@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -18,6 +20,7 @@ namespace SME.SGP.Dominio
         private const string CLAIM_RF = "rf";
         private readonly IContextoAplicacao contextoAplicacao;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
+        private readonly IMediator mediator;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
@@ -30,7 +33,8 @@ namespace SME.SGP.Dominio
                               IUnitOfWork unitOfWork,
                               IContextoAplicacao contextoAplicacao,
                               IRepositorioCache repositorioCache,
-                              IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
+                              IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
+                              IMediator mediator)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -39,6 +43,7 @@ namespace SME.SGP.Dominio
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task AlterarEmailUsuarioPorLogin(string login, string novoEmail)
@@ -66,13 +71,13 @@ namespace SME.SGP.Dominio
 
         public string ObterClaim(string nomeClaim)
         {
-            var claim = contextoAplicacao.ObterVarivel<IEnumerable<InternalClaim>>("Claims").FirstOrDefault(a => a.Type == nomeClaim);
+            var claim = contextoAplicacao.ObterVariavel<IEnumerable<InternalClaim>>("Claims").FirstOrDefault(a => a.Type == nomeClaim);
             return claim?.Value;
         }
 
         public string ObterLoginAtual()
         {
-            var loginAtual = contextoAplicacao.ObterVarivel<string>("login");
+            var loginAtual = contextoAplicacao.ObterVariavel<string>("login");
             if (loginAtual == null)
                 throw new NegocioException("Não foi possível localizar o login no token");
 
@@ -81,7 +86,7 @@ namespace SME.SGP.Dominio
 
         public string ObterNomeLoginAtual()
         {
-            var nomeLoginAtual = contextoAplicacao.ObterVarivel<string>("NomeUsuario");
+            var nomeLoginAtual = contextoAplicacao.ObterVariavel<string>("NomeUsuario");
             if (nomeLoginAtual == null)
                 throw new NegocioException("Não foi possível localizar o nome do login no token");
 
@@ -111,7 +116,7 @@ namespace SME.SGP.Dominio
 
         public IEnumerable<Permissao> ObterPermissoes()
         {
-            var claims = contextoAplicacao.ObterVarivel<IEnumerable<InternalClaim>>("Claims").Where(a => a.Type == CLAIM_PERMISSAO);
+            var claims = contextoAplicacao.ObterVariavel<IEnumerable<InternalClaim>>("Claims").Where(a => a.Type == CLAIM_PERMISSAO);
             List<Permissao> retorno = new List<Permissao>();
 
             if (claims.Any())
@@ -214,7 +219,7 @@ namespace SME.SGP.Dominio
 
             if (!usuario.EhProfessorCj())
             {
-                var validacaoData = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, turmaId, new DateTime[] { data }, long.Parse(disciplinaId));
+                var validacaoData = await mediator.Send(new ObterValidacaoPodePersistirTurmaNasDatasQuery(usuario.CodigoRf, turmaId, new DateTime[] { data }, long.Parse(disciplinaId)));
 
                 if (validacaoData == null || !validacaoData.Any())
                     throw new NegocioException("Não foi possível obter a validação do professor no EOL.");

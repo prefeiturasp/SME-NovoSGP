@@ -46,6 +46,24 @@ namespace SME.SGP.IoC
             services.AddMediatR(assembly);
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
         }
+        private static void RegistrarRabbit(IServiceCollection services)
+        {
+            var factory = new ConnectionFactory
+            {
+                HostName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__HostName"),
+                UserName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__UserName"),
+                Password = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Password"),
+                VirtualHost = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Virtualhost")
+            };
+
+            var conexaoRabbit = factory.CreateConnection();
+            IModel canalRabbit = conexaoRabbit.CreateModel();
+            services.AddSingleton(conexaoRabbit);
+            services.AddSingleton(canalRabbit);
+
+            canalRabbit.ExchangeDeclare(ExchangeRabbit.Sgp, ExchangeType.Topic);
+        }
+
         private static void RegistrarComandos(IServiceCollection services)
         {
             services.TryAddScopedWorkerService<IComandosPlanoCiclo, ComandosPlanoCiclo>();
@@ -443,6 +461,10 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExecutarConsolidacaoFrequenciaTurmaSyncUseCase, ExecutarConsolidacaoFrequenciaTurmaSyncUseCase>();
             services.TryAddScopedWorkerService<IConsolidarFrequenciaTurmasUseCase, ConsolidarFrequenciaTurmasUseCase>();
             services.TryAddScopedWorkerService<IConsolidarFrequenciaPorTurmaUseCase, ConsolidarFrequenciaPorTurmaUseCase>();
+            
+            // Frequência
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasUseCase, ConciliacaoFrequenciaTurmasUseCase>();
+            services.TryAddScopedWorkerService<IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase, ValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase>();
 
             // Notificações
             services.TryAddScopedWorkerService<IExecutaNotificacaoAndamentoFechamentoUseCase, ExecutaNotificacaoAndamentoFechamentoUseCase>();
@@ -563,6 +585,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExecutarConsolidacaoMatriculaTurmasUseCase, ExecutarConsolidacaoMatriculaTurmasUseCase>();
 
             services.TryAddScopedWorkerService<INotificacaoSalvarItineranciaUseCase, NotificacaoSalvarItineranciaUseCase>();
+
+            services.TryAddScopedWorkerService<IAlterarAulaFrequenciaTratarUseCase, AlterarAulaFrequenciaTratarUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

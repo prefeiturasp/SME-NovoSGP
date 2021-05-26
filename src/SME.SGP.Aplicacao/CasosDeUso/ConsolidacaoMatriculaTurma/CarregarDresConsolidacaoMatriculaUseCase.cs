@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 var dre = new FiltroConsolidacaoMatriculaDreDto(dreId, anosLetivosParaConsolidar);
                 try
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizarDresMatriculasTurmas, dre, new Guid(), null, fila: RotasRabbit.SincronizarDresMatriculasTurmas));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDresMatriculasTurmas, dre, Guid.NewGuid(), null));
                 }
                 catch (Exception ex)
                 {
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
             var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoInformacoesEscolares, ano));
             if (parametroSistema != null)
             {
-                parametroSistema.Valor = DateTime.Now.ToString();
+                parametroSistema.Valor = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff tt");
 
                 await mediator.Send(new AtualizarParametroSistemaCommand(parametroSistema));
             }

@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoFrequenciaTurma, ano));
             if (parametroSistema != null)
             {
-                parametroSistema.Valor = DateTime.Now.ToString();
+                parametroSistema.Valor = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff tt");
 
                 await mediator.Send(new AtualizarParametroSistemaCommand(parametroSistema));
             }
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ConsolidarFrequenciasTurmasNoAno(int ano)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, new FiltroAnoDto(ano), Guid.NewGuid(), null, fila: RotasRabbit.ConsolidarFrequenciasTurmasNoAno));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarFrequenciasTurmasNoAno, new FiltroAnoDto(ano), Guid.NewGuid(), null));
             await AtualizarDataExecucao(ano);
         }
     }

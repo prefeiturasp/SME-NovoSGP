@@ -7,6 +7,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -171,7 +172,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<Turma> ObterPorCodigo(string turmaCodigo)
         {
-            return await contexto.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
         public async Task<long> ObterTurmaIdPorCodigo(string turmaCodigo)
@@ -443,27 +444,24 @@ namespace SME.SGP.Dados.Repositorios
                 .Select(e => $"'{e.CodigoTurma}'")?.ToArray();
 
             var listaTurmas = string.Join(",", codigosTurmas);
+            var transacao = contexto.Conexao.BeginTransaction();
 
-            var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
-                .Replace("#codigosTurmasParaHistorico", GerarQueryCodigosTurmasForaLista(anoLetivo, true))
-                .Replace("#idsTurmas", listaTurmas);
+            try
+            {
+                var codigosTurmasParaHistorico = await ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(anoLetivo, true, listaTurmas, transacao);
+                var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
+                                        .Replace("#codigosTurmasParaHistorico", MapearParaCodigosQuerySql(codigosTurmasParaHistorico));                
 
-            var sqlExcluirTurmas = Delete.Replace("#queryIdsConselhoClasseTurmasForaListaCodigos", QueryIdsConselhoClasseTurmasForaListaCodigos)
+                await contexto.Conexao.ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, transacao);
+
+                var codigosTurmasARemover = await ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(anoLetivo, false, listaTurmas, transacao);
+                var sqlExcluirTurmas = Delete.Replace("#queryIdsConselhoClasseTurmasForaListaCodigos", QueryIdsConselhoClasseTurmasForaListaCodigos)
                                          .Replace("#queryFechamentoAlunoTurmasForaListaCodigos", QueryFechamentoAlunoTurmasForaListaCodigos)
                                          .Replace("#queryIdsFechamentoTurmaTurmasForaListaCodigos", QueryIdsFechamentoTurmaTurmasForaListaCodigos)
                                          .Replace("#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos", QueryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos)
                                          .Replace("#queryIdsTurmasForaListaCodigos", QueryIdsTurmasForaListaCodigos)
                                          .Replace("#queryIdsAulasTurmasForaListaCodigos", QueryAulasTurmasForaListaCodigos)
-                                         .Replace("#codigosTurmasARemover", GerarQueryCodigosTurmasForaLista(anoLetivo, false))
-                                         .Replace("#idsTurmas", listaTurmas);
-
-            var transacao = contexto.Conexao.BeginTransaction();
-
-            try
-            {
-                await contexto.Conexao
-                    .ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, transacao);
-
+                                         .Replace("#codigosTurmasARemover", MapearParaCodigosQuerySql(codigosTurmasARemover));
                 await contexto.Conexao
                     .ExecuteAsync(sqlExcluirTurmas, transacao);
 
@@ -475,6 +473,17 @@ namespace SME.SGP.Dados.Repositorios
                 SentrySdk.CaptureException(erro);
                 transacao.Rollback();
             }
+        }
+
+        public async Task<IEnumerable<string>> ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(int anoLetivo, bool definirTurmasComoHistorica, string listaTurmas, IDbTransaction transacao)
+        {
+            var sqlQuery = GerarQueryCodigosTurmasForaLista(anoLetivo, true).Replace("#idsTurmas", listaTurmas);
+            return await contexto.Conexao.QueryAsync<string>(sqlQuery, transacao);
+        }
+        private string MapearParaCodigosQuerySql(IEnumerable<string> codigos)
+        {
+            string[] arrCodigos = codigos.Select(x => $"'{x}'").ToArray();
+            return string.Join(",", arrCodigos);
         }
 
         public async Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos)
@@ -958,7 +967,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, bool listarTodasTurmas)
         {
-            var query = new StringBuilder(@"select t.id as TurmaId,
+            var query = new StringBuilder(@"select distinct t.id as TurmaId,
                                                      t.nome       
                                                 from turma t 
                                                inner join ue on ue.id = t.ue_id
@@ -975,8 +984,8 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
-            else
-                query.AppendLine("and pe.bimestre is null ");
+            //else
+            //    query.AppendLine("and pe.bimestre is null ");
 
             DateTime dataReferencia = DateTime.MinValue;
             string queryPeriodoEJA = string.Empty;
@@ -991,11 +1000,11 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine(@" and t.modalidade_codigo = @modalidade
                                 and t.ano_letivo = @anoLetivo
-                                and not t.historica
+                                and not t.historica 
                             order by t.nome
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
 
-            query.AppendLine(@"select count(t.id)      
+            query.AppendLine(@"select count(distinct (t.id))
                                     from turma t 
                                 inner join ue on ue.id = t.ue_id
                                 inner join dre on dre.id = ue.dre_id
@@ -1011,8 +1020,8 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
-            else
-                query.AppendLine("and pe.bimestre is null ");
+            //else
+            //    query.AppendLine("and pe.bimestre is null ");
 
             if (modalidade == Modalidade.EJA)
                 query.AppendLine(queryPeriodoEJA);
@@ -1079,42 +1088,65 @@ namespace SME.SGP.Dados.Repositorios
         }
 
 
-        public async Task<IEnumerable<GraficoBaseDto>> ObterInformacoesEscolaresTurmasAsync(int anoLetivo, long dreId, long ueId, string ano, Modalidade modalidade, int? semestre)
+        public async Task<IEnumerable<GraficoBaseDto>> ObterInformacoesEscolaresTurmasAsync(int anoLetivo, long dreId, long ueId, AnoItinerarioPrograma[] anos, Modalidade modalidade, int? semestre)
         {
-            var sql = dreId > 0 ? QueryInformacoesEscolaresTurmasPorAno(dreId, ueId, semestre) : QueryInformacoesEscolaresTurmasPorDre(dreId, ueId, ano, semestre);
+            var tiposTurma = new List<int>();
+            var anosCondicao = new List<string>();
+            if (anos != null)
+            {
+                foreach (var ano in anos)
+                {
+                    if (ano == AnoItinerarioPrograma.Programa || ano == AnoItinerarioPrograma.Itinerario || ano == AnoItinerarioPrograma.EducacaoFisica)
+                        tiposTurma.Add(ano.ObterTipoTurma());
+                    else anosCondicao.Add(ano.ShortName());
+                }
+            }
+            var sql = dreId > 0 ? QueryInformacoesEscolaresTurmasPorAno(dreId, ueId, anosCondicao, tiposTurma, semestre) : 
+                QueryInformacoesEscolaresTurmasPorDre(dreId, ueId, anosCondicao, tiposTurma, semestre);
             return await contexto
                 .Conexao
-                .QueryAsync<GraficoBaseDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre, ano });
+                .QueryAsync<GraficoBaseDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre, tiposTurma, anosCondicao });
         }
 
-        private string CondicoesInformacoesEscolares(long dreId, long ueId, string ano, int? semestre)
+        private string CondicoesInformacoesEscolares(long dreId, long ueId, IEnumerable<string> anosCondicao, IEnumerable<int> tiposTurma, int? semestre)
         {
             var query = new StringBuilder("");
             if (semestre > 0) query.AppendLine(@"  and t.semestre = @semestre");
             if (dreId > 0) query.AppendLine(@" and dre.id = @dreId");
             if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId");
-            if (!string.IsNullOrEmpty(ano)) query.AppendLine(@"  and t.ano = @ano");
+            if (anosCondicao != null && anosCondicao.Any()) query.AppendLine(@"  and t.ano = ANY(@anosCondicao)");
+            if (tiposTurma != null && tiposTurma.Any()) query.AppendLine(@"  and t.tipo_turma = ANY(@tiposTurma)");
             return query.ToString();
         }
 
-        private string QueryInformacoesEscolaresTurmasPorDre(long dreId, long ueId, string ano, int? semestre)
+        private string QueryInformacoesEscolaresTurmasPorDre(long dreId, long ueId, IEnumerable<string> anos, IEnumerable<int> tiposTurma, int? semestre)
         {
             var query = new StringBuilder(@"select dre.abreviacao as descricao,
 	                                             count(t.id) as quantidade
                                             from turma t 
                                            inner join ue on ue.id = t.ue_id 
                                            inner join dre on dre.id = ue.dre_id 
-                                           where t.ano <> '0'
-                                             and t.ano is not null 
+                                           where t.ano is not null 
                                              and t.ano_letivo = @anoLetivo
-                                             and t.modalidade_codigo = @modalidade ");
-            query.AppendLine(CondicoesInformacoesEscolares(dreId, ueId, ano, semestre));
+                                             and t.modalidade_codigo = @modalidade "); 
+            if (semestre > 0) query.AppendLine(@"  and t.semestre = @semestre");
+            if (dreId > 0) query.AppendLine(@" and dre.id = @dreId");
+            if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId");
+            if (anos != null && anos.Any() && tiposTurma != null && tiposTurma.Any())
+            {
+                query.AppendLine(@"  and (t.ano = ANY(@anosCondicao) or t.tipo_turma = ANY(@tiposTurma)) ");
+            }
+            else
+            {
+                if (anos != null && anos.Any()) query.AppendLine(@"  and t.ano = ANY(@anosCondicao)");
+                if (tiposTurma != null && tiposTurma.Any()) query.AppendLine(@"  and t.tipo_turma = ANY(@tiposTurma)");
+            }
             query.AppendLine(@" group by dre.abreviacao 
                          order by dre.abreviacao");
             return query.ToString();
         }
 
-        private string QueryInformacoesEscolaresTurmasPorAno(long dreId, long ueId, int? semestre)
+        private string QueryInformacoesEscolaresTurmasPorAno(long dreId, long ueId, IEnumerable<string> anosCondicao, IEnumerable<int> tiposTurma, int? semestre)
         {
             var query = new StringBuilder(@"select * from (	
 	                                            (select t.ano as descricao,
@@ -1122,24 +1154,30 @@ namespace SME.SGP.Dados.Repositorios
 	                                              from turma t 
 	                                             inner join ue on ue.id = t.ue_id 
 	                                             inner join dre on dre.id = ue.dre_id 
-	                                             where t.ano <> '0'
-	                                               and t.ano is not null
-	                                               and t.tipo_turma not in (2,7)
-                                                   and t.ano_letivo = @anoLetivo");
-            query.AppendLine(CondicoesInformacoesEscolares(dreId, ueId, "", semestre));
+	                                             where  t.ano is not null
+	                                               and t.tipo_turma not in (2,3,7)
+                                                   and t.ano_letivo = @anoLetivo ");
+
+            if (tiposTurma.Any() && !anosCondicao.Any()) query.AppendLine("and t.ano = '0'");
+            else query.AppendLine("and t.ano <> '0' ");
+
+            query.AppendLine(CondicoesInformacoesEscolares(dreId, ueId, anosCondicao, null, semestre));
             query.AppendLine(@" group by t.ano
 	                                             order by t.ano)
 	                                             union
-	                                            select 'Turmas de programa' as descricao,
+	                                            select case 
+                                                       when t.tipo_turma = 3 then 'Turmas de programa' 
+                                                       when t.tipo_turma = 2 then 'Educação física'
+                                                       else 'Itinerário' end AS descricao,
 		                                               count(t.id) as quantidade
 	                                              from turma t 
 	                                             inner join ue on ue.id = t.ue_id 
 	                                             inner join dre on dre.id = ue.dre_id 
 	                                             where t.ano is not null
-	                                               and t.tipo_turma in (2,7) 
+	                                               and t.tipo_turma in (2,3,7) 
                                                    and t.ano_letivo = @anoLetivo");
-            query.AppendLine(CondicoesInformacoesEscolares(dreId, ueId, "", semestre));
-            query.AppendLine(@"            ) x
+            query.AppendLine(CondicoesInformacoesEscolares(dreId, ueId, anosCondicao, tiposTurma, semestre));
+            query.AppendLine(@"group by t.tipo_turma) x
                                             order by x.descricao");
             return query.ToString();
         }
