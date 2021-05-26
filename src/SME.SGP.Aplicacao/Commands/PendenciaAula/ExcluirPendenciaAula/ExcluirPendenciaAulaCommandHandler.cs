@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -21,12 +22,21 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirPendenciaAulaCommand request, CancellationToken cancellationToken)
         {
-            var pendenciasId = await repositorioPendenciaAula.ObterPendenciaIdPorAula(request.AulaId, request.TipoPendenciaAula);
-            foreach(var pendenciaId in pendenciasId)
+            try
             {
-                await repositorioPendenciaAula.Excluir(pendenciaId, request.AulaId);
 
-                await ExcluirPendenciaSeNaoHouverMaisPendenciaAula(pendenciaId);
+                var pendenciasId = await repositorioPendenciaAula.ObterPendenciaIdPorAula(request.AulaId, request.TipoPendenciaAula);
+                foreach (var pendenciaId in pendenciasId)
+                {
+                    await repositorioPendenciaAula.Excluir(pendenciaId, request.AulaId);
+
+                    await ExcluirPendenciaSeNaoHouverMaisPendenciaAula(pendenciaId);
+                }
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.AddBreadcrumb("ExcluirPendenciaAulaCommand", "RabbitMQ");
+                SentrySdk.CaptureException(ex);
             }
             return true;
         }

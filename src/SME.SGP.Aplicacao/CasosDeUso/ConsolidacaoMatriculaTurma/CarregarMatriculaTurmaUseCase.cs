@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 matricula.TurmaId = turmaId;
                 try
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidacaoMatriculasTurmasSync, matricula, new Guid(), null, fila: RotasRabbit.ConsolidacaoMatriculasTurmasSync));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasSync, matricula, Guid.NewGuid(), null));
                 }
                 catch (Exception ex)
                 {

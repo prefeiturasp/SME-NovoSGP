@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             var aula = await mediator.Send(new ObterAulaPorIdQuery(anotacao.AulaId));
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            if (!usuario.EhProfessorCj())
+            if (!usuario.EhProfessorCj() && !usuario.EhGestorEscolar())
                 await ValidarAtribuicaoUsuario(long.Parse(aula.DisciplinaId), aula.TurmaId, aula.DataAula, usuario);
 
             return await AtualizarAnotacaoFrequenciaAluno(anotacao, param);

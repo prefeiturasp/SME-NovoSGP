@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             var atualizarConsolidado = false;
 
             if (fechamento != null && consolidadoTurmaComponente != null) 
-                atualizarConsolidado = consolidadoTurmaComponente.Status != fechamento.ObterStatusFechamento();
+                atualizarConsolidado = consolidadoTurmaComponente.Status != fechamento.Situacao;
 
             consolidadoTurmaComponente = MapearFechamentoConsolidado(filtro, consolidadoTurmaComponente, fechamento, professoresDaTurma);
 
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
 
         private FechamentoConsolidadoComponenteTurma MapearFechamentoConsolidado(FechamentoConsolidacaoTurmaComponenteBimestreDto filtro, FechamentoConsolidadoComponenteTurma consolidadoTurmaComponente, FechamentoTurmaDisciplina fechamento, IEnumerable<Infra.ProfessorTitularDisciplinaEol> professoresDaTurma)
         {
-            var statusFechamento = fechamento != null ? fechamento.ObterStatusFechamento() : StatusFechamento.NaoIniciado;
+            var statusFechamento = fechamento != null ? fechamento.Situacao : SituacaoFechamento.NaoIniciado;
 
             if (consolidadoTurmaComponente == null)
             {

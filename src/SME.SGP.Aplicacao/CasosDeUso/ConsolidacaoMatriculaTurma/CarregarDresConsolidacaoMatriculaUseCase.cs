@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 var dre = new FiltroConsolidacaoMatriculaDreDto(dreId, anosLetivosParaConsolidar);
                 try
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizarDresMatriculasTurmas, dre, new Guid(), null, fila: RotasRabbit.SincronizarDresMatriculasTurmas));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDresMatriculasTurmas, dre, Guid.NewGuid(), null));
                 }
                 catch (Exception ex)
                 {

@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api
 {
     [ApiController]
-    [Route("api/v1/fechamentos/acompanhamentos")]
+    [Route("api/v1/fechamentos/acompanhamentos/turmas")]
     [Authorize("Bearer")]
     public class FechamentoAcompanhamentoTurmasController : ControllerBase
     {
-        [HttpGet("turmas")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
@@ -24,7 +24,7 @@ namespace SME.SGP.Api
             return Ok(await useCase.Executar(filtro));
         }
 
-        [HttpGet("turmas/{turmaId}/fechamentos/bimestres/{bimestre}")]
+        [HttpGet("{turmaId}/fechamentos/bimestres/{bimestre}")]
         [ProducesResponseType(typeof(IEnumerable<StatusTotalFechamentoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
@@ -34,8 +34,9 @@ namespace SME.SGP.Api
 
             return Ok(listaStatus);
         }
-        [HttpGet("turmas/{turmaId}/conselho-classe/bimestres/{bimestre}")]
-        [ProducesResponseType(typeof(IEnumerable<StatusTotalConselhoClasseDto>), 200)]
+
+        [HttpGet("{turmaId}/conselho-classe/bimestres/{bimestre}")]
+        [ProducesResponseType(typeof(IEnumerable<StatusTotalFechamentoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
         public async Task<IActionResult> ListaTotalStatusConselhosClasse(long turmaId, int bimestre, [FromServices] IObterConselhoClasseConsolidadoPorTurmaBimestreUseCase useCase)
@@ -45,18 +46,26 @@ namespace SME.SGP.Api
             return Ok(listaStatus);
         }
 
-        //TODO: REMOVER ANTES DA STORY IR PARA DEV!
-        [HttpPost]
-        public async Task<IActionResult> TestarFila([FromServices] IExecutarConsolidacaoTurmaGeralUseCase executarConsolidacaoTurmaGeralUseCase)
+        [HttpGet("{turmaId}/conselho-classe/bimestres/{bimestre}/alunos")]
+        [ProducesResponseType(typeof(IEnumerable<ConselhoClasseAlunoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ACF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListaAlunosPorTurma(long turmaId, int bimestre, [FromServices] IObterFechamentoConselhoClasseAlunosPorTurmaUseCase useCase)
         {
+            var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoTurmaBimestreDto(turmaId, bimestre));
 
-            var obj = new ConsolidacaoTurmaDto() { Bimestre = 1, TurmaId = 625342 };
-            var mensagem = JsonConvert.SerializeObject(obj);
-            var msgRabbit = new MensagemRabbit(mensagem);
+            return Ok(listaStatus);
+        }
 
-            await executarConsolidacaoTurmaGeralUseCase.Executar(msgRabbit);
+        [HttpGet("{turmaId}/conselho-classe/bimestres/{bimestre}/alunos/{alunoCodigo}/componentes-curriculares/detalhamento")]
+        [ProducesResponseType(typeof(IEnumerable<DetalhamentoComponentesCurricularesAlunoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ACF_C, Policy = "Bearer")]
+        public async Task<IActionResult> DetalhamentoComponentesCurricularesAluno(long turmaId, int bimestre, string alunoCodigo, [FromServices] IObterDetalhamentoFechamentoConselhoClasseAlunoUseCase useCase)
+        {
+            var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoDto(turmaId, bimestre, alunoCodigo));
 
-            return Ok();
+            return Ok(listaStatus);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             return MapearRetornoStatusAgrupado(statusAgrupados);
         }
 
-        private IEnumerable<StatusTotalFechamentoDto> MapearRetornoStatusAgrupado(IEnumerable<IGrouping<StatusFechamento, FechamentoConsolidadoComponenteTurma>> statusAgrupados)
+        private IEnumerable<StatusTotalFechamentoDto> MapearRetornoStatusAgrupado(IEnumerable<IGrouping<SituacaoFechamento, FechamentoConsolidadoComponenteTurma>> statusAgrupados)
         {
             var lstStatus = new List<StatusTotalFechamentoDto>();
 
@@ -34,24 +34,24 @@ namespace SME.SGP.Aplicacao
             {
                 lstStatus.Add(new StatusTotalFechamentoDto()
                 {
-                    Status = status.Key,
-                    Descricao = status.Key.Description(),
+                    Status = status.Key == SituacaoFechamento.EmProcessamento ? (int)SituacaoFechamento.NaoIniciado : (int)status.Key,
+                    Descricao = status.Key == SituacaoFechamento.EmProcessamento ? SituacaoFechamento.NaoIniciado.Name() : status.Key.Name(),
                     Quantidade = status.Count()
                 });
             }
 
-           var lstTodosStatus = Enum.GetValues(typeof(StatusFechamento)).Cast<StatusFechamento>();
+           var lstTodosStatus = Enum.GetValues(typeof(SituacaoFechamento)).Cast<SituacaoFechamento>();
 
-            var statusNaoEncontrados = lstTodosStatus.Where(ls => !lstStatus.Select(s => s.Status).Contains(ls));
+            var statusNaoEncontrados = lstTodosStatus.Where(ls => !lstStatus.Select(s => (SituacaoFechamento)s.Status).Contains(ls));
 
             if (statusNaoEncontrados != null && statusNaoEncontrados.Any()) 
             {
-                foreach (var status in statusNaoEncontrados)
+                foreach (var status in statusNaoEncontrados.Where(s => s != SituacaoFechamento.EmProcessamento))
                 {
                     lstStatus.Add(new StatusTotalFechamentoDto()
                     {
-                        Status = status,
-                        Descricao = status.Description(),
+                        Status = status == SituacaoFechamento.EmProcessamento ? (int)SituacaoFechamento.NaoIniciado : (int)status,
+                        Descricao = status.Name(),
                         Quantidade = 0
                     });
                 }

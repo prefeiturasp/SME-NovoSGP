@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             return MapearRetornoStatusAgrupado(statusAgrupados);
         }
 
-        private IEnumerable<StatusTotalConselhoClasseDto> MapearRetornoStatusAgrupado(IEnumerable<IGrouping<StatusConselhoClasse, ConselhoClasseConsolidadoTurmaAluno>> statusAgrupados)
+        private IEnumerable<StatusTotalConselhoClasseDto> MapearRetornoStatusAgrupado(IEnumerable<IGrouping<SituacaoConselhoClasse, ConselhoClasseConsolidadoTurmaAluno>> statusAgrupados)
         {
             var lstStatus = new List<StatusTotalConselhoClasseDto>();
 
@@ -34,15 +34,15 @@ namespace SME.SGP.Aplicacao
             {
                 lstStatus.Add(new StatusTotalConselhoClasseDto()
                 {
-                    Status = status.Key,
-                    Descricao = status.Key.Description(),
+                    Status = (int)status.Key,
+                    Descricao = status.Key.Name(),
                     Quantidade = status.Count()
                 });
             }
 
-            var lstTodosStatus = Enum.GetValues(typeof(StatusConselhoClasse)).Cast<StatusConselhoClasse>();
+            var lstTodosStatus = Enum.GetValues(typeof(SituacaoConselhoClasse)).Cast<SituacaoConselhoClasse>();
 
-            var statusNaoEncontrados = lstTodosStatus.Where(ls => !lstStatus.Select(s => s.Status).Contains(ls));
+            var statusNaoEncontrados = lstTodosStatus.Where(ls => !lstStatus.Select(s => (SituacaoConselhoClasse)s.Status).Contains(ls));
 
             if (statusNaoEncontrados != null && statusNaoEncontrados.Any())
             {
@@ -50,8 +50,8 @@ namespace SME.SGP.Aplicacao
                 {
                     lstStatus.Add(new StatusTotalConselhoClasseDto()
                     {
-                        Status = status,
-                        Descricao = status.Description(),
+                        Status = (int)status,
+                        Descricao = status.Name(),
                         Quantidade = 0
                     });
                 }

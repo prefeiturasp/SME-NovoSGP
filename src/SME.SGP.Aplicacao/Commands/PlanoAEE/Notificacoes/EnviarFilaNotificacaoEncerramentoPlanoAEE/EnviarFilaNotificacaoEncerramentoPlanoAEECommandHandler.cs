@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             var command = new NotificarEncerramentoPlanoAEECommand(request.PlanoAEEId, usuario);
 
-            await mediator.Send(new PublicaFilaWorkerSgpCommand(RotasRabbit.NotificarPlanoAEEEncerrado, command, Guid.NewGuid(), usuario));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarPlanoAEEEncerrado, command, Guid.NewGuid(), usuario));
             SentrySdk.AddBreadcrumb($"Envio Fila de Notificação de Encerramento de PlanoAEE", "RabbitMQ");
 
             return true;

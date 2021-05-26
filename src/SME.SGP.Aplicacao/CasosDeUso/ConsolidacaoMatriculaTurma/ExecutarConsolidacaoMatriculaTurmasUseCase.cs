@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExecutarConsolidacaoFrequenciaTurmaSyncUseCase", "Rabbit - ExecutarConsolidacaoFrequenciaTurmaSyncUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidacaoMatriculasTurmasDreCarregar, string.Empty, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasDreCarregar, string.Empty, Guid.NewGuid(), null));
         }
     }
 }

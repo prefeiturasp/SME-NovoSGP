@@ -19,6 +19,7 @@ using SME.SGP.Dados;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.IoC;
+using SME.SGP.IoC.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -128,6 +129,7 @@ namespace SME.SGP.Api
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
+            services.AddPolicies();
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 

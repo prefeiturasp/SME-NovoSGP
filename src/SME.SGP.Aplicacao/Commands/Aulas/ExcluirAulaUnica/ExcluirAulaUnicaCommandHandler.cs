@@ -30,7 +30,8 @@ namespace SME.SGP.Aplicacao
             if (await mediator.Send(new AulaPossuiAvaliacaoQuery(aula, request.Usuario.CodigoRf)))
                 throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
 
-            await ValidarComponentesDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId), aula.DataAula, request.Usuario);
+            if(!request.Usuario.EhGestorEscolar())
+                await ValidarComponentesDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId), aula.DataAula, request.Usuario);
 
             unitOfWork.IniciarTransacao();
             try
@@ -45,10 +46,15 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ExcluirDiarioBordoDaAulaCommand(aula.Id));
                 await mediator.Send(new IncluirFilaExclusaoPendenciasAulaCommand(aula.Id, request.Usuario));
 
+                //TODO: TENTAR OTIMIZAR PARA BUSCAR MAIS FÁCIL O BIMESTRE
+                var bimestreAtual = await mediator.Send(new ObterBimestrePorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
+
                 aula.Excluido = true;
                 await repositorioAula.SalvarAsync(aula);
 
                 unitOfWork.PersistirTransacao();
+
+                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(null, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestreAtual));
             }
             catch (Exception)
             {

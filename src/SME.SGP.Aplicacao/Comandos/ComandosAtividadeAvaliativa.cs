@@ -50,8 +50,8 @@ namespace SME.SGP.Aplicacao
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentException(nameof(repositorioPeriodoEscolar));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaRegencia));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaDisciplina));
-            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentException(nameof(repositorioAtribuicaoCJ));         
-            this.mediator = mediator ?? throw new ArgumentException(nameof(mediator));         
+            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentException(nameof(repositorioAtribuicaoCJ));
+            this.mediator = mediator ?? throw new ArgumentException(nameof(mediator));
         }
 
         public async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> Alterar(AtividadeAvaliativaDto dto, long id)
@@ -68,7 +68,8 @@ namespace SME.SGP.Aplicacao
 
             atividadeAvaliativa.PodeSerAlterada(usuario);
 
-            await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, dto.DisciplinasId[0], atividadeAvaliativa.DataAvaliacao, usuario);
+            if(!usuario.EhGestorEscolar())
+                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, dto.DisciplinasId[0], atividadeAvaliativa.DataAvaliacao, usuario);
 
             unitOfWork.IniciarTransacao();
 
@@ -137,14 +138,17 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            atividadeAvaliativa.PodeSerAlterada(usuario);
-
             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(idAtividadeAvaliativa);
 
-            foreach (var atividadeDisciplina in atividadeDisciplinas)
+            if (!usuario.EhGestorEscolar())
             {
-                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeDisciplina.DisciplinaId, atividadeAvaliativa.DataAvaliacao, usuario);
-            }
+                atividadeAvaliativa.PodeSerAlterada(usuario);
+
+                foreach (var atividadeDisciplina in atividadeDisciplinas)
+                {
+                    await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeDisciplina.DisciplinaId, atividadeAvaliativa.DataAvaliacao, usuario);
+                }
+            }               
 
             unitOfWork.IniciarTransacao();
 
@@ -193,8 +197,11 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("É necessário informar o componente curricular");
             var disciplina = await ObterDisciplina(filtro.DisciplinasId[0]);
             var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var regenteAtual = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(disciplina.Id, filtro.TurmaId, DateTime.Now.Date, usuario));
             DateTime dataAvaliacao = filtro.DataAvaliacao.Value.Date;
-            var aula = await repositorioAula.ObterAulas(filtro.TurmaId, filtro.UeID, usuario.CodigoRf, dataAvaliacao, filtro.DisciplinasId);
+            var rf = usuario.EhGestorEscolar() ? null : usuario.CodigoRf;
+
+            var aula = await repositorioAula.ObterAulas(filtro.TurmaId, filtro.UeID, regenteAtual ? string.Empty : rf, dataAvaliacao, filtro.DisciplinasId, usuario.EhProfessorCj());
 
             //verificar se tem para essa atividade
             if (!aula.Any())
@@ -255,7 +262,7 @@ namespace SME.SGP.Aplicacao
                     {
                         mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto($"Erro ao copiar para a turma: '{turma.TurmaId}' na data '{turma.DataAtividadeAvaliativa.ToString("dd/MM/yyyy")}'. {nex.Message}"));
                     }
-                }               
+                }
             }
 
             return mensagens;
@@ -354,11 +361,11 @@ namespace SME.SGP.Aplicacao
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            foreach (var id in dto.DisciplinasId)
-            {
-                await VerificaSeProfessorPodePersistirTurma(atividadeAvaliativa.ProfessorRf, atividadeAvaliativa.TurmaId, id, atividadeAvaliativa.DataAvaliacao.Date, usuario);
-            }
 
+            if(!usuario.EhGestorEscolar())
+                foreach (var id in dto.DisciplinasId)                
+                    await VerificaSeProfessorPodePersistirTurma(atividadeAvaliativa.ProfessorRf, atividadeAvaliativa.TurmaId, id, atividadeAvaliativa.DataAvaliacao.Date, usuario);
+            
             unitOfWork.IniciarTransacao();
 
             await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
