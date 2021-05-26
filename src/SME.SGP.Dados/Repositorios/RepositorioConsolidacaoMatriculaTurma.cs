@@ -100,7 +100,7 @@ namespace SME.SGP.Dados
             var query = new StringBuilder();
             query.AppendLine(@"                 select case 
  													   when t.tipo_turma = 3 then 'Turmas de programa' 
- 													   when t.tipo_turma = 2 then 'Educação física'
+ 													   when t.tipo_turma = 2 then 'Ed. Física'
  													   when t.tipo_turma = 7 then 'Itinerário'end as AnoDescricao,
                                                          sum(cfm.quantidade) as quantidade
                                                   from consolidacao_matricula_turma cfm
