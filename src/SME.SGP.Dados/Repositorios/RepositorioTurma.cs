@@ -1116,6 +1116,7 @@ namespace SME.SGP.Dados.Repositorios
             if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId");
             if (anosCondicao != null && anosCondicao.Any()) query.AppendLine(@"  and t.ano = ANY(@anosCondicao)");
             if (tiposTurma != null && tiposTurma.Any()) query.AppendLine(@"  and t.tipo_turma = ANY(@tiposTurma)");
+            
             return query.ToString();
         }
 
@@ -1127,8 +1128,8 @@ namespace SME.SGP.Dados.Repositorios
                                            inner join ue on ue.id = t.ue_id 
                                            inner join dre on dre.id = ue.dre_id 
                                            where t.ano is not null 
-                                             and t.ano_letivo = @anoLetivo
-                                             and t.modalidade_codigo = @modalidade "); 
+                                             and t.ano_letivo = @anoLetivo  
+                                             and t.modalidade_codigo = @modalidade"); 
             if (semestre > 0) query.AppendLine(@"  and t.semestre = @semestre");
             if (dreId > 0) query.AppendLine(@" and dre.id = @dreId");
             if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId");
@@ -1156,7 +1157,8 @@ namespace SME.SGP.Dados.Repositorios
 	                                             inner join dre on dre.id = ue.dre_id 
 	                                             where  t.ano is not null
 	                                               and t.tipo_turma not in (2,3,7)
-                                                   and t.ano_letivo = @anoLetivo ");
+                                                   and t.ano_letivo = @anoLetivo
+                                                   and t.modalidade_codigo = @modalidade ");
 
             if (tiposTurma.Any() && !anosCondicao.Any()) query.AppendLine("and t.ano = '0'");
             else query.AppendLine("and t.ano <> '0' ");
@@ -1175,7 +1177,8 @@ namespace SME.SGP.Dados.Repositorios
 	                                             inner join dre on dre.id = ue.dre_id 
 	                                             where t.ano is not null
 	                                               and t.tipo_turma in (2,3,7) 
-                                                   and t.ano_letivo = @anoLetivo");
+                                                   and t.ano_letivo = @anoLetivo
+                                                   and t.modalidade_codigo = @modalidade ");
             query.AppendLine(CondicoesInformacoesEscolares(dreId, ueId, anosCondicao, tiposTurma, semestre));
             query.AppendLine(@"group by t.tipo_turma) x
                                             order by x.descricao");
