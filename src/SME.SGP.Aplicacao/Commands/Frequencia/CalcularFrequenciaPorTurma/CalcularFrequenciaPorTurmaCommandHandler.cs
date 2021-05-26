@@ -196,6 +196,7 @@ namespace SME.SGP.Aplicacao
             catch(Exception)
             {
                 unitOfWork.Rollback();
+                throw;
             }
         }
 

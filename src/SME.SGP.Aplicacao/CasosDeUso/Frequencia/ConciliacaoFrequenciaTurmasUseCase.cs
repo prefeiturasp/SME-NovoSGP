@@ -15,10 +15,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task Executar()
         {
-            SentrySdk.AddBreadcrumb($"Mensagem ConciliacaoFrequenciaTurmaSync", "Rabbit - ConciliacaoFrequenciaTurmaSync");
-            var command = new ConciliacaoFrequenciaTurmasCommand(DateTime.Now);
+            await Executar(DateTime.Now);
+        }
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaSync, command, Guid.NewGuid(), null));
+        public async Task Executar(DateTime dataPeriodo)
+        {
+            await mediator.Send(new ConciliacaoFrequenciaTurmasCommand(dataPeriodo));
         }
     }
 }
