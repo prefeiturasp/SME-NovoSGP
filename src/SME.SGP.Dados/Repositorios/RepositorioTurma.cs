@@ -443,27 +443,24 @@ namespace SME.SGP.Dados.Repositorios
                 .Select(e => $"'{e.CodigoTurma}'")?.ToArray();
 
             var listaTurmas = string.Join(",", codigosTurmas);
+            var transacao = contexto.Conexao.BeginTransaction();
 
-            var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
-                .Replace("#codigosTurmasParaHistorico", GerarQueryCodigosTurmasForaLista(anoLetivo, true))
-                .Replace("#idsTurmas", listaTurmas);
+            try
+            {
+                var codigosTurmasParaHistorico = await ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(anoLetivo, true, listaTurmas, transacao);
+                var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
+                                        .Replace("#codigosTurmasParaHistorico", MapearParaCodigosQuerySql(codigosTurmasParaHistorico));                
 
-            var sqlExcluirTurmas = Delete.Replace("#queryIdsConselhoClasseTurmasForaListaCodigos", QueryIdsConselhoClasseTurmasForaListaCodigos)
+                await contexto.Conexao.ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, transacao);
+
+                var codigosTurmasARemover = await ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(anoLetivo, false, listaTurmas, transacao);
+                var sqlExcluirTurmas = Delete.Replace("#queryIdsConselhoClasseTurmasForaListaCodigos", QueryIdsConselhoClasseTurmasForaListaCodigos)
                                          .Replace("#queryFechamentoAlunoTurmasForaListaCodigos", QueryFechamentoAlunoTurmasForaListaCodigos)
                                          .Replace("#queryIdsFechamentoTurmaTurmasForaListaCodigos", QueryIdsFechamentoTurmaTurmasForaListaCodigos)
                                          .Replace("#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos", QueryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos)
                                          .Replace("#queryIdsTurmasForaListaCodigos", QueryIdsTurmasForaListaCodigos)
                                          .Replace("#queryIdsAulasTurmasForaListaCodigos", QueryAulasTurmasForaListaCodigos)
-                                         .Replace("#codigosTurmasARemover", GerarQueryCodigosTurmasForaLista(anoLetivo, false))
-                                         .Replace("#idsTurmas", listaTurmas);
-
-            var transacao = contexto.Conexao.BeginTransaction();
-
-            try
-            {
-                await contexto.Conexao
-                    .ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, transacao);
-
+                                         .Replace("#codigosTurmasARemover", MapearParaCodigosQuerySql(codigosTurmasARemover));
                 await contexto.Conexao
                     .ExecuteAsync(sqlExcluirTurmas, transacao);
 
@@ -475,6 +472,17 @@ namespace SME.SGP.Dados.Repositorios
                 SentrySdk.CaptureException(erro);
                 transacao.Rollback();
             }
+        }
+
+        public async Task<IEnumerable<string>> ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(int anoLetivo, bool definirTurmasComoHistorica, string listaTurmas, IDbTransaction transacao)
+        {
+            var sqlQuery = GerarQueryCodigosTurmasForaLista(anoLetivo, true).Replace("#idsTurmas", listaTurmas);
+            return await contexto.Conexao.QueryAsync<string>(sqlQuery, transacao);
+        }
+        private string MapearParaCodigosQuerySql(IEnumerable<string> codigos)
+        {
+            string[] arrCodigos = codigos.Select(x => $"'{x}'").ToArray();
+            return string.Join(",", arrCodigos);
         }
 
         public async Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos)
