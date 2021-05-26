@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
 
         private static void ObterFrequenciasParaRemoverAlunosSemAusencia(CalcularFrequenciaPorTurmaCommand request, IEnumerable<AusenciaPorDisciplinaAlunoDto> ausenciasDosAlunos, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaRemover)
         {
-            var alunosSemAusencia = frequenciaDosAlunos.Where(f => f.Tipo == TipoFrequenciaAluno.PorDisciplina && 
+            var alunosSemAusencia = frequenciaDosAlunos.Where(f => f.Tipo == TipoFrequenciaAluno.PorDisciplina &&
                                                                    !ausenciasDosAlunos.Any(a => a.AlunoCodigo == f.CodigoAluno &&
                                                                                                 a.ComponenteCurricularId == f.DisciplinaId &&
                                                                                                 a.PeriodoEscolarId == f.PeriodoEscolarId)).ToList();
@@ -182,21 +182,35 @@ namespace SME.SGP.Aplicacao
 
         private async Task Persistir(long[] idsFinaisParaRemover, List<FrequenciaAluno> frequenciasParaPersistir)
         {
-            unitOfWork.IniciarTransacao();
-            try
+
+            if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
             {
-                if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
+                try
+                {
+                    unitOfWork.IniciarTransacao();
                     await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
-
-                if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
-                    await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarVariosAsync(frequenciasParaPersistir);
-
-                unitOfWork.PersistirTransacao();
+                    unitOfWork.PersistirTransacao();
+                }
+                catch (Exception)
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
             }
-            catch(Exception)
+
+            if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
             {
-                unitOfWork.Rollback();
-                throw;
+                try
+                {
+                    unitOfWork.IniciarTransacao();
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarVariosAsync(frequenciasParaPersistir);
+                    unitOfWork.PersistirTransacao();
+                }
+                catch (Exception)
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
             }
         }
 
