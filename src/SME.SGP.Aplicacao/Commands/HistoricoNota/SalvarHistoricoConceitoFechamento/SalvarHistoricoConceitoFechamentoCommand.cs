@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarHistoricoConceitoFechamentoCommand : IRequest<long>
     {
-        public SalvarHistoricoConceitoFechamentoCommand(long conceitoAnteriorId, long conceitoNovoId, long fechamentoNotaId, string criadoRF = "", string criadoPor = "", long? workflowId = null)
+        public SalvarHistoricoConceitoFechamentoCommand(long? conceitoAnteriorId, long? conceitoNovoId, long fechamentoNotaId, string criadoRF = "", string criadoPor = "", long? workflowId = null)
         {
             ConceitoAnteriorId = conceitoAnteriorId;
             ConceitoNovoId = conceitoNovoId;
@@ -13,8 +13,8 @@ namespace SME.SGP.Aplicacao
             WorkFlowId = workflowId;
         }
 
-        public long ConceitoAnteriorId { get; set; }
-        public long ConceitoNovoId { get; set; }
+        public long? ConceitoAnteriorId { get; set; }
+        public long? ConceitoNovoId { get; set; }
         public long FechamentoNotaId { get; set; }
         public string CriadoRF { get; set; }
         public string CriadoPor { get; set; }
@@ -25,14 +25,6 @@ namespace SME.SGP.Aplicacao
     {
         public SalvarHistoricoConceitoFechamentoCommandValidator()
         {
-            RuleFor(c => c.ConceitoAnteriorId)
-            .NotEmpty()
-            .WithMessage("O id do conceito anteior deve ser informado para geração do histórico");
-
-            RuleFor(c => c.ConceitoNovoId)
-            .NotEmpty()
-            .WithMessage("O id do conceito novo deve ser informado para geração do histórico");
-
             RuleFor(a => a.FechamentoNotaId)
             .NotEmpty()
             .WithMessage("O id da nota do fechamento deve ser informada para geração do histórico!");
