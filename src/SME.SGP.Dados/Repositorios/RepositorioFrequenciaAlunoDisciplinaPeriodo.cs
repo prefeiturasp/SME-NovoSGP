@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IConfiguration configuration) : base(database)
         {
-            this.connectionString = configuration.GetConnectionString("SGP_PostgresProd");
+            this.connectionString = configuration.GetConnectionString("SGP_Postgres");
         }
 
         private String BuildQueryObter()
