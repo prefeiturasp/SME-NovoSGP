@@ -394,12 +394,12 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query, parametros);
         }
 
-        public bool PossuiAbrangenciaTurmaAtivaPorLogin(string login)
+        public bool PossuiAbrangenciaTurmaAtivaPorLogin(string login, bool cj = false)
         {
-            var sql = @"select count(*) from usuario u
-                        inner join abrangencia a on a.usuario_id = u.id
-                        where u.login = @login and historico = false and turma_id is not null
-                              and not a.perfil = ANY(@perfisCJ) ;";
+            var sql = $@"select count(*) from usuario u
+                         inner join abrangencia a on a.usuario_id = u.id
+                         where u.login = @login and historico = false and turma_id is not null
+                              and { (cj ? string.Empty : "not") } a.perfil = ANY(@perfisCJ);";
 
             var parametros = new { login, perfisCJ = new Guid[] { Perfis.PERFIL_CJ, Perfis.PERFIL_CJ_INFANTIL } };
 
