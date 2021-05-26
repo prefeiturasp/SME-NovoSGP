@@ -199,7 +199,9 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var regenteAtual = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(disciplina.Id, filtro.TurmaId, DateTime.Now.Date, usuario));
             DateTime dataAvaliacao = filtro.DataAvaliacao.Value.Date;
-            var aula = await repositorioAula.ObterAulas(filtro.TurmaId, filtro.UeID, regenteAtual ? string.Empty : usuario.CodigoRf, dataAvaliacao, filtro.DisciplinasId, usuario.EhProfessorCj());
+            var rf = usuario.EhGestorEscolar() ? null : usuario.CodigoRf;
+
+            var aula = await repositorioAula.ObterAulas(filtro.TurmaId, filtro.UeID, regenteAtual ? string.Empty : rf, dataAvaliacao, filtro.DisciplinasId, usuario.EhProfessorCj());
 
             //verificar se tem para essa atividade
             if (!aula.Any())
