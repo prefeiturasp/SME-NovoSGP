@@ -95,7 +95,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaDisciplinaId)
         {
-            var query = @"select n.disciplina_id as DisciplinaId, n.nota as Nota, n.conceito_id as ConceitoId, aluno_codigo as CodigoAluno, n.sintese_id as SinteseId
+            var query = @"select n.disciplina_id as DisciplinaId, 
+                                 n.nota as Nota, 
+                                 n.conceito_id as ConceitoId, 
+                                 fa.aluno_codigo as CodigoAluno, 
+                                 n.sintese_id as SinteseId,
+                                 n.criado_em,
+                                 n.criado_rf,
+                                 n.criado_por,
+                                 n.alterado_em,
+                                 n.alterado_rf,
+                                 n.alterado_por
                          from fechamento_nota n
                         inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
                         where not n.excluido
