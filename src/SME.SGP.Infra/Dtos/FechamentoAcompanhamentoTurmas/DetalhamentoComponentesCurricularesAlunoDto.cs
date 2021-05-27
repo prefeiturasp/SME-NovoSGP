@@ -10,6 +10,8 @@ namespace SME.SGP.Infra
         public int QuantidadeAusencia { get; set; }
         public int QuantidadeCompensacoes { get; set; }
         public double PercentualFrequencia { get; set; }
+
+        public bool LancaNota { get; set; }
     
     }
 }
