@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task ProcessarNaData(DateTime dataPeriodo)
         {
-            await mediator.Send(new ConciliacaoFrequenciaTurmasCommand(dataPeriodo));
+            await mediator.Send(new ConciliacaoFrequenciaTurmasCommand(dataPeriodo, string.Empty, string.Empty));
         }
     }
 }
