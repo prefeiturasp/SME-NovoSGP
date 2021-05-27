@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
 
         private static void ObterFrequenciasParaRemoverAlunosSemAusencia(CalcularFrequenciaPorTurmaCommand request, IEnumerable<AusenciaPorDisciplinaAlunoDto> ausenciasDosAlunos, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaRemover)
         {
-            var alunosSemAusencia = frequenciaDosAlunos.Where(f => f.Tipo == TipoFrequenciaAluno.PorDisciplina && 
+            var alunosSemAusencia = frequenciaDosAlunos.Where(f => f.Tipo == TipoFrequenciaAluno.PorDisciplina &&
                                                                    !ausenciasDosAlunos.Any(a => a.AlunoCodigo == f.CodigoAluno &&
                                                                                                 a.ComponenteCurricularId == f.DisciplinaId &&
                                                                                                 a.PeriodoEscolarId == f.PeriodoEscolarId)).ToList();
@@ -182,21 +182,34 @@ namespace SME.SGP.Aplicacao
 
         private async Task Persistir(long[] idsFinaisParaRemover, List<FrequenciaAluno> frequenciasParaPersistir)
         {
-            unitOfWork.IniciarTransacao();
-            try
-            {
-                if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
-                    await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
 
-                if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
+            if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
+            {
+                await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
+            }
+
+            if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
+            {
+                var alunos = frequenciasParaPersistir.Select(a => a.CodigoAluno).Distinct().ToArray();
+                var frequencia = frequenciasParaPersistir.FirstOrDefault();
+                var periodoEscolarId = frequencia.PeriodoEscolarId.Value;
+                var turmaCodigo = frequencia.TurmaId;
+
+                unitOfWork.IniciarTransacao();
+                try
+                {
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverFrequenciaGeralAlunos(alunos, turmaCodigo, periodoEscolarId);
                     await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarVariosAsync(frequenciasParaPersistir);
 
-                unitOfWork.PersistirTransacao();
-            }
-            catch(Exception)
-            {
-                unitOfWork.Rollback();
-                throw;
+                    unitOfWork.PersistirTransacao();
+                }
+                catch (Exception e)
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
+
+                await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverFrequenciasDuplicadas(alunos, turmaCodigo, periodoEscolarId);
             }
         }
 

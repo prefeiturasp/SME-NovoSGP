@@ -15,10 +15,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task Executar()
         {
-            await Executar(DateTime.Now);
+            await ProcessarNaData(DateTime.Now);
         }
 
-        public async Task Executar(DateTime dataPeriodo)
+        public async Task ProcessarNaData(DateTime dataPeriodo)
         {
             await mediator.Send(new ConciliacaoFrequenciaTurmasCommand(dataPeriodo));
         }
