@@ -31,13 +31,11 @@ namespace SME.SGP.Aplicacao
                 foreach (var total in totalMatriculaPorDreEAnoDtos)
                 {
                     var descricao = "";
-                    if(ueId > 0 && anos != null && anos.Count() == 1)
-                    {
+                    if (ueId > 0 && anos != null && anos.Count() == 1)
                         descricao = total.TurmaDescricao;
-                    }else
-                    {
-                        descricao = dreId > 0 ? total.AnoDescricao : FormatarAbreviacaoDre(total.DreDescricao);
-                    }
+                    else if (dreId > 0)
+                        descricao = total.AnoDescricao;
+                    else descricao = FormatarAbreviacaoDre(total.DreDescricao);
                     var grafico = new GraficoBaseDto()
                     {
                         Descricao = descricao,

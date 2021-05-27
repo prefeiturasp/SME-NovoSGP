@@ -32,13 +32,10 @@ namespace SME.SGP.Dados
                 }
             }
             if (ueId > 0 && anos != null && anos.Count() == 1)
-            {
                 sql = QueryConsolidacaoPorTurma(tiposTurma, anosCondicao, semestre);
-            }
-            else
-            {
-                sql = dreId > 0 ? QueryConsolidacaoPorAno(dreId, ueId, tiposTurma, anosCondicao, semestre) : QueryConsolidacaoPorDre(dreId, ueId, tiposTurma, anosCondicao, semestre);
-            }
+            else if (dreId > 0)
+                sql = QueryConsolidacaoPorAno(dreId, ueId, tiposTurma, anosCondicao, semestre);
+            else sql = QueryConsolidacaoPorDre(dreId, ueId, tiposTurma, anosCondicao, semestre);
             return await database
                 .Conexao
                 .QueryAsync<InformacoesEscolaresPorDreEAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre, anosCondicao, tiposTurma });
