@@ -45,11 +45,10 @@ namespace SME.SGP.Worker.RabbitMQ
 
             canalRabbit.BasicQos(0, 10, false);
 
-            canalRabbit.ExchangeDeclare(ExchangeRabbit.Sgp, ExchangeType.Topic);
-            canalRabbit.ExchangeDeclare(ExchangeRabbit.ServidorRelatorios, ExchangeType.Topic);
+            canalRabbit.ExchangeDeclare(ExchangeRabbit.Sgp, ExchangeType.Direct, true, false);            
+            canalRabbit.ExchangeDeclare(ExchangeRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
 
-            DeclararFilasSgp();
-            DeclararFilasRelatorios();
+            DeclararFilasSgp();            
 
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
@@ -57,21 +56,45 @@ namespace SME.SGP.Worker.RabbitMQ
 
         private void DeclararFilasSgp()
         {
+
+            //args.put("x-dead-letter-routing-key", "some-routing-key");
+            var argsDeadLetter = new Dictionary<String, Object>
+            {
+                { "x-queue-mode", "lazy" }
+            };
+
             foreach (var fila in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>())
             {
-                canalRabbit.QueueDeclare(fila, false, false, false, null);
-                canalRabbit.QueueBind(fila, ExchangeRabbit.Sgp, fila, null);
-            }
-        }
+                var args = new Dictionary<string, object>()
+                    {
+                        { "x-dead-letter-exchange", ExchangeRabbit.SgpDeadLetter }
+                    };
 
-        private void DeclararFilasRelatorios()
-        {
-            foreach (var fila in typeof(RotasRabbitRelatorios).ObterConstantesPublicas<string>())
-            {
-                canalRabbit.QueueDeclare(fila, false, false, false, null);
-                canalRabbit.QueueBind(fila, ExchangeRabbit.ServidorRelatorios, fila, null);
+                canalRabbit.QueueDeclare(fila, true, false, false, args);
+                canalRabbit.QueueBind(fila, ExchangeRabbit.Sgp, fila, null);
+
+                var filaDeadLetter = $"{fila}.deadletter";
+                canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
+                canalRabbit.QueueBind(filaDeadLetter, ExchangeRabbit.SgpDeadLetter, fila, null);
+
+
+                //var nomeFilaDeadLetter = $"{fila}.deadletter";
+
+                ////DeadLetter
+                //canalRabbit.QueueDeclare(nomeFilaDeadLetter, true, false, false, argsDeadLetter);
+                //canalRabbit.QueueBind(nomeFilaDeadLetter, ExchangeRabbit.SgpDeadLetter, nomeFilaDeadLetter, null);
+
+                //var args = new Dictionary<String, Object>
+                //{
+                //    { "x-dead-letter-exchange", "sme.sgp.workers.deadletter" },
+                //    { "x-dead-letter-routing-key", nomeFilaDeadLetter }
+                //};
+
+                //canalRabbit.QueueDeclare(fila, true, false, false, args);
+                //canalRabbit.QueueBind(fila, ExchangeRabbit.Sgp, fila, null);               
+
             }
-        }
+        }        
 
         private void RegistrarUseCases()
         {
@@ -115,13 +138,13 @@ namespace SME.SGP.Worker.RabbitMQ
 
             comandos.Add(RotasRabbitSgp.RotaNotificacaoInicioFimPeriodoFechamento, new ComandoRabbit("Executa notificação sobre o início e fim do Periodo de fechamento", typeof(INotificacaoInicioFimPeriodoFechamentoUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoFrequenciaUe, new ComandoRabbit("Notificar frequências dos alunos no bimestre para UE", typeof(INotificacaoFrequenciaUeUseCase)));
-            
+
             comandos.Add(RotasRabbitSgp.RotaTrataNotificacoesNiveis, new ComandoRabbit("Trata Níveis e Cargos das notificações aguardando ação", typeof(ITrataNotificacoesNiveisCargosUseCase)));
             comandos.Add(RotasRabbitSgp.RotaPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Gerar as pendências por ausência de registro individual", typeof(IGerarPendenciaAusenciaRegistroIndividualUseCase)));
             comandos.Add(RotasRabbitSgp.RotaAtualizarPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Atualizar pendência por ausência de registro individual", typeof(IAtualizarPendenciaRegistroIndividualUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaAlterarAulaFrequenciaTratar, new ComandoRabbit("Normaliza as frequências quando há uma alteração de aula única", typeof(IAlterarAulaFrequenciaTratarUseCase)));
-            
+
 
             comandos.Add(RotasRabbitSgp.RotaValidacaoAusenciaConciliacaoFrequenciaTurma, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase)));
         }
