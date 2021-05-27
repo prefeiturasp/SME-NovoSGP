@@ -6,19 +6,17 @@ namespace SME.SGP.Aplicacao
 {
     public class IncluirFilaConciliacaoFrequenciaTurmaCommand : IRequest<bool>
     {
-        public IncluirFilaConciliacaoFrequenciaTurmaCommand(string turmaCodigo, int bimestre, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
+        public IncluirFilaConciliacaoFrequenciaTurmaCommand(string turmaCodigo, int bimestre, string componenteCurricularId, DateTime dataReferencia)
         {
             TurmaCodigo = turmaCodigo;
-            Bimestre = bimestre;
-            DataInicio = dataInicio;
-            DataFim = dataFim;
+            Bimestre = bimestre;            
             ComponenteCurricularId = componenteCurricularId;
+            DataReferencia = dataReferencia;
         }
 
         public string TurmaCodigo { get; }
-        public int Bimestre { get; }
-        public DateTime DataInicio { get; }
-        public DateTime DataFim { get; }
+        public int Bimestre { get; }        
+        public DateTime DataReferencia { get; set; }
         public string ComponenteCurricularId { get; set; }
     }
 
@@ -34,13 +32,10 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O bimestre da turma deve ser informado para inclusão da fila de conciliação de frequência");
 
-            RuleFor(a => a.DataInicio)
+            RuleFor(a => a.DataReferencia)
                 .NotEmpty()
-                .WithMessage("A data de início deve ser informada para inclusão da fila de conciliação de frequência");
-
-            RuleFor(a => a.DataFim)
-                .NotEmpty()
-                .WithMessage("A data de fim deve ser informada para inclusão da fila de conciliação de frequência");
+                .WithMessage("A data de referência deve ser informada para inclusão da fila de conciliação de frequência");
+            
         }
     }
 }

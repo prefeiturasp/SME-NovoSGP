@@ -6,18 +6,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand : IRequest<bool>
     {
-        public ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand(string turmaCodigo, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
+        public ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand(string turmaCodigo, DateTime dataInicio, string componenteCurricularId)
         {
             TurmaCodigo = turmaCodigo;
-            DataInicio = dataInicio;
-            DataFim = dataFim;
+            DataReferencia = dataInicio;
             ComponenteCurricularId = componenteCurricularId;
         }
 
         public string TurmaCodigo { get; }
-        
-        public DateTime DataInicio { get; }
-        public DateTime DataFim { get; }
+
+        public DateTime DataReferencia { get; }
+
         public string ComponenteCurricularId { get; set; }
     }
 
@@ -27,15 +26,12 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.TurmaCodigo)
                 .NotEmpty()
-                .WithMessage("O código da turma deve ser informado para validação de ausências e conciliação de frequência");            
+                .WithMessage("O código da turma deve ser informado para validação de ausências e conciliação de frequência");
 
-            RuleFor(a => a.DataInicio)
+            RuleFor(a => a.DataReferencia)
                 .NotEmpty()
                 .WithMessage("A data de início deve ser informada para validação de ausências e conciliação de frequência");
 
-            RuleFor(a => a.DataFim)
-                .NotEmpty()
-                .WithMessage("A data de fim deve ser informada para validação de ausências e conciliação de frequência");
         }
     }
 }

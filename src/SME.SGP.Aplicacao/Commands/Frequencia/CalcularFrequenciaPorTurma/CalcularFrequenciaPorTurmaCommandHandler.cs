@@ -18,20 +18,18 @@ namespace SME.SGP.Aplicacao
     {
         public readonly IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno;
         public readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
-        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
-        private readonly IRepositorioProcessoExecutando repositorioProcessoExecutando;
+        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;        
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IAsyncPolicy policy;
 
         public CalcularFrequenciaPorTurmaCommandHandler(IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno,
             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
-            IRepositorioProcessoExecutando repositorioProcessoExecutando, IUnitOfWork unitOfWork, IMediator mediator, IReadOnlyPolicyRegistry<string> registry)
+            IUnitOfWork unitOfWork, IMediator mediator, IReadOnlyPolicyRegistry<string> registry)
         {
             this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
-            this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
-            this.repositorioProcessoExecutando = repositorioProcessoExecutando ?? throw new ArgumentNullException(nameof(repositorioProcessoExecutando));
+            this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));            
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
@@ -39,20 +37,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(CalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
-            if (request.Alunos == null || !request.Alunos.Any())
-            {
-                var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaId));
-                if (alunosDaTurma.Any())
-                {
-                    request.Alunos = alunosDaTurma.Select(a => a.CodigoAluno).Distinct().ToList();
-                }
-                else
-                {
-                    //TODO: LOGAR NO SENTRY
-                    return false;
-                }
-            }
-
             var ausenciasDosAlunos = await repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunosETurmaAsync(request.DataAula, request.Alunos, request.TurmaId);
 
             var periodosEscolaresParaFiltro = ausenciasDosAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();

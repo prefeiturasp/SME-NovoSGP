@@ -38,13 +38,13 @@ namespace SME.SGP.Aplicacao
                 {
                     if (string.IsNullOrEmpty(request.TurmaCodigo))
                     {
-                        turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year)).ToList();                 
+                        turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year)).ToList();
                     }
-                    
+
                     if (turmasDaModalidade != null && turmasDaModalidade.Any())
                     {
                         foreach (var periodoEscolar in modalidade)
-                            await PublicarFilaConciliacaoTurmas(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim, request.ComponenteCurricularId);
+                            await PublicarFilaConciliacaoTurmas(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, request.ComponenteCurricularId);
                     }
                 }
 
@@ -58,15 +58,10 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<Turma> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
+        private async Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<Turma> turmasDaModalidade, int bimestre, DateTime dataInicio, string componenteCurricularId)
         {
             foreach (var turma in turmasDaModalidade)
-                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, dataInicio, dataFim, componenteCurricularId));
-
-            //Parallel.ForEach(turmasDaModalidade, new ParallelOptions { MaxDegreeOfParallelism = 3 }
-            //    , async turma =>
-            //        await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, dataInicio, dataFim))
-            //    );
+                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, componenteCurricularId, dataInicio));
 
             return true;
         }

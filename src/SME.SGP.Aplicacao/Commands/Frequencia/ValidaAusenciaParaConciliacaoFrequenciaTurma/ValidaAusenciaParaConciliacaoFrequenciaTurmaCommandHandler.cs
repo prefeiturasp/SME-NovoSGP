@@ -22,10 +22,10 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var alunosAusentes = await mediator.Send(new ObterAlunosAusentesPorTurmaNoPeriodoQuery(request.TurmaCodigo, request.DataInicio, request.DataFim, request.ComponenteCurricularId));
+                var alunosAusentes = await mediator.Send(new ObterAlunosAusentesPorTurmaNoPeriodoQuery(request.TurmaCodigo, request.DataReferencia, request.ComponenteCurricularId));
 
                 if (alunosAusentes != null && alunosAusentes.Any())
-                    await IncluirFilaCalculoFrequenciaAlunosPorComponenteETurma(request.TurmaCodigo,  request.DataFim, alunosAusentes);
+                    await IncluirFilaCalculoFrequenciaAlunosPorComponenteETurma(request.TurmaCodigo, request.DataReferencia, alunosAusentes);
 
                 return true;
             }

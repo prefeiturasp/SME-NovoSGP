@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(IncluirFilaConciliacaoFrequenciaTurmaCommand request, CancellationToken cancellationToken)
         {
-            var command = new ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand(request.TurmaCodigo, request.DataInicio, request.DataFim , request.ComponenteCurricularId);
+            var command = new ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand(request.TurmaCodigo, request.DataReferencia, request.ComponenteCurricularId);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaValidacaoAusenciaConciliacaoFrequenciaTurma, command, Guid.NewGuid(), null));
             SentrySdk.AddBreadcrumb($"Incluir fila de conciliação de frequência da turma [{request.TurmaCodigo}]", "RabbitMQ");
