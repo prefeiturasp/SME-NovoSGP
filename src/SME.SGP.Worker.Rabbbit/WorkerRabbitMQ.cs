@@ -45,10 +45,10 @@ namespace SME.SGP.Worker.RabbitMQ
 
             canalRabbit.BasicQos(0, 10, false);
 
-            canalRabbit.ExchangeDeclare(ExchangeRabbit.Sgp, ExchangeType.Direct, true, false);            
+            canalRabbit.ExchangeDeclare(ExchangeRabbit.Sgp, ExchangeType.Direct, true, false);
             canalRabbit.ExchangeDeclare(ExchangeRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
 
-            DeclararFilasSgp();            
+            DeclararFilasSgp();
 
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
@@ -56,13 +56,6 @@ namespace SME.SGP.Worker.RabbitMQ
 
         private void DeclararFilasSgp()
         {
-
-            //args.put("x-dead-letter-routing-key", "some-routing-key");
-            var argsDeadLetter = new Dictionary<String, Object>
-            {
-                { "x-queue-mode", "lazy" }
-            };
-
             foreach (var fila in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>())
             {
                 var args = new Dictionary<string, object>()
@@ -76,25 +69,8 @@ namespace SME.SGP.Worker.RabbitMQ
                 var filaDeadLetter = $"{fila}.deadletter";
                 canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
                 canalRabbit.QueueBind(filaDeadLetter, ExchangeRabbit.SgpDeadLetter, fila, null);
-
-
-                //var nomeFilaDeadLetter = $"{fila}.deadletter";
-
-                ////DeadLetter
-                //canalRabbit.QueueDeclare(nomeFilaDeadLetter, true, false, false, argsDeadLetter);
-                //canalRabbit.QueueBind(nomeFilaDeadLetter, ExchangeRabbit.SgpDeadLetter, nomeFilaDeadLetter, null);
-
-                //var args = new Dictionary<String, Object>
-                //{
-                //    { "x-dead-letter-exchange", "sme.sgp.workers.deadletter" },
-                //    { "x-dead-letter-routing-key", nomeFilaDeadLetter }
-                //};
-
-                //canalRabbit.QueueDeclare(fila, true, false, false, args);
-                //canalRabbit.QueueBind(fila, ExchangeRabbit.Sgp, fila, null);               
-
             }
-        }        
+        }
 
         private void RegistrarUseCases()
         {
