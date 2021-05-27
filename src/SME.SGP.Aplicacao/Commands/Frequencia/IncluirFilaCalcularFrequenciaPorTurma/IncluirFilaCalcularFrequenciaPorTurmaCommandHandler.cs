@@ -27,10 +27,10 @@ namespace SME.SGP.Aplicacao
             
             if (processoNaFila != null)
             {
-                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaId));
+                var anoTurma = request.DataAula.Year;
 
                 var parametroTempoValidade = await mediator
-                    .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.TempoValidadeProcessoExecutandoEmSegundos, turma.AnoLetivo));
+                    .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.TempoValidadeProcessoExecutandoEmSegundos, anoTurma));
 
                 if (parametroTempoValidade != null)
                 {
