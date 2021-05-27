@@ -6,18 +6,20 @@ namespace SME.SGP.Aplicacao
 {
     public class IncluirFilaConciliacaoFrequenciaTurmaCommand : IRequest<bool>
     {
-        public IncluirFilaConciliacaoFrequenciaTurmaCommand(string turmaCodigo, int bimestre, DateTime dataInicio, DateTime dataFim)
+        public IncluirFilaConciliacaoFrequenciaTurmaCommand(string turmaCodigo, int bimestre, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
             TurmaCodigo = turmaCodigo;
             Bimestre = bimestre;
             DataInicio = dataInicio;
             DataFim = dataFim;
+            ComponenteCurricularId = componenteCurricularId;
         }
 
         public string TurmaCodigo { get; }
         public int Bimestre { get; }
         public DateTime DataInicio { get; }
         public DateTime DataFim { get; }
+        public string ComponenteCurricularId { get; set; }
     }
 
     public class IncluirFilaConciliacaoFrequenciaTurmaCommandValidator : AbstractValidator<IncluirFilaConciliacaoFrequenciaTurmaCommand>

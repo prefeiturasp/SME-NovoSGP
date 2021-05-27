@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             //Verificar se já há essa turma/bimestre/disciplina
             var processoNaFila = await repositorioProcessoExecutando
-                .ObterProcessoCalculoFrequenciaAsync(request.TurmaId, request.DisciplinaId, request.Bimestre, TipoProcesso.CalculoFrequenciaFilaRabbit);
+                .ObterProcessoCalculoFrequenciaAsync(request.TurmaId, request.DisciplinaId, 0, TipoProcesso.CalculoFrequenciaFilaRabbit);
             
             if (processoNaFila != null)
             {
@@ -47,14 +47,14 @@ namespace SME.SGP.Aplicacao
             {
                 await repositorioProcessoExecutando.SalvarAsync(new ProcessoExecutando()
                 {
-                    Bimestre = request.Bimestre,
+                    Bimestre = 0,
                     DisciplinaId = request.DisciplinaId,
                     TipoProcesso = TipoProcesso.CalculoFrequenciaFilaRabbit,
                     TurmaId = request.TurmaId,
                     CriadoEm = HorarioBrasilia()
                 });
 
-                var comando = new CalcularFrequenciaPorTurmaCommand(request.Alunos, request.DataAula, request.TurmaId, request.DisciplinaId, request.Bimestre);
+                var comando = new CalcularFrequenciaPorTurmaCommand(request.Alunos, request.DataAula, request.TurmaId, request.DisciplinaId, 0);
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
             }
