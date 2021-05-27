@@ -257,7 +257,7 @@ namespace SME.SGP.Aplicacao
 
             var parecerFinal = bimestre == 0 ? await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, componenteCurricular) : null;
 
-            var notaFechamento = !componenteCurricular.LancaNota ? parecerFinal.Valor : (notasFechamento != null && notasFechamento.Any() &&
+            var notaFechamento = !componenteCurricular.LancaNota ? parecerFinal?.Valor : (notasFechamento != null && notasFechamento.Any() &&
                                  notasFechamento.FirstOrDefault().NotaConceito != null ? String.Format("{0:0.0}", notasFechamento.FirstOrDefault().NotaConceito) : null);
 
             var conselhoClasseComponente = new DetalhamentoComponentesCurricularesAlunoDto()
