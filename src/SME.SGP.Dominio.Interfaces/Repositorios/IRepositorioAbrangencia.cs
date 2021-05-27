@@ -49,7 +49,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool PossuiAbrangenciaTurmaAtivaPorLogin(string login, bool cj = false);
 
-        bool PossuiAbrangenciaTurmaInfantilAtivaPorLogin(string login);
+        bool PossuiAbrangenciaTurmaInfantilAtivaPorLogin(string login, bool cj = false);
 
         void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo);
 

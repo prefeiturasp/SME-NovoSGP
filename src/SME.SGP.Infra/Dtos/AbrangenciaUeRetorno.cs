@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 
 namespace SME.SGP.Dto
 {
@@ -13,7 +14,7 @@ namespace SME.SGP.Dto
         {
             get
             {
-                if (TipoEscola == TipoEscola.Nenhum)
+                if (TipoEscola == TipoEscola.Nenhum || !Enum.IsDefined(typeof(TipoEscola), TipoEscola))
                     return NomeSimples;
                 else return $"{TipoEscola.ShortName()} {NomeSimples}";
             }

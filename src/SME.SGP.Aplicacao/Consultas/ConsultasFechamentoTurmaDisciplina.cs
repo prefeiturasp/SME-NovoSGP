@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
 
             // Carrega alunos
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma, turma.AnoLetivo);
+            var alunos = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
@@ -200,7 +200,7 @@ namespace SME.SGP.Aplicacao
                     alunoDto.CodigoAluno = aluno.CodigoAluno;
                     alunoDto.NumeroChamada = aluno.NumeroAlunoChamada;
                     alunoDto.Nome = aluno.NomeAluno;
-                    alunoDto.Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo);
+                    alunoDto.Ativo = aluno.EstaAtivo(periodoAtual.PeriodoFim);
 
                     var anotacaoAluno = await consultasFehcamentoAluno.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
                     alunoDto.TemAnotacao = anotacaoAluno != null && anotacaoAluno.Anotacao != null &&

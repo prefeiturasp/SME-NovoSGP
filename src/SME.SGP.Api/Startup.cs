@@ -169,11 +169,6 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
 
-            if (_env.EnvironmentName != "teste-integrado")
-            {
-                services.AddRabbit();
-            }
-
             // Teste para injeção do client de telemetria em classe estática 
 
 

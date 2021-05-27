@@ -18,6 +18,16 @@ namespace SME.SGP.Dados.Repositorios
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
         }
 
+        public async Task<bool> AtualizarSituacaoFechamento(long fechamentoTurmaDisciplinaId, int situacaoFechamento)
+        {
+            var query = @"update fechamento_turma_disciplina 
+                             set situacao = @situacaoFechamento
+                         where id = @fechamentoTurmaDisciplinaId";
+
+            await database.Conexao.ExecuteAsync(query, new { fechamentoTurmaDisciplinaId, situacaoFechamento });
+            return true;
+        }
+
         public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(long turmaId, long[] disciplinasId, int bimestre = 0)
         {
             var query = new StringBuilder(@"select f.*, fa.*
@@ -85,7 +95,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaDisciplinaId)
         {
-            var query = @"select n.disciplina_id as DisciplinaId, n.nota as Nota, n.conceito_id as ConceitoId, aluno_codigo as CodigoAluno, n.sintese_id as SinteseId
+            var query = @"select n.disciplina_id as DisciplinaId, 
+                                 n.nota as Nota, 
+                                 n.conceito_id as ConceitoId, 
+                                 fa.aluno_codigo as CodigoAluno, 
+                                 n.sintese_id as SinteseId,
+                                 n.criado_em,
+                                 n.criado_rf,
+                                 n.criado_por,
+                                 n.alterado_em,
+                                 n.alterado_rf,
+                                 n.alterado_por
                          from fechamento_nota n
                         inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
                         where not n.excluido

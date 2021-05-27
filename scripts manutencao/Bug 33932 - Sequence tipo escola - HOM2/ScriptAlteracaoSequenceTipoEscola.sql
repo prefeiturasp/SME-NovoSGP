@@ -1,0 +1,1 @@
+select setval('tipo_escola_id_seq', 30, false);

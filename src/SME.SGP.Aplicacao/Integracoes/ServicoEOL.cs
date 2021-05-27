@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public class ServicoEOL : IServicoEol
     {
+        private const string NOME_CHAVE_API_EOL = "x-api-eol-key";
         private readonly IRepositorioCache cache;
         private readonly HttpClient httpClient;
         private readonly IServicoLog servicoLog;
@@ -318,13 +319,13 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil)
         {
             var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}";
-            return await ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(url);
+            return await ObterComponentesCurriculares(url);
         }
 
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil)
         {
             var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}/planejamento";
-            return await ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(url);
+            return await ObterComponentesCurriculares(url);
         }
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo)
@@ -352,6 +353,12 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var url = $"funcionarios/turmas/{codigoTurma}/disciplinas";
             return await ObterDisciplinas(url, "ObterDisciplinasPorCodigoTurma");
+        }
+
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesRegenciaPorAno(int anoTurma)
+        {
+            var url = $"v1/componentes-curriculares/anos/{anoTurma}/regencia";
+            return await ObterComponentesCurriculares(url);
         }
 
         [Obsolete("Utilizar: ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", true)]
@@ -749,8 +756,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data)
         {
-
-
             var dataString = data.ToString("s");
 
             var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{disciplinaId}/atribuicao/verificar/data?dataConsulta={dataString}");
@@ -866,7 +871,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
         }
 
-        private async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string url)
+        private async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurriculares(string url)
         {
             var resposta = await httpClient.GetAsync(url);
 
