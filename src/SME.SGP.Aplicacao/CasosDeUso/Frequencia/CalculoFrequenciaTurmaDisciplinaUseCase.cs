@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             var alunosConsiderados = await ValidarDadosCalculo(calcularFrequenciaDto);
 
             await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunosConsiderados
-                .Select(a => a.CodigoAluno), calcularFrequenciaDto.DataReferencia, calcularFrequenciaDto.CodigoTurma, calcularFrequenciaDto.CodigoComponenteCurricular, calcularFrequenciaDto.Bimestre));
+                .Select(a => a.CodigoAluno), calcularFrequenciaDto.DataReferencia, calcularFrequenciaDto.CodigoTurma, calcularFrequenciaDto.CodigoComponenteCurricular));
         }
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ValidarDadosCalculo(CalcularFrequenciaDto calcularFrequenciaDto)

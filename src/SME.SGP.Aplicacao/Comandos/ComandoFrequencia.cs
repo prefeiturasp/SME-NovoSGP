@@ -36,11 +36,9 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("A lista de alunos da turma e o componente curricular devem ser informados para calcular a frequência.");
             }
 
-            var aula = await consultasAula.BuscarPorId(frequenciaDto.AulaId);
+            var aula = await consultasAula.BuscarPorId(frequenciaDto.AulaId);            
 
-            var bimestre = await mediator.Send(new ObterBimestrePorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
-
-            await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestre));            
+            await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId));            
 
             await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
         }
