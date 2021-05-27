@@ -20,19 +20,27 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<GraficoBaseDto>> Handle(ObterDadosDashboardMatriculaQuery request, CancellationToken cancellationToken)
         {
             var dadosGrafico = await repositorioConsolidacaoMatriculaTurma.ObterGraficoMatriculasAsync(request.AnoLetivo, request.DreId, request.UeId, request.Anos, request.Modalidade, request.Semestre);
-            return MontarDto(dadosGrafico, request.DreId);
+            return MontarDto(dadosGrafico, request.DreId, request.UeId, request.Anos);
         }
 
-        private IEnumerable<GraficoBaseDto> MontarDto(IEnumerable<InformacoesEscolaresPorDreEAnoDto> totalMatriculaPorDreEAnoDtos, long dreId)
+        private IEnumerable<GraficoBaseDto> MontarDto(IEnumerable<InformacoesEscolaresPorDreEAnoDto> totalMatriculaPorDreEAnoDtos, long dreId, long ueId, AnoItinerarioPrograma[] anos)
         {
             var listaGraficos = new List<GraficoBaseDto>();
             if (totalMatriculaPorDreEAnoDtos.Any())
             {
                 foreach (var total in totalMatriculaPorDreEAnoDtos)
                 {
+                    var descricao = "";
+                    if(ueId > 0 && anos != null && anos.Count() == 1)
+                    {
+                        descricao = total.TurmaDescricao;
+                    }else
+                    {
+                        descricao = dreId > 0 ? total.AnoDescricao : FormatarAbreviacaoDre(total.DreDescricao);
+                    }
                     var grafico = new GraficoBaseDto()
                     {
-                        Descricao = dreId > 0 ? total.AnoDescricao : FormatarAbreviacaoDre(total.DreDescricao),
+                        Descricao = descricao,
                         Quantidade = total.Quantidade
                     };
                     listaGraficos.Add(grafico);
