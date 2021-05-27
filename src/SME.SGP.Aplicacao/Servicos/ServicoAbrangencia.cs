@@ -1,4 +1,5 @@
-﻿using Sentry;
+﻿using MediatR;
+using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -22,9 +23,12 @@ namespace SME.SGP.Aplicacao.Servicos
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
+        private readonly IRepositorioUsuario repositorioUsuario;
 
         public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEol servicoEOL, IConsultasSupervisor consultasSupervisor,
-            IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma, IRepositorioCicloEnsino repositorioCicloEnsino, IRepositorioTipoEscola repositorioTipoEscola)
+            IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma, IRepositorioCicloEnsino repositorioCicloEnsino, IRepositorioTipoEscola repositorioTipoEscola,
+            IMediator mediator, IRepositorioUsuario repositorioUsuario)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -35,6 +39,8 @@ namespace SME.SGP.Aplicacao.Servicos
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoEscola = repositorioTipoEscola ?? throw new ArgumentNullException(nameof(repositorioTipoEscola));
             this.repositorioCicloEnsino = repositorioCicloEnsino ?? throw new ArgumentNullException(nameof(repositorioCicloEnsino));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
         }
 
         public bool DreEstaNaAbrangencia(string login, Guid perfilId, string codigoDre)
@@ -92,7 +98,7 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             repositorioAbrangencia.InserirAbrangencias(abrangencias, login);
         }
-                
+
         public async Task SincronizarEstruturaInstitucionalVigenteCompleta()
         {
             EstruturaInstitucionalRetornoEolDTO estruturaInstitucionalVigente;
@@ -149,6 +155,48 @@ namespace SME.SGP.Aplicacao.Servicos
                 .ObterUes(codigoDre, login, perfilId).Result;
 
             return ues.Any(dre => dre.Codigo.Equals(codigoUE, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public async Task SincronizarAbrangenciaHistorica(int anoLetivo, string professorRf)
+        {
+            try
+            {
+                var turmasHistoricasEOL = await mediator.Send(new ObterTurmasAbrangenciaHistoricaEOLAnoProfessorQuery(anoLetivo, professorRf));
+                var usuario = await repositorioUsuario.ObterUsuarioPorCodigoRfAsync(professorRf);
+                if (usuario == null)
+                    throw new NegocioException("Usuário não encontrado no SGP");
+
+                var abrangenciaGeralSGP = await repositorioAbrangencia.ObterAbrangenciaGeralPorUsuarioId(usuario.Id);
+                List<Abrangencia> abrangenciaTurmasHistoricasEOL = new List<Abrangencia>();
+                foreach (AbrangenciaTurmaRetornoEolDto turma in turmasHistoricasEOL)
+                {
+                    Abrangencia abrangencia = new Abrangencia();
+                    var turmaSGP = await repositorioTurma.ObterTurmaCompletaPorCodigo(turma.Codigo);
+
+                    if (turmaSGP == null)
+                        throw new NegocioException($"Turma não encontrada no SGP - [{turma.Codigo} - {turma.NomeTurma}]");
+
+                    abrangencia.DreId = turmaSGP.Ue.DreId;
+                    abrangencia.UeId = turmaSGP.Ue.Id;
+                    abrangencia.UsuarioId = usuario.Id;
+                    abrangencia.TurmaId = turmaSGP.Id;
+                    abrangencia.Perfil = (Modalidade)int.Parse(turma.CodigoModalidade) == Modalidade.Infantil ?
+                        Perfis.PERFIL_PROFESSOR_INFANTIL : Perfis.PERFIL_PROFESSOR;
+
+                    abrangenciaTurmasHistoricasEOL.Add(abrangencia);
+                }
+
+                var novas = abrangenciaTurmasHistoricasEOL.Where(ath => !abrangenciaGeralSGP.Any(x => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
+                repositorioAbrangencia.InserirAbrangencias(novas, usuario.Login);
+                abrangenciaGeralSGP = await repositorioAbrangencia.ObterAbrangenciaGeralPorUsuarioId(usuario.Id);
+                var paraAtualizar = abrangenciaGeralSGP.Where(x => abrangenciaTurmasHistoricasEOL.Any(ath => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
+                repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar.Select(x => x.Id));
+            }
+            catch (Exception e)
+            {
+                SentrySdk.CaptureException(e);
+                throw new NegocioException($"Erro ao sincronizar abrangencia histórica - Ano({anoLetivo}), RF({professorRf})");
+            }
         }
 
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
@@ -221,7 +269,7 @@ namespace SME.SGP.Aplicacao.Servicos
         }
 
         private async Task<IEnumerable<Turma>> ImportarTurmasNaoEncontradas(string[] codigosNaoEncontrados)
-        {            
+        {
             if (codigosNaoEncontrados != null && codigosNaoEncontrados.Length > 0)
             {
                 var turmasEol = servicoEOL.ObterEstruturaInstuticionalVigentePorTurma(codigosTurma: codigosNaoEncontrados);
