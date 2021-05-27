@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var gradeAulas = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(request.TurmaCodigo, request.ComponenteCurricularCodigo, request.Data, request.UsuarioRf, request.EhRegencia));
+                var gradeAulas = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(request.TurmaCodigo, request.ComponenteCurricularCodigo, request.Data, request.UsuarioRf, request.EhRegencia, request.EhGestor));
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
 
                 if (gradeAulas != null)

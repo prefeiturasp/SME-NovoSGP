@@ -28,14 +28,13 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             var retorno = new RetornoBaseDto();
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularQuery(request.DataAula, request.CodigoTurma, request.CodigoComponenteCurricular, usuarioLogado.EhProfessorCj()));
+            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularQuery(request.DataAula, request.CodigoTurma, request.CodigoComponenteCurricular, request.Usuario.EhProfessorCj()));
             if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
             {
-                if (usuarioLogado.EhProfessorCj())
+                if (request.Usuario.EhProfessorCj())
                 {
-                    if(aulasExistentes.Any(a => a.ProfessorRf == usuarioLogado.CodigoRf))
+                    if(aulasExistentes.Any(a => a.ProfessorRf == request.Usuario.CodigoRf))
                         throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
                 }
                 else
@@ -43,17 +42,17 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             }
 
 
-            await AplicarValidacoes(request, turma, usuarioLogado, aulasExistentes);
+            await AplicarValidacoes(request, turma, request.Usuario, aulasExistentes);
 
             var aula = MapearEntidade(request);
 
-            if (usuarioLogado.PerfilAtual == Perfis.PERFIL_DIRETOR)
+            if (request.Usuario.PerfilAtual == Perfis.PERFIL_DIRETOR)
                 aula.Status = EntidadeStatus.Aprovado;
 
             aula.Id = await repositorioAula.SalvarAsync(aula);
 
-            if(usuarioLogado.PerfilAtual != Perfis.PERFIL_DIRETOR)
-                await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens, usuarioLogado);
+            if(request.Usuario.PerfilAtual != Perfis.PERFIL_DIRETOR)
+                await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens, request.Usuario);
 
             retorno.Mensagens.Add("Aula cadastrada com sucesso.");
             return retorno;
@@ -118,7 +117,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                                                                                    usuarioLogado.CodigoRf,
                                                                                    inserirAulaUnicaCommand.Quantidade,
                                                                                    inserirAulaUnicaCommand.EhRegencia,
-                                                                                   aulasExistentes));
+                                                                                   aulasExistentes, usuarioLogado.EhGestorEscolar()));
 
             if (!retornoValidacao.resultado)
                 throw new NegocioException(retornoValidacao.mensagem);
