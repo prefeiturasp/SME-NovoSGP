@@ -80,9 +80,10 @@ namespace SME.SGP.Aplicacao
                     statusNovo = SituacaoConselhoClasse.Concluido;
             }
 
+            if (consolidadoTurmaAluno.ParecerConclusivoId != null)
+                statusNovo = SituacaoConselhoClasse.Concluido;
 
-            if (consolidadoTurmaAluno.Status != statusNovo)
-                consolidadoTurmaAluno.Status = statusNovo;
+            consolidadoTurmaAluno.Status = statusNovo;
 
             consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
 
