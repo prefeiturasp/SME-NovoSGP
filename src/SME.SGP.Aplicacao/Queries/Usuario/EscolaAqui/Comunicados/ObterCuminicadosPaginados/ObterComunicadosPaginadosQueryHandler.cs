@@ -174,8 +174,8 @@ namespace SME.SGP.Aplicacao
         {
             get
             {
-                var numeroPaginaQueryString = _contextoAplicacao.ObterVarivel<string>("NumeroPagina");
-                var numeroRegistrosQueryString = _contextoAplicacao.ObterVarivel<string>("NumeroRegistros");
+                var numeroPaginaQueryString = _contextoAplicacao.ObterVariavel<string>("NumeroPagina");
+                var numeroRegistrosQueryString = _contextoAplicacao.ObterVariavel<string>("NumeroRegistros");
 
                 if (string.IsNullOrWhiteSpace(numeroPaginaQueryString) || string.IsNullOrWhiteSpace(numeroRegistrosQueryString))
                     return new Paginacao(0, 0);

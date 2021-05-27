@@ -10,8 +10,9 @@ namespace SME.SGP.Infra.Interfaces
 
         string UsuarioLogado { get; }
         string NomeUsuario { get; }
+        string PerfilUsuario { get; }
 
-        T ObterVarivel<T>(string nome);
+        T ObterVariavel<T>(string nome);
 
         IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto);
         void AdicionarVariaveis(IDictionary<string, object> variaveis);

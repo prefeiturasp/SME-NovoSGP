@@ -1,8 +1,8 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,51 +17,109 @@ namespace SME.SGP.Dados
             this.database = database;
         }
 
-        public async Task<IEnumerable<InformacoesEscolaresPorDreEAnoDto>> ObterGraficoMatriculasAsync(int anoLetivo, long dreId, long ueId, string ano, Modalidade modalidade, int? semestre)
+        public async Task<IEnumerable<InformacoesEscolaresPorDreEAnoDto>> ObterGraficoMatriculasAsync(int anoLetivo, long dreId, long ueId, AnoItinerarioPrograma[] anos, Modalidade modalidade, int? semestre)
         {
-            var sql = dreId > 0 ? QueryConsolidacaoPorAno(dreId, ueId, semestre) : QueryConsolidacaoPorDre(dreId, ueId, ano, semestre);
+            var tiposTurma = new List<int>();
+            var anosCondicao = new List<string>();
+            if (anos != null)
+            {
+                foreach (var ano in anos)
+                {
+                    if (ano == AnoItinerarioPrograma.Programa || ano == AnoItinerarioPrograma.Itinerario || ano == AnoItinerarioPrograma.EducacaoFisica)
+                        tiposTurma.Add(ano.ObterTipoTurma());
+                    else anosCondicao.Add(ano.ShortName());
+                }
+            }
+            var sql = dreId > 0 ? QueryConsolidacaoPorAno(dreId, ueId, tiposTurma, anosCondicao, semestre) : QueryConsolidacaoPorDre(dreId, ueId, tiposTurma, anosCondicao, semestre);
             return await database
                 .Conexao
-                .QueryAsync<InformacoesEscolaresPorDreEAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre, ano });
+                .QueryAsync<InformacoesEscolaresPorDreEAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre, anosCondicao, tiposTurma });
         }
 
-        private string QueryConsolidacaoPorAno( long dreId, long ueId, int? semestre)
+        private string QueryConsolidacaoPorAno(long dreId, long ueId, IEnumerable<int> tiposTurma, IEnumerable<string> anosCondicao, int? semestre)
         {
-            var query = new StringBuilder(@"select * from (
-                                                (select t.ano || 'º' as AnoDescricao,
-                                                        sum(cfm.quantidade) as quantidade
-                                                   from consolidacao_matricula_turma cfm
-                                                  inner join turma t on t.id = cfm.turma_id
-                                                  inner join ue on ue.id = t.ue_id
-                                                  inner join dre on dre.id = ue.dre_id
-                                                  where t.tipo_turma not in (2, 7)
-                                                    and t.ano_letivo = @anoLetivo 
-                                                    and t.modalidade_codigo = @modalidade");
+            var query = new StringBuilder();
+            if (anosCondicao.Any() && !tiposTurma.Any())
+            {
+                query.AppendLine(QueryAnos(dreId, ueId, anosCondicao, semestre));
+            }
+            else if (tiposTurma.Any() && !anosCondicao.Any())
+            {
+                query.AppendLine(QueryTiposTurma(dreId, ueId, tiposTurma, semestre));
+            }
+            else
+            {
+                query.AppendLine($@"select* from(
+                                          ({QueryAnos(dreId, ueId, anosCondicao, semestre)}) 
+                                    union");
+                query.AppendLine($@"       {QueryTiposTurma(dreId, ueId, tiposTurma, semestre)}) as x
+                                             where x.quantidade > 0
+                                             order by x.AnoDescricao");
+            }
+            return query.ToString();
+        }
+
+        private string CondicaoQueryPorAno(long dreId, long ueId, int? semestre)
+        {
+            var query = new StringBuilder();
             if (semestre > 0) query.AppendLine(@"   and t.semestre = @semestre");
             if (dreId > 0) query.AppendLine(@"      and dre.id = @dreId");
             if (ueId > 0) query.AppendLine(@"       and ue.id = @ueId");
+            return query.ToString();
+        }
+
+        private string QueryAnos(long dreId, long ueId, IEnumerable<string> anosCondicao, int? semestre)
+        {
+            var query = new StringBuilder();
+            query.AppendLine(@"                  select t.ano || 'º' as AnoDescricao,
+                                                        sum(cfm.quantidade) as quantidade
+                                                   from consolidacao_matricula_turma cfm
+                                                  inner
+                                                   join turma t on t.id = cfm.turma_id
+
+                                             inner
+                                                   join ue on ue.id = t.ue_id
+
+                                             inner
+                                                   join dre on dre.id = ue.dre_id
+                                                  where t.tipo_turma not in (2, 3, 7)
+                                                    and t.ano_letivo = @anoLetivo
+                                                    and t.modalidade_codigo = @modalidade");
+            if (anosCondicao != null && anosCondicao.Any())
+            {
+                query.AppendLine("and t.ano = ANY(@anosCondicao) ");
+            }
+            query.AppendLine(CondicaoQueryPorAno(dreId, ueId, semestre));
             query.AppendLine(@"                   group by t.ano
-                                                  order by t.ano desc) 
-                                                union");
-            query.AppendLine(@"                 select 'Turmas de programa' as AnoDescricao,
+                                                  order by t.ano ");
+            return query.ToString();
+        }
+
+        private string QueryTiposTurma(long dreId, long ueId, IEnumerable<int> tiposTurma, int? semestre)
+        {
+            var query = new StringBuilder();
+            query.AppendLine(@"                 select case 
+ 													   when t.tipo_turma = 3 then 'Turmas de programa' 
+ 													   when t.tipo_turma = 2 then 'Ed. Física'
+ 													   when t.tipo_turma = 7 then 'Itinerário'end as AnoDescricao,
                                                          sum(cfm.quantidade) as quantidade
                                                   from consolidacao_matricula_turma cfm
                                                  inner join turma t on t.id = cfm.turma_id
                                                  inner join ue on ue.id = t.ue_id
                                                  inner join dre on dre.id = ue.dre_id
-                                                 where t.tipo_turma in (2, 7)
-                                                   and t.ano_letivo = @anoLetivo 
+                                                 where t.ano_letivo = @anoLetivo 
                                                    and t.modalidade_codigo = @modalidade");
-            if (semestre > 0) query.AppendLine(@"  and t.semestre = @semestre");
-            if (dreId > 0) query.AppendLine(@"     and dre.id = @dreId");
-            if (ueId > 0) query.AppendLine(@"      and ue.id = @ueId");
-            query.AppendLine(@"              ) as x
-                                             where x.quantidade > 0
-                                             order by x.AnoDescricao");
+            query.AppendLine(CondicaoQueryPorAno(dreId, ueId, semestre));
+            if (tiposTurma != null && tiposTurma.Any())
+                query.AppendLine(@"and t.tipo_turma = ANY(@tiposTurma) ");
+            else
+                query.AppendLine(@"and t.tipo_turma in (2,3,7) ");
+
+            query.AppendLine(@"group by t.tipo_turma");
             return query.ToString();
         }
 
-        private string QueryConsolidacaoPorDre(long dreId, long ueId, string ano, int? semestre)
+        private string QueryConsolidacaoPorDre(long dreId, long ueId, IEnumerable<int> tiposTurma, IEnumerable<string> anosCondicao, int? semestre)
         {
             var query = new StringBuilder(@"select dre.abreviacao as DreDescricao,
 		                                           sum(cfm.quantidade) as quantidade 
@@ -73,10 +131,18 @@ namespace SME.SGP.Dados
                                                and t.modalidade_codigo = @modalidade");
             if (semestre > 0) query.AppendLine(@"  and t.semestre = @semestre");
             if (dreId > 0) query.AppendLine(@" and dre.id = @dreId");
-            if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId");
-            if (!string.IsNullOrEmpty(ano)) query.AppendLine(@"  and t.ano = @ano");
+            if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId ");
+            if (anosCondicao != null && anosCondicao.Any() && tiposTurma != null && tiposTurma.Any())
+            {
+                query.AppendLine(@"  and (t.ano = ANY(@anosCondicao) or t.tipo_turma = ANY(@tiposTurma)) ");
+            }
+            else
+            {
+                if (anosCondicao != null && anosCondicao.Any()) query.AppendLine(@"  and t.ano = ANY(@anosCondicao)");
+                if (tiposTurma != null && tiposTurma.Any()) query.AppendLine(@"  and t.tipo_turma = ANY(@tiposTurma)");
+            }
             query.AppendLine(@" group by dre.abreviacao 
-                         order by dre.abreviacao desc");
+                         order by dre.abreviacao ");
 
             return query.ToString();
         }
@@ -109,9 +175,9 @@ namespace SME.SGP.Dados
         {
             var query = new StringBuilder($@"select 
                             distinct modalidade_codigo as modalidade, 
-                            case when tipo_turma = 2 then '{(int)AnoItinerarioPrograma.Programa}'
+                            case when tipo_turma = 2 then '{(int)AnoItinerarioPrograma.EducacaoFisica}'
                                  when tipo_turma = 7 then '{(int)AnoItinerarioPrograma.Itinerario}'
-                                 when tipo_turma = 3 then '{(int)AnoItinerarioPrograma.EducacaoFisica}'
+                                 when tipo_turma = 3 then '{(int)AnoItinerarioPrograma.Programa}'
                             else ano end as ano
                          from turma t
                          inner join ue u on t.ue_id = u.id

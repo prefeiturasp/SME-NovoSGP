@@ -49,7 +49,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(InserirAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
-            await ValidarComponentesProfessor(request, request.Usuario);
+            if(!request.Usuario.EhGestorEscolar())
+                await ValidarComponentesProfessor(request, request.Usuario);
             await GerarRecorrencia(request, request.Usuario);
             return true;
         }
@@ -284,9 +285,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<(IEnumerable<DateTime> datasAtribuicao, IEnumerable<string> mensagensValidacao)> ValidarAtribuicaoProfessor(IEnumerable<DateTime> datasValidas, string turmaCodigo, long componenteCurricularCodigo, Usuario usuario)
         {
-            if (usuario.EhProfessorCj())
+            if (usuario.EhProfessorCj() || usuario.EhGestorEscolar())
+            {
                 return (datasValidas, Enumerable.Empty<string>());
-
+            }
             var datasAtribuicaoEOL = await mediator.Send(new ObterValidacaoPodePersistirTurmaNasDatasQuery(
                 usuario.CodigoRf,
                 turmaCodigo,

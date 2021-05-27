@@ -22,11 +22,30 @@ namespace SME.SGP.Dominio
         Oito = 8,
         [Display(ShortName = "9")]
         Nove = 9,
-        [Display(ShortName = "Educacao física")]
+        [Display(ShortName = "Ed. Física")]
         EducacaoFisica = 200,
         [Display(ShortName = "Turmas de programa")]
         Programa = 300,
         [Display(ShortName = "Itinerário")]
         Itinerario = 700
+    }
+
+    public static class AnoItinerarioProgramaExtension
+    {
+        public static int ObterTipoTurma(this AnoItinerarioPrograma ano)
+        {
+            switch (ano)
+            {
+                case AnoItinerarioPrograma.Programa:
+                    return 3;
+                case AnoItinerarioPrograma.EducacaoFisica:
+                    return 2;
+                case AnoItinerarioPrograma.Itinerario:
+                    return 7;
+
+                default:
+                    return 0;
+            }
+        }
     }
 }

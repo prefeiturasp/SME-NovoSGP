@@ -91,7 +91,8 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
 
         private async Task AplicarValidacoes(AlterarAulaUnicaCommand request, Aula aula, Turma turma, Usuario usuarioLogado, IEnumerable<AulaConsultaDto> aulasExistentes)
         {
-            await ValidarComponentesDoProfessor(request, usuarioLogado);
+            if(!usuarioLogado.EhGestorEscolar())
+                await ValidarComponentesDoProfessor(request, usuarioLogado);
 
             await ValidarSeEhDiaLetivo(request, turma);
 

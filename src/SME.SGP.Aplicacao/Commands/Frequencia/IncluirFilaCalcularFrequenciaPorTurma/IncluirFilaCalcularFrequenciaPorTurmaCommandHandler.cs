@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -21,6 +22,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(IncluirFilaCalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
+          
             //Verificar se já há essa turma/bimestre/disciplina
             var processoNaFila = await repositorioProcessoExecutando
                 .ObterProcessoCalculoFrequenciaAsync(request.TurmaId, request.DisciplinaId, request.Bimestre, TipoProcesso.CalculoFrequenciaFilaRabbit);

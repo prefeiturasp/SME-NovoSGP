@@ -63,8 +63,11 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não é permitido registro de frequência para este componente curricular.");
             }
 
-            ValidaSeUsuarioPodeCriarAula(aula, usuario);
-            await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId, aula.DataAula, usuario);
+            if (!usuario.EhGestorEscolar())
+            {
+                ValidaSeUsuarioPodeCriarAula(aula, usuario);
+                await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId, aula.DataAula, usuario);
+            }            
 
             var alunos = await ObterAlunos(aula);
 

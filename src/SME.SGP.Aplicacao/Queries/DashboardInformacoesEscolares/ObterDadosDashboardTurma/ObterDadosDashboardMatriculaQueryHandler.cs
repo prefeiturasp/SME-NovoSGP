@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<GraficoBaseDto>> Handle(ObterDadosDashboardTurmaQuery request, CancellationToken cancellationToken)
         {
-            var dadosGrafico = await repositorioTurma.ObterInformacoesEscolaresTurmasAsync(request.AnoLetivo, request.DreId, request.UeId, request.Ano, request.Modalidade, request.Semestre);
+            var dadosGrafico = await repositorioTurma.ObterInformacoesEscolaresTurmasAsync(request.AnoLetivo, request.DreId, request.UeId, request.Anos, request.Modalidade, request.Semestre);
             TratarDescricaoDados(dadosGrafico, request.DreId);
             return dadosGrafico;
         }

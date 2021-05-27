@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoFrequenciaTurma, ano));
             if (parametroSistema != null)
             {
-                parametroSistema.Valor = DateTime.Now.ToString();
+                parametroSistema.Valor = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff tt");
 
                 await mediator.Send(new AtualizarParametroSistemaCommand(parametroSistema));
             }

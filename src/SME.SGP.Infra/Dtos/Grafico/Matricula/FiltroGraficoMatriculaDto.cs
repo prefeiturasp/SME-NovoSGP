@@ -11,7 +11,7 @@ namespace SME.SGP.Infra
         public Modalidade Modalidade { get; set; }
         public long DreId { get; set; }
         public long UeId { get; set; }
-        public string Ano { get; set; }
+        public AnoItinerarioPrograma[] Anos { get; set; }
         public int? Semestre { get; set; }
     }
 }

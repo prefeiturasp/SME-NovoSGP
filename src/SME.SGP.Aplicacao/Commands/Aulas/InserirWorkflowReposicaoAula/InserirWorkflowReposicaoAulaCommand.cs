@@ -1,14 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirWorkflowReposicaoAulaCommand: IRequest<long>
+    public class InserirWorkflowReposicaoAulaCommand : IRequest<long>
     {
-        public InserirWorkflowReposicaoAulaCommand(int ano, long aulaId, int quantidade, string dreCodigo, string dreNome, string ueCodigo, string ueNome, string turmaNome, string componenteCurricularNome)
+        public InserirWorkflowReposicaoAulaCommand(int ano, long aulaId, int quantidade, string dreCodigo, string dreNome, string ueCodigo, string ueNome, string turmaNome, string componenteCurricularNome, Guid? perfilAtual = null)
         {
             Ano = ano;
             AulaId = aulaId;
@@ -19,6 +17,7 @@ namespace SME.SGP.Aplicacao
             UeNome = ueNome;
             TurmaNome = turmaNome;
             ComponenteCurricularNome = componenteCurricularNome;
+            PerfilAtual = perfilAtual;
         }
 
         public int Ano { get; set; }
@@ -30,15 +29,16 @@ namespace SME.SGP.Aplicacao
         public string UeNome { get; set; }
         public string TurmaNome { get; set; }
         public string ComponenteCurricularNome { get; set; }
+        public Guid? PerfilAtual { get; set; }
     }
 
     public class InserirWorkflowReposicaoAulaCommandValidator : AbstractValidator<InserirWorkflowReposicaoAulaCommand>
     {
         public InserirWorkflowReposicaoAulaCommandValidator()
         {
-           RuleFor(c => c.Ano)
-           .NotEmpty()
-           .WithMessage("Deve ser informado o ano para geração do workFlow de reposição de aula");
+            RuleFor(c => c.Ano)
+            .NotEmpty()
+            .WithMessage("Deve ser informado o ano para geração do workFlow de reposição de aula");
 
             RuleFor(c => c.AulaId)
             .NotEmpty()
@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(c => c.ComponenteCurricularNome)
             .NotEmpty()
-            .WithMessage("Deve ser informado o nome do componente curricular para geração do workFlow de reposição de aula");
+            .WithMessage("Deve ser informado o nome do componente curricular para geração do workFlow de reposição de aula");            
         }
     }
 }

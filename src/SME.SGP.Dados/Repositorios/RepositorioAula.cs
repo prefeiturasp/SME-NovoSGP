@@ -369,7 +369,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<int> ObterQuantidadeAulasTurmaComponenteCurricularDiaProfessor(string turma, string componenteCurricular, DateTime dataAula, string codigoRf)
+        public async Task<int> ObterQuantidadeAulasTurmaComponenteCurricularDiaProfessor(string turma, string componenteCurricular, DateTime dataAula, string codigoRf, bool ehGestor)
         {
             StringBuilder query = new StringBuilder();
 
@@ -377,7 +377,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from aula ");
             query.AppendLine("where not excluido and tipo_aula = @aulaNomal ");
 
-            if (!string.IsNullOrEmpty(codigoRf))
+            if (!string.IsNullOrEmpty(codigoRf) && !ehGestor)
                 query.AppendLine("and professor_rf = @codigoRf");
 
             query.AppendLine("and turma_id = @turma ");
@@ -422,7 +422,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<int> ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(string turma, string componenteCurricular, int semana, string codigoRf, DateTime dataExcecao)
+        public async Task<int> ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(string turma, string componenteCurricular, int semana, string codigoRf, DateTime dataExcecao, bool ehGestor)
         {
             StringBuilder query = new StringBuilder();
 
@@ -430,8 +430,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from aula ");
             query.AppendLine("where not excluido and tipo_aula = @aulaNomal ");
 
-            if (!string.IsNullOrEmpty(codigoRf))
-                query.AppendLine("and professor_rf = @codigoRf");
+            //TODO: Ver o impactor que isso vai causar em outras telas
+            //if (!string.IsNullOrEmpty(codigoRf) && !ehGestor)
+            //    query.AppendLine("and professor_rf = @codigoRf");
 
             query.AppendLine("and turma_id = @turma ");
             query.AppendLine("and disciplina_id = @componenteCurricular ");

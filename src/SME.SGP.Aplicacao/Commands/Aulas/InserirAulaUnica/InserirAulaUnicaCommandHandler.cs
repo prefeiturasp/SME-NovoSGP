@@ -28,14 +28,13 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             var retorno = new RetornoBaseDto();
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularQuery(request.DataAula, request.CodigoTurma, request.CodigoComponenteCurricular, usuarioLogado.EhProfessorCj()));
+            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularQuery(request.DataAula, request.CodigoTurma, request.CodigoComponenteCurricular, request.Usuario.EhProfessorCj()));
             if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
             {
-                if (usuarioLogado.EhProfessorCj())
+                if (request.Usuario.EhProfessorCj())
                 {
-                    if(aulasExistentes.Any(a => a.ProfessorRf == usuarioLogado.CodigoRf))
+                    if(aulasExistentes.Any(a => a.ProfessorRf == request.Usuario.CodigoRf))
                         throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
                 }
                 else
@@ -43,19 +42,23 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             }
 
 
-            await AplicarValidacoes(request, turma, usuarioLogado, aulasExistentes);
+            await AplicarValidacoes(request, turma, request.Usuario, aulasExistentes);
 
             var aula = MapearEntidade(request);
 
+            if (request.Usuario.PerfilAtual == Perfis.PERFIL_DIRETOR)
+                aula.Status = EntidadeStatus.Aprovado;
+
             aula.Id = await repositorioAula.SalvarAsync(aula);
 
-            await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens);
+            if(request.Usuario.PerfilAtual != Perfis.PERFIL_DIRETOR)
+                await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens, request.Usuario);
 
             retorno.Mensagens.Add("Aula cadastrada com sucesso.");
             return retorno;
         }
 
-        private async Task ValidarAulasDeReposicao(InserirAulaUnicaCommand request, Turma turma, IEnumerable<AulaConsultaDto> aulasExistentes, Aula aula, List<string> mensagens)
+        private async Task ValidarAulasDeReposicao(InserirAulaUnicaCommand request, Turma turma, IEnumerable<AulaConsultaDto> aulasExistentes, Aula aula, List<string> mensagens, Usuario usuarioLogado)
         {
             if (request.TipoAula == TipoAula.Reposicao)
             {
@@ -63,7 +66,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 
                 if (AulasReposicaoPrecisamAprovacao(quantidadeDeAulasExistentes + request.Quantidade, request.EhRegencia))
                 {
-                    var idWorkflow = await PersistirWorkflowReposicaoAula(request, turma, aula);
+                    var idWorkflow = await PersistirWorkflowReposicaoAula(request, turma, aula, usuarioLogado);
                     aula.EnviarParaWorkflowDeAprovacao(idWorkflow);
                     await repositorioAula.SalvarAsync(aula);
 
@@ -114,7 +117,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                                                                                    usuarioLogado.CodigoRf,
                                                                                    inserirAulaUnicaCommand.Quantidade,
                                                                                    inserirAulaUnicaCommand.EhRegencia,
-                                                                                   aulasExistentes));
+                                                                                   aulasExistentes, usuarioLogado.EhGestorEscolar()));
 
             if (!retornoValidacao.resultado)
                 throw new NegocioException(retornoValidacao.mensagem);
@@ -142,7 +145,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                 throw new NegocioException(resultadoValidacao.mensagem);
         }
 
-        private async Task<long> PersistirWorkflowReposicaoAula(InserirAulaUnicaCommand command, Turma turma, Aula aula)
+        private async Task<long> PersistirWorkflowReposicaoAula(InserirAulaUnicaCommand command, Turma turma, Aula aula, Usuario usuarioLogado)
             => await mediator.Send(new InserirWorkflowReposicaoAulaCommand(command.DataAula.Year,
                                                                            aula.Id,
                                                                            aula.Quantidade,
@@ -151,6 +154,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                                                                            turma.Ue.CodigoUe,
                                                                            turma.Ue.Nome,
                                                                            turma.Nome,
-                                                                           command.NomeComponenteCurricular));
+                                                                           command.NomeComponenteCurricular,
+                                                                           usuarioLogado.PerfilAtual));
     }
 }
