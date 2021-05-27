@@ -49,9 +49,10 @@ namespace SME.SGP.Aplicacao
             {
                 var usuario = await servicoUsuario.ObterUsuarioLogado();
                 request.CodigoRf = usuario.CodigoRf;
+                request.EhGestor = usuario.EhGestorEscolar();
             }
 
-            var horascadastradas = await ObtenhaHorasCadastradas(request.ComponenteCurricular, semana, request.DataAula, request.CodigoRf, turma, request.EhRegencia);
+            var horascadastradas = await ObtenhaHorasCadastradas(request.ComponenteCurricular, semana, request.DataAula, request.CodigoRf, turma, request.EhRegencia, request.EhGestor);
             var aulasRestantes = horasGrade - horascadastradas;
 
             return new GradeComponenteTurmaAulasDto
@@ -81,18 +82,18 @@ namespace SME.SGP.Aplicacao
             return await repositorioGrade.ObterHorasComponente(grade.Id, componenteCurricularId, ano);
         }
 
-        private async Task<int> ObtenhaHorasCadastradas(long componenteCurricular, int semana, DateTime dataAula, string codigoRf, Turma turma, bool ehRegencia)
+        private async Task<int> ObtenhaHorasCadastradas(long componenteCurricular, int semana, DateTime dataAula, string codigoRf, Turma turma, bool ehRegencia, bool ehGestor)
         {
             var ehExperienciaPedagogica = await mediator.Send(new AulaDeExperienciaPedagogicaQuery(componenteCurricular));
             if (ehRegencia)
                 return ehExperienciaPedagogica ?
                     await repositorioAula.ObterQuantidadeAulasTurmaExperienciasPedagogicasDia(turma.CodigoTurma, dataAula) :
-                    await repositorioAula.ObterQuantidadeAulasTurmaComponenteCurricularDiaProfessor(turma.CodigoTurma, componenteCurricular.ToString(), dataAula, codigoRf);
+                    await repositorioAula.ObterQuantidadeAulasTurmaComponenteCurricularDiaProfessor(turma.CodigoTurma, componenteCurricular.ToString(), dataAula, codigoRf, ehGestor);
 
             // Busca horas aula cadastradas para a disciplina na turma
             return ehExperienciaPedagogica ?
                 await repositorioAula.ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(turma.CodigoTurma, semana) :
-                await repositorioAula.ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(turma.CodigoTurma, componenteCurricular.ToString(), semana, codigoRf, dataAula);
+                await repositorioAula.ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(turma.CodigoTurma, componenteCurricular.ToString(), semana, codigoRf, dataAula, ehGestor);
         }
     }
 }
