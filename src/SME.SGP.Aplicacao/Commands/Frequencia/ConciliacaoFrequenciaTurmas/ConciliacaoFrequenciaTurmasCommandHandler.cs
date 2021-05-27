@@ -45,10 +45,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<Turma> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim)
         {
-            Parallel.ForEach(turmasDaModalidade, new ParallelOptions { MaxDegreeOfParallelism = 3 }
-                , async turma =>
-                    await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, dataInicio, dataFim))
-                );
+            foreach (var turma in turmasDaModalidade)
+                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, dataInicio, dataFim));
+
+            //Parallel.ForEach(turmasDaModalidade, new ParallelOptions { MaxDegreeOfParallelism = 3 }
+            //    , async turma =>
+            //        await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, dataInicio, dataFim))
+            //    );
 
             return true;
         }

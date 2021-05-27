@@ -255,8 +255,15 @@ namespace SME.SGP.Worker.RabbitMQ
             var consumer = new EventingBasicConsumer(canalRabbit);
             consumer.Received += async (ch, ea) =>
             {
-
-                await TratarMensagem(ea);
+                try
+                {
+                    await TratarMensagem(ea);
+                }
+                catch (Exception ex)
+                {
+                    SentrySdk.CaptureException(ex);
+                    canalRabbit.BasicReject(ea.DeliveryTag, false);                    
+                }              
             };
 
             RegistrarConsumerSgp(consumer);
