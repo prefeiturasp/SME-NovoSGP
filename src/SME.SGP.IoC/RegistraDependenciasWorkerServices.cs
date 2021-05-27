@@ -61,8 +61,6 @@ namespace SME.SGP.IoC
             IModel canalRabbit = conexaoRabbit.CreateModel();
             services.AddSingleton(conexaoRabbit);
             services.AddSingleton(canalRabbit);
-
-            canalRabbit.ExchangeDeclare(ExchangeRabbit.Sgp, ExchangeType.Topic);
         }
 
         private static void RegistrarComandos(IServiceCollection services)
