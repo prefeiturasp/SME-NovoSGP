@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var podeEditar = true;
+            var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
             var podeAtribuirResponsavel = await VerificaPodeAtribuirResponsavel(encaminhamentoAee, usuarioLogado);
 
             return new EncaminhamentoAEERespostaDto()
@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao
             {
                 case SituacaoAEE.Rascunho:
                 case SituacaoAEE.Devolvido:
-                    return await EhProfessorDaTurma(usuarioLogado, encaminhamento.Turma) || await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma);
+                    return true;
                 case SituacaoAEE.Encaminhado:
                     return await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma);
                 case SituacaoAEE.Analise:
