@@ -1,0 +1,1 @@
+CREATE INDEX if not exists frequencia_aluno_codigo_aluno_idx ON public.frequencia_aluno (codigo_aluno);
