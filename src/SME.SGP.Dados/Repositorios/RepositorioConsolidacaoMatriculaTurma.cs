@@ -21,6 +21,7 @@ namespace SME.SGP.Dados
         {
             var tiposTurma = new List<int>();
             var anosCondicao = new List<string>();
+            var sql = "";
             if (anos != null)
             {
                 foreach (var ano in anos)
@@ -30,10 +31,43 @@ namespace SME.SGP.Dados
                     else anosCondicao.Add(ano.ShortName());
                 }
             }
-            var sql = dreId > 0 ? QueryConsolidacaoPorAno(dreId, ueId, tiposTurma, anosCondicao, semestre) : QueryConsolidacaoPorDre(dreId, ueId, tiposTurma, anosCondicao, semestre);
+            if (ueId > 0 && anos != null && anos.Count() == 1)
+                sql = QueryConsolidacaoPorTurma(tiposTurma, anosCondicao, semestre);
+            else if (dreId > 0)
+                sql = QueryConsolidacaoPorAno(dreId, ueId, tiposTurma, anosCondicao, semestre);
+            else sql = QueryConsolidacaoPorDre(dreId, ueId, tiposTurma, anosCondicao, semestre);
             return await database
                 .Conexao
                 .QueryAsync<InformacoesEscolaresPorDreEAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre, anosCondicao, tiposTurma });
+        }
+
+        private string QueryConsolidacaoPorTurma(IEnumerable<int> tiposTurma, IEnumerable<string> anosCondicao, int? semestre)
+        {
+            var query = new StringBuilder();
+            query.AppendLine(@"SELECT t.nome AS TurmaDescricao,
+                                       Sum(cfm.quantidade) AS quantidade
+                                FROM   consolidacao_matricula_turma cfm
+                                       INNER JOIN turma t
+                                               ON t.id = cfm.turma_id
+                                       INNER JOIN ue
+                                               ON ue.id = t.ue_id
+                                       INNER JOIN dre
+                                               ON dre.id = ue.dre_id 
+                                     WHERE t.ano_letivo = @anoLetivo
+                                       AND t.modalidade_codigo = @modalidade
+                                       AND dre.id = @dreId
+                                       AND ue.id = @ueId
+                                       ");
+            if (tiposTurma.Any())
+                query.AppendLine(@"    AND t.tipo_turma IN ( 2, 3, 7 )
+                                       AND t.tipo_turma = ANY(@tiposTurma) ");
+            else if (anosCondicao.Any())
+                query.AppendLine(@"    AND t.tipo_turma NOT IN ( 2, 3, 7 )
+                                       AND t.ano = ANY(@anosCondicao) ");
+
+            query.AppendLine(@"      GROUP BY t.nome
+                                     ORDER BY t.nome");
+            return query.ToString();
         }
 
         private string QueryConsolidacaoPorAno(long dreId, long ueId, IEnumerable<int> tiposTurma, IEnumerable<string> anosCondicao, int? semestre)
