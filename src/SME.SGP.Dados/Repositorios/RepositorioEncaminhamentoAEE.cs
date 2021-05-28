@@ -192,7 +192,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join turma t on t.id = ea.turma_id
                          inner join ue on t.ue_id = ue.id 
                      where not ea.excluido 
-                       and ea.situacao not in (4, 5)
+                       and ea.situacao not in (4, 5, 8)
                        and ea.aluno_codigo = @codigoEstudante ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoAEEAlunoTurmaDto>(sql, new { codigoEstudante });
