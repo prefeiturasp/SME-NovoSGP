@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio
 {
-    public enum SituacaoFrequencia
+    public enum TipoFrequencia
     {
         [Display(Name = "Compareceu")]
         C = 1,
