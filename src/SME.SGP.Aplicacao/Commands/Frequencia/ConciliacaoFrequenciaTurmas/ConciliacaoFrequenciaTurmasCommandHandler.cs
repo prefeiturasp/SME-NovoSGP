@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                     if (turmasDaModalidade != null && turmasDaModalidade.Any())
                     {
                         foreach (var periodoEscolar in modalidade)
-                            await PublicarFilaConciliacaoTurmas(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, request.ComponenteCurricularId);
+                            await PublicarFilaConciliacaoTurmas(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim, request.ComponenteCurricularId);
                     }
                 }
 
@@ -58,10 +58,10 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<Turma> turmasDaModalidade, int bimestre, DateTime dataInicio, string componenteCurricularId)
+        private async Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<Turma> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
             foreach (var turma in turmasDaModalidade)
-                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, componenteCurricularId, dataInicio));
+                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, componenteCurricularId, dataInicio, dataFim));
 
             return true;
         }
