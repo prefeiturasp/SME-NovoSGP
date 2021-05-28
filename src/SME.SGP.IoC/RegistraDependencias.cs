@@ -935,6 +935,7 @@ namespace SME.SGP.IoC
 
 
             services.TryAddScoped<IAlterarAulaFrequenciaTratarUseCase, AlterarAulaFrequenciaTratarUseCase>();
+            services.TryAddScoped<IObterFrequenciasPreDefinidasUseCase, ObterFrequenciasPreDefinidasUseCase>();
         }
     }
 }

@@ -115,5 +115,14 @@ namespace SME.SGP.Api.Controllers
             await calculoFrequenciaTurmaDisciplinaUseCase.IncluirCalculoFila(calcularFrequenciaDto);
             return Ok();
         }
+
+        [HttpGet("frequencias/pre-definidas")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> ObterFrequenciasPreDefinidas([FromQuery] FiltroFrequenciaPreDefinidaDto filtro, [FromServices] IObterFrequenciasPreDefinidasUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));           
+        }
     }
 }
