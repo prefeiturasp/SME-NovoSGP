@@ -44,22 +44,20 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { aulaId });
         }
 
-        public async Task<IEnumerable<AlunoComponenteCurricularDto>> ObterAlunosAusentesPorTurmaEPeriodo(string turmaCodigo, DateTime dataReferencia, string componenteCurricularId)
+        public async Task<IEnumerable<AlunoComponenteCurricularDto>> ObterAlunosAusentesPorTurmaEPeriodo(string turmaCodigo, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
             var query = new StringBuilder(@"select distinct a.disciplina_id as ComponenteCurricularId, raa.codigo_aluno as AlunoCodigo
                         from registro_ausencia_aluno raa 
                        inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
                        inner join aula a on a.id = rf.aula_id 
-                       inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
                        where 
                          a.turma_id = @turmaCodigo
-                         and @dataReferencia between pe.periodo_inicio and pe.periodo_fim
-                         and a.data_aula between pe.periodo_inicio and pe.periodo_fim ");
+                         and a.data_aula between @dataInicio and @dataFim ");
 
             if (!string.IsNullOrEmpty(componenteCurricularId))
                 query.AppendLine("and a.disciplina_id = @componenteCurricularId");
 
-            return await database.Conexao.QueryAsync<AlunoComponenteCurricularDto>(query.ToString(), new { turmaCodigo, dataReferencia, componenteCurricularId });
+            return await database.Conexao.QueryAsync<AlunoComponenteCurricularDto>(query.ToString(), new { turmaCodigo, dataInicio, dataFim, componenteCurricularId });
         }
 
         public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId)

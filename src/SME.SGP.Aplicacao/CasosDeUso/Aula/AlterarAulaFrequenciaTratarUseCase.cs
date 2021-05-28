@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             if (aulaParaTratar != null)
             {
                 await mediator.Send(new AlterarAulaFrequenciaTratarCommand(aulaParaTratar, filtro.QuantidadeAnterior));
-                await mediator.Send(new ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand(aulaParaTratar.TurmaId, aulaParaTratar.DataAula, aulaParaTratar.DisciplinaId));
+                await mediator.Send(new CalcularFrequenciaPorTurmaCommand(null, aulaParaTratar.DataAula, aulaParaTratar.TurmaId, aulaParaTratar.DisciplinaId));
             }
 
             return true;
