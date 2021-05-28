@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioFechamentoTurmaDisciplina(ISgpContext database, IRepositorioTurma repositorioTurma) : base(database)
         {
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
-        }
+        }       
 
         public async Task<bool> AtualizarSituacaoFechamento(long fechamentoTurmaDisciplinaId, int situacaoFechamento)
         {
@@ -142,6 +142,22 @@ namespace SME.SGP.Dados.Repositorios
                           and ft.periodo_escolar_id = @periodoEscolarId ";
 
             return (SituacaoFechamento)await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, componenteCurricularId, periodoEscolarId });
+        }
+
+        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosComSituacaoEmProcessamentoPorAnoLetivo(int anoLetivo)
+        {
+            var sqlQuery = @"select distinct ftd.*
+	                         from fechamento_turma_disciplina ftd 
+		                        inner join fechamento_turma ft
+			                        on ftd.fechamento_turma_id = ft.id
+		                        inner join turma t
+			                        on ft.turma_id = t.id
+                             where t.ano_letivo = @anoLetivo and
+	                              ftd.situacao = @situacao and
+	                              not ftd.excluido and
+	                              not ft.excluido;";
+
+            return await database.Conexao.QueryAsync<FechamentoTurmaDisciplina>(sqlQuery, new { anoLetivo, situacao = SituacaoFechamento.EmProcessamento });
         }
     }
 }
