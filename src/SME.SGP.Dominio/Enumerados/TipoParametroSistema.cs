@@ -114,6 +114,16 @@ namespace SME.SGP.Dominio
         ExecucaoConsolidacaoFrequenciaTurma = 58,
 
         ExecucaoConsolidacaoInformacoesEscolares = 59,
+        
+        HabilitaFrequenciaRemotaEIPre = 60,
+        HabilitaFrequenciaRemotaEICEI = 61,
+        HabilitaFrequenciaRemotaEJA = 62,
+        HabilitaFrequenciaRemotaCIEJA = 63,
+        HabilitaFrequenciaRemotaEF = 64,
+        HabilitaFrequenciaRemotaEM = 65,
+        HabilitaFrequenciaRemotaCMCT = 66,
+        HabilitaFrequenciaRemotaMOVA = 67,
+        HabilitaFrequenciaRemotaETEC = 68,
 
 
         //Sistema
