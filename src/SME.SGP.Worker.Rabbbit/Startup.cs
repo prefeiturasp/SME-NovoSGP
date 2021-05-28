@@ -37,14 +37,8 @@ namespace SME.SGP.Worker.Rabbbit
             RegistrarHttpClients(services, configuration);
             services.AddApplicationInsightsTelemetry(configuration);
             services.AddPolicies();
-            var provider = services.BuildServiceProvider();
-            //services.AdicionarRedis(configuration, provider.GetService<IServicoLog>());
 
-            if (env.EnvironmentName != "teste-integrado")
-            {
-                services.AddRabbit();
-            }
-
+            services.AddRabbit();
             services.AddHostedService<WorkerRabbitMQ>();
 
 

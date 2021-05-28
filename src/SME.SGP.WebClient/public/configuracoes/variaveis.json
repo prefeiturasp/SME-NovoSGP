@@ -1,5 +1,5 @@
 {
-  "API_URL": "https://localhost:5001/api",
+  "API_URL": "https://dev-novosgp.sme.prefeitura.sp.gov.br/api",
   "TRACKING_ID": "",
   "URL_SONDAGEM": "http://localhost:61540"
 }

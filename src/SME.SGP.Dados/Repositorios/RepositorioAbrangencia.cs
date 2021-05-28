@@ -554,6 +554,11 @@ namespace SME.SGP.Dados.Repositorios
 	                        and ue.tipo_escola in (1,3,4,16)";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { usuarioRF, usuarioPerfil });
-        }     
+        }
+        public async Task<IEnumerable<Abrangencia>> ObterAbrangenciaGeralPorUsuarioId(long usuarioId)
+        {
+            var query = @"select id,usuario_id,dre_id,ue_id,turma_id,perfil from abrangencia where usuario_id = @usuarioId";
+            return await database.Conexao.QueryAsync<Abrangencia>(query, new { usuarioId });
+        }
     }
 }
