@@ -67,7 +67,7 @@ namespace SME.SGP.Background
             Cliente.ExecutarPeriodicamente<IConciliacaoFrequenciaTurmasUseCase>(c => c.Executar(), Cron.Weekly(System.DayOfWeek.Saturday, 23));
 
             //De 10 em 10 minutos
-            Cliente.ExecutarPeriodicamente<ITrataDeadletterRabbitUseCase>(c => c.Executar(), "0 0/10 0 ? * * *");
+            Cliente.ExecutarPeriodicamente<ITrataDeadletterRabbitUseCase>(c => c.Executar(), Cron.MinuteInterval(10));
         }
     }
 }
