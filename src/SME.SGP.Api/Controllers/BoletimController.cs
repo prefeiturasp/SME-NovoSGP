@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Relatorios;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
