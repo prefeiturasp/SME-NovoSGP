@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
             this.dataBase = dataBase ?? throw new System.ArgumentNullException(nameof(dataBase));
         }
 
-        public async Task<IEnumerable<FrequenciaPreDefinidaDto>> Listar(long turmaId, long componenteCurricularId, string alunoCodigo)
+        public async Task<IEnumerable<FrequenciaPreDefinidaDto>> Listar(long turmaId, long componenteCurricularId, string codigoAluno)
         {
             var query = new StringBuilder(@"select codigo_aluno as codigoAluno,
                                                    tipo_frequencia as tipo
@@ -23,14 +23,14 @@ namespace SME.SGP.Dados.Repositorios
                                              where turma_id = @turmaId
                                                and componente_curricular_id  = @componenteCurricularId  ");
 
-            if (!string.IsNullOrEmpty(alunoCodigo))
+            if (!string.IsNullOrEmpty(codigoAluno))
                 query.AppendLine("and codigo_aluno = @codigoAluno");
 
             var parametros = new
             {
                 turmaId,
                 componenteCurricularId,
-                alunoCodigo
+                codigoAluno
             };
 
             return await dataBase.Conexao.QueryAsync<FrequenciaPreDefinidaDto>(query.ToString(), parametros);
