@@ -52,7 +52,7 @@ namespace SME.SGP.Dados.Repositorios
                        inner join aula a on a.id = rf.aula_id 
                        where 
                          a.turma_id = @turmaCodigo
-                         and a.data_aula between pe.periodo_inicio and pe.periodo_fim ");
+                         and a.data_aula between @dataInicio and @dataFim ");
 
             if (!string.IsNullOrEmpty(componenteCurricularId))
                 query.AppendLine("and a.disciplina_id = @componenteCurricularId");
