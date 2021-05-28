@@ -138,7 +138,6 @@ namespace SME.SGP.Aplicacao
             var nomeAvaliacaoAuditoriaAlteracao = string.Empty;
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var turma = await repositorioTurma.ObterPorCodigo(filtro.TurmaCodigo);
 
             foreach (var periodoEscolar in periodosEscolares)
             {
