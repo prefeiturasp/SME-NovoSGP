@@ -229,7 +229,7 @@ namespace SME.SGP.Dados
             if (modalidade > 0)
                 query.AppendLine(" and t.modalidade_codigo = @modalidade ");
 
-            if (semestre >= 0)
+            if (semestre > 0)
                 query.AppendLine(" and t.semestre = @semestre ");
 
             query.AppendLine("order by ano");
