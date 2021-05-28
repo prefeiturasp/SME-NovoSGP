@@ -4,11 +4,11 @@ namespace SME.SGP.Dominio
 {
     public enum TipoFrequencia
     {
-        [Display(Name = "Compareceu")]
+        [Display(Name = "Compareceu", ShortName = "C")]
         C = 1,
-        [Display(Name = "Faltou")]
+        [Display(Name = "Faltou", ShortName = "F")]
         F = 2,
-        [Display(Name = "Remoto")]
+        [Display(Name = "Remoto", ShortName = "R")]
         R = 3,
     }
 }

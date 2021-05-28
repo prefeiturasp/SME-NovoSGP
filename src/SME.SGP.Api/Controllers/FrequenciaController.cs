@@ -124,5 +124,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));           
         }
+
+        [HttpGet("frequencias/tipos")]
+        [ProducesResponseType(typeof(TipoFrequenciaDto), 500)]
+        [ProducesResponseType(typeof(TipoFrequenciaDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> ObterTiposFrequenciasPorModalidade([FromQuery] TipoFrequenciaFiltroDto filtro, [FromServices] IObterTiposFrequenciasUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
