@@ -671,6 +671,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
 
             services.TryAddScoped<IAlterarAulaFrequenciaTratarUseCase, AlterarAulaFrequenciaTratarUseCase>();
+
+            services.TryAddScoped<ITrataDeadletterRabbitUseCase, TrataDeadletterRabbitUseCase>();
+            
         }
     }
 }

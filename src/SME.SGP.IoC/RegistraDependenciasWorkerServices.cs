@@ -490,6 +490,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
 
             services.TryAddScopedWorkerService<IAlterarAulaFrequenciaTratarUseCase, AlterarAulaFrequenciaTratarUseCase>();
+
+            services.TryAddScopedWorkerService<ITrataDeadletterRabbitUseCase, TrataDeadletterRabbitUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
