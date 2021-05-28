@@ -44,16 +44,12 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ExcluirAnotacoesFrequencciaDaAulaCommand(aula.Id));
                 await mediator.Send(new ExcluirDiarioBordoDaAulaCommand(aula.Id));
                 await mediator.Send(new IncluirFilaExclusaoPendenciasAulaCommand(aula.Id, request.Usuario));
-
-                //TODO: TENTAR OTIMIZAR PARA BUSCAR MAIS FÁCIL O BIMESTRE
-                var bimestreAtual = await mediator.Send(new ObterBimestrePorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
-
                 aula.Excluido = true;
                 await repositorioAula.SalvarAsync(aula);
 
                 unitOfWork.PersistirTransacao();
 
-                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(null, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestreAtual));
+                await mediator.Send(new CalcularFrequenciaPorTurmaCommand(null, aula.DataAula, aula.TurmaId, aula.DisciplinaId));
             }
             catch (Exception)
             {

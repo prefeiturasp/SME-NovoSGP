@@ -22,10 +22,10 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var alunosAusentes = await mediator.Send(new ObterAlunosAusentesPorTurmaNoPeriodoQuery(request.TurmaCodigo, request.DataInicio, request.DataFim));
+                var alunosAusentes = await mediator.Send(new ObterAlunosAusentesPorTurmaNoPeriodoQuery(request.TurmaCodigo, request.DataInicio, request.DataFim, request.ComponenteCurricularId));
 
                 if (alunosAusentes != null && alunosAusentes.Any())
-                    await IncluirFilaCalculoFrequenciaAlunosPorComponenteETurma(request.TurmaCodigo, request.Bimestre, request.DataFim, alunosAusentes);
+                    await IncluirFilaCalculoFrequenciaAlunosPorComponenteETurma(request.TurmaCodigo, request.DataFim, alunosAusentes);
 
                 return true;
             }
@@ -36,12 +36,12 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task IncluirFilaCalculoFrequenciaAlunosPorComponenteETurma(string turmaCodigo, int bimestre, DateTime dataFim, IEnumerable<AlunoComponenteCurricularDto> alunosAusentes)
+        private async Task IncluirFilaCalculoFrequenciaAlunosPorComponenteETurma(string turmaCodigo, DateTime dataFim, IEnumerable<AlunoComponenteCurricularDto> alunosAusentes)
         {
             var alunosPorComponentes = alunosAusentes.GroupBy(a => a.ComponenteCurricularId);
 
             foreach (var alunosNoComponente in alunosPorComponentes)
-                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunosNoComponente.Select(a => a.AlunoCodigo), dataFim, turmaCodigo, alunosNoComponente.Key, bimestre));
+                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunosNoComponente.Select(a => a.AlunoCodigo), dataFim, turmaCodigo, alunosNoComponente.Key));
         }
     }
 }

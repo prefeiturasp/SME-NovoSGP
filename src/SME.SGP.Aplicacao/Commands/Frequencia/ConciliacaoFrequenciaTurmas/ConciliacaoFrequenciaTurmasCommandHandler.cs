@@ -24,12 +24,28 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var periodosPorModalidade = await ObterPeriodosPassadosPorModalidade(request.Data);
+                var turmasDaModalidade = new List<Turma>();
+
+                if (!string.IsNullOrEmpty(request.TurmaCodigo))
+                {
+                    var turmaParaConsulta = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
+                    if (turmaParaConsulta == null)
+                        throw new NegocioException($"Não foi possível localizar a turma de código {request.TurmaCodigo} para efetuar a conciliaçaõ de frequência.");
+                    turmasDaModalidade.Add(turmaParaConsulta);
+                }
+
                 foreach (var modalidade in periodosPorModalidade)
                 {
-                    var turmasDaModalidade = await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year);
+                    if (string.IsNullOrEmpty(request.TurmaCodigo))
+                    {
+                        turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year)).ToList();
+                    }
 
-                    foreach (var periodoEscolar in modalidade)
-                        await PublicarFilaConciliacaoTurmas(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim);
+                    if (turmasDaModalidade != null && turmasDaModalidade.Any())
+                    {
+                        foreach (var periodoEscolar in modalidade)
+                            await PublicarFilaConciliacaoTurmas(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim, request.ComponenteCurricularId);
+                    }
                 }
 
                 return true;
@@ -39,18 +55,13 @@ namespace SME.SGP.Aplicacao
             {
                 SentrySdk.CaptureException(ex);
                 throw;
-            }        
+            }
         }
 
-        private async Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<Turma> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim)
+        private async Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<Turma> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
             foreach (var turma in turmasDaModalidade)
-                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, dataInicio, dataFim));
-
-            //Parallel.ForEach(turmasDaModalidade, new ParallelOptions { MaxDegreeOfParallelism = 3 }
-            //    , async turma =>
-            //        await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, dataInicio, dataFim))
-            //    );
+                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, componenteCurricularId, dataInicio, dataFim));
 
             return true;
         }
