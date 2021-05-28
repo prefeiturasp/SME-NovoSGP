@@ -157,10 +157,11 @@ namespace SME.SGP.Aplicacao.Servicos
             return ues.Any(dre => dre.Codigo.Equals(codigoUE, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public async Task SincronizarAbrangenciaHistorica(int anoLetivo, string professorRf)
+        public async Task<bool> SincronizarAbrangenciaHistorica(int anoLetivo, string professorRf)
         {
             try
             {
+                SentrySdk.AddBreadcrumb($"Sincronizar abrangência histórica SGP com base nas turmas com data disponibilização no EOL - Chamada SincronizarAbrangenciaHistorica - anoLetivo: {anoLetivo}, professorRf {professorRf}", "SGP Api - Negócio");
                 var turmasHistoricasEOL = await mediator.Send(new ObterTurmasAbrangenciaHistoricaEOLAnoProfessorQuery(anoLetivo, professorRf));
                 var usuario = await repositorioUsuario.ObterUsuarioPorCodigoRfAsync(professorRf);
                 if (usuario == null)
@@ -191,11 +192,13 @@ namespace SME.SGP.Aplicacao.Servicos
                 abrangenciaGeralSGP = await repositorioAbrangencia.ObterAbrangenciaGeralPorUsuarioId(usuario.Id);
                 var paraAtualizar = abrangenciaGeralSGP.Where(x => abrangenciaTurmasHistoricasEOL.Any(ath => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
                 repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar.Select(x => x.Id));
+                return true;
             }
             catch (Exception e)
             {
+                SentrySdk.AddBreadcrumb($"Erro ao sincronizar abrangência histórica SGP - Chamada SincronizarAbrangenciaHistorica - anoLetivo: {anoLetivo}, professorRf {professorRf} - erro: {e.Message}", "SGP Api - Negócio");
                 SentrySdk.CaptureException(e);
-                throw new NegocioException($"Erro ao sincronizar abrangencia histórica - Ano({anoLetivo}), RF({professorRf})");
+                throw new NegocioException($"Erro ao sincronizar abrangência histórica - Ano({anoLetivo}), RF({professorRf})");
             }
         }
 

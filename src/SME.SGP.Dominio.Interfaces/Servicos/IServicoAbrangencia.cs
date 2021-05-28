@@ -25,5 +25,6 @@ namespace SME.SGP.Dominio.Interfaces
         bool DreEstaNaAbrangencia(string login, Guid perfilId, string codigoDre);
 
         bool UeEstaNaAbrangecia(string login, Guid perfilId, string codigoDre, string codigoUE);
+        Task<bool> SincronizarAbrangenciaHistorica(int anoLetivo, string professorRf);
     }
 }
