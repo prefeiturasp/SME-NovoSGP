@@ -183,6 +183,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConselhoClasseConsolidadoTurmaAlunoMap());              
                config.AddMap(new ConsolidacaoMatriculaTurmaMap());
                config.AddMap(new FrequenciaPreDefinidaMap());
+               config.AddMap(new RegistroFrequenciaAlunoMap());
 
                config.ForDommel();
            });

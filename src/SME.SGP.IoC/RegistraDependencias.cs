@@ -393,6 +393,7 @@ namespace SME.SGP.IoC
 
             // Frequência 
             services.TryAddScoped<IRepositorioFrequenciaPreDefinida, RepositorioFrequenciaPreDefinida>();
+            services.TryAddScoped<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
 
         }
 
