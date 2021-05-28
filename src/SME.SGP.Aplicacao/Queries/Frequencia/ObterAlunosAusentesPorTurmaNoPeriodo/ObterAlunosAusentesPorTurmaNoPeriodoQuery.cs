@@ -3,22 +3,21 @@ using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosAusentesPorTurmaNoPeriodoQuery : IRequest<IEnumerable<AlunoComponenteCurricularDto>>
     {
-        public ObterAlunosAusentesPorTurmaNoPeriodoQuery(string turmaCodigo, DateTime dataInicio, DateTime dataFim)
+        public ObterAlunosAusentesPorTurmaNoPeriodoQuery(string turmaCodigo, DateTime dataInicio, string componenteCurricularId)
         {
             TurmaCodigo = turmaCodigo;
-            DataInicio = dataInicio;
-            DataFim = dataFim;
+            DataReferencia = dataInicio;
+            ComponenteCurricularId = componenteCurricularId;
         }
 
         public string TurmaCodigo { get; }
-        public DateTime DataInicio { get; }
-        public DateTime DataFim { get; }
+        public DateTime DataReferencia { get; }
+        public string ComponenteCurricularId { get; set; }
     }
 
     public class ObterAlunosAusentesPorTurmaNoPeriodoQueryValidator : AbstractValidator<ObterAlunosAusentesPorTurmaNoPeriodoQuery>
@@ -29,13 +28,9 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O código da turma deve ser informado para consulta de alunos ausêntes no período");
 
-            RuleFor(a => a.DataInicio)
+            RuleFor(a => a.DataReferencia)
                 .NotEmpty()
                 .WithMessage("A data de início deve ser informada para consulta de alunos ausêntes no período");
-
-            RuleFor(a => a.DataFim)
-                .NotEmpty()
-                .WithMessage("A data de fim deve ser informada para consulta de alunos ausêntes no período");
         }
     }
 }
