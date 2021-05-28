@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
             ComponenteCurricularId = componenteCurricularId;
         }
 
-        public string TurmaCodigo { get; }
+        public string TurmaCodigo { get; set; }
 
-        public DateTime DataReferencia { get; }
+        public DateTime DataReferencia { get; set; }
 
         public string ComponenteCurricularId { get; set; }
     }
