@@ -2,7 +2,6 @@
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -29,6 +28,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(encaminhamentoAEEDto.AlunoCodigo, DateTime.Now.Year));
             if (aluno == null)
                 throw new NegocioException("O aluno informado não foi encontrado");
+
+            var alunoEncaminhamentoAEE = mediator.Send(new ObterEncaminhamentoAEEPorEstudanteQuery(encaminhamentoAEEDto.AlunoCodigo));
+            if (alunoEncaminhamentoAEE != null)
+                throw new NegocioException("Estudante/Criança já possui encaminhametno AEE em aberto");
 
             if (!encaminhamentoAEEDto.Secoes.Any())
                 throw new NegocioException("Nenhuma seção foi encontrada");
@@ -70,10 +73,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             encaminhamentoAEE.Situacao = encaminhamentoAEEDto.Situacao;
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamentoAEE));
 
-            if(encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado)
+            if (encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado)
             {
-                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id ));
-            } 
+                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id));
+            }
 
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {
