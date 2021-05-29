@@ -1,9 +1,9 @@
 ﻿using SME.SGP.Infra;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IExecutaVerificacaoGeracaoPendenciaAusenciaFechamentoUseCase
+    public interface IRabbitDeadletterTratarUseCase
     {
         Task<bool> Executar(MensagemRabbit mensagem);
     }

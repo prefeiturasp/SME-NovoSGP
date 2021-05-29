@@ -70,5 +70,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterAlunos(string codigoTurma, int anoLetivo, int semestre, [FromServices] IConsultasFechamentoTurmaDisciplina consultas)
            => Ok(await consultas.ObterDadosAlunos(codigoTurma, anoLetivo, semestre));
+
+        [HttpPost("processar-pendentes/{anoLetivo}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]        
+        public async Task<IActionResult> ProcessarPendentes(int anoLetivo, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
+        {
+            await comandos.ProcessarPendentes(anoLetivo);
+            return Ok();
+        }
     }
 }
