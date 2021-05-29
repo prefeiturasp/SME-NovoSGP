@@ -46,9 +46,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 {
                     while (true)
                     {
-                        var mensagemParaEnviar = _channel.BasicGet($"{fila}.deadletter", true);
-                        
-                        //var message = Encoding.UTF8.GetString(mensagemParaEnviar.Body.ToArray());
+                        var mensagemParaEnviar = _channel.BasicGet($"{fila}.deadletter", true);                        
 
                         if (mensagemParaEnviar == null)
                             break;
