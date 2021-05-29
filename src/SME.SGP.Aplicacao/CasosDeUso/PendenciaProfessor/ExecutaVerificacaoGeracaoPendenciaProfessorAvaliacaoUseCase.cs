@@ -1,31 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase : AbstractUseCase, IExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase
     {
-        private readonly IServicoEol servicoEol;
 
-        public ExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase(IMediator mediator, IServicoEol servicoEol) : base(mediator)
+        public ExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase(IMediator mediator) : base(mediator)
         {
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
+
         }
 
-        public async Task Executar(MensagemRabbit mensagem)
+        public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var anoAtual = DateTime.Now.Year;
             var parametrosGeracaoPendenciaAvaliacao = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.DiasGeracaoPendenciaAvaliacao, anoAtual));
 
             await ExecutarVerificacaoPendenciaProfessor(parametrosGeracaoPendenciaAvaliacao);
             await ExecutarVerificacaoPendenciaCP(parametrosGeracaoPendenciaAvaliacao);
+
+            return true;
         }
 
         private async Task ExecutarVerificacaoPendenciaProfessor(IEnumerable<ParametrosSistema> parametrosGeracaoPendenciaAvaliacao)
