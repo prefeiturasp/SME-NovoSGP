@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
                     var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(fechamentoTurma.TurmaId));                    
                     var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
                     var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(fechamento.AlteradoEm.HasValue ? fechamento.AlteradoRF : fechamento.CriadoRF));
-                    await servicoFechamentoTurmaDisciplina.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuario);
+                    //await servicoFechamentoTurmaDisciplina.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuario);
                 }                
             }
         }
