@@ -125,7 +125,6 @@ namespace SME.SGP.Dominio
         HabilitaFrequenciaRemotaMOVA = 67,
         HabilitaFrequenciaRemotaETEC = 68,
 
-
         //Sistema
         HabilitarServicosEmBackground = 100
     }
