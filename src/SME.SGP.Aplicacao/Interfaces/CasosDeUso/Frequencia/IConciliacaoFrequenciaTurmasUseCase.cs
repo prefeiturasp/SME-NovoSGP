@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao.Interfaces
     public interface IConciliacaoFrequenciaTurmasUseCase
     {
         Task Executar();
-        Task ProcessarNaData(DateTime dataPeriodo);
+        Task ProcessarNaData(DateTime dataPeriodo, string turmaCodigo);
     }
 }
