@@ -1,27 +1,30 @@
-﻿using MediatR;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using Polly;
+using Polly.Registry;
 using RabbitMQ.Client;
+using SME.GoogleClassroom.Infra;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class TrataDeadletterRabbitUseCase : ITrataDeadletterRabbitUseCase
+    public class RabbitDeadletterTratarUseCase : IRabbitDeadletterTratarUseCase
     {
         private readonly IConfiguration configuration;
-        private readonly IMediator mediator;
+        private readonly IAsyncPolicy policy;
 
-        public TrataDeadletterRabbitUseCase(IConfiguration configuration, IMediator mediator)
+        public RabbitDeadletterTratarUseCase(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
         }
 
-        public async Task<bool> Executar()
+        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
+            var fila = mensagemRabbit.Mensagem.ToString();
+
             var factory = new ConnectionFactory
             {
                 HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
@@ -30,25 +33,32 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
             };
 
+            await policy.ExecuteAsync(() => TratarMensagens(fila, factory));
+
+            return await Task.FromResult(true);
+        }
+
+        private async Task TratarMensagens(string fila, ConnectionFactory factory)
+        {
             using (var conexaoRabbit = factory.CreateConnection())
             {
                 using (IModel _channel = conexaoRabbit.CreateModel())
                 {
                     while (true)
                     {
-                        var mensagemParaEnviar = _channel.BasicGet(RotasRabbitSgp.RotaCalculoFrequenciaPorTurmaComponente + ".deadletter", true);
+                        var mensagemParaEnviar = _channel.BasicGet($"{fila}.deadletter", true);
+                        
+                        //var message = Encoding.UTF8.GetString(mensagemParaEnviar.Body.ToArray());
+
                         if (mensagemParaEnviar == null)
                             break;
                         else
                         {
-                            var mensagem = Encoding.UTF8.GetString(mensagemParaEnviar.Body.Span.ToArray());
-                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaCalculoFrequenciaPorTurmaComponente, mensagem, Guid.NewGuid(), null, false));
-                        }
+                            await Task.Run(() => _channel.BasicPublish(ExchangeRabbit.Sgp, fila, null, mensagemParaEnviar.Body.ToArray()));
+                        }                        
                     }
                 }
             }
-
-            return true;
         }
     }
 }
