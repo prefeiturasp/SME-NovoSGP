@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface ITrataDeadletterRabbitUseCase
+    public interface IRabbitDeadletterSyncUseCase
     {
         Task<bool> Executar();
     }

@@ -60,5 +60,7 @@
         public const string RotaValidacaoAusenciaConciliacaoFrequenciaTurma = "sgp.frequencia.turma.conciliacao.validar";
         public const string RotaConciliacaoFrequenciaTurmasSync = "sgp.frequencia.turma.conciliacao.sync";
         
+        public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
+        public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
     }
 }

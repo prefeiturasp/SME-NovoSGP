@@ -123,6 +123,9 @@ namespace SME.SGP.Worker.RabbitMQ
 
             comandos.Add(RotasRabbitSgp.RotaValidacaoAusenciaConciliacaoFrequenciaTurma, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasSync, new ComandoRabbit("Inicia rotina de cálculo de frequência da turma", typeof(IConciliacaoFrequenciaTurmasSyncUseCase)));
+
+            comandos.Add(RotasRabbitSgp.RotaRabbitDeadletterSync, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IRabbitDeadletterSyncUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaRabbitDeadletterTratar, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IRabbitDeadletterTratarUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -153,7 +156,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     }
                     catch (NegocioException nex)
                     {
-                        canalRabbit.BasicReject(ea.DeliveryTag, false);
+                        canalRabbit.BasicAck(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {nex.Message}");
                         SentrySdk.CaptureException(nex);
                         RegistrarSentry(ea, mensagemRabbit, nex);
@@ -162,7 +165,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     }
                     catch (ValidacaoException vex)
                     {
-                        canalRabbit.BasicReject(ea.DeliveryTag, false);
+                        canalRabbit.BasicAck(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
                         SentrySdk.CaptureException(vex);
                         RegistrarSentry(ea, mensagemRabbit, vex);
@@ -251,6 +254,7 @@ namespace SME.SGP.Worker.RabbitMQ
         {
             stoppingToken.ThrowIfCancellationRequested();
             var consumer = new EventingBasicConsumer(canalRabbit);
+            
             consumer.Received += async (ch, ea) =>
             {
                 try
