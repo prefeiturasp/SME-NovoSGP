@@ -114,7 +114,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(bool), 200)]
-        public async Task<IActionResult> ConciliarFrequencia([FromQuery] DateTime dataReferencia, string turmaCodigo, [FromServices] IConciliacaoFrequenciaTurmasUseCase useCase)
+        public async Task<IActionResult> ConciliarFrequencia([FromQuery] DateTime dataReferencia, string turmaCodigo, [FromServices] IConciliacaoFrequenciaTurmasCronUseCase useCase)
         {
             await useCase.ProcessarNaData(dataReferencia, turmaCodigo);
             return Ok();
