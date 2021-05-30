@@ -177,7 +177,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
 
-            FrequenciaDto registroFrequenciaDto = ObterRegistroFrequencia(aulaId, aula, turma);
+            FrequenciaDto registroFrequenciaDto = await ObterRegistroFrequencia(aulaId, aula, turma);
 
             var ausencias = servicoFrequencia.ObterListaAusenciasPorAula(aulaId);
             if (ausencias == null)
@@ -339,9 +339,9 @@ namespace SME.SGP.Aplicacao
             return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequencia };
         }
 
-        private FrequenciaDto ObterRegistroFrequencia(long aulaId, Aula aula, Turma turma)
+        private async Task<FrequenciaDto> ObterRegistroFrequencia(long aulaId, Aula aula, Turma turma)
         {
-            var registroFrequencia = servicoFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
+            var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorAulaIdQuery(aulaId));
             if (registroFrequencia == null)
             {
                 registroFrequencia = new RegistroFrequencia(aula);
