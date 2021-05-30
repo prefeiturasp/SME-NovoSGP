@@ -126,6 +126,9 @@ namespace SME.SGP.Worker.RabbitMQ
 
             comandos.Add(RotasRabbitSgp.RotaRabbitDeadletterSync, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IRabbitDeadletterSyncUseCase)));
             comandos.Add(RotasRabbitSgp.RotaRabbitDeadletterTratar, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IRabbitDeadletterTratarUseCase)));
+            
+            comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasAlunosSync, new ComandoRabbit("Conciliação de frequência da turma sync", typeof(IConciliacaoFrequenciaTurmasAlunosSyncUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasAlunosBuscar, new ComandoRabbit("Conciliação de frequência da turma buscar", typeof(IConciliacaoFrequenciaTurmasAlunosBuscarUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)

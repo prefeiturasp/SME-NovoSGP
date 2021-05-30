@@ -492,6 +492,10 @@ namespace SME.SGP.IoC
 
             services.TryAddScopedWorkerService<IRabbitDeadletterSyncUseCase, RabbitDeadletterSyncUseCase>();
             services.TryAddScopedWorkerService<IRabbitDeadletterTratarUseCase, RabbitDeadletterTratarUseCase>();
+
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasAlunosCronUseCase, ConciliacaoFrequenciaTurmasAlunosCronUseCase>();
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasAlunosSyncUseCase, ConciliacaoFrequenciaTurmasAlunosSyncUseCase>();
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasAlunosBuscarUseCase, ConciliacaoFrequenciaTurmasAlunosBuscarUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
