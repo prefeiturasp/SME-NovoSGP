@@ -1,4 +1,6 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using Dapper;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Text;
@@ -8,11 +10,11 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFrequenciaPreDefinida : IRepositorioFrequenciaPreDefinida
     {
-        private readonly ISgpContext dataBase;
+        private readonly ISgpContext database;
 
         public RepositorioFrequenciaPreDefinida(ISgpContext dataBase)
         {
-            this.dataBase = dataBase ?? throw new System.ArgumentNullException(nameof(dataBase));
+            this.database = dataBase ?? throw new System.ArgumentNullException(nameof(dataBase));
         }
 
         public async Task<IEnumerable<FrequenciaPreDefinidaDto>> Listar(long turmaId, long componenteCurricularId, string codigoAluno)
@@ -33,7 +35,29 @@ namespace SME.SGP.Dados.Repositorios
                 codigoAluno
             };
 
-            return await dataBase.Conexao.QueryAsync<FrequenciaPreDefinidaDto>(query.ToString(), parametros);
+            return await database.Conexao.QueryAsync<FrequenciaPreDefinidaDto>(query.ToString(), parametros);
+        }
+
+        public async Task RemoverPorCCIdETurmaId(long componenteCurricularId, long turmaId)
+        {
+            await database.Conexao.ExecuteAsync("DELETE FROM frequencia_pre_definida " +
+                "WHERE turma_id = @turmaId AND componente_curricular_id = @componenteCurricularId;",
+                new { turmaId, componenteCurricularId });
+
+        }
+
+        public async Task Salvar(FrequenciaPreDefinida frequenciaPreDefinida)
+        {
+            await database.Conexao.ExecuteAsync(@"INSERT INTO frequencia_pre_definida 
+                (componente_curricular_id,turma_id,codigo_aluno,tipo_frequencia) values 
+                (@componenteCurricularId, @turmaId, @codigoAluno, @tipoFrequencia);",
+               new
+               {
+                   turmaId = frequenciaPreDefinida.TurmaId,
+                   componenteCurricularId = frequenciaPreDefinida.ComponenteCurricularId,
+                   codigoAluno = frequenciaPreDefinida.CodigoAluno,
+                   tipoFrequencia = frequenciaPreDefinida.TipoFrequencia
+               });
         }
     }
 }
