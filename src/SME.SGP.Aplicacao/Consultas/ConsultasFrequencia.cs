@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
             => await repositorioFrequencia.FrequenciaAulaRegistrada(aulaId);
 
-        public async Task<double> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
+        public async Task<double?> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
         {
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
             var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
             
             if (frequenciaAluno == null)
-                return 100;
+                return null;
 
             //Particularidade de 2020
             if (turma.AnoLetivo.Equals(2020))
@@ -277,10 +277,13 @@ namespace SME.SGP.Aplicacao
         public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
             => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual);
 
-        public async Task<SinteseDto> ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina)
+        public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina)
         {
-            var sintese = percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
-                        SinteseEnum.Frequente : SinteseEnum.NaoFrequente;
+            var sintese = percentualFrequencia != null ? 
+                SinteseEnum.NaoFrequente :
+                percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
+                SinteseEnum.Frequente : 
+                SinteseEnum.NaoFrequente;
 
             return new SinteseDto()
             {
@@ -320,12 +323,15 @@ namespace SME.SGP.Aplicacao
             var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(aluno.CodigoAluno, disciplinaId, bimestre.Id, TipoFrequenciaAluno.PorDisciplina, aluno.CodigoTurma.ToString());
             // Frequencia não calculada
             if (frequenciaAluno == null)
-            {
-                if (aluno.PodeEditarNotaConceito())
-                    return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = 100 };
-
                 return null;
-            }
+
+            //if (frequenciaAluno == null)
+            //{
+            //    if (aluno.PodeEditarNotaConceito())
+            //        return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = 100 };
+
+            //    return null;
+            //}
 
             int percentualFrequencia = (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0);
             // Critico
