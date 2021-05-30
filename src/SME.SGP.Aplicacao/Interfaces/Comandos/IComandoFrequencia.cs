@@ -5,6 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandoFrequencia
     {
-        Task Registrar(FrequenciaDto frequenciaDto);
+        //TODO REMOVER
+        //Task Registrar(FrequenciaDto frequenciaDto);
     }
 }

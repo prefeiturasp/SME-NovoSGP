@@ -78,9 +78,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(200)]
         [Permissao(Permissao.PDA_I, Policy = "Bearer")]
-        public async Task<IActionResult> Registrar([FromBody] FrequenciaDto frequenciaDto, [FromServices] IComandoFrequencia comandoFrequencia)
+        public async Task<IActionResult> Registrar([FromBody] FrequenciaDto frequenciaDto, [FromServices] IInserirFrequenciaUseCase useCase)
         {
-            await comandoFrequencia.Registrar(frequenciaDto);
+            await useCase.Executar(frequenciaDto);
             return Ok();
         }
 

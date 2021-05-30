@@ -34,5 +34,6 @@ namespace SME.SGP.Infra
         public string CelularResponsavel { get; set; }
         public DateTime DataAtualizacaoContato { get; set; }
         public bool EhAtendidoAEE { get; set; }
+        public TipoFrequencia TipoFrequenciaPreDefinido { get; set; }
     }
 }

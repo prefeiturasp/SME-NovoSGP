@@ -1,15 +1,21 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dados.Repositorios;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
-    public class RepositorioRegistroFrequenciaAluno : IRepositorioRegistroFrequenciaAluno
+    public class RepositorioRegistroFrequenciaAluno : RepositorioBase<RegistroFrequenciaAluno>, IRepositorioRegistroFrequenciaAluno
     {
-        private readonly ISgpContext database;
-
-        public RepositorioRegistroFrequenciaAluno(ISgpContext database)
+        public RepositorioRegistroFrequenciaAluno(ISgpContext conexao) : base(conexao)
         {
-            this.database = database;
+        }
+
+        public async Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId)
+        {
+            await database.Conexao.ExecuteAsync("DELETE FROM registro_frequencia_aluno WHERE registro_frequencia_id = @registroFrequenciaId", 
+                new { registroFrequenciaId });
         }
     }
 }
