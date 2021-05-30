@@ -16,11 +16,11 @@ namespace SME.SGP.Aplicacao
 
         FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual);
 
-        Task<SinteseDto> ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina);
+        Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina);
 
         Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina);
 
-        Task<double> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "");
+        Task<double?> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "");
         Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "");
         Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string codigoTurma, short bimestre, short ano);
     }
