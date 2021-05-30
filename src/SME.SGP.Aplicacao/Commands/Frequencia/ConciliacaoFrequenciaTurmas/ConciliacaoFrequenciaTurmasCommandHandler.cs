@@ -24,32 +24,24 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var periodosPorModalidade = await ObterPeriodosPassadosPorModalidade(request.Data);
-                var turmasDaModalidade = new List<Turma>();
-
-                if (!string.IsNullOrEmpty(request.TurmaCodigo))
-                {
-                    var turmaParaConsulta = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
-                    if (turmaParaConsulta == null)
-                        throw new NegocioException($"Não foi possível localizar a turma de código {request.TurmaCodigo} para efetuar a conciliaçaõ de frequência.");
-                    turmasDaModalidade.Add(turmaParaConsulta);
-                }
 
                 foreach (var modalidade in periodosPorModalidade)
                 {
-                    if (string.IsNullOrEmpty(request.TurmaCodigo))
-                    {
-                        turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year)).ToList();
-                    }
+                    var turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year, request.TurmaCodigo)).ToList();
+                    
+                    //Mensagem muito grande para o sentry :\
+                    //var turmasParaLog = string.Join(",", turmasDaModalidade);
+                    //var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(turmasParaLog);
+                    //var turmasParaLogBase64 = Convert.ToBase64String(plainTextBytes);
 
+                    SentrySdk.CaptureMessage($"Conciliação Turmas: {turmasDaModalidade.Count}");
+                    
                     if (turmasDaModalidade != null && turmasDaModalidade.Any())
-                    {
                         foreach (var periodoEscolar in modalidade)
                             await PublicarFilaConciliacaoTurmas(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim, request.ComponenteCurricularId);
-                    }
                 }
 
                 return true;
-
             }
             catch (Exception ex)
             {
@@ -58,19 +50,19 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<Turma> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
+        private async Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<string> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
             foreach (var turma in turmasDaModalidade)
-                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, componenteCurricularId, dataInicio, dataFim));
+                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma, bimestre, componenteCurricularId, dataInicio, dataFim));
 
             return true;
         }
 
-        private async Task<IEnumerable<Turma>> ObterTurmasPorModalidade(ModalidadeTipoCalendario modalidadeTipoCalendario, int ano)
+        private async Task<IEnumerable<string>> ObterTurmasPorModalidade(ModalidadeTipoCalendario modalidadeTipoCalendario, int ano, string turmaCodigo)
         {
             var modalidades = modalidadeTipoCalendario.ObterModalidades();
 
-            return await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(ano, modalidades));
+            return await mediator.Send(new ObterCodigosTurmasPorAnoModalidadeQuery(ano, modalidades, turmaCodigo));
         }
 
         private async Task<IEnumerable<IGrouping<ModalidadeTipoCalendario, PeriodoEscolarModalidadeDto>>> ObterPeriodosPassadosPorModalidade(DateTime data)

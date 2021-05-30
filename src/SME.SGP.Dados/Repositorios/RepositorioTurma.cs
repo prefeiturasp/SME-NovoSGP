@@ -524,7 +524,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasCompletasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades)
+        public async Task<IEnumerable<Turma>> ObterTurmasCompletasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades, string turmaCodigo = "")
         {
             var query = @"select turma.*, ue.*, dre.* 
                             from turma
@@ -534,12 +534,15 @@ namespace SME.SGP.Dados.Repositorios
                             turma.ano_letivo = @anoLetivo
                             and turma.modalidade_codigo = any(@modalidades) ";
 
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += " and turma.turma_id = @turmaCodigo ";
+
             return await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
                 return turma;
-            }, new { modalidades = modalidades.Cast<int>().ToArray(), anoLetivo });
+            }, new { modalidades = modalidades.Cast<int>().ToArray(), anoLetivo, turmaCodigo });
 
         }
 
@@ -600,6 +603,19 @@ var query = @"select t.*
                 turma.AdicionarUe(ue);
                 return turma;
             } , new { ueId, modalidades, ano });
+        }
+
+        public async Task<IEnumerable<string>> ObterCodigosTurmasPorAnoModalidade(int anoLetivo, int[] modalidades, string turmaCodigo = "")
+        {
+            var query = @"select turma_id 
+                            from turma
+                           where ano_letivo = @anoLetivo
+                             and modalidade_codigo = any(@modalidades) ";
+
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += " and turma_id = @turmaCodigo ";
+
+            return await contexto.QueryAsync<string>(query, new { anoLetivo, modalidades, turmaCodigo });
         }
     }
 }
