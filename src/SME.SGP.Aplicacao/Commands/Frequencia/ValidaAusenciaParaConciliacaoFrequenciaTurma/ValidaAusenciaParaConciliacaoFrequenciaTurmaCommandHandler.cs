@@ -41,7 +41,11 @@ namespace SME.SGP.Aplicacao
             var alunosPorComponentes = alunosAusentes.GroupBy(a => a.ComponenteCurricularId);
 
             foreach (var alunosNoComponente in alunosPorComponentes)
-                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunosNoComponente.Select(a => a.AlunoCodigo), dataFim, turmaCodigo, alunosNoComponente.Key));
+            {
+                var alunosCodigo = alunosNoComponente.Select(a => a.AlunoCodigo).ToList();
+                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunosCodigo, dataFim, turmaCodigo, alunosNoComponente.Key));
+            }
+
         }
     }
 }

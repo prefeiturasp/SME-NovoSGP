@@ -28,7 +28,14 @@ namespace SME.SGP.Aplicacao
                 foreach (var modalidade in periodosPorModalidade)
                 {
                     var turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year, request.TurmaCodigo)).ToList();
+                    
+                    //Mensagem muito grande para o sentry :\
+                    //var turmasParaLog = string.Join(",", turmasDaModalidade);
+                    //var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(turmasParaLog);
+                    //var turmasParaLogBase64 = Convert.ToBase64String(plainTextBytes);
 
+                    SentrySdk.CaptureMessage($"Conciliação Turmas: {turmasDaModalidade.Count}");
+                    
                     if (turmasDaModalidade != null && turmasDaModalidade.Any())
                         foreach (var periodoEscolar in modalidade)
                             await PublicarFilaConciliacaoTurmas(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim, request.ComponenteCurricularId);
