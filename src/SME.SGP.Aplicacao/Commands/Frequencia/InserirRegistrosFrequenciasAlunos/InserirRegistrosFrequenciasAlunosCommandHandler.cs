@@ -49,15 +49,17 @@ namespace SME.SGP.Aplicacao
                             };
                             await repositorioRegistroFrequenciaAluno.SalvarAsync(entidade);
 
-                            var frequenciaPreDefinida = new FrequenciaPreDefinida()
-                            {
-                                CodigoAluno = frequencia.CodigoAluno,
-                                TurmaId = request.TurmaId,
-                                ComponenteCurricularId = request.ComponenteCurricularId,
-                                TipoFrequencia = frequencia.TipoFrequenciaPreDefinido != 0 ? frequencia.TipoFrequenciaPreDefinido : TipoFrequencia.C
-                            };
-                            await repositorioFrequenciaPreDefinida.Salvar(frequenciaPreDefinida);
+                           
                         }
+
+                        var frequenciaPreDefinida = new FrequenciaPreDefinida()
+                        {
+                            CodigoAluno = frequencia.CodigoAluno,
+                            TurmaId = request.TurmaId,
+                            ComponenteCurricularId = request.ComponenteCurricularId,
+                            TipoFrequencia = frequencia.TipoFrequenciaPreDefinido != 0 ? frequencia.TipoFrequenciaPreDefinido : TipoFrequencia.C
+                        };
+                        await repositorioFrequenciaPreDefinida.Salvar(frequenciaPreDefinida);
                     }
                     unitOfWork.PersistirTransacao();
                 }
