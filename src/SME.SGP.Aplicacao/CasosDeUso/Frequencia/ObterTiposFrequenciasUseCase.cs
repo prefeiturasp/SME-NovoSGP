@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = Enum.GetValues(typeof(TipoFrequencia))
                         .Cast<TipoFrequencia>()
-                        .Select(d => new TipoFrequenciaDto() { Valor = (int)d, Descricao = d.ShortName() })
+                        .Select(d => new TipoFrequenciaDto() { Valor = d.ShortName(), Descricao = d.ShortName() })
                         .ToList();
 
             if (filtro.Modalidade != null)
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                 var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(tipoParametroSistema, filtro.AnoLetivo != null ? filtro.AnoLetivo.Value : DateTime.Now.Year));;
 
                 if (parametro.Valor == "0")
-                    return retorno.Where(a => a.Valor != (int)TipoFrequencia.R);
+                    return retorno.Where(a => a.Valor != TipoFrequencia.R.ShortName());
 
             }
 
