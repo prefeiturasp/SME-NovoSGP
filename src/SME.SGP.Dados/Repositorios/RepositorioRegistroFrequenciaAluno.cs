@@ -18,15 +18,15 @@ namespace SME.SGP.Dados
         {
             var query = @"           
                     select
-	                count(ra.id) as TotalAusencias,
+	                count(rfa.id) as TotalAusencias,
 	                p.id as PeriodoEscolarId,
 	                p.periodo_inicio as PeriodoInicio,
 	                p.periodo_fim as PeriodoFim,
 	                p.bimestre,
-                    ra.codigo_aluno as AlunoCodigo,
+                    rfa.codigo_aluno as AlunoCodigo,
                     a.disciplina_id as ComponenteCurricularId                    
                 from
-	                registro_ausencia_aluno ra
+	                registro_frequencia_aluno rfa
                 inner join registro_frequencia rf on
 	                ra.registro_frequencia_id = rf.id
                 inner join aula a on
@@ -34,25 +34,26 @@ namespace SME.SGP.Dados
                 inner join periodo_escolar p on
 	                a.tipo_calendario_id = p.tipo_calendario_id
                 where
-	                not ra.excluido
+	                not rfa.excluido
 	                and not a.excluido
-	                and ra.codigo_aluno = any(@codigoAlunos)	                
+	                and rfa.codigo_aluno = any(@codigoAlunos)	                
 	                and a.turma_id = @turmaId
 	                and p.periodo_inicio <= @dataAula
 	                and p.periodo_fim >= @dataAula
 	                and a.data_aula >= p.periodo_inicio
 	                and a.data_aula <= p.periodo_fim
 	                and not ra.excluido
-	                and not a.excluido
+	                and not a.excluido 
+                    and rfa.tipo_frequencia = @tipoFrequencia
                 group by
 	                p.id,
 	                p.periodo_inicio,
 	                p.periodo_fim,
 	                p.bimestre,
-                    ra.codigo_aluno,
+                    rfa.codigo_aluno,
                     a.disciplina_id";
 
-            return await database.Conexao.QueryAsync<AusenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmaId });
+            return await database.Conexao.QueryAsync<AusenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmaId, tipoFrequencia = (int)TipoFrequencia.F });
         }
 
         public async Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId)
