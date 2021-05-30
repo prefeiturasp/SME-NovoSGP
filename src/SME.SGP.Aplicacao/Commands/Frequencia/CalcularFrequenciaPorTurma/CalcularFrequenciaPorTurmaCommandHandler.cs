@@ -173,7 +173,12 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverFrequenciaGeralAlunos(alunos, turmaCodigo, periodoEscolarId);
-                    await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarVariosAsync(frequenciasParaPersistir);
+
+                    foreach (var frequenciaAluno in frequenciasParaPersistir)
+                    {
+                        frequenciaAluno.Id = 0;
+                        await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarAsync(frequenciaAluno);
+                    }
 
                     unitOfWork.PersistirTransacao();
                 }
