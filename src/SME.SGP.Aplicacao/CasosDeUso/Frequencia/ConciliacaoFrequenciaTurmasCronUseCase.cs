@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
         {
             var mensagem = new ConciliacaoFrequenciaTurmasSyncDto(dataPeriodo, turmaCodigo);
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasSync, mensagem, Guid.NewGuid(), null, false));
-    
         }
     }
 
