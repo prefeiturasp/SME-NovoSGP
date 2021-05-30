@@ -48,8 +48,6 @@ namespace SME.SGP.Aplicacao
                                 RegistroFrequenciaId = request.RegistroFrequenciaId,
                             };
                             await repositorioRegistroFrequenciaAluno.SalvarAsync(entidade);
-
-                           
                         }
 
                         var frequenciaPreDefinida = new FrequenciaPreDefinida()
