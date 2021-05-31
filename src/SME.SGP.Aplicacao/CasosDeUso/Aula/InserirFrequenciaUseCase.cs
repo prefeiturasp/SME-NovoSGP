@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
 
             var bimestre = await mediator.Send(new ObterBimestrePorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
 
-            //await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestre));
+            await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestre));
 
             await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
 
