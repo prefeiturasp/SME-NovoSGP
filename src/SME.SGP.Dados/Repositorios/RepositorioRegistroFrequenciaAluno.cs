@@ -28,7 +28,7 @@ namespace SME.SGP.Dados
                 from
 	                registro_frequencia_aluno rfa
                 inner join registro_frequencia rf on
-	                ra.registro_frequencia_id = rf.id
+	                rfa.registro_frequencia_id = rf.id
                 inner join aula a on
 	                rf.aula_id = a.id
                 inner join periodo_escolar p on
@@ -42,9 +42,8 @@ namespace SME.SGP.Dados
 	                and p.periodo_fim >= @dataAula
 	                and a.data_aula >= p.periodo_inicio
 	                and a.data_aula <= p.periodo_fim
-	                and not ra.excluido
 	                and not a.excluido 
-                    and rfa.tipo_frequencia = @tipoFrequencia
+                    and rfa.valor = @tipoFrequencia
                 group by
 	                p.id,
 	                p.periodo_inicio,
