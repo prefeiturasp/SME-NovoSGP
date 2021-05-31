@@ -62,12 +62,12 @@ namespace SME.SGP.Background
 
             //Cliente.ExecutarPeriodicamente<IRemoveConexaoIdleUseCase>(c => c.Executar(), Cron.MinuteInterval(30));
 
-            Cliente.ExecutarPeriodicamente<IConciliacaoFrequenciaTurmasUseCase>(c => c.Executar(), Cron.Weekly(System.DayOfWeek.Saturday, 23));
-
-            Cliente.ExecutarPeriodicamente<IConciliacaoFrequenciaTurmasUseCase>(c => c.Executar(), Cron.Weekly(System.DayOfWeek.Saturday, 23));
+            Cliente.ExecutarPeriodicamente<IConciliacaoFrequenciaTurmasCronUseCase>(c => c.Executar(), Cron.Weekly(System.DayOfWeek.Saturday, 23));           
 
             //De 10 em 10 minutos
             Cliente.ExecutarPeriodicamente<IRabbitDeadletterSyncUseCase>(c => c.Executar(), Cron.MinuteInterval(10));
+            
+            //Cliente.ExecutarPeriodicamente<IConciliacaoFrequenciaTurmasAlunosCronUseCase>(c => c.Executar(), Cron.Weekly(System.DayOfWeek.Saturday, 23));
         }
     }
 }
