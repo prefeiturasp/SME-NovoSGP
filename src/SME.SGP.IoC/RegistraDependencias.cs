@@ -554,8 +554,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDiasLetivosPorCalendarioUseCase, ObterDiasLetivosPorCalendarioUseCase>();
 
             // Frequência
-            services.TryAddScoped<IConciliacaoFrequenciaTurmaSyncUseCase, ConciliacaoFrequenciaTurmaSyncUseCase>();
-            services.TryAddScoped<IConciliacaoFrequenciaTurmasUseCase, ConciliacaoFrequenciaTurmasUseCase>();
+            services.TryAddScoped<IConciliacaoFrequenciaTurmasCronUseCase, ConciliacaoFrequenciaTurmasCronUseCase>();
+            services.TryAddScoped<IConciliacaoFrequenciaTurmasSyncUseCase, ConciliacaoFrequenciaTurmasSyncUseCase>();
             services.TryAddScoped<IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase, ValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase>();
 
             // Notificações
@@ -674,6 +674,10 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<IRabbitDeadletterSyncUseCase, RabbitDeadletterSyncUseCase>();
             services.TryAddScoped<IRabbitDeadletterTratarUseCase, RabbitDeadletterTratarUseCase>();
+
+            services.TryAddScoped<IConciliacaoFrequenciaTurmasAlunosCronUseCase, ConciliacaoFrequenciaTurmasAlunosCronUseCase>();
+            services.TryAddScoped<IConciliacaoFrequenciaTurmasAlunosSyncUseCase, ConciliacaoFrequenciaTurmasAlunosSyncUseCase>();
+            services.TryAddScoped<IConciliacaoFrequenciaTurmasAlunosBuscarUseCase, ConciliacaoFrequenciaTurmasAlunosBuscarUseCase>();
 
         }
     }

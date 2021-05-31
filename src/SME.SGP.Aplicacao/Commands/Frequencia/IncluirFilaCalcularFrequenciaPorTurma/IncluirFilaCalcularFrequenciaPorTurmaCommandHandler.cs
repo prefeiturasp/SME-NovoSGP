@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
+
         public async Task<bool> Handle(IncluirFilaCalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
             var comando = new CalcularFrequenciaPorTurmaCommand(request.Alunos, request.DataAula, request.TurmaId, request.DisciplinaId);
