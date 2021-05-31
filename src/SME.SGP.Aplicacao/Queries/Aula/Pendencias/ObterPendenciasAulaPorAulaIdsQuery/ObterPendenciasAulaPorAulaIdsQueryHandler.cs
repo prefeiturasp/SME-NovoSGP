@@ -18,10 +18,18 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(ObterPendenciasAulaPorAulaIdsQuery request, CancellationToken cancellationToken)
         {
-            var possuiPendencia = await repositorioPendenciaAula.PossuiPendenciasPorAulasId(request.AulasId, request.EhModalidadeInfantil);
-            if (!possuiPendencia) {
-                possuiPendencia = await repositorioPendenciaAula.PossuiAtividadeAvaliativaSemNotaPorAulasId(request.AulasId);
+            var possuiPendencia = false;
+            foreach (long aula in request.AulasId)
+            {
+                var pendencias = await repositorioPendenciaAula.PossuiPendenciasPorAulaId(aula, request.EhModalidadeInfantil);
+                if (pendencias != null)
+                    if (pendencias.PossuiPendenciaFrequencia || pendencias.PossuiPendenciaDiarioBordo)
+                        return possuiPendencia = true;
             }
+
+            if (!possuiPendencia)
+                possuiPendencia = await repositorioPendenciaAula.PossuiAtividadeAvaliativaSemNotaPorAulasId(request.AulasId);
+            
             return possuiPendencia;
         }
     }
