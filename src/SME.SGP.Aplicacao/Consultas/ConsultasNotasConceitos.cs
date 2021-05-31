@@ -490,7 +490,9 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = disciplina.TerritorioSaber,
                     LancaNota = disciplina.LancaNota,
                     BaseNacional = disciplina.BaseNacional,
-                    GrupoMatriz = new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatriz.Id, Nome = disciplina.GrupoMatriz.Nome }
+                    GrupoMatriz = disciplina.GrupoMatriz != null ?
+                        new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatriz.Id, Nome = disciplina.GrupoMatriz.Nome } :
+                        new Integracoes.Respostas.GrupoMatriz()
                 };
             }
         }
