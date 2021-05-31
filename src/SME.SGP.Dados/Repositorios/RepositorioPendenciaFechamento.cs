@@ -137,5 +137,26 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { pendenciaId });
         }
+
+        public async Task<IEnumerable<PendenciaParaFechamentoConsolidadoDto>> ObterPendenciasParaFechamentoConsolidado(long turmaId, int bimestre, long componenteCurricularId)
+        {
+            var query = @"select p.id as PendenciaId, 
+                                 p.titulo as descricao, 
+                                 P.tipo as tipoPendencia  
+                            from pendencia_fechamento pf
+                           inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id
+                           inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
+                           inner join turma t on t.id = ft.turma_id
+                           inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                           inner join pendencia p on p.id = pf.pendencia_id
+                           where not p.excluido
+                             and P.situacao = 1
+                             and t.id = @turmaId
+                             and pe.bimestre = @bimestre
+                             and ftd.disciplina_id = @componenteCurricularId
+                           order by p.criado_em";
+
+            return await database.Conexao.QueryAsync<PendenciaParaFechamentoConsolidadoDto>(query, new { turmaId, bimestre, componenteCurricularId });
+        }
     }
 }

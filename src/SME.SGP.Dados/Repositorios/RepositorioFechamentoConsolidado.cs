@@ -37,6 +37,21 @@ namespace SME.SGP.Dados
 
             return await database.Conexao.QueryAsync<FechamentoConsolidadoComponenteTurma>(query, new { turmaId, bimestre });
         }
+        public async Task<IEnumerable<ConsolidacaoTurmaComponenteCurricularDto>> ObterComponentesFechamentoConsolidadoPorTurmaBimestre(long turmaId, int bimestre)
+        {
+            var query = $@" select coalesce(cc.descricao_sgp, cc.descricao) as descricao,
+                                   cfct.professor_nome as professorNome,
+                                   cfct.professor_rf as professorRf,
+                                   cfct.status as SituacaoFechamentoCodigo 
+                              from componente_curricular cc
+                             inner join componente_curricular_grupo_area_ordenacao ccgao on ccgao.grupo_matriz_id = cc.grupo_matriz_id and ccgao.area_conhecimento_id = cc.area_conhecimento_id 
+                             inner join  consolidado_fechamento_componente_turma cfct on cfct.componente_curricular_id = cc.id 
+                             where cfct.turma_id = @turmaId
+                               and cfct.bimestre = @bimestre
+                             order by ccgao.grupo_matriz_id, ccgao.area_conhecimento_id, ccgao.ordem, cc.descricao_sgp";
+
+            return await database.Conexao.QueryAsync<ConsolidacaoTurmaComponenteCurricularDto>(query, new { turmaId, bimestre });
+        }
 
     }
 }
