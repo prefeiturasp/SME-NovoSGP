@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             if (aula == null)
                 throw new NegocioException("Aula não encontrada.");
 
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
 
@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
                     continue;
 
                 var tipoFrequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(turma.Id, long.Parse(aula.DisciplinaId), aluno.CodigoAluno));
-
+                
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {
@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
                     CelularResponsavel = aluno.CelularResponsavel,
                     DataAtualizacaoContato = aluno.DataAtualizacaoContato,
                     EhAtendidoAEE = alunoPossuiPlanoAEE,
-                    TipoFrequenciaPreDefinido = tipoFrequenciaPreDefinida != null ? tipoFrequenciaPreDefinida.Tipo.ShortName() : TipoFrequencia.C.ShortName()
+                    TipoFrequenciaPreDefinido = tipoFrequenciaPreDefinida.ShortName()
                 };
 
                 // Marcador visual da situação
@@ -124,7 +124,7 @@ namespace SME.SGP.Aplicacao
                     registroFrequenciaAluno.Aulas.Add(new FrequenciaAulaDto
                     {
                         NumeroAula = numeroAula,
-                        TipoFrequencia = ObterFrequenciaAluno(frequenciaAlunos, aluno.CodigoAluno, numeroAula)
+                        TipoFrequencia = ObterFrequenciaAluno(frequenciaAlunos, aluno.CodigoAluno, numeroAula, tipoFrequenciaPreDefinida)
                     });
                 }
 
@@ -136,12 +136,12 @@ namespace SME.SGP.Aplicacao
             return registroFrequenciaDto;
         }
 
-        private string ObterFrequenciaAluno(IEnumerable<FrequenciaAlunoSimplificadoDto> frequenciaAlunos, string codigoAluno, int numeroAula)
+        private string ObterFrequenciaAluno(IEnumerable<FrequenciaAlunoSimplificadoDto> frequenciaAlunos, string codigoAluno, int numeroAula, TipoFrequencia tipoFrequenciaPreDefinida)
         {
             var tipoFrequencia = frequenciaAlunos.FirstOrDefault(a => a.NumeroAula == numeroAula && a.CodigoAluno == codigoAluno)?.TipoFrequencia;
             if (tipoFrequencia.HasValue)
                 return tipoFrequencia.ShortName();
-            return TipoFrequencia.C.ShortName();
+            return tipoFrequenciaPreDefinida.ShortName();
         }
 
         private string ObterTipoResponsavel(string tipoResponsavel)

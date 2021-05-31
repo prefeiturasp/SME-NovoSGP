@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFrequenciaPreDefinidaPorAlunoETurmaQueryHandler : IRequestHandler<ObterFrequenciaPreDefinidaPorAlunoETurmaQuery, FrequenciaPreDefinidaDto>
+    public class ObterFrequenciaPreDefinidaPorAlunoETurmaQueryHandler : IRequestHandler<ObterFrequenciaPreDefinidaPorAlunoETurmaQuery, TipoFrequencia>
     {
         private readonly IRepositorioFrequenciaPreDefinida repositorioFrequenciaPreDefinida;
 
@@ -18,9 +18,13 @@ namespace SME.SGP.Aplicacao
             this.repositorioFrequenciaPreDefinida = repositorioFrequenciaPreDefinida ?? throw new ArgumentNullException(nameof(repositorioFrequenciaPreDefinida));
         }
 
-        public async Task<FrequenciaPreDefinidaDto> Handle(ObterFrequenciaPreDefinidaPorAlunoETurmaQuery request, CancellationToken cancellationToken)
+        public async Task<TipoFrequencia> Handle(ObterFrequenciaPreDefinidaPorAlunoETurmaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioFrequenciaPreDefinida.ObterPorTurmaECCEAlunoCodigo(request.TurmaId, request.ComponenteCurricularId, request.AlunoCodigo);
+            var retorno = await repositorioFrequenciaPreDefinida.ObterPorTurmaECCEAlunoCodigo(request.TurmaId, request.ComponenteCurricularId, request.AlunoCodigo);
+            if (retorno != null)
+                return retorno.Tipo;
+
+            return TipoFrequencia.C;
         }
     }
 }
