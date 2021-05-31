@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
@@ -66,6 +65,28 @@ namespace SME.SGP.Api
             var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoDto(turmaId, bimestre, alunoCodigo));
 
             return Ok(listaStatus);
+        }
+
+        [HttpGet("{turmaId}/fechamento/bimestres/{bimestre}/componentes-curriculares")]
+        [ProducesResponseType(typeof(IEnumerable<ConsolidacaoTurmaComponenteCurricularDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ACF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterComponentesFechamentoConsolidadoPorTurmaBimestre(long turmaId, int bimestre, [FromServices] IObterComponentesFechamentoConsolidadoPorTurmaBimestreUseCase useCase)
+        {
+            var listaComponentes = await useCase.Executar(new FiltroComponentesFechamentoConsolidadoDto(turmaId, bimestre));
+
+            return Ok(listaComponentes);
+        }
+
+        [HttpGet("{turmaId}/fechamento/bimestres/{bimestre}/componentes-curriculares/{componenteCurricularId}/pendencias")]
+        [ProducesResponseType(typeof(IEnumerable<PendenciaParaFechamentoConsolidadoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ACF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPendenciasParaFechamentoConsolidado(long turmaId, int bimestre, long componenteCurricularId, [FromServices] IObterPendenciasParaFechamentoConsolidadoUseCase useCase)
+        {
+            var listaPendencias = await useCase.Executar(new FiltroPendenciasFechamentoConsolidadoDto(turmaId, bimestre, componenteCurricularId));
+
+            return Ok(listaPendencias);
         }
     }
 }
