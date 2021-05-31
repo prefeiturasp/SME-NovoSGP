@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFrequenciaPreDefinidaPorAlunoETurmaQuery : IRequest<FrequenciaPreDefinidaDto>
+    public class ObterFrequenciaPreDefinidaPorAlunoETurmaQuery : IRequest<TipoFrequencia>
     {
         public ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(long turmaId, long componenteCurricularId, string alunoCodigo)
         {
