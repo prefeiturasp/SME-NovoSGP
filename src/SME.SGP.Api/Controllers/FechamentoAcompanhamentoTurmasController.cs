@@ -67,5 +67,16 @@ namespace SME.SGP.Api
 
             return Ok(listaStatus);
         }
+
+        [HttpGet("{turmaId}/fechamento/bimestres/{bimestre}/componentes-curriculares")]
+        [ProducesResponseType(typeof(IEnumerable<ConsolidacaoTurmaComponenteCurricularDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ACF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterComponentesFechamentoConsolidadoPorTurmaBimestre(long turmaId, int bimestre, [FromServices] IObterComponentesFechamentoConsolidadoPorTurmaBimestreUseCase useCase)
+        {
+            var listaComponentes = await useCase.Executar(new FiltroComponentesFechamentoConsolidadoDto(turmaId, bimestre));
+
+            return Ok(listaComponentes);
+        }
     }
 }
