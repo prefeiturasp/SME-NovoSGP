@@ -56,6 +56,19 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<AusenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmaId, tipoFrequencia = (int)TipoFrequencia.F });
         }
 
+        public async Task<IEnumerable<FrequenciaAlunoSimplificadoDto>> ObterFrequenciasPorAulaId(long aulaId)
+        {
+			var query = @"select 
+                        rfa.codigo_aluno as CodigoAluno,
+                        rfa.numero_aula as NumeroAula,
+                        rfa.valor as TipoFrequencia
+                        from registro_frequencia rf 
+                        inner join registro_frequencia_aluno rfa on rf.id = rfa.registro_frequencia_id 
+                        where rf.aula_id = @aulaId";
+
+			return await database.Conexao.QueryAsync<FrequenciaAlunoSimplificadoDto>(query, new { aulaId });
+		}
+
         public async Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId)
         {
             await database.Conexao.ExecuteAsync("DELETE FROM registro_frequencia_aluno WHERE registro_frequencia_id = @registroFrequenciaId", 

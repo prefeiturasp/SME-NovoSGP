@@ -36,10 +36,11 @@ namespace SME.SGP.Aplicacao
                 {
                     foreach (var frequencia in request.Frequencias)
                     {
+                        var preDefinida = frequencia.TipoFrequenciaPreDefinido != "" ? (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), frequencia.TipoFrequenciaPreDefinido) : TipoFrequencia.C;
+
                         foreach (var aulaRegistrada in frequencia.Aulas)
                         {
-                            var presenca = (int)aulaRegistrada.TipoFrequencia != 0 ? aulaRegistrada.TipoFrequencia :
-                                ((int)frequencia.TipoFrequenciaPreDefinido != 0 ? frequencia.TipoFrequenciaPreDefinido : TipoFrequencia.C);
+                            var presenca = aulaRegistrada.TipoFrequencia != "" ? (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), aulaRegistrada.TipoFrequencia) : preDefinida;
                             var entidade = new RegistroFrequenciaAluno()
                             {
                                 CodigoAluno = frequencia.CodigoAluno,
@@ -55,7 +56,7 @@ namespace SME.SGP.Aplicacao
                             CodigoAluno = frequencia.CodigoAluno,
                             TurmaId = request.TurmaId,
                             ComponenteCurricularId = request.ComponenteCurricularId,
-                            TipoFrequencia = frequencia.TipoFrequenciaPreDefinido != 0 ? frequencia.TipoFrequenciaPreDefinido : TipoFrequencia.C
+                            TipoFrequencia = preDefinida
                         };
                         await repositorioFrequenciaPreDefinida.Salvar(frequenciaPreDefinida);
                     }

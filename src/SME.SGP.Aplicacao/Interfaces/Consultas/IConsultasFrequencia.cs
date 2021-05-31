@@ -8,8 +8,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasFrequencia
     {
-        Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId, long? disciplinaId = null);
-
         Task<bool> FrequenciaAulaRegistrada(long aulaId);
 
         Task<IEnumerable<AlunoAusenteDto>> ObterListaAlunosComAusencia(string turmaId, string disciplinaId, int bimestre);

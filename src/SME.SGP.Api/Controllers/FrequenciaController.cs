@@ -22,10 +22,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar(long aulaId, long? componenteCurricularId, [FromServices] IConsultasFrequencia consultasFrequencia)
+        public async Task<IActionResult> Listar([FromQuery] FiltroFrequenciaDto filtro, [FromServices] IObterFrequenciaPorAulaUseCase useCase)
         {
-            var retorno = await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId, componenteCurricularId);
-
+            var retorno = await useCase.Executar(filtro);            
+            //var retorno = await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId, componenteCurricularId);
             if (retorno == null)
                 return NoContent();
 

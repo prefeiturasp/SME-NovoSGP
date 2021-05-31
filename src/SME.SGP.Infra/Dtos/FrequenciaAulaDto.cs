@@ -4,8 +4,7 @@ namespace SME.SGP.Infra
 {
     public class FrequenciaAulaDto
     {
-        public TipoFrequencia TipoFrequencia { get; set; }
-        public bool Compareceu { get; set; }
+        public string TipoFrequencia { get; set; }
         public int NumeroAula { get; set; }
     }
 }

@@ -79,7 +79,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosEvento, ComandosEvento>();
             services.TryAddScopedWorkerService<IComandosDiasLetivos, ComandosDiasLetivos>();
             services.TryAddScopedWorkerService<IComandosGrade, ComandosGrade>();
-            services.TryAddScopedWorkerService<IComandoFrequencia, ComandoFrequencia>();
             services.TryAddScopedWorkerService<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IComandosAtividadeAvaliativa, ComandosAtividadeAvaliativa>();
             services.TryAddScopedWorkerService<IComandosTipoAvaliacao, ComandosTipoAavaliacao>();
