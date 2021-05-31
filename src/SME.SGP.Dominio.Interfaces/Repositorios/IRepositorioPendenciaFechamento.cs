@@ -1,8 +1,6 @@
-﻿using System;
+﻿using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -16,5 +14,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task RemoverAsync(PendenciaFechamento pendencia);
         Task<bool> ExistePendenciaFechamentoPorPendenciaId(long pendenciaId);
+        Task<IEnumerable<PendenciaParaFechamentoConsolidadoDto>> ObterPendenciasParaFechamentoConsolidado(long turmaId, int bimestre, long componenteCurricularId);
     }
 }
