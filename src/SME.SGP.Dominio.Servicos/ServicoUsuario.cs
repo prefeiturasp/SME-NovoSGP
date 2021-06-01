@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -18,6 +20,7 @@ namespace SME.SGP.Dominio
         private const string CLAIM_RF = "rf";
         private readonly IContextoAplicacao contextoAplicacao;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
+        private readonly IMediator mediator;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
@@ -30,7 +33,8 @@ namespace SME.SGP.Dominio
                               IUnitOfWork unitOfWork,
                               IContextoAplicacao contextoAplicacao,
                               IRepositorioCache repositorioCache,
-                              IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
+                              IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
+                              IMediator mediator)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -39,6 +43,7 @@ namespace SME.SGP.Dominio
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task AlterarEmailUsuarioPorLogin(string login, string novoEmail)
@@ -214,7 +219,7 @@ namespace SME.SGP.Dominio
 
             if (!usuario.EhProfessorCj())
             {
-                var validacaoData = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, turmaId, new DateTime[] { data }, long.Parse(disciplinaId));
+                var validacaoData = await mediator.Send(new ObterValidacaoPodePersistirTurmaNasDatasQuery(usuario.CodigoRf, turmaId, new DateTime[] { data }, long.Parse(disciplinaId)));
 
                 if (validacaoData == null || !validacaoData.Any())
                     throw new NegocioException("Não foi possível obter a validação do professor no EOL.");

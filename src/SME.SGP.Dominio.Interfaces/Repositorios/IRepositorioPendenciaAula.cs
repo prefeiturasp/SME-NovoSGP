@@ -17,6 +17,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId);
         Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId);
+        Task<bool> PossuiAtividadeAvaliativaSemNotaPorAulasId(long[] aulasId);
 
         Task Salvar(long aulaId, string motivo, long pendenciaId);
         Task Excluir(long pendenciaId, long aulaId);

@@ -23,8 +23,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
         private readonly IServicoNotificacao servicoNotificacao;
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IAsyncPolicy policy;
+        private readonly IUnitOfWork unitOfWork;        
 
         private const String MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA = "Você não pode criar aulas para essa Turma.";
 
@@ -37,8 +36,7 @@ namespace SME.SGP.Aplicacao
                                                    IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
                                                    IServicoNotificacao servicoNotificacao,
-                                                   IUnitOfWork unitOfWork,
-                                                   IReadOnlyPolicyRegistry<string> registry)
+                                                   IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -46,8 +44,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));            
         }
 
         public async Task<bool> Handle(InserirAulaRecorrenteCommand request, CancellationToken cancellationToken)
@@ -290,11 +287,12 @@ namespace SME.SGP.Aplicacao
             if (usuario.EhProfessorCj())
                 return (datasValidas, Enumerable.Empty<string>());
 
-            var datasAtribuicaoEOL = await policy.ExecuteAsync(() => servicoEOL.PodePersistirTurmaNasDatas(
+            var datasAtribuicaoEOL = await mediator.Send(new ObterValidacaoPodePersistirTurmaNasDatasQuery(
                 usuario.CodigoRf,
                 turmaCodigo,
                 datasValidas.Select(a => a.Date).ToArray(),
                 componenteCurricularCodigo));
+
 
             if (datasAtribuicaoEOL == null || !datasAtribuicaoEOL.Any())
                 throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");

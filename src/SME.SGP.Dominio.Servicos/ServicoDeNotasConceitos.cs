@@ -123,7 +123,9 @@ namespace SME.SGP.Dominio
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, DateTime.Today, usuario);
+            var dataConsiderada = atividadesAvaliativas.Any() ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao : DateTime.Today;
+            
+            await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, dataConsiderada, usuario);
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
@@ -165,7 +167,8 @@ namespace SME.SGP.Dominio
             {
                 var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
                 var valoresConceito = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
-                var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, dataAtual.Year != atividadeAvaliativa.DataAvaliacao.Year);
+                var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(atividadeAvaliativa.TurmaId, true);
+                var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
                 var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
                 var quantidadeAlunos = notasPorAvaliacao.Count();
@@ -293,9 +296,14 @@ namespace SME.SGP.Dominio
             if (disciplinasEol != null && disciplinasEol.Any())
                 ehTitular = disciplinasEol.Any(d => d.DisciplinaId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
 
+            var usuarioLogado = await mediator.Send(new ObterUsuarioPorRfQuery(professorRf));
+            var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Convert.ToInt64(disciplinaId), atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, usuarioLogado));
+
             if ((atividadeAvaliativa.EhCj && !atividadeAvaliativa.ProfessorRf.Equals(professorRf)) ||
-                (!atividadeAvaliativa.EhCj && !ehTitular))
+                (!atividadeAvaliativa.EhCj && !ehTitular && !usuarioPossuiAtribuicaoNaTurmaNaData))
+            {
                 throw new NegocioException("Somente o professor que criou a avaliação e/ou titular, pode atribuir e/ou editar notas/conceitos");
+            }
         }
 
         private async Task<IEnumerable<NotaConceito>> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf, string disciplinaId,
@@ -304,8 +312,8 @@ namespace SME.SGP.Dominio
             var notasMultidisciplina = new List<NotaConceito>();
             var alunosNotasExtemporaneas = new StringBuilder();
             var nota = notasConceitos.FirstOrDefault();
-
-            var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, atividadeAvaliativa.DataAvaliacao.Year != DateTime.Now.Year);
+            var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(turma.CodigoTurma, true);            
+            var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
             var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
             var dataAtual = DateTime.Now;
 
