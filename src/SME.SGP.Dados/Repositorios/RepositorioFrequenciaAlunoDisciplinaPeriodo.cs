@@ -444,5 +444,20 @@ namespace SME.SGP.Dados.Repositorios
                 bimestres
             });
         }
+
+        public async Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricular(string codigoTurma, string componenteCurricularId, long periodoEscolarId)
+        {
+            const string sql = @"select distinct(1)
+                                  from registro_frequencia_aluno rfa
+                                  inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
+                                  inner join aula a on a.id = rf.aula_id 
+                                  inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
+                                  inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
+                                  where pe.id = @periodoEscolarId
+                                    and a.turma_id = @codigoTurma
+                                    and a.disciplina_id = @componenteCurricularId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoTurma, componenteCurricularId, periodoEscolarId });
+        }
     }
 }
