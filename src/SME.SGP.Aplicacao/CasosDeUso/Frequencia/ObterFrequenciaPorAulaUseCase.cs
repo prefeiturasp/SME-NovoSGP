@@ -67,6 +67,7 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaAlunosRegistrada = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, long.Parse(aula.DisciplinaId), periodoEscolar.Id));
 
+            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, aula.DisciplinaId, periodoEscolar.Id));
             foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
             {
                 // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
@@ -111,7 +112,7 @@ namespace SME.SGP.Aplicacao
                 aluno.CodigoTurma = long.Parse(turma.CodigoTurma);
 
                 var frequenciaAluno = frequenciaAlunosRegistrada.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
-                registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, percentualAlerta, percentualCritico, frequenciaAlunosRegistrada.Count() > 0);
+                registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, percentualAlerta, percentualCritico, turmaPossuiFrequenciaRegistrada);
 
                 if (!componenteCurricularAula.FirstOrDefault().RegistraFrequencia)
                 {
@@ -170,7 +171,14 @@ namespace SME.SGP.Aplicacao
 
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
         {
-            int percentualFrequencia = (int)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : turmaComFrequenciasRegistradas ? 100 : 0, 0);
+            var percentualFrequencia = 0;
+            if (turmaComFrequenciasRegistradas) {
+                percentualFrequencia = (int)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
+            }else
+            {
+                percentualFrequencia = -1;
+            }
+            
             // Critico
             if (percentualFrequencia <= percentualCritico)
                 return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequencia };
