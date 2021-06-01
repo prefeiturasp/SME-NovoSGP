@@ -70,5 +70,15 @@ namespace SME.SGP.Dados.Repositorios
                         t.ano as TurmaAno,
                         sum(cd.quantidade_estimada_devolutivas) as DevolutivasEstimadas,
 	                    sum(cd.quantidade_registrada_devolutivas) as DevolutivasRegistradas";
+
+        public async Task<long> Inserir(ConsolidacaoDevolutivas consolidacao)
+        {
+            return (long)(await database.Conexao.InsertAsync(consolidacao));
+        }
+
+        public Task LimparConsolidacaoDevolutivasPorAno(int anoLetivo)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

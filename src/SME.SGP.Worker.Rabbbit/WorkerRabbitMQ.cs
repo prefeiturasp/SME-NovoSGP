@@ -103,6 +103,12 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.QueueDeclare(RotasRabbit.ConsolidarFrequenciasPorTurma, true, false, false);
             canalRabbit.QueueBind(RotasRabbit.ConsolidarFrequenciasPorTurma, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidarFrequenciasPorTurma);
 
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilSync, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilSync, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaDevolutivasPorTurmaInfantilSync);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilTratar, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaDevolutivasPorTurmaInfantilTratar);
+
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
         }
@@ -183,6 +189,14 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.ConsolidacaoFrequenciasTurmasCarregar, new ComandoRabbit("Consolidação de Registros de Frequência das Turmas - Carregar", typeof(IConsolidarFrequenciaTurmasUseCase)));
             comandos.Add(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, new ComandoRabbit("Consolidar Registros de Frequência das Turmas", typeof(IConsolidarFrequenciaTurmasPorAnoUseCase)));
             comandos.Add(RotasRabbit.ConsolidarFrequenciasPorTurma, new ComandoRabbit("Consolidar Registros de Frequência por Turma", typeof(IConsolidarFrequenciaPorTurmaUseCase)));
+
+            // Sincronização de Devolutivas
+            comandos.Add(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilSync, new ComandoRabbit("Devolutivas - Sync de Turmas da Modalidade Infantil", typeof(IExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase)));
+            comandos.Add(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilTratar, new ComandoRabbit("Devolutivas - Tratar Turmas da Modalidade Infantil", typeof(IExecutarSincronizacaoDevolutivasPorTurmaInfantilTratarUseCase)));
+
+
+
+
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -338,6 +352,8 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasPorTurma, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilSync, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilTratar, false, consumer);
 
             return Task.CompletedTask;
         }
