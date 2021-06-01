@@ -455,7 +455,8 @@ namespace SME.SGP.Dados.Repositorios
                                   inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
                                   where pe.id = @periodoEscolarId
                                     and a.turma_id = @codigoTurma
-                                    and a.disciplina_id = @componenteCurricularId";
+                                    and a.disciplina_id = @componenteCurricularId
+                                    and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoTurma, componenteCurricularId, periodoEscolarId });
         }

@@ -176,18 +176,19 @@ namespace SME.SGP.Aplicacao
                 percentualFrequencia = (int)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
             }else
             {
-                percentualFrequencia = -1;
+                percentualFrequencia = int.MinValue;
             }
-            
+            var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : percentualFrequencia.ToString();
+
             // Critico
             if (percentualFrequencia <= percentualCritico)
-                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequencia };
+                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequenciaLabel };
 
             // Alerta
             if (percentualFrequencia <= percentualAlerta)
-                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequencia };
+                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequenciaLabel };
 
-            return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequencia };
+            return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequenciaLabel };
         }
 
         private async Task<FrequenciaDto> ObterRegistroFrequencia(Aula aula, Turma turma)
