@@ -66,14 +66,32 @@ namespace SME.SGP.Aplicacao
 
                 var totalCompensacoesDisciplinaAlunos = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunosETurmaAsync(bimestresParaFiltro, alunosComAusencias, request.TurmaId);
 
-                foreach (var codigoAluno in alunosComAusencias)
+                foreach (var codigoAluno in request.Alunos)
                 {
                     var ausenciasDoAluno = ausenciasDosAlunos.Where(a => a.AlunoCodigo == codigoAluno).ToList();
                     var compensacoesDoAluno = totalCompensacoesDisciplinaAlunos.Where(a => a.AlunoCodigo == codigoAluno).ToList();
                     var frequenciasDoAluno = frequenciaDosAlunos.Where( a=> a.CodigoAluno == codigoAluno).ToList();
 
-                    TrataFrequenciaAlunoComponente(request, frequenciasDoAluno, frequenciasParaPersistir, totalAulasNaDisciplina, compensacoesDoAluno, codigoAluno, ausenciasDoAluno, frequenciasParaRemover);
-                    TrataFrequenciaAlunoGlobal(request, frequenciasDoAluno, frequenciasParaPersistir, totalAulasDaTurmaGeral, totalCompensacoesDisciplinaAlunos, codigoAluno, ausenciasDoAluno, frequenciasParaRemover);
+                    TrataFrequenciaPorDisciplinaAluno(
+                        codigoAluno,
+                        totalAulasNaDisciplina,
+                        ausenciasDoAluno,
+                        frequenciaDosAlunos,
+                        totalCompensacoesDisciplinaAlunos,
+                        request.TurmaId,
+                        request.DisciplinaId,
+                        frequenciasParaPersistir,
+                        frequenciasParaRemover);
+
+                    TrataFrequenciaGlobalAluno(
+                        codigoAluno,
+                        totalAulasDaTurmaGeral,
+                        ausenciasDoAluno,
+                        frequenciaDosAlunos,
+                        totalCompensacoesDisciplinaAlunos,
+                        request.TurmaId,
+                        frequenciasParaPersistir,
+                        frequenciasParaRemover);
                 }
             }
 
@@ -105,24 +123,6 @@ namespace SME.SGP.Aplicacao
 
             if (alunosSemAusencia != null && alunosSemAusencia.Any())
                 frequenciasParaRemover.AddRange(alunosSemAusencia);
-        }
-
-        private void TrataFrequenciaAlunoGlobal(CalcularFrequenciaPorTurmaCommand request, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaPersistir,
-            int totalAulasDaTurmaGeral, IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> totalCompensacoesDisciplinaAlunos, string codigoAluno, List<AusenciaPorDisciplinaAlunoDto> ausenciasDoAluno,
-            List<FrequenciaAluno> frequenciasParaRemover)
-        {
-            TrataFrequenciaGlobalAluno(codigoAluno, totalAulasDaTurmaGeral, ausenciasDoAluno, frequenciaDosAlunos,
-                                          totalCompensacoesDisciplinaAlunos, request.TurmaId, frequenciasParaPersistir, frequenciasParaRemover);
-
-        }
-
-        private void TrataFrequenciaAlunoComponente(CalcularFrequenciaPorTurmaCommand request, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaPersistir,
-            int totalAulasNaDisciplina, IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> totalCompensacoesDisciplinaAlunos, string codigoAluno,
-            List<AusenciaPorDisciplinaAlunoDto> ausenciasDoAluno, List<FrequenciaAluno> frequenciasPararemover)
-        {
-
-            TrataFrequenciaPorDisciplinaAluno(codigoAluno, totalAulasNaDisciplina, ausenciasDoAluno, frequenciaDosAlunos,
-                totalCompensacoesDisciplinaAlunos, request.TurmaId, request.DisciplinaId, frequenciasParaPersistir, frequenciasPararemover);
         }
 
         private async Task TrataPersistencia(List<FrequenciaAluno> frequenciasParaRemover, List<FrequenciaAluno> frequenciasParaPersistir)
@@ -182,8 +182,6 @@ namespace SME.SGP.Aplicacao
             IEnumerable<FrequenciaAluno> frequenciaDosAlunos, IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> compensacoesDisciplinasAlunos,
             string turmaId, string componenteCurricularId, List<FrequenciaAluno> frequenciasParaPersistir, List<FrequenciaAluno> frequenciasParaRemover)
         {
-            FrequenciaAluno frequenciaFinal;
-
             var ausenciasDoAlunoPorDisciplina = ausenciasDosAlunos.FirstOrDefault(a => a.ComponenteCurricularId == componenteCurricularId);
 
             var frequenciaParaTratar = frequenciaDosAlunos.FirstOrDefault(a => a.DisciplinaId == componenteCurricularId);
@@ -200,28 +198,29 @@ namespace SME.SGP.Aplicacao
             if (totalCompensacoesDisciplinaAluno != null)
                 totalCompensacoes = totalCompensacoesDisciplinaAluno.Compensacoes;
 
-            if (frequenciaParaTratar == null)
+            if (ausenciasDoAlunoPorDisciplina != null)
             {
-                frequenciaFinal = new FrequenciaAluno
-                         (
-                             alunoCodigo,
-                             turmaId,
-                             componenteCurricularId,
-                             ausenciasDoAlunoPorDisciplina.PeriodoEscolarId,
-                             ausenciasDoAlunoPorDisciplina.PeriodoInicio,
-                             ausenciasDoAlunoPorDisciplina.PeriodoFim,
-                             ausenciasDoAlunoPorDisciplina.Bimestre,
-                             ausenciasDoAlunoPorDisciplina.TotalAusencias,
-                             totalAulasNaDisciplina,
-                             totalCompensacoes,
-                             TipoFrequenciaAluno.PorDisciplina);
-            }
-            else
-            {
-                frequenciaFinal = frequenciaParaTratar.DefinirFrequencia(ausenciasDoAlunoPorDisciplina.TotalAusencias, totalAulasNaDisciplina, (totalCompensacoesDisciplinaAluno?.Compensacoes ?? 0), TipoFrequenciaAluno.PorDisciplina);
-            }
+                var frequenciaFinal = frequenciaParaTratar == null ?
+                    new FrequenciaAluno(
+                            alunoCodigo,
+                            turmaId,
+                            componenteCurricularId,
+                            ausenciasDoAlunoPorDisciplina.PeriodoEscolarId,
+                            ausenciasDoAlunoPorDisciplina.PeriodoInicio,
+                            ausenciasDoAlunoPorDisciplina.PeriodoFim,
+                            ausenciasDoAlunoPorDisciplina.Bimestre,
+                            ausenciasDoAlunoPorDisciplina.TotalAusencias,
+                            totalAulasNaDisciplina,
+                            totalCompensacoes,
+                            TipoFrequenciaAluno.PorDisciplina) :
+                    frequenciaParaTratar.DefinirFrequencia(
+                        ausenciasDoAlunoPorDisciplina.TotalAusencias,
+                        totalAulasNaDisciplina,
+                        (totalCompensacoesDisciplinaAluno?.Compensacoes ?? 0),
+                        TipoFrequenciaAluno.PorDisciplina);
 
-            frequenciasParaPersistir.Add(frequenciaFinal);
+                frequenciasParaPersistir.Add(frequenciaFinal);
+            }
         }
 
         private void TrataFrequenciaGlobalAluno(string alunoCodigo, int totalAulasDaTurmaGeral,
