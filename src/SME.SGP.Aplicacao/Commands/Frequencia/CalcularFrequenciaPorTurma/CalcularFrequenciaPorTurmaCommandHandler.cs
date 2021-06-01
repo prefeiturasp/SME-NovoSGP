@@ -90,8 +90,7 @@ namespace SME.SGP.Aplicacao
                         frequenciaDosAlunos,
                         totalCompensacoesDisciplinaAlunos,
                         request.TurmaId,
-                        frequenciasParaPersistir,
-                        frequenciasParaRemover);
+                        frequenciasParaPersistir);
                 }
             }
 
@@ -145,9 +144,7 @@ namespace SME.SGP.Aplicacao
         private async Task Persistir(long[] idsFinaisParaRemover, List<FrequenciaAluno> frequenciasParaPersistir)
         {
             if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
-            {
                 await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
-            }
 
             if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
             {
@@ -156,23 +153,8 @@ namespace SME.SGP.Aplicacao
                 var periodoEscolarId = frequencia.PeriodoEscolarId.Value;
                 var turmaCodigo = frequencia.TurmaId;
 
-                unitOfWork.IniciarTransacao();
-                try
-                {
-                    //await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverFrequenciaGeralAlunos(alunos, turmaCodigo, periodoEscolarId);
-
-                    foreach (var frequenciaAluno in frequenciasParaPersistir)
-                    {
-                        await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarAsync(frequenciaAluno);
-                    }
-
-                    unitOfWork.PersistirTransacao();
-                }
-                catch (Exception e)
-                {
-                    unitOfWork.Rollback();
-                    throw;
-                }
+                foreach (var frequenciaAluno in frequenciasParaPersistir)
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarAsync(frequenciaAluno);
 
                 await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverFrequenciasDuplicadas(alunos, turmaCodigo, periodoEscolarId);
             }
@@ -225,7 +207,7 @@ namespace SME.SGP.Aplicacao
 
         private void TrataFrequenciaGlobalAluno(string alunoCodigo, int totalAulasDaTurmaGeral,
             IEnumerable<Infra.AusenciaPorDisciplinaAlunoDto> ausenciasDoAlunos, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> compensacoesDisciplinasAlunos,
-            string turmaId, List<FrequenciaAluno> frequenciasParaPersistir, List<FrequenciaAluno> frequenciasParaRemover)
+            string turmaId, List<FrequenciaAluno> frequenciasParaPersistir)
         {
             var ausenciaParaSeBasear = ausenciasDoAlunos.FirstOrDefault();
             if (ausenciaParaSeBasear != null)
