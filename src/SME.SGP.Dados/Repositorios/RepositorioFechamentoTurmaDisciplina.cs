@@ -90,12 +90,12 @@ namespace SME.SGP.Dados.Repositorios
                                  n.conceito_id as ConceitoId, 
                                  fa.aluno_codigo as CodigoAluno, 
                                  n.sintese_id as SinteseId,
-                                 n.criado_em,
-                                 n.criado_rf,
-                                 n.criado_por,
-                                 n.alterado_em,
-                                 n.alterado_rf,
-                                 n.alterado_por
+                                 n.criado_em CriadoEm,
+                                 n.criado_rf CriadoRf,
+                                 n.criado_por CriadoPor,
+                                 n.alterado_em AlteradoEm,
+                                 n.alterado_rf AlteradoRf,
+                                 n.alterado_por AlteradoPor
                          from fechamento_nota n
                         inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
                         where not n.excluido
