@@ -224,14 +224,12 @@ namespace SME.SGP.Aplicacao
         }
 
         private void TrataFrequenciaGlobalAluno(string alunoCodigo, int totalAulasDaTurmaGeral,
-        IEnumerable<Infra.AusenciaPorDisciplinaAlunoDto> ausenciasDoAlunos, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> compensacoesDisciplinasAlunos,
-        string turmaId, List<FrequenciaAluno> frequenciasParaPersistir, List<FrequenciaAluno> frequenciasParaRemover)
+            IEnumerable<Infra.AusenciaPorDisciplinaAlunoDto> ausenciasDoAlunos, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> compensacoesDisciplinasAlunos,
+            string turmaId, List<FrequenciaAluno> frequenciasParaPersistir, List<FrequenciaAluno> frequenciasParaRemover)
         {
-            FrequenciaAluno frequenciaGlobal;
-
-            //TODO: Caso não tenha ausência? Avaliar
-
             var ausenciaParaSeBasear = ausenciasDoAlunos.FirstOrDefault();
+            if (ausenciaParaSeBasear != null)
+                return;
 
             int totalCompensacoesDoAlunoGeral = 0, totalAusencias = 0;
 
@@ -245,26 +243,24 @@ namespace SME.SGP.Aplicacao
             }
 
             var frequenciaParaTratar = frequenciaDosAlunos.FirstOrDefault(a => string.IsNullOrEmpty(a.DisciplinaId));
-            if (frequenciaParaTratar == null && ausenciaParaSeBasear != null)
-            {
-                frequenciaGlobal = new FrequenciaAluno
-                         (
-                             alunoCodigo,
-                             turmaId,
-                             string.Empty,
-                             ausenciaParaSeBasear.PeriodoEscolarId,
-                             ausenciaParaSeBasear.PeriodoInicio,
-                             ausenciaParaSeBasear.PeriodoFim,
-                             ausenciaParaSeBasear.Bimestre,
-                             totalAusencias,
-                             totalAulasDaTurmaGeral,
-                             totalCompensacoesDoAlunoGeral,
-                             TipoFrequenciaAluno.Geral);
-            }
-            else
-            {
-                frequenciaGlobal = frequenciaParaTratar.DefinirFrequencia(totalAusencias, totalAulasDaTurmaGeral, totalCompensacoesDoAlunoGeral, TipoFrequenciaAluno.Geral);
-            }
+            var frequenciaGlobal = frequenciaParaTratar == null ?
+                new FrequenciaAluno(
+                            alunoCodigo,
+                            turmaId,
+                            string.Empty,
+                            ausenciaParaSeBasear.PeriodoEscolarId,
+                            ausenciaParaSeBasear.PeriodoInicio,
+                            ausenciaParaSeBasear.PeriodoFim,
+                            ausenciaParaSeBasear.Bimestre,
+                            totalAusencias,
+                            totalAulasDaTurmaGeral,
+                            totalCompensacoesDoAlunoGeral,
+                            TipoFrequenciaAluno.Geral) :
+            frequenciaParaTratar.DefinirFrequencia(
+                totalAusencias,
+                totalAulasDaTurmaGeral,
+                totalCompensacoesDoAlunoGeral,
+                TipoFrequenciaAluno.Geral);
 
             frequenciasParaPersistir.Add(frequenciaGlobal);
         }
