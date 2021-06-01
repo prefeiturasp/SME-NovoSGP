@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var comando = mensagemRabbit.ObterObjetoMensagem<CalcularFrequenciaPorTurmaCommand>();
+            var comando = mensagemRabbit.ObterObjetoMensagem<CalcularFrequenciaPorTurmaOldCommand>();
             if (comando != null)
             {
                 await mediator.Send(comando);
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             var alunosConsiderados = await ValidarDadosCalculo(calcularFrequenciaDto);
 
             await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunosConsiderados
-                .Select(a => a.CodigoAluno), calcularFrequenciaDto.DataReferencia, calcularFrequenciaDto.CodigoTurma, calcularFrequenciaDto.CodigoComponenteCurricular, calcularFrequenciaDto.Bimestre));
+                .Select(a => a.CodigoAluno), calcularFrequenciaDto.DataReferencia, calcularFrequenciaDto.CodigoTurma, calcularFrequenciaDto.CodigoComponenteCurricular));
         }
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ValidarDadosCalculo(CalcularFrequenciaDto calcularFrequenciaDto)

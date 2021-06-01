@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task Executar(MensagemRabbit mensagem)
+        public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             if (!await mediator.Send(new ProcessoEstaEmExecucaoQuery(Dominio.TipoProcesso.CriacaoDePendenciasGerais)))
             {
@@ -26,6 +26,8 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new RemoverProcessoEmExecucaoPorIdCommand(processoId));
                 }
             }
+
+            return true;
         }
     }
 }
