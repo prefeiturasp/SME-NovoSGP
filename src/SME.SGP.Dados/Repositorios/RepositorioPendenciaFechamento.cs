@@ -48,7 +48,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId)
         {
-            var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento
+            var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento, p.descricao_html as descricaohtml
                                 , p.situacao, ftd.disciplina_id as DisciplinaId, pe.bimestre, pf.fechamento_turma_disciplina_id as FechamentoId
                                 , p.criado_em as CriadoEm, p.criado_por as CriadoPor, p.criado_rf as CriadoRf, p.alterado_em as AlteradoEm, p.alterado_por as AlteradoPor, p.alterado_rf as AlteradoRf
                           from pendencia_fechamento pf
