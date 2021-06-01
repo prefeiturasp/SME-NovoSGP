@@ -101,6 +101,11 @@ namespace SME.SGP.Dominio
             return Perfis.Any(c => c.Tipo == TipoPerfil.UE && c.CodigoPerfil == PerfilAtual);
         }
 
+        public bool EhPerfilAD()
+        {
+            return Perfis.Any(c => c.CodigoPerfil == PerfilAtual && PerfilAtual == Dominio.Perfis.PERFIL_AD);
+        }
+
         public bool EhPerfilProfessor()
             => EhProfessor()
             || EhProfessorCj()
