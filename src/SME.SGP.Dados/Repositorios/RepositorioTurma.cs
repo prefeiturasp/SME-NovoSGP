@@ -4,6 +4,7 @@ using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -524,7 +525,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasCompletasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades)
+        public async Task<IEnumerable<Turma>> ObterTurmasCompletasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades, string turmaCodigo = "")
         {
             var query = @"select turma.*, ue.*, dre.* 
                             from turma
@@ -534,12 +535,15 @@ namespace SME.SGP.Dados.Repositorios
                             turma.ano_letivo = @anoLetivo
                             and turma.modalidade_codigo = any(@modalidades) ";
 
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += " and turma.turma_id = @turmaCodigo ";
+
             return await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
                 return turma;
-            }, new { modalidades = modalidades.Cast<int>().ToArray(), anoLetivo });
+            }, new { modalidades = modalidades.Cast<int>().ToArray(), anoLetivo, turmaCodigo });
 
         }
 
@@ -600,6 +604,34 @@ var query = @"select t.*
                 turma.AdicionarUe(ue);
                 return turma;
             } , new { ueId, modalidades, ano });
+        }
+
+        public async Task<IEnumerable<string>> ObterCodigosTurmasPorAnoModalidade(int anoLetivo, int[] modalidades, string turmaCodigo = "")
+        {
+            var query = @"select turma_id 
+                            from turma
+                           where ano_letivo = @anoLetivo
+                             and modalidade_codigo = any(@modalidades) ";
+
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += " and turma_id = @turmaCodigo ";
+
+            return await contexto.QueryAsync<string>(query, new { anoLetivo, modalidades, turmaCodigo });
+        }
+
+        public async Task<IEnumerable<TurmaComponenteDto>> ObterTurmasComponentesPorAnoLetivo(DateTime dataReferencia)
+        {
+                var query = @"select a.turma_id as TurmaCodigo, a.disciplina_id as ComponenteCurricularId, pe.periodo_fim as DataReferencia from aula a 
+                                inner join turma t on a.turma_id = t.turma_id 
+                                inner join tipo_calendario tc on a.tipo_calendario_id = tc.id 
+                                inner join periodo_escolar pe on pe.tipo_calendario_id  = tc.id 
+                                    where t.ano_letivo  = @anoLetivo   
+                                    and pe.periodo_inicio < @dataReferencia
+                                group by a.turma_id, a.disciplina_id, a.tipo_calendario_id, pe.periodo_fim ";
+
+         
+
+            return await contexto.QueryAsync<TurmaComponenteDto>(query, new { anoLetivo = dataReferencia.Year, dataReferencia });
         }
     }
 }

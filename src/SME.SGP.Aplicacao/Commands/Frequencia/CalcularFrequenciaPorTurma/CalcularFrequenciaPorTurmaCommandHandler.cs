@@ -18,20 +18,18 @@ namespace SME.SGP.Aplicacao
     {
         public readonly IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno;
         public readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
-        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
-        private readonly IRepositorioProcessoExecutando repositorioProcessoExecutando;
+        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;        
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IAsyncPolicy policy;
 
         public CalcularFrequenciaPorTurmaCommandHandler(IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno,
             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
-            IRepositorioProcessoExecutando repositorioProcessoExecutando, IUnitOfWork unitOfWork, IMediator mediator, IReadOnlyPolicyRegistry<string> registry)
+            IUnitOfWork unitOfWork, IMediator mediator, IReadOnlyPolicyRegistry<string> registry)
         {
             this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
-            this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
-            this.repositorioProcessoExecutando = repositorioProcessoExecutando ?? throw new ArgumentNullException(nameof(repositorioProcessoExecutando));
+            this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));            
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
@@ -39,74 +37,50 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(CalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
-            await repositorioProcessoExecutando.SalvarAsync(new ProcessoExecutando()
+            if (request.Alunos == null || !request.Alunos.Any())
             {
-                Bimestre = request.Bimestre,
-                DisciplinaId = request.DisciplinaId,
-                TipoProcesso = TipoProcesso.CalculoFrequencia,
-                TurmaId = request.TurmaId,
-                CriadoEm = HorarioBrasilia()
-            });
+                var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaId));
+                if (alunosDaTurma == null || !alunosDaTurma.Any())
+                    throw new NegocioException($"Não localizados alunos para turma [{request.TurmaId}] no EOL");
 
-            try
-            {
-
-                if (request.Alunos == null || !request.Alunos.Any())
-                {
-                    var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaId));
-                    if (alunosDaTurma.Any())
-                    {
-                        request.Alunos = alunosDaTurma.Select(a => a.CodigoAluno).Distinct().ToList();
-                    }
-                    else
-                    {
-                        //TODO: LOGAR NO SENTRY
-                        return false;
-                    }
-                }
-
-                var ausenciasDosAlunos = await repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunosETurmaAsync(request.DataAula, request.Alunos, request.TurmaId);
-
-                var periodosEscolaresParaFiltro = ausenciasDosAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
-
-                var frequenciaDosAlunos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunosAsync(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId);
-
-                var frequenciasParaRemover = new List<FrequenciaAluno>();
-                var frequenciasParaPersistir = new List<FrequenciaAluno>();
-
-                if (ausenciasDosAlunos != null && ausenciasDosAlunos.Any())
-                {
-                    //Transformar em uma query única?
-                    var totalAulasNaDisciplina = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, request.DisciplinaId, request.TurmaId);
-                    var totalAulasDaTurmaGeral = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, string.Empty, request.TurmaId);
-                    //
-
-                    var alunosComAusencias = ausenciasDosAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
-                    var bimestresParaFiltro = ausenciasDosAlunos.Select(a => a.Bimestre).Distinct().ToList();
-
-                    var totalCompensacoesDisciplinaAlunos = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunosETurmaAsync(bimestresParaFiltro, alunosComAusencias, request.TurmaId);
-
-                    foreach (var codigoAluno in alunosComAusencias)
-                    {
-                        var ausenciasDoAluno = ausenciasDosAlunos.Where(a => a.AlunoCodigo == codigoAluno).ToList();
-
-                        TrataFrequenciaAlunoComponente(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasNaDisciplina, totalCompensacoesDisciplinaAlunos, codigoAluno, ausenciasDoAluno);
-                        TrataFrequenciaAlunoGlobal(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasDaTurmaGeral, totalCompensacoesDisciplinaAlunos, codigoAluno, ausenciasDoAluno);
-                    }
-                }
-
-                ObterFrequenciasParaExcluirGeral(request, frequenciaDosAlunos, frequenciasParaRemover, frequenciasParaPersistir);
-
-                ObterFrequenciasParaRemoverAlunosSemAusencia(request, ausenciasDosAlunos, frequenciaDosAlunos, frequenciasParaRemover);
-
-                await TrataPersistencia(frequenciasParaRemover, frequenciasParaPersistir);
+                request.Alunos = alunosDaTurma.Select(a => a.CodigoAluno).Distinct().ToList();
             }
-            finally
+
+            var ausenciasDosAlunos = await repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunosETurmaAsync(request.DataAula, request.Alunos, request.TurmaId);
+
+            var periodosEscolaresParaFiltro = ausenciasDosAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
+
+            var frequenciaDosAlunos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunosAsync(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId);
+
+            var frequenciasParaRemover = new List<FrequenciaAluno>();
+            var frequenciasParaPersistir = new List<FrequenciaAluno>();
+
+            if (ausenciasDosAlunos != null && ausenciasDosAlunos.Any())
             {
-                var idsParaRemover = await repositorioProcessoExecutando.ObterIdsPorFiltrosAsync(request.Bimestre, request.DisciplinaId, request.TurmaId);
-                if (idsParaRemover != null && idsParaRemover.Any())
-                    await repositorioProcessoExecutando.RemoverIdsAsync(idsParaRemover.ToArray());
+                //Transformar em uma query única?
+                var totalAulasNaDisciplina = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, request.DisciplinaId, request.TurmaId);
+                var totalAulasDaTurmaGeral = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, string.Empty, request.TurmaId);
+                //
+
+                var alunosComAusencias = ausenciasDosAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
+                var bimestresParaFiltro = ausenciasDosAlunos.Select(a => a.Bimestre).Distinct().ToList();
+
+                var totalCompensacoesDisciplinaAlunos = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunosETurmaAsync(bimestresParaFiltro, alunosComAusencias, request.TurmaId);
+
+                foreach (var codigoAluno in alunosComAusencias)
+                {
+                    var ausenciasDoAluno = ausenciasDosAlunos.Where(a => a.AlunoCodigo == codigoAluno).ToList();
+
+                    TrataFrequenciaAlunoComponente(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasNaDisciplina, totalCompensacoesDisciplinaAlunos, codigoAluno, ausenciasDoAluno);
+                    TrataFrequenciaAlunoGlobal(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasDaTurmaGeral, totalCompensacoesDisciplinaAlunos, codigoAluno, ausenciasDoAluno);
+                }
             }
+
+            ObterFrequenciasParaExcluirGeral(request, frequenciaDosAlunos, frequenciasParaRemover, frequenciasParaPersistir);
+
+            ObterFrequenciasParaRemoverAlunosSemAusencia(request, ausenciasDosAlunos, frequenciaDosAlunos, frequenciasParaRemover);
+
+            await TrataPersistencia(frequenciasParaRemover, frequenciasParaPersistir);
 
             return true;
         }
@@ -128,7 +102,7 @@ namespace SME.SGP.Aplicacao
 
         private static void ObterFrequenciasParaRemoverAlunosSemAusencia(CalcularFrequenciaPorTurmaCommand request, IEnumerable<AusenciaPorDisciplinaAlunoDto> ausenciasDosAlunos, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaRemover)
         {
-            var alunosSemAusencia = frequenciaDosAlunos.Where(f => f.Tipo == TipoFrequenciaAluno.PorDisciplina && 
+            var alunosSemAusencia = frequenciaDosAlunos.Where(f => f.Tipo == TipoFrequenciaAluno.PorDisciplina &&
                                                                    !ausenciasDosAlunos.Any(a => a.AlunoCodigo == f.CodigoAluno &&
                                                                                                 a.ComponenteCurricularId == f.DisciplinaId &&
                                                                                                 a.PeriodoEscolarId == f.PeriodoEscolarId)).ToList();
@@ -182,21 +156,39 @@ namespace SME.SGP.Aplicacao
 
         private async Task Persistir(long[] idsFinaisParaRemover, List<FrequenciaAluno> frequenciasParaPersistir)
         {
-            unitOfWork.IniciarTransacao();
-            try
+
+            if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
             {
-                if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
-                    await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
-
-                if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
-                    await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarVariosAsync(frequenciasParaPersistir);
-
-                unitOfWork.PersistirTransacao();
+                await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
             }
-            catch(Exception)
+
+            if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
             {
-                unitOfWork.Rollback();
-                throw;
+                var alunos = frequenciasParaPersistir.Select(a => a.CodigoAluno).Distinct().ToArray();
+                var frequencia = frequenciasParaPersistir.FirstOrDefault();
+                var periodoEscolarId = frequencia.PeriodoEscolarId.Value;
+                var turmaCodigo = frequencia.TurmaId;
+
+                unitOfWork.IniciarTransacao();
+                try
+                {
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverFrequenciaGeralAlunos(alunos, turmaCodigo, periodoEscolarId);
+
+                    foreach (var frequenciaAluno in frequenciasParaPersistir)
+                    {
+                        frequenciaAluno.Id = 0;
+                        await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarAsync(frequenciaAluno);
+                    }
+
+                    unitOfWork.PersistirTransacao();
+                }
+                catch (Exception e)
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
+
+                await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverFrequenciasDuplicadas(alunos, turmaCodigo, periodoEscolarId);
             }
         }
 
