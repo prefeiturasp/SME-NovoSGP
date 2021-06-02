@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                 var alunosComAusencias = ausenciasDosAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
                 var bimestresParaFiltro = ausenciasDosAlunos.Select(a => a.Bimestre).Distinct().ToList();
 
-                var totalCompensacoesDisciplinaAlunos = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunosETurmaAsync(bimestresParaFiltro, alunosComAusencias, request.TurmaId);
+                var totalCompensacoesDisciplinaAlunos = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunosETurmaAsync(bimestresParaFiltro.ToArray(), alunosComAusencias.ToArray(), request.TurmaId);
 
                 foreach (var codigoAluno in alunosComAusencias)
                 {
@@ -157,10 +157,10 @@ namespace SME.SGP.Aplicacao
         private async Task Persistir(long[] idsFinaisParaRemover, List<FrequenciaAluno> frequenciasParaPersistir)
         {
 
-            if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
-            {
-                await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
-            }
+            //if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
+            //{
+            //    await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
+            //}
 
             if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
             {
