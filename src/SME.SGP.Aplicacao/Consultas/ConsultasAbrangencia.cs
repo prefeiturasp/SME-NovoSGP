@@ -95,12 +95,22 @@ namespace SME.SGP.Aplicacao
             return Task.FromResult(anos);
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
+        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "")
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
-
-            return await repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo);
+            var filtroDescricao = string.Empty;
+            var filtroCodigo = string.Empty;
+           
+            if(!string.IsNullOrWhiteSpace(filtro))
+            {
+                if (filtro.All(char.IsDigit))
+                    filtroCodigo = filtro;
+                else
+                    filtroDescricao = filtro;
+            }
+           
+                return await repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtroDescricao, filtroCodigo);
         }
 
         public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0)

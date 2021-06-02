@@ -291,27 +291,42 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaDreRetorno>(query.ToString(), new { dreCodigo, ueCodigo, login, perfil }));
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
+        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtroDescricao = "", string filtroCodigo = "")
         {
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-            string query = @"select distinct abreviacao, 
-                                             codigo, 
-                                             nome,
-                                             dre_id as id
-                             from f_abrangencia_dres(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @anoLetivo)
-                             order by 3";
-
-            var parametros = new
+            try
             {
-                login,
-                perfil,
-                consideraHistorico,
-                modalidade = modalidade ?? 0,
-                semestre = periodo,
-                anoLetivo
-            };
+                filtroDescricao = $"%{filtroDescricao.ToUpper()}%";
 
-            return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query, parametros)).AsList();
+                // Foi utilizada função de banco de dados com intuíto de melhorar a performance
+                var query = new StringBuilder();
+                query.AppendLine("select distinct abreviacao, ");
+                query.AppendLine("codigo,");
+                query.AppendLine("nome,");
+                query.AppendLine("dre_id as id");
+                query.AppendLine("from f_abrangencia_dres(@login , @perfil, @consideraHistorico, @modalidade, @semestre, @anoLetivo  )");
+                
+                query.AppendLine("where upper(nome) like @filtroDescricao");
+
+                var parametros = new
+                {
+                    login,
+                    perfil,
+                    consideraHistorico,
+                    modalidade = modalidade ?? 0,
+                    semestre = periodo,
+                    anoLetivo,
+                    filtroDescricao,
+
+                };
+
+                return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query.ToString(), parametros)).AsList();
+            }
+
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
         public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas)
