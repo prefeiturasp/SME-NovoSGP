@@ -115,7 +115,9 @@ namespace SME.SGP.Dominio
 
         PeriodoDeDiasDevolutiva = 59,
 
- 
+        ExecucaoConsolidacaoDevolutivasTurma = 60,
+
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }

@@ -902,7 +902,8 @@ namespace SME.SGP.IoC
 
             // Sincronização de Devolutivas
             services.TryAddScoped<IExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase, ExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase>();
-            services.TryAddScoped<IExecutarSincronizacaoDevolutivasPorTurmaInfantilTratarUseCase, ExecutarSincronizacaoDevolutivasPorTurmaInfantilTratarUseCase>();
+            services.TryAddScoped<IConsolidarDevolutivasPorTurmaUseCase, ConsolidarDevolutivasPorTurmaUseCase>();
+            services.TryAddScoped<IConsolidarDevolutivasPorTurmaInfantilUseCase, ConsolidarDevolutivasPorTurmaInfantilUseCase>();
         }
     }
 }

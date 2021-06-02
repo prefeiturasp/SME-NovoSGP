@@ -106,8 +106,8 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.QueueDeclare(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilSync, true, false, false);
             canalRabbit.QueueBind(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilSync, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaDevolutivasPorTurmaInfantilSync);
 
-            canalRabbit.QueueDeclare(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilTratar, true, false, false);
-            canalRabbit.QueueBind(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaDevolutivasPorTurmaInfantilTratar);
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidarDevolutivasPorTurmaInfantil, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidarDevolutivasPorTurmaInfantil, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidarDevolutivasPorTurmaInfantil);
 
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
@@ -192,10 +192,7 @@ namespace SME.SGP.Worker.RabbitMQ
 
             // Sincronização de Devolutivas
             comandos.Add(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilSync, new ComandoRabbit("Devolutivas - Sync de Turmas da Modalidade Infantil", typeof(IExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase)));
-            comandos.Add(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilTratar, new ComandoRabbit("Devolutivas - Tratar Turmas da Modalidade Infantil", typeof(IExecutarSincronizacaoDevolutivasPorTurmaInfantilTratarUseCase)));
-
-
-
+            comandos.Add(RotasRabbit.ConsolidarDevolutivasPorTurmaInfantil, new ComandoRabbit("Consolidar Devolutivas Turmas da Modalidade Infantil", typeof(IConsolidarDevolutivasPorTurmaInfantilUseCase)));
 
         }
 
@@ -352,8 +349,9 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasPorTurma, false, consumer);
+            // Consolidação de Devolutivas
             canalRabbit.BasicConsume(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilSync, false, consumer);
-            canalRabbit.BasicConsume(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilTratar, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidarDevolutivasPorTurmaInfantil, false, consumer);
 
             return Task.CompletedTask;
         }

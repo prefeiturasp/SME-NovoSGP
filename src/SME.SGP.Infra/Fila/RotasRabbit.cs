@@ -99,8 +99,7 @@
         public static string ConsolidarFrequenciasPorTurma => "sgp.frequencia.turma.consolidar";
 
         public static string SincronizaDevolutivasPorTurmaInfantilSync => "sgp.sincronizacao.devolutivas.turma.sync";
-
-        public static string SincronizaDevolutivasPorTurmaInfantilTratar => "sgp.sincronizacao.devolutivas.turma.tratar";
+        public static string ConsolidarDevolutivasPorTurmaInfantil => "sgp.devolutivas.turma.consolidar";
 
 
 
