@@ -15,11 +15,9 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFrequenciaAlunoDisciplinaPeriodo : RepositorioBase<FrequenciaAluno>, IRepositorioFrequenciaAlunoDisciplinaPeriodo
     {
-        private readonly string connectionString;
 
-        public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IConfiguration configuration) : base(database)
+        public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database) : base(database)
         {
-            this.connectionString = configuration.GetConnectionString("SGP_Postgres");
         }
 
         private String BuildQueryObter()
@@ -308,30 +306,31 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task RemoverVariosAsync(long[] ids)
-        {
-            var query = @"delete from frequencia_aluno where id = any(@ids)";
+        // TODO remover depois de excluir o CalcularFrequenciaPorTurmaCommandHandler
+        //public async Task RemoverVariosAsync(long[] ids)
+        //{
+        //    var query = @"delete from frequencia_aluno where id = any(@ids)";
 
-            using (var conexao = new NpgsqlConnection(connectionString))
-            {
-                await conexao.OpenAsync();
-                var transacao = conexao.BeginTransaction();
-                try
-                {
-                    await conexao.ExecuteAsync(query, new
-                    {
-                        ids
-                    }, transacao);
-                    await transacao.CommitAsync();
-                    conexao.Close();
-                }
-                catch (Exception)
-                {
-                    await transacao.RollbackAsync();
-                    throw;
-                }                
-            }
-        }
+        //    using (var conexao = new NpgsqlConnection(connectionString))
+        //    {
+        //        await conexao.OpenAsync();
+        //        var transacao = conexao.BeginTransaction();
+        //        try
+        //        {
+        //            await conexao.ExecuteAsync(query, new
+        //            {
+        //                ids
+        //            }, transacao);
+        //            await transacao.CommitAsync();
+        //            conexao.Close();
+        //        }
+        //        catch (Exception)
+        //        {
+        //            await transacao.RollbackAsync();
+        //            throw;
+        //        }                
+        //    }
+        //}
 
         public async Task RemoverFrequenciaGeralAlunos(string[] alunos, string turmaCodigo, long periodoEscolarId)
         {

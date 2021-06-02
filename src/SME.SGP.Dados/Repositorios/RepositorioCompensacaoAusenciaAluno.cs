@@ -68,7 +68,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { bimestre, codigoAluno, disciplinaId, turmaId });
         }
 
-        public async Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> ObterTotalCompensacoesPorAlunosETurmaAsync(IEnumerable<int> bimestres, IEnumerable<string> alunoCodigos, string turmaId)
+        public async Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> ObterTotalCompensacoesPorAlunosETurmaAsync(int[] bimestres, string[] alunoCodigos, string turmaId)
         {
             var query = @"
                 select
