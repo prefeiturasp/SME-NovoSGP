@@ -1095,8 +1095,7 @@ namespace SME.SGP.Dados.Repositorios
                                     on e.tipo_calendario_id = tc.id
                         where
                             e.tipo_calendario_id = @tipoCalendarioId
-                        and extract(year from e.data_inicio) = tc.ano_letivo
-                        and extract(year from e.data_fim) = tc.ano_letivo
+                        and extract(year from e.data_inicio) = tc.ano_letivo                        
                         and not e.excluido";
             return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId });
         }
