@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
 
                 unitOfWork.PersistirTransacao();
 
-                await mediator.Send(new ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand(aula.TurmaId, aula.DataAula, aula.DisciplinaId));
+                await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aula.TurmaId, aula.DisciplinaId, aula.Id));
             }
             catch (Exception)
             {

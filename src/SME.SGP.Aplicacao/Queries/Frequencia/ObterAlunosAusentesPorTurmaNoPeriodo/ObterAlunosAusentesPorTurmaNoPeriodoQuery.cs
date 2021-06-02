@@ -8,15 +8,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosAusentesPorTurmaNoPeriodoQuery : IRequest<IEnumerable<AlunoComponenteCurricularDto>>
     {
-        public ObterAlunosAusentesPorTurmaNoPeriodoQuery(string turmaCodigo, DateTime dataInicio, string componenteCurricularId)
+        public ObterAlunosAusentesPorTurmaNoPeriodoQuery(string turmaCodigo, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
             TurmaCodigo = turmaCodigo;
-            DataReferencia = dataInicio;
+            DataInicio = dataInicio;
+            DataFim = dataFim;
             ComponenteCurricularId = componenteCurricularId;
         }
 
         public string TurmaCodigo { get; }
-        public DateTime DataReferencia { get; }
+        public DateTime DataInicio { get; }
+        public DateTime DataFim { get; }
         public string ComponenteCurricularId { get; set; }
     }
 
@@ -28,9 +30,13 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O código da turma deve ser informado para consulta de alunos ausêntes no período");
 
-            RuleFor(a => a.DataReferencia)
+            RuleFor(a => a.DataInicio)
                 .NotEmpty()
                 .WithMessage("A data de início deve ser informada para consulta de alunos ausêntes no período");
+
+            RuleFor(a => a.DataFim)
+                .NotEmpty()
+                .WithMessage("A data de fim deve ser informada para consulta de alunos ausêntes no período");
         }
     }
 }

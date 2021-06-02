@@ -37,6 +37,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(CalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
+            if (request.Alunos == null || !request.Alunos.Any())
+            {
+                var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaId));
+                if (alunosDaTurma == null || !alunosDaTurma.Any())
+                    throw new NegocioException($"Não localizados alunos para turma [{request.TurmaId}] no EOL");
+
+                request.Alunos = alunosDaTurma.Select(a => a.CodigoAluno).Distinct().ToList();
+            }
+
             var ausenciasDosAlunos = await repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunosETurmaAsync(request.DataAula, request.Alunos, request.TurmaId);
 
             var periodosEscolaresParaFiltro = ausenciasDosAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
@@ -164,7 +173,12 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverFrequenciaGeralAlunos(alunos, turmaCodigo, periodoEscolarId);
-                    await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarVariosAsync(frequenciasParaPersistir);
+
+                    foreach (var frequenciaAluno in frequenciasParaPersistir)
+                    {
+                        frequenciaAluno.Id = 0;
+                        await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarAsync(frequenciaAluno);
+                    }
 
                     unitOfWork.PersistirTransacao();
                 }

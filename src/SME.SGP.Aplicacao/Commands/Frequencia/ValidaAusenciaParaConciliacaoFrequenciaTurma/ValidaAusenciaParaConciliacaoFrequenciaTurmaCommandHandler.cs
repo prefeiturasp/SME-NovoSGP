@@ -22,10 +22,10 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var alunosAusentes = await mediator.Send(new ObterAlunosAusentesPorTurmaNoPeriodoQuery(request.TurmaCodigo, request.DataReferencia, request.ComponenteCurricularId));
+                var alunosAusentes = await mediator.Send(new ObterAlunosAusentesPorTurmaNoPeriodoQuery(request.TurmaCodigo, request.DataInicio, request.DataFim, request.ComponenteCurricularId));
 
                 if (alunosAusentes != null && alunosAusentes.Any())
-                    await IncluirFilaCalculoFrequenciaAlunosPorComponenteETurma(request.TurmaCodigo, request.DataReferencia, alunosAusentes);
+                    await IncluirFilaCalculoFrequenciaAlunosPorComponenteETurma(request.TurmaCodigo, request.DataFim, alunosAusentes);
 
                 return true;
             }
@@ -41,7 +41,14 @@ namespace SME.SGP.Aplicacao
             var alunosPorComponentes = alunosAusentes.GroupBy(a => a.ComponenteCurricularId);
 
             foreach (var alunosNoComponente in alunosPorComponentes)
-                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunosNoComponente.Select(a => a.AlunoCodigo), dataFim, turmaCodigo, alunosNoComponente.Key));
+            {
+                var alunosCodigo = alunosNoComponente.Select(a => a.AlunoCodigo).ToList();
+                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunosCodigo, dataFim, turmaCodigo, alunosNoComponente.Key));
+
+                var alunos = string.Join(",", alunosCodigo);
+                await mediator.Send(new GravarConciliacaoTurmaComponenteCommand(turmaCodigo, alunosNoComponente.Key, dataFim, alunos));
+            }
+
         }
     }
 }
