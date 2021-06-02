@@ -288,7 +288,7 @@ namespace SME.SGP.Aplicacao
                                         AlteradoRf = !string.IsNullOrWhiteSpace(nc.AlteradoRf) && !nc.AlteradoRf.Equals(0) ? nc.AlteradoRf : nc.CriadoRf,
                                         AlteradoEm = nc.AlteradoEm.HasValue && !nc.AlteradoRf.Equals(0) ? nc.AlteradoEm.Value : nc.CriadoEm,
                                     }).First();
-                                retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {(dadosAuditoriaAlteracaoBimestre.AlteradoPor)}({dadosAuditoriaAlteracaoBimestre.AlteradoRf}) em {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurma.AlteradoEm.Value.ToString("HH:mm")}.";
+                                retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {(dadosAuditoriaAlteracaoBimestre.AlteradoPor)}({dadosAuditoriaAlteracaoBimestre.AlteradoRf}) em {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("dd/MM/yyyy")}, às {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("HH:mm")}.";
                             }
 
                             if (disciplinaEOL.Regencia)
@@ -359,13 +359,14 @@ namespace SME.SGP.Aplicacao
                             Nome = avaliacao.NomeAvaliacao,
                             EhCJ = avaliacao.EhCj
                         };
-                        if (avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar))
+                        avaliacaoDoBimestre.EhInterdisciplinar = avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar);
+
+                        if (avaliacao.EhRegencia)
                         {
-                            avaliacaoDoBimestre.EhInterdisciplinar = true;
-                            var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(avaliacao.Id);
-                            var idsDisciplinas = atividadeDisciplinas.Select(a => long.Parse(a.DisciplinaId)).ToArray();
+                            var atividadeDisciplinas = await ObterDisciplinasAtividadeAvaliativa(avaliacao.Id, avaliacao.EhRegencia);
+                            var idsDisciplinas = atividadeDisciplinas?.Select(a => long.Parse(a.DisciplinaId)).ToArray();
                             var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinas);
-                            var nomesDisciplinas = disciplinas.Select(d => d.Nome).ToArray();
+                            var nomesDisciplinas = disciplinas?.Select(d => d.Nome).ToArray();
                             avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
                         }
                         bimestreParaAdicionar.Avaliacoes.Add(avaliacaoDoBimestre);
@@ -400,6 +401,14 @@ namespace SME.SGP.Aplicacao
             }
 
             return retorno;
+        }
+
+        public async Task<IEnumerable<AtividadeAvaliativaDisciplina>> ObterDisciplinasAtividadeAvaliativa(long avaliacao_id, bool ehRegencia)
+        {
+            if (ehRegencia)
+                return await repositorioAtividadeAvaliativaDisciplina.ObterDisciplinasAtividadeAvaliativa(avaliacao_id);
+            else
+                return await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(avaliacao_id);
         }
 
         public async Task<IEnumerable<ConceitoDto>> ObterConceitos(DateTime data)
@@ -481,7 +490,9 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = disciplina.TerritorioSaber,
                     LancaNota = disciplina.LancaNota,
                     BaseNacional = disciplina.BaseNacional,
-                    GrupoMatriz = new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatriz.Id, Nome = disciplina.GrupoMatriz.Nome }
+                    GrupoMatriz = disciplina.GrupoMatriz != null ?
+                        new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatriz.Id, Nome = disciplina.GrupoMatriz.Nome } :
+                        new Integracoes.Respostas.GrupoMatriz()
                 };
             }
         }

@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var comando = mensagemRabbit.ObterObjetoMensagem<CalcularFrequenciaPorTurmaOldCommand>();
+            var comando = mensagemRabbit.ObterObjetoMensagem<CalcularFrequenciaPorTurmaCommand>();
             if (comando != null)
             {
                 await mediator.Send(comando);

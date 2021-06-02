@@ -360,7 +360,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScoped<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
             services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
-            services.TryAddScoped<IServicoFila, FilaRabbit>();
 
         }
 
@@ -464,6 +463,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterBimestresComConselhoClasseTurmaUseCase, ObterBimestresComConselhoClasseTurmaUseCase>();
             services.TryAddScoped<IObterPareceresConclusivosUseCase, ObterPareceresConclusivosUseCase>();
             services.TryAddScoped<IAtualizarSituacaoConselhoClasseUseCase, AtualizarSituacaoConselhoClasseUseCase>();
+
+            // Fechamento
+            services.TryAddScoped<IGerarPendenciasFechamentoUseCase, GerarPendenciasFechamentoUseCase>();
+
 
             //Notificacao Devolutivoa
             services.TryAddScoped<ISalvarNotificacaoDevolutivaUseCase, SalvarNotificacaoDevolutivaUseCase>();

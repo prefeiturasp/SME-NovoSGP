@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public async Task ProcessarNaData(DateTime dataPeriodo, string turmaCodigo)
         {
             var mensagem = new ConciliacaoFrequenciaTurmasSyncDto(dataPeriodo, turmaCodigo);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasSync, mensagem, Guid.NewGuid(), null, false));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaSync, mensagem, Guid.NewGuid(), null, false));
         }
     }
 
