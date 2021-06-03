@@ -4,6 +4,7 @@ namespace SME.SGP.Infra
 {
     public class ConsolidacaoTurmaComponenteCurricularDto
     {
+        public long Id { get; set; }
         public string Descricao { get; set; }
         public string ProfessorNome { get; set; }
         public string ProfessorRf { get; set; }

@@ -39,7 +39,8 @@ namespace SME.SGP.Dados
         }
         public async Task<IEnumerable<ConsolidacaoTurmaComponenteCurricularDto>> ObterComponentesFechamentoConsolidadoPorTurmaBimestre(long turmaId, int bimestre)
         {
-            var query = $@" select coalesce(cc.descricao_sgp, cc.descricao) as descricao,
+            var query = $@" select cc.id,
+                                   coalesce(cc.descricao_sgp, cc.descricao) as descricao,
                                    cfct.professor_nome as professorNome,
                                    cfct.professor_rf as professorRf,
                                    cfct.status as SituacaoFechamentoCodigo 
