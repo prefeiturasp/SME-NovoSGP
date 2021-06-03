@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
@@ -22,12 +21,12 @@ namespace SME.SGP.Aplicacao
         {
             var componentesCurricularesParaVisualizar = new List<string>();
 
-            var componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo, request.UsuarioLogado.CodigoRf, request.UsuarioLogado.PerfilAtual);
+            var componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo, request.RfLogado, request.PerfilAtual);
             var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado?.Select(b => b.Codigo.ToString());            
 
             foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
             {
-                if (await PodePersistirTurmaDisciplina(request.UsuarioLogado.CodigoRf, request.TurmaCodigo, componenteParaVerificarAtribuicao))
+                if (await PodePersistirTurmaDisciplina(request.RfLogado, request.TurmaCodigo, componenteParaVerificarAtribuicao))
                     componentesCurricularesParaVisualizar.Add(componenteParaVerificarAtribuicao);
             }
 
@@ -40,8 +39,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> PodePersistirTurmaDisciplina(string criadoRF, string turmaCodigo, string componenteParaVerificarAtribuicao)
         {
-            var hoje = DateTime.Today;
-            return await mediator.Send(new PodePersistirTurmaDisciplinaQuery(criadoRF, turmaCodigo, componenteParaVerificarAtribuicao, hoje));
+            long hojeTick = DateTime.Today.Ticks;
+            return await mediator.Send(new PodePersistirTurmaDisciplinaQuery(criadoRF, turmaCodigo, componenteParaVerificarAtribuicao, hojeTick));
         }
     }
 }

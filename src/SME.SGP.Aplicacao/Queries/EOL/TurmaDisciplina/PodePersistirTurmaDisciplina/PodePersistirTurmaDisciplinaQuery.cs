@@ -10,18 +10,18 @@ namespace SME.SGP.Aplicacao
 {
     public class PodePersistirTurmaDisciplinaQuery : IRequest<bool>
     {
-        public PodePersistirTurmaDisciplinaQuery(string criadoRF, string turmaCodigo, string componenteParaVerificarAtribuicao, DateTime data)
+        public PodePersistirTurmaDisciplinaQuery(string criadoRF, string turmaCodigo, string componenteParaVerificarAtribuicao, long dataTick)
         {
             CriadoRF = criadoRF;
             TurmaCodigo = turmaCodigo;
             ComponenteParaVerificarAtribuicao = componenteParaVerificarAtribuicao;
-            Data = data;
+            DataTick = dataTick;
         }
 
         public string CriadoRF { get;}
         public string TurmaCodigo { get; }
         public string ComponenteParaVerificarAtribuicao { get; }
-        public DateTime Data { get; }
+        public long DataTick { get; }
     }
 
     public class PodePersistirTurmaDisciplinaQueryValidator : AbstractValidator<PodePersistirTurmaDisciplinaQuery>
@@ -40,9 +40,9 @@ namespace SME.SGP.Aplicacao
             .NotEmpty()
             .WithMessage("O ComponenteParaVerificarAtribuicao deve ser informado.");
 
-            RuleFor(c => c.Data)
+            RuleFor(c => c.DataTick)
             .NotEmpty()
-            .WithMessage("A data deve ser informado.");
+            .WithMessage("A data em tick deve ser informado.");
 
         }
     }
