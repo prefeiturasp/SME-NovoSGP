@@ -90,7 +90,7 @@ namespace SME.SGP.Api
         }
 
         [HttpGet("pendencias/{pendenciaId}/detalhamentos")]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(DetalhamentoPendenciaFechamentoRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterDetalhamentoPendenciasFechamento(long pendenciaId, [FromServices] IObterDetalhamentoPendenciaFechamentoConsolidadoUseCase useCase)

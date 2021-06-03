@@ -180,7 +180,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<DetalhamentoPendenciaAulaDto> ObterDetalhamentoPendenciaAula(long pendenciaId)
         {
-            var query = @"select p.tipo as tipoPendencia,
+            var query = @"select P.id as pendenciaId,
+                                 p.tipo as tipoPendencia,
                                  p.descricao_html as descricaohtml                               
                             from pendencia_fechamento pf
                            inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id
@@ -188,8 +189,7 @@ namespace SME.SGP.Dados.Repositorios
                            inner join turma t on t.id = ft.turma_id
                            inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
                            inner join pendencia p on p.id = pf.pendencia_id
-                           where p.id = @pendenciaId
-                             and p.tipo in (1,7)
+                           where p.id = @pendenciaId                             
                              and p.situacao = 1
                              and not ftd.excluido ";
 
