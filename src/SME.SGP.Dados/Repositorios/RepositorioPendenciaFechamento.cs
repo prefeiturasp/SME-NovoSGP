@@ -177,5 +177,23 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DetalhamentoPendenciaFechamentoConsolidadoDto>(query, new { pendenciaId });
         }
+
+        public async Task<DetalhamentoPendenciaAulaDto> ObterDetalhamentoPendenciaAula(long pendenciaId)
+        {
+            var query = @"select p.tipo as tipoPendencia,
+                                 p.descricao_html as descricaohtml                               
+                            from pendencia_fechamento pf
+                           inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id
+                           inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
+                           inner join turma t on t.id = ft.turma_id
+                           inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                           inner join pendencia p on p.id = pf.pendencia_id
+                           where p.id = @pendenciaId
+                             and p.tipo in (1,7)
+                             and p.situacao = 1
+                             and not ftd.excluido ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<DetalhamentoPendenciaAulaDto>(query, new { pendenciaId });
+        }
     }
 }
