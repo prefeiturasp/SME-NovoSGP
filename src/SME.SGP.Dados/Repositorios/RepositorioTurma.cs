@@ -937,7 +937,8 @@ namespace SME.SGP.Dados.Repositorios
                                 serie_ensino = @serieEnsino,
                                 dt_fim_eol = @dataFim,
                                 tipo_turma = @tipoTurma,
-                                historica = @historica
+                                historica = @historica,
+                                nome_filtro = @nomeFiltro
                             where
 	                            turma_id = @turmaId";
 
@@ -958,7 +959,8 @@ namespace SME.SGP.Dados.Repositorios
                 turma.SerieEnsino,
                 turma.TipoTurma,
                 turmaId = turma.Codigo.ToString(),
-                historica = deveMarcarHistorica ? true : false
+                historica = deveMarcarHistorica ? true : false,
+                turma.NomeFiltro
             };
 
             var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);

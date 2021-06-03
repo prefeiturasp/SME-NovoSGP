@@ -23,6 +23,7 @@ namespace SME.SGP.Infra
         public string UeCodigo { get; set; }
         public DateTime DataAtualizacao { get; set; }
         public DateTime DataStatusTurmaEscola { get; set; }
+        public string NomeFiltro { get; set; }
         public int EtapaEJA
         {
             get
