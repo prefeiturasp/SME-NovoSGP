@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-    }
+        }
 
         public async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorfiltro(string texto, bool consideraHistorico)
         {
@@ -97,27 +97,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "")
         {
-            try
-            {
-                var login = servicoUsuario.ObterLoginAtual();
+            var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
             var filtroEhCodigo = false;
-           
-            if(!string.IsNullOrWhiteSpace(filtro))
+
+            if (!string.IsNullOrWhiteSpace(filtro))
             {
                 if (filtro.All(char.IsDigit))
                     filtroEhCodigo = true;
             }
-
-          
-                return await repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtro, filtroEhCodigo);
-            }
-            catch (Exception ex )
-            {
-
-                throw ex;
-            }
-              
+            return await repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtro, filtroEhCodigo);
         }
 
         public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0)
@@ -168,11 +157,11 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<AbrangenciaTurmaRetorno> OrdernarTurmasItinerario(IEnumerable<AbrangenciaTurmaRetorno> result)
         {
-            List<AbrangenciaTurmaRetorno> turmasOrdenadas = new List<AbrangenciaTurmaRetorno> ();
+            List<AbrangenciaTurmaRetorno> turmasOrdenadas = new List<AbrangenciaTurmaRetorno>();
 
             var turmasItinerario = result.Where(t => t.TipoTurma == (int)TipoTurma.Itinerarios2AAno || t.TipoTurma == (int)TipoTurma.ItinerarioEnsMedio);
             var turmas = result.Where(t => !turmasItinerario.Any(ti => ti.Id == t.Id));
-            
+
             turmasOrdenadas.AddRange(turmas.OrderBy(a => a.ModalidadeTurmaNome));
             turmasOrdenadas.AddRange(turmasItinerario.OrderBy(a => a.ModalidadeTurmaNome));
 

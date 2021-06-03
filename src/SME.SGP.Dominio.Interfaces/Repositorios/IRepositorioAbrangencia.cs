@@ -45,7 +45,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<bool> UsuarioPossuiAbrangenciaAdm(long usuarioId);
 
-        Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null);
+        Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null, string filtro = "", bool filtroEhCodigo = false);
 
         bool PossuiAbrangenciaTurmaAtivaPorLogin(string login);
 
