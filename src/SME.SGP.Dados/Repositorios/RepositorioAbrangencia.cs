@@ -291,12 +291,10 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaDreRetorno>(query.ToString(), new { dreCodigo, ueCodigo, login, perfil }));
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtroDescricao = "", string filtroCodigo = "")
+        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "", bool filtroEhCodigo = false)
         {
             try
             {
-                filtroDescricao = $"%{filtroDescricao.ToUpper()}%";
-
                 // Foi utilizada função de banco de dados com intuíto de melhorar a performance
                 var query = new StringBuilder();
                 query.AppendLine("select distinct abreviacao, ");
@@ -304,9 +302,16 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("nome,");
                 query.AppendLine("dre_id as id");
                 query.AppendLine("from f_abrangencia_dres(@login , @perfil, @consideraHistorico, @modalidade, @semestre, @anoLetivo  )");
-                
-                query.AppendLine("where upper(nome) like @filtroDescricao");
 
+                if (!string.IsNullOrWhiteSpace(filtro))
+                {
+                    filtro = $"%{filtro.ToUpper()}%";
+
+                    if (filtroEhCodigo)
+                        query.AppendLine("where upper(codigo) like @filtro");
+                    else
+                        query.AppendLine("where upper(nome) like @filtro");
+                }
                 var parametros = new
                 {
                     login,
@@ -315,8 +320,7 @@ namespace SME.SGP.Dados.Repositorios
                     modalidade = modalidade ?? 0,
                     semestre = periodo,
                     anoLetivo,
-                    filtroDescricao,
-
+                    filtro
                 };
 
                 return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query.ToString(), parametros)).AsList();
