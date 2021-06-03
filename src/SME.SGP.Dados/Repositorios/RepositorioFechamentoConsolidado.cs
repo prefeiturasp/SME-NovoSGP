@@ -45,7 +45,7 @@ namespace SME.SGP.Dados
                                    cfct.professor_rf as professorRf,
                                    cfct.status as SituacaoFechamentoCodigo 
                               from componente_curricular cc
-                             inner join componente_curricular_grupo_area_ordenacao ccgao on ccgao.grupo_matriz_id = cc.grupo_matriz_id and ccgao.area_conhecimento_id = cc.area_conhecimento_id 
+                              left join componente_curricular_grupo_area_ordenacao ccgao on ccgao.grupo_matriz_id = cc.grupo_matriz_id and ccgao.area_conhecimento_id = cc.area_conhecimento_id 
                              inner join  consolidado_fechamento_componente_turma cfct on cfct.componente_curricular_id = cc.id 
                              where cfct.turma_id = @turmaId
                                and cfct.bimestre = @bimestre
