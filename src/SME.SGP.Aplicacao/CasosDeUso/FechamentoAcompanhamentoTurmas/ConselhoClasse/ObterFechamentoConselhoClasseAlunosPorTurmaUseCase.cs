@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
                     SituacaoFechamento = consolidadoConselhoClasse.Status.Name(),
                     SituacaoFechamentoCodigo = (int)consolidadoConselhoClasse.Status,
                     FrequenciaGlobal = frequenciaGlobal,
-                    PodeExpandir = consolidadoConselhoClasse.Status != SituacaoConselhoClasse.NaoIniciado,
+                    PodeExpandir = true,
                     ParecerConclusivo = parecerConclusivo
                 });
             }
