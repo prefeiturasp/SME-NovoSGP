@@ -291,16 +291,26 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaDreRetorno>(query.ToString(), new { dreCodigo, ueCodigo, login, perfil }));
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
+        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "", bool filtroEhCodigo = false)
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-            string query = @"select distinct abreviacao, 
-                                             codigo, 
-                                             nome,
-                                             dre_id as id
-                             from f_abrangencia_dres(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @anoLetivo)
-                             order by 3";
+            var query = new StringBuilder();
+            query.AppendLine("select distinct abreviacao, ");
+            query.AppendLine("codigo,");
+            query.AppendLine("nome,");
+            query.AppendLine("dre_id as id");
+            query.AppendLine("from f_abrangencia_dres(@login , @perfil, @consideraHistorico, @modalidade, @semestre, @anoLetivo  )");
 
+            if (!string.IsNullOrWhiteSpace(filtro))
+            {
+                filtro = $"%{filtro.ToUpper()}%";
+
+                if (filtroEhCodigo)
+                    query.AppendLine("where upper(codigo) like @filtro");
+                else
+                    query.AppendLine("where upper(nome) like @filtro");
+                query.AppendLine("limit 10;");
+            }
             var parametros = new
             {
                 login,
@@ -308,10 +318,13 @@ namespace SME.SGP.Dados.Repositorios
                 consideraHistorico,
                 modalidade = modalidade ?? 0,
                 semestre = periodo,
-                anoLetivo
+                anoLetivo,
+                filtro
             };
 
-            return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query, parametros)).AsList();
+            return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query.ToString(), parametros)).AsList();
+
+
         }
 
         public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas)
@@ -372,15 +385,33 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaUeRetorno>(query.ToString(), new { codigo, login, perfil }));
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null)
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null, string filtro = "", bool filtroEhCodigo = false)
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-            var query = @"select distinct codigo,
-	                                      nome as NomeSimples,
-	                                      tipoescola,
-                                          ue_id as id
-	                         from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo, @ignorarTiposUE)
-                          order by 2;";
+            var query = new StringBuilder();
+
+            query.AppendLine("select distinct codigo,");
+            query.AppendLine("nome as NomeSimples,");
+            query.AppendLine("tipoescola,");
+            query.AppendLine("ue_id as id");
+            query.AppendLine("from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo, @ignorarTiposUE)");
+
+            if (!string.IsNullOrWhiteSpace(filtro))
+            {
+                filtro = $"%{filtro.ToUpper()}%";
+
+                if (filtroEhCodigo)
+                    query.AppendLine("where upper(codigo) like @filtro");
+                else
+                    query.AppendLine("where upper(nome) like @filtro");
+
+                query.AppendLine("order by 2");
+                query.AppendLine("limit 10;");
+            }
+
+            else
+                query.AppendLine("order by 2;");
+
 
             var parametros = new
             {
@@ -391,10 +422,11 @@ namespace SME.SGP.Dados.Repositorios
                 semestre = periodo,
                 codigoDre,
                 anoLetivo,
-                ignorarTiposUE
+                ignorarTiposUE,
+                filtro
             };
 
-            return await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query, parametros);
+            return (await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query.ToString(), parametros)).AsList();
         }
 
         public bool PossuiAbrangenciaTurmaAtivaPorLogin(string login)
