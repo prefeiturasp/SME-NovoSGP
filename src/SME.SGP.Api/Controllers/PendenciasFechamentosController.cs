@@ -49,5 +49,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(pendenciaId));
         }
 
+        [HttpGet("{pendenciaId}/aulas/detalhamentos")]
+        [ProducesResponseType(typeof(DetalhamentoPendenciaAulaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterDetalhamentoPendenciasAula(long pendenciaId, [FromServices] IObterDetalhamentoPendenciaAulaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(pendenciaId));
+        }
+
     }
 }
