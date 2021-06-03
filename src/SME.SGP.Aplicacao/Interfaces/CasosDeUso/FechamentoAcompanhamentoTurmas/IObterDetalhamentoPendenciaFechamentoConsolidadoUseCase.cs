@@ -1,6 +1,8 @@
-﻿namespace SME.SGP.Aplicacao.Interfaces
+﻿using SME.SGP.Infra;
+
+namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IObterDetalhamentoPendenciaFechamentoConsolidadoUseCase : IUseCase<long, string>
+    public interface IObterDetalhamentoPendenciaFechamentoConsolidadoUseCase : IUseCase<long, DetalhamentoPendenciaFechamentoRetornoDto>
     {
     }
 }

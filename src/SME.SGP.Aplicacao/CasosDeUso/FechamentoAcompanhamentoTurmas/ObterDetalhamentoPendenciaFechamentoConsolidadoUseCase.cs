@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System.Threading.Tasks;
 
@@ -11,12 +12,12 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<string> Executar(long param)
+        public async Task<DetalhamentoPendenciaFechamentoRetornoDto> Executar(long param)
         {
             var detalhamentoPendencia = await mediator.Send(new ObterDetalhamentoPendenciaFechamentoConsolidadoQuery(param));
 
             if (detalhamentoPendencia == null)
-                return string.Empty;
+                return null;
 
             var descricao = UtilRegex.RemoverTagsHtml(detalhamentoPendencia.Descricao);
 
@@ -24,7 +25,11 @@ namespace SME.SGP.Aplicacao
                 "" :
                 $" Justificativa : {UtilRegex.RemoverTagsHtml(detalhamentoPendencia.Justificativa)}";
 
-            return $"{descricao}{justificativa}";
+            return new DetalhamentoPendenciaFechamentoRetornoDto
+            {
+                PendenciaId = detalhamentoPendencia.PendenciaId,
+                Descricao = $"{descricao}{justificativa}",
+            };            
         }
     }
 }
