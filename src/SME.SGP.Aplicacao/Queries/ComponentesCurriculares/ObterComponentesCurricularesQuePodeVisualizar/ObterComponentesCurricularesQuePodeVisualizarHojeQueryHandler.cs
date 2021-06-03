@@ -12,22 +12,24 @@ namespace SME.SGP.Aplicacao
     public class ObterComponentesCurricularesQuePodeVisualizarHojeQueryHandler : IRequestHandler<ObterComponentesCurricularesQuePodeVisualizarHojeQuery, string[]>
     {
         private readonly IServicoEol servicoEol;
+        private readonly IMediator mediator;
 
-        public ObterComponentesCurricularesQuePodeVisualizarHojeQueryHandler(IServicoEol servicoEol)
+        public ObterComponentesCurricularesQuePodeVisualizarHojeQueryHandler(IServicoEol servicoEol, IMediator mediator)
         {
             this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<string[]> Handle(ObterComponentesCurricularesQuePodeVisualizarHojeQuery request, CancellationToken cancellationToken)
         {
             var componentesCurricularesParaVisualizar = new List<string>();
 
-            var componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo, request.UsuarioLogado.CriadoRF, request.UsuarioLogado.PerfilAtual);
-            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado.Select(b => b.Codigo.ToString());            
+            var componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo, request.UsuarioLogado.CodigoRf, request.UsuarioLogado.PerfilAtual);
+            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado?.Select(b => b.Codigo.ToString());            
 
             foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
             {
-                if (await PodePersistirTurmaDisciplina(request.UsuarioLogado.CriadoRF, request.TurmaCodigo, componenteParaVerificarAtribuicao))
+                if (await PodePersistirTurmaDisciplina(request.UsuarioLogado.CodigoRf, request.TurmaCodigo, componenteParaVerificarAtribuicao))
                     componentesCurricularesParaVisualizar.Add(componenteParaVerificarAtribuicao);
             }
 
@@ -36,12 +38,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesUsuarioLogado(string turmaCodigo, string criadoRF, Guid perfilAtual)
         {
-            return await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, criadoRF, perfilAtual);
+            return await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, criadoRF, perfilAtual));
         }
         public async Task<bool> PodePersistirTurmaDisciplina(string criadoRF, string turmaCodigo, string componenteParaVerificarAtribuicao)
         {
             var hoje = DateTime.Today;
-            return await servicoEol.PodePersistirTurmaDisciplina(criadoRF, turmaCodigo, componenteParaVerificarAtribuicao, hoje);
+            return await mediator.Send(new PodePersistirTurmaDisciplinaQuery(criadoRF, turmaCodigo, componenteParaVerificarAtribuicao, hoje));
         }
     }
 }
