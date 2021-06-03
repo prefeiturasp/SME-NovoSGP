@@ -201,14 +201,14 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<RegistroAusenciaAluno>(query, new { aulaId });
         }
 
-        public RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId)
+        public async Task<RegistroFrequencia> ObterRegistroFrequenciaPorAulaId(long aulaId)
         {
             var query = @"select *
                             from registro_frequencia
                           where not excluido
                             and aula_id = @aulaId";
 
-            return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<RegistroFrequencia>(query, new { aulaId });
         }
 
         public async Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string turma, short bimestre, short anoLetivo)

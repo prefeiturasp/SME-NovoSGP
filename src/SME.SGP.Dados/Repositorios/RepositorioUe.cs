@@ -356,5 +356,12 @@ namespace SME.SGP.Dados.Repositorios
         {
             return await contexto.Conexao.QueryAsync<string>("select ue_id from ue where dre_id = @dreId", new { dreId });
         }
+
+        public async Task<int> ObterQuantidadeUesPorAnoLetivoAsync(int anoLetivo)
+        {
+            var query = @"select count(distinct(t.ue_id)) from turma t where t.ano_letivo = @anoLetivo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<int>(query, new { anoLetivo });
+        }
     }
 }

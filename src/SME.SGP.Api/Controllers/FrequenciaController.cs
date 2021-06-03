@@ -22,10 +22,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar(long aulaId, long? componenteCurricularId, [FromServices] IConsultasFrequencia consultasFrequencia)
+        public async Task<IActionResult> Listar([FromQuery] FiltroFrequenciaDto filtro, [FromServices] IObterFrequenciaPorAulaUseCase useCase)
         {
-            var retorno = await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId, componenteCurricularId);
-
+            var retorno = await useCase.Executar(filtro);            
+            //var retorno = await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId, componenteCurricularId);
             if (retorno == null)
                 return NoContent();
 
@@ -78,9 +78,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(200)]
         [Permissao(Permissao.PDA_I, Policy = "Bearer")]
-        public async Task<IActionResult> Registrar([FromBody] FrequenciaDto frequenciaDto, [FromServices] IComandoFrequencia comandoFrequencia)
+        public async Task<IActionResult> Registrar([FromBody] FrequenciaDto frequenciaDto, [FromServices] IInserirFrequenciaUseCase useCase)
         {
-            await comandoFrequencia.Registrar(frequenciaDto);
+            await useCase.Executar(frequenciaDto);
             return Ok();
         }
 
@@ -114,6 +114,24 @@ namespace SME.SGP.Api.Controllers
         {
             await calculoFrequenciaTurmaDisciplinaUseCase.IncluirCalculoFila(calcularFrequenciaDto);
             return Ok();
+        }
+
+        [HttpGet("frequencias/pre-definidas")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> ObterFrequenciasPreDefinidas([FromQuery] FiltroFrequenciaPreDefinidaDto filtro, [FromServices] IObterFrequenciasPreDefinidasUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));           
+        }
+
+        [HttpGet("frequencias/tipos")]
+        [ProducesResponseType(typeof(TipoFrequenciaDto), 500)]
+        [ProducesResponseType(typeof(TipoFrequenciaDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> ObterTiposFrequenciasPorModalidade([FromQuery] TipoFrequenciaFiltroDto filtro, [FromServices] IObterTiposFrequenciasUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
         }
     }
 }

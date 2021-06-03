@@ -224,22 +224,21 @@ namespace SME.SGP.Aplicacao
                     {
                         alunoDto.QuantidadeFaltas = frequenciaAluno.TotalAusencias;
                         alunoDto.QuantidadeCompensacoes = frequenciaAluno.TotalCompensacoes;
-                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia;
+                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia.ToString();
                     }
                     else
-                    {
-                        // Quando não tem registro de frequencia assume 100%
+                    {                        
                         alunoDto.QuantidadeFaltas = 0;
                         alunoDto.QuantidadeCompensacoes = 0;
-                        alunoDto.PercentualFrequencia = 100;
+                        alunoDto.PercentualFrequencia = string.Empty;
                     }
 
                     // Carrega Frequencia do aluno
                     if (aluno.CodigoAluno != null)
                     {
                         if (fechamentoBimestre.EhSintese && fechamentoTurma == null)
-                        {
-                            var sinteseDto = await consultasFrequencia.ObterSinteseAluno(alunoDto.PercentualFrequencia, disciplinaEOL);
+                        {                            
+                            var sinteseDto = await consultasFrequencia.ObterSinteseAluno(frequenciaAluno.PercentualFrequencia, disciplinaEOL);
 
                             alunoDto.SinteseId = sinteseDto.Id;
                             alunoDto.Sintese = sinteseDto.Valor;

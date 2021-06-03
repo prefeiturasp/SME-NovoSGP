@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
             => await repositorioFrequencia.FrequenciaAulaRegistrada(aulaId);
 
-        public async Task<double> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
+        public async Task<double?> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
         {
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
             var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
             
             if (frequenciaAluno == null)
-                return 100;
+                return null;
 
             //Particularidade de 2020
             if (turma.AnoLetivo.Equals(2020))
@@ -161,126 +161,16 @@ namespace SME.SGP.Aplicacao
             return alunosAusentesDto;
         }
 
-        public async Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId, long? disciplinaId = null)
-        {
-            var aula = repositorioAula.ObterPorId(aulaId);
-            if (aula == null)
-                throw new NegocioException("Aula não encontrada.");
-
-
-
-            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
-            if (alunosDaTurma == null || !alunosDaTurma.Any())
-                throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
-
-            var turma = await repositorioTurma.ObterPorCodigo(aula.TurmaId);
-            if (turma == null)
-                throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
-
-            FrequenciaDto registroFrequenciaDto = ObterRegistroFrequencia(aulaId, aula, turma);
-
-            var ausencias = servicoFrequencia.ObterListaAusenciasPorAula(aulaId);
-            if (ausencias == null)
-                ausencias = new List<RegistroAusenciaAluno>();
-
-            var bimestre = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(aula.TipoCalendarioId, aula.DataAula);
-            if (bimestre == null)
-                throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
-
-
-            registroFrequenciaDto.TemPeriodoAberto = await consultasTurma.TurmaEmPeriodoAberto(aula.TurmaId, DateTime.Today, bimestre.Bimestre);
-
-            var parametroPercentualCritico = await repositorioParametrosSistema.ObterValorPorTipoEAno(
-                                                    TipoParametroSistema.PercentualFrequenciaCritico,
-                                                    bimestre.PeriodoInicio.Year);
-            if (parametroPercentualCritico == null)
-                throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
-
-            var percentualCritico = int.Parse(parametroPercentualCritico);
-            var percentualAlerta = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(
-                                                    TipoParametroSistema.PercentualFrequenciaAlerta,
-                                                    bimestre.PeriodoInicio.Year));
-
-            var disciplinaAula = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId.HasValue ? disciplinaId.Value : Convert.ToInt64(aula.DisciplinaId) });
-
-            if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
-                throw new NegocioException("Componente curricular da aula não encontrado");
-
-            var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoNaAulaQuery(aulaId));
-
-            foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
-            {
-                // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
-                // se a matrícula foi ativada após a data da aula                
-                if ((aluno.EstaInativo(aula.DataAula) && aluno.DataSituacao < bimestre.PeriodoInicio) ||
-                    (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataSituacao > aula.DataAula))
-                    continue;
-
-                if (aula.DataAula < aluno.DataMatricula.Date)
-                    continue;
-
-                if (aluno.EstaInativo(aula.DataAula) && aluno.DataSituacao < aula.DataAula)
-                    continue;
-
-                var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
-                var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
-                {
-                    CodigoAluno = aluno.CodigoAluno,
-                    NomeAluno = aluno.NomeAluno,
-                    NumeroAlunoChamada = aluno.NumeroAlunoChamada,
-                    CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
-                    SituacaoMatricula = aluno.SituacaoMatricula,
-                    DataSituacao = aluno.DataSituacao,
-                    DataNascimento = aluno.DataNascimento,
-                    Desabilitado = aluno.EstaInativo(aula.DataAula) || aula.EhDataSelecionadaFutura,
-                    PermiteAnotacao = aluno.EstaAtivo(aula.DataAula),
-                    PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno),
-                    NomeResponsavel = aluno.NomeResponsavel,
-                    TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
-                    CelularResponsavel = aluno.CelularResponsavel,
-                    DataAtualizacaoContato = aluno.DataAtualizacaoContato,
-                    EhAtendidoAEE = alunoPossuiPlanoAEE
-                };
-
-                // Marcador visual da situação
-                registroFrequenciaAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestre, turma.EhTurmaInfantil);
-
-                // Indicativo de frequencia do aluno
-                aluno.CodigoTurma = long.Parse(turma.CodigoTurma);
-                registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(aluno, aula.DisciplinaId, bimestre, percentualAlerta, percentualCritico);
-
-                if (!disciplinaAula.FirstOrDefault().RegistraFrequencia)
-                {
-                    registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
-                    continue;
-                }
-
-                var ausenciasAluno = ausencias.Where(c => c.CodigoAluno == aluno.CodigoAluno);
-
-                for (int numeroAula = 1; numeroAula <= aula.Quantidade; numeroAula++)
-                {
-                    registroFrequenciaAluno.Aulas.Add(new FrequenciaAulaDto
-                    {
-                        NumeroAula = numeroAula,
-                        Compareceu = !ausenciasAluno.Any(c => c.NumeroAula == numeroAula)
-                    });
-                }
-
-                registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
-            }
-
-            registroFrequenciaDto.Desabilitado = registroFrequenciaDto.ListaFrequencia.All(c => c.Desabilitado) || aula.EhDataSelecionadaFutura;
-
-            return registroFrequenciaDto;
-        }
-
         public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
             => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual);
 
-        public async Task<SinteseDto> ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina)
+        public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina)
         {
-            var sintese = percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
-                        SinteseEnum.Frequente : SinteseEnum.NaoFrequente;
+            var sintese = percentualFrequencia != null ? 
+                SinteseEnum.NaoFrequente :
+                percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
+                SinteseEnum.Frequente : 
+                SinteseEnum.NaoFrequente;
 
             return new SinteseDto()
             {
@@ -313,75 +203,6 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Turma não localizada!");
 
             return turma;
-        }
-
-        private IndicativoFrequenciaDto ObterIndicativoFrequencia(AlunoPorTurmaResposta aluno, string disciplinaId, PeriodoEscolar bimestre, int percentualAlerta, int percentualCritico)
-        {
-            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(aluno.CodigoAluno, disciplinaId, bimestre.Id, TipoFrequenciaAluno.PorDisciplina, aluno.CodigoTurma.ToString());
-            // Frequencia não calculada
-            if (frequenciaAluno == null)
-            {
-                if (aluno.PodeEditarNotaConceito())
-                    return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = 100 };
-
-                return null;
-            }
-
-            int percentualFrequencia = (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0);
-            // Critico
-            if (percentualFrequencia <= percentualCritico)
-                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequencia };
-
-            // Alerta
-            if (percentualFrequencia <= percentualAlerta)
-                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequencia };
-
-            return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequencia };
-        }
-
-        private FrequenciaDto ObterRegistroFrequencia(long aulaId, Aula aula, Turma turma)
-        {
-            var registroFrequencia = servicoFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
-            if (registroFrequencia == null)
-            {
-                registroFrequencia = new RegistroFrequencia(aula);
-            }
-            var registroFrequenciaDto = new FrequenciaDto(aulaId)
-            {
-                AlteradoEm = registroFrequencia.AlteradoEm,
-                AlteradoPor = registroFrequencia.AlteradoPor,
-                AlteradoRF = registroFrequencia.AlteradoRF,
-                CriadoEm = registroFrequencia.CriadoEm,
-                CriadoPor = registroFrequencia.CriadoPor,
-                CriadoRF = registroFrequencia.CriadoRF,
-                Id = registroFrequencia.Id,
-                Desabilitado = !aula.PermiteRegistroFrequencia(turma)
-            };
-            return registroFrequenciaDto;
-        }
-
-        private string ObterTipoResponsavel(string tipoResponsavel)
-        {
-            switch (tipoResponsavel)
-            {
-                case "1":
-                    {
-                        return TipoResponsavel.Filicacao1.Name();
-                    }
-                case "2":
-                    {
-                        return TipoResponsavel.Filiacao2.Name();
-                    }
-                case "3":
-                    {
-                        return TipoResponsavel.ResponsavelLegal.Name();
-                    }
-                case "4":
-                    {
-                        return TipoResponsavel.ProprioEstudante.Name();
-                    }
-            }
-            return TipoResponsavel.Filicacao1.ToString();
         }
 
 

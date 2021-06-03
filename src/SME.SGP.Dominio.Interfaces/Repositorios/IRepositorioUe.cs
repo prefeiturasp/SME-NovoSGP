@@ -42,5 +42,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task AtualizarAsync(Ue ueParaAtualizar);
         Task<Ue> ObterUeComDrePorId(long ueId);
         Task<IEnumerable<string>> ObterUesCodigosPorDreAsync(long dreId);
+        Task<int> ObterQuantidadeUesPorAnoLetivoAsync(int anoLetivo);
     }
 }
