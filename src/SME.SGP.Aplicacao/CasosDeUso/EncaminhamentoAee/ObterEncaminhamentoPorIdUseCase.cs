@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao
             {
                 case SituacaoAEE.Rascunho:
                 case SituacaoAEE.Devolvido:
-                    return await EhProfessorDaTurma(usuarioLogado, encaminhamento.Turma) || await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma);
+                    return true;
                 case SituacaoAEE.Encaminhado:
                     return await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma);
                 case SituacaoAEE.Analise:
