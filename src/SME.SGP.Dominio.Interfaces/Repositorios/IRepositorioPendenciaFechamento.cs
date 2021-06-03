@@ -15,5 +15,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> ExistePendenciaFechamentoPorPendenciaId(long pendenciaId);
         Task<IEnumerable<PendenciaParaFechamentoConsolidadoDto>> ObterPendenciasParaFechamentoConsolidado(long turmaId, int bimestre, long componenteCurricularId);
         Task<DetalhamentoPendenciaFechamentoConsolidadoDto> ObterDetalhamentoPendenciaFechamentoConsolidado(long pendenciaId);
+        Task<DetalhamentoPendenciaAulaDto> ObterDetalhamentoPendenciaAula(long pendenciaId);
     }
 }
