@@ -11,12 +11,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesQuePodeVisualizarHojeQueryHandler : IRequestHandler<ObterComponentesCurricularesQuePodeVisualizarHojeQuery, string[]>
     {
-        private readonly IServicoEol servicoEol;
         private readonly IMediator mediator;
 
-        public ObterComponentesCurricularesQuePodeVisualizarHojeQueryHandler(IServicoEol servicoEol, IMediator mediator)
+        public ObterComponentesCurricularesQuePodeVisualizarHojeQueryHandler(IMediator mediator)
         {
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
