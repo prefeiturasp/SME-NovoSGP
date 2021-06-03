@@ -293,45 +293,38 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "", bool filtroEhCodigo = false)
         {
-            try
+            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
+            var query = new StringBuilder();
+            query.AppendLine("select distinct abreviacao, ");
+            query.AppendLine("codigo,");
+            query.AppendLine("nome,");
+            query.AppendLine("dre_id as id");
+            query.AppendLine("from f_abrangencia_dres(@login , @perfil, @consideraHistorico, @modalidade, @semestre, @anoLetivo  )");
+
+            if (!string.IsNullOrWhiteSpace(filtro))
             {
-                // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-                var query = new StringBuilder();
-                query.AppendLine("select distinct abreviacao, ");
-                query.AppendLine("codigo,");
-                query.AppendLine("nome,");
-                query.AppendLine("dre_id as id");
-                query.AppendLine("from f_abrangencia_dres(@login , @perfil, @consideraHistorico, @modalidade, @semestre, @anoLetivo  )");
+                filtro = $"%{filtro.ToUpper()}%";
 
-                if (!string.IsNullOrWhiteSpace(filtro))
-                {
-                    filtro = $"%{filtro.ToUpper()}%";
-
-                    if (filtroEhCodigo)
-                        query.AppendLine("where upper(codigo) like @filtro");
-                    else
-                        query.AppendLine("where upper(nome) like @filtro");
-                        query.AppendLine("limit 10;");
-                }
-                var parametros = new
-                {
-                    login,
-                    perfil,
-                    consideraHistorico,
-                    modalidade = modalidade ?? 0,
-                    semestre = periodo,
-                    anoLetivo,
-                    filtro
-                };
-
-                return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query.ToString(), parametros)).AsList();
+                if (filtroEhCodigo)
+                    query.AppendLine("where upper(codigo) like @filtro");
+                else
+                    query.AppendLine("where upper(nome) like @filtro");
+                query.AppendLine("limit 10;");
             }
-
-            catch (Exception ex)
+            var parametros = new
             {
+                login,
+                perfil,
+                consideraHistorico,
+                modalidade = modalidade ?? 0,
+                semestre = periodo,
+                anoLetivo,
+                filtro
+            };
 
-                throw ex;
-            }
+            return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query.ToString(), parametros)).AsList();
+
+
         }
 
         public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas)
@@ -396,7 +389,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = new StringBuilder();
-           
+
             query.AppendLine("select distinct codigo,");
             query.AppendLine("nome as NomeSimples,");
             query.AppendLine("tipoescola,");
@@ -432,7 +425,7 @@ namespace SME.SGP.Dados.Repositorios
                 ignorarTiposUE,
                 filtro
             };
-            
+
             return (await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query.ToString(), parametros)).AsList();
         }
 
