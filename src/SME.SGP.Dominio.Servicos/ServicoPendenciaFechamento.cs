@@ -66,6 +66,11 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Componente curricular não encontrado.");
                 }
                 var mensagem = new StringBuilder($"A aulas de reposição de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão pendentes de aprovação:<br>");
+
+                var mensagemHtml = new StringBuilder($"<table><tr><td colspan='2'>A aulas de reposição de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão pendentes de aprovação:</td></tr>");
+
+                mensagemHtml.Append("<tr><td>Professor</td><td>Data</td></tr>");
+
                 foreach (var aula in aulasPendentes.OrderBy(a => a.DataAula))
                 {
                     var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
@@ -73,11 +78,12 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         throw new NegocioException($"Professor com RF {aula.ProfessorRf} não encontrado.");
                     }
-                    mensagem.AppendLine($"Professor { aula.ProfessorRf} - { professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
+                    mensagem.AppendLine($"Professor {aula.ProfessorRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
+                    mensagemHtml.Append($"<tr><td>{aula.ProfessorRf} - {professor.Nome}</td><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td></tr>");
                 }
-
+                mensagemHtml.Append("</table>");
                 var professorRf = aulasPendentes.First().ProfessorRf;
-                await GerarPendencia(fechamentoId, TipoPendencia.AulasReposicaoPendenteAprovacao, mensagem.ToString(), professorRf);
+                await GerarPendencia(fechamentoId, TipoPendencia.AulasReposicaoPendenteAprovacao, mensagem.ToString(), professorRf, mensagemHtml.ToString());
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasReposicaoPendenteAprovacao);
@@ -99,17 +105,23 @@ namespace SME.SGP.Dominio.Servicos
 
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:<br>");
 
-                // Carrega lista de professores
+                var mensagemHtml = new StringBuilder($"<table><tr><td colspan='2'>A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:</td></tr>");
+
+                mensagemHtml.Append("<tr><td>Professor</td><td>Data</td></tr>");
+
                 var usuariosProfessores = CarregaListaProfessores(registrosAulasSemFrequencia.Select(a => a.ProfessorRf).Distinct());
 
                 foreach (var aula in registrosAulasSemFrequencia.OrderBy(x => x.DataAula))
                 {
                     var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == aula.ProfessorRf);
-                    mensagem.AppendLine($"Professor { aula.ProfessorRf} - { professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
+                    mensagem.AppendLine($"Professor {aula.ProfessorRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
+                    mensagemHtml.Append($"<tr><td>{aula.ProfessorRf} - {professor.Nome}</td><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td></tr>");
                 }
 
+                mensagemHtml.Append("</table>");
+
                 var professorRf = registrosAulasSemFrequencia.First().ProfessorRf;
-                await GerarPendencia(fechamentoId, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento, mensagem.ToString(), professorRf);
+                await GerarPendencia(fechamentoId, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento, mensagem.ToString(), professorRf, mensagemHtml.ToString());
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento);
@@ -146,15 +158,21 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem plano de aula registrado até a data do fechamento:<br>");
 
+                var mensagemHtml = new StringBuilder($"<table><tr><td colspan='2'>A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem plano de aula registrado até a data do fechamento:</td></tr>");
+
+                mensagemHtml.Append("<tr><td>Professor</td><td>Data</td></tr>");
+
                 var usuariosProfessores = CarregaListaProfessores(registrosAulasSemPlanoAula.Select(a => a.ProfessorRf).Distinct());
                 foreach (var aula in registrosAulasSemPlanoAula.OrderBy(a => a.DataAula))
                 {
                     var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == aula.ProfessorRf);
-                    mensagem.AppendLine($"Professor { aula.ProfessorRf} - { professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
+                    mensagem.AppendLine($"Professor {aula.ProfessorRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
+                    mensagemHtml.Append($"<tr><td>{aula.ProfessorRf} - {professor.Nome}</td><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td></tr>");
                 }
+                mensagemHtml.Append("</table>");
 
                 var professorRf = registrosAulasSemPlanoAula.First().ProfessorRf;
-                await GerarPendencia(fechamentoId, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento, mensagem.ToString(), professorRf);
+                await GerarPendencia(fechamentoId, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento, mensagem.ToString(), professorRf, mensagemHtml.ToString());
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
@@ -173,15 +191,21 @@ namespace SME.SGP.Dominio.Servicos
             if (registrosAvaliacoesSemNotaParaNenhumAluno != null && registrosAvaliacoesSemNotaParaNenhumAluno.Any())
             {
                 var mensagem = new StringBuilder($"As avaliações a seguir não tiveram notas lançadas para nenhum aluno<br>");
+
+                var mensagemHtml = new StringBuilder($"<table><tr><td colspan='3'>As avaliações a seguir não tiveram notas lançadas para nenhum aluno:</td></tr>");
+
+                mensagemHtml.Append("<tr><td>Data da Avaliação</td><td>Título</td><td>Professor</td></tr>");
+
                 var usuariosProfessores = CarregaListaProfessores(registrosAvaliacoesSemNotaParaNenhumAluno.Select(a => a.ProfessorRf).Distinct());
                 foreach (var avaliacao in registrosAvaliacoesSemNotaParaNenhumAluno.OrderBy(x => x.DataAvaliacao))
                 {
                     var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == avaliacao.ProfessorRf);
-                    mensagem.AppendLine($"Professor { avaliacao.ProfessorRf} - { professor.Nome} - {avaliacao.NomeAvaliacao}.<br>");
+                    mensagem.AppendLine($"Professor {avaliacao.ProfessorRf} - {professor.Nome} - {avaliacao.NomeAvaliacao}.<br>");
+                    mensagemHtml.Append($"<tr><td>{avaliacao.DataAvaliacao.ToString("dd/MM/yyyy")}</td><td>{avaliacao.NomeAvaliacao}</td><td>{professor.Nome} - {avaliacao.ProfessorRf}</td></tr>");
                 }
-
+                mensagemHtml.Append("</table>");
                 var professorRf = registrosAvaliacoesSemNotaParaNenhumAluno.First().ProfessorRf;
-                await GerarPendencia(fechamentoId, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno, mensagem.ToString(), professorRf);
+                await GerarPendencia(fechamentoId, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno, mensagem.ToString(), professorRf, mensagemHtml.ToString());
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno);
@@ -197,7 +221,9 @@ namespace SME.SGP.Dominio.Servicos
                 var percentualReprovacao = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
                 var mensagem = new StringBuilder($"O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes<br>");
 
-                await GerarPendencia(fechamentoTurma.Id, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem.ToString(), fechamentoTurma.CriadoRF);
+                var mensagemHtml = new StringBuilder($"<table><tr><td>O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes</td></tr></table>");
+
+                await GerarPendencia(fechamentoTurma.Id, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem.ToString(), fechamentoTurma.CriadoRF, mensagemHtml.ToString());
                 alunosAbaixoMedia = 1;
             }
             else
@@ -209,19 +235,23 @@ namespace SME.SGP.Dominio.Servicos
             return alunosAbaixoMedia;
         }
 
-        private async Task GerarPendencia(long fechamentoId, TipoPendencia tipoPendencia, string mensagem, string professorRf)
+        private async Task GerarPendencia(long fechamentoId, TipoPendencia tipoPendencia, string mensagem, string professorRf, string descricaoHtml)
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 repositorioPendencia.ExcluirPendenciasFechamento(fechamentoId, tipoPendencia);
 
-                var pendencia = new Pendencia(tipoPendencia, tipoPendencia.Name(), mensagem);
-                repositorioPendencia.Salvar(pendencia);
+                // var pendencia = new Pendencia(tipoPendencia, tipoPendencia.Name(), mensagem);
+                // repositorioPendencia.Salvar(pendencia);
 
-                var pendenciaFechamento = new PendenciaFechamento(fechamentoId, pendencia.Id);
-                repositorioPendenciaFechamento.Salvar(pendenciaFechamento);
+                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(tipoPendencia, mensagem, "", tipoPendencia.Name(), descricaoHtml));
 
-                await RelacionaPendenciaUsuario(pendencia.Id, professorRf);
+              //  var pendenciaFechamento = new PendenciaFechamento(fechamentoId, pendenciaId);
+              //  repositorioPendenciaFechamento.Salvar(pendenciaFechamento);
+
+                await mediator.Send(new SalvarPendenciaFechamentoCommand(fechamentoId, pendenciaId));
+
+                await RelacionaPendenciaUsuario(pendenciaId, professorRf);
 
                 unitOfWork.PersistirTransacao();
             }
@@ -292,7 +322,7 @@ namespace SME.SGP.Dominio.Servicos
             if (registrosNotasAlteradas != null && registrosNotasAlteradas.Any())
             {
                 var mensagem = new StringBuilder($"Notas de fechamento alteradas fora do ano de vigência da turma {turmaCodigo}. Necessário aprovação do workflow");
-                await GerarPendencia(fechamentoId, TipoPendencia.AlteracaoNotaFechamento, mensagem.ToString(), professorRf);
+                await GerarPendencia(fechamentoId, TipoPendencia.AlteracaoNotaFechamento, mensagem.ToString(), professorRf, "");
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
