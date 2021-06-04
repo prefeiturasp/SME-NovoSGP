@@ -59,7 +59,7 @@ namespace SME.SGP.Dados
 
             query.AppendLine("order by ccgao.grupo_matriz_id, ccgao.area_conhecimento_id, ccgao.ordem, cc.descricao_sgp");
 
-            return await database.Conexao.QueryAsync<ConsolidacaoTurmaComponenteCurricularDto>(query.ToString(), new { turmaId, bimestre });
+            return await database.Conexao.QueryAsync<ConsolidacaoTurmaComponenteCurricularDto>(query.ToString(), new { turmaId, bimestre, situacoesFechamento });
         }
 
     }

@@ -72,9 +72,9 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<ConsolidacaoTurmaComponenteCurricularDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterComponentesFechamentoConsolidadoPorTurmaBimestre(long turmaId, int bimestre, int situacaoConselhoClasse, [FromServices] IObterComponentesFechamentoConsolidadoPorTurmaBimestreUseCase useCase)
+        public async Task<IActionResult> ObterComponentesFechamentoConsolidadoPorTurmaBimestre(long turmaId, int bimestre, int situacaoFechamento, [FromServices] IObterComponentesFechamentoConsolidadoPorTurmaBimestreUseCase useCase)
         {
-            var listaComponentes = await useCase.Executar(new FiltroComponentesFechamentoConsolidadoDto(turmaId, bimestre, situacaoConselhoClasse));
+            var listaComponentes = await useCase.Executar(new FiltroComponentesFechamentoConsolidadoDto(turmaId, bimestre, situacaoFechamento));
 
             return Ok(listaComponentes);
         }
