@@ -38,10 +38,6 @@ namespace SME.SGP.Dados.Repositorios
                            and t.modalidade_codigo <> 1
                            and a.tipo_aula = 1
 
-                           and pe.bimestre = 1
-                           and a.turma_id = '2240275'
-                           and a.tipo_calendario_id = 24
-
                          group by
                          	a.turma_id, t.nome, ue.ue_id , ue.nome, dre.dre_id, dre.nome, a.disciplina_id,  a.professor_rf, pe.bimestre, apb.aulas_previstas
                          having COUNT(a.id) <> coalesce(apb.aulas_previstas, 0)
