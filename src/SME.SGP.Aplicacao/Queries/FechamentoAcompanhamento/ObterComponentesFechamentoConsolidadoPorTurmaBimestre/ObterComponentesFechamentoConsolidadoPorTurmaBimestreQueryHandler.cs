@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ConsolidacaoTurmaComponenteCurricularDto>> Handle(ObterComponentesFechamentoConsolidadoPorTurmaBimestreQuery request, CancellationToken cancellationToken)
         {
-            var componentes = await repositorioFechamentoConsolidado.ObterComponentesFechamentoConsolidadoPorTurmaBimestre(request.TurmaId, request.Bimestre);
+            var componentes = await repositorioFechamentoConsolidado.ObterComponentesFechamentoConsolidadoPorTurmaBimestre(request.TurmaId, request.Bimestre, request.SituacoesFechamento);
             return componentes;
         }
     }

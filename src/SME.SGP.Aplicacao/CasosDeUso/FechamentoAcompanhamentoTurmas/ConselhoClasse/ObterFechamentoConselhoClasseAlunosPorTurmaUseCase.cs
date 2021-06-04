@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, 1));
 
             var alunos = await mediator.Send(new ObterEstudantesAtivosPorTurmaEDataReferenciaQuery(turma.CodigoTurma, periodoEscolar.PeriodoInicio));
-            var consolidadoConselhosClasses = await mediator.Send(new ObterConselhoClasseConsolidadoPorTurmaBimestreQuery(turma.Id, param.Bimestre));
+            var consolidadoConselhosClasses = await mediator.Send(new ObterConselhoClasseConsolidadoPorTurmaBimestreQuery(turma.Id, param.Bimestre, param.SituacaoConselhoClasse));
 
             alunos = param.Bimestre == 0 ?  alunos.ToList() : alunos.Where(a => a.DataSituacao <= periodoEscolar.PeriodoFim).ToList();
 
