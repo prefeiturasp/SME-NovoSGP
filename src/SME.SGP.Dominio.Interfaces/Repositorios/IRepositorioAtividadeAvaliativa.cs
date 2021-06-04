@@ -32,5 +32,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> VerificarSeJaExisteAvaliacaoRegencia(DateTime dataAvaliacao, string dreId, string ueId, string turmaId, string[] disciplinasId, string[] disciplinasContidaId, string professorRf, long? id);
 
         Task<bool> VerificarSeJaExistePorTipoAvaliacao(long tipoAvaliacaoId);
+        Task<IEnumerable<AtividadeAvaliativa>> ObterPorTurmaDisciplinasPeriodoAsync(string turmaCodigo, string[] disciplinasId, DateTime inicioPeriodo, DateTime fimPeriodo);
     }
 }
