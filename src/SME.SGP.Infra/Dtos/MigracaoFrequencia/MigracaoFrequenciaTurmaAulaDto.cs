@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
 {
     public class MigracaoFrequenciaTurmaAulaDto
     {
-        public MigracaoFrequenciaTurmaAulaDto(string turmaCodigo, long aulaId, int quantidadeAula, long registroFrequenciaId, IEnumerable<string> codigosAlunos)
+        public MigracaoFrequenciaTurmaAulaDto(string turmaCodigo, long aulaId, int quantidadeAula, long registroFrequenciaId, string[] codigosAlunos)
         {
             TurmaCodigo = turmaCodigo;
             AulaId = aulaId;
@@ -19,6 +19,6 @@ namespace SME.SGP.Infra
         public long AulaId { get; set; }
         public int QuantidadeAula { get; set; }
         public long RegistroFrequenciaId { get; set; }
-        public IEnumerable<string> CodigosAlunos { get; set; }
+        public string[] CodigosAlunos { get; set; }
     }
 }

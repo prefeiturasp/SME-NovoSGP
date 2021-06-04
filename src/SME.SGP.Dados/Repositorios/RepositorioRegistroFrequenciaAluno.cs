@@ -91,15 +91,15 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<FiltroMigracaoFrequenciaAulasDto>(query, new { anosLetivos });
         }
 
-        public async Task<bool> ExisteRegistroFrequenciaAlunoAsync(long registroFrequenciaId, string codigoAluno, int numeroAula)
+        public async Task<IEnumerable<string>> ObterCodigosAlunosComRegistroFrequenciaAlunoAsync(long registroFrequenciaId, string[] codigosAlunos, int numeroAula)
         {
-            var query = @"  select 1 
+            var query = @"  select distinct(codigo_aluno) 
 				              from registro_frequencia_aluno
 		  		             where registro_frequencia_id = @registroFrequenciaId
 		  		               and numero_aula = @numeroAula
-		  		               and codigo_aluno = @codigoAluno";
+		  		               and codigo_aluno = ANY(@codigosAlunos)";
 
-            var resultado = await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { registroFrequenciaId, codigoAluno, numeroAula });
+            var resultado = await database.Conexao.QueryAsync<string>(query, new { registroFrequenciaId, codigosAlunos, numeroAula });
             return resultado;
         }
     }

@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                     continue;
                 codigosAlunosFitlrados.Add(aluno.CodigoAluno);
             }
-            var migracaoFrequenciaTurmaAula = new MigracaoFrequenciaTurmaAulaDto(dadosAula.TurmaCodigo, dadosAula.AulaId, dadosAula.QuantidadeAula, dadosAula.RegistroFrequenciaId, codigosAlunosFitlrados);
+            var migracaoFrequenciaTurmaAula = new MigracaoFrequenciaTurmaAulaDto(dadosAula.TurmaCodigo, dadosAula.AulaId, dadosAula.QuantidadeAula, dadosAula.RegistroFrequenciaId, codigosAlunosFitlrados.ToArray());
 
             try
             {

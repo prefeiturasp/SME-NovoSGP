@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -18,9 +19,15 @@ namespace SME.SGP.Aplicacao
             var contadorAula = 1;
             while(contadorAula <= dadosAula.QuantidadeAula)
             {
-                foreach(var codigoAluno in dadosAula.CodigosAlunos)
+                var codigosAlunosComRegistro = await mediator.Send(new CodigosAlunosComRegistroFrequenciaAlunoQuery(dadosAula.RegistroFrequenciaId, dadosAula.CodigosAlunos, contadorAula));
+                foreach (var codigoAluno in dadosAula.CodigosAlunos)
                 {
-                    var existeRegistro = await mediator.Send(new ExisteRegistroFrequenciaAlunoQuery(dadosAula.RegistroFrequenciaId, codigoAluno, contadorAula));
+                    var existeRegistro = false;
+                    if(codigosAlunosComRegistro != null && codigosAlunosComRegistro.Any())
+                    {
+                        var codigoAlunoExistente = codigosAlunosComRegistro.FirstOrDefault(c => c == codigoAluno);
+                        existeRegistro = codigoAlunoExistente != null;
+                    }
                     if (!existeRegistro)
                     {
                         var registro = new RegistroFrequenciaAluno()
