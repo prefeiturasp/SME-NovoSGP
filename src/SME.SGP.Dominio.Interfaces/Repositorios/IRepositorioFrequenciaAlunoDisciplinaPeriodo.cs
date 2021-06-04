@@ -32,5 +32,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task RemoverVariosAsync(long[] idsParaRemover);
         Task RemoverFrequenciaGeralAlunos(string[] alunos, string turmaCodigo, long periodoEscolarId);
         Task RemoverFrequenciasDuplicadas(string[] alunos, string turmaCodigo, long periodoEscolarId);
+        Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosDataAsync(string[] alunosCodigo, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string codigoTurma, string componenteCurricularId);
     }
 }
