@@ -7,7 +7,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public PendenciaMap()
         {
             ToTable("pendencia");
-            Map(c => c.DescricaoHtml).ToColumn("descracao_html");
+            Map(c => c.DescricaoHtml).ToColumn("descricao_html");
         }
     }
 }
