@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -27,9 +28,9 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<StatusTotalFechamentoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ListaTotalStatusFechamentos(long turmaId, int bimestre, [FromServices] IObterFechamentoConsolidadoPorTurmaBimestreUseCase useCase)
+        public async Task<IActionResult> ListaTotalStatusFechamentos(long turmaId, int bimestre, int situacaoFechamento, [FromServices] IObterFechamentoConsolidadoPorTurmaBimestreUseCase useCase)
         {
-            var listaStatus = await useCase.Executar(new FiltroFechamentoConsolidadoTurmaBimestreDto(turmaId, bimestre));
+            var listaStatus = await useCase.Executar(new FiltroFechamentoConsolidadoTurmaBimestreDto(turmaId, bimestre, situacaoFechamento));
 
             return Ok(listaStatus);
         }
@@ -38,9 +39,9 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<StatusTotalFechamentoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ListaTotalStatusConselhosClasse(long turmaId, int bimestre, [FromServices] IObterConselhoClasseConsolidadoPorTurmaBimestreUseCase useCase)
+        public async Task<IActionResult> ListaTotalStatusConselhosClasse(long turmaId, int bimestre, int situacaoConselhoClasse, [FromServices] IObterConselhoClasseConsolidadoPorTurmaBimestreUseCase useCase)
         {
-            var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoTurmaBimestreDto(turmaId, bimestre));
+            var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoTurmaBimestreDto(turmaId, bimestre, situacaoConselhoClasse));
 
             return Ok(listaStatus);
         }
@@ -49,11 +50,11 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<ConselhoClasseAlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ListaAlunosPorTurma(long turmaId, int bimestre, [FromServices] IObterFechamentoConselhoClasseAlunosPorTurmaUseCase useCase)
+        public async Task<IActionResult> ListaAlunosPorTurma(long turmaId, int bimestre, int situacaoConselhoClasse, [FromServices] IObterFechamentoConselhoClasseAlunosPorTurmaUseCase useCase)
         {
-            var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoTurmaBimestreDto(turmaId, bimestre));
+            var conselhoClasseAlunos = await useCase.Executar(new FiltroConselhoClasseConsolidadoTurmaBimestreDto(turmaId, bimestre, situacaoConselhoClasse));
 
-            return Ok(listaStatus);
+            return Ok(conselhoClasseAlunos);
         }
 
         [HttpGet("{turmaId}/conselho-classe/bimestres/{bimestre}/alunos/{alunoCodigo}/componentes-curriculares/detalhamento")]
@@ -71,9 +72,9 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<ConsolidacaoTurmaComponenteCurricularDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterComponentesFechamentoConsolidadoPorTurmaBimestre(long turmaId, int bimestre, [FromServices] IObterComponentesFechamentoConsolidadoPorTurmaBimestreUseCase useCase)
+        public async Task<IActionResult> ObterComponentesFechamentoConsolidadoPorTurmaBimestre(long turmaId, int bimestre, int situacaoConselhoClasse, [FromServices] IObterComponentesFechamentoConsolidadoPorTurmaBimestreUseCase useCase)
         {
-            var listaComponentes = await useCase.Executar(new FiltroComponentesFechamentoConsolidadoDto(turmaId, bimestre));
+            var listaComponentes = await useCase.Executar(new FiltroComponentesFechamentoConsolidadoDto(turmaId, bimestre, situacaoConselhoClasse));
 
             return Ok(listaComponentes);
         }

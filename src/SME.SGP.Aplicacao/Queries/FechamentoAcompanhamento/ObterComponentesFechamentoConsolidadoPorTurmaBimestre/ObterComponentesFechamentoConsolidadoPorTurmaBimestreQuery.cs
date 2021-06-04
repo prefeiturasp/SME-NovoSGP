@@ -7,14 +7,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesFechamentoConsolidadoPorTurmaBimestreQuery : IRequest<IEnumerable<ConsolidacaoTurmaComponenteCurricularDto>>
     {
-        public ObterComponentesFechamentoConsolidadoPorTurmaBimestreQuery(long turmaId, int bimestre)
+        public ObterComponentesFechamentoConsolidadoPorTurmaBimestreQuery(long turmaId, int bimestre, int[] situacoesFechamento)
         {
             TurmaId = turmaId;
             Bimestre = bimestre;
+            SituacoesFechamento = situacoesFechamento;
         }
 
         public long TurmaId { get; set; }
         public int Bimestre { get; set; }
+        public int[] SituacoesFechamento { get; set; }
     }
     public class ObterComponentesFechamentoConsolidadoPorTurmaBimestreQueryValidator : AbstractValidator<ObterComponentesFechamentoConsolidadoPorTurmaBimestreQuery>
     {
