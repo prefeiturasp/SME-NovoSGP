@@ -237,15 +237,9 @@ namespace SME.SGP.Dominio.Servicos
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                repositorioPendencia.ExcluirPendenciasFechamento(fechamentoId, tipoPendencia);
+                repositorioPendencia.ExcluirPendenciasFechamento(fechamentoId, tipoPendencia);               
 
-                // var pendencia = new Pendencia(tipoPendencia, tipoPendencia.Name(), mensagem);
-                // repositorioPendencia.Salvar(pendencia);
-
-                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(tipoPendencia, mensagem, "", tipoPendencia.Name(), descricaoHtml));
-
-              //  var pendenciaFechamento = new PendenciaFechamento(fechamentoId, pendenciaId);
-              //  repositorioPendenciaFechamento.Salvar(pendenciaFechamento);
+                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(tipoPendencia, mensagem, "", tipoPendencia.Name(), descricaoHtml));              
 
                 await mediator.Send(new SalvarPendenciaFechamentoCommand(fechamentoId, pendenciaId));
 
