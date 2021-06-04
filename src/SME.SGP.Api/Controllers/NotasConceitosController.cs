@@ -19,20 +19,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(NotasConceitosRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
-        public async Task<IActionResult> Get([FromQuery] ListaNotasConceitosConsultaRefatoradaDto consultaListaNotasConceitosDto, [FromServices] IObterNotasParaAvaliacoesUseCase obterNotasParaAvaliacoesUseCase,  [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
+        public async Task<IActionResult> Get([FromQuery] ListaNotasConceitosConsultaDto consultaListaNotasConceitosDto, [FromServices] IObterNotasParaAvaliacoesUseCase obterNotasParaAvaliacoesUseCase,  [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
         {
 
-            consultaListaNotasConceitosDto.PeriodoInicioTicks = 637489440000000000;
-            consultaListaNotasConceitosDto.PeriodoFimTicks = 637553376000000000;
-            consultaListaNotasConceitosDto.PeriodoEscolarId = 45;
-            //front ja possui
-            consultaListaNotasConceitosDto.Bimestre = 1;
-            //front ja possui
-            consultaListaNotasConceitosDto.TurmaId = 253453;
+            //consultaListaNotasConceitosDto.PeriodoInicioTicks = 637489440000000000;
+            //consultaListaNotasConceitosDto.PeriodoFimTicks = 637553376000000000;
+            //consultaListaNotasConceitosDto.PeriodoEscolarId = 45;
+            ////front ja possui
+            //consultaListaNotasConceitosDto.Bimestre = 1;
+            ////front ja possui
+            //consultaListaNotasConceitosDto.TurmaId = 253453;
 
-            return Ok(await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto)); 
+            //return Ok(await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto)); 
 
-            //return Ok(await consultasNotasConceitos.ListarNotasConceitos(consultaListaNotasConceitosDto));
+            return Ok(await consultasNotasConceitos.ListarNotasConceitos(consultaListaNotasConceitosDto));
         }
         [HttpGet("periodos")]
         [ProducesResponseType(typeof(NotasConceitosRetornoDto), 200)]
