@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<FechamentoConsolidadoComponenteTurma>> Handle(ObterFechamentoConsolidadoPorTurmaBimestreQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioFechamentoConsolidado.ObterFechamentosConsolidadoPorTurmaBimestre(request.TurmaId, request.Bimestre);
+            return await repositorioFechamentoConsolidado.ObterFechamentosConsolidadoPorTurmaBimestre(request.TurmaId, request.Bimestre, request.SituacoesFechamento);
         }
     }
 }
