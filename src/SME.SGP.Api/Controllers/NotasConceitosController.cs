@@ -24,7 +24,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto));             
         }
         [HttpGet("periodos")]
-        [ProducesResponseType(typeof(NotasConceitosRetornoDto), 200)]
+        [ProducesResponseType(typeof(IEnumerable<PeriodosParaConsultaNotasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
         public async Task<IActionResult> ObterPeriodosParaConsulta([FromQuery] ObterPeriodosParaConsultaNotasFiltroDto filtro, [FromServices] IObterPeriodosParaConsultaNotasUseCase obterNotasParaAvaliacoesUseCase)
