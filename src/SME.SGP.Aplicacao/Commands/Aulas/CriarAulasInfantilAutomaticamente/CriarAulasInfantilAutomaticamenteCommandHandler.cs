@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
                 var excluirAula = (diasNaoLetivos != null && diasNaoLetivos.Any(a => a.Data == aula.DataAula)) ||
                                   !turma.DataInicio.HasValue || 
                                   aula.DataAula.Date < turma.DataInicio.Value.Date ||
-                                  aulas.Any(a => a.DataAula.Date.Equals(aula.DataAula.Date) && a.Id < aula.Id);
+                                  aulas.Any(a => a.DataAula.Date.Equals(aula.DataAula.Date) && !a.Excluido && a.Id < aula.Id);
 
                 if (excluirAula)
                     aulasExclusao.Add(aula);
