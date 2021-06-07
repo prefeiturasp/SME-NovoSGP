@@ -1,5 +1,4 @@
-﻿
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -310,12 +309,13 @@ namespace SME.SGP.Dominio
                 if (disciplinasEol != null && disciplinasEol.Any())
                     ehTitular = disciplinasEol.Any(d => d.DisciplinaId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioPorRfQuery(professorRf));
-            var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Convert.ToInt64(disciplinaId), atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, usuarioLogado));
+                var usuarioLogado = await mediator.Send(new ObterUsuarioPorRfQuery(professorRf));
+                var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Convert.ToInt64(disciplinaId), atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, usuarioLogado));
 
-            if ((atividadeAvaliativa.EhCj && !atividadeAvaliativa.ProfessorRf.Equals(professorRf)) ||
-                (!atividadeAvaliativa.EhCj && !ehTitular && !usuarioPossuiAtribuicaoNaTurmaNaData))
-                throw new NegocioException("Somente o professor que criou a avaliação e/ou titular, pode atribuir e/ou editar notas/conceitos");
+                if ((atividadeAvaliativa.EhCj && !atividadeAvaliativa.ProfessorRf.Equals(professorRf)) ||
+                    (!atividadeAvaliativa.EhCj && !ehTitular && !usuarioPossuiAtribuicaoNaTurmaNaData))
+                    throw new NegocioException("Somente o professor que criou a avaliação e/ou titular, pode atribuir e/ou editar notas/conceitos");
+            }
         }
 
         private async Task<IEnumerable<NotaConceito>> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf, string disciplinaId,

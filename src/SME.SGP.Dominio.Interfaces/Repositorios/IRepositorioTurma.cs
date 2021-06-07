@@ -1,8 +1,9 @@
 ﻿using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Dominio.Interfaces
 {

@@ -287,9 +287,6 @@ namespace SME.SGP.Dados.Repositorios
                 semestre
             });
         }
-            return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
-        }
-
         public async Task SalvarConciliacaoTurma(string turmaId, string disciplinaId, DateTime dataReferencia, string alunos)
         {
             var query = @"insert into conciliacao_turma (turma_id, disciplina_id, data_referencia, alunos) 

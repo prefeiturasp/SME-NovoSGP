@@ -245,7 +245,7 @@ namespace SME.SGP.Aplicacao
                     NumeroChamada = aluno.NumeroAlunoChamada,
                     CodAluno = a.AlunoId,
                     Turma = aluno.TurmaEscola,
-                    TurmaId = aluno.CodigoTurma,
+                    TurmaId = aluno.CodigoTurma.Equals(0) ? Convert.ToInt64(turma.CodigoTurma) : aluno.CodigoTurma,
                     TurmaRecuperacaoParalelaId = turmaId,
                     EhAtendidoAEE = ehAtendidoAEE,
                     Respostas = alunosRecuperacaoParalela

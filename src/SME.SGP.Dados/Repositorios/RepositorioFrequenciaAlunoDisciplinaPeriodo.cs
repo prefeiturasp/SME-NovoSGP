@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio;
