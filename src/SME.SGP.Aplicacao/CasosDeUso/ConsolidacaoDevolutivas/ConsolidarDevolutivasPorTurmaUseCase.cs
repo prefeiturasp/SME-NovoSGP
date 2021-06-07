@@ -2,8 +2,6 @@
 using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -20,15 +18,9 @@ namespace SME.SGP.Aplicacao
             {
                 var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoDevolutivasTurma>();
 
-                var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(filtro.TurmaCodigo));
+                var devolutivasTurma = await mediator.Send(new ObterDevolutivaPorTurmaQuery(filtro.TurmaCodigo));
 
-                var frequenciaTurma = await mediator.Send(new ObterFrequenciaGeralPorTurmaQuery(filtro.TurmaCodigo));
-
-                var quantidadeEstimadaDevolutivas = 0;
-                var quantidadeRegistradaDevolutivas = 0;
-        
-                await RegistraConsolidacaoDevolutivasTurma(filtro.TurmaId, quantidadeEstimadaDevolutivas, quantidadeRegistradaDevolutivas);
-
+                await RegistraConsolidacaoDevolutivasTurma(filtro.TurmaId, devolutivasTurma.QuantidadeEstimadaDevolutivas, devolutivasTurma.QuantidadeRegistradaDevolutivas);
 
                 return true;
             }
@@ -36,7 +28,7 @@ namespace SME.SGP.Aplicacao
             {
                 SentrySdk.CaptureException(ex);
                 throw;
-            }        
+            }
         }
 
         private async Task RegistraConsolidacaoDevolutivasTurma(long turmaId, int quantidadeEstimadaDevolutivas, int quantidadeRegistradaDevolutivas)

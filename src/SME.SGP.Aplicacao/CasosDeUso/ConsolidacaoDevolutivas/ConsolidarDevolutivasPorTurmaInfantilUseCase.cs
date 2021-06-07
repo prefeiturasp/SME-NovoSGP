@@ -21,6 +21,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var turmas = await mediator.Send(new ObterTurmasComModalidadePorAnoQuery(anoAtual));
             var turmasInfantil = turmas.Where(t => t.ModalidadeInfantil == true);
 
+            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(anoAtual));
+
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil);
 
             await AtualizarDataExecucao(anoAtual);

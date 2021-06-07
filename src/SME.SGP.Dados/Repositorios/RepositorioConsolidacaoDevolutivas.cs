@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -76,9 +77,14 @@ namespace SME.SGP.Dados.Repositorios
             return (long)(await database.Conexao.InsertAsync(consolidacao));
         }
 
-        public Task LimparConsolidacaoDevolutivasPorAno(int anoLetivo)
+        public async Task LimparConsolidacaoDevolutivasPorAno(int anoLetivo)
         {
-            throw new NotImplementedException();
+                var query = @"delete from consolidacao_devolutivas
+                        where turma_id in (
+                            select id from turma where ano_letivo = @ano)";
+
+                await database.Conexao.ExecuteScalarAsync(query, new { anoLetivo });
+
+            }
         }
-    }
 }

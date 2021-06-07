@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -89,6 +90,43 @@ namespace SME.SGP.Dados.Repositorios
                 componenteCurricularCodigo = componenteCurricularCodigo.ToString(),
                 periodoInicio = periodoInicio.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
                 periodoFim = periodoFim.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
+            });
+        }
+
+        public async Task<ConsolidacaoDevolutivaTurmaDTO> ObterDevolutivasPorTurma(string turmaCodigo)
+        {
+            var query = @" select 
+	                            dev.turmaid,
+	                            sum(dev.quantidadeEstimadaDevolutivas) as quantidadeEstimadaDevolutivas,
+	                            sum(dev.quantidadeRegistradaDevolutivas) as quantidadeRegistradaDevolutivas
+                            from (
+                            select 
+	                            a.turma_id,
+	                            count(db.planejamento) as quantidadeEstimadaDevolutivas, 
+	                            0 as quantidadeRegistradaDevolutivas
+                            from devolutiva d 
+                             inner join diario_bordo db on db.devolutiva_id = d.id
+                             inner join aula a on a.id = db.id
+                            where not d.excluido
+	                            and a.turma_id = @turmaCodigo
+                            group by a.turma_id	
+                            union all
+                            select 
+	                            a.turma_id,
+	                            0 as quantidadeEstimadaDevolutivas, 
+	                            count(db.reflexoes_replanejamento) as quantidadeRegistradaDevolutivas
+                            from devolutiva d 
+                             inner join diario_bordo db on db.devolutiva_id = d.id
+                             inner join aula a on a.id = db.id
+                            where not d.excluido
+	                            and a.turma_id = @turmaCodigo
+	                            and db.reflexoes_replanejamento <> ''
+                            group by a.turma_id) as dev
+                            group by dev.turma_id ";
+
+            return await database.Conexao.QueryFirstAsync<ConsolidacaoDevolutivaTurmaDTO>(query, new
+            {
+                turmaCodigo
             });
         }
     }
