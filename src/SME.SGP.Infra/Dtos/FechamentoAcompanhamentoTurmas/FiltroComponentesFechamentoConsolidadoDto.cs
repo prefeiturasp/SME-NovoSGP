@@ -1,10 +1,8 @@
-﻿using SME.SGP.Dominio;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
-    public class FiltroFechamentoConsolidadoTurmaBimestreDto
+    public class FiltroComponentesFechamentoConsolidadoDto
     {
-        public FiltroFechamentoConsolidadoTurmaBimestreDto(long turmaId, int bimestre, int situacaoFechamento)
+        public FiltroComponentesFechamentoConsolidadoDto(long turmaId, int bimestre, int situacaoFechamento)
         {
             TurmaId = turmaId;
             Bimestre = bimestre;
@@ -14,6 +12,5 @@ namespace SME.SGP.Infra
         public long TurmaId { get; set; }
         public int Bimestre { get; set; }
         public int SituacaoFechamento { get; set; }
-
     }
 }
