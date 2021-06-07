@@ -8,5 +8,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciasAtividadeAvaliativaQuery : IRequest<IEnumerable<Aula>>
     {
+        public ObterPendenciasAtividadeAvaliativaQuery(int? anoLetivo = null)
+        {
+            AnoLetivo = anoLetivo ?? DateTime.Today.Year;
+        }
+        public int AnoLetivo { get; set; }
     }
 }
