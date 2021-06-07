@@ -35,7 +35,8 @@ namespace SME.SGP.Aplicacao
             IContextoAplicacao contextoAplicacao,
             IServicoUsuario servicoUsuario,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
-            IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo, IMediator mediator) : base(contextoAplicacao)
+            IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo,
+            IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));
             this.repositorioEixo = repositorioEixo ?? throw new ArgumentNullException(nameof(repositorioEixo));
@@ -45,6 +46,7 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar;
             this.repositorioRecuperacaoParalelaPeriodo = repositorioRecuperacaoParalelaPeriodo ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalelaPeriodo));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
@@ -120,6 +122,7 @@ namespace SME.SGP.Aplicacao
                 bimestreEdicao = recuperacaoParalelaPeriodo?.BimestreEdicao ?? 0;
 
             var somenteLeitura = bimestreEdicao != 0 && (periodoEscolarAtual == null || bimestreEdicao != periodoEscolarAtual.Bimestre);
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
 
             var recuperacaoRetorno = new RecuperacaoParalelaListagemDto
             {

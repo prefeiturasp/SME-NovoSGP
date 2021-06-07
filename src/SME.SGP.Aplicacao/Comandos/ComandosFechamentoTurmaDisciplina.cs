@@ -12,11 +12,18 @@ namespace SME.SGP.Aplicacao
     public class ComandosFechamentoTurmaDisciplina : IComandosFechamentoTurmaDisciplina
     {
         private readonly IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina;
+        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
         private readonly IMediator mediator;
 
-        public ComandosFechamentoTurmaDisciplina(IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina, IMediator mediator)
+        public ComandosFechamentoTurmaDisciplina(IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina,
+                                                 IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
+                                                 IRepositorioFechamentoTurma repositorioFechamentoTurma,
+                                                 IMediator mediator)
         {
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(servicoFechamentoTurmaDisciplina));
+            this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
+            this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -49,6 +56,25 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Erro ao salvar o fechamento da turma: " + string.Join(", ", listaAuditoria.Select(s => s.MensagemConsistencia)));
 
             return listaAuditoria;
+        }
+
+        public async Task ProcessarPendentes(int anoLetivo)
+        {
+            var fechamentosPendentes = await repositorioFechamentoTurmaDisciplina
+                .ObterFechamentosComSituacaoEmProcessamentoPorAnoLetivo(anoLetivo);
+
+            foreach (var fechamento in fechamentosPendentes)
+            {
+                var fechamentoTurma = await repositorioFechamentoTurma.ObterPorIdAsync(fechamento.FechamentoTurmaId);
+
+                if (fechamentoTurma.PeriodoEscolarId.HasValue)
+                {
+                    var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(fechamentoTurma.TurmaId));                    
+                    var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
+                    var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(fechamento.AlteradoEm.HasValue ? fechamento.AlteradoRF : fechamento.CriadoRF));
+                    await servicoFechamentoTurmaDisciplina.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuario);
+                }                
+            }
         }
     }
 }

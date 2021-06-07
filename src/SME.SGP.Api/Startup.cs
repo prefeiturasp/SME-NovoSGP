@@ -142,8 +142,6 @@ namespace SME.SGP.Api
 
             Orquestrador.Inicializar(serviceProvider);
 
-            //Provisório: Caso necessite sincronizar a estrutura, descomentar a linha abaixo e iniciar o projeto
-            //serviceProvider.GetService<IServicoAbrangencia>().SincronizarEstruturaInstitucionalVigenteCompleta();
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
             {

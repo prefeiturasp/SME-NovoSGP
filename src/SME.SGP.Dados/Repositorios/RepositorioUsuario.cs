@@ -28,6 +28,8 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(login))
                 query.AppendLine("and login = @login");
+            else
+                query.AppendLine("or login = @codigoRf");
 
             return database.Conexao.Query<Usuario>(query.ToString(), new { codigoRf, login })
                 .FirstOrDefault();

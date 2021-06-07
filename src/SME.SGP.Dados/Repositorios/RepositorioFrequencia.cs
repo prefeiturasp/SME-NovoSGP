@@ -44,19 +44,20 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { aulaId });
         }
 
-        public async Task<IEnumerable<AlunoComponenteCurricularDto>> ObterAlunosAusentesPorTurmaEPeriodo(string turmaCodigo, DateTime dataInicio, DateTime dataFim)
+        public async Task<IEnumerable<AlunoComponenteCurricularDto>> ObterAlunosAusentesPorTurmaEPeriodo(string turmaCodigo, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
-            var query = @"select distinct a.disciplina_id as ComponenteCurricularId, raa.codigo_aluno as AlunoCodigo
+            var query = new StringBuilder(@"select distinct a.disciplina_id as ComponenteCurricularId, raa.codigo_aluno as AlunoCodigo
                         from registro_ausencia_aluno raa 
                        inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
                        inner join aula a on a.id = rf.aula_id 
-                       where not a.excluido 
-                         and not rf.excluido 
-                         and not raa.excluido 
-                         and a.turma_id = @turmaCodigo
-                         and a.data_aula between @dataInicio and @dataFim ";
+                       where 
+                         a.turma_id = @turmaCodigo
+                         and a.data_aula between @dataInicio and @dataFim ");
 
-            return await database.Conexao.QueryAsync<AlunoComponenteCurricularDto>(query, new { turmaCodigo, dataInicio, dataFim });
+            if (!string.IsNullOrEmpty(componenteCurricularId))
+                query.AppendLine("and a.disciplina_id = @componenteCurricularId");
+
+            return await database.Conexao.QueryAsync<AlunoComponenteCurricularDto>(query.ToString(), new { turmaCodigo, dataInicio, dataFim, componenteCurricularId });
         }
 
         public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId)
@@ -285,6 +286,16 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId,
                 semestre
             });
+        }
+            return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
+        }
+
+        public async Task SalvarConciliacaoTurma(string turmaId, string disciplinaId, DateTime dataReferencia, string alunos)
+        {
+            var query = @"insert into conciliacao_turma (turma_id, disciplina_id, data_referencia, alunos) 
+                          values (@turmaId, @disciplinaId, @dataReferencia, @alunos)";
+
+            await database.Conexao.ExecuteAsync(query, new { turmaId, disciplinaId, dataReferencia, alunos });
         }
     }
 }
