@@ -670,9 +670,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId)
         {
             var query = @"INSERT INTO public.turma
-				                (turma_id, ue_id, nome, ano, ano_letivo, modalidade_codigo, semestre, qt_duracao_aula, tipo_turno, data_atualizacao, historica, dt_fim_eol, ensino_especial, etapa_eja, data_inicio, serie_ensino, tipo_turma)
+				                (turma_id, ue_id, nome, ano, ano_letivo, modalidade_codigo, semestre, qt_duracao_aula, tipo_turno, data_atualizacao, historica, dt_fim_eol, ensino_especial, etapa_eja, data_inicio, serie_ensino, tipo_turma, nome_filtro)
 	                        values
-	                            (@Codigo, @ueId, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, @historica, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma);";
+	                            (@Codigo, @ueId, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, @historica, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma, @NomeFiltro);";
 
             var parametros = new
             {
@@ -693,7 +693,8 @@ namespace SME.SGP.Dados.Repositorios
                 turma.SerieEnsino,
                 turma.TipoTurma,
                 ueId,
-                historica = turma.Extinta
+                historica = turma.Extinta,
+                turma.NomeFiltro
             };
             var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
 
