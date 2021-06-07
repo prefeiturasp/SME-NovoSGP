@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AbrangenciaHistoricaDto>> ObterAbrangenciaHistorica()
         {
-            var login = servicoUsuario.ObterLoginAtual();            
+            var login = servicoUsuario.ObterLoginAtual();
             return await repositorioAbrangencia.ObterAbrangenciaHistoricaPorLogin(login);
         }
 
@@ -44,10 +44,10 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
-            AbrangenciaCompactaVigenteRetornoEOLDTO abrangencia = await servicoEOL.ObterAbrangenciaCompactaVigente(login.ToString(), Guid.Parse(perfil.ToString()));            
+            AbrangenciaCompactaVigenteRetornoEOLDTO abrangencia = await servicoEOL.ObterAbrangenciaCompactaVigente(login.ToString(), Guid.Parse(perfil.ToString()));
             bool abrangenciaPermitida = abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.UE
                                         || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.Dre
-                                        || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.SME;            
+                                        || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.SME;
 
             return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil, consideraHistorico, abrangenciaPermitida);
         }
@@ -87,8 +87,11 @@ namespace SME.SGP.Aplicacao
 
         public Task<IEnumerable<int>> ObterAnosLetivosTodos()
         {
-            var anos = Enumerable.Range(2014, 8).OrderByDescending(x => x).AsEnumerable();
-
+            int qtdeRange = 0;
+            int anoInicio = 2014;
+            for (int i = anoInicio; i <= DateTime.Today.Year; i++)
+                qtdeRange++;
+            var anos = Enumerable.Range(anoInicio, qtdeRange).OrderByDescending(x => x).AsEnumerable();
             return Task.FromResult(anos);
         }
 
