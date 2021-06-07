@@ -145,5 +145,14 @@ namespace SME.SGP.Api.Controllers
             await useCase.ProcessarNaData(dataReferencia, turmaCodigo);
             return Ok();
         }
+
+        [HttpGet("migracao")]
+        [ProducesResponseType(typeof(TipoFrequenciaDto), 500)]
+        [ProducesResponseType(typeof(TipoFrequenciaDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> MigracaoDadosFrequencia([FromQuery] int[] anosLetivos, [FromServices] ICarregarDadosAulasFrequenciaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anosLetivos));
+        }
     }
 }

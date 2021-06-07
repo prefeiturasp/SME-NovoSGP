@@ -166,6 +166,11 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasRelatorioSemestralPAPAluno, ConsultasRelatorioSemestralPAPAluno>();
             services.TryAddScopedWorkerService<IConsultasRelatorioSemestralPAPAlunoSecao, ConsultasRelatorioSemestralPAPAlunoSecao>();
             services.TryAddScopedWorkerService<IConsultasSecaoRelatorioSemestralPAP, ConsultasSecaoRelatorioSemestralPAP>();
+
+            services.TryAddScoped<ICarregarDadosAulasFrequenciaUseCase, CarregarDadosAulasFrequenciaUseCase>();
+            services.TryAddScoped<IExecutarSincronizacaoDadosAulasFrequenciaUseCase, ExecutarSincronizacaoDadosAulasFrequenciaUseCase>();
+            services.TryAddScoped<IExecutarSincronizacaoRegistroFrequenciaAlunosUseCase, ExecutarSincronizacaoRegistroFrequenciaAlunosUseCase>();
+            services.TryAddScoped<ICarregarRegistroFrequenciaAlunosUseCase, CarregarRegistroFrequenciaAlunosUseCase>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -334,6 +339,8 @@ namespace SME.SGP.IoC
 
             // Consolidação Frequencia Turma
             services.TryAddScopedWorkerService<IRepositorioConsolidacaoFrequenciaTurma, RepositorioConsolidacaoFrequenciaTurma>();
+
+            services.TryAddScopedWorkerService<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)

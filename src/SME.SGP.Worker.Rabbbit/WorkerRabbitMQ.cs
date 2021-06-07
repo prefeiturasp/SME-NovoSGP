@@ -177,6 +177,10 @@ namespace SME.SGP.Worker.RabbitMQ
             
             comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasAlunosSync, new ComandoRabbit("Conciliação de frequência da turma sync", typeof(IConciliacaoFrequenciaTurmasAlunosSyncUseCase)));
             comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasAlunosBuscar, new ComandoRabbit("Conciliação de frequência da turma buscar", typeof(IConciliacaoFrequenciaTurmasAlunosBuscarUseCase)));
+
+            comandos.Add(RotasRabbitSgp.SincronizarDadosAulasFrequenciaMigracao, new ComandoRabbit("Sincronizar - migração dados frequencia aulas", typeof(IExecutarSincronizacaoDadosAulasFrequenciaUseCase)));
+            comandos.Add(RotasRabbitSgp.CarregarDadosAlunosFrequenciaMigracao, new ComandoRabbit("Carregar- migração dados frequencia alunos", typeof(ICarregarRegistroFrequenciaAlunosUseCase)));
+            comandos.Add(RotasRabbitSgp.SincronizarDadosAlunosFrequenciaMigracao, new ComandoRabbit("Executar sincronização - migração dados frequencia alunos", typeof(IExecutarSincronizacaoRegistroFrequenciaAlunosUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
