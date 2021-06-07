@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                     var valorEhUmNumero = int.TryParse(itemGrafico.Descricao, out _);
                     if (valorEhUmNumero)
                     {
-                        itemGrafico.Descricao += "º";
+                        itemGrafico.Descricao += "º ano";
                     }
                 }
                 else
