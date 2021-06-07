@@ -73,5 +73,34 @@ namespace SME.SGP.Dados
             await database.Conexao.ExecuteAsync("DELETE FROM registro_frequencia_aluno WHERE registro_frequencia_id = @registroFrequenciaId", 
                 new { registroFrequenciaId });
         }
+
+        public async Task<IEnumerable<FiltroMigracaoFrequenciaAulasDto>> ObterTurmasIdFrequenciasExistentesPorAnoAsync(int[] anosLetivos)
+        {
+            var query = @"  select distinct(t.turma_id) turma_codigo, 
+	                               a.id aula_id, 
+                                   a.tipo_calendario_id,
+	                               a.quantidade quantidade_aula,
+	                               a.data_aula,
+                                   rfa.registro_frequencia_id
+                             from registro_frequencia_aluno rfa 
+                            inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
+                            inner join aula a on a.id = rf.aula_id 
+                            inner join turma t on t.turma_id = a.turma_id 
+                            where t.ano_letivo = ANY(@anosLetivos)";
+
+            return await database.Conexao.QueryAsync<FiltroMigracaoFrequenciaAulasDto>(query, new { anosLetivos });
+        }
+
+        public async Task<IEnumerable<string>> ObterCodigosAlunosComRegistroFrequenciaAlunoAsync(long registroFrequenciaId, string[] codigosAlunos, int numeroAula)
+        {
+            var query = @"  select distinct(codigo_aluno) 
+				              from registro_frequencia_aluno
+		  		             where registro_frequencia_id = @registroFrequenciaId
+		  		               and numero_aula = @numeroAula
+		  		               and codigo_aluno = ANY(@codigosAlunos)";
+
+            var resultado = await database.Conexao.QueryAsync<string>(query, new { registroFrequenciaId, codigosAlunos, numeroAula });
+            return resultado;
+        }
     }
 }
