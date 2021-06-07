@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
             try
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDadosAlunosFrequenciaMigracao, migracaoFrequenciaTurmaAula, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.CarregarDadosAlunosFrequenciaMigracao, migracaoFrequenciaTurmaAula, Guid.NewGuid(), null));
             }
             catch (Exception ex)
             {
