@@ -1,5 +1,7 @@
 ﻿using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -30,10 +32,12 @@ namespace SME.SGP.Dominio.Interfaces
         Task<DreUeDaTurmaDto> ObterCodigosDreUePorId(long turmaId);
         Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo);
         Task<IEnumerable<Turma>> ObterTurmasPorIds(long[] turmasIds);
+        Task<IEnumerable<string>> ObterCodigosTurmasPorAnoModalidade(int anoLetivo, int[] modalidades, string turmaCodigo = "");
+        Task<IEnumerable<TurmaComponenteDto>> ObterTurmasComponentesPorAnoLetivo(DateTime dataReferencia);
         Task<IEnumerable<Turma>> ObterTurmasPorUeModalidadesAno(long ueId, int[] modalidades, int ano);
         Task<IEnumerable<Turma>> ObterTurmasComInicioFechamento(long ueId, long periodoEscolarId, int[] modalidades);
         Task<IEnumerable<Turma>> ObterTurmasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades);
-        Task<IEnumerable<Turma>> ObterTurmasCompletasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades);
+        Task<IEnumerable<Turma>> ObterTurmasCompletasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades, string turmaCodigo = "");
         Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long ueId, int anoLetivo, long? periodoEscolarId, int[] modalidades, int semestre);
         Task<ObterTurmaSimplesPorIdRetornoDto> ObterTurmaSimplesPorId(long id);
         Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos);

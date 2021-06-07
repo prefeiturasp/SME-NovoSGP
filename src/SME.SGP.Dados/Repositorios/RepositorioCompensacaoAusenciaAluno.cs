@@ -84,7 +84,6 @@ namespace SME.SGP.Dados.Repositorios
 	                and caa.codigo_aluno = any(@alunoCodigos)
 	                and t.turma_id = @turmaId
                 group by
-	                caa.qtd_faltas_compensadas,
 	                caa.codigo_aluno,
 	                c.disciplina_id,
 	                c.bimestre";

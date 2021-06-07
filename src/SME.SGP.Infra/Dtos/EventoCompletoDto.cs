@@ -15,6 +15,7 @@ namespace SME.SGP.Infra
         public long Id { get; set; }
         public EventoTipoDto TipoEvento { get; set; }
         public bool? PodeAlterar { get; set; }
+        public bool? PodeAlterarExcluirPorPerfilAbrangencia { get; set; }
         public EntidadeStatus Status { get; set; }
     }
 }
