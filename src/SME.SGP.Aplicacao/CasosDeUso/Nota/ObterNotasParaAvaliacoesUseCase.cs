@@ -169,17 +169,19 @@ namespace SME.SGP.Aplicacao
                                 dataUltimaNotaConceitoAlterada = notaDoAluno.AlteradoEm;
                                 nomeAvaliacaoAuditoriaAlteracao = atividadeAvaliativa.NomeAvaliacao;
                             }
-                            var ausente = ausenciasDasAtividadesAvaliativas.Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
-                            var notaAvaliacao = new NotasConceitosNotaAvaliacaoRetornoDto()
-                            {
-                                AtividadeAvaliativaId = atividadeAvaliativa.Id,
-                                NotaConceito = notaParaVisualizar,
-                                Ausente = ausente,
-                                PodeEditar = aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) ||
-                                             (aluno.EstaInativo(atividadeAvaliativa.DataAvaliacao) && atividadeAvaliativa.DataAvaliacao.Date <= aluno.DataSituacao.Date)
-                            };
-                            notasAvaliacoes.Add(notaAvaliacao);
+                                           
                         }
+
+                        var ausente = ausenciasDasAtividadesAvaliativas.Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
+                        var notaAvaliacao = new NotasConceitosNotaAvaliacaoRetornoDto()
+                        {
+                            AtividadeAvaliativaId = atividadeAvaliativa.Id,
+                            NotaConceito = notaParaVisualizar,
+                            Ausente = ausente,
+                            PodeEditar = aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) ||
+                                         (aluno.EstaInativo(atividadeAvaliativa.DataAvaliacao) && atividadeAvaliativa.DataAvaliacao.Date <= aluno.DataSituacao.Date)
+                        };
+                        notasAvaliacoes.Add(notaAvaliacao);
                     }
 
                     notaConceitoAluno.PodeEditar = notasAvaliacoes.Any(na => na.PodeEditar) || (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any());
