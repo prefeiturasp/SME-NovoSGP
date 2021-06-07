@@ -22,6 +22,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Get([FromQuery] ListaNotasConceitosConsultaRefatoradaDto consultaListaNotasConceitosDto, [FromServices] IObterNotasParaAvaliacoesUseCase obterNotasParaAvaliacoesUseCase,  [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
         {
             return Ok(await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto));             
+            //return Ok(await consultasNotasConceitos.ListarNotasConceitos(consultaListaNotasConceitosDto));
         }
         [HttpGet("periodos")]
         [ProducesResponseType(typeof(IEnumerable<PeriodosParaConsultaNotasDto>), 200)]
