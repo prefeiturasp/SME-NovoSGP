@@ -44,9 +44,6 @@ namespace SME.SGP.Aplicacao
             {
                 var alunosCodigo = alunosNoComponente.Select(a => a.AlunoCodigo).ToList();
                 await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunosCodigo, dataFim, turmaCodigo, alunosNoComponente.Key));
-
-                var alunos = string.Join(",", alunosCodigo);
-                await mediator.Send(new GravarConciliacaoTurmaComponenteCommand(turmaCodigo, alunosNoComponente.Key, dataFim, alunos));
             }
 
         }
