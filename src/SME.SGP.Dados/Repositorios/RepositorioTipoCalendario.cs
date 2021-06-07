@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,13 +25,13 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("on tc.id = pe.tipo_calendario_id");
             query.AppendLine("where tc.id = @tipoCalendarioId");
             query.AppendLine("and @dataParaVerificar between symmetric pe.periodo_inicio::date and pe.periodo_fim ::date");
-            
-            return (await database.Conexao.QueryAsync<PeriodoEscolar, TipoCalendario, PeriodoEscolar>(query.ToString(), (pe, tc) => 
+
+            return (await database.Conexao.QueryAsync<PeriodoEscolar, TipoCalendario, PeriodoEscolar>(query.ToString(), (pe, tc) =>
             {
                 pe.AdicionarTipoCalendario(tc);
                 return pe;
 
-            }, new { tipoCalendarioId, dataParaVerificar }, splitOn: "id" )).FirstOrDefault();
+            }, new { tipoCalendarioId, dataParaVerificar }, splitOn: "id")).FirstOrDefault();
         }
         public async Task<IEnumerable<TipoCalendario>> BuscarPorAnoLetivo(int anoLetivo)
         {
@@ -150,14 +151,14 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<bool> PeriodoEmAberto(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
-        {            
+        {
             var query = new StringBuilder(@"select count(pe.Id)
                           from periodo_escolar pe 
                          where pe.tipo_calendario_id = @tipoCalendarioId
                            and periodo_fim::date >= @dataReferencia::date ");
 
             if (!ehAnoLetivo)
-            {                
+            {
                 query.AppendLine("and periodo_inicio <= @dataReferencia");
             }
 
@@ -237,6 +238,24 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by ano_letivo desc");
 
             return await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query.ToString(), new { anosLetivo, modalidades });
+        }
+        public async Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, int modalidadeTipoCalendarioId)
+        {
+            var query = @"select
+	                        pe.id as periodoEscolarId,
+	                        pe.bimestre,
+	                        pe.periodo_inicio as PeriodoInicio,
+	                        pe.periodo_fim as PeriodoFim
+                        from
+	                        tipo_calendario tc
+                        inner join periodo_escolar pe on
+	                        pe.tipo_calendario_id = tc.id
+                        where
+	                        tc.ano_letivo = @anoLetivo
+	                        and tc.modalidade = @modalidadeTipoCalendarioId
+	                        and not tc.excluido";
+
+            return await database.Conexao.QueryAsync<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>(query.ToString(), new { anoLetivo, modalidadeTipoCalendarioId });
         }
     }
 }
