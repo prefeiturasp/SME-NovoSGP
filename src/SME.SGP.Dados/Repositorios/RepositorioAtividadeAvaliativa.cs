@@ -97,7 +97,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(fromCompleto);
             sql.AppendLine("where a.excluido = false");
             sql.AppendLine("and a.turma_id = @turmaCodigo");
-            sql.AppendLine("and a.data_avaliacao >= @inicioPeriodo and a.data_avaliacao <= @fimPeriodo");
+            sql.AppendLine("and a.data_avaliacao::date >= @inicioPeriodo::date and a.data_avaliacao::date <= @fimPeriodo::date");
             sql.AppendLine("and aad.disciplina_id = @disciplinaId");
 
             return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinaId });
@@ -125,8 +125,10 @@ namespace SME.SGP.Dados.Repositorios
                         from atividade_avaliativa av
                        inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = av.id
                         left join notas_conceito n on n.atividade_avaliativa = av.id
-                       where av.turma_id = @turmaCodigo
+                       where not av.excluido
+                         and av.turma_id = @turmaCodigo
 	                     and aad.disciplina_id = @disciplinaId
+                         and av.data_avaliacao::date between @inicioPeriodo::date and @fimPeriodo::date
                          and n.id is null";
 
             return database.Query<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, disciplinaId, inicioPeriodo, fimPeriodo });

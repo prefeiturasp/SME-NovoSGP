@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dominio
+﻿using System;
+
+namespace SME.SGP.Dominio
 {
     public class ProcessoExecutando
     {
@@ -8,5 +10,6 @@
         public string DisciplinaId { get; set; }
         public int Bimestre { get; set; }
         public long? AulaId { get; set; }
+        public DateTime CriadoEm { get; set; }
     }
 }

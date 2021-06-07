@@ -38,7 +38,8 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<CompensacaoAusenciaAluno>(query, new { compensacaoId });
         }
 
-        public int ObterTotalCompensacoesPorAlunoETurma(int bimestre, string codigoAluno, string disciplinaId, string turmaId)
+        private String BuildQueryObterTotalCompensacoesPorAlunoETurma(int bimestre, string codigoAluno,
+            string disciplinaId, string turmaId)
         {
             var query = new StringBuilder(@"select coalesce(sum(a.qtd_faltas_compensadas), 0)
                                 from compensacao_ausencia_aluno a
@@ -48,11 +49,51 @@ namespace SME.SGP.Dados.Repositorios
                                     and c.bimestre = @bimestre
                                     and a.codigo_aluno = @codigoAluno
                                     and t.turma_id = @turmaId ");
-
+            
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.Append("and c.disciplina_id = @disciplinaId");
+            
+            return query.ToString();
+        }
 
+        public int ObterTotalCompensacoesPorAlunoETurma(int bimestre, string codigoAluno, string disciplinaId, string turmaId)
+        {
+            var query = BuildQueryObterTotalCompensacoesPorAlunoETurma(bimestre, codigoAluno, disciplinaId, turmaId);
             return database.Conexao.QueryFirst<int>(query.ToString(), new { bimestre, codigoAluno, disciplinaId, turmaId });
+        }
+        
+        public async Task<int> ObterTotalCompensacoesPorAlunoETurmaAsync(int bimestre, string codigoAluno, string disciplinaId, string turmaId)
+        {
+            var query = BuildQueryObterTotalCompensacoesPorAlunoETurma(bimestre, codigoAluno, disciplinaId, turmaId);
+            return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { bimestre, codigoAluno, disciplinaId, turmaId });
+        }
+
+        public async Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> ObterTotalCompensacoesPorAlunosETurmaAsync(IEnumerable<int> bimestres, IEnumerable<string> alunoCodigos, string turmaId)
+        {
+            var query = @"
+                select
+	                coalesce(sum(caa.qtd_faltas_compensadas), 0) as compensacoes,
+	                caa.codigo_aluno as alunoCodigo,
+	                c.disciplina_id as componenteCurricularId,
+	                c.bimestre
+                from
+	                compensacao_ausencia_aluno caa
+                inner join compensacao_ausencia c on
+	                c.id = caa.compensacao_ausencia_id
+                inner join turma t on
+	                t.id = c.turma_id
+                where
+	                not caa.excluido
+                    and not c.excluido 
+	                and c.bimestre = any(@bimestres)
+	                and caa.codigo_aluno = any(@alunoCodigos)
+	                and t.turma_id = @turmaId
+                group by
+	                caa.codigo_aluno,
+	                c.disciplina_id,
+	                c.bimestre";
+
+            return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoCalculoFrequenciaDto>(query, new { bimestres, alunoCodigos, turmaId });
         }
     }
 }

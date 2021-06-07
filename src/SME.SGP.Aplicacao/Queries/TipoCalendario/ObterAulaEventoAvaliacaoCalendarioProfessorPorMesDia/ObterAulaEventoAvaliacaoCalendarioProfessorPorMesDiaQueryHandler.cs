@@ -21,8 +21,6 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<EventoAulaDto>();
 
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
-
             if (request.Aulas.Any())
             {
                 foreach (var aulaParaVisualizar in request.Aulas)
@@ -44,8 +42,8 @@ namespace SME.SGP.Aplicacao
                     var atividadesAvaliativasDaAula = (from avaliacao in request.Avaliacoes
                                                        from disciplina in avaliacao.Disciplinas
                                                        where avaliacao.EhCj == aulaParaVisualizar.AulaCJ &&
-                                                             ((!avaliacao.EhCj && disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId) ||
-                                                                avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf)
+                                                             disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId &&
+                                                             avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf
                                                        select avaliacao);
 
                     if (atividadesAvaliativasDaAula.Any())
@@ -62,7 +60,7 @@ namespace SME.SGP.Aplicacao
                         eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);
                     }
 
-                    eventoAulaDto.Pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id));
+                    eventoAulaDto.Pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id, atividadesAvaliativasDaAula.Any()));
 
                     retorno.Add(eventoAulaDto);
                 }

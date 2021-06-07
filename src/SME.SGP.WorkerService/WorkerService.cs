@@ -6,6 +6,7 @@ using SME.Background.Core;
 using SME.SGP.Api;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
+using SME.SGP.IoC.Extensions;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -63,10 +64,12 @@ namespace SME.SGP.Worker.Service
 
         internal static void ConfigurarDependencias(IConfiguration configuration, IServiceCollection services)
         {
+            services.AddPolicies();
             RegistraDependenciasWorkerServices.Registrar(services);
             RegistrarMapeamentos.Registrar();
             RegistraClientesHttp.Registrar(services, configuration);
             Orquestrador.Inicializar(services.BuildServiceProvider());
+            
         }
     }
 }

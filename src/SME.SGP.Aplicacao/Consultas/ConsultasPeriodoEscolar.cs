@@ -64,16 +64,24 @@ namespace SME.SGP.Aplicacao.Consultas
 
         private static PeriodoEscolarListaDto EntidadeParaDto(IEnumerable<PeriodoEscolar> lista)
         {
+            var primeiraCriacao = lista.OrderBy(x => x.CriadoEm).First();
+            var ultimaAlteracao = lista.Any(x => x.AlteradoEm.HasValue) ? lista.OrderBy(x => x.AlteradoEm).Last() : null;
             return new PeriodoEscolarListaDto
             {
                 TipoCalendario = lista.ElementAt(0).TipoCalendarioId,
+                AlteradoEm = ultimaAlteracao?.AlteradoEm,
+                AlteradoPor = ultimaAlteracao?.AlteradoPor,
+                AlteradoRF = ultimaAlteracao?.AlteradoRF,
+                CriadoEm = primeiraCriacao.CriadoEm,
+                CriadoPor = primeiraCriacao.CriadoPor,
+                CriadoRF = primeiraCriacao.CriadoRF,
                 Periodos = lista.Select(x => new PeriodoEscolarDto
                 {
                     Bimestre = x.Bimestre,
                     PeriodoInicio = x.PeriodoInicio,
                     PeriodoFim = x.PeriodoFim,
                     Migrado = x.Migrado,
-                    Id = x.Id
+                    Id = x.Id                    
                 }).ToList()
             };
         }

@@ -40,10 +40,10 @@ namespace SME.SGP.Aplicacao
             if (request.Observacao.Trim().Length < 200 && (request.UsuariosIdNotificacao == null || !request.UsuariosIdNotificacao.Any()))
             {
                 // Excluir Notificação Especifica
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoDiarioBordo,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoDiarioBordo,
                       new ExcluirNotificacaoDiarioBordoDto(request.ObservacaoId), Guid.NewGuid(), null));
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoNovaObservacaoDiarioBordo,
                       new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId), Guid.NewGuid(), null));
             }
             else if (request.UsuariosIdNotificacao != null && request.UsuariosIdNotificacao.Any())
@@ -56,13 +56,13 @@ namespace SME.SGP.Aplicacao
 
                 var usuariosNotificacao = request.UsuariosIdNotificacao?.Select(async u => await mediator.Send(new ObterUsuarioPorIdQuery(u)))?.Select(t => t.Result);
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoNovaObservacaoDiarioBordo,
                         new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId, usuariosNotificacao), Guid.NewGuid(), null));
 
                 foreach (var usuarioExcluido in usuariosExcluidos)
                 {
                     // Excluir Notificação Especifica
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoAlterarObservacaoDiarioBordo,
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoAlterarObservacaoDiarioBordo,
                           new AlterarNotificacaoDiarioBordoDto(request.ObservacaoId, usuarioExcluido), Guid.NewGuid(), null));
                 }
             }

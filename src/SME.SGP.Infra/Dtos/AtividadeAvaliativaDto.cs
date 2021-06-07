@@ -18,8 +18,8 @@ namespace SME.SGP.Infra
 
         public string[] DisciplinaContidaRegenciaId { get; set; }
 
-        [Required(ErrorMessage = "A Disciplina da atividade avaliativa deve ser informada.")]
-        [ListaTemElementos(ErrorMessage = "É necessário informar ao menos uma disciplina")]
+        [Required(ErrorMessage = "O componente curricular da atividade avaliativa deve ser informada.")]
+        [ListaTemElementos(ErrorMessage = "É necessário informar ao menos um componente curricular")]
         public string[] DisciplinasId { get; set; }
 
         [Required(ErrorMessage = "A Dre da atividade avaliativa deve ser informado.")]

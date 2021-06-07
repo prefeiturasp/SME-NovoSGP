@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
 
                 if (aulasAExcluirComFrequenciaRegistrada.Any())
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoExclusaoAulasComFrequencia,
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoExclusaoAulasComFrequencia,
                         new NotificarExclusaoAulasComFrequenciaDto(turma, aulasAExcluirComFrequenciaRegistrada), Guid.NewGuid(), null));
 
                     aulasAExcluirComFrequenciaRegistrada.Clear();
@@ -167,12 +167,12 @@ namespace SME.SGP.Aplicacao
         {
             return diasDoPeriodo.Where(c => (c.ExcluirAulaUe(turma.Ue.CodigoUe) && c.EhNaoLetivo) ||
                                             (!c.DreIds.Any() && !c.UesIds.Any() && c.EhNaoLetivo) ||
-                                            c.ExcluirAulaSME || c.EhNaoLetivo)?.ToList();
+                                            c.ExcluirAulaSME || (c.UesIds.Any() && c.UesIds.Contains(turma.Ue.CodigoUe) && c.EhNaoLetivo))?.ToList();
         }
 
         private IList<DiaLetivoDto> DeterminaDiasLetivos(IEnumerable<DiaLetivoDto> diasDoPeriodo, Turma turma)
         {
-            return diasDoPeriodo.Where(c => (c.CriarAulaUe(turma.Ue.CodigoUe) && c.EhLetivo) ||
+            return diasDoPeriodo.Where(c => (c.CriarAulaUe(turma.Ue.CodigoUe) && c.EhLetivo) ||                                       
                                        (!c.DreIds.Any() && !c.UesIds.Any() && c.EhLetivo) ||
                                        c.CriarAulaSME())?.OrderBy(c => c.Data)?.ToList();
         }

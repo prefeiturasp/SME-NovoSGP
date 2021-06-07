@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(compensacao.DisciplinaId) });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
-                throw new NegocioException("Disciplina informada na compensação não localizada no EOL.");
+                throw new NegocioException("Componente curricular informado na compensação não localizado no EOL.");
             
             var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
             var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));

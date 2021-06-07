@@ -7,6 +7,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Linq;
+using System.Globalization;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -74,15 +75,15 @@ namespace SME.SGP.Dados.Repositorios
                         where pe.tipo_calendario_id = @tipoCalendarioId
                         and ue.ue_id = @ueCodigo
                         and dre.dre_id = @dreCodigo
-                        and pfb.inicio_fechamento <= @dataReferencia
-                        and pfb.final_fechamento >= @dataReferencia");
+                        and TO_DATE(pfb.inicio_fechamento::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
+                        and TO_DATE(pfb.final_fechamento::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')");
 
 
             query.AppendLine($"and pe.bimestre =  {(bimestre > 0 ? "@bimestre" : consultaObterBimestreFinal)}");
 
             return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new
             {
-                dataReferencia,
+                dataReferencia = dataReferencia.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
                 dreCodigo,
                 ueCodigo,
                 bimestre,

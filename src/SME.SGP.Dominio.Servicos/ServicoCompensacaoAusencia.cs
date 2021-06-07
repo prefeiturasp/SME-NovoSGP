@@ -23,6 +23,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
+        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -42,6 +43,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioTurma repositorioTurma,
                                           IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                           IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
+                                          IConsultasDisciplina consultasDisciplina,
                                           IUnitOfWork unitOfWork, IRepositorioProcessoExecutando repositorioProcessoExecutando,
                                           IMediator mediator)
         {
@@ -54,6 +56,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
+            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
@@ -72,7 +75,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            await ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario.CodigoRf, periodo.PeriodoFim);
+            await ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario, periodo.PeriodoFim);
 
             // Valida mesma compensação no ano
             var compensacaoExistente = await repositorioCompensacaoAusencia.ObterPorAnoTurmaENome(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id);
@@ -111,7 +114,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (codigosAlunosCompensacao.Any())
             {
-                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, periodo.Bimestre));
+                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
             }
 
             Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarCompensacaoAusencia(compensacao.Id));
@@ -122,12 +125,12 @@ namespace SME.SGP.Dominio.Servicos
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
 
             if (!disciplinasEOL.Any())
-                throw new NegocioException("Disciplina não encontrada no EOL.");
+                throw new NegocioException("Componente curricular não encontrado no EOL.");
 
             var disciplina = disciplinasEOL.FirstOrDefault();
 
             if (!registroMigrado && disciplina.Regencia && ((disciplinasRegenciaIds == null) || !disciplinasRegenciaIds.Any()))
-                throw new NegocioException("Regência de classe deve informar a(s) disciplina(s) relacionadas a esta atividade.");
+                throw new NegocioException("Regência de classe deve informar o(s) componente(s) curricular(es) relacionados a esta atividade.");
 
         }
 
@@ -274,17 +277,6 @@ namespace SME.SGP.Dominio.Servicos
                 Excluido = false
             };
 
-
-        private CompensacaoAusencia MapearEntidade(long id, CompensacaoAusenciaDto compensacaoDto)
-        {
-            CompensacaoAusencia compensacaoBanco = new CompensacaoAusencia();
-
-            if (id > 0)
-                compensacaoBanco = repositorioCompensacaoAusencia.ObterPorId(id);
-
-            return MapearEntidade(compensacaoDto, compensacaoBanco);
-        }
-
         private CompensacaoAusencia MapearEntidade(CompensacaoAusenciaDto compensacaoDto, CompensacaoAusencia compensacao)
         {
             compensacao.DisciplinaId = compensacaoDto.DisciplinaId;
@@ -352,7 +344,7 @@ namespace SME.SGP.Dominio.Servicos
 
                     if (alunosDaCompensacao.Any())
                     {
-                        await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos, periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId, periodo.Bimestre));
+                        await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos, periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId));
                     }
 
                 }
@@ -367,10 +359,24 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Não foi possível excluir as compensações de ids {string.Join(",", idsComErroAoExcluir)}");
         }
 
-        private async Task ValidaProfessorPodePersistirTurma(string turmaId, string codigoRf, DateTime dataAula)
+        private async Task ValidaProfessorPodePersistirTurma(string turmaId, Usuario usuario, DateTime dataAula)
         {
-            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula.Local()))
+            if (!await PossuiPermissaoTurma(turmaId, usuario, dataAula))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+        }
+
+        private async Task<bool> PossuiPermissaoTurma(string turmaId, Usuario usuario, DateTime dataAula)
+        {
+            if (usuario.EhProfessorCj())
+                return await PossuiAtribuicaoCJ(turmaId, usuario.CodigoRf);
+
+            return await servicoEOL.ProfessorPodePersistirTurma(usuario.CodigoRf, turmaId, dataAula.Local());
+        }
+
+        private async Task<bool> PossuiAtribuicaoCJ(string turmaId, string codigoRf)
+        {
+            var componentes = await consultasDisciplina.ObterDisciplinasPerfilCJ(turmaId, codigoRf);
+            return componentes != null && componentes.Any();
         }
 
         public async Task<string> Copiar(CompensacaoAusenciaCopiaDto compensacaoCopia)

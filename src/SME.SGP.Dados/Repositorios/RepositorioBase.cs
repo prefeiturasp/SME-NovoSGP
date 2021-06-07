@@ -5,6 +5,9 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dommel;
+using Npgsql;
+using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -43,6 +46,12 @@ namespace SME.SGP.Dados.Repositorios
         {
             database.Conexao.Delete(entidade);
             Auditar(entidade.Id, "E");
+        }
+        
+        public virtual async Task RemoverAsync(T entidade)
+        {
+            await database.Conexao.DeleteAsync(entidade);
+            await AuditarAsync(entidade.Id, "E");
         }
 
         public virtual long Salvar(T entidade)
@@ -141,5 +150,47 @@ namespace SME.SGP.Dados.Repositorios
                 Acao = acao
             });
         }
+       // public async Task SalvarVariosAsync(IEnumerable<T> entidades)
+       // {
+            //var table = DommelMapper.Resolvers.Properties(typeof(T));
+            //var tableName = DommelMapper.Resolvers.Table(typeof(T));
+
+            //var str = new StringBuilder();
+            //str.AppendLine("copy aula ( ");
+            //var sql = @"copy aula ( 
+            //                            data_aula, 
+            //                            disciplina_id, 
+            //                            quantidade, 
+            //                            recorrencia_aula, 
+            //                            tipo_aula, 
+            //                            tipo_calendario_id, 
+            //                            turma_id, 
+            //                            ue_id, 
+            //                            professor_rf,
+            //                            criado_em,
+            //                            criado_por,
+            //                            criado_rf)
+            //                from
+            //                stdin (FORMAT binary)";
+
+            //using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            //{
+            //    foreach (var entidade in entidades)
+            //    {
+            //        writer.StartRow();
+       
+            //    }
+            //    writer.Complete();
+            //}
+            //await database.Conexao.InsertAsync<Auditoria>(new Auditoria()
+            //{
+            //    Data = DateTimeExtension.HorarioBrasilia(),
+            //    Entidade = typeof(T).Name.ToLower(),
+            //    Chave = identificador,
+            //    Usuario = database.UsuarioLogadoNomeCompleto,
+            //    RF = database.UsuarioLogadoRF,
+            //    Acao = acao
+            //});
+      //  }
     }
 }

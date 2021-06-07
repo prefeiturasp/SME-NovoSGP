@@ -284,18 +284,22 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> SolicitarRecuperacaoSenha(string login)
         {
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
-            var usuarioCore = await servicoEOL.ObterMeusDados(login);
+            string loginRecuperar = login.Replace(" ","");
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, loginRecuperar);
+            var usuarioCore = await servicoEOL.ObterMeusDados(loginRecuperar);
+
+            if (usuarioCore == null && usuario == null)
+                throw new NegocioException("Usuário ou RF não encontrado");
 
             if (usuario == null)
-                usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, login, usuarioCore.Nome, usuarioCore.Email);
+                usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, loginRecuperar, usuarioCore.Nome, usuarioCore.Email);
 
             if (usuario.Perfis == null || !usuario.Perfis.Any())
             {
-                await servicoEOL.RelecionarUsuarioPerfis(login);
+                await servicoEOL.RelecionarUsuarioPerfis(loginRecuperar);
             }
 
-            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(login));
+            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(loginRecuperar));
             usuario.DefinirEmail(usuarioCore.Email);
             usuario.IniciarRecuperacaoDeSenha();
             repositorioUsuario.Salvar(usuario);

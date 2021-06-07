@@ -3,7 +3,7 @@ using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AbstractUseCase
+    public abstract class AbstractUseCase
     {
         protected readonly IMediator mediator;
 

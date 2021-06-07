@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario)
         {
             if (!usuario.EhProfessorCj() && !await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(long.Parse(disciplinaId), turmaId, dataAula, usuario)))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
         }
     }
 }

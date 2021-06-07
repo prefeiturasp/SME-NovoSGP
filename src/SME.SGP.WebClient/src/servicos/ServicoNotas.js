@@ -21,16 +21,16 @@ class ServicoNota {
         );
 
         const qtdAlunosAbaixoMedia = notasDoAluno.filter(
-          nota => nota.notaConceito <= mediaAprovacaoBimestre
+          nota => nota.notaConceito < mediaAprovacaoBimestre
         );
         quantidadeTotalNotas += notasDoAluno.length;
         quantidadeTotalNotasNaoAprovado += qtdAlunosAbaixoMedia.length;
       });
 
-      const persentualAbaixoMedia =
-        (quantidadeTotalNotasNaoAprovado / quantidadeTotalNotas) * 100;
+      const percentualAbaixoMedia =
+        100 - ((quantidadeTotalNotasNaoAprovado / quantidadeTotalNotas) * 100);
       const ehPorcentagemAceitavel =
-        persentualAbaixoMedia < percentualMinimoAprovados;
+        percentualAbaixoMedia >= percentualMinimoAprovados;
       return ehPorcentagemAceitavel;
     };
 

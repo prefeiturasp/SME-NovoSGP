@@ -115,7 +115,7 @@ namespace SME.SGP.Dominio
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
 
-            ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId);
+            await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId);
 
             var entidadesSalvar = new List<NotaConceito>();
 
@@ -123,7 +123,9 @@ namespace SME.SGP.Dominio
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, DateTime.Today, usuario);
+            var dataConsiderada = atividadesAvaliativas.Any() ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao : DateTime.Today;
+            
+            await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, dataConsiderada, usuario);
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
@@ -165,7 +167,8 @@ namespace SME.SGP.Dominio
             {
                 var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
                 var valoresConceito = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
-                var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, dataAtual.Year != atividadeAvaliativa.DataAvaliacao.Year);
+                var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(atividadeAvaliativa.TurmaId, true);
+                var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
                 var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
                 var quantidadeAlunos = notasPorAvaliacao.Count();
@@ -247,7 +250,8 @@ namespace SME.SGP.Dominio
             if (turma == null)
                 throw new NegocioException("Não foi encontrada a turma informada");
 
-            var ciclo = repositorioCiclo.ObterCicloPorAnoModalidade(turma.Ano, turma.Modalidade);
+            string anoCicloModalidade = !String.IsNullOrEmpty(turma?.Ano) ? turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : turma.Ano : string.Empty;
+            var ciclo = repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, turma.Modalidade);
 
             if (ciclo == null)
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
@@ -270,33 +274,36 @@ namespace SME.SGP.Dominio
             unitOfWork.PersistirTransacao();
         }
 
-        private void ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId)
+        private async Task ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId)
         {
             if (atividadesAvaliativas == null || !atividadesAvaliativas.Any())
                 throw new NegocioException("Não foi encontrada nenhuma da(s) avaliação(es) informada(s)");
 
             ValidarSeAtividadesAvaliativasExistem(avaliacoesAlteradasIds, atividadesAvaliativas);
+            var disciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
 
-            atividadesAvaliativas.ToList().ForEach(async atividadeAvaliativa => await ValidarDataAvaliacaoECriador(atividadeAvaliativa, professorRf, disciplinaId));
+            foreach (var atividadeAvaliativa in atividadesAvaliativas)
+                await ValidarDataAvaliacaoECriador(atividadeAvaliativa, professorRf, disciplinaId, disciplinasEol);
         }
 
-        private async Task ValidarDataAvaliacaoECriador(AtividadeAvaliativa atividadeAvaliativa, string professorRf, string disciplinaId)
+        private async Task ValidarDataAvaliacaoECriador(AtividadeAvaliativa atividadeAvaliativa, string professorRf, string disciplinaId, IEnumerable<ProfessorTitularDisciplinaEol> disciplinasEol)
         {
             if (atividadeAvaliativa.DataAvaliacao.Date > DateTime.Today)
                 throw new NegocioException("Não é possivel atribuir notas/conceitos para avaliação(es) com data(s) futura(s)");
 
             bool ehTitular = false;
-            var disciplinasEol = Enumerable.Empty<ProfessorTitularDisciplinaEol>();
-
-            if (!atividadeAvaliativa.EhCj)
-                disciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
 
             if (disciplinasEol != null && disciplinasEol.Any())
                 ehTitular = disciplinasEol.Any(d => d.DisciplinaId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
 
+            var usuarioLogado = await mediator.Send(new ObterUsuarioPorRfQuery(professorRf));
+            var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Convert.ToInt64(disciplinaId), atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, usuarioLogado));
+
             if ((atividadeAvaliativa.EhCj && !atividadeAvaliativa.ProfessorRf.Equals(professorRf)) ||
-                (!atividadeAvaliativa.EhCj && !ehTitular))
+                (!atividadeAvaliativa.EhCj && !ehTitular && !usuarioPossuiAtribuicaoNaTurmaNaData))
+            {
                 throw new NegocioException("Somente o professor que criou a avaliação e/ou titular, pode atribuir e/ou editar notas/conceitos");
+            }
         }
 
         private async Task<IEnumerable<NotaConceito>> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf, string disciplinaId,
@@ -305,8 +312,8 @@ namespace SME.SGP.Dominio
             var notasMultidisciplina = new List<NotaConceito>();
             var alunosNotasExtemporaneas = new StringBuilder();
             var nota = notasConceitos.FirstOrDefault();
-
-            var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, atividadeAvaliativa.DataAvaliacao.Year != DateTime.Now.Year);
+            var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(turma.CodigoTurma, true);            
+            var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
             var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
             var dataAtual = DateTime.Now;
 
@@ -417,7 +424,7 @@ namespace SME.SGP.Dominio
                 usuario = await servicoUsuario.ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
         }
     }
 }

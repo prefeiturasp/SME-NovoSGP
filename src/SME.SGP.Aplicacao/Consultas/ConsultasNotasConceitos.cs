@@ -117,9 +117,6 @@ namespace SME.SGP.Aplicacao
                 // Disciplina não tem disciplinas filhas então carrega avaliações da propria
                 atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, filtro.DisciplinaCodigo, periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
 
-            if (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any())
-                return ObterRetornoGenericoBimestreAtualVazio(periodosEscolares, bimestre.Value);
-
             var alunos = await servicoEOL.ObterAlunosPorTurma(filtro.TurmaCodigo);
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
@@ -139,6 +136,8 @@ namespace SME.SGP.Aplicacao
             var usuarioRfUltimaNotaConceitoAlterada = string.Empty;
             var nomeAvaliacaoAuditoriaInclusao = string.Empty;
             var nomeAvaliacaoAuditoriaAlteracao = string.Empty;
+
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             foreach (var periodoEscolar in periodosEscolares)
             {
@@ -162,8 +161,13 @@ namespace SME.SGP.Aplicacao
                         .ToList();
 
                     var alunosIds = alunos.Select(a => a.CodigoAluno).Distinct();
-                    var notas = repositorioNotasConceitos
-                        .ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativasdoBimestre.Select(a => a.Id).Distinct(), alunosIds, filtro.DisciplinaCodigo);
+
+                    IEnumerable<long> atividadesAvaliativas = atividadesAvaliativasdoBimestre.Select(a => a.Id)?.Distinct();
+                    IEnumerable<NotaConceito> notas = null;
+
+                    if (atividadesAvaliativaEBimestres != null && atividadesAvaliativaEBimestres.Any())
+                        notas = repositorioNotasConceitos
+                            .ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativas, alunosIds, filtro.DisciplinaCodigo);
 
                     var ausenciasAtividadesAvaliativas = await repositorioFrequencia
                         .ObterAusencias(filtro.TurmaCodigo, filtro.DisciplinaCodigo, atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
@@ -171,13 +175,27 @@ namespace SME.SGP.Aplicacao
                     var consultaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(filtro.DisciplinaCodigo) });
 
                     if (consultaEOL == null || !consultaEOL.Any())
-                        throw new NegocioException("Disciplina informada não encontrada no EOL");
+                        throw new NegocioException("Componente curricular informado não encontrado no EOL");
                     var disciplinaEOL = consultaEOL.First();
 
                     IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
-
                     if (disciplinaEOL.Regencia)
-                        disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(filtro.TurmaCodigo), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
+                    {
+                        if (usuario.EhProfessorCj())
+                        {
+                            IEnumerable<DisciplinaDto> disciplinasRegenciaCJ = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(long.Parse(filtro.DisciplinaCodigo), filtro.TurmaCodigo, false, disciplinaEOL.Regencia);
+                            if (disciplinasRegenciaCJ == null || !disciplinasRegenciaCJ.Any())
+                                throw new NegocioException("Não foram encontradas as disciplinas de regência");
+                            disciplinasRegencia = MapearParaDto(disciplinasRegenciaCJ);
+                        }
+                        else
+                        {
+                            IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(filtro.TurmaCodigo, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
+                            if (disciplinasRegenciaEol == null || !disciplinasRegenciaEol.Any())
+                                throw new NegocioException("Não foram encontradas disciplinas de regência no EOL");
+                            disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol);
+                        }
+                    }
 
                     var fechamentosTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplina(filtro.TurmaCodigo, filtro.DisciplinaCodigo, valorBimestreAtual);
 
@@ -234,7 +252,7 @@ namespace SME.SGP.Aplicacao
                             notasAvaliacoes.Add(notaAvaliacao);
                         }
 
-                        notaConceitoAluno.PodeEditar = notasAvaliacoes.Any(na => na.PodeEditar);
+                        notaConceitoAluno.PodeEditar = notasAvaliacoes.Any(na => na.PodeEditar) || (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any());
 
                         notaConceitoAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar()
                         {
@@ -256,11 +274,23 @@ namespace SME.SGP.Aplicacao
                             bimestreParaAdicionar.FechamentoTurmaId = fechamentoTurma.Id;
                             bimestreParaAdicionar.Situacao = fechamentoTurma.Situacao;
 
-                            retorno.AuditoriaBimestreInserido = $"Nota final do bimestre inserida por {fechamentoTurma.CriadoPor}({fechamentoTurma.CriadoRF}) em {fechamentoTurma.CriadoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurma.CriadoEm.ToString("HH:mm")}.";
-                            if (fechamentoTurma.AlteradoEm.HasValue)
-                                retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {fechamentoTurma.AlteradoPor}({fechamentoTurma.CriadoRF}) em {fechamentoTurma.AlteradoEm.Value.ToString("dd/MM/yyyy")}, às {fechamentoTurma.AlteradoEm.Value.ToString("HH:mm")}.";
-
                             var notasConceitoBimestre = await consultasFechamentoTurmaDisciplina.ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
+
+                            retorno.AuditoriaBimestreInserido = $"Nota final do bimestre inserida por {fechamentoTurma.CriadoPor}({fechamentoTurma.CriadoRF}) em {fechamentoTurma.CriadoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurma.CriadoEm.ToString("HH:mm")}.";
+                            if (notasConceitoBimestre.Any())
+                            {
+                                var dadosAuditoriaAlteracaoBimestre = notasConceitoBimestre
+                                    .OrderByDescending(nc => nc.AlteradoEm)
+                                    .ThenBy(nc => nc.CriadoEm)
+                                    .Select(nc => new
+                                    {
+                                        AlteradoPor = !string.IsNullOrWhiteSpace(nc.AlteradoPor) && !nc.AlteradoRf.Equals(0) ? nc.AlteradoPor : nc.CriadoPor,
+                                        AlteradoRf = !string.IsNullOrWhiteSpace(nc.AlteradoRf) && !nc.AlteradoRf.Equals(0) ? nc.AlteradoRf : nc.CriadoRf,
+                                        AlteradoEm = nc.AlteradoEm.HasValue && !nc.AlteradoRf.Equals(0) ? nc.AlteradoEm.Value : nc.CriadoEm,
+                                    }).First();
+                                retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {(dadosAuditoriaAlteracaoBimestre.AlteradoPor)}({dadosAuditoriaAlteracaoBimestre.AlteradoRf}) em {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("dd/MM/yyyy")}, às {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("HH:mm")}.";
+                            }
+
                             if (disciplinaEOL.Regencia)
                             {
                                 // Regencia carrega disciplinas mesmo sem nota de fechamento
@@ -297,13 +327,16 @@ namespace SME.SGP.Aplicacao
                         if (disciplinaEOL.Regencia)
                         {
                             // Regencia carrega disciplinas mesmo sem nota de fechamento
-                            foreach (var disciplinaRegencia in disciplinasRegencia)
+                            if (disciplinasRegencia != null)
                             {
-                                notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
+                                foreach (var disciplinaRegencia in disciplinasRegencia)
                                 {
-                                    DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
-                                    Disciplina = disciplinaRegencia.Nome,
-                                });
+                                    notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
+                                    {
+                                        DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
+                                        Disciplina = disciplinaRegencia.Nome,
+                                    });
+                                }
                             }
                         }
 
@@ -355,6 +388,11 @@ namespace SME.SGP.Aplicacao
 
                         retorno.NotaTipo = notaTipo.TipoNota;
                         ObterValoresDeAuditoria(dataUltimaNotaConceitoInserida, dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoAlterada, notaTipo.TipoNota, retorno, nomeAvaliacaoAuditoriaInclusao, nomeAvaliacaoAuditoriaAlteracao);
+                    }
+                    else
+                    {
+                        var tipoNota = await ObterNotaTipo(long.Parse(filtro.TurmaCodigo), filtro.AnoLetivo, filtro.TurmaHistorico);
+                        retorno.NotaTipo = tipoNota;
                     }
                 }
 
@@ -428,6 +466,47 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        private IEnumerable<DisciplinaResposta> MapearParaDto(IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol)
+        {
+            foreach (var disciplina in disciplinasRegenciaEol)
+            {
+                yield return new DisciplinaResposta()
+                {
+                    CodigoComponenteCurricular = disciplina.Codigo,
+                    Compartilhada = disciplina.Compartilhada,
+                    CodigoComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
+                    Nome = disciplina.Descricao,
+                    Regencia = disciplina.Regencia,
+                    RegistroFrequencia = disciplina.RegistraFrequencia,
+                    TerritorioSaber = disciplina.TerritorioSaber,
+                    LancaNota = disciplina.LancaNota,
+                    BaseNacional = disciplina.BaseNacional,
+                    GrupoMatriz = disciplina.GrupoMatriz != null ?
+                        new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatriz.Id, Nome = disciplina.GrupoMatriz.Nome } :
+                        new Integracoes.Respostas.GrupoMatriz()
+                };
+            }
+        }
+
+        private IEnumerable<DisciplinaResposta> MapearParaDto(IEnumerable<DisciplinaDto> disciplinasRegenciaCJ)
+        {
+            foreach (var disciplina in disciplinasRegenciaCJ)
+            {
+                yield return new DisciplinaResposta()
+                {
+                    CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
+                    Compartilhada = disciplina.Compartilhada,
+                    CodigoComponenteCurricularPai = disciplina.CdComponenteCurricularPai,
+                    Nome = disciplina.Nome,
+                    Regencia = disciplina.Regencia,
+                    RegistroFrequencia = disciplina.RegistraFrequencia,
+                    TerritorioSaber = disciplina.TerritorioSaber,
+                    LancaNota = disciplina.LancaNota,
+                    GrupoMatriz = new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatrizId, Nome = disciplina.GrupoMatrizNome }
+                };
+            }
+        }
+
         private int ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
         {
             var dataPesquisa = DateTime.Now;
@@ -487,13 +566,13 @@ namespace SME.SGP.Aplicacao
                         disciplinasObservacao.Add(disciplinaRegencia.Nome);
                 }
                 if (disciplinasObservacao.Count > 0)
-                    bimestreDto.Observacoes.Add($"A(s) disciplina(s) [{string.Join(",", disciplinasObservacao)}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
+                    bimestreDto.Observacoes.Add($"O(s) componente(s) curricular(es) [{string.Join(",", disciplinasObservacao)}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }
             else
             {
                 var avaliacoes = await repositorioAtividadeAvaliativaDisciplina.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaEOL.CodigoComponenteCurricular.ToString(), bimestre);
                 if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
-                    bimestreDto.Observacoes.Add($"A disciplina [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
+                    bimestreDto.Observacoes.Add($"O componente curricular [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }
         }
 

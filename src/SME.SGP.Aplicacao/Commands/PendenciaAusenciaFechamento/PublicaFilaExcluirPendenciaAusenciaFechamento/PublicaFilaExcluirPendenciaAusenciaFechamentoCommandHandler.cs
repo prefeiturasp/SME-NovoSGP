@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(PublicaFilaExcluirPendenciaAusenciaFechamentoCommand request, CancellationToken cancellationToken)
         {
-            await mediator.Send(new PublicaFilaWorkerSgpCommand(RotasRabbit.RotaExecutaExclusaoPendenciasAusenciaFechamento,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAusenciaFechamento,
                                                        new VerificaExclusaoPendenciasAusenciaFechamentoCommand
                                                        (request.DisciplinaId,
                                                        request.PeriodoEscolarId,

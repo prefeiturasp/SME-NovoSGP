@@ -21,10 +21,6 @@ namespace SME.SGP.IoC
             IModel _channel = conexaoRabbit.CreateModel();
             services.AddSingleton(conexaoRabbit);
             services.AddSingleton(_channel);
-
-            _channel.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
-            _channel.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
-            _channel.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, "*");
         }
     }
 }

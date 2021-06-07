@@ -204,11 +204,11 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<DataAulasProfessorDto>> ObterAulasNosPeriodos(PeriodoEscolarListaDto periodosEscolares, int anoLetivo, string turmaCodigo, string disciplinaCodigo, Usuario usuarioLogado, string usuarioRF)
         {
             if (disciplinaCodigo.ToCharArray().Any(a => !char.IsDigit(a)))
-                throw new NegocioException("Código da disciplina inválido");
+                throw new NegocioException("Código do componente curricular inválido");
 
             var disciplina = await consultasDisciplina.ObterDisciplina(Convert.ToInt64(disciplinaCodigo));
             if (disciplina == null)
-                throw new NegocioException("Disciplina não encontrada");
+                throw new NegocioException("Componente curricular não encontrado");
 
             var aulasRetorno = new List<DataAulasProfessorDto>();
 

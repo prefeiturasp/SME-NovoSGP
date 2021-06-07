@@ -30,7 +30,10 @@ namespace SME.SGP.Aplicacao
                 datasDosPeriodosEscolares.AddRange(periodoEscolar.ObterIntervaloDatas(periodosEventosFeriados).Select(c => new DiaLetivoDto
                 {
                     Data = c,
-                    EhLetivo = !c.FimDeSemana()
+                    EhLetivo = eventos.Any(e => e.Letivo == EventoLetivo.Sim && c.Date >= e.DataInicio.Date && c.Date <= e.DataFim.Date) ||
+                               (!c.FimDeSemana() && !eventos.Any(e => e.Letivo == EventoLetivo.Nao && c.Date >= e.DataInicio.Date && c.Date <= e.DataFim.Date)),
+                    DreIds = ObterUnidades(eventos, c.Date, true).ToList(),
+                    UesIds = ObterUnidades(eventos, c.Date, false).ToList()
                 }));
             }
 
@@ -38,13 +41,13 @@ namespace SME.SGP.Aplicacao
             {
                 datasDosPeriodosEscolares.AddRange(ObtemEventoLetivosFimDeSemana(eventos));
 
-                datasDosPeriodosEscolares.AddRange(ObtemEventosNaoLetivos(datasDosPeriodosEscolares, eventos));
+                datasDosPeriodosEscolares.AddRange(ObtemEventosNaoLetivos(eventos));
             }
 
             return datasDosPeriodosEscolares;
         }
 
-        private IEnumerable<DiaLetivoDto> ObtemEventosNaoLetivos(List<DiaLetivoDto> datasDosPeriodosEscolares, IEnumerable<Evento> eventos)
+        private IEnumerable<DiaLetivoDto> ObtemEventosNaoLetivos(IEnumerable<Evento> eventos)
         {
             var datasComEventosNaoLetivos = eventos.Where(c => c.EhEventoNaoLetivo())
                 .SelectMany(evento => evento.ObterIntervaloDatas()
@@ -58,7 +61,7 @@ namespace SME.SGP.Aplicacao
                     UesIds = string.IsNullOrWhiteSpace(evento.UeId) ? new List<string>() : new List<string> { evento.UeId },
                     DreIds = string.IsNullOrWhiteSpace(evento.DreId) ? new List<string>() : new List<string> { evento.DreId },
                     PossuiEvento = true
-                }));;
+                }));
 
             return datasComEventosNaoLetivos;
         }
@@ -78,6 +81,22 @@ namespace SME.SGP.Aplicacao
                 }));
 
             return datasComEventosFimDeSemana;
+        }
+
+        private IList<string> ObterUnidades(IEnumerable<Evento> eventos, DateTime dataConsiderada, bool obterDres)
+        {
+            var listaRetorno = new List<string>();            
+
+            var eventosPorData = eventos?
+                .Where(e => dataConsiderada >= e.DataInicio.Date && dataConsiderada <= e.DataFim.Date && (obterDres ? e.EhEventoDRE() : e.EhEventoUE()));
+
+            if (eventosPorData != null && eventosPorData.Any())
+            {
+                listaRetorno.AddRange((from e in eventosPorData
+                                       select (obterDres ? e.DreId : e.UeId)).ToList());
+            }
+
+            return listaRetorno;
         }
     }
 }

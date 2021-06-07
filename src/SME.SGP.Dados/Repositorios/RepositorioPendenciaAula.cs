@@ -190,52 +190,59 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil)
         {
-            var tabelaReferencia = ehInfantil ? "diario_bordo" : "plano_aula";
 
-            var sql = $@"select
-	                       1
-                        from
-	                        aula
-                        inner join turma on 
-	                        aula.turma_id = turma.turma_id
-	                    left join registro_frequencia rf on
-	                        aula.id = rf.aula_id
-                        left join {tabelaReferencia} tr on
-                            aula.id = tr.aula_id
-                        where
-	                        not aula.excluido
+            var sql = ehInfantil ? $@"select 1
+                        from aula
+                        inner join turma on aula.turma_id = turma.turma_id
+	                    left join registro_frequencia rf on aula.id = rf.aula_id
+                        left join diario_bordo tr on aula.id = tr.aula_id
+                        where not aula.excluido
 	                        and aula.id = ANY(@aulas)
                             and aula.data_aula::date < @hoje
                             and (rf.id is null or tr.id is null)
-	                        group by
-	                        1 ";
+	                        " :
+                            $@"select 1
+                        from aula
+                        inner join turma on aula.turma_id = turma.turma_id
+	                    left join registro_frequencia rf on aula.id = rf.aula_id
+                        where not aula.excluido
+	                        and aula.id = ANY(@aulas)
+                            and aula.data_aula::date < @hoje
+                            and rf.id is null";
 
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
         {
-            var sql = @"select
-	                       1
-                        from
-	                        atividade_avaliativa aa
-                        inner join atividade_avaliativa_disciplina aad on
-	                        aad.atividade_avaliativa_id = aa.id
-                        left join notas_conceito n on
-	                        aa.id = n.atividade_avaliativa
-                        inner join aula a on
-	                        aa.turma_id = a.turma_id
-	                        and aa.data_avaliacao::date = a.data_aula::date
-	                        and aad.disciplina_id = a.disciplina_id
-                        where
-	                        not a.excluido
-	                        and a.id = ANY(@aulas)
+            var sql = @"select 1
+                            from aula a
+                            inner join atividade_avaliativa aa on a.id = ANY(@aulas)
+                            and aa.turma_id = a.turma_id
+                            and not a.excluido
                             and a.data_aula::date < @hoje
-	                        and n.id is null
-                        group by
-	                        1";
+                            and aa.data_avaliacao::date = a.data_aula::date
+                            inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = aa.id
+                            and aad.disciplina_id = a.disciplina_id
+                            left join notas_conceito n on aa.id = n.atividade_avaliativa and n.id is null;";
 
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
+        }
+
+        public async Task<bool> PossuiAtividadeAvaliativaSemNotaPorAulasId(long[] aulasId)
+        {
+            var sql = @"select 1 from     
+                            (select a.id aula_id,aad.atividade_avaliativa_id,max(n.id) nota_id
+                                from aula a
+                                inner join atividade_avaliativa aa on a.id = ANY(@aulas) and aa.turma_id = a.turma_id and not a.excluido
+                                and a.data_aula::date < @hoje
+                                and aa.data_avaliacao::date = a.data_aula::date
+                                inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = aa.id
+                                and aad.disciplina_id = a.disciplina_id
+                                left join notas_conceito n on aa.id = n.atividade_avaliativa
+                                group by a.id,aad.atividade_avaliativa_id) a where a.nota_id is null;";
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId)
@@ -258,21 +265,19 @@ namespace SME.SGP.Dados.Repositorios
                             and a.data_aula::date < @hoje
 	                        and n.id is null";
 
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil)
         {
-            var tabelaReferencia = ehInfantil ? "diario_bordo" : "plano_aula";
-            var propriedadeReferencia = ehInfantil ? "PossuiPendenciaDiarioBordo" : "PossuiPendenciaPlanoAula";
 
-            var sql = $@"select
+            var sql = ehInfantil ? $@"select
 	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
                                     ELSE 0
                               END PossuiPendenciaFrequencia,
                               CASE WHEN tr.id is null THEN 1
                                     ELSE 0
-                               END {propriedadeReferencia} 
+                               END PossuiPendenciaDiarioBordo 
                            from
 	                            aula
                             inner join turma on 
@@ -281,13 +286,32 @@ namespace SME.SGP.Dados.Repositorios
 	                        	aula.disciplina_id = cc.id::varchar
 	                        left join registro_frequencia rf on
 	                            aula.id = rf.aula_id
-                            left join {tabelaReferencia} tr on
+                            left join diario_bordo tr on
                                 aula.id =  tr.aula_id
                             where
 	                            not aula.excluido
 	                            and aula.id = @aula
                                 and aula.data_aula::date < @hoje
-                                and (rf.id is null or tr.id is null) ";
+                                and (rf.id is null or tr.id is null) " :
+
+                                $@"select
+	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
+                                    ELSE 0
+                              END PossuiPendenciaFrequencia,
+                               0 PossuiPendenciaPlanoAula 
+                           from
+	                            aula
+                            inner join turma on 
+	                            aula.turma_id = turma.turma_id
+                            inner join componente_curricular cc on 
+	                        	aula.disciplina_id = cc.id::varchar
+	                        left join registro_frequencia rf on
+	                            aula.id = rf.aula_id                            
+                            where
+	                            not aula.excluido
+	                            and aula.id = @aula
+                                and aula.data_aula::date < @hoje
+                                and rf.id is null";
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }

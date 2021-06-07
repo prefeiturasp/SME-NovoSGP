@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(c => c.DisciplinaId)
             .NotEmpty()
-            .WithMessage("O id da disciplina deve ser informada.");
+            .WithMessage("O id do componente curricular deve ser informada.");
         }
     }
 }

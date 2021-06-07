@@ -234,7 +234,7 @@ const Notas = ({ match }) => {
             setNotaTipo(dados.notaTipo);
 
             let listaTiposConceitos = [];
-            if (Number(notasConceitos.Conceitos) === Number(dados.notaTipo)) {
+            if (Number(notasConceitos.Conceitos) === Number(dados.notaTipo) || !(Number(notasConceitos.Notas) === notaTipo)) {
               listaTiposConceitos = await obterListaConceitos(item.periodoFim);
             }
 
@@ -845,8 +845,8 @@ const Notas = ({ match }) => {
             bimestrePesquisado.periodoFim
           );
         }
-        setNotaTipo(dados.notaTipo);
 
+        setNotaTipo(dados.notaTipo);
         setNotaTipo(dados.notaTipo);
 
         const bimestreAtualizado = {
@@ -969,7 +969,7 @@ const Notas = ({ match }) => {
       clicouNoBotaoSalvar,
       clicouNoBotaoVoltar
     );
-  };
+  };  
 
   return (
     <Container>

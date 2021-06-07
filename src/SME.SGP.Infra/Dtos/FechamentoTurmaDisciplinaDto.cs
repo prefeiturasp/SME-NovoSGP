@@ -13,7 +13,7 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "O bimestre é obrigatório")]
         public int Bimestre { get; set; }
 
-        [Required(ErrorMessage = "A disciplina é obrigatória!")]
+        [Required(ErrorMessage = "O componente curricular é obrigatória!")]
         public long DisciplinaId { get; set; }
 
         public string Justificativa { get; set; }

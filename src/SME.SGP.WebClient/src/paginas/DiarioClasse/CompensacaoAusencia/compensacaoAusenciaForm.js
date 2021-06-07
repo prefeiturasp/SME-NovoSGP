@@ -55,6 +55,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
+  const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [alunosAusenciaTurma, setAlunosAusenciaTurma] = useState([]);
   const [carregouInformacoes, setCarregouInformacoes] = useState(false);
   const [idCompensacaoAusencia, setIdCompensacaoAusencia] = useState(0);
@@ -581,9 +582,12 @@ const CompensacaoAusenciaForm = ({ match }) => {
         'Cancelar'
       );
       if (confirmado) {
+        setCarregandoGeral(true);
         const excluir = await ServicoCompensacaoAusencia.deletar([
           idCompensacaoAusencia,
-        ]).catch(e => erros(e));
+        ])
+          .catch(e => erros(e))
+          .finally(() => setCarregandoGeral(false));
 
         if (excluir && excluir.status === 200) {
           sucesso('Compensação excluída com sucesso.');
@@ -683,6 +687,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
+    setCarregandoGeral(true);
     const paramas = valoresForm;
     paramas.id = idCompensacaoAusencia;
     paramas.turmaId = turmaSelecionada.turma;
@@ -706,7 +711,9 @@ const CompensacaoAusenciaForm = ({ match }) => {
     const cadastrado = await ServicoCompensacaoAusencia.salvar(
       paramas.id,
       paramas
-    ).catch(e => erros(e));
+    )
+      .catch(e => erros(e))
+      .finally(() => setCarregandoGeral(false));
 
     if (cadastrado && cadastrado.status === 200) {
       if (
@@ -747,7 +754,12 @@ const CompensacaoAusenciaForm = ({ match }) => {
       const novaListaAlunosAusenciaCompensada = obterListaAlunosComIdsSelecionados(
         alunosAusenciaTurma,
         idsAlunos
-      );
+      ).map(item => {
+        return {
+          ...item,
+          alunoSemSalvar: true,
+        };
+      });
 
       const novaListaAlunos = obterListaAlunosSemIdsSelecionados(
         alunosAusenciaTurma,
@@ -779,17 +791,20 @@ const CompensacaoAusenciaForm = ({ match }) => {
       const listaAlunosRemover = alunosAusenciaCompensada.filter(item =>
         idsAlunosAusenciaCompensadas.find(id => String(id) === String(item.id))
       );
-      const confirmado = await confirmar(
-        'Excluir estudante',
-        listaAlunosRemover.map(item => {
-          return `${item.id} - ${item.nome}`;
-        }),
-        'A frequência do(s) seguinte(s) estudante(s) será recalculada somente quando salvar as suas alterações',
-        'Excluir',
-        'Cancelar',
-        true
-      );
 
+      const dadosAlunoMsg = `${listaAlunosRemover[0]?.id} - ${listaAlunosRemover[0]?.nome}`;
+      let confirmado = true;
+
+      if (!listaAlunosRemover[0]?.alunoSemSalvar) {
+        confirmado = await confirmar(
+          'Excluir estudante',
+          dadosAlunoMsg,
+          'A frequência do(s) seguinte(s) estudante(s) será recalculada somente quando salvar as suas alterações',
+          'Excluir',
+          'Cancelar',
+          true
+        );
+      }
       if (confirmado) {
         const novaListaAlunosOriginal = obterListaAlunosComIdsSelecionados(
           alunosAusenciaTurmaOriginal,
@@ -893,7 +908,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
   };
 
   return (
-    <>
+    <Loader loading={carregandoGeral} ignorarTip>
       {exibirCopiarCompensacao ? (
         <CopiarCompensacao
           visivel={exibirCopiarCompensacao}
@@ -1166,7 +1181,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
           </Formik>
         </Loader>
       </Card>
-    </>
+    </Loader>
   );
 };
 

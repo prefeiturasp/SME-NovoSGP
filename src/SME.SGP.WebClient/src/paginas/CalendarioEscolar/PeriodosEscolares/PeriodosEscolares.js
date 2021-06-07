@@ -13,6 +13,7 @@ import {
   Loader,
   momentSchema,
   SelectAutocomplete,
+  Auditoria
 } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 
@@ -40,6 +41,7 @@ const PeriodosEscolares = () => {
   const [isTipoCalendarioAnual, setIsTipoCalendarioAnual] = useState(true);
   const [validacoes, setValidacoes] = useState();
   const [modoEdicao, setModoEdicao] = useState(false);
+  const [ehRegistroExistente, setEhRegistroExistente] = useState(false);
   const [periodoEscolarEdicao, setPeriodoEscolarEdicao] = useState({});
   const valoresFormInicial = {
     primeiroBimestreDataInicial: '',
@@ -60,6 +62,11 @@ const PeriodosEscolares = () => {
   const [valorTipoCalendario, setValorTipoCalendario] = useState('');
   const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
   const [carregandoTipos, setCarregandoTipos] = useState(false);
+  const [auditoria, setAuditoria] = useState({});
+
+  const temValorInicial = Object.keys(valoresIniciais).length;
+  const labelBotaoCadastrar =
+    temValorInicial && modoEdicao ? 'Alterar' : 'Cadastrar';
 
   const validacaoPrimeiroBim = {
     primeiroBimestreDataInicial: momentSchema.required(
@@ -295,6 +302,15 @@ const PeriodosEscolares = () => {
     } else {
       setDesabilitaCampos(!permissoesTela.podeIncluir || somenteConsulta);
     }
+    setEhRegistroExistente(periodoAtual.data.tipoCalendario);
+    setAuditoria({
+      criadoEm: periodoAtual.data.criadoEm,
+      criadoPor: periodoAtual.data.criadoPor,
+      criadoRf: periodoAtual.data.criadoRf,
+      alteradoPor: periodoAtual.data.alteradoPor,
+      alteradoEm: periodoAtual.data.alteradoEm,
+      alteradoRf: periodoAtual.data.alteradoRf,
+    });
     setPeriodoEscolarEdicao(periodoAtual.data);
     setValoresIniciais(bimestresValorInicial);
   };
@@ -559,7 +575,7 @@ const PeriodosEscolares = () => {
                   />
                   <Button
                     id={shortid.generate()}
-                    label="Cadastrar"
+                    label={labelBotaoCadastrar}
                     color={Colors.Roxo}
                     border
                     bold
@@ -590,6 +606,24 @@ const PeriodosEscolares = () => {
             </Form>
           )}
         </Formik>
+        <div className="col-md-6 d-flex justify-content-start">
+            {valorTipoCalendario &&
+            valorTipoCalendario !== '' &&
+            ehRegistroExistente &&
+            auditoria &&
+            auditoria.criadoEm ? (
+              <Auditoria
+                criadoEm={auditoria.criadoEm}
+                criadoPor={auditoria.criadoPor}
+                criadoRf={auditoria.criadoRf}
+                alteradoPor={auditoria.alteradoPor}
+                alteradoEm={auditoria.alteradoEm}
+                alteradoRf={auditoria.alteradoRf}
+              />
+            ) : (
+              ''
+            )}
+          </div>
       </Card>
     </>
   );

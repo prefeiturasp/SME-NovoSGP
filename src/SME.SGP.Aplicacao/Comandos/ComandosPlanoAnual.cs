@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var podePersistir = await servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), planoAnualDto.ComponenteCurricularEolId.ToString(), DateTime.Now);
                     if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistir)
-                        throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
+                        throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
                 }
                 planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao, bimestrePlanoAnual.ObjetivosAprendizagemOpcionais);
                 Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);

@@ -10,21 +10,21 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasTurma: IConsultasTurma
+    public class ConsultasTurma : IConsultasTurma
     {
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IServicoEol servicoEOL;
-        private readonly IServicoAluno servicoAluno;        
+        private readonly IServicoAluno servicoAluno;
 
         public ConsultasTurma(IRepositorioTurma repositorioTurma,
                                 IConsultasTipoCalendario consultasTipoCalendario,
                                 IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                 IServicoEol servicoEOL,
-                                IServicoAluno servicoAluno                                
+                                IServicoAluno servicoAluno
             )
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));            
+            this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
         }
 
         public async Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia, int bimestre = 0, TipoCalendario tipoCalendario = null)
@@ -123,9 +123,15 @@ namespace SME.SGP.Aplicacao
 
             var dadosAlunosDto = new List<AlunoDadosBasicosDto>();
 
-            foreach(var dadoAluno in dadosAlunos)
+            foreach (var dadoAluno in dadosAlunos)
             {
                 var dadosBasicos = (AlunoDadosBasicosDto)dadoAluno;
+
+                if ((TipoResponsavel)Convert.ToInt32(dadoAluno.TipoResponsavel) == TipoResponsavel.ProprioEstudante &&
+                    !string.IsNullOrEmpty(dadoAluno.NomeSocialAluno) && dadoAluno.Maioridade)
+                {
+                    dadosBasicos.NomeResponsavel = dadoAluno.NomeSocialAluno;
+                }
 
                 dadosBasicos.TipoResponsavel = ObterTipoResponsavel(dadoAluno.TipoResponsavel);
                 // se informado periodo escolar carrega marcadores no periodo

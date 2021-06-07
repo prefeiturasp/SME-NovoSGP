@@ -12,11 +12,19 @@ namespace SME.SGP.Aplicacao
     public class ComandosFechamentoTurmaDisciplina : IComandosFechamentoTurmaDisciplina
     {
         private readonly IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina;
+        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
         private readonly IMediator mediator;
 
-        public ComandosFechamentoTurmaDisciplina(IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina, IMediator mediator)
+        public ComandosFechamentoTurmaDisciplina(IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina,
+                                                 IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
+                                                 IRepositorioFechamentoTurma repositorioFechamentoTurma,
+                                                 IMediator mediator)
         {
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(servicoFechamentoTurmaDisciplina));
+            this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
+            this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task Reprocessar(long fechamentoId)
@@ -29,6 +37,13 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
+                    if (fechamentoTurma?.Justificativa != null)
+                    {
+                        int tamanhoJustificativa = fechamentoTurma.Justificativa.Length;
+                        int limite = int.Parse(FechamentoTurmaDisciplinaEnum.TamanhoCampoJustificativa.Description());
+                        if (tamanhoJustificativa > limite)
+                            throw new NegocioException("Justificativa não pode ter mais que " + limite.ToString() + " caracteres");
+                    }
                     listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma, componenteSemNota));
                 }
                 catch (Exception e)
@@ -41,6 +56,25 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Erro ao salvar o fechamento da turma: " + string.Join(", ", listaAuditoria.Select(s => s.MensagemConsistencia)));
 
             return listaAuditoria;
+        }
+
+        public async Task ProcessarPendentes(int anoLetivo)
+        {
+            var fechamentosPendentes = await repositorioFechamentoTurmaDisciplina
+                .ObterFechamentosComSituacaoEmProcessamentoPorAnoLetivo(anoLetivo);
+
+            foreach (var fechamento in fechamentosPendentes)
+            {
+                var fechamentoTurma = await repositorioFechamentoTurma.ObterPorIdAsync(fechamento.FechamentoTurmaId);
+
+                if (fechamentoTurma.PeriodoEscolarId.HasValue)
+                {
+                    var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(fechamentoTurma.TurmaId));                    
+                    var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
+                    var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(fechamento.AlteradoEm.HasValue ? fechamento.AlteradoRF : fechamento.CriadoRF));
+                    await servicoFechamentoTurmaDisciplina.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuario);
+                }                
+            }
         }
     }
 }

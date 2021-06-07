@@ -6,6 +6,8 @@ namespace SME.SGP.Infra
 {
     public class AlunoPorTurmaResposta
     {
+        private string nomeAluno;
+
         public int Ano { get; set; }
         public string CodigoAluno { get; set; }
         public int? CodigoComponenteCurricular { get; set; }
@@ -15,7 +17,7 @@ namespace SME.SGP.Infra
         public DateTime DataSituacao { get; set; }
         public DateTime DataMatricula { get; set; }
         public string EscolaTransferencia { get; set; }
-        public string NomeAluno { get; set; }
+        public string NomeAluno { get => Maioridade && !string.IsNullOrWhiteSpace(NomeSocialAluno) ? NomeSocialAluno : nomeAluno; set { nomeAluno = value; } }
         public string NomeSocialAluno { get; set; }
         public int NumeroAlunoChamada { get; set; }
         public char? ParecerConclusivo { get; set; }
@@ -29,6 +31,14 @@ namespace SME.SGP.Infra
         public string TipoResponsavel { get; set; }
         public string CelularResponsavel { get; set; }
         public DateTime DataAtualizacaoContato { get; set; }
+        public int Idade 
+        { 
+            get 
+            { 
+                return ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(DataNascimento.ToString("yyyyMMdd"))) / 10000); 
+            } 
+        }
+        public bool Maioridade => Idade > 18;
 
         private SituacaoMatriculaAluno[] SituacoesAtiva => new[] { SituacaoMatriculaAluno.Ativo,
                         SituacaoMatriculaAluno.Rematriculado,

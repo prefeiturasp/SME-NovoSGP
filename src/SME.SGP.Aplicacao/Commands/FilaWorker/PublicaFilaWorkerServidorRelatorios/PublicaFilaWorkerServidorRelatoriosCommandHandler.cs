@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using Sentry;
@@ -12,19 +13,32 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicaFilaWorkerServidorRelatoriosCommandHandler : IRequestHandler<PublicaFilaWorkerServidorRelatoriosCommand, bool>
     {
-        private readonly IModel rabbitChannel;
+        private readonly IConfiguration configuration;
 
-        public PublicaFilaWorkerServidorRelatoriosCommandHandler(IModel rabbitChannel)
+        public PublicaFilaWorkerServidorRelatoriosCommandHandler(IConfiguration configuration)
         {
-            this.rabbitChannel = rabbitChannel ?? throw new ArgumentNullException(nameof(rabbitChannel));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public Task<bool> Handle(PublicaFilaWorkerServidorRelatoriosCommand request, CancellationToken cancellationToken)
         {
             byte[] body = FormataBodyWorker(request);
 
-            rabbitChannel.QueueBind(RotasRabbit.WorkerRelatoriosSgp, RotasRabbit.ExchangeServidorRelatorios, RotasRabbit.RotaRelatoriosSolicitados);
-            rabbitChannel.BasicPublish(RotasRabbit.ExchangeServidorRelatorios, request.Fila, null, body);
+            var factory = new ConnectionFactory
+            {
+                HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
+                UserName = configuration.GetSection("ConfiguracaoRabbit:UserName").Value,
+                Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
+                VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
+            };
+
+            using (var conexaoRabbit = factory.CreateConnection())
+            {
+                using (IModel _channel = conexaoRabbit.CreateModel())
+                {
+                    _channel.BasicPublish(ExchangeRabbit.ServidorRelatorios, request.Fila, null, body);
+                }
+            }
 
             SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
 
@@ -34,7 +48,10 @@ namespace SME.SGP.Aplicacao
         private static byte[] FormataBodyWorker(PublicaFilaWorkerServidorRelatoriosCommand request)
         {
             var mensagem = new MensagemRabbit(request.Endpoint, request.Mensagem, request.CodigoCorrelacao, request.UsuarioLogadoRF, request.NotificarErroUsuario, request.PerfilUsuario);
-            var mensagemJson = JsonConvert.SerializeObject(mensagem);
+            var mensagemJson = JsonConvert.SerializeObject(mensagem, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
             var body = Encoding.UTF8.GetBytes(mensagemJson);
             return body;
         }

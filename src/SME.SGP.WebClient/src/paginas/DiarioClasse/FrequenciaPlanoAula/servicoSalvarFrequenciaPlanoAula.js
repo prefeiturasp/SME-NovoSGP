@@ -199,8 +199,7 @@ class ServicoSalvarFrequenciaPlanoAula {
 
     const salvouComSucesso = salvouFrequencia && salvouPlanoAula;
 
-    if (salvouComSucesso) {
-      dispatch(setDataSelecionadaFrequenciaPlanoAula());
+    if (salvouComSucesso) {      
       dispatch(setAtualizarDatas(true));
     }
     return salvouComSucesso;

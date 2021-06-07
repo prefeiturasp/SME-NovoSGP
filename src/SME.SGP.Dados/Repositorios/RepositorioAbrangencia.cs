@@ -394,26 +394,26 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query, parametros);
         }
 
-        public bool PossuiAbrangenciaTurmaAtivaPorLogin(string login)
+        public bool PossuiAbrangenciaTurmaAtivaPorLogin(string login, bool cj = false)
         {
-            var sql = @"select count(*) from usuario u
-                        inner join abrangencia a on a.usuario_id = u.id
-                        where u.login = @login and historico = false and turma_id is not null
-                              and not a.perfil = ANY(@perfisCJ) ;";
+            var sql = $@"select count(*) from usuario u
+                         inner join abrangencia a on a.usuario_id = u.id
+                         where u.login = @login and historico = false and turma_id is not null
+                              and { (cj ? string.Empty : "not") } a.perfil = ANY(@perfisCJ);";
 
             var parametros = new { login, perfisCJ = new Guid[] { Perfis.PERFIL_CJ, Perfis.PERFIL_CJ_INFANTIL } };
 
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
 
-        public bool PossuiAbrangenciaTurmaInfantilAtivaPorLogin(string login)
+        public bool PossuiAbrangenciaTurmaInfantilAtivaPorLogin(string login, bool cj = false)
         {
             var sql = @"select count(*) from usuario u
                         inner join abrangencia a on a.usuario_id = u.id
                         where u.login = @login and historico = false and turma_id is not null
-                              and a.perfil = ANY(@perfilINFANTIL) ;";
+                              and a.perfil = @perfilINFANTIL ;";
 
-            var parametros = new { login, perfilINFANTIL = new Guid[] { Perfis.PERFIL_PROFESSOR_INFANTIL } };
+            var parametros = new { login, perfilINFANTIL = cj ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_PROFESSOR_INFANTIL };
 
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
@@ -465,6 +465,20 @@ namespace SME.SGP.Dados.Repositorios
                                 u.ue_id = @codigoUe";
 
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe });
+        }
+
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorCodigosUe(string[] codigosUe)
+        {
+            var query = @"select
+                                distinct t.modalidade_codigo
+                            from
+                                turma t
+                            inner join ue u on
+                                t.ue_id = u.id
+                            where
+                                u.ue_id = any(@codigosUe)";
+
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigosUe });
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre)

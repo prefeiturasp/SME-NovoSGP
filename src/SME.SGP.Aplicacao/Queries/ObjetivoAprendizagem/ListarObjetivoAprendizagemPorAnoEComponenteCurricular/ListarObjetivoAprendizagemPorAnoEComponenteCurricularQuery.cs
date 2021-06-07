@@ -8,13 +8,13 @@ namespace SME.SGP.Aplicacao
     public class ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery : IRequest<IEnumerable<ObjetivoAprendizagemDto>>
     {
     
-        public ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery(string ano, long[] juremaIds)
+        public ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery(string[] anos, long[] juremaIds)
         {
-            Ano = ano;
+            Anos = anos;
             JuremaIds = juremaIds;
         }
 
-        public string Ano { get; set; }
+        public string[] Anos { get; set; }
         public long[] JuremaIds { get; set; }
         
     }
@@ -23,9 +23,9 @@ namespace SME.SGP.Aplicacao
     {
         public ObterObjetivoAprendizagemPorAnoEComponenteCurricularQueryValidator()
         {
-            RuleFor(a => a.Ano)
+            RuleFor(a => a.Anos)
                 .NotEmpty()
-                .WithMessage("O ano precisa ser informado.");
+                .WithMessage("Os anos precisam ser informados.");
             RuleFor(a => a.JuremaIds)
                 .NotEmpty()
                 .WithMessage("Os ids do jurema precisam ser informados.");

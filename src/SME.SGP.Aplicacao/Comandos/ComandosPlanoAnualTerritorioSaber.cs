@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 if (planoAnualTerritorioSaber != null)
                 {
                     if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString(), DateTime.Now).Result)
-                        throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
+                        throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
                 }
                 planoAnualTerritorioSaber = MapearParaDominio(planoAnualTerritorioSaberDto, planoAnualTerritorioSaber, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Desenvolvimento, bimestrePlanoAnual.Reflexao);
                 repositorioPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaber);

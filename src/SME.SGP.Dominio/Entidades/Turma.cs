@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio
         public Modalidade ModalidadeCodigo { get; set; }
         public ModalidadeTipoCalendario ModalidadeTipoCalendario
         {
-            get => ModalidadeCodigo == Modalidade.EJA ?
+                get => ModalidadeCodigo == Modalidade.EJA ?
                 ModalidadeTipoCalendario.EJA :
                 ModalidadeCodigo == Modalidade.Infantil ?
                     ModalidadeTipoCalendario.Infantil :
@@ -26,6 +26,8 @@ namespace SME.SGP.Dominio
 
         public Ue Ue { get; set; }
         public long UeId { get; set; }
+
+        public bool Historica { get; set; }
 
         public void AdicionarUe(Ue ue)
         {

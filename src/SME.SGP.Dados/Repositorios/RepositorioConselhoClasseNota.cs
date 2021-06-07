@@ -29,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
                           from conselho_classe_aluno cca 
                          inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
                           where cca.aluno_codigo = @alunoCodigo
-                            { (conselhoClasseId > 0  ? "and cca.conselho_classe_id = @conselhoClasseId" : string.Empty) }";
+                            and cca.conselho_classe_id = @conselhoClasseId";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { conselhoClasseId, alunoCodigo });
         }

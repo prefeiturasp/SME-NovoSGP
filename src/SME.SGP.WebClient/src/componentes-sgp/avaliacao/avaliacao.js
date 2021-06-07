@@ -289,14 +289,12 @@ const Avaliacao = props => {
                       %Freq.
                     </th>
                   </tr>
+                  {dados.avaliacoes && dados.avaliacoes.length > 0 ? 
                   <tr>
-                    <th
-                      className="sticky-col col-numero-chamada cinza-fundo"
-                      style={{ borderRight: 'none' }}
-                    />
+                    <th className="sticky-col col-numero-chamada cinza-fundo" style={{ borderRight: 'none' }}/>
                     <th className="sticky-col col-nome-aluno cinza-fundo" />
                     {montarCabecalhoInterdisciplinar()}
-                  </tr>
+                  </tr> : ''}
                 </thead>
               </table>
             </div>

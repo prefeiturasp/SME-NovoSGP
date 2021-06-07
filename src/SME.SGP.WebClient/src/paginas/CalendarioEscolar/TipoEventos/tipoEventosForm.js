@@ -16,6 +16,7 @@ import servicoEvento from '~/servicos/Paginas/Calendario/ServicoTipoEvento';
 
 const TipoEventosForm = ({ match }) => {
   const botaoCadastrarRef = useRef();
+  const campoDescricaoRef = useRef();
 
   const [idTipoEvento, setIdTipoEvento] = useState('');
   const [dadosTipoEvento, setDadosTipoEvento] = useState({
@@ -188,10 +189,7 @@ const TipoEventosForm = ({ match }) => {
   };
 
   const aoDigitarDescricao = e => {
-    setDadosTipoEvento({
-      ...dadosTipoEvento,
-      descricao: e.target.value,
-    });
+    campoDescricaoRef.current.value = e.target.value;
   };
 
   useEffect(() => {
@@ -203,12 +201,17 @@ const TipoEventosForm = ({ match }) => {
     setDadosTipoEvento({
       ...dadosTipoEvento,
       localOcorrencia: local,
+      descricao: campoDescricaoRef.current.value,
     });
     setDesabilitarBotaoCadastrar(false);
   };
 
   const aoSelecionarLetivo = letivo => {
-    setDadosTipoEvento({ ...dadosTipoEvento, letivo });
+    setDadosTipoEvento({
+      ...dadosTipoEvento,
+      letivo,
+      descricao: campoDescricaoRef.current.value,
+    });
     setDesabilitarBotaoCadastrar(false);
   };
 
@@ -216,12 +219,17 @@ const TipoEventosForm = ({ match }) => {
     setDadosTipoEvento({
       ...dadosTipoEvento,
       concomitancia: concomitancia.target.value,
+      descricao: campoDescricaoRef.current.value,
     });
     setDesabilitarBotaoCadastrar(false);
   };
 
   const aoSelecionarTipoData = tipoData => {
-    setDadosTipoEvento({ ...dadosTipoEvento, tipoData: tipoData.target.value });
+    setDadosTipoEvento({
+      ...dadosTipoEvento,
+      tipoData: tipoData.target.value,
+      descricao: campoDescricaoRef.current.value,
+    });
     setDesabilitarBotaoCadastrar(false);
   };
 
@@ -229,12 +237,17 @@ const TipoEventosForm = ({ match }) => {
     setDadosTipoEvento({
       ...dadosTipoEvento,
       dependencia: dependencia.target.value,
+      descricao: campoDescricaoRef.current.value,
     });
     setDesabilitarBotaoCadastrar(false);
   };
 
   const aoSelecionarSituacao = situacao => {
-    setDadosTipoEvento({ ...dadosTipoEvento, ativo: situacao.target.value });
+    setDadosTipoEvento({
+      ...dadosTipoEvento,
+      ativo: situacao.target.value,
+      descricao: campoDescricaoRef.current.value,
+    });
     setDesabilitarBotaoCadastrar(false);
   };
 
@@ -307,6 +320,7 @@ const TipoEventosForm = ({ match }) => {
                       <Rotulo>Nome do tipo de evento</Rotulo>
                       <CampoTexto
                         form={form}
+                        ref={campoDescricaoRef}
                         name="descricao"
                         id="descricao"
                         maxlength={100}

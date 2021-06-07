@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             await repositorioCartaIntencoesObservacao.SalvarAsync(cartaIntencoesObservacao);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoObservacaoCartaIntencoes,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoObservacaoCartaIntencoes,
                        new ExcluirNotificacaoCartaIntencoesObservacaoDto(cartaIntencoesObservacao.Id), Guid.NewGuid(), null));
 
             return true;

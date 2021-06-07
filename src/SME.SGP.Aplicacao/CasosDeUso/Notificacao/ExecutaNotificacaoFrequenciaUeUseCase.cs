@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb("Mensagem NotificacaoFrequenciaUe", "Rabbit - NotificacaoFrequenciaUe");
 
-            await mediator.Send(new PublicaFilaWorkerSgpCommand(RotasRabbit.RotaNotificacaoFrequenciaUe, null, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFrequenciaUe, null, Guid.NewGuid(), null));
         }
     }
 }

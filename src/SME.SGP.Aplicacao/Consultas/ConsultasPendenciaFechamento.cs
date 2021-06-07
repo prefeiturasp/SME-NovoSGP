@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { pendencia.DisciplinaId });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
-                throw new NegocioException("Disciplina informada não localizada.");
+                throw new NegocioException("Componente curricular informado não localizado.");
 
             var disciplinaEOL = disciplinasEOL.First();
             pendencia.ComponenteCurricular = disciplinaEOL.Nome;
