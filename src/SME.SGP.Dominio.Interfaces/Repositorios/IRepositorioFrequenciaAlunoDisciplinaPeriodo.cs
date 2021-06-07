@@ -38,5 +38,6 @@ namespace SME.SGP.Dominio.Interfaces
             string[] disciplinasId, string[] turmasCodigo, int[] bimestres);
         Task<IEnumerable<FrequenciaAluno>> ObterFrequenciasAlunosPorCodigoAlunoCodigoComponentesTurmaAsync(string alunoCodigo, string[] turmasCodigos, string[] componenteCurricularCodigos);
         Task RemoverVariosAsync(long[] idsParaRemover);
+        Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricular(string codigoTurma, string componenteCurricularId, long periodoEscolarId);
     }
 }

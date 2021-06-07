@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
                     AlunoRf = long.Parse(aluno.CodigoAluno),
                     Ausencias = ausencias,
                     Compensacoes = compensacoes,
-                    Frequencia = frequenciaAlunoRegistrada?.PercentualFrequencia ?? 100,
+                    Frequencia = frequenciaAlunoRegistrada == null ? string.Empty :  frequenciaAlunoRegistrada.PercentualFrequencia.ToString(),
                     MarcadorFrequencia = marcador,
                     Nome = aluno.NomeAluno,
                     NumeroChamada = aluno.NumeroAlunoChamada,

@@ -329,13 +329,13 @@ namespace SME.SGP.Aplicacao
                                     });
                                 }
                             }                            
-                        }
+                        }                       
 
                         // Carrega Frequencia Aluno
                         var frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
-                        notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ?
-                                        (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0) :
-                                        100;
+                        notaConceitoAluno.PercentualFrequencia = frequenciaAluno == null ? null :
+                                        ((int)Math.Round(frequenciaAluno.PercentualFrequencia, 0)).ToString();
+                                        
 
                         listaAlunosDoBimestre.Add(notaConceitoAluno);
                     }

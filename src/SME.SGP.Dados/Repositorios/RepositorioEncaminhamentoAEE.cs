@@ -268,5 +268,17 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AEETurmaDto>(sql.ToString(), new { ano, dreId, ueId }))
                 .OrderBy(a => a.Ordem).ThenBy(a => a.Descricao);
         }
+
+        public async Task<bool> VerificaSeExisteEncaminhamentoPorAluno(string codigoEstudante)
+        {
+            var sql = @"select count(ea.id)
+                         from encaminhamento_aee ea 
+                     where not ea.excluido 
+                       and ea.situacao not in (4, 5, 8)
+                       and ea.aluno_codigo = @codigoEstudante ";
+
+            var existeEncaminhamentoAEEAluno = await database.Conexao.QueryFirstOrDefaultAsync<int>(sql, new { codigoEstudante });
+            return existeEncaminhamentoAEEAluno >= 1 ? true : false;
+        }
     }
 }
