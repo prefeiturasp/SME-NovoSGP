@@ -8,18 +8,23 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace SME.SGP.Aplicacao
 {
     public class NotificacaoSalvarItineranciaAlunosCommandHandler : IRequestHandler<NotificacaoSalvarItineranciaAlunosCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IConfiguration configuration;
+        private readonly IConfiguration configuration; 
+        private readonly IHttpClientFactory httpClientFactory;
 
-        public NotificacaoSalvarItineranciaAlunosCommandHandler(IMediator mediator, IConfiguration configuration)
+        public NotificacaoSalvarItineranciaAlunosCommandHandler(IMediator mediator, IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<bool> Handle(NotificacaoSalvarItineranciaAlunosCommand request, CancellationToken cancellationToken)
@@ -59,9 +64,28 @@ namespace SME.SGP.Aplicacao
                 UsuarioRF = criadoRF
             }));
 
-            mensagem.AppendLine($"<br/><br/><a href='{urlServidorRelatorios}api/v1/downloads/sgp/pdf/Itiner%C3%A2ncias.pdf/{codigoCorrelacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
+            mensagem.AppendLine($"<br/><br/><a href='{urlServidorRelatorios}api/v1/downloads/sgp/pdf/Itiner%C3%A2ncias.pdf/' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
 
-            var workflowId = await mediator.Send(new EnviarNotificacaoItineranciaCommand(itineranciaId, titulo, mensagem.ToString(), NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.AEE, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
+            var existeCpAtivo = false;
+            using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
+            {
+                var resposta = await httpClient.GetAsync($"/api/escolas/{ue.CodigoUe}/funcionarios/cargos/{(int)Cargo.CP}");
+
+                if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
+                {
+                    var json = await resposta.Content.ReadAsStringAsync();
+                    var cpsEOL = JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
+                    foreach(var cp in cpsEOL)
+                    {
+                        if (!cp.EstaAfastado)
+                        {
+                            existeCpAtivo = true;
+                        }
+                    }
+                }
+            }
+
+            var workflowId = await mediator.Send(new EnviarNotificacaoItineranciaCommand(itineranciaId, titulo, mensagem.ToString(), NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.AEE, ObterCargosGestaoEscola(existeCpAtivo), ue.Dre.CodigoDre, ue.CodigoUe));
 
             await mediator.Send(new SalvarWorkflowAprovacaoItineranciaCommand(itineranciaId, workflowId));
             await mediator.Send(new AlterarSituacaoItineranciaCommand(itineranciaId, Dominio.Enumerados.SituacaoItinerancia.AguardandoAprovacao));
@@ -101,7 +125,12 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private Cargo[] ObterCargosGestaoEscola()
-            => new[] { Cargo.CP, Cargo.Diretor };
+        private Cargo[] ObterCargosGestaoEscola(bool cpsAfastados)
+        {
+            if (cpsAfastados)
+                return new[] { Cargo.CP, Cargo.Diretor };
+            else
+                return new[] { Cargo.Diretor };
+        }
     }
 }
