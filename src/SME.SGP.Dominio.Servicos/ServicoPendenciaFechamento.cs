@@ -64,9 +64,9 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 var mensagem = new StringBuilder($"A aulas de reposição de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão pendentes de aprovação:<br>");
 
-                var mensagemHtml = new StringBuilder($"<table><tr><td colspan='2'>A aulas de reposição de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão pendentes de aprovação:</td></tr>");
+                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td>A aulas de reposição de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão pendentes de aprovação:</td></tr>");
 
-                mensagemHtml.Append("<tr><td>Professor</td><td>Data</td></tr>");
+                mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
 
                 foreach (var aula in aulasPendentes.OrderBy(a => a.DataAula))
                 {
@@ -76,7 +76,7 @@ namespace SME.SGP.Dominio.Servicos
                         throw new NegocioException($"Professor com RF {aula.ProfessorRf} não encontrado.");
                     }
                     mensagem.AppendLine($"Professor {aula.ProfessorRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
-                    mensagemHtml.Append($"<tr><td>{aula.ProfessorRf} - {professor.Nome}</td><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td></tr>");
+                    mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {aula.ProfessorRf}</td></tr>");
                 }
                 mensagemHtml.Append("</table>");
                 var professorRf = aulasPendentes.First().ProfessorRf;
@@ -103,9 +103,9 @@ namespace SME.SGP.Dominio.Servicos
 
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turmaNome} a seguir estão sem frequência:<br>");
 
-                var mensagemHtml = new StringBuilder($"<table><tr><td colspan='2'>A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:</td></tr>");
+                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td>A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:</td></tr>");
 
-                mensagemHtml.Append("<tr><td>Professor</td><td>Data</td></tr>");
+                mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
 
                 var usuariosProfessores = CarregaListaProfessores(registrosAulasSemFrequencia.Select(a => a.ProfessorRf).Distinct());
 
@@ -113,7 +113,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == aula.ProfessorRf);
                     mensagem.AppendLine($"Professor {aula.ProfessorRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
-                    mensagemHtml.Append($"<tr><td>{aula.ProfessorRf} - {professor.Nome}</td><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td></tr>");
+                    mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {aula.ProfessorRf}</td></tr>");
                 }
 
                 mensagemHtml.Append("</table>");
@@ -156,16 +156,16 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem plano de aula registrado até a data do fechamento:<br>");
 
-                var mensagemHtml = new StringBuilder($"<table><tr><td colspan='2'>A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem plano de aula registrado até a data do fechamento:</td></tr>");
+                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td>A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem plano de aula registrado até a data do fechamento:</td></tr>");
 
-                mensagemHtml.Append("<tr><td>Professor</td><td>Data</td></tr>");
+                mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
 
                 var usuariosProfessores = CarregaListaProfessores(registrosAulasSemPlanoAula.Select(a => a.ProfessorRf).Distinct());
                 foreach (var aula in registrosAulasSemPlanoAula.OrderBy(a => a.DataAula))
                 {
                     var professor = usuariosProfessores.FirstOrDefault(c => c.CodigoRf == aula.ProfessorRf);
                     mensagem.AppendLine($"Professor {aula.ProfessorRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
-                    mensagemHtml.Append($"<tr><td>{aula.ProfessorRf} - {professor.Nome}</td><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td></tr>");
+                    mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {aula.ProfessorRf}</td></tr>");
                 }
                 mensagemHtml.Append("</table>");
 
@@ -190,9 +190,9 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var mensagem = new StringBuilder($"As avaliações a seguir não tiveram notas lançadas para nenhum aluno<br>");
 
-                var mensagemHtml = new StringBuilder($"<table><tr><td colspan='3'>As avaliações a seguir não tiveram notas lançadas para nenhum aluno:</td></tr>");
+                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td>As avaliações a seguir não tiveram notas lançadas para nenhum aluno:</td></tr>");
 
-                mensagemHtml.Append("<tr><td>Data da Avaliação</td><td>Título</td><td>Professor</td></tr>");
+                mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da avaliação</td><td>Título</td><td>Professor</td></tr>");
 
                 var usuariosProfessores = CarregaListaProfessores(registrosAvaliacoesSemNotaParaNenhumAluno.Select(a => a.ProfessorRf).Distinct());
                 foreach (var avaliacao in registrosAvaliacoesSemNotaParaNenhumAluno.OrderBy(x => x.DataAvaliacao))
@@ -217,11 +217,11 @@ namespace SME.SGP.Dominio.Servicos
             if (!string.IsNullOrEmpty(justificativa))
             {
                 var percentualReprovacao = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
-                var mensagem = new StringBuilder($"O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes<br>");
+                var mensagem = $"O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes<br>";
 
                 var mensagemHtml = new StringBuilder($"<table><tr><td>O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes</td></tr></table>");
 
-                await GerarPendencia(fechamentoTurma.Id, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem.ToString(), fechamentoTurma.CriadoRF, mensagemHtml.ToString());
+                await GerarPendencia(fechamentoTurma.Id, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem, fechamentoTurma.CriadoRF, mensagemHtml.ToString());
                 alunosAbaixoMedia = 1;
             }
             else
