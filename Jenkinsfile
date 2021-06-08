@@ -33,7 +33,7 @@ pipeline {
              withCredentials([file(credentialsId: 'dev-newman-sgp', variable: 'NEWMANSGPDEV')]) {
                  
                sh 'pwd'
-               sh 'who'
+               sh 'whoami'
                sh 'cp $NEWMANSGPDEV teste/Postman/Dev.json'
                sh 'newman run teste/Postman/GradeComponentesCurriculares.json -e teste/Postman/Dev.json -r htmlextra --reporter-htmlextra-titleSize 4 --reporter-htmlextra-title "Grade dos Componentes Curriculares" --reporter-htmlextra-export ./results/reportgcc.html'
                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'results', reportFiles: 'reportgcc.html', reportName: 'Postman Report', reportTitles: 'Report'])
