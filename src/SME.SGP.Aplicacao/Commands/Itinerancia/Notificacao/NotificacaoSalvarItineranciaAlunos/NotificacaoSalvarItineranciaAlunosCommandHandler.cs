@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
             mensagem.AppendLine($"<br/><br/><a href='{urlServidorRelatorios}api/v1/downloads/sgp/pdf/Itiner%C3%A2ncias.pdf/{codigoCorrelacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
 
-            var cpsEOL = await mediator.Send(new ObterFuncionariosCompletosPorUeECargoQuery(ue.CodigoUe, (int)Cargo.CP));
+            var cpsEOL = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(ue.CodigoUe, (int)Cargo.CP));
             var existeCpAtivo = false;
             foreach (var cp in cpsEOL)
             {
