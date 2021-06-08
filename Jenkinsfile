@@ -27,7 +27,9 @@ pipeline {
         }
         
       stage('Testes API DEV') {
-           
+           when {
+             branch 'development'
+           }
 
            steps {
              catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
@@ -38,7 +40,7 @@ pipeline {
                sh 'cp $NEWMANSGPDEV /home/jenkins/Dev.json'
                sh 'newman run teste/Postman/GradeComponentesCurriculares.json -e /home/jenkins/Dev.json -r htmlextra --reporter-htmlextra-titleSize 4 --reporter-htmlextra-title "Grade dos Componentes Curriculares" --reporter-htmlextra-export ./results/reportgcc.html'
                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'results', reportFiles: 'reportgcc.html', reportName: 'Postman Report', reportTitles: 'Report'])
-               sh "exit 1"
+               
              }
              }     
            }
@@ -51,12 +53,14 @@ pipeline {
         
 
            steps {
+             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {  
              withCredentials([file(credentialsId: 'hom-newman-sgp', variable: 'NEWMANSGPHOM')]) {
                sh 'cp $NEWMANSGPHOM teste/Postman/Hom.json'
                sh 'newman run teste/Postman/GradeComponentesCurriculares.json -e teste/Postman/Hom.json -r htmlextra --reporter-htmlextra-titleSize 4 --reporter-htmlextra-title "Grade dos Componentes Curriculares" --reporter-htmlextra-export ./results/report.html'
                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'results', reportFiles: 'report.html', reportName: 'Postman Report', reportTitles: 'Report'])
              
-             } 
+             }
+            }
            }
       }
 
