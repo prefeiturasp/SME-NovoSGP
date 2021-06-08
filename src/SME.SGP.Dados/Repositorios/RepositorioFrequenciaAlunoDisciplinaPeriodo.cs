@@ -460,5 +460,26 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoTurma, componenteCurricularId, periodoEscolarId });
         }
+
+        public async Task<IEnumerable<RegistroFrequenciaAlunoBimestreDto>> ObterFrequenciasRegistradasPorTurmasComponentesCurriculares(string codigoAluno, string[] codigosTurma, string[] componentesCurricularesId, long? periodoEscolarId)
+        {
+            var sql = new StringBuilder(@"select pe.bimestre, a.turma_id CodigoTurma, 
+                                                a.disciplina_id CodigoComponenteCurricular, 
+                                                rfa.codigo_aluno CodigoAluno
+                                  from registro_frequencia_aluno rfa
+                                  inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
+                                  inner join aula a on a.id = rf.aula_id 
+                                  inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
+                                  inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
+                                  where rfa.codigo_aluno = @codigoAluno 
+                                    and a.turma_id = ANY(@codigosTurma)
+                                    and a.disciplina_id = ANY(@componentesCurricularesId)");
+
+            if (periodoEscolarId.HasValue && periodoEscolarId > 0)
+                sql.AppendLine(@" and pe.id = @periodoEscolarId 
+                                  and a.data_aula between pe.periodo_inicio and pe.periodo_fim ");
+
+            return await database.Conexao.QueryAsync<RegistroFrequenciaAlunoBimestreDto>(sql.ToString(), new { codigoAluno, codigosTurma, componentesCurricularesId, periodoEscolarId });
+        }
     }
 }
