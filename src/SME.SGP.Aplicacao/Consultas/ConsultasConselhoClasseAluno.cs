@@ -196,12 +196,14 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var disciplina in grupoDisiplinasMatriz.OrderBy(g => g.Nome))
                 {
+                    var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
+
                     var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
                     FrequenciaAluno frequenciaAluno;
 
                     if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
                     {
-                        frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplina.TurmaCodigo };
+                        frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
                     }
                     else if (frequenciasAlunoParaTratar.Count() == 1)
                     {
@@ -233,7 +235,7 @@ namespace SME.SGP.Aplicacao
                     }
                     else
                     {
-                        var turmaPossuiRegistroFrequencia = VerificarSePossuiRegistroFrequencia(alunoCodigo, disciplina.TurmaCodigo, disciplina.CodigoComponenteCurricular,
+                        var turmaPossuiRegistroFrequencia = VerificarSePossuiRegistroFrequencia(alunoCodigo, disciplinaEol.TurmaCodigo, disciplina.CodigoComponenteCurricular,
                                                                                                 periodoEscolar, frequenciasAlunoParaTratar, registrosFrequencia);
 
                         conselhoClasseAlunoNotas.ComponentesCurriculares.Add(ObterNotasFrequenciaComponente(disciplina.Nome,
