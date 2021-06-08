@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -13,24 +14,26 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioFechamentoAluno repositorio;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IMediator mediator;
         private readonly IServicoEol servicoEOL;
 
-        public ConsultasFechamentoAluno(IRepositorioFechamentoAluno repositorio
-                                            , IServicoEol servicoEOL, IRepositorioComponenteCurricular repositorioComponenteCurricular)
+        public ConsultasFechamentoAluno(IRepositorioFechamentoAluno repositorio,                                         
+                                        IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                        IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<FechamentoAlunoCompletoDto> ObterAnotacaoAluno(string codigoAluno, long fechamentoId, string codigoTurma, int anoLetivo)
         {
             var consultaFechamentoAluno = repositorio.ObterFechamentoAluno(fechamentoId, codigoAluno);
-            var dadosAlunos = await servicoEOL.ObterDadosAluno(codigoAluno, anoLetivo);
-            if (dadosAlunos == null || !dadosAlunos.Any(c => c.CodigoTurma.ToString() == codigoTurma))
+            var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(codigoTurma, anoLetivo));
+            if (dadosAlunos == null || !dadosAlunos.Any(da => da.CodigoEOL.Equals(codigoAluno)))
                 throw new NegocioException($"Não foram localizados dados do aluno {codigoAluno} na turma {codigoTurma} no EOL para o ano letivo {anoLetivo}");
 
-            var dadosAluno = (AlunoDadosBasicosDto)dadosAlunos.FirstOrDefault(c => c.CodigoTurma.ToString() == codigoTurma);
+            var dadosAluno = dadosAlunos.First(da => da.CodigoEOL.Equals(codigoAluno));
 
             var anotacaoAluno = await consultaFechamentoAluno;
             var anotacaoDto = anotacaoAluno == null ?
