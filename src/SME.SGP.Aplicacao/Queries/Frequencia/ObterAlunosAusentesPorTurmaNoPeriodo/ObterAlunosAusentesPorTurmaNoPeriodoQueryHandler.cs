@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<AlunoComponenteCurricularDto>> Handle(ObterAlunosAusentesPorTurmaNoPeriodoQuery request, CancellationToken cancellationToken)
-            => await repositorioFrequencia.ObterAlunosAusentesPorTurmaEPeriodo(request.TurmaCodigo, request.DataInicio, request.DataFim);
+            => await repositorioFrequencia.ObterAlunosAusentesPorTurmaEPeriodo(request.TurmaCodigo, request.DataInicio, request.DataFim, request.ComponenteCurricularId);
     }
 }

@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
         private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IConsultasAbrangencia> consultasAbrangencia;
 
         public ConsultasEventoTeste()
         {
@@ -26,8 +27,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             httpContextAcessorObj.HttpContext = context;
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
+            consultasAbrangencia = new Mock<IConsultasAbrangencia>();
 
-            consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), servicoUsuario.Object, repositorioEventoTipo.Object);
+            consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), servicoUsuario.Object, repositorioEventoTipo.Object, consultasAbrangencia.Object);
         }
 
         //[Fact]
