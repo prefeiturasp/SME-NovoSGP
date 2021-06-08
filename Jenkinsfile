@@ -27,18 +27,20 @@ pipeline {
         }
         
       stage('Testes API DEV') {
-           when {
-           branch 'development'
-        }
+           
 
            steps {
+             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    
+               
              withCredentials([file(credentialsId: 'dev-newman-sgp', variable: 'NEWMANSGPDEV')]) {
                  
                sh 'cp $NEWMANSGPDEV /home/jenkins/Dev.json'
                sh 'newman run teste/Postman/GradeComponentesCurriculares.json -e /home/jenkins/Dev.json -r htmlextra --reporter-htmlextra-titleSize 4 --reporter-htmlextra-title "Grade dos Componentes Curriculares" --reporter-htmlextra-export ./results/reportgcc.html'
                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'results', reportFiles: 'reportgcc.html', reportName: 'Postman Report', reportTitles: 'Report'])
-             
-             } 
+               sh "exit 1"
+             }
+             }     
            }
       }
 
