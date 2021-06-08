@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
     {
         public AlterarAulaFrequenciaTratarUseCase(IMediator mediator) : base(mediator)
         {
-            
+
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
@@ -19,11 +19,8 @@ namespace SME.SGP.Aplicacao
             var aulaParaTratar = await mediator.Send(new ObterAulaPorIdQuery(filtro.AulaId));
             if (aulaParaTratar != null)
             {
-                //TODO: TENTAR OTIMIZAR PARA BUSCAR MAIS FÁCIL O BIMESTRE
-                var bimestreAtual = await mediator.Send(new ObterBimestrePorTurmaCodigoQuery(aulaParaTratar.TurmaId, aulaParaTratar.DataAula));
-
                 await mediator.Send(new AlterarAulaFrequenciaTratarCommand(aulaParaTratar, filtro.QuantidadeAnterior));
-                await mediator.Send(new CalcularFrequenciaPorTurmaCommand(null, aulaParaTratar.DataAula, aulaParaTratar.TurmaId, aulaParaTratar.DisciplinaId, bimestreAtual));
+                await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aulaParaTratar.TurmaId, aulaParaTratar.DisciplinaId, aulaParaTratar.Id));
             }
 
             return true;

@@ -29,8 +29,7 @@ namespace SME.SGP.Aplicacao
                 PossuiPendenciaPlanoAula = pendencias.PossuiPendenciaPlanoAula,
                 PossuiPendenciaAtividadeAvaliativa = false
             };
-            pendencias.PossuiPendenciaAtividadeAvaliativa = request.TemAtividadeAvaliativa ? 
-                await repositorioPendenciaAula.PossuiPendenciasAtividadeAvaliativaPorAulaId(request.AulaId) : false;
+            pendencias.PossuiPendenciaAtividadeAvaliativa = request.TemAtividadeAvaliativa && await repositorioPendenciaAula.PossuiPendenciasAtividadeAvaliativaPorAulaId(request.AulaId);
 
             return pendencias.RetornarTipoPendecias();
         }

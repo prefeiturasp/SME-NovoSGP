@@ -6,18 +6,20 @@ namespace SME.SGP.Aplicacao
 {
     public class ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand : IRequest<bool>
     {
-        public ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand(string turmaCodigo, int bimestre, DateTime dataInicio, DateTime dataFim)
+        public ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand(string turmaCodigo, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
             TurmaCodigo = turmaCodigo;
-            Bimestre = bimestre;
             DataInicio = dataInicio;
             DataFim = dataFim;
+            ComponenteCurricularId = componenteCurricularId;
         }
 
-        public string TurmaCodigo { get; }
-        public int Bimestre { get; }
-        public DateTime DataInicio { get; }
-        public DateTime DataFim { get; }
+        public string TurmaCodigo { get; set; }
+
+        public DateTime DataInicio { get; set; }
+        public DateTime DataFim { get; set; }
+
+        public string ComponenteCurricularId { get; set; }
     }
 
     public class ValidaAusenciaParaConciliacaoFrequenciaTurmaCommandValidator : AbstractValidator<ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand>
@@ -28,10 +30,6 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O código da turma deve ser informado para validação de ausências e conciliação de frequência");
 
-            RuleFor(a => a.Bimestre)
-                .NotEmpty()
-                .WithMessage("O bimestre turma deve ser informado para validação de ausências e conciliação de frequência");
-
             RuleFor(a => a.DataInicio)
                 .NotEmpty()
                 .WithMessage("A data de início deve ser informada para validação de ausências e conciliação de frequência");
@@ -39,6 +37,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.DataFim)
                 .NotEmpty()
                 .WithMessage("A data de fim deve ser informada para validação de ausências e conciliação de frequência");
+
         }
     }
 }

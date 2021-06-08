@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<Turma>> Handle(ObterTurmasPorAnoModalidadeQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTurma.ObterTurmasCompletasPorAnoLetivoModalidade(request.AnoLetivo, request.Modalidades);
+            return await repositorioTurma.ObterTurmasCompletasPorAnoLetivoModalidade(request.AnoLetivo, request.Modalidades, request.TurmaCodigo);
         }
     }
 }
