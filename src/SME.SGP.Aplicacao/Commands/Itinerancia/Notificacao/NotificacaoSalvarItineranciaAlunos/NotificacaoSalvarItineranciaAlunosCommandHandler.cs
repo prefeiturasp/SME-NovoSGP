@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,13 +15,11 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IConfiguration configuration;
-        private readonly IHttpClientFactory httpClientFactory;
 
-        public NotificacaoSalvarItineranciaAlunosCommandHandler(IMediator mediator, IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public NotificacaoSalvarItineranciaAlunosCommandHandler(IMediator mediator, IConfiguration configuration)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<bool> Handle(NotificacaoSalvarItineranciaAlunosCommand request, CancellationToken cancellationToken)
