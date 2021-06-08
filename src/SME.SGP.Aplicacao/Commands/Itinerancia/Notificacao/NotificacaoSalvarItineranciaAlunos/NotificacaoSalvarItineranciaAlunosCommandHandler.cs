@@ -5,19 +5,17 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net;
-using System.Net.Http;
-using Newtonsoft.Json;
 
 namespace SME.SGP.Aplicacao
 {
     public class NotificacaoSalvarItineranciaAlunosCommandHandler : IRequestHandler<NotificacaoSalvarItineranciaAlunosCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IConfiguration configuration; 
+        private readonly IConfiguration configuration;
         private readonly IHttpClientFactory httpClientFactory;
 
         public NotificacaoSalvarItineranciaAlunosCommandHandler(IMediator mediator, IConfiguration configuration, IHttpClientFactory httpClientFactory)
@@ -64,24 +62,15 @@ namespace SME.SGP.Aplicacao
                 UsuarioRF = criadoRF
             }));
 
-            mensagem.AppendLine($"<br/><br/><a href='{urlServidorRelatorios}api/v1/downloads/sgp/pdf/Itiner%C3%A2ncias.pdf/' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
+            mensagem.AppendLine($"<br/><br/><a href='{urlServidorRelatorios}api/v1/downloads/sgp/pdf/Itiner%C3%A2ncias.pdf/{codigoCorrelacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
 
+            var cpsEOL = await mediator.Send(new ObterFuncionariosCompletosPorUeECargoQuery(ue.CodigoUe, (int)Cargo.CP));
             var existeCpAtivo = false;
-            using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
+            foreach (var cp in cpsEOL)
             {
-                var resposta = await httpClient.GetAsync($"/api/escolas/{ue.CodigoUe}/funcionarios/cargos/{(int)Cargo.CP}");
-
-                if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
+                if (!cp.EstaAfastado)
                 {
-                    var json = await resposta.Content.ReadAsStringAsync();
-                    var cpsEOL = JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
-                    foreach(var cp in cpsEOL)
-                    {
-                        if (!cp.EstaAfastado)
-                        {
-                            existeCpAtivo = true;
-                        }
-                    }
+                    existeCpAtivo = true;
                 }
             }
 
@@ -125,9 +114,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private Cargo[] ObterCargosGestaoEscola(bool cpsAfastados)
+        private Cargo[] ObterCargosGestaoEscola(bool existeCpAtivo)
         {
-            if (cpsAfastados)
+            if (existeCpAtivo)
                 return new[] { Cargo.CP, Cargo.Diretor };
             else
                 return new[] { Cargo.Diretor };
