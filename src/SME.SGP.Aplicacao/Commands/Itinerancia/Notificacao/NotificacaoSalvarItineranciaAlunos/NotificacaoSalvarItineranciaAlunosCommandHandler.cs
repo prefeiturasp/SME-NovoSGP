@@ -61,17 +61,7 @@ namespace SME.SGP.Aplicacao
 
             mensagem.AppendLine($"<br/><br/><a href='{urlServidorRelatorios}api/v1/downloads/sgp/pdf/Itiner%C3%A2ncias.pdf/{codigoCorrelacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
 
-            var cpsEOL = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(ue.CodigoUe, (int)Cargo.CP));
-            var existeCpAtivo = false;
-            foreach (var cp in cpsEOL)
-            {
-                if (!cp.EstaAfastado)
-                {
-                    existeCpAtivo = true;
-                }
-            }
-
-            var workflowId = await mediator.Send(new EnviarNotificacaoItineranciaCommand(itineranciaId, titulo, mensagem.ToString(), NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.AEE, ObterCargosGestaoEscola(existeCpAtivo), ue.Dre.CodigoDre, ue.CodigoUe));
+            var workflowId = await mediator.Send(new EnviarNotificacaoItineranciaCommand(itineranciaId, titulo, mensagem.ToString(), NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.AEE, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
 
             await mediator.Send(new SalvarWorkflowAprovacaoItineranciaCommand(itineranciaId, workflowId));
             await mediator.Send(new AlterarSituacaoItineranciaCommand(itineranciaId, Dominio.Enumerados.SituacaoItinerancia.AguardandoAprovacao));
@@ -111,12 +101,6 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private Cargo[] ObterCargosGestaoEscola(bool existeCpAtivo)
-        {
-            if (existeCpAtivo)
-                return new[] { Cargo.CP, Cargo.Diretor };
-            else
-                return new[] { Cargo.Diretor };
-        }
+        private Cargo[] ObterCargosGestaoEscola() => new [] { Cargo.CP, Cargo.Diretor };
     }
 }
