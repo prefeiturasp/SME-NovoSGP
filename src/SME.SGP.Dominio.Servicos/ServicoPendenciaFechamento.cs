@@ -193,7 +193,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var mensagem = new StringBuilder($"As avaliações a seguir não tiveram notas lançadas para nenhum aluno<br>");
 
-                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td>As avaliações a seguir não tiveram notas lançadas para nenhum aluno:</td></tr>");
+                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td colspan=\"3\">As avaliações a seguir não tiveram notas lançadas para nenhum aluno:</td></tr>");
 
                 mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da avaliação</td><td>Título</td><td>Professor</td></tr>");
 
@@ -316,8 +316,10 @@ namespace SME.SGP.Dominio.Servicos
 
             if (registrosNotasAlteradas != null && registrosNotasAlteradas.Any())
             {
-                var mensagem = new StringBuilder($"Notas de fechamento alteradas fora do ano de vigência da turma {turmaCodigo}. Necessário aprovação do workflow");
-                await GerarPendencia(fechamentoId, TipoPendencia.AlteracaoNotaFechamento, mensagem.ToString(), professorRf, "");
+                var mensagem = $"Notas de fechamento alteradas fora do ano de vigência da turma {turmaCodigo}. Necessário aprovação do workflow";
+
+                var mensagemHtml = $"<table><tr><td class=\"sem-borda\">Notas de fechamento alteradas fora do ano de vigência da turma {turmaCodigo}. Necessário aprovação do workflow</td></tr></table>";
+                await GerarPendencia(fechamentoId, TipoPendencia.AlteracaoNotaFechamento, mensagem, professorRf, mensagemHtml);
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
