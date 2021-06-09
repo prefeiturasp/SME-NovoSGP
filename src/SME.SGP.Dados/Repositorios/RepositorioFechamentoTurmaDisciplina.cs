@@ -18,6 +18,16 @@ namespace SME.SGP.Dados.Repositorios
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
         }       
 
+        public async Task<bool> AtualizarSituacaoFechamento(long fechamentoTurmaDisciplinaId, int situacaoFechamento)
+        {
+            var query = @"update fechamento_turma_disciplina 
+                             set situacao = @situacaoFechamento
+                         where id = @fechamentoTurmaDisciplinaId";
+
+            await database.Conexao.ExecuteAsync(query, new { fechamentoTurmaDisciplinaId, situacaoFechamento });
+            return true;
+        }
+
         public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(long turmaId, long[] disciplinasId, int bimestre = 0)
         {
             var query = new StringBuilder(@"select f.*, fa.*
