@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 {
                     Id = 6,
                     TurmaId = 1,
-                    Situacao = Dominio.Enumerados.SituacaoAEE.Rascunho,
+                    Situacao = Dominio.Enumerados.SituacaoAEE.Encaminhado,
                     AlunoCodigo = "1234567",
                     Turma = new Turma()
                     {

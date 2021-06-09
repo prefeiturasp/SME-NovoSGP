@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 request.Alunos = alunosDaTurma.Select(a => a.CodigoAluno).Distinct().ToList();
             }
 
-                var ausenciasDosAlunos = await mediator.Send(new ObterAusenciasAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId));
+            var ausenciasDosAlunos = await mediator.Send(new ObterAusenciasAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId));
 
             var periodosEscolaresParaFiltro = ausenciasDosAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
 
