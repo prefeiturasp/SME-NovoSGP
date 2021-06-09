@@ -4,6 +4,7 @@ using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -440,27 +441,24 @@ namespace SME.SGP.Dados.Repositorios
                 .Select(e => $"'{e.CodigoTurma}'")?.ToArray();
 
             var listaTurmas = string.Join(",", codigosTurmas);
+            var transacao = contexto.Conexao.BeginTransaction();
 
-            var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
-                .Replace("#codigosTurmasParaHistorico", GerarQueryCodigosTurmasForaLista(anoLetivo, true))
-                .Replace("#idsTurmas", listaTurmas);
+            try
+            {
+                var codigosTurmasParaHistorico = await ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(anoLetivo, true, listaTurmas, transacao);
+                var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
+                                        .Replace("#codigosTurmasParaHistorico", MapearParaCodigosQuerySql(codigosTurmasParaHistorico));                
 
-            var sqlExcluirTurmas = Delete.Replace("#queryIdsConselhoClasseTurmasForaListaCodigos", QueryIdsConselhoClasseTurmasForaListaCodigos)
+                await contexto.Conexao.ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, transacao);
+
+                var codigosTurmasARemover = await ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(anoLetivo, false, listaTurmas, transacao);
+                var sqlExcluirTurmas = Delete.Replace("#queryIdsConselhoClasseTurmasForaListaCodigos", QueryIdsConselhoClasseTurmasForaListaCodigos)
                                          .Replace("#queryFechamentoAlunoTurmasForaListaCodigos", QueryFechamentoAlunoTurmasForaListaCodigos)
                                          .Replace("#queryIdsFechamentoTurmaTurmasForaListaCodigos", QueryIdsFechamentoTurmaTurmasForaListaCodigos)
                                          .Replace("#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos", QueryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos)
                                          .Replace("#queryIdsTurmasForaListaCodigos", QueryIdsTurmasForaListaCodigos)
                                          .Replace("#queryIdsAulasTurmasForaListaCodigos", QueryAulasTurmasForaListaCodigos)
-                                         .Replace("#codigosTurmasARemover", GerarQueryCodigosTurmasForaLista(anoLetivo, false))
-                                         .Replace("#idsTurmas", listaTurmas);
-
-            var transacao = contexto.Conexao.BeginTransaction();
-
-            try
-            {
-                await contexto.Conexao
-                    .ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, transacao);
-
+                                         .Replace("#codigosTurmasARemover", MapearParaCodigosQuerySql(codigosTurmasARemover));
                 await contexto.Conexao
                     .ExecuteAsync(sqlExcluirTurmas, transacao);
 
@@ -472,6 +470,17 @@ namespace SME.SGP.Dados.Repositorios
                 SentrySdk.CaptureException(erro);
                 transacao.Rollback();
             }
+        }
+
+        public async Task<IEnumerable<string>> ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(int anoLetivo, bool definirTurmasComoHistorica, string listaTurmas, IDbTransaction transacao)
+        {
+            var sqlQuery = GerarQueryCodigosTurmasForaLista(anoLetivo, true).Replace("#idsTurmas", listaTurmas);
+            return await contexto.Conexao.QueryAsync<string>(sqlQuery, transacao);
+        }
+        private string MapearParaCodigosQuerySql(IEnumerable<string> codigos)
+        {
+            string[] arrCodigos = codigos.Select(x => $"'{x}'").ToArray();
+            return string.Join(",", arrCodigos);
         }
 
         public async Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos)
@@ -516,7 +525,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasCompletasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades)
+        public async Task<IEnumerable<Turma>> ObterTurmasCompletasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades, string turmaCodigo = "")
         {
             var query = @"select turma.*, ue.*, dre.* 
                             from turma
@@ -526,12 +535,15 @@ namespace SME.SGP.Dados.Repositorios
                             turma.ano_letivo = @anoLetivo
                             and turma.modalidade_codigo = any(@modalidades) ";
 
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += " and turma.turma_id = @turmaCodigo ";
+
             return await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
                 return turma;
-            }, new { modalidades = modalidades.Cast<int>().ToArray(), anoLetivo });
+            }, new { modalidades = modalidades.Cast<int>().ToArray(), anoLetivo, turmaCodigo });
 
         }
 
@@ -592,6 +604,34 @@ var query = @"select t.*
                 turma.AdicionarUe(ue);
                 return turma;
             } , new { ueId, modalidades, ano });
+        }
+
+        public async Task<IEnumerable<string>> ObterCodigosTurmasPorAnoModalidade(int anoLetivo, int[] modalidades, string turmaCodigo = "")
+        {
+            var query = @"select turma_id 
+                            from turma
+                           where ano_letivo = @anoLetivo
+                             and modalidade_codigo = any(@modalidades) ";
+
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += " and turma_id = @turmaCodigo ";
+
+            return await contexto.QueryAsync<string>(query, new { anoLetivo, modalidades, turmaCodigo });
+        }
+
+        public async Task<IEnumerable<TurmaComponenteDto>> ObterTurmasComponentesPorAnoLetivo(DateTime dataReferencia)
+        {
+                var query = @"select a.turma_id as TurmaCodigo, a.disciplina_id as ComponenteCurricularId, pe.periodo_fim as DataReferencia from aula a 
+                                inner join turma t on a.turma_id = t.turma_id 
+                                inner join tipo_calendario tc on a.tipo_calendario_id = tc.id 
+                                inner join periodo_escolar pe on pe.tipo_calendario_id  = tc.id 
+                                    where t.ano_letivo  = @anoLetivo   
+                                    and pe.periodo_inicio < @dataReferencia
+                                group by a.turma_id, a.disciplina_id, a.tipo_calendario_id, pe.periodo_fim ";
+
+         
+
+            return await contexto.QueryAsync<TurmaComponenteDto>(query, new { anoLetivo = dataReferencia.Year, dataReferencia });
         }
     }
 }

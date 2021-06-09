@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -22,6 +23,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo;
+        private readonly IMediator mediator;
 
         public ConsultasRecuperacaoParalela(
             IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
@@ -33,7 +35,8 @@ namespace SME.SGP.Aplicacao
             IContextoAplicacao contextoAplicacao,
             IServicoUsuario servicoUsuario,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
-            IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo) : base(contextoAplicacao)
+            IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo,
+            IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));
             this.repositorioEixo = repositorioEixo ?? throw new ArgumentNullException(nameof(repositorioEixo));
@@ -43,6 +46,7 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar;
             this.repositorioRecuperacaoParalelaPeriodo = repositorioRecuperacaoParalelaPeriodo ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalelaPeriodo));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
@@ -117,6 +121,7 @@ namespace SME.SGP.Aplicacao
                 bimestreEdicao = recuperacaoParalelaPeriodo?.BimestreEdicao ?? 0;
 
             var somenteLeitura = bimestreEdicao != 0 && (periodoEscolarAtual == null || bimestreEdicao != periodoEscolarAtual.Bimestre);
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
 
             var recuperacaoRetorno = new RecuperacaoParalelaListagemDto
             {
@@ -149,7 +154,7 @@ namespace SME.SGP.Aplicacao
                             NumeroChamada = aluno.NumeroAlunoChamada,
                             CodAluno = a.AlunoId,
                             Turma = aluno.TurmaEscola,
-                            TurmaId = aluno.CodigoTurma,
+                            TurmaId = aluno.CodigoTurma.Equals(0) ? Convert.ToInt64(turma.CodigoTurma) : aluno.CodigoTurma,
                             TurmaRecuperacaoParalelaId = turmaId,
                             Respostas = alunosRecuperacaoParalela
                                                      .Where(w => w.Id == a.Id && objetivos.Any(x => x.Id == w.ObjetivoId))
