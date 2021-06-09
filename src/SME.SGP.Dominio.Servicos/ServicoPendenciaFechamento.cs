@@ -106,9 +106,9 @@ namespace SME.SGP.Dominio.Servicos
 
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:<br>");
 
-                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td>A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:</td></tr>");
+                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td colspan=\"2\">A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:</td></tr>");
 
-                mensagemHtml.Append("<tr class=\"cabecalho\"><td colspan=\"2\">Data da aula</td><td>Professor</td></tr>");
+                mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
 
                 var usuariosProfessores = CarregaListaProfessores(registrosAulasSemFrequencia.Select(a => a.ProfessorRf).Distinct());
 
