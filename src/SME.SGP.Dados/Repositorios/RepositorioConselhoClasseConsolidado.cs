@@ -24,7 +24,9 @@ namespace SME.SGP.Dados
                             and bimestre = @bimestre ");
 
             if (situacaoConselhoClasse != -99)
-                query.AppendLine("and status = @situacaoConselhoClasse");
+                query.AppendLine(@"and EXISTS(select 1 from consolidado_conselho_classe_aluno_turma
+                                              where not excluido and turma_id = @turmaId 
+                                                and bimestre = @bimestre and status = @situacaoConselhoClasse)");
 
             return await database.Conexao.QueryAsync<ConselhoClasseConsolidadoTurmaAluno>(query.ToString(), new { turmaId, bimestre, situacaoConselhoClasse });
         }
