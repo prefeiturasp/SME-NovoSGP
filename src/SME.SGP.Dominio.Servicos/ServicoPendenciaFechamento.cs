@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -64,7 +65,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 var mensagem = new StringBuilder($"A aulas de reposição de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão pendentes de aprovação:<br>");
 
-                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td>A aulas de reposição de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão pendentes de aprovação:</td></tr>");
+                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td colspan=\"2\">A aulas de reposição de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão pendentes de aprovação:</td></tr>");
 
                 mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
 
@@ -105,7 +106,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td>A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:</td></tr>");
 
-                mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
+                mensagemHtml.Append("<tr class=\"cabecalho\"><td colspan=\"2\">Data da aula</td><td>Professor</td></tr>");
 
                 var usuariosProfessores = CarregaListaProfessores(registrosAulasSemFrequencia.Select(a => a.ProfessorRf).Distinct());
 
@@ -156,7 +157,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem plano de aula registrado até a data do fechamento:<br>");
 
-                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td>A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem plano de aula registrado até a data do fechamento:</td></tr>");
+                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td colspan=\"2\">A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem plano de aula registrado até a data do fechamento:</td></tr>");
 
                 mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
 
@@ -219,7 +220,7 @@ namespace SME.SGP.Dominio.Servicos
                 var percentualReprovacao = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
                 var mensagem = $"O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes<br>";
 
-                var mensagemHtml = new StringBuilder($"<table><tr><td>O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes</td></tr></table>");
+                var mensagemHtml = new StringBuilder($"<table><tr><td class=\"sem-borda\">O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes</td></tr></table>");
 
                 await GerarPendencia(fechamentoTurma.Id, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem, fechamentoTurma.CriadoRF, mensagemHtml.ToString());
                 alunosAbaixoMedia = 1;
@@ -241,9 +242,9 @@ namespace SME.SGP.Dominio.Servicos
 
                 var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(tipoPendencia, mensagem, "", tipoPendencia.Name(), descricaoHtml));              
 
-                await mediator.Send(new SalvarPendenciaFechamentoCommand(fechamentoId, pendenciaId));
+                await mediator.Send(new SalvarPendenciaFechamentoCommand(fechamentoId, pendenciaId));                
 
-                await RelacionaPendenciaUsuario(pendenciaId, professorRf);
+                await RelacionaPendenciaUsuario(pendenciaId, professorRf);                
 
                 unitOfWork.PersistirTransacao();
             }

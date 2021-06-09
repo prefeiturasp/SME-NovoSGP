@@ -25,10 +25,16 @@ namespace SME.SGP.Aplicacao
                 "" :
                 $" Justificativa : {UtilRegex.RemoverTagsHtml(detalhamentoPendencia.Justificativa)}";
 
+            var descricaoTexto = $"{descricao}{justificativa}";
+
+            var descricaoHtml = detalhamentoPendencia.DescricaoHtml;
+
             return new DetalhamentoPendenciaFechamentoRetornoDto
             {
                 PendenciaId = detalhamentoPendencia.PendenciaId,
-                Descricao = $"{descricao}{justificativa}",
+                DescricaoHtml = string.IsNullOrEmpty(descricaoHtml) ?
+                descricaoTexto :
+                descricaoHtml
             };            
         }
     }
