@@ -1049,6 +1049,8 @@ namespace SME.SGP.Dados.Repositorios
                 semestre,
                 bimestre,
                 anoLetivo,
+                situacaoFechamento = (int?)situacaoFechamento,
+                situacaoConselhoClasse = (int?)situacaoConselhoClasse,
                 dataReferencia
             };
 
