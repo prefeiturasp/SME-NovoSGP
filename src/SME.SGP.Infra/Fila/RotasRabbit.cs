@@ -98,5 +98,8 @@
         public static string ConsolidarFrequenciasTurmasNoAno => "sgp.frequencia.turma.ano.consolidar";
         public static string ConsolidarFrequenciasPorTurma => "sgp.frequencia.turma.consolidar";
 
+        public static string SincronizaDevolutivasPorTurmaInfantilSync => "sgp.sincronizacao.devolutivas.turma.sync";
+        public static string ConsolidarDevolutivasPorTurmaInfantil => "sgp.devolutivas.turma.infantil.consolidar";
+        public static string ConsolidarDevolutivasPorTurma => "sgp.devolutivas.turma.consolidar";
     }
 }
