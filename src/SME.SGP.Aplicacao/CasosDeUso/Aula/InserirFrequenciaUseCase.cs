@@ -1,12 +1,9 @@
 ﻿using MediatR;
-using Sentry;
-using SME.SGP.Aplicacao.Commands.Aulas.InserirAula;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(FrequenciaDto param)
+        public async Task<AuditoriaDto> Executar(FrequenciaDto param)
         {
             var alunos = param.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
             if (alunos == null || !alunos.Any())
@@ -51,12 +48,11 @@ namespace SME.SGP.Aplicacao
 
             var alteracaoRegistro = registroFrequencia != null;
             if (registroFrequencia == null)
-            {
                 registroFrequencia = new RegistroFrequencia(aula);
-                registroFrequencia.Id = await mediator.Send(new InserirRegistroFrequenciaCommand(registroFrequencia));
-            }
 
+            registroFrequencia.Id = await mediator.Send(new PersistirRegistroFrequenciaCommand(registroFrequencia));
             await mediator.Send(new InserirRegistrosFrequenciasAlunosCommand(param.ListaFrequencia, registroFrequencia.Id, turma.Id, long.Parse(aula.DisciplinaId)));
+
             // Quando for alteração de registro de frequencia chama o servico para verificar se atingiu o limite de dias para alteração e notificar
             if (alteracaoRegistro)
                 Background.Core.Cliente.Executar<IServicoNotificacaoFrequencia>(e => e.VerificaRegraAlteracaoFrequencia(registroFrequencia.Id, registroFrequencia.CriadoEm, DateTime.Now, usuario.Id));
@@ -65,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
 
-            return true;
+            return (AuditoriaDto)registroFrequencia;
 
 
         }

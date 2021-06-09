@@ -1,15 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirRegistroFrequenciaCommand : IRequest<long>
+    public class PersistirRegistroFrequenciaCommand : IRequest<long>
     {
-        public InserirRegistroFrequenciaCommand(RegistroFrequencia registroFrequencia)
+        public PersistirRegistroFrequenciaCommand(RegistroFrequencia registroFrequencia)
         {
             RegistroFrequencia = registroFrequencia;
         }
@@ -17,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public RegistroFrequencia RegistroFrequencia { get; set; }
     }
 
-    public class SalvarFrequenciaCommandValidator : AbstractValidator<InserirRegistroFrequenciaCommand>
+    public class SalvarFrequenciaCommandValidator : AbstractValidator<PersistirRegistroFrequenciaCommand>
     {
         public SalvarFrequenciaCommandValidator()
         {

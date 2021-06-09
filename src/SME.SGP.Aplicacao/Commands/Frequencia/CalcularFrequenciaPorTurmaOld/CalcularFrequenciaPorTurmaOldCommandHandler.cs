@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,39 +10,40 @@ namespace SME.SGP.Aplicacao
 {
     public class CalcularFrequenciaPorTurmaOldCommandHandler : IRequestHandler<CalcularFrequenciaPorTurmaOldCommand, bool>
     {
-        public readonly IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno;
+        private readonly IMediator mediator;
         public readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
 
-        private readonly IRepositorioProcessoExecutando repositorioProcessoExecutando;
-
-        public CalcularFrequenciaPorTurmaOldCommandHandler(IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno,
-            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
-            IRepositorioProcessoExecutando repositorioProcessoExecutando)
+        public CalcularFrequenciaPorTurmaOldCommandHandler(
+            IMediator mediator,
+            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
+            IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno)
         {
-            this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
-            this.repositorioProcessoExecutando = repositorioProcessoExecutando ?? throw new ArgumentNullException(nameof(repositorioProcessoExecutando));
         }
 
         public async Task<bool> Handle(CalcularFrequenciaPorTurmaOldCommand request, CancellationToken cancellationToken)
         {
-            var totalAulasNaDisciplina = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, request.DisciplinaId, request.TurmaId);
-            var totalAulasDaTurmaGeral = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, string.Empty, request.TurmaId);
+            var totalAulasNaDisciplina = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, request.DisciplinaId, request.TurmaId);
+            var totalAulasDaTurmaGeral = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, string.Empty, request.TurmaId);
 
+            var ausenciasDosAlunos = await mediator.Send(new ObterAusenciasAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId));
             foreach (var codigoAluno in request.Alunos)
             {
-                await RegistraFrequenciaPorDisciplina(request.TurmaId, request.DisciplinaId, request.DataAula, totalAulasNaDisciplina, codigoAluno);
-                await RegistraFrequenciaGeral(request.TurmaId, request.DataAula, codigoAluno, totalAulasDaTurmaGeral);
+                await RegistraFrequenciaPorDisciplina(request.TurmaId, request.DisciplinaId, request.DataAula, totalAulasNaDisciplina, codigoAluno, ausenciasDosAlunos);
+                await RegistraFrequenciaGeral(request.TurmaId, request.DataAula, codigoAluno, totalAulasDaTurmaGeral, ausenciasDosAlunos);
             }
 
             return true;
         }
 
-        private async Task RegistraFrequenciaPorDisciplina(string turmaId, string disciplinaId, DateTime dataAtual, int totalAulasNaDisciplina, string codigoAluno)
+        private async Task RegistraFrequenciaPorDisciplina(string turmaId, string disciplinaId, DateTime dataAtual, int totalAulasNaDisciplina, string codigoAluno, System.Collections.Generic.IEnumerable<Infra.AusenciaPorDisciplinaAlunoDto> ausenciasDosAlunos)
         {
-            var ausenciasAlunoPorDisciplina = await repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurmaAsync(dataAtual, codigoAluno, disciplinaId, turmaId);
+            var ausenciasAlunoPorDisciplina = ausenciasDosAlunos.FirstOrDefault(c => c.AlunoCodigo == codigoAluno && 
+                                                                                     c.ComponenteCurricularId == disciplinaId);
+
             if (ausenciasAlunoPorDisciplina != null)
             {
                 var totalCompensacoesDisciplinaAluno = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurmaAsync(ausenciasAlunoPorDisciplina.Bimestre, codigoAluno, disciplinaId, turmaId);
@@ -92,20 +94,22 @@ namespace SME.SGP.Aplicacao
                          ) : frequenciaAluno.DefinirFrequencia(totalAusencias, totalAulas, totalCompensacoes, tipo);
         }
 
-        private async Task RegistraFrequenciaGeral(string turmaId, DateTime dataAtual, string codigoAluno, int totalAulasDaTurma)
+        private async Task RegistraFrequenciaGeral(string turmaId, DateTime dataAtual, string codigoAluno, int totalAulasDaTurma, System.Collections.Generic.IEnumerable<Infra.AusenciaPorDisciplinaAlunoDto> ausenciasDosAlunos)
         {
-            var totalAusenciasGeralAluno = await repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurmaAsync(dataAtual, codigoAluno, string.Empty, turmaId);
-            if (totalAusenciasGeralAluno != null)
+            var totalAusenciasGeralAluno = ausenciasDosAlunos.Where(c => c.AlunoCodigo == codigoAluno);
+            if (totalAusenciasGeralAluno != null && totalAusenciasGeralAluno.Any())
             {
-                var totalCompensacoesGeralAluno = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurmaAsync(totalAusenciasGeralAluno.Bimestre, codigoAluno, string.Empty, turmaId);
+                var periodoAusencias = totalAusenciasGeralAluno.FirstOrDefault();
+
+                var totalCompensacoesGeralAluno = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurmaAsync(periodoAusencias.Bimestre, codigoAluno, string.Empty, turmaId);
                 var frequenciaGeralAluno = await MapearFrequenciaAluno(codigoAluno,
                                                                     turmaId,
                                                                     string.Empty,
-                                                                    totalAusenciasGeralAluno.PeriodoEscolarId,
-                                                                    totalAusenciasGeralAluno.PeriodoInicio,
-                                                                    totalAusenciasGeralAluno.PeriodoFim,
-                                                                    totalAusenciasGeralAluno.Bimestre,
-                                                                    totalAusenciasGeralAluno.TotalAusencias,
+                                                                    periodoAusencias.PeriodoEscolarId,
+                                                                    periodoAusencias.PeriodoInicio,
+                                                                    periodoAusencias.PeriodoFim,
+                                                                    periodoAusencias.Bimestre,
+                                                                    totalAusenciasGeralAluno.Sum(a => a.TotalAusencias),
                                                                     totalAulasDaTurma,
                                                                     totalCompensacoesGeralAluno,
                                                                     TipoFrequenciaAluno.Geral);
