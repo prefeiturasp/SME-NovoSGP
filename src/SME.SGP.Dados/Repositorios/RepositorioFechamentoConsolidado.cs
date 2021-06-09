@@ -37,7 +37,8 @@ namespace SME.SGP.Dados
                                                  and turma_id = @turmaId
                                                  and bimestre = @bimestre ");
             if (!situacoesFechamento.Any(c => c == -99))
-                query.AppendLine("and status = ANY(@situacoesFechamento)");
+                query.AppendLine(@"and EXISTS(select 1 from consolidado_fechamento_componente_turma 
+                                              where turma_id = @turmaId and bimestre = @bimestre and status = ANY(@situacoesFechamento))");
 
             return await database.Conexao.QueryAsync<FechamentoConsolidadoComponenteTurma>(query.ToString(), new { turmaId, bimestre, situacoesFechamento });
         }
@@ -55,7 +56,8 @@ namespace SME.SGP.Dados
                                                 and cfct.bimestre = @bimestre ");                             
 
             if (!situacoesFechamento.Any(c => c == -99))
-                query.AppendLine("and cfct.status = ANY(@situacoesFechamento) ");
+                query.AppendLine(@"and EXISTS(select 1 from consolidado_fechamento_componente_turma 
+                                              where turma_id = @turmaId and bimestre = @bimestre and status = ANY(@situacoesFechamento)) ");
 
             query.AppendLine("order by ccgao.grupo_matriz_id, ccgao.area_conhecimento_id, ccgao.ordem, cc.descricao_sgp");
 

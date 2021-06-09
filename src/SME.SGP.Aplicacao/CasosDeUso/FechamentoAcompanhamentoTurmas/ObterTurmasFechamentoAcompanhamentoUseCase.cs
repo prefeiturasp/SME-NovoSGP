@@ -28,8 +28,8 @@ namespace SME.SGP.Aplicacao
                                                                                           param.Semestre,
                                                                                           param.Bimestre,
                                                                                           param.AnoLetivo,
-                                                                                          situacaoFechamento,
-                                                                                          situacaoConselhoClasse,
+                                                                                          param.SituacaoFechamento,
+                                                                                          param.SituacaoConselhoClasse,
                                                                                           listarTodasTurmas));
             return turmas;
         }

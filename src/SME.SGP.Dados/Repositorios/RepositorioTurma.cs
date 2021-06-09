@@ -451,7 +451,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var codigosTurmasParaHistorico = await ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(anoLetivo, true, listaTurmas, transacao);
                 var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
-                                        .Replace("#codigosTurmasParaHistorico", MapearParaCodigosQuerySql(codigosTurmasParaHistorico));                
+                                        .Replace("#codigosTurmasParaHistorico", MapearParaCodigosQuerySql(codigosTurmasParaHistorico));
 
                 await contexto.Conexao.ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, transacao);
 
@@ -969,7 +969,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno != 0;
         }
 
-        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, bool listarTodasTurmas)
+        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, SituacaoFechamento? situacaoFechamento, SituacaoConselhoClasse? situacaoConselhoClasse, bool listarTodasTurmas)
         {
             var query = new StringBuilder(@"select distinct t.id as TurmaId,
                                                      t.nome       
@@ -988,8 +988,31 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
-            //else
-            //    query.AppendLine("and pe.bimestre is null ");
+
+            var querySituacao = new StringBuilder();
+            if (situacaoFechamento.HasValue)
+            {
+                querySituacao.AppendLine(@"and t.id in (select turma_id from consolidado_fechamento_componente_turma 
+                                   where not excluido and turma_id = t.id and status = @situacaoFechamento  ");
+
+                if (bimestre > 0)
+                    querySituacao.AppendLine("and bimestre = @bimestre ");
+
+                querySituacao.AppendLine(")");
+            }
+
+            if (situacaoConselhoClasse.HasValue)
+            {
+                querySituacao.AppendLine(@"and t.id in (select turma_id from consolidado_conselho_classe_aluno_turma 
+                                   where not excluido and turma_id = t.id and status = @situacaoConselhoClasse  ");
+
+                if (bimestre > 0)
+                    querySituacao.AppendLine("and bimestre = @bimestre ");
+
+                querySituacao.AppendLine(")");
+            }
+
+            query.AppendLine(querySituacao.ToString());
 
             DateTime dataReferencia = DateTime.MinValue;
             string queryPeriodoEJA = string.Empty;
@@ -999,7 +1022,7 @@ namespace SME.SGP.Dados.Repositorios
                 queryPeriodoEJA = $"and exists(select 0 from periodo_escolar p where p.tipo_calendario_id = tc.id and {periodoReferencia})";
                 query.AppendLine(queryPeriodoEJA);
 
-               dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
+                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
             }
 
             query.AppendLine(@" and t.modalidade_codigo = @modalidade
@@ -1024,11 +1047,11 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
-            //else
-            //    query.AppendLine("and pe.bimestre is null ");
 
             if (modalidade == Modalidade.EJA)
                 query.AppendLine(queryPeriodoEJA);
+
+            query.AppendLine(querySituacao.ToString());
 
             query.AppendLine(@"and t.modalidade_codigo = @modalidade 
                                and t.ano_letivo = @anoLetivo
@@ -1050,7 +1073,7 @@ namespace SME.SGP.Dados.Repositorios
                 bimestre,
                 anoLetivo,
                 situacaoFechamento = (int?)situacaoFechamento,
-                situacaoConselhoClasse = (int?)situacaoConselhoClasse,
+                situacaoConselhoClasse = (int?)situacaoFechamento,
                 dataReferencia
             };
 
@@ -1107,7 +1130,7 @@ namespace SME.SGP.Dados.Repositorios
                     else anosCondicao.Add(ano.ShortName());
                 }
             }
-            var sql = dreId > 0 ? QueryInformacoesEscolaresTurmasPorAno(dreId, ueId, anosCondicao, tiposTurma, semestre) : 
+            var sql = dreId > 0 ? QueryInformacoesEscolaresTurmasPorAno(dreId, ueId, anosCondicao, tiposTurma, semestre) :
                 QueryInformacoesEscolaresTurmasPorDre(dreId, ueId, anosCondicao, tiposTurma, semestre);
             return await contexto
                 .Conexao
@@ -1122,7 +1145,7 @@ namespace SME.SGP.Dados.Repositorios
             if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId");
             if (anosCondicao != null && anosCondicao.Any()) query.AppendLine(@"  and t.ano = ANY(@anosCondicao)");
             if (tiposTurma != null && tiposTurma.Any()) query.AppendLine(@"  and t.tipo_turma = ANY(@tiposTurma)");
-            
+
             return query.ToString();
         }
 
@@ -1135,7 +1158,7 @@ namespace SME.SGP.Dados.Repositorios
                                            inner join dre on dre.id = ue.dre_id 
                                            where t.ano is not null 
                                              and t.ano_letivo = @anoLetivo  
-                                             and t.modalidade_codigo = @modalidade"); 
+                                             and t.modalidade_codigo = @modalidade");
             if (semestre > 0) query.AppendLine(@"  and t.semestre = @semestre");
             if (dreId > 0) query.AppendLine(@" and dre.id = @dreId");
             if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId");
@@ -1224,7 +1247,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TurmaComponenteDto>> ObterTurmasComponentesPorAnoLetivo(DateTime dataReferencia)
         {
-                var query = @"select a.turma_id as TurmaCodigo, a.disciplina_id as ComponenteCurricularId, pe.periodo_fim as DataReferencia from aula a 
+            var query = @"select a.turma_id as TurmaCodigo, a.disciplina_id as ComponenteCurricularId, pe.periodo_fim as DataReferencia from aula a 
                                 inner join turma t on a.turma_id = t.turma_id 
                                 inner join tipo_calendario tc on a.tipo_calendario_id = tc.id 
                                 inner join periodo_escolar pe on pe.tipo_calendario_id  = tc.id 
@@ -1232,7 +1255,7 @@ namespace SME.SGP.Dados.Repositorios
                                     and pe.periodo_inicio < @dataReferencia
                                 group by a.turma_id, a.disciplina_id, a.tipo_calendario_id, pe.periodo_fim ";
 
-         
+
 
             return await contexto.QueryAsync<TurmaComponenteDto>(query, new { anoLetivo = dataReferencia.Year, dataReferencia });
         }
