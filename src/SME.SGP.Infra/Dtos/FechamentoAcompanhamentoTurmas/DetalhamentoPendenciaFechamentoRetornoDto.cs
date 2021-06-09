@@ -3,6 +3,6 @@
     public class DetalhamentoPendenciaFechamentoRetornoDto
     {
         public long PendenciaId { get; set; }
-        public string Descricao { get; set; }
+        public string DescricaoHtml { get; set; }
     }
 }
