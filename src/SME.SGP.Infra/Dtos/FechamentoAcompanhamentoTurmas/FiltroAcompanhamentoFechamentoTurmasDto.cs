@@ -11,5 +11,7 @@ namespace SME.SGP.Infra
         public int Semestre { get; set; }
         public int Bimestre { get; set; }
         public int AnoLetivo { get; set; }
+        public SituacaoFechamento? SituacaoFechamento { get; set; }
+        public SituacaoConselhoClasse? SituacaoConselhoClasse { get; set; }
     }
 }
