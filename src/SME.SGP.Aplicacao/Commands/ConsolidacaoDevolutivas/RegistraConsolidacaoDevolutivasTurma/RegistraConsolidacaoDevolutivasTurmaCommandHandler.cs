@@ -16,6 +16,8 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<long> Handle(RegistraConsolidacaoDevolutivasTurmaCommand request, CancellationToken cancellationToken)
-            => await repositorio.Inserir(new ConsolidacaoDevolutivas(request.TurmaId, request.QuantidadeEstimadaDevolutivas, request.QuantidadeRegistradaDevolutivas));
+        { 
+            return await repositorio.Inserir(new ConsolidacaoDevolutivas(request.TurmaId, request.QuantidadeEstimadaDevolutivas, request.QuantidadeRegistradaDevolutivas));
+        }
     }
 }

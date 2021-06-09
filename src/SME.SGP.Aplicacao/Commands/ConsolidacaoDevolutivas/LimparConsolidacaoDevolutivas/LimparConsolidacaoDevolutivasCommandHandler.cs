@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +17,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(LimparConsolidacaoDevolutivasCommand request, CancellationToken cancellationToken)
         {
-            await repositorio.LimparConsolidacaoDevolutivasPorAno(request.Ano);
+            try
+            {
+                await repositorio.LimparConsolidacaoDevolutivasPorAno(request.AnoLetivo);
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+            }
+            
             return true;
         }
     }

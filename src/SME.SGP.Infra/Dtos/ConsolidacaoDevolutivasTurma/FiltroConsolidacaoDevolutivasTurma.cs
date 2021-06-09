@@ -12,4 +12,15 @@
         public long TurmaId { get; set; }
         public string TurmaCodigo { get; set; }
     }
+
+    public class FiltroConsolidacaoDevolutivasTurma1
+    {
+        public FiltroConsolidacaoDevolutivasTurma1() { }
+        public FiltroConsolidacaoDevolutivasTurma1(string turmaCodigo)
+        {
+            TurmaCodigo = turmaCodigo;
+        }
+
+        public string TurmaCodigo { get; set; }
+    }
 }

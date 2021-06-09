@@ -2,6 +2,7 @@
 using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,28 +19,27 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var anoAtual = DateTime.Now.Year;
-            var turmas = await mediator.Send(new ObterTurmasComModalidadePorAnoQuery(anoAtual));
-            var turmasInfantil = turmas.Where(t => t.ModalidadeInfantil == true);
-
+            var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual));
+            
             await mediator.Send(new LimparConsolidacaoDevolutivasCommand(anoAtual));
 
-            await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil);
+            await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, anoAtual);
 
             await AtualizarDataExecucao(anoAtual);
 
             return true;
         }
 
-        private async Task PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(IEnumerable<TurmaModalidadeDto> turmas)
+        private async Task PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(IEnumerable<DevolutivaTurmaDTO> turmasInfantil, int anoLetivo)
         {
-            if (turmas == null && !turmas.Any())
+            if (turmasInfantil == null && !turmasInfantil.Any())
                 throw new NegocioException("Não foi possível localizar turmas para consolidar dados de devolutivas");
-
-            foreach (var turma in turmas)
+           
+            foreach (var turma in turmasInfantil)
             {
                 try
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarDevolutivasPorTurmaInfantil, turma.TurmaCodigo, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidarDevolutivasPorTurmaInfantil));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarDevolutivasPorTurma, new FiltroDevolutivaTurmaDTO(turma.TurmaId, anoLetivo), Guid.NewGuid(), null, fila: RotasRabbit.ConsolidarDevolutivasPorTurmaInfantil));
                 }
                 catch (Exception ex)
                 {

@@ -193,8 +193,10 @@ namespace SME.SGP.Worker.RabbitMQ
             // Sincronização de Devolutivas
             comandos.Add(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilSync, new ComandoRabbit("Devolutivas - Sync de Turmas da Modalidade Infantil", typeof(IExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase)));
             comandos.Add(RotasRabbit.ConsolidarDevolutivasPorTurmaInfantil, new ComandoRabbit("Consolidar Devolutivas Turmas da Modalidade Infantil", typeof(IConsolidarDevolutivasPorTurmaInfantilUseCase)));
+            comandos.Add(RotasRabbit.ConsolidarDevolutivasPorTurma, new ComandoRabbit("Consolidar Devolutivas Turmas ", typeof(IConsolidarDevolutivasPorTurmaUseCase)));
 
         }
+        
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
         {

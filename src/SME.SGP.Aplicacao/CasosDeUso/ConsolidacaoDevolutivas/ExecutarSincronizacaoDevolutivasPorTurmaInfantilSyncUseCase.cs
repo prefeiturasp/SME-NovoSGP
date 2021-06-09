@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase", "Rabbit - ExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaDevolutivasPorTurmaInfantilSync, string.Empty, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarDevolutivasPorTurmaInfantil, string.Empty, Guid.NewGuid(), null));
         }
     }
 }
