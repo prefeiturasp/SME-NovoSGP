@@ -1073,7 +1073,7 @@ namespace SME.SGP.Dados.Repositorios
                 bimestre,
                 anoLetivo,
                 situacaoFechamento = (int?)situacaoFechamento,
-                situacaoConselhoClasse = (int?)situacaoFechamento,
+                situacaoConselhoClasse = (int?)situacaoConselhoClasse,
                 dataReferencia
             };
 
