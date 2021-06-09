@@ -520,7 +520,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
 
-            query.AppendLine(@"select t.turma_id as valor, t.nome as descricao from turma t
+            query.AppendLine(@"select t.turma_id as valor, coalesce(t.nome_filtro, t.nome) as descricao from turma t
                             inner join ue ue on ue.id = t.ue_id");
 
             query.AppendLine("where ue.ue_id = @codigoUe and ano_letivo = @anoLetivo");

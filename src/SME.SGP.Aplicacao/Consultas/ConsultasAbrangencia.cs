@@ -150,6 +150,7 @@ namespace SME.SGP.Aplicacao
             {
                 var modalidadeEnum = (Modalidade)a.CodigoModalidade;
                 a.ModalidadeTurmaNome = $"{modalidadeEnum.ShortName()} - {a.Nome}";
+                a.NomeFiltro = $"{modalidadeEnum.ShortName()} - {a.NomeFiltro}";
             });
 
             return OrdernarTurmasItinerario(result);
