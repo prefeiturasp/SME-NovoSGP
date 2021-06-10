@@ -20,13 +20,13 @@ namespace SME.SGP.Aplicacao
         {
             var uesCodigo = await mediator.Send(new ObterUesCodigoPorDreSincronizacaoInstitucionalQuery(request.DreCodigo));
 
-            if (!uesCodigo?.Any() ?? true) return true;
+            if (uesCodigo == null || !uesCodigo.Any()) return true;            
 
             foreach (var ueCodigo in uesCodigo)
             {
                 try
                 {
-                    var publicarSyncUe = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, ueCodigo, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalUeTratar));
+                    var publicarSyncUe = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalUeTratar, ueCodigo, Guid.NewGuid(), null));
                     if (!publicarSyncUe)
                     {
                         var mensagem = $"Não foi possível inserir a UE de codígo : {ueCodigo} na fila de sync.";

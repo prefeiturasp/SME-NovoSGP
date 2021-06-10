@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<AulaReduzidaDto>> Handle(ObterAulasReduzidaPorTipoCalendarioQuery request, CancellationToken cancellationToken)
-                => await repositorioAula.ObterAulasReduzidasPorTipoCalendario(request.TipoCalendarioId);
+                => await repositorioAula.ObterAulasReduzidasParaPendenciasAulaDiasNaoLetivos(request.TipoCalendarioId, request.TiposEscola);
     }
 }

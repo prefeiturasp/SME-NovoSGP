@@ -13,14 +13,20 @@ namespace SME.SGP.Aplicacao
     public class ObterFimPeriodoRecorrenciaQueryHandler : IRequestHandler<ObterFimPeriodoRecorrenciaQuery, DateTime>
     {
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        public ObterFimPeriodoRecorrenciaQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+        private readonly IRepositorioCache repositorioCache;
+        
+        public ObterFimPeriodoRecorrenciaQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioCache repositorioCache)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<DateTime> Handle(ObterFimPeriodoRecorrenciaQuery request, CancellationToken cancellationToken)
         {
-            var periodos = await repositorioPeriodoEscolar.ObterPorTipoCalendarioAsync(request.TipoCalendarioId);
+            var periodos = await repositorioCache.ObterAsync(
+                $"TipoCalendario-{request.TipoCalendarioId}", 
+                async () => await repositorioPeriodoEscolar.ObterPorTipoCalendarioAsync(request.TipoCalendarioId));
+
             if (periodos == null || !periodos.Any())
                 throw new NegocioException("Não foi possível obter os períodos deste tipo de calendário.");
 

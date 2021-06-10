@@ -30,14 +30,14 @@ namespace SME.SGP.Aplicacao
                 var graficoFrequenciaAcimaDoMinimo = new GraficoFrequenciaGlobalPorDREDto
                 {
                     Dre = FormatarAbreviacaoDre(frequenciaGlobalPorDre.Dre),
-                    Descricao = DashboardFrequenciaConstants.QuantidadeAcimaMinimoFrequenciaDescricao,
+                    Descricao = DashboardConstants.QuantidadeAcimaMinimoFrequenciaDescricao,
                     Quantidade = frequenciaGlobalPorDre.QuantidadeAcimaMinimoFrequencia
                 };
 
                 var graficoFrequenciaAbaixoDoMinimo = new GraficoFrequenciaGlobalPorDREDto
                 {
                     Dre = FormatarAbreviacaoDre(frequenciaGlobalPorDre.Dre),
-                    Descricao = DashboardFrequenciaConstants.QuantidadeAbaixoMinimoFrequenciaDescricao,
+                    Descricao = DashboardConstants.QuantidadeAbaixoMinimoFrequenciaDescricao,
                     Quantidade = frequenciaGlobalPorDre.QuantidadeAbaixoMinimoFrequencia
                 };
 
@@ -49,6 +49,6 @@ namespace SME.SGP.Aplicacao
         }
 
         private static string FormatarAbreviacaoDre(string abreviacaoDre)
-            => abreviacaoDre.Replace(DashboardFrequenciaConstants.PrefixoDreParaSerRemovido, string.Empty).Trim();
+            => abreviacaoDre.Replace(DashboardConstants.PrefixoDreParaSerRemovido, string.Empty).Trim();
     }
 }

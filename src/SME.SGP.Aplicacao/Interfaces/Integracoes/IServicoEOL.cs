@@ -115,20 +115,14 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data);
 
-        Task<bool> PodePersistirTurmaNoPeriodo(string professorRf, string codigoTurma, long componenteCurricularId, DateTime dataInicio, DateTime dataFim);
-
-        Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, DateTime[] datas, long codigoDisciplina);
+        Task<bool> PodePersistirTurmaNoPeriodo(string professorRf, string codigoTurma, long componenteCurricularId, DateTime dataInicio, DateTime dataFim);       
 
         Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data);
 
         Task ReiniciarSenha(string login);
-
         Task<UsuarioEolAutenticacaoRetornoDto> RelecionarUsuarioPerfis(string login);
-
         Task RemoverCJSeNecessario(Guid usuarioId);
-
         Task<bool> ValidarProfessor(string professorRf);
-
         Task<bool> TurmaPossuiComponenteCurricularPAP(string codigoTurma, string login, Guid idPerfil);
         Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, string[] anosEscolares, int anoLetivo);
         Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesTurmasProgramaPorAnoEModalidade(string codigoUe, Modalidade modalidade, int anoLetivo);
@@ -136,7 +130,6 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<InformacoesEscolaresAlunoDto> ObterNecessidadesEspeciaisAluno(string codigoAluno);       
 
         Task<IEnumerable<string>> DefinirTurmasRegulares(string[] codigosTurmas);
-
         Task<DadosTurmaEolDto> ObterDadosTurmaPorCodigo(string codigoTurma);
     }
 }

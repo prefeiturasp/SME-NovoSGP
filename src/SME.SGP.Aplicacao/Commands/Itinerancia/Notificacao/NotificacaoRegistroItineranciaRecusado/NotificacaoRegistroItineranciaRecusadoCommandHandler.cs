@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             if (itinerancia == null)
                 throw new NegocioException("Não foi possível encontrar a Itinerância informada");
 
-            var ue = await mediator.Send(new ObterUeComDrePorIdQuery(itinerancia.Ues.FirstOrDefault().UeId));
+            var ue = await mediator.Send(new ObterUeComDrePorIdQuery(itinerancia.UeId));
             if (ue == null)
                 throw new NegocioException("Não foi possível encontrar a UE informada");
             

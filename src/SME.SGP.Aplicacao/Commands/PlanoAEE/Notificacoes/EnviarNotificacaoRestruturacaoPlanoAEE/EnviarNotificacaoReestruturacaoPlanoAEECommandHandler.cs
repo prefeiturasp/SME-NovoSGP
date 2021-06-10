@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             var titulo = $"Reestruturação do plano AEE - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
             var descricao = $@"O usuário {request.Usuario.Nome} ({request.Usuario.CodigoRf}) registrou a reestruturação {reestruturacao.Semestre}º semestre do Plano AEE 
                             {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {plano.Turma.NomeComModalidade()} da {ueDre} em {reestruturacao.CriadoEm:dd/MM/yyyy}.<br/>
-                            <a href='{hostAplicacao}relatorios/aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano. ";
+                            <a href='{hostAplicacao}aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano. ";
 
             var usuariosIds = await ObterUsuarios(plano.Turma.Ue.CodigoUe, plano.Turma.Ue.Dre.CodigoDre);
 

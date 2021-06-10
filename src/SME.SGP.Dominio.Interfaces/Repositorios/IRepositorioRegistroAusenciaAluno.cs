@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -9,9 +10,16 @@ namespace SME.SGP.Dominio.Interfaces
         bool MarcarRegistrosAusenciaAlunoComoExcluidoPorRegistroFrequenciaId(long registroFrequenciaId);
 
         int ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, string turmaId);
+        
+        Task<int> ObterTotalAulasPorDisciplinaETurmaAsync(DateTime dataAula, string disciplinaId, string turmaId);
 
         AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoETurma(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId);
+        
+        Task<AusenciaPorDisciplinaDto> ObterTotalAusenciasPorAlunoETurmaAsync(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId);
 
-        IEnumerable<RegistroAusenciaAluno> ObterRegistrosAusenciaPorAula(long aulaId);
+        Task<IEnumerable<RegistroAusenciaAluno>> ObterRegistrosAusenciaPorAulaAsync(long aulaId);
+        Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterTotalAusenciasPorAlunosETurmaAsync(DateTime dataAula, IEnumerable<string> alunos,  string turmaId);
+        Task SalvarVarios(List<RegistroAusenciaAluno> ausenciasParaAdicionar);
+        Task ExcluirVarios(List<long> idsParaExcluir);
     }
 }

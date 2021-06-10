@@ -23,8 +23,6 @@ namespace SME.SGP.Aplicacao
             if (itinerancia == null)
                 throw new NegocioException($"Não foi possível localizar a itinerância de Id {id}");
 
-            var ues = await mediator.Send(new ObterUesPorIdsQuery(itinerancia.Ues.Select(u => u.UeId).ToArray()));
-
             var questoesBase = await mediator.Send(new ObterQuestoesBaseItineranciaEAlunoQuery());
 
             var verificaWorkflow = await mediator.Send(new ObterWorkflowItineranciaPorItineranciaIdQuery(itinerancia.Id));
@@ -40,8 +38,9 @@ namespace SME.SGP.Aplicacao
                 DataRetornoVerificacao = itinerancia.DataRetornoVerificacao,
                 ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
-                Ues = MontarUes(ues, itinerancia),
                 TipoCalendarioId = await ObterTipoCalendario(itinerancia.EventoId),
+                DreId = itinerancia.DreId,
+                UeId = itinerancia.UeId,
                 EventoId = itinerancia.EventoId,
                 CriadoRF = itinerancia.CriadoRF,
                 Auditoria = (AuditoriaDto)itinerancia,
@@ -112,7 +111,6 @@ namespace SME.SGP.Aplicacao
              {
                  return new ItineranciaUeDto
                  {
-                     Id = itinerancia.Ues.FirstOrDefault(i => i.UeId == ue.Id).Id,
                      UeId = ue.Id,
                      Descricao = $"{ue.TipoEscola.ShortName()} - {ue.Nome}",
                      CodigoUe = ue.CodigoUe,
@@ -150,7 +148,6 @@ namespace SME.SGP.Aplicacao
                     ItineranciaObjetivoBaseId = o.ItineranciaObjetivosBaseId,
                     Nome = itinerancia.ObjetivosBase.FirstOrDefault(ob => ob.Id == o.ItineranciaObjetivosBaseId).Nome,
                     TemDescricao = itinerancia.ObjetivosBase.FirstOrDefault(ob => ob.Id == o.ItineranciaObjetivosBaseId).TemDescricao,
-                    PermiteVariasUes = itinerancia.ObjetivosBase.FirstOrDefault(ob => ob.Id == o.ItineranciaObjetivosBaseId).PermiteVariasUes,
                     Descricao = string.IsNullOrEmpty(o.Descricao) ? "" : o.Descricao
                 };
             });

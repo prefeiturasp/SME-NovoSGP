@@ -15,12 +15,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.TipoCalendario
     public class BuscarTiposCalendarioPorDescricaoUseCaseTeste
     {
         private readonly Mock<IMediator> mediator;
+        private readonly Mock<IConsultasAbrangencia> consultasAbrangencia;
         private readonly BuscarTiposCalendarioPorDescricaoUseCase buscarTiposCalendarioPorDescricaoUseCaseTeste;
 
         public BuscarTiposCalendarioPorDescricaoUseCaseTeste()
         {
             mediator = new Mock<IMediator>();
-            buscarTiposCalendarioPorDescricaoUseCaseTeste = new BuscarTiposCalendarioPorDescricaoUseCase(mediator.Object);
+            consultasAbrangencia = new Mock<IConsultasAbrangencia>();
+            buscarTiposCalendarioPorDescricaoUseCaseTeste = new BuscarTiposCalendarioPorDescricaoUseCase(mediator.Object, consultasAbrangencia.Object);
         }
 
         [Fact]

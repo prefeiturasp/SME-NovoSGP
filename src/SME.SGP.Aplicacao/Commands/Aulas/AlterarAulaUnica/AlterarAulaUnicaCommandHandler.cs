@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -42,6 +41,8 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
 
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.Id));
 
+            var aulaAnteriorQnt = aula.Quantidade;
+
             await AplicarValidacoes(request, aula, turma, usuarioLogado, aulasExistentes);
 
             MapearEntidade(aula, request);
@@ -50,8 +51,18 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
 
             repositorioAula.Salvar(aula);
 
+            await TrataAlteracaoDeFrequencia(usuarioLogado, aula, aulaAnteriorQnt);
+
             retorno.Mensagens.Add("Aula alterada com sucesso.");
+
             return retorno;
+        }
+
+        private async Task TrataAlteracaoDeFrequencia(Usuario usuarioLogado, Aula aula, int aulaAnteriorQnt)
+        {
+            var trataFrequenciaAulaModificada = new AulaAlterarFrequenciaRequestDto(aula.Id, aulaAnteriorQnt);
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAlterarAulaFrequenciaTratar, trataFrequenciaAulaModificada, Guid.NewGuid(), usuarioLogado));
         }
 
         private async Task ValidarAulasDeReposicao(AlterarAulaUnicaCommand request, Turma turma, IEnumerable<AulaConsultaDto> aulasExistentes, Aula aula, List<string> mensagens)
@@ -80,7 +91,8 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
 
         private async Task AplicarValidacoes(AlterarAulaUnicaCommand request, Aula aula, Turma turma, Usuario usuarioLogado, IEnumerable<AulaConsultaDto> aulasExistentes)
         {
-            await ValidarComponentesDoProfessor(request, usuarioLogado);
+            if(!usuarioLogado.EhGestorEscolar())
+                await ValidarComponentesDoProfessor(request, usuarioLogado);
 
             await ValidarSeEhDiaLetivo(request, turma);
 

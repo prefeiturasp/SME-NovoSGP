@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Enumerados;
@@ -79,6 +80,7 @@ namespace SME.SGP.Dominio.Servicos
             var ehAnoAnterior = turma.AnoLetivo != DateTime.Now.Year;
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, ehAnoAnterior));
             var fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina();
+            var periodoEscolar = new PeriodoEscolar();
 
             if (fechamentoTurma == null)
             {
@@ -88,7 +90,7 @@ namespace SME.SGP.Dominio.Servicos
                 ue.AdicionarDre(repositorioDre.ObterPorId(ue.DreId));
                 turma.AdicionarUe(ue);
 
-                var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
+                periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
                 if (periodoEscolar == null && bimestre > 0) throw new NegocioException("Período escolar não encontrado");
 
                 fechamentoTurma = new FechamentoTurma()
@@ -106,8 +108,14 @@ namespace SME.SGP.Dominio.Servicos
                 };
 
             }
+            else 
+            {
+                if(fechamentoTurma.PeriodoEscolarId != null)
+                    periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
+            }
 
-
+            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, fechamentoTurma.PeriodoEscolarId != null ? periodoEscolar.Bimestre : 0);
+            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
 
             try
             {
@@ -135,6 +143,8 @@ namespace SME.SGP.Dominio.Servicos
                     }
                 }
                 unitOfWork.PersistirTransacao();
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null));
             }
             catch (Exception e)
             {
@@ -214,6 +224,8 @@ namespace SME.SGP.Dominio.Servicos
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
 
                     unitOfWork.PersistirTransacao();
+
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
                 }
             }
             catch (Exception e)
@@ -424,6 +436,11 @@ namespace SME.SGP.Dominio.Servicos
             var parecerConclusivo = await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma);
             conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
+
+            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar != null ?
+                   conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre : 0);
+            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
 
             return new ParecerConclusivoDto()
             {

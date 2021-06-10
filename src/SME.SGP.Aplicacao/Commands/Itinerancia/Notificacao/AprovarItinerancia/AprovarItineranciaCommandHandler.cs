@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -49,7 +48,7 @@ namespace SME.SGP.Aplicacao
                 {
                     unitOfWork.Rollback();
                     throw;
-                }            
+                }
             }
 
             return true;
@@ -57,16 +56,14 @@ namespace SME.SGP.Aplicacao
 
         private async Task CriarEvento(Itinerancia itinerancia, IEnumerable<ItineranciaObjetivoDescricaoDto> objetivos)
         {
-            foreach(var ue in itinerancia.Ues)
-            {
-                await mediator.Send(new CriarEventoItineranciaPAAICommand(
-                    itinerancia.Id,
-                    ue.Ue.Dre.CodigoDre,
-                    ue.Ue.CodigoUe,
-                    itinerancia.DataRetornoVerificacao.Value,
-                    itinerancia.DataVisita,
-                    objetivos));
-            }
+            var ue = await mediator.Send(new ObterUePorIdQuery(itinerancia.UeId));
+            await mediator.Send(new CriarEventoItineranciaPAAICommand(
+                itinerancia.Id,
+                ue.Dre.CodigoDre,
+                ue.CodigoUe,
+                itinerancia.DataRetornoVerificacao.Value,
+                itinerancia.DataVisita,
+                objetivos));
         }
     }
 }

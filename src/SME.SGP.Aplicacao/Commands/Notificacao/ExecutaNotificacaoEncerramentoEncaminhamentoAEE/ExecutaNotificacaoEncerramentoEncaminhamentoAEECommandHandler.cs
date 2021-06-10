@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem NotificacaoEncerramentoEncaminhamentoAEECommand", "Rabbit - NotificacaoEncerramentoEncaminhamentoAEECommand");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoEncerramentoEncaminhamentoAEE,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoEncerramentoEncaminhamentoAEE,
                 new NotificacaoEncaminhamentoAEEDto
                 {
                     EncaminhamentoAEEId = request.EncaminhamentoAEEId,

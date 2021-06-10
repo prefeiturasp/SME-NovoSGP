@@ -260,12 +260,30 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         public int ObterQuantidadePendenciasGeradas()
-            => (avaliacoesSemnota > 0 ? 1 : 0)
-            + (aulasReposicaoPendentes > 0 ? 1 : 0)
-            + (aulasSemPlanoAula > 0 ? 1 : 0)
-            + (aulasSemFrequencia > 0 ? 1 : 0)
-            + (alunosAbaixoMedia > 0 ? 1 : 0)
-            + (notasExtemporaneasAlteradas > 0 ? 1 : 0);
+            => Convert.ToInt32(AvaliacoesSemNota())
+            + Convert.ToInt32(AulasReposicaoPendentes())
+            + Convert.ToInt32(AulasSemPlanoAula())
+            + Convert.ToInt32(AulasSemFrequencia())
+            + Convert.ToInt32(AlunosAbaixoMedia())
+            + Convert.ToInt32(NotasExtemporaneasAlteradas());
+
+        public bool AvaliacoesSemNota()
+            => avaliacoesSemnota > 0;
+
+        public bool AulasReposicaoPendentes()
+            => aulasReposicaoPendentes > 0;
+
+        public bool AulasSemPlanoAula()
+            => aulasSemPlanoAula > 0;
+
+        public bool AulasSemFrequencia()
+            => aulasSemFrequencia > 0;
+
+        public bool AlunosAbaixoMedia()
+            => alunosAbaixoMedia > 0;
+
+        public bool NotasExtemporaneasAlteradas()
+            => notasExtemporaneasAlteradas > 0;
 
         public async Task<int> ValidarAlteracaoExtemporanea(long fechamentoId, string turmaCodigo, string professorRf)
         {
@@ -281,6 +299,31 @@ namespace SME.SGP.Dominio.Servicos
 
             notasExtemporaneasAlteradas = registrosNotasAlteradas.Count();
             return notasExtemporaneasAlteradas;
+        }
+
+        public IEnumerable<string> ObterDescricaoPendenciasGeradas()
+        {
+            var listaPendencias = new List<string>();
+
+            if (AvaliacoesSemNota())
+                listaPendencias.Add("Avaliação sem notas lançadas");
+
+            if (AulasReposicaoPendentes())
+                listaPendencias.Add("Aulas de reposição pendentes de aprovação");
+
+            if (AulasSemPlanoAula())
+                listaPendencias.Add("Aulas sem plano de aula registrado");
+
+            if (AulasSemFrequencia())
+                listaPendencias.Add("Aulas sem frequência registrada");
+
+            if (AlunosAbaixoMedia())
+                listaPendencias.Add("Fechamento com percentual de aprovação insuficiente");
+
+            if (NotasExtemporaneasAlteradas())
+                listaPendencias.Add("Notas de fechamento alteradas fora do ano de vigência da turma");
+
+            return listaPendencias;
         }
     }
 }

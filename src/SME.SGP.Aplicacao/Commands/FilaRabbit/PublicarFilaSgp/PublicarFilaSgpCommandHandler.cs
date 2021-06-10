@@ -1,8 +1,12 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Polly;
+using Polly.Registry;
 using RabbitMQ.Client;
+using SME.GoogleClassroom.Infra;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Utilitarios;
+using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,14 +15,16 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicarFilaSgpCommandHandler : IRequestHandler<PublicarFilaSgpCommand, bool>
     {
-        private readonly ConfiguracaoRabbitOptions configuracaoRabbitOptions;
+        private readonly IConfiguration configuration;
+        private readonly IAsyncPolicy policy;
 
-        public PublicarFilaSgpCommandHandler(ConfiguracaoRabbitOptions configuracaoRabbitOptions)
+        public PublicarFilaSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry)
         {
-            this.configuracaoRabbitOptions = configuracaoRabbitOptions ?? throw new System.ArgumentNullException(nameof(configuracaoRabbitOptions));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
         }
 
-        public Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
+        public async Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
         {
             var request = new MensagemRabbit(command.Filtros,
                                              command.CodigoCorrelacao,
@@ -27,31 +33,35 @@ namespace SME.SGP.Aplicacao
                                              command.PerfilUsuario,
                                              command.NotificarErroUsuario);
 
+            var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+            var body = Encoding.UTF8.GetBytes(mensagem);
+
+            await policy.ExecuteAsync(() => PublicarMensagem(command.Rota, body));
+
+            return true;
+        }
+
+        private async Task PublicarMensagem(string rota, byte[] body)
+        {
             var factory = new ConnectionFactory
             {
-                HostName = configuracaoRabbitOptions.HostName,
-                UserName = configuracaoRabbitOptions.UserName,
-                Password = configuracaoRabbitOptions.Password,
-                VirtualHost = configuracaoRabbitOptions.VirtualHost
+                HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
+                UserName = configuration.GetSection("ConfiguracaoRabbit:UserName").Value,
+                Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
+                VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
             };
 
             using (var conexaoRabbit = factory.CreateConnection())
             {
                 using (IModel _channel = conexaoRabbit.CreateModel())
                 {
-                    var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore
-                    });
-                    var body = Encoding.UTF8.GetBytes(mensagem);
-
-
-                    _channel.QueueBind(string.IsNullOrEmpty(command.Fila) ? RotasRabbit.FilaSgp : command.Fila, RotasRabbit.ExchangeSgp, command.NomeFila);
-                    _channel.BasicPublish(RotasRabbit.ExchangeSgp, command.NomeFila, null, body);
+                    _channel.BasicPublish(ExchangeRabbit.Sgp, rota, null, body);
                 }
             }
-
-            return Task.FromResult(true);
         }
+
     }
 }

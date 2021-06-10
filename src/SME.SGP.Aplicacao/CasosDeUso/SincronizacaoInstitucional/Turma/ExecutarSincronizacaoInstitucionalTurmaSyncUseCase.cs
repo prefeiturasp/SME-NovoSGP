@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
                     var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemSyncTurma);
 
-                    var publicarFilaIncluirTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar));
+                    var publicarFilaIncluirTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalTurmaTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null));
                     if (!publicarFilaIncluirTurma)
                     {
                         var mensagem = $"Não foi possível inserir a turma de codígo : {codigoTurma} na fila de inclusão.";

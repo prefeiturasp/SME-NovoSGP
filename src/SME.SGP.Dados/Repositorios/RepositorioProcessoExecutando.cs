@@ -5,6 +5,7 @@ using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -57,6 +58,19 @@ namespace SME.SGP.Dados
             }
         }
 
+        public async Task<IEnumerable<ProcessoExecutando>> ObterProcessosEmExecucaoAsync(string turmaId, string disciplinaId, int bimestre, TipoProcesso tipoProcesso)
+        {
+            var query = @"select * 
+                            from processo_executando
+                           where tipo_processo = @tipoProcesso
+                             and turma_id = @turmaId
+                             and disciplina_id = @disciplinaId
+                             and bimestre = @bimestre
+                           order by id";
+
+            return await database.Conexao.QueryAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre, tipoProcesso = (int)tipoProcesso });            
+        }
+
         public async Task<bool> ProcessoEstaEmExecucao(TipoProcesso tipoProcesso)
         {
             var query = "select 1 from processo_executando where tipo_processo = @tipoProcesso";
@@ -74,9 +88,9 @@ namespace SME.SGP.Dados
         {
             var query = @"delete
                             from processo_executando
-                           where id IN (#ids)";
+                           where id = ANY(@ids)";
 
-            await database.Conexao.ExecuteAsync(query.Replace("#ids", string.Join(",", ids)));
+            await database.Conexao.ExecuteAsync(query, new { ids });
         }
 
 

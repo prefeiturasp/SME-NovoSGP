@@ -167,7 +167,7 @@ namespace SME.SGP.Aplicacao
                     var disciplina = await ObterDisciplina(Convert.ToInt32(filtro.DisciplinasId[0]));
                     var usuario = await servicoUsuario.ObterUsuarioLogado();
                     DateTime dataAvaliacao = filtro.DataAvaliacao.Date;
-                    var aula = await repositorioAula.ObterAulas(filtro.TurmaId.ToString(), null, usuario.CodigoRf, dataAvaliacao, filtro.DisciplinasId);
+                    var aula = await repositorioAula.ObterAulas(filtro.TurmaId.ToString(), null, usuario.CodigoRf, dataAvaliacao, filtro.DisciplinasId, usuario.EhProfessorCj());
 
                     //verificar se tem para essa atividade
                     if (!aula.Any())

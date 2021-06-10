@@ -27,6 +27,7 @@ namespace SME.SGP.Api
         {
             return Ok(await useCase.Executar());
         }
+       
         [HttpGet("criadores")]
         [ProducesResponseType(typeof(IEnumerable<ItineranciaObjetivosBaseDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -116,9 +117,9 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<EventoNomeDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RI_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterEventosPorCalendario([FromQuery]long tipoCalendarioId, [FromQuery] long itineranciaId, [FromServices] IObterEventosItinerânciaPorTipoCalendarioUseCase useCase)
+        public async Task<IActionResult> ObterEventosPorCalendario([FromQuery]long tipoCalendarioId, [FromQuery] long itineranciaId, [FromQuery] string codigoUE, [FromServices] IObterEventosItinerânciaPorTipoCalendarioUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroEventosItineranciaDto(tipoCalendarioId, itineranciaId)));
+            return Ok(await useCase.Executar(new FiltroEventosItineranciaDto(tipoCalendarioId, itineranciaId, codigoUE)));
         }
 
     }

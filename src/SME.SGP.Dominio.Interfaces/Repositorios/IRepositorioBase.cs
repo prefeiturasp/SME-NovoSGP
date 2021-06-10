@@ -14,6 +14,8 @@ namespace SME.SGP.Dominio.Interfaces
         void Remover(long id);
 
         void Remover(T entidade);
+        
+        Task RemoverAsync(T entidade);
 
         long Salvar(T entidade);
 
@@ -21,6 +23,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<bool> Exists(long id, string coluna = null);
 
-        Task<long> RemoverLogico(long id, string coluna = null);
+        Task<long> RemoverLogico(long id, string coluna = null);      
     }
 }

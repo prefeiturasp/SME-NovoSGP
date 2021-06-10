@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExecutaPendenciaAulaUseCase", "Rabbit - ExecutaPendenciaAulaUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExecutaPendenciasAula, new PendenciaAulaUseCase(mediator), Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAula, new PendenciaAulaUseCase(mediator), Guid.NewGuid(), null));
         }
     }
 }

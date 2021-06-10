@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirDevolutivaCommand request, CancellationToken cancellationToken)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoDevolutiva,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoDevolutiva,
                       new ExcluirNotificacaoDevolutivaDto(request.DevolutivaId), Guid.NewGuid(), null));
 
             await repositorioDevolutiva.RemoverLogico(request.DevolutivaId);

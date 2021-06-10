@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             var command = new EnviarNotificacaoCriacaoPlanoAEECommand(request.PlanoAEEId, usuario);
 
-            await mediator.Send(new PublicaFilaWorkerSgpCommand(RotasRabbit.NotificarCriacaoPlanoAEE, command, Guid.NewGuid(), usuario));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarCriacaoPlanoAEE, command, Guid.NewGuid(), usuario));
 
             SentrySdk.AddBreadcrumb($"Envio Fila de Notificação de Criação de PlanoAEE", "RabbitMQ");
          

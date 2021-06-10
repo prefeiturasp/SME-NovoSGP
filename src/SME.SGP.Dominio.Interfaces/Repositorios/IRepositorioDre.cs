@@ -22,5 +22,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Dre>> SincronizarAsync(IEnumerable<Dre> entidades);
         Task<string> ObterCodigoDREPorTurmaId(long turmaId);
         Task<string> ObterCodigoDREPorUEId(long ueId);
+        Task<IEnumerable<long>> ObterIdsDresAsync();
     }
 }

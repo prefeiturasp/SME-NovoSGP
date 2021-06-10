@@ -12,6 +12,8 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Situacao).ToColumn("situacao");
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
             Map(c => c.EventoId).ToColumn("evento_id");
+            Map(c => c.DreId).ToColumn("dre_id");
+            Map(c => c.UeId).ToColumn("ue_id");
         }
     }
 }

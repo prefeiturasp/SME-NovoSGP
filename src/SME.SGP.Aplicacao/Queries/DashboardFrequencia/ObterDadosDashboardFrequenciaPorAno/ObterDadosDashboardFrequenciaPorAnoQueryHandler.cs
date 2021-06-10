@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 {
                     dto.Add(new GraficoFrequenciaGlobalPorAnoDto()
                     {
-                        Descricao = DashboardFrequenciaConstants.QuantidadeAcimaMinimoFrequenciaDescricao,
+                        Descricao = DashboardConstants.QuantidadeAcimaMinimoFrequenciaDescricao,
                         Quantidade = frequencia.QuantidadeAcimaMinimoFrequencia,
                         Turma = !string.IsNullOrEmpty(frequencia.NomeTurma) ? frequencia.NomeTurma: frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
                     });
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 {
                     dto.Add(new GraficoFrequenciaGlobalPorAnoDto()
                     {
-                        Descricao = DashboardFrequenciaConstants.QuantidadeAbaixoMinimoFrequenciaDescricao,
+                        Descricao = DashboardConstants.QuantidadeAbaixoMinimoFrequenciaDescricao,
                         Quantidade = frequencia.QuantidadeAbaixoMinimoFrequencia,
                         Turma = !string.IsNullOrEmpty(frequencia.NomeTurma) ? frequencia.NomeTurma : frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
                     });

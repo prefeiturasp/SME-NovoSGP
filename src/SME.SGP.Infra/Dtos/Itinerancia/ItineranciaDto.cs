@@ -9,17 +9,18 @@ namespace SME.SGP.Infra
         public ItineranciaDto()
         {
             ObjetivosVisita = new List<ItineranciaObjetivoDto>();
-            Ues = new List<ItineranciaUeDto>();
             Alunos = new List<ItineranciaAlunoDto>();
             Questoes = new List<ItineranciaQuestaoDto>();
         }
         public long Id { get; set; }
+        
+        public long DreId { get; set; }
+        public long UeId { get; set; }
         public int AnoLetivo { get; set; }
         public string CriadoRF { get; set; }
         public DateTime DataVisita { get; set; }
         public DateTime? DataRetornoVerificacao { get; set; }
         public IEnumerable<ItineranciaObjetivoDto> ObjetivosVisita { get; set; }
-        public IEnumerable<ItineranciaUeDto> Ues { get; set; }
         public IEnumerable<ItineranciaAlunoDto> Alunos { get; set; }
         public IEnumerable<ItineranciaQuestaoDto> Questoes { get; set; }
         public long? TipoCalendarioId { get; set; }
@@ -27,10 +28,8 @@ namespace SME.SGP.Infra
         public AuditoriaDto Auditoria { get; set; }
         public string StatusWorkflow { get; set; }
         public bool PodeEditar { get; set; }
-
         public bool PossuiAlunos { get => Alunos != null && Alunos.Any(); }
         public bool PossuiObjetivos { get => ObjetivosVisita != null && ObjetivosVisita.Any(); }
         public bool PossuiQuestoes { get => Questoes != null && Questoes.Any(); }
-        public bool PossuiUes { get => Ues != null && Ues.Any(); }
     }
 }

@@ -470,6 +470,20 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe });
         }
 
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorCodigosUe(string[] codigosUe)
+        {
+            var query = @"select
+                                distinct t.modalidade_codigo
+                            from
+                                turma t
+                            inner join ue u on
+                                t.ue_id = u.id
+                            where
+                                u.ue_id = any(@codigosUe)";
+
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigosUe });
+        }
+
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre)
         {
             var query = new StringBuilder();

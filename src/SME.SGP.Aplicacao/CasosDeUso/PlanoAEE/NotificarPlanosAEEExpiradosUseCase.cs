@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
 
             var titulo = $"Plano AEE Expirado - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
             var descricao = $@"O Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} expirou em {dataFim:dd/MM/yyyy} e até o momento não teve sua vigência prorrogada ou foi encerrado.<br/>
-                <a href='{hostAplicacao}relatorios/aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano. ";
+                <a href='{hostAplicacao}aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano. ";
 
             var usuarioId = await ObterCEFAI(turma.Ue.Dre.CodigoDre);
 

@@ -34,37 +34,7 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
-        }
-
-        public void AtualizarQuantidadeFrequencia(long aulaId, int quantidadeOriginal, int quantidadeAtual)
-        {
-            var ausencias = repositorioRegistroAusenciaAluno.ObterRegistrosAusenciaPorAula(aulaId);
-
-            if (quantidadeAtual > quantidadeOriginal)
-            {
-                // Replicar o ultimo registro de frequencia
-                ausencias.Where(a => a.NumeroAula == quantidadeOriginal).ToList()
-                    .ForEach(ausencia =>
-                    {
-                        for (var n = quantidadeOriginal + 1; n <= quantidadeAtual; n++)
-                        {
-                            var clone = (RegistroAusenciaAluno)ausencia.Clone();
-                            clone.NumeroAula = n;
-
-                            repositorioRegistroAusenciaAluno.Salvar(clone);
-                        }
-                    });
-            }
-            else
-            {
-                // Excluir os registros de aula maior que o atual
-                ausencias.Where(a => a.NumeroAula > quantidadeAtual).ToList()
-                    .ForEach(ausencia =>
-                    {
-                        repositorioRegistroAusenciaAluno.Remover(ausencia);
-                    });
-            }
-        }
+        }        
 
         public async Task ExcluirFrequenciaAula(long aulaId)
         {
@@ -93,8 +63,11 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não é permitido registro de frequência para este componente curricular.");
             }
 
-            ValidaSeUsuarioPodeCriarAula(aula, usuario);
-            await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId, aula.DataAula, usuario);
+            if (!usuario.EhGestorEscolar())
+            {
+                ValidaSeUsuarioPodeCriarAula(aula, usuario);
+                await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId, aula.DataAula, usuario);
+            }            
 
             var alunos = await ObterAlunos(aula);
 
@@ -157,9 +130,6 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (aluno == null)
                     throw new NegocioException("O aluno informado na frequência não pertence a essa turma.");
-
-                if (aluno.EstaInativo(dataAula))
-                    throw new NegocioException($"Não foi possível registrar a frequência pois o aluno: '{aluno.NomeAluno}' está com a situação: '{aluno.SituacaoMatricula}'.");
 
                 ausencia.RegistroFrequenciaId = registroFrequencia.Id;
                 repositorioRegistroAusenciaAluno.Salvar(ausencia);

@@ -1,9 +1,4 @@
 ﻿using FluentValidation;
-using MediatR;
-using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -23,9 +18,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.DataVisita)
                .NotEmpty()
                .WithMessage("A data da visita deve ser informada");
-            RuleFor(c => c.Estudantes)
-               .NotEmpty()
-               .WithMessage("Os estudantes devem ser informados");
         }
     }
 }

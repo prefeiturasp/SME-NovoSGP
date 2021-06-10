@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var command = new ExcluirTodasPendenciasAulaCommand(request.AulaId);
 
-            await mediator.Send(new PublicaFilaWorkerSgpCommand(RotasRabbit.RotaExecutaExclusaoPendenciasAula, command, Guid.NewGuid(), request.Usuario));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula, command, Guid.NewGuid(), request.Usuario));
             SentrySdk.AddBreadcrumb($"Incluir fila exclusão pendências aula", "RabbitMQ");
 
             return true;

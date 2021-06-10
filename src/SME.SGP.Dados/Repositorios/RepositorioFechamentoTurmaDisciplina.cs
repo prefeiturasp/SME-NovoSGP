@@ -18,9 +18,24 @@ namespace SME.SGP.Dados.Repositorios
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
         }
 
+        public async Task<IEnumerable<int>> ObterDisciplinaIdsPorTurmaIdBimestre(long turmaId, int bimestre)
+        {
+            var query = new StringBuilder(@"select disciplina_id as ComponenteCurricularId from fechamento_turma_disciplina ftd 
+                            inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
+                            left join periodo_escolar pe on ft.periodo_escolar_id = pe.id 
+                            where ft.turma_id = @turmaId");
+
+            if (bimestre > 0)
+                query.AppendLine(" and pe.bimestre = @bimestre ");
+            else
+                query.AppendLine(" and ft.periodo_escolar_id is null ");
+
+            return await database.Conexao.QueryAsync<int>(query.ToString(), new { turmaId, bimestre });
+        }
+
         public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(long turmaId, long[] disciplinasId, int bimestre = 0)
         {
-            var query = new StringBuilder(@"select f.*, fa.*
+            var query = new StringBuilder(@"select f.*, fa.*, ft.*, p.*
                          from fechamento_turma_disciplina f
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id 
@@ -39,12 +54,17 @@ namespace SME.SGP.Dados.Repositorios
 
             IList<FechamentoTurmaDisciplina> fechammentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();
 
-            await database.Conexao.QueryAsync<FechamentoTurmaDisciplina, FechamentoAluno, FechamentoTurmaDisciplina>(query.ToString(),
-                (fechamentoTurmaDiscplina, fechamentoAluno) =>
+            await database.Conexao.QueryAsync<FechamentoTurmaDisciplina, FechamentoAluno, FechamentoTurma, PeriodoEscolar, FechamentoTurmaDisciplina>
+                (query.ToString(), (fechamentoTurmaDiscplina, fechamentoAluno, fechamentoTurma, periodoEscolar) =>
                 {
                     var fechamentoTurmaDisciplinaLista = fechammentosTurmaDisciplina.FirstOrDefault(ftd => ftd.Id == fechamentoTurmaDiscplina.Id);
                     if (fechamentoTurmaDisciplinaLista == null)
                     {
+                        if (periodoEscolar != null)
+                            fechamentoTurma.AdicionarPeriodoEscolar(periodoEscolar);
+
+                        fechamentoTurmaDiscplina.FechamentoTurma = fechamentoTurma;
+
                         fechamentoTurmaDisciplinaLista = fechamentoTurmaDiscplina;
                         fechammentosTurmaDisciplina.Add(fechamentoTurmaDiscplina);
                     }

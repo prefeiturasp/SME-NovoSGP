@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                     {
                         await TrataTurmasCodigos(itineranciaDto);
                     }
-                    var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.AnoLetivo, itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao, itineranciaDto.EventoId));
+                    var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.AnoLetivo, itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao, itineranciaDto.EventoId, itineranciaDto.DreId, itineranciaDto.UeId));
                     if (itinerancia == null)
                         throw new NegocioException("Erro ao Salvar a itinerancia");
 
@@ -49,27 +49,19 @@ namespace SME.SGP.Aplicacao
                     if (itineranciaDto.PossuiQuestoes)
                         foreach (var questao in itineranciaDto.Questoes)
                             await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
-
-                    if (itineranciaDto.PossuiUes)
-                        foreach (var ue in itineranciaDto.Ues)
-                            await mediator.Send(new SalvarItineranciaUeCommand(ue.UeId, itinerancia.Id));
-
-                    if (itineranciaDto.DataRetornoVerificacao.HasValue && !itineranciaDto.PossuiAlunos)
-                        await SalvarEventoItinerancia(itinerancia.Id, itineranciaDto);
-
                     unitOfWork.PersistirTransacao();
 
                     SentrySdk.AddBreadcrumb($"Mensagem RotaNotificacaoRegistroItineranciaInseridoUseCase", "Rabbit - RotaNotificacaoRegistroItineranciaInseridoUseCase");
                     await mediator.Send(new AlterarSituacaoItineranciaCommand(itinerancia.Id, Dominio.Enumerados.SituacaoItinerancia.Enviado));
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase,
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoRegistroItineranciaInseridoUseCase,
                         new NotificacaoSalvarItineranciaDto
                         {
                             CriadoRF = itinerancia.CriadoRF,
                             CriadoPor = itinerancia.CriadoPor,
                             DataVisita = itineranciaDto.DataVisita,
-                            Ues = itineranciaDto.Ues,
                             Estudantes = itineranciaDto.Alunos,
-                            ItineranciaId = itinerancia.Id
+                            ItineranciaId = itinerancia.Id, 
+                            UeId = itineranciaDto.UeId,
                         }, Guid.NewGuid(), null));
 
                     return itinerancia;
@@ -84,10 +76,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task SalvarEventoItinerancia(long itineranciaId, ItineranciaDto itineranciaDto)
         {
-            foreach (var ue in itineranciaDto.Ues)
-                await mediator.Send(new CriarEventoItineranciaPAAICommand(
+            var ue = await mediator.Send(new ObterUePorIdQuery(itineranciaDto.UeId));
+            if (ue == null)
+                throw new NegocioException("Não foi possível localizar um Unidade Escolar!");
+
+            await mediator.Send(new CriarEventoItineranciaPAAICommand(
                     itineranciaId,
-                    ue.CodigoDre,
+                    ue.Dre.CodigoDre,
                     ue.CodigoUe,
                     itineranciaDto.DataRetornoVerificacao.Value,
                     itineranciaDto.DataVisita,

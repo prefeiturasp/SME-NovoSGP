@@ -335,11 +335,33 @@ namespace SME.SGP.Dados.Repositorios
             }, new { ids });
         }
 
+        public async Task<Ue> ObterUePorId(long id)
+        {
+            var query = @"select ue.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue.id = @id";
+
+            return await contexto.QueryFirstAsync<Ue>(query);
+        }
+
         public async Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo)
         {
             var query = "select tipo_escola from ue where ue_id = @ueCodigo";
 
             return await contexto.Conexao.QueryFirstOrDefaultAsync<TipoEscola>(query, new { ueCodigo });
+        }
+
+        public async Task<IEnumerable<string>> ObterUesCodigosPorDreAsync(long dreId)
+        {
+            return await contexto.Conexao.QueryAsync<string>("select ue_id from ue where dre_id = @dreId", new { dreId });
+        }
+
+        public async Task<int> ObterQuantidadeUesPorAnoLetivoAsync(int anoLetivo)
+        {
+            var query = @"select count(distinct(t.ue_id)) from turma t where t.ano_letivo = @anoLetivo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<int>(query, new { anoLetivo });
         }
     }
 }

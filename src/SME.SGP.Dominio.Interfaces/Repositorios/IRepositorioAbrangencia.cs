@@ -56,6 +56,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> UsuarioPossuiAbrangenciaDeUmDosTipos(Guid perfil, IEnumerable<TipoPerfil> tipos);
 
         Task<IEnumerable<Modalidade>> ObterModalidadesPorUe(string codigoUe);
+        Task<IEnumerable<Modalidade>> ObterModalidadesPorCodigosUe(string[] codigosUe);
 
         Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre);
 

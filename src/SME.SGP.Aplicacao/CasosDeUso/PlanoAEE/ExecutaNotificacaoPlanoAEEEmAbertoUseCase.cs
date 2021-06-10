@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExecutaNotificacaoPlanoAEEEmAbertoUseCase", "Rabbit - ExecutaNotificacaoPlanoAEEEmAbertoUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.NotificarPlanoAEEEmAberto, null, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarPlanoAEEEmAberto, null, Guid.NewGuid(), null));
         }
     }
 }

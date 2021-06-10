@@ -33,7 +33,9 @@ namespace SME.SGP.Aplicacao
                     CodigoAluno = frequencia.CodigoAluno,
                     Frequencia = frequencia.PercentualFrequencia,
                     QuantidadeAusencias = frequencia.TotalAusencias,
-                    QuantidadeCompensacoes = frequencia.TotalCompensacoes
+                    QuantidadeCompensacoes = frequencia.TotalCompensacoes,
+                    TotalAulas = frequencia.TotalAulas
+                    
                 };
 
                 frequenciaBimestreAlunoDto.Add(frequenciaBimestreAluno);

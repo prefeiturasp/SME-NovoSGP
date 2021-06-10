@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
             var titulo = $"Encaminhamento AEE - {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) - {ueDre}";
             var mensagem = $"O usuário {request.UsuarioNome} ({request.UsuarioRF}) <b>{situacao}</b> o encaminhamento {estudanteOuCrianca} {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) " +
                 $"da turma {turma.ModalidadeCodigo.ShortName()}-{turma.Nome} da {ueDre}.<br/><br/>" +
-                $"<a href='{hostAplicacao}relatorios/aee/encaminhamento/editar/{encaminhamentoAEE.Id}'>Clique aqui para acessar o encaminhamento.</a>";
+                $"<a href='{hostAplicacao}aee/encaminhamento/editar/{encaminhamentoAEE.Id}'>Clique aqui para acessar o encaminhamento.</a>";
 
 
             

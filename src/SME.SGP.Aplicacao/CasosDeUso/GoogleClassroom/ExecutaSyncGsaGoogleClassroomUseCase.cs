@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
                 return false;
 
             string mensagem = "Mensagem API Google Classroom - Comparativo de Dados";
-            return await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitGoogleClassroomApi.FilaGsaSync, mensagem));
+            return await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitSgpGoogleClassroomApi.FilaGsaSync, mensagem));
         }
     }
 }

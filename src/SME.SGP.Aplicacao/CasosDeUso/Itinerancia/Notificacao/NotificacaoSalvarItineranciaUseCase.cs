@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System.Linq;
@@ -18,17 +19,11 @@ namespace SME.SGP.Aplicacao
         {
             var mensagemRabbit = JsonConvert.DeserializeObject<NotificacaoSalvarItineranciaDto>(param.Mensagem.ToString());
 
-            if (mensagemRabbit.Estudantes.Any())
-            {
-                await mediator.Send(new NotificacaoSalvarItineranciaAlunosCommand(mensagemRabbit.Ues.FirstOrDefault().CodigoUe, mensagemRabbit.CriadoRF, mensagemRabbit.CriadoPor, mensagemRabbit.DataVisita, mensagemRabbit.Estudantes, mensagemRabbit.ItineranciaId));
-            }
-            else
-            {
-                foreach (var ue in mensagemRabbit.Ues)
-                {
-                   await mediator.Send(new NotificacaoSalvarItineranciaSemAlunosVinculadosCommand(ue.CodigoUe, mensagemRabbit.CriadoRF, mensagemRabbit.CriadoPor, mensagemRabbit.DataVisita, mensagemRabbit.ItineranciaId));
-                }
-            }
+            var ue = await mediator.Send(new ObterUePorIdQuery(mensagemRabbit.UeId));
+            if (ue == null)
+                throw new NegocioException("Não foi possível localizar um Unidade Escolar!");
+
+                await mediator.Send(new NotificacaoSalvarItineranciaAlunosCommand(ue.CodigoUe, mensagemRabbit.CriadoRF, mensagemRabbit.CriadoPor, mensagemRabbit.DataVisita, mensagemRabbit.Estudantes, mensagemRabbit.ItineranciaId));
 
             return true;
         }

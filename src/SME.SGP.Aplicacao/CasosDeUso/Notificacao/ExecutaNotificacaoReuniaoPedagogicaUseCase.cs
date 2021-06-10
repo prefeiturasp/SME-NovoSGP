@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem NotificacaoReuniaoPedagogica", "Rabbit - NotificacaoReuniaoPedagogica");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoReuniaoPedagogica, null, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoReuniaoPedagogica, null, Guid.NewGuid(), null));
         }
     }
 }

@@ -262,6 +262,11 @@ class ServicoAcompanhamentoAprendizagem {
       dispatch(setDadosApanhadoGeral({ ...retorno.data }));
     }
   };
+
+  gerar = params => {
+    const url = `v1/relatorios/acompanhamento-aprendizagem`;
+    return api.post(url, params);
+  };
 }
 
 export default new ServicoAcompanhamentoAprendizagem();

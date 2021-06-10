@@ -46,10 +46,6 @@ namespace SME.SGP.Aplicacao
                         if(!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
                             throw new NegocioException($"Não foi possível excluir a quesão da itinerância de Id {questao.Id}");
 
-                    foreach (var ue in itinerancia.Ues)
-                        if(!await mediator.Send(new ExcluirItineranciaUeCommand(ue.Id, itinerancia.Id)))
-                            throw new NegocioException($"Não foi possível excluir a ue da itinerância de Id {ue.Id}");
-
                     unitOfWork.PersistirTransacao();
 
                     return true;

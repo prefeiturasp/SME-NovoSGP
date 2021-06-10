@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<EventoNomeDto>> Handle(ObterEventosItineranciaPAAIQuery request, CancellationToken cancellationToken) 
             => MapearParaDto(await repositorioEvento
-                .ListarEventosItinerancia(request.TipoCalendarioId, request.ItineranciaId, request.Login, request.Perfil));
+                .ListarEventosItinerancia(request.TipoCalendarioId, request.ItineranciaId, request.CodigoUE ,request.Login, request.Perfil));
 
         private IEnumerable<EventoNomeDto> MapearParaDto(IEnumerable<EventoDataDto> eventos)
         {

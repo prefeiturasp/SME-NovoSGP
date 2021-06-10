@@ -109,12 +109,12 @@ namespace SME.SGP.Aplicacao
                 var dto = new AtribuicaoCJGoogleClassroomApiDto(rf, turmaId, atribuicaoCJ.DisciplinaId);
 
                 var publicacaoConcluida = atribuicaoCJ.Substituir
-                    ? await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitGoogleClassroomApi.FilaProfessorCursoIncluir, dto))
-                    : await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitGoogleClassroomApi.FilaProfessorCursoRemover, dto));
+                    ? await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitSgpGoogleClassroomApi.FilaProfessorCursoIncluir, dto))
+                    : await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitSgpGoogleClassroomApi.FilaProfessorCursoRemover, dto));
                 if(!publicacaoConcluida)
                 {
                     SentrySdk.AddBreadcrumb("Atribuição CJ", "Google Classroom Api");
-                    SentrySdk.CaptureMessage($"Não foi possível publicar na fila {RotasRabbitGoogleClassroomApi.FilaProfessorCursoIncluir}."); ;
+                    SentrySdk.CaptureMessage($"Não foi possível publicar na fila {RotasRabbitSgpGoogleClassroomApi.FilaProfessorCursoIncluir}."); ;
                 }
             }
             catch(Exception ex)

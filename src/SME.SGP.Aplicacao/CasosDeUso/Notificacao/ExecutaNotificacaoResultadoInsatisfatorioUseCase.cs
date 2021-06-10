@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem NotificacaoResultadoInsatisfatorioUseCase", "Rabbit - NotificacaoResultadoInsatisfatorioUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoResultadoInsatisfatorio, null, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoResultadoInsatisfatorio, null, Guid.NewGuid(), null));
         }
     }
 }

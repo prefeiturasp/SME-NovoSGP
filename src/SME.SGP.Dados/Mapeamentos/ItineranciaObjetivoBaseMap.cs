@@ -9,7 +9,6 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("itinerancia_objetivo_base");
             Map(a => a.TemDescricao).ToColumn("tem_descricao");
-            Map(a => a.PermiteVariasUes).ToColumn("permite_varias_ues");
         }
     }
 }

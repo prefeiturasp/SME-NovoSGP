@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExecutaPendenciaValidadoPlanoAEEUseCase", "Rabbit - ExecutaPendenciaValidadoPlanoAEEUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.GerarPendenciaValidadePlanoAEE, null, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.GerarPendenciaValidadePlanoAEE, null, Guid.NewGuid(), null));
         }
     }
 }

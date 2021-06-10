@@ -1,7 +1,9 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -94,6 +96,11 @@ namespace SME.SGP.Aplicacao
 
                 fechamentoTurmaDisciplina.FechamentoAlunos.Add(fechamentoAluno);
             }
+
+            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, 0);
+            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null));
+
             return fechamentoTurmaDisciplina;
         }
 

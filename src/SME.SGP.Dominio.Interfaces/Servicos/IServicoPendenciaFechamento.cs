@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SME.SGP.Infra;
 
@@ -21,6 +22,15 @@ namespace SME.SGP.Dominio.Interfaces
         Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia);
 
         int ObterQuantidadePendenciasGeradas();
+
+        bool AvaliacoesSemNota();
+        bool AulasReposicaoPendentes();
+        bool AulasSemPlanoAula();
+        bool AulasSemFrequencia();
+        bool AlunosAbaixoMedia();
+        bool NotasExtemporaneasAlteradas();
+
         Task<int> ValidarAlteracaoExtemporanea(long fechamentoId, string turmaCodigo, string professorRf);
+        IEnumerable<string> ObterDescricaoPendenciasGeradas();
     }
 }
