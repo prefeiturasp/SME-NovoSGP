@@ -9,6 +9,8 @@ namespace SME.SGP.Infra
         public string ProfessorNome { get; set; }
         public string ProfessorRf { get; set; }
         public SituacaoFechamento SituacaoFechamentoCodigo { get; set; }
+        public int GrupoMatrizId { get; set; }
+        public int AreaConnhecimentoId { get; set; }
         public string SituacaoFechamentoNome
         {
             get => SituacaoFechamentoCodigo == SituacaoFechamento.EmProcessamento ? 
