@@ -54,7 +54,7 @@ namespace SME.SGP.Dominio.Servicos
             await repositorioNotificacao.SalvarAsync(notificacao);
         }
 
-        public IEnumerable<(Cargo? Cargo, string Id)> ObterFuncionariosPorNivel(string codigoUe, Cargo? cargo, bool primeiroNivel = true)
+        public IEnumerable<(Cargo? Cargo, string Id)> ObterFuncionariosPorNivel(string codigoUe, Cargo? cargo, bool primeiroNivel = true, bool? notificacaoExigeAcao = false)
         {
             IEnumerable<SupervisorEscolasDreDto> supervisoresEscola = null;
             IEnumerable<UsuarioEolRetornoDto> funcionarios = null;
@@ -64,9 +64,11 @@ namespace SME.SGP.Dominio.Servicos
             else
                 funcionarios = servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)cargo);
 
+            var funcionariosDisponiveis = funcionarios.Where(f => !f.EstaAfastado);
+
             if (cargo == Cargo.Supervisor ? 
                 supervisoresEscola == null || !supervisoresEscola.Any() :
-                funcionarios == null || !funcionarios.Any())
+                funcionarios == null || !funcionarios.Any() || (!funcionariosDisponiveis.Any() && notificacaoExigeAcao.Value))
             {
                 Cargo? cargoProximoNivel = ObterProximoNivel(cargo, primeiroNivel);
 

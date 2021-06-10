@@ -20,7 +20,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioPendenciaFechamento repositorioPendenciaFechamento;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
@@ -39,7 +38,6 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioPendenciaFechamento repositorioPendenciaFechamento,
                                           IRepositorioAula repositorioAula,
                                           IRepositorioComponenteCurricular repositorioComponenteCurricular,
-                                          IRepositorioParametrosSistema repositorioParametrosSistema,
                                           IRepositorioFechamentoNota repositorioFechamentoNota,
                                           IServicoUsuario servicoUsuario,
                                           IMediator mediator)
@@ -49,16 +47,15 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
             this.repositorioPendenciaFechamento = repositorioPendenciaFechamento ?? throw new ArgumentNullException(nameof(repositorioPendenciaFechamento));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
-            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<int> ValidarAulasReposicaoPendente(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public async Task<int> ValidarAulasReposicaoPendente(long fechamentoId, string turmaCodigo, string turmaNome, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
-            var aulasPendentes = repositorioAula.ObterAulasReposicaoPendentes(turma.CodigoTurma, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
+            var aulasPendentes = repositorioAula.ObterAulasReposicaoPendentes(turmaCodigo, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
             if (aulasPendentes != null && aulasPendentes.Any())
             {
                 var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
@@ -93,9 +90,9 @@ namespace SME.SGP.Dominio.Servicos
             return aulasReposicaoPendentes;
         }
 
-        public async Task<int> ValidarAulasSemFrequenciaRegistrada(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public async Task<int> ValidarAulasSemFrequenciaRegistrada(long fechamentoId, string turmaCodigo, string turmaNome, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
-            var registrosAulasSemFrequencia = repositorioAula.ObterAulasSemFrequenciaRegistrada(turma.CodigoTurma, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
+            var registrosAulasSemFrequencia = repositorioAula.ObterAulasSemFrequenciaRegistrada(turmaCodigo, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
             if (registrosAulasSemFrequencia != null && registrosAulasSemFrequencia.Any())
             {
                 var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
@@ -104,7 +101,7 @@ namespace SME.SGP.Dominio.Servicos
                     throw new NegocioException("Componente curricular não encontrado.");
                 }
 
-                var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:<br>");
+                var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turmaNome} a seguir estão sem frequência:<br>");
 
                 var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td colspan=\"2\">A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem frequência:</td></tr>");
 
@@ -215,22 +212,22 @@ namespace SME.SGP.Dominio.Servicos
             return avaliacoesSemnota;
         }
 
-        public async Task<int> ValidarPercentualAlunosAbaixoDaMedia(FechamentoTurmaDisciplina fechamentoTurma)
+        public async Task<int> ValidarPercentualAlunosAbaixoDaMedia(long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF)
         {
-            if (!string.IsNullOrEmpty(fechamentoTurma.Justificativa))
+            if (!string.IsNullOrEmpty(justificativa))
             {
                 var percentualReprovacao = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
                 var mensagem = $"O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes<br>";                
 
                 var mensagemHtml = new StringBuilder($"<table><tr><td class=\"sem-borda\">O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes. Justificativa : {fechamentoTurma.Justificativa} </td></tr></table>");
 
-                await GerarPendencia(fechamentoTurma.Id, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem, fechamentoTurma.CriadoRF, mensagemHtml.ToString());
+                await GerarPendencia(fechamentoTurmaDisciplinaId, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem.ToString(), criadoRF);
                 alunosAbaixoMedia = 1;
             }
             else
             {
                 alunosAbaixoMedia = 0;
-                repositorioPendencia.AtualizarPendencias(fechamentoTurma.Id, SituacaoPendencia.Resolvida, TipoPendencia.ResultadosFinaisAbaixoDaMedia);
+                repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.ResultadosFinaisAbaixoDaMedia);
             }
 
             return alunosAbaixoMedia;
