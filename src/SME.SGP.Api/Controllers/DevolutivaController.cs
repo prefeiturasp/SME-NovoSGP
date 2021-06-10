@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -78,6 +79,17 @@ namespace SME.SGP.Api.Controllers
                 return NoContent();
 
             return Ok(data.Value);
+        }
+
+
+        [HttpGet("periodo-dias")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPeriodoDeDiasDevolutiva(TipoParametroSistema tipo, int anoLegivo, [FromServices] IObterPeriodoDeDiasDevolutivaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FiltroTipoParametroAnoDto(tipo, anoLegivo)));
         }
     }
 
