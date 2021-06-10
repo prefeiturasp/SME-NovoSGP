@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             {
                 try
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarDevolutivasPorTurma, new FiltroDevolutivaTurmaDTO(turma.TurmaId, anoLetivo), Guid.NewGuid(), null, fila: RotasRabbit.ConsolidarDevolutivasPorTurmaInfantil));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurma, new FiltroDevolutivaTurmaDTO(turma.TurmaId, anoLetivo), Guid.NewGuid(), null));
                 }
                 catch (Exception ex)
                 {
