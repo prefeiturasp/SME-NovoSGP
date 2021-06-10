@@ -981,7 +981,7 @@ namespace SME.SGP.Dados.Repositorios
                                                left join periodo_escolar pe
 	                                              on tc.id = pe.tipo_calendario_id
                                                where dre.id = @dreId
-                                                 and ue.id = @ueId ");
+                                                 and ue.id = @ueId and t.tipo_turma in (1,2,7) ");
 
             if (!listarTodasTurmas)
                 query.AppendLine("and t.id = ANY(@turmasId) ");
@@ -1028,6 +1028,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(@" and t.modalidade_codigo = @modalidade
                                 and t.ano_letivo = @anoLetivo
                                 and not t.historica 
+                                and t.tipo_turma in (1,2,7)
                             order by t.nome
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
 
@@ -1055,7 +1056,8 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine(@"and t.modalidade_codigo = @modalidade 
                                and t.ano_letivo = @anoLetivo
-                               and not t.historica");
+                               and not t.historica
+                               and t.tipo_turma in (1,2,7)");
 
 
             var retorno = new PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>();
