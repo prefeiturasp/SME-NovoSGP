@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
             {
                 SentrySdk.CaptureMessage($"Erro ao buscar componentes curriculares no EOL - Turma:{request.CodigoTurma}, Login:{request.Login}, Perfil:{request.Perfil} - Erro:{e.Message}");
                 SentrySdk.CaptureException(e);
-                throw new NegocioException("Não foi possível consultar os componentes curriculares no EOL");
+                throw e;
             }
         }
     }

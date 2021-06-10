@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             {
                 SentrySdk.CaptureMessage($"Erro ao validar a atribuição do professor no EOL - Turma:{request.TurmaCodigo}, Professor:{request.CriadoRF}, Disciplina:{request.ComponenteParaVerificarAtribuicao} - Erro:{e.Message}");
                 SentrySdk.CaptureException(e);
-                throw new NegocioException("Não foi possível validar a atribuição do professor no EOL");
+                throw e;
             }
         }
     }
