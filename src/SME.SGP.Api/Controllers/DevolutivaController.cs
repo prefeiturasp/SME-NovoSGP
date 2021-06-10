@@ -87,7 +87,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPeriodoDeDiasDevolutiva(TipoParametroSistema tipo, int anoLegivo, [FromServices] IObterPeriodoDeDiasDevolutivaUseCase useCase)
+        public async Task<IActionResult> ObterPeriodoDeDiasDevolutiva(TipoParametroSistema tipo, int anoLetivo, [FromServices] IObterPeriodoDeDiasDevolutivaUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroTipoParametroAnoDto(tipo, anoLegivo)));
         }
