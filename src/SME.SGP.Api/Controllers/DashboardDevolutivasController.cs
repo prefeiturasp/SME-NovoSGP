@@ -44,5 +44,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+        
+        [HttpGet("consolidacao")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.DF_C, Policy = "Bearer")] Será feito em uma task específica
+        public async Task<IActionResult> ObterUltimaConsolidacao([FromQuery] int anoLetivo, [FromServices] IObterUltimaConsolidacaoDevolutivaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo));
+        }
     }
 }
