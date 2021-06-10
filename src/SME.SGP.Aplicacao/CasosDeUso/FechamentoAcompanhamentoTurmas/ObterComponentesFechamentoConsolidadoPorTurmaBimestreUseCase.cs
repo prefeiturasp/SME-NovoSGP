@@ -48,9 +48,7 @@ namespace SME.SGP.Aplicacao
                 c.Id == cc.CodDisciplina);
 
                 componentesCurriculares.Add(componente);
-            };
-
-            //return componentesOrdenados.Select(a => new ConsolidacaoTurmaComponenteCurricularDto() { AreaConnhecimentoId = a.AreaDoConhecimento. });
+            };            
 
             return componentesCurriculares;
         }
