@@ -24,14 +24,11 @@ namespace SME.SGP.Dominio
             return PeriodoInicio.Date <= data.Date && PeriodoFim.Date >= data.Date;
         }
 
-        public IEnumerable<DateTime> ObterIntervaloDatas(IEnumerable<(DateTime, DateTime)> periodosFeriados)
+        public IEnumerable<DateTime> ObterIntervaloDatas()
         {
             var datas = new List<DateTime>();
             for (var dia = PeriodoInicio.Date; dia <= PeriodoFim.Date; dia = dia.AddDays(1))
-            {
-                if (periodosFeriados == null || !periodosFeriados.Any() || !periodosFeriados.Any(pf => pf.Item1 >= dia && pf.Item2 <= dia))
-                    datas.Add(dia);
-            }
+                datas.Add(dia);
             return datas;
         }
 

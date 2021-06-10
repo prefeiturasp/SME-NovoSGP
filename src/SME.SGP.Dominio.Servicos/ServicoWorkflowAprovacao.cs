@@ -350,7 +350,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (nivel.Cargo.HasValue)
             {
-                var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(nivel.Workflow.UeId, nivel.Cargo);
+                var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(nivel.Workflow.UeId, nivel.Cargo, true, true);
 
                 foreach (var funcionario in funcionariosRetorno)
                 {
@@ -643,7 +643,7 @@ namespace SME.SGP.Dominio.Servicos
             if (escola == null)
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
 
-            var funcionariosEscola = servicoNotificacao.ObterFuncionariosPorNivel(escola.CodigoUe, Cargo.Diretor);
+            var funcionariosEscola = servicoNotificacao.ObterFuncionariosPorNivel(escola.CodigoUe, Cargo.Diretor, true, true);
 
             var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/{evento.Id}/";
 
@@ -814,7 +814,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (cargoDoNivelQueRecusou == Cargo.Supervisor)
             {
-                var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(evento.UeId, Cargo.Diretor);
+                var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(evento.UeId, Cargo.Diretor, true, true);
 
                 foreach (var funcionario in funcionariosRetorno)
                 {
