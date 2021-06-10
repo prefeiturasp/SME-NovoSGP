@@ -1,5 +1,6 @@
 import { Tooltip } from 'antd';
 import React, { useState } from 'react';
+import * as moment from 'moment';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
 import FechamentoRegencia from '../fechamanto-regencia/fechamento-regencia';
 import BotaoExpandir from './botao-expandir';
@@ -18,26 +19,37 @@ import ServicoFechamentoBimestre from '~/servicos/Paginas/Fechamento/ServicoFech
 import { erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import RotasDto from '~/dtos/rotasDto';
-import * as moment from 'moment';
 import { BtbAnotacao } from '../fechamento-bimestre.css';
 import ModalAnotacaoAluno from '../../FechamentoModalAnotacaoAluno/modal-anotacao-aluno';
+import SinalizacaoAEE from '~/componentes-sgp/SinalizacaoAEE/sinalizacaoAEE';
 
 const FechamentoBimestreLista = props => {
-
-  const { dados, ehRegencia, ehSintese, codigoComponenteCurricular, turmaId, anoLetivo, registraFrequencia } = props;
+  const {
+    dados,
+    ehRegencia,
+    ehSintese,
+    codigoComponenteCurricular,
+    turmaId,
+    anoLetivo,
+    registraFrequencia,
+  } = props;
   const [dadosLista, setDadosLista] = useState(
     dados ? dados.alunos : undefined
   );
   const [situacaoFechamento, setSituacaoFechamento] = useState(dados.situacao);
   const [podeProcessarReprocessar] = useState(dados.podeProcessarReprocessar);
-  const [situacaosituacaoNomeFechamento, setSituacaosituacaoNomeFechamento] = useState(dados.situacaoNome);
+  const [
+    situacaosituacaoNomeFechamento,
+    setSituacaosituacaoNomeFechamento,
+  ] = useState(dados.situacaoNome);
   const [dataFechamento] = useState(dados.dataFechamento);
 
   const [exibirModalAnotacao, setExibirModalAnotacao] = useState(false);
   const [alunoModalAnotacao, setAlunoModalAnotacao] = useState({});
   const [fechamentoId, setFechamentoId] = useState(0);
 
-  const mensagempRrocessamento = 'Solicitação de fechamento realizada com sucesso. Em breve você receberá uma notificação com o resultado do processo.';
+  const mensagempRrocessamento =
+    'Solicitação de fechamento realizada com sucesso. Em breve você receberá uma notificação com o resultado do processo.';
 
   const onClickReprocessarNotasConceitos = async () => {
     const processando = await ServicoFechamentoBimestre.reprocessarNotasConceitos(
@@ -67,9 +79,9 @@ const FechamentoBimestreLista = props => {
       disciplinaId: codigoComponenteCurricular,
       notaConceitoAlunos: alunosParaProcessar,
     };
-    const processando = await ServicoFechamentoBimestre.processarReprocessarSintese([
-      params,
-    ]).catch(e => erros(e));
+    const processando = await ServicoFechamentoBimestre.processarReprocessarSintese(
+      [params]
+    ).catch(e => erros(e));
     if (processando && processando.status == 200) {
       setSituacaoFechamento(situacaoFechamentoDto.EmProcessamento);
       setSituacaosituacaoNomeFechamento('Em Processamento');
@@ -79,7 +91,9 @@ const FechamentoBimestreLista = props => {
 
   const onClickVerPendecias = async () => {
     const { bimestre } = dados;
-    history.push(`${RotasDto.PENDENCIAS_FECHAMENTO}/${bimestre}/${codigoComponenteCurricular}`);
+    history.push(
+      `${RotasDto.PENDENCIAS_FECHAMENTO}/${bimestre}/${codigoComponenteCurricular}`
+    );
   };
 
   const onClickAnotacao = aluno => {
@@ -108,12 +122,12 @@ const FechamentoBimestreLista = props => {
           codigoTurma={turmaId}
           anoLetivo={anoLetivo}
           dadosAlunoSelecionado={alunoModalAnotacao}
-        ></ModalAnotacaoAluno>
+        />
       ) : (
         ''
       )}
       <div className="row pb-4">
-       {dados.fechamentoId && dataFechamento ? (
+        {dados.fechamentoId && dataFechamento ? (
           <div className="col-md-12 d-flex justify-content-end">
             <DataFechamentoProcessado>
               <span>{`${situacaosituacaoNomeFechamento} em ${moment(
@@ -135,7 +149,10 @@ const FechamentoBimestreLista = props => {
             }}
             desabilitado={dadosLista ? dadosLista.length <= 0 : true}
           />
-          {!ehSintese && podeProcessarReprocessar && situacaoFechamento == situacaoFechamentoDto.ProcessadoComPendencias ? (
+          {!ehSintese &&
+          podeProcessarReprocessar &&
+          situacaoFechamento ==
+            situacaoFechamentoDto.ProcessadoComPendencias ? (
             <>
               <Button
                 id="btn-reprocessar"
@@ -157,7 +174,9 @@ const FechamentoBimestreLista = props => {
           ) : (
             ''
           )}
-          {ehSintese && podeProcessarReprocessar && situacaoFechamento != situacaoFechamentoDto.EmProcessamento ? (
+          {ehSintese &&
+          podeProcessarReprocessar &&
+          situacaoFechamento != situacaoFechamentoDto.EmProcessamento ? (
             <Button
               label={dados.fechamentoId ? 'Reprocessar' : 'Processar'}
               color={Colors.Azul}
@@ -171,7 +190,11 @@ const FechamentoBimestreLista = props => {
         </div>
         <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
           <SituacaoProcessadoComPendencias>
-            <span>{ situacaoFechamento ? situacaosituacaoNomeFechamento : 'Não executado' }</span>
+            <span>
+              {situacaoFechamento
+                ? situacaosituacaoNomeFechamento
+                : 'Não executado'}
+            </span>
           </SituacaoProcessadoComPendencias>
           <MarcadorAulas className="ml-2">
             <span>Aulas previstas </span>
@@ -234,22 +257,42 @@ const FechamentoBimestreLista = props => {
                         )}
                       </td>
                       <td className={`${!item.ativo ? 'fundo-cinza' : ''}`}>
-                      <div
+                        <div
                           className="d-flex"
                           style={{ justifyContent: 'space-between' }}
                         >
                           <div className=" d-flex justify-content-start">
                             {item.nome}
                           </div>
-                          { item.ativo ?
-                            <Tooltip title={item.temAnotacao ? 'Estudante com anotação' : ''} placement="top">
-                              <div className=" d-flex justify-content-end">
-                                <BtbAnotacao className={item.temAnotacao ? 'btn-com-anotacao' : ''} onClick={() => onClickAnotacao(item)}>
-                                  <i className="fas fa-pen" />
-                                </BtbAnotacao>
-                              </div>
-                            </Tooltip> : ''
-                          }
+                          <div className=" d-flex justify-content-end">
+                            <SinalizacaoAEE
+                              exibirSinalizacao={item.ehAtendidoAEE}
+                            />
+
+                            {item.ativo ? (
+                              <Tooltip
+                                title={
+                                  item.temAnotacao
+                                    ? 'Estudante com anotação'
+                                    : ''
+                                }
+                                placement="top"
+                              >
+                                <div className="d-flex justify-content-end ml-3">
+                                  <BtbAnotacao
+                                    className={
+                                      item.temAnotacao ? 'btn-com-anotacao' : ''
+                                    }
+                                    onClick={() => onClickAnotacao(item)}
+                                  >
+                                    <i className="fas fa-pen" />
+                                  </BtbAnotacao>
+                                </div>
+                              </Tooltip>
+                            ) : (
+                              ''
+                            )}
+                          </div>
                         </div>
                       </td>
                       <td

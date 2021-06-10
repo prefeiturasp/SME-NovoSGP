@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using MediatR;
+using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -22,6 +23,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
         private readonly Mock<IConsultasFechamentoTurma> consultasFechamentoTurma;
         private readonly Mock<IServicoDeNotasConceitos> servicoDeNotasConceitos;
+        private readonly Mock<IMediator> mediator;
 
         public ConsultasConselhoClasseTeste()
         {
@@ -37,6 +39,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
             consultasFechamentoTurma = new Mock<IConsultasFechamentoTurma>();
             servicoDeNotasConceitos = new Mock<IServicoDeNotasConceitos>();
+            mediator = new Mock<IMediator>();
             consultasConselhoClasse = new ConsultasConselhoClasse(repositorioConselhoClasse.Object, 
                                        repositorioPeriodoEscolar.Object,
                                        repositorioParametrosSistema.Object,
@@ -47,7 +50,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                        consultasPeriodoEscolar.Object,
                                        consultasPeriodoFechamento.Object,
                                        consultasFechamentoTurma.Object,
-                                       servicoDeNotasConceitos.Object);
+                                       servicoDeNotasConceitos.Object,
+                                       mediator.Object);
         }
 
         [Fact]

@@ -36,6 +36,17 @@ namespace SME.SGP.Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [Route("turma/{turmaId}/aluno/{codigoAluno}/semestre/{semestre}")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<OcorrenciasPorAlunoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.OCO_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterOcorrenciasPorAluno(long codigoAluno, long turmaId, int semestre, [FromServices] IObterOcorrenciasPorAlunoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FiltroTurmaAlunoSemestreDto(turmaId, codigoAluno, semestre)));
+        }
+
         [HttpPost]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

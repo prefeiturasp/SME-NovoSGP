@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -93,6 +94,81 @@ namespace SME.SGP.Dados.Repositorios
                            and cca.aluno_codigo = @alunoCodigo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseAluno>(query, new { alunoCodigo, turmaId, periodoEscolarId });
+        }
+
+        public async Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo)
+        {
+            var query = $@"select distinct * from (SELECT 0                AS ConselhoClasseAlunoId,
+                                   fn.disciplina_id AS ComponenteCurricularCodigo,
+                                   fn.conceito_id   AS ConceitoId,
+                                   fn.nota          AS Nota
+                            FROM   fechamento_turma ft
+                                   LEFT JOIN periodo_escolar pe
+                                          ON pe.id = ft.periodo_escolar_id
+                                   INNER JOIN turma t
+                                           ON t.id = ft.turma_id
+                                   INNER JOIN fechamento_turma_disciplina ftd
+                                           ON ftd.fechamento_turma_id = ft.id
+                                   INNER JOIN fechamento_aluno fa
+                                           ON fa.fechamento_turma_disciplina_id = ftd.id
+                                   INNER JOIN fechamento_nota fn
+                                           ON fn.fechamento_aluno_id = fa.id
+                            WHERE  t.turma_id = ANY(@turmasCodigos)
+                                   AND fa.aluno_codigo = @alunoCodigo
+                                   AND pe.bimestre IS NULL
+                            UNION
+                            SELECT cca.id                                    AS ConselhoClasseAlunoId,
+                                   ccn.componente_curricular_codigo          AS ComponenteCurricularCodigo,
+                                   ccn.conceito_id AS ConceitoId,
+                                   ccn.nota               AS Nota
+                            FROM   fechamento_turma ft
+                                   LEFT JOIN periodo_escolar pe
+                                          ON pe.id = ft.periodo_escolar_id
+                                   INNER JOIN turma t
+                                           ON t.id = ft.turma_id
+                                   INNER JOIN conselho_classe cc
+                                           ON cc.fechamento_turma_id = ft.id
+                                   INNER JOIN conselho_classe_aluno cca
+                                           ON cca.conselho_classe_id = cc.id
+                                   INNER JOIN conselho_classe_nota ccn
+                                           ON ccn.conselho_classe_aluno_id = cca.id
+                                   LEFT JOIN fechamento_turma_disciplina ftd
+                                          ON ftd.fechamento_turma_id = ft.id
+                                   LEFT JOIN fechamento_aluno fa
+                                          ON fa.fechamento_turma_disciplina_id = ftd.id
+                                             AND cca.aluno_codigo = fa.aluno_codigo
+                                   LEFT JOIN fechamento_nota fn
+                                          ON fn.fechamento_aluno_id = fa.id
+                                             AND ccn.componente_curricular_codigo = fn.disciplina_id
+                            WHERE  t.turma_id = ANY(@turmasCodigos)
+                                   AND cca.aluno_codigo = @alunoCodigo
+                                   AND bimestre IS NULL )  x";
+
+            return await database.Conexao.QueryAsync<NotaConceitoFechamentoConselhoFinalDto>(query, new { turmasCodigos, alunoCodigo });
+        }
+
+        public async Task<IEnumerable<long>> ObterComponentesPorAlunoTurmaBimestreAsync(string alunoCodigo, int bimestre, long turmaId)
+        {
+            var query = new StringBuilder( @"select ccn.componente_curricular_codigo as ComponenteCurricularId 
+                            from conselho_classe_aluno cca 
+	                        inner join conselho_classe_nota ccn
+		                        on ccn.conselho_classe_aluno_id  = cca.id 
+	                        inner join conselho_classe cc 
+		                        on cca.conselho_classe_id = cc.id
+	                        inner join fechamento_turma ft 
+		                        on cc.fechamento_turma_id  = ft.id
+	                        left join periodo_escolar pe 
+		                        on ft.periodo_escolar_id = pe.id 
+	                        where cca.aluno_codigo = @alunoCodigo
+	                        and ft.turma_id  = @turmaId");
+
+            if (bimestre > 0)
+                query.AppendLine(" and pe.bimestre = @bimestre ");
+            else
+                query.AppendLine(" and ft.periodo_escolar_id is null ");
+
+
+            return await database.Conexao.QueryAsync<long>(query.ToString(), new { alunoCodigo, turmaId, bimestre });
         }
     }
 }

@@ -10,7 +10,7 @@ import { URL_HOME } from '~/constantes';
 import { setDadosAlunoObjectCard } from '~/redux/modulos/conselhoClasse/actions';
 import { limparDadosRegistroIndividual } from '~/redux/modulos/registroIndividual/actions';
 
-import MetodosRegistroIndividual from '../../metodosRegistroIndividual';
+import MetodosRegistroIndividual from '~/componentes-sgp/RegistroIndividual/metodosRegistroIndividual';
 
 const BotoesAcoes = ({ turmaInfantil }) => {
   const registroIndividualEmEdicao = useSelector(

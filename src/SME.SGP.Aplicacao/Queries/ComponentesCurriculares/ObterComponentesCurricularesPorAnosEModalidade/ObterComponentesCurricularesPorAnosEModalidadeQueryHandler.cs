@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurr
             }
             componentes = componentes.OrderBy(c => c.Descricao).ToList();
 
-            if (request.Modalidade != Modalidade.Infantil)
+            if (request.Modalidade != Modalidade.InfantilPreEscola)
             {
                 componentes.Insert(0, new ComponenteCurricularEol
                 {

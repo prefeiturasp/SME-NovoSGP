@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         [Obsolete("não utilizar mais esse método, utilize o ObterAlunosPorTurma")]
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo);
 
-        Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, string nome, string codigoEol);
+        Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol);
 
         Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil);
 
@@ -127,6 +127,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, string[] anosEscolares, int anoLetivo);
         Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesTurmasProgramaPorAnoEModalidade(string codigoUe, Modalidade modalidade, int anoLetivo);
         Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesCurriculares();
+        Task<InformacoesEscolaresAlunoDto> ObterNecessidadesEspeciaisAluno(string codigoAluno);       
+
         Task<IEnumerable<string>> DefinirTurmasRegulares(string[] codigosTurmas);
         Task<DadosTurmaEolDto> ObterDadosTurmaPorCodigo(string codigoTurma);
     }

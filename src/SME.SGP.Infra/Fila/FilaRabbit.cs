@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
 using Sentry;
 using SME.SGP.Infra.Dtos;
@@ -45,7 +44,7 @@ namespace SME.SGP.Infra
 
         private static byte[] FormataBodyWorker(PublicaFilaRelatoriosDto adicionaFilaDto)
         {
-            var request = new MensagemRabbit(adicionaFilaDto.Endpoint, adicionaFilaDto.Mensagem, adicionaFilaDto.CodigoCorrelacao,adicionaFilaDto.UsuarioLogadoRF, adicionaFilaDto.NotificarErroUsuario, adicionaFilaDto.PerfilUsuario);
+            var request = new MensagemRabbit(adicionaFilaDto.Endpoint, adicionaFilaDto.Mensagem, adicionaFilaDto.CodigoCorrelacao, adicionaFilaDto.UsuarioLogadoRF, adicionaFilaDto.NotificarErroUsuario, adicionaFilaDto.PerfilUsuario);
             var mensagem = JsonConvert.SerializeObject(request);
             var body = Encoding.UTF8.GetBytes(mensagem);
             return body;

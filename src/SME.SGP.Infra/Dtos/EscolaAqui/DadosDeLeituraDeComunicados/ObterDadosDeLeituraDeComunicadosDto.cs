@@ -8,6 +8,8 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados
         public string CodigoUe { get; set; }
         [Required(ErrorMessage = "O comunicado deve ser informado.")]
         public long NotificacaoId { get; set; }
+        [Required(ErrorMessage = "O modo de agrupamento por modalidade é obrigatório.")]
+        public bool AgruparModalidade { get; set; }
         [Required(ErrorMessage = "O modo de visualização deve ser informado.")]
         public int ModoVisualizacao { get; set; }
     }

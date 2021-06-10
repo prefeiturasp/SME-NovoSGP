@@ -38,6 +38,32 @@ namespace SME.SGP.Dados.Repositorios
             return armazenados;
         }
 
+        public async Task<string> ObterCodigoDREPorTurmaId(long turmaId)
+        {
+            var query = @"select dre.dre_id 
+                          from turma t
+                         inner join ue on ue.id = t.ue_id
+                         inner join dre on dre.id = ue.dre_id
+                         where t.id = @turmaId";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<string>(query, new { turmaId });
+        }
+
+        public async Task<string> ObterCodigoDREPorUEId(long ueId)
+        {
+            var query = @"select dre.dre_id 
+                          from ue 
+                         inner join dre on dre.id = ue.dre_id
+                         where ue.id = @ueId";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<string>(query, new { ueId });
+        }
+
+        public async Task<long> ObterIdDrePorCodigo(string codigo)
+        {
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<long>("select Id from dre where dre_id = @codigo", new { codigo });
+        }
+
         public Dre ObterPorCodigo(string codigo)
         {
             return contexto.Conexao.QueryFirstOrDefault<Dre>("select * from dre where dre_id = @codigo", new { codigo });
@@ -46,6 +72,11 @@ namespace SME.SGP.Dados.Repositorios
         public Dre ObterPorId(long dreId)
         {
             return contexto.Conexao.QueryFirstOrDefault<Dre>("select * from dre where id = @dreId", new { dreId });
+        }
+
+        public async Task<Dre> ObterPorIdAsync(long dreId)
+        {
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<Dre>("select * from dre where id = @dreId", new { dreId });
         }
 
         public IEnumerable<Dre> ObterTodas()
@@ -92,6 +123,11 @@ namespace SME.SGP.Dados.Repositorios
             resultado.AddRange(armazenados.Where(x => !resultado.Select(y => y.CodigoDre).Contains(x.CodigoDre)));
 
             return resultado;
+        }
+
+        public async Task<IEnumerable<long>> ObterIdsDresAsync()
+        {
+            return await contexto.Conexao.QueryAsync<long>("select Id from dre ", new { });
         }
     }
 }

@@ -74,9 +74,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterAnosLetivos()
+        public async Task<IActionResult> ObterAnosLetivos([FromQuery] int anoMinimo)
         {
-            int[] retorno = (await consultasAbrangencia.ObterAnosLetivos(ConsideraHistorico)).ToArray();
+            int[] retorno = (await consultasAbrangencia.ObterAnosLetivos(ConsideraHistorico, anoMinimo)).ToArray();
 
             if (!retorno.Any())
                 return NoContent();
@@ -102,7 +102,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDres([FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
+        public async Task<IActionResult> ObterDres([FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0)
         {
             var dres = await consultasAbrangencia.ObterDres(modalidade, periodo, ConsideraHistorico, anoLetivo);
 
@@ -116,11 +116,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterModalidades(int anoLetivo)
+        public async Task<IActionResult> ObterModalidades([FromServices] IObterModalidadesPorAnoUseCase obterModalidadesPorAnoUseCase, int anoLetivo, bool consideraNovasModalidades = false)
         {
-            var retorno = await consultasAbrangencia.ObterModalidades(anoLetivo, ConsideraHistorico);
-
-            if (!retorno.Any())
+            var retorno = await obterModalidadesPorAnoUseCase.Executar(anoLetivo, ConsideraHistorico, consideraNovasModalidades);
+            if (!retorno?.Any() ?? true)
                 return NoContent();
 
             return Ok(retorno);
@@ -130,7 +129,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterSemestres([FromQuery]Modalidade modalidade, [FromQuery]int anoLetivo = 0)
+        public async Task<IActionResult> ObterSemestres([FromQuery] Modalidade modalidade, [FromQuery] int anoLetivo = 0)
         {
             var retorno = await consultasAbrangencia.ObterSemestres(modalidade, ConsideraHistorico, anoLetivo);
 
@@ -145,9 +144,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery]Modalidade modalidade, int periodo = 0, [FromQuery]int anoLetivo = 0)
+        public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] int[] tipos = null)
         {
-            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            IEnumerable<AbrangenciaTurmaRetorno> turmas;
+            turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos);
 
             if (!turmas.Any())
                 return NoContent();
@@ -176,9 +176,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
+        public async Task<IActionResult> ObterUes([FromServices] IObterUEsPorDreUseCase useCase, string codigoDre, [FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] bool consideraNovasUEs = false)
         {
-            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            var ues = await useCase.Executar(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo, consideraNovasUEs);
 
             if (!ues.Any())
                 return NoContent();

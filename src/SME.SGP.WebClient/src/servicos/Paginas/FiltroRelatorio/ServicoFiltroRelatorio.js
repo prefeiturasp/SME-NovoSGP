@@ -8,8 +8,8 @@ class ServicoFiltroRelatorio {
     return api.get(`${urlPadrao}/dres`);
   };
 
-  obterUes = codigoDre => {
-    const url = `${urlPadrao}/dres/${codigoDre}/ues`;
+  obterUes = (codigoDre, consideraNovasUEs = false) => {
+    const url = `${urlPadrao}/dres/${codigoDre}/ues?consideraNovasUEs=${consideraNovasUEs}`;
     return api.get(url);
   };
 
@@ -18,18 +18,20 @@ class ServicoFiltroRelatorio {
     return api.get(url);
   };
 
-  obterModalidadesAnoLetivo = (codigoUe, anoLetivo) => {
-    const url = `${urlPadrao}/ues/${codigoUe}/${anoLetivo}/modalidades`;
+  obterModalidadesAnoLetivo = (
+    codigoUe,
+    anoLetivo,
+    consideraNovasModalidades = false
+  ) => {
+    const url = `${urlPadrao}/ues/${codigoUe}/${anoLetivo}/modalidades?consideraNovasModalidades=${consideraNovasModalidades}`;
     return api.get(url);
   };
 
-  obterModalidadesAnoLetivo = (codigoUe, anoLetivo) => {
-    const url = `${urlPadrao}/ues/${codigoUe}/${anoLetivo}/modalidades`;
-    return api.get(url);
-  };
-
-  obterModalidadesPorAbrangencia = codigoUe => {
-    const url = `${urlPadrao}/ues/${codigoUe}/modalidades/abrangencias`;
+  obterModalidadesPorAbrangencia = (
+    codigoUe,
+    consideraNovasModalidades = false
+  ) => {
+    const url = `${urlPadrao}/ues/${codigoUe}/modalidades/abrangencias?consideraNovasModalidades=${consideraNovasModalidades}`;
     return api.get(url);
   };
 

@@ -24,6 +24,7 @@ function Barras({
 
   return (
     <ResponsiveBar
+      borderRadius={4}
       data={dados}
       keys={chaves}
       indexBy={indice}

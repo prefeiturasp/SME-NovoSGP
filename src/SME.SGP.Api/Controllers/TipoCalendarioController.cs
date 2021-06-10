@@ -95,7 +95,7 @@ namespace SME.SGP.Api.Controllers
         [Route("anos-letivos")]
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.TCE_C, Permissao.PFA_C, Permissao.PFR_C,  Policy = "Bearer")]
+        [Permissao(Permissao.TCE_C, Permissao.PFA_C, Permissao.PFR_C, Permissao.CO_C, Policy = "Bearer")]
         public async Task<IActionResult> BuscarPorDescricao([FromQuery]string descricao, [FromServices] IBuscarTiposCalendarioPorDescricaoUseCase buscarTiposCalendarioPorDescricaoUseCase)
         {
             return Ok(await buscarTiposCalendarioPorDescricaoUseCase.Executar(descricao));

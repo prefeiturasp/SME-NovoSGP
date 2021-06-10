@@ -21,7 +21,8 @@ function AtribuicaoEsporadicaLista() {
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
   const [somenteConsulta, setSomenteConsulta] = useState(false);
-  const permissoesTela = useSelector(store => store.usuario.permissoes);
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_SEMESTRAL];
 
   const formatarCampoDataGrid = data => {
     let dataFormatada = '';

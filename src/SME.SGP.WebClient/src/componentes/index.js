@@ -33,3 +33,6 @@ export { default as TabelaRetratil } from './TabelaRetratil';
 export { default as CardCollapse } from './cardCollapse';
 export { default as JoditEditor } from './jodit-editor/joditEditor';
 export { default as InputBusca } from './InputBusca/InputBusca';
+export { default as LocalizadorEstudante } from './LocalizadorEstudante';
+export { default as LocalizadorEstudantesAtivos } from './LocalizadorEstudantesAtivos';
+export { default as MarcadorSituacao } from './MarcadorSituacao/marcadorSituacao';

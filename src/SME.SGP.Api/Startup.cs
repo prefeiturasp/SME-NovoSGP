@@ -13,8 +13,11 @@ using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
+using SME.SGP.Aplicacao;
 using SME.SGP.Background;
 using SME.SGP.Dados;
+using SME.SGP.Infra.Utilitarios;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.IoC;
 using SME.SGP.IoC.Extensions;
 using System;
@@ -22,6 +25,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Api
 {
@@ -131,6 +135,9 @@ namespace SME.SGP.Api
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
+            ConfiguraVariaveisAmbiente(services);
+            ConfiguraGoogleClassroomSync(services);
+
             var serviceProvider = services.BuildServiceProvider();
 
             Orquestrador.Inicializar(serviceProvider);
@@ -157,20 +164,29 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
 
-            if (_env.EnvironmentName != "teste-integrado")
-            {
-                services.AddRabbit();
-            }
-
-            // Teste para injeção do client de telemetria em classe estática 
 
 
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
             DapperExtensionMethods.Init(clientTelemetry);
+         
+            services.AddMemoryCache();
+        }
 
-            //
+        private void ConfiguraVariaveisAmbiente(IServiceCollection services)
+        {
+            var configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
+            Configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(configuracaoRabbitOptions);
+        }
+
+        private void ConfiguraGoogleClassroomSync(IServiceCollection services)
+        {
+            var googleClassroomSyncOptions = new GoogleClassroomSyncOptions();
+            Configuration.GetSection(nameof(GoogleClassroomSyncOptions)).Bind(googleClassroomSyncOptions, c => c.BindNonPublicProperties = true);
 
             services.AddMemoryCache();
+            services.AddSingleton(googleClassroomSyncOptions);
         }
     }
 }

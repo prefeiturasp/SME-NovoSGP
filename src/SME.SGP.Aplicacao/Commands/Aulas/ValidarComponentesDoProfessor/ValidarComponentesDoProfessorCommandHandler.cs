@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             if (request.Usuario.EhProfessorCj())
             {
                 var componentesCurricularesDoProfessorCJ = await mediator.Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(request.Usuario.Login));
-                if (componentesCurricularesDoProfessorCJ == null || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo && c.DisciplinaId == request.ComponenteCurricularCodigo ))
+                if (componentesCurricularesDoProfessorCJ == null || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo && c.DisciplinaId == request.ComponenteCurricularCodigo))
                     return (false, "Você não pode criar aulas para essa Turma.");
             }
             else
@@ -29,9 +29,12 @@ namespace SME.SGP.Aplicacao
                 if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == request.ComponenteCurricularCodigo))
                     return (false, "Você não pode criar aulas para essa Turma.");
 
-                var usuarioPodePersistirTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(request.ComponenteCurricularCodigo, request.TurmaCodigo, request.Data, request.Usuario));
-                if (!usuarioPodePersistirTurmaNaData)
-                    return (false, "Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                if (!request.Usuario.EhGestorEscolar())
+                {
+                    var usuarioPodePersistirTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(request.ComponenteCurricularCodigo, request.TurmaCodigo, request.Data, request.Usuario));
+                    if (!usuarioPodePersistirTurmaNaData)
+                        return (false, "Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                }
             }
 
             return (true, string.Empty);

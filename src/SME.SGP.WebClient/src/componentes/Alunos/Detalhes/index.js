@@ -1,10 +1,11 @@
-import { Avatar, Card } from 'antd';
+import { Card } from 'antd';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { SinalizacaoAEE } from '~/componentes-sgp';
 import Button from '~/componentes/button';
-import { Colors } from '~/componentes/colors';
-import { Base } from '~/componentes';
+import { Base, Colors } from '~/componentes/colors';
+import FotoEstudanteObjectCard from './imagemEstudanteObjectCard';
 import { Container, DadosAluno, FrequenciaGlobal } from './styles';
 
 const DetalhesAluno = props => {
@@ -15,10 +16,10 @@ const DetalhesAluno = props => {
     exibirBotaoImprimir,
     exibirFrequencia,
     exibirResponsavel,
+    permiteAlterarImagem,
   } = props;
 
   const {
-    avatar,
     nome,
     numeroChamada,
     dataNascimento,
@@ -30,6 +31,7 @@ const DetalhesAluno = props => {
     tipoResponsavel,
     celularResponsavel,
     dataAtualizacaoContato,
+    turma,
   } = dados;
 
   const numeroLinhas = () => {
@@ -66,12 +68,9 @@ const DetalhesAluno = props => {
                   : 'none',
             }}
           >
-            <Avatar
-              className="mr-2"
-              size={80}
-              icon="user"
-              src={avatar}
-              style={{ minWidth: '80px' }}
+            <FotoEstudanteObjectCard
+              codigoEOL={codigoEOL}
+              permiteAlterarImagem={permiteAlterarImagem}
             />
             <div>
               <p>
@@ -87,6 +86,7 @@ const DetalhesAluno = props => {
                 {dataSituacao ? moment(dataSituacao).format('L') : ''}{' '}
                 {dataSituacao ? moment(dataSituacao).format('LT') : ''}
               </p>
+              {turma ? <p>Turma: {turma}</p> : ''}
             </div>
           </div>
           {nomeResponsavel && exibirResponsavel ? (
@@ -108,6 +108,9 @@ const DetalhesAluno = props => {
                       : ''
                   })`}</span>
                 </p>
+              </div>
+              <div>
+                <SinalizacaoAEE exibirSinalizacao={dados?.ehAtendidoAEE} />
               </div>
             </div>
           ) : (
@@ -156,6 +159,7 @@ DetalhesAluno.propTypes = {
   exibirBotaoImprimir: PropTypes.oneOfType([PropTypes.bool]),
   exibirFrequencia: PropTypes.oneOfType([PropTypes.bool]),
   exibirResponsavel: PropTypes.bool,
+  permiteAlterarImagem: PropTypes.bool,
 };
 
 DetalhesAluno.defaultProps = {
@@ -165,6 +169,7 @@ DetalhesAluno.defaultProps = {
   exibirBotaoImprimir: true,
   exibirFrequencia: true,
   exibirResponsavel: true,
+  permiteAlterarImagem: true,
 };
 
 export default DetalhesAluno;

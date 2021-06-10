@@ -13,7 +13,9 @@ namespace SME.SGP.Dominio.Interfaces
         List<Evento> EhEventoLetivoPorLiberacaoExcepcional(long tipoCalendarioId, DateTime dataAula, string ueId);
 
         bool EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId);
+        Task<long> ObterTipoCalendarioIdPorEvento(long eventoId);
         Task<IEnumerable<Evento>> ObterEventosPorTipoEData(TipoEvento tipoEvento, DateTime data);
+        Task<IEnumerable<EventoDataDto>> ListarEventosItinerancia(long tipoCalendarioId, long ItineranciaId, string codigoUE, string login, Guid perfil, bool historico = false);
         Task<IEnumerable<Evento>> ObterEventosPorTipoECalendarioUe(long tipoCalendarioId, string ueCodigo, TipoEvento tipoEvento);
         Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId, bool utilizarRangeDatas = true);        
         bool ExisteEventoPorEventoTipoId(long eventoTipoId);

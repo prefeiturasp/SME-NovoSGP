@@ -59,12 +59,58 @@
         public const string RotaPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual";
         public const string RotaAtualizarPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual.atualizar";
 
-        public const string RotaValidacaoAusenciaConciliacaoFrequenciaTurma = "sgp.frequencia.turma.conciliacao.validar";
+        public const string RotaValidacaoAusenciaConciliacaoFrequenciaTurma = "sgp.frequencia.turma.conciliacao.validar";        
+
+        public const string RotaNotificacaoRegistroConclusaoEncaminhamentoAEE = "notificacao.registro.conclusao.encaminhamentoaee";
+        public const string RotaNotificacaoEncerramentoEncaminhamentoAEE = "notificacao.encerramento.encaminhamentoaee";
+        public const string RotaNotificacaoDevolucaoEncaminhamentoAEE = "notificacao.devolucao.encaminhamentoaee";
+
+        public const string EncerrarPlanoAEEEstudantesInativos = "plano.aee.encerrar.inativos";
+        public const string GerarPendenciaValidadePlanoAEE = "plano.aee.pendencia.validade";
+
+        public const string NotificarPlanoAEEExpirado = "plano.aee.notificar.expirados";
+        public const string NotificarPlanoAEEEmAberto = "plano.aee.notificar.emaberto";
+        public const string NotificarPlanoAEEReestruturado = "plano.aee.notificar.reestruturado";
+        public const string NotificarCriacaoPlanoAEE = "plano.aee.notificar.criacao";
+        public const string NotificarPlanoAEEEncerrado = "plano.aee.notificar.encerramento";
+        public const string RotaNotificacaoRegistroItineranciaInseridoUseCase = "notificacao.registro.itinerancia.inserido";
+        public const string SincronizaEstruturaInstitucionalUes = "sincroniza.estrtura.institucional.ues";
+        public const string SincronizaEstruturaInstitucionalDreSync = "sgp.sincronizacao.institucional.dre.sync";
+        public const string SincronizaEstruturaInstitucionalDreTratar = "sgp.sincronizacao.institucional.dre.tratar";
+        public const string SincronizaEstruturaInstitucionalUeTratar = "sgp.sincronizacao.institucional.ue.tratar";
+        public const string SincronizaEstruturaInstitucionalTurmasSync = "sgp.sincronizacao.institucional.turmas.sync";
+        public const string SincronizaEstruturaInstitucionalTurmaTratar = "sgp.sincronizacao.institucional.turma.tratar";
+
+        public const string SincronizaEstruturaInstitucionalTipoEscolaSync = "sgp.sincronizacao.institucional.tipoescola.sync";
+        public const string SincronizaEstruturaInstitucionalTipoEscolaTratar = "sgp.sincronizacao.institucional.tipoescola.tratar";
+
+        public const string SincronizaEstruturaInstitucionalCicloSync = "sgp.sincronizacao.institucional.ciclo.sync";
+        public const string SincronizaEstruturaInstitucionalCicloTratar = "sgp.sincronizacao.institucional.ciclo.tratar";
+
+        public const string ConsolidacaoFrequenciasTurmasCarregar = "sgp.frequencia.turma.carregar";
+        public const string ConsolidarFrequenciasTurmasNoAno = "sgp.frequencia.turma.ano.consolidar";
+        public const string ConsolidarFrequenciasPorTurma = "sgp.frequencia.turma.consolidar";
+
+        public const string ConsolidacaoMatriculasTurmasDreCarregar = "sgp.matricula.turma.consolidar.dre.carregar";
+        public const string SincronizarDresMatriculasTurmas = "sgp.matricula.turma.consolidar.dre.sync";
+        public const string ConsolidacaoMatriculasTurmasCarregar = "sgp.matricula.turma.carregar";
+        public const string ConsolidacaoMatriculasTurmasSync = "sgp.matricula.turma.sync";
+        public const string ConsolidarGeralSync = "sgp.consolidacao.geral.sync";
+        public const string ConsolidarTurmaSync = "sgp.consolidacao.turma.sync";
+        public const string ConsolidarTurmaFechamentoSync = "sgp.consolidacao.turma.fechamento.sync";
+        public const string ConsolidarTurmaFechamentoComponenteTratar = "sgp.consolidacao.turma.fechamento.componente.tratar";
+        public const string ConsolidarTurmaConselhoClasseSync = "sgp.consolidacao.turma.conselhoclasse.sync";
+        public const string ConsolidarTurmaConselhoClasseAlunoTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.tratar";
+
         public const string RotaConciliacaoFrequenciaTurmasSync = "sgp.frequencia.turma.conciliacao.sync";
         public const string RotaConciliacaoFrequenciaTurmasAlunosSync = "sgp.frequencia.turma.alunos.conciliacao.sync";
         public const string RotaConciliacaoFrequenciaTurmasAlunosBuscar = "sgp.frequencia.turma.alunos.buscar.sync";
 
         public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
         public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
+
+        public const string SincronizarDadosAulasFrequenciaMigracao = "sgp.migracao.frequencia.aulas.sync";
+        public const string CarregarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.carregar";
+        public const string SincronizarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.sync";
     }
 }
