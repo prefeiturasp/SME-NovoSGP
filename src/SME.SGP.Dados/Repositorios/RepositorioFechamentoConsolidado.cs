@@ -48,18 +48,17 @@ namespace SME.SGP.Dados
                                                     coalesce(cc.descricao_sgp, cc.descricao) as descricao,
                                                     cfct.professor_nome as professorNome,
                                                     cfct.professor_rf as professorRf,
-                                                    cfct.status as SituacaoFechamentoCodigo 
-                                               from componente_curricular cc
-                                               left join componente_curricular_grupo_area_ordenacao ccgao on ccgao.grupo_matriz_id = cc.grupo_matriz_id and ccgao.area_conhecimento_id = cc.area_conhecimento_id 
-                                              inner join  consolidado_fechamento_componente_turma cfct on cfct.componente_curricular_id = cc.id 
-                                              where cfct.turma_id = @turmaId
-                                                and cfct.bimestre = @bimestre ");                             
+                                                    cfct.status as SituacaoFechamentoCodigo, 
+                                                    cc.grupo_matriz_id as GrupoMatrizId,
+                                                    cc.area_conhecimento_id as AreaConnhecimentoId 
+                                               from consolidado_fechamento_componente_turma cfct   
+                                               inner join componente_curricular cc on cc.id = cfct.componente_curricular_id           
+                                               where cfct.turma_id = @turmaId
+                                                 and cfct.bimestre = @bimestre  ");                             
 
             if (!situacoesFechamento.Any(c => c == -99))
                 query.AppendLine(@"and EXISTS(select 1 from consolidado_fechamento_componente_turma 
-                                              where turma_id = @turmaId and bimestre = @bimestre and status = ANY(@situacoesFechamento)) ");
-
-            query.AppendLine("order by ccgao.grupo_matriz_id, ccgao.area_conhecimento_id, ccgao.ordem, cc.descricao_sgp");
+                                              where turma_id = @turmaId and bimestre = @bimestre and status = ANY(@situacoesFechamento)) ");            
 
             return await database.Conexao.QueryAsync<ConsolidacaoTurmaComponenteCurricularDto>(query.ToString(), new { turmaId, bimestre, situacoesFechamento });
         }
