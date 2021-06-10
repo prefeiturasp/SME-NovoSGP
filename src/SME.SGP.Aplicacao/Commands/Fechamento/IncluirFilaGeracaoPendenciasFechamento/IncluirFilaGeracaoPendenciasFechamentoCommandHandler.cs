@@ -29,6 +29,7 @@ namespace SME.SGP.Aplicacao
                                                             , request.FechamentoTurmaDisciplinaId
                                                             , request.Justificativa
                                                             , request.CriadoRF
+                                                            , request.TurmaId
                                                             , request.ComponenteSemNota
                                                             , request.RegistraFrequencia);
 

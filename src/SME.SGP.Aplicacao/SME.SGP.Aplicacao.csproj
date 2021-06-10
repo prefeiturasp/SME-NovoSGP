@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\" />
     <Folder Include="Interfaces\CasosDeUso\Aluno\" />
     <Folder Include="Queries\AcompanhamentoFrequencia\" />
     <Folder Include="Servicos\Interfaces\" />

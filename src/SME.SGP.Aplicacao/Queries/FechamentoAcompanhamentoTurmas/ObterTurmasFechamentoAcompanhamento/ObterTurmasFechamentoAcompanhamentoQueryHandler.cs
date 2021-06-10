@@ -27,6 +27,8 @@ namespace SME.SGP.Aplicacao
                                                                                             request.Semestre,
                                                                                             request.Bimestre,
                                                                                             request.AnoLetivo,
+                                                                                            request.SituacaoFechamento,
+                                                                                            request.SituacaoConselhoClasse,
                                                                                             request.ListarTodasTurmas);
 
             return turmasPaginada;

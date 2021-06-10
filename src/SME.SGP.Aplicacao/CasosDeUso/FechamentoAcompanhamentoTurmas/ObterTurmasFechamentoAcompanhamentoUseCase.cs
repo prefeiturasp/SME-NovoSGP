@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,13 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> Executar(FiltroAcompanhamentoFechamentoTurmasDto param)
         {
             var listarTodasTurmas = param.TurmasId.Any(c => c == -99);
+
+            //int situacaoFechamento = param.SituacaoFechamento.HasValue && param.SituacaoFechamento.Value > -99 ? 
+            //                                        (SituacaoFechamento)param.SituacaoFechamento : 0;
+
+            //int situacaoConselhoClasse = param.SituacaoConselhoClasse.HasValue && param.SituacaoConselhoClasse.Value > -99 ? 
+            //                                                 (SituacaoConselhoClasse)param.SituacaoConselhoClasse : 0;
+
             var turmas = await mediator.Send(new ObterTurmasFechamentoAcompanhamentoQuery(param.DreId,
                                                                                           param.UeId,
                                                                                           param.TurmasId,
@@ -20,6 +28,8 @@ namespace SME.SGP.Aplicacao
                                                                                           param.Semestre,
                                                                                           param.Bimestre,
                                                                                           param.AnoLetivo,
+                                                                                          param.SituacaoFechamento,
+                                                                                          param.SituacaoConselhoClasse,
                                                                                           listarTodasTurmas));
             return turmas;
         }
