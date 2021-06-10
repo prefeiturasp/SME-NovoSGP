@@ -149,7 +149,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task GerarPendenciasFechamento(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, Usuario usuario, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, bool componenteSemNota = false, bool registraFrequencia = true)
+        private async Task GerarPendenciasFechamento(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, Usuario usuario, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, long turmaId, bool componenteSemNota = false, bool registraFrequencia = true)
         {
             await mediator.Send(new IncluirFilaGeracaoPendenciasFechamentoCommand(
                 componenteCurricularId,
@@ -162,6 +162,7 @@ namespace SME.SGP.Dominio.Servicos
                 fechamentoTurmaDisciplinaId,
                 justificativa,
                 criadoRF,
+                turmaId,
                 componenteSemNota,
                 registraFrequencia));
         }
@@ -199,6 +200,7 @@ namespace SME.SGP.Dominio.Servicos
                                             fechamentoTurmaDisciplina.Id,
                                             fechamentoTurmaDisciplina.Justificativa,
                                             fechamentoTurmaDisciplina.CriadoRF,
+                                            turma.Id,
                                             !disciplinaEOL.LancaNota,
                                             disciplinaEOL.RegistraFrequencia);
         }
@@ -208,7 +210,8 @@ namespace SME.SGP.Dominio.Servicos
             notasEnvioWfAprovacao = new List<FechamentoNotaDto>();            
 
             var fechamentoTurmaDisciplina = MapearParaEntidade(id, entidadeDto);
-            await CarregarTurma(entidadeDto.TurmaId);
+
+           // await CarregarTurma(entidadeDto.TurmaId);
 
             // Valida periodo de fechamento
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turmaFechamento.AnoLetivo
@@ -296,6 +299,7 @@ namespace SME.SGP.Dominio.Servicos
                                                 fechamentoTurmaDisciplina.Id,
                                                 fechamentoTurmaDisciplina.Justificativa,
                                                 fechamentoTurmaDisciplina.CriadoRF,
+                                                fechamentoTurmaDisciplina.FechamentoTurma.TurmaId,
                                                 componenteSemNota,
                                                 disciplinaEOL.RegistraFrequencia);
 
