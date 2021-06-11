@@ -95,5 +95,15 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteScalarAsync(query, new { anoLetivo });
 
         }
+
+        public async Task<bool> ExisteConsolidacaoDevolutivaTurmaPorAno(int ano)
+        {
+            var query = @"select 1 
+                          from consolidacao_devolutivas cd
+                         inner join turma t on t.id = cd.turma_id
+                         where t.ano_letivo = @ano";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ano });
+        }
     }
 }
