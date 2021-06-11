@@ -611,9 +611,7 @@ namespace SME.SGP.Dominio.Servicos
                 mensagemUsuario.AppendLine("</tr>");
             }
             mensagemUsuario.AppendLine("</table>");
-
-            var hostAplicacao = configuration["UrlFrontEnd"];
-            mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/compensacao-ausencia/editar/{compensacaoId}'>Para consultar detalhes da atividade clique aqui.</a>");
+            mensagemUsuario.Append("Para consultar os detalhes desta atividade acesse 'Diário de classe > Compensação de ausência'");
 
             var notificacao = new Notificacao()
             {
