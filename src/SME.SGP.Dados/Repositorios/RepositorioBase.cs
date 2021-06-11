@@ -127,6 +127,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private void Auditar(long identificador, string acao)
         {
+            var perfil = database.PerfilUsuario != String.Empty ? Guid.Parse(database.PerfilUsuario) : (Guid?)null;
             database.Conexao.Insert<Auditoria>(new Auditoria()
             {
                 Data = DateTimeExtension.HorarioBrasilia(),
@@ -134,12 +135,14 @@ namespace SME.SGP.Dados.Repositorios
                 Chave = identificador,
                 Usuario = database.UsuarioLogadoNomeCompleto,
                 RF = database.UsuarioLogadoRF,
+                Perfil = perfil,
                 Acao = acao
             });
         }
 
         protected async Task AuditarAsync(long identificador, string acao)
         {
+            var perfil = database.PerfilUsuario != String.Empty ? Guid.Parse(database.PerfilUsuario) : (Guid?)null;
             await database.Conexao.InsertAsync<Auditoria>(new Auditoria()
             {
                 Data = DateTimeExtension.HorarioBrasilia(),
@@ -147,6 +150,7 @@ namespace SME.SGP.Dados.Repositorios
                 Chave = identificador,
                 Usuario = database.UsuarioLogadoNomeCompleto,
                 RF = database.UsuarioLogadoRF,
+                Perfil = perfil,
                 Acao = acao
             });
         }

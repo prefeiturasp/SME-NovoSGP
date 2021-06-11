@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class EnviarNotificacaoUsuariosCommandHandler : IRequestHandler<EnviarNotificacaoUsuariosCommand, bool>
+    public class EnviarNotificacaoUsuariosCommandHandler : IRequestHandler<EnviarNotificacaoUsuariosCommand, IEnumerable<long>>
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
 
@@ -18,9 +18,10 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
         }
 
-        public async Task<bool> Handle(EnviarNotificacaoUsuariosCommand request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<long>> Handle(EnviarNotificacaoUsuariosCommand request, CancellationToken cancellationToken)
         {
-            foreach(var usuario in request.Usuarios)
+            var notificacoes = new List<long>();
+            foreach (var usuario in request.Usuarios)
             {
                 var notificacao = new Notificacao()
                 {
@@ -36,10 +37,10 @@ namespace SME.SGP.Aplicacao
                     UsuarioId = usuario
                 };
 
-                await repositorioNotificacao.SalvarAsync(notificacao);
+                notificacoes.Add(await repositorioNotificacao.SalvarAsync(notificacao));
             }
 
-            return true;
+            return notificacoes;
         }
         public long ObtemNovoCodigo()
         {

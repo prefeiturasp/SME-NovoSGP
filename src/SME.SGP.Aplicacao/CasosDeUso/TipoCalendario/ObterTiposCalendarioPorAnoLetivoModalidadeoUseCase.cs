@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TipoCalendarioDto>> Executar(int anoLetivo, string modalidades)
         {
-            return (await mediator.Send(new ObterTiposCalendarioPorAnoLetivoModalidadeoQuery(anoLetivo, modalidades)))
+            return (await mediator.Send(new ObterTiposCalendarioPorAnoLetivoModalidadeQuery(anoLetivo, modalidades)))
                 .Where(tc => tc.Situacao && !tc.Excluido)
                 .Select(t => new TipoCalendarioDto
                 {

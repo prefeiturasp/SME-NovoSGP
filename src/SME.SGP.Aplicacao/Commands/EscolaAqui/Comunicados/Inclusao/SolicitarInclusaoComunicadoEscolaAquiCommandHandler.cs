@@ -196,18 +196,36 @@ namespace SME.SGP.Aplicacao
         {
             List<long> modalidades = new List<long>();
             var gruposModalidade = string.Join(",", grupos.Select(x => x).ToArray());
-            if (gruposModalidade.Contains("2") || gruposModalidade.Contains("3"))
-                modalidades.Add(1);
 
-            if (gruposModalidade.Contains("4"))
+            if (gruposModalidade.Contains("3"))
+                modalidades.Add(1); // infantil Pré
+
+            if (gruposModalidade.Contains("2"))
+                modalidades.Add(2); // infantil CEI
+
+            if (gruposModalidade.Contains("6")) // eja
+                modalidades.Add(3);
+
+            if (gruposModalidade.Contains("7")) // cieja
+                modalidades.Add(4);
+
+            if (gruposModalidade.Contains("4")) // fundamental
                 modalidades.Add(5);
 
-            if (gruposModalidade.Contains("5"))
+            if (gruposModalidade.Contains("5")) // médio
                 modalidades.Add(6);
 
-            if (gruposModalidade.Contains("6"))
-                modalidades.Add(3);
-            
+            if (gruposModalidade.Contains("8")) // cmct
+                modalidades.Add(7);
+
+            if (gruposModalidade.Contains("9")) // mova
+                modalidades.Add(8);
+
+            if (gruposModalidade.Contains("10")) // etec
+                modalidades.Add(9);
+
+
+
             return string.Join(",", modalidades); ;
         }
 

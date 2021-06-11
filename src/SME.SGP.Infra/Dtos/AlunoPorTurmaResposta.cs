@@ -31,6 +31,15 @@ namespace SME.SGP.Infra
         public string TipoResponsavel { get; set; }
         public string CelularResponsavel { get; set; }
         public DateTime DataAtualizacaoContato { get; set; }
+                
+        public bool Inativo
+        {
+            get => !(new[] { SituacaoMatriculaAluno.Ativo,
+                             SituacaoMatriculaAluno.PendenteRematricula,
+                             SituacaoMatriculaAluno.Rematriculado,
+                             SituacaoMatriculaAluno.SemContinuidade,
+                             SituacaoMatriculaAluno.Concluido }.Contains(this.CodigoSituacaoMatricula));
+        }
         public int Idade 
         { 
             get 

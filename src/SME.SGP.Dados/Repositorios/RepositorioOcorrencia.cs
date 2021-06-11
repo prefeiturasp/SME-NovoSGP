@@ -1,6 +1,6 @@
-﻿using SME.SGP.Dados.Repositorios;
+﻿using Dapper;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -157,6 +157,82 @@ namespace SME.SGP.Dados
                 new { id });
 
             return resultado;
+        }
+
+        public async Task<PaginacaoResultadoDto<OcorrenciasPorAlunoDto>> ObterOcorrenciasPorTurmaAlunoEPeriodoPaginadas(long turmaId, long codigoAluno, DateTime periodoInicio, DateTime periodoFim, Paginacao paginacao)
+        {
+            try
+            {
+                var query = MontaQueryCompleta(paginacao, turmaId, codigoAluno, periodoInicio, periodoFim);
+
+                var parametros = new { turmaId, codigoAluno, periodoInicio, periodoFim };
+                var retorno = new PaginacaoResultadoDto<OcorrenciasPorAlunoDto>();
+
+                using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
+                {
+                    retorno.Items = multi.Read<OcorrenciasPorAlunoDto>();
+                    retorno.TotalRegistros = multi.ReadFirst<int>();
+                }
+
+                retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+                return retorno;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private static string MontaQueryCompleta(Paginacao paginacao, long turmaId, long alunoCodigo, DateTime periodoIncio, DateTime periodoFim)
+        {
+            StringBuilder sql = new StringBuilder();
+
+            MontaQueryConsulta(paginacao, sql, contador: false, turmaId, alunoCodigo, periodoIncio, periodoFim);
+
+            sql.AppendLine(";");
+
+            MontaQueryConsulta(paginacao, sql, contador: true, turmaId, alunoCodigo, periodoIncio, periodoFim);
+
+            return sql.ToString();
+        }
+
+        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long turmaId, long alunoCodigo, DateTime periodoIncio, DateTime periodoFim)
+        {
+            ObtenhaCabecalho(sql, contador);
+
+            ObtenhaFiltro(sql, turmaId, alunoCodigo, periodoIncio, periodoFim);
+
+            if (!contador)
+                sql.AppendLine(" order by o.data_ocorrencia desc ");
+
+            if (paginacao.QuantidadeRegistros > 0 && !contador)
+                sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+        }
+
+        private static void ObtenhaCabecalho(StringBuilder sql, bool contador)
+        {
+            sql.AppendLine("select ");
+            if (contador)
+                sql.AppendLine(" count(o.id) ");
+            else
+            {
+                sql.AppendLine(" o.data_ocorrencia data_ocorrencia ");
+                sql.AppendLine(", CONCAT(o.criado_por, ' (', o.criado_rf, ')') registrado_por ");
+                sql.AppendLine(", o.titulo ");
+            }
+
+            sql.AppendLine(" from ocorrencia o ");
+            sql.AppendLine(" inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id ");
+            sql.AppendLine(" inner join turma t on t.id = o.turma_id");
+        }
+
+        private static void ObtenhaFiltro(StringBuilder sql, long turmaId, long alunoCodigo, DateTime periodoIncio, DateTime periodoFim)
+        {
+            sql.AppendLine(" where ");
+            sql.AppendLine(" o.turma_id = @turmaId and ");
+            sql.AppendLine(" oa.codigo_aluno = @codigoAluno and ");
+            sql.AppendLine(" o.criado_em::date between @periodoInicio and @periodoFim ");
         }
     }
 }

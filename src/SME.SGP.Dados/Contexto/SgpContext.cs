@@ -42,9 +42,10 @@ namespace SME.SGP.Dados.Contexto
 
         public string UsuarioLogadoNomeCompleto =>
                                           contextoAplicacao.NomeUsuario;
+        public string PerfilUsuario => contextoAplicacao.PerfilUsuario;
 
         public string UsuarioLogadoRF =>
-                                          contextoAplicacao.ObterVarivel<string>("RF") ?? "0";
+                                          contextoAplicacao.ObterVariavel<string>("RF") ?? "0";
 
 
         public IDbTransaction BeginTransaction()

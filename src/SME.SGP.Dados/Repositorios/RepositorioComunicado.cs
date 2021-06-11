@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro;
 using SME.SGP.Infra.Dtos.EscolaAqui.Dashboard;
@@ -378,7 +380,12 @@ namespace SME.SGP.Dados.Repositorios
                                             {comunicadoAlias}.data_envio AS DataEnvio,
                                             {comunicadoAlias}.codigo_dre AS CodigoDre,
                                             {comunicadoAlias}.codigo_ue AS CodigoUe,
-                                            {comunicadoAlias}.modalidade AS Modalidade
+                                            {comunicadoAlias}.modalidade AS Modalidade,
+                                            CASE
+                                               WHEN (select count(id) from comunidado_grupo where comunicado_id = {comunicadoAlias}.id) = 0 THEN 0
+                                               WHEN (select count(id) from comunidado_grupo where comunicado_id = {comunicadoAlias}.id) = 1 THEN 0
+                                               WHEN (select count(id) from comunidado_grupo where comunicado_id = {comunicadoAlias}.id) > 1 THEN 1
+                                            END agruparModalidade
                                         FROM comunicado {comunicadoAlias} ");
 
             if (!string.IsNullOrWhiteSpace(filtro.CodigoTurma))
@@ -416,10 +423,10 @@ namespace SME.SGP.Dados.Repositorios
         private string MontarCondicoesDaConsultaObterComunicadosParaFiltroDaDashboard(FiltroObterComunicadosParaFiltroDaDashboardDto filtro, string comunicadoAlias,
             string comunicadoTumaAlias, string turmaAlias, string comunicadoGrupoAlias)
         {
-            var where = new StringBuilder($" WHERE {comunicadoAlias}.ano_letivo = @anoLetivo ");            
+            var where = new StringBuilder($" WHERE {comunicadoAlias}.ano_letivo = @anoLetivo ");
 
             where.Append(!string.IsNullOrWhiteSpace(filtro.CodigoDre) ? $" AND {comunicadoAlias}.codigo_dre = @CodigoDre" : $" AND {comunicadoAlias}.codigo_dre is null");
-                        
+
             where.Append(!string.IsNullOrWhiteSpace(filtro.CodigoUe) ? $" AND {comunicadoAlias}.codigo_ue = @CodigoUe" : $" AND {comunicadoAlias}.codigo_ue is null");
 
             if (filtro.GruposIds != null)
@@ -463,12 +470,124 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public Task<IEnumerable<ComunicadoTurmaDto>> ObterComunicadosTurma(long comunicadoId) 
+        public Task<IEnumerable<ComunicadoTurmaDto>> ObterComunicadosTurma(long comunicadoId)
         {
             var sql = $@"select turma_codigo AS CodigoTurma from comunicado_turma ct where comunicado_id = @comunicadoId";
             var parametros = new { comunicadoId };
             return database.QueryAsync<ComunicadoTurmaDto>(sql, parametros);
 
         }
+
+        public async Task<IEnumerable<ComunicadoAlunoReduzidoDto>> ObterComunicadosReduzidosPorTipo(TipoComunicado tipoComunicado)
+        {
+            var sql = $@"select data_envio, tipo_comunicado, titulo, false as leitura from comunicado c where c.tipo_comunicado = @tipoComunicado;";
+            var parametros = new { tipoComunicado };
+            return await database.QueryAsync<ComunicadoAlunoReduzidoDto>(sql, parametros);
+        }
+
+        public async Task<PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>> ObterComunicadosReduzidos(string dreCodigo, string ueCodigo, string turmaCodigo, string alunoCodigo, Paginacao paginacao)
+        {
+            StringBuilder sql = new StringBuilder();
+
+            MontaQueryObterComunicados(paginacao, sql, false);
+
+            sql.AppendLine(";");
+
+            MontaQueryObterComunicados(paginacao, sql, true);
+
+            var parametros = new { dreCodigo, ueCodigo, turmaCodigo, alunoCodigo };
+
+            var retorno = new PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>();
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(sql.ToString(), parametros))
+            {
+                retorno.Items = multi.Read<ComunicadoAlunoReduzidoDto>();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
+            }
+
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retorno;
+        }
+
+        private void MontaQueryObterComunicados(Paginacao paginacao, StringBuilder sql, bool contador)
+        {
+            if (contador)
+            {
+                sql.AppendLine(" select count(n.ComunicadoId) ");
+            }
+            else
+            {
+                sql.AppendLine(" select n.* ");
+            }
+
+            sql.AppendLine(@" from
+	                    ( (
+	                    select
+                            comunicado.id as ComunicadoId,
+		                    data_envio as DataEnvio,
+		                    tipo_comunicado as Categoria,
+		                    titulo,
+		                    '' as leitura
+	                    from
+		                    comunicado
+	                    where
+		                    not comunicado.excluido
+		                    and comunicado.tipo_comunicado = 1)
+                    union (
+                    select
+                        comunicado.id,
+	                    data_envio as DataEnvio,
+	                    tipo_comunicado as Categoria,
+	                    titulo,
+	                    '' as leitura
+                    from
+	                    comunicado
+                    where
+	                    not comunicado.excluido
+	                    and comunicado.tipo_comunicado = 2 and comunicado.codigo_dre = @dreCodigo)
+	                    union (
+                    select
+                        comunicado.id,
+	                    data_envio as DataEnvio,
+	                    tipo_comunicado as Categoria,
+	                    titulo,
+	                    '' as leitura
+                    from
+	                    comunicado
+                    where
+	                    not comunicado.excluido
+	                    and comunicado.tipo_comunicado = 3 and comunicado.codigo_ue = @ueCodigo)
+	                    union (
+                    select
+                        comunicado.id,
+	                    data_envio as DataEnvio,
+	                    tipo_comunicado as Categoria,
+	                    titulo,
+	                    '' as leitura
+                    from
+	                    comunicado
+                    inner join comunicado_turma ct on comunicado.id = ct.comunicado_id 
+                    where
+	                    not comunicado.excluido
+	                    and comunicado.tipo_comunicado = 5 and ct.turma_codigo = @turmaCodigo)
+		                    union (
+                    select
+                        comunicado.id,
+	                    data_envio as DataEnvio,
+	                    tipo_comunicado as Categoria,
+	                    titulo,
+	                    '' as leitura from comunicado inner join comunicado_aluno ca on 
+            comunicado.id = ca.comunicado_id where not comunicado.excluido and comunicado.tipo_comunicado = 6 and ca.aluno_codigo = @alunoCodigo)) n ");
+
+
+            if (!contador)
+                sql.AppendLine(" order by n.DataEnvio desc ");
+
+
+            if (paginacao.QuantidadeRegistros > 0 && !contador)
+                sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+        }
+
     }
 }

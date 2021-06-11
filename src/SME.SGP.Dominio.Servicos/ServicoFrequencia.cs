@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -18,6 +19,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
 
         public ServicoFrequencia(IRepositorioFrequencia repositorioFrequencia,
                                  IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno,
@@ -25,7 +27,8 @@ namespace SME.SGP.Dominio.Servicos
                                  IServicoUsuario servicoUsuario,
                                  IUnitOfWork unitOfWork,
                                  IServicoEol servicoEOL,
-                                 IRepositorioTurma repositorioTurma)
+                                 IRepositorioTurma repositorioTurma,
+                                 IMediator mediator)
         {
             this.repositorioFrequencia = repositorioFrequencia ?? throw new System.ArgumentNullException(nameof(repositorioFrequencia));
             this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new System.ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
@@ -34,6 +37,7 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }        
 
         public async Task ExcluirFrequenciaAula(long aulaId)
@@ -44,11 +48,6 @@ namespace SME.SGP.Dominio.Servicos
         public IEnumerable<RegistroAusenciaAluno> ObterListaAusenciasPorAula(long aulaId)
         {
             return repositorioFrequencia.ObterListaFrequenciaPorAula(aulaId);
-        }
-
-        public RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId)
-        {
-            return repositorioFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
         }
 
         public async Task Registrar(long aulaId, IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos)
@@ -63,12 +62,15 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não é permitido registro de frequência para este componente curricular.");
             }
 
-            ValidaSeUsuarioPodeCriarAula(aula, usuario);
-            await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId, aula.DataAula, usuario);
+            if (!usuario.EhGestorEscolar())
+            {
+                ValidaSeUsuarioPodeCriarAula(aula, usuario);
+                await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario.CodigoRf, aula.DisciplinaId, aula.DataAula, usuario);
+            }            
 
             var alunos = await ObterAlunos(aula);
 
-            var registroFrequencia = repositorioFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
+            var registroFrequencia = await mediator.Send( new ObterRegistroFrequenciaPorAulaIdQuery(aulaId));
             var alteracaoRegistro = registroFrequencia != null;
 
             unitOfWork.IniciarTransacao();

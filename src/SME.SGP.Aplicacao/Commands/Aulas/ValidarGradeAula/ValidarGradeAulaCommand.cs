@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
                                        string usuarioRf,
                                        int quantidade,
                                        bool ehRegencia,
-                                       IEnumerable<AulaConsultaDto> aulasExistentes)
+                                       IEnumerable<AulaConsultaDto> aulasExistentes, bool ehGestor = false)
         {
             TurmaCodigo = turmaCodigo;
             TurmaModalidade = turmaModalidade;
@@ -27,6 +27,7 @@ namespace SME.SGP.Aplicacao
             Quantidade = quantidade;
             EhRegencia = ehRegencia;
             AulasExistentes = aulasExistentes;
+            EhGestor = ehGestor;
         }
 
         public string TurmaCodigo { get; set; }
@@ -36,6 +37,7 @@ namespace SME.SGP.Aplicacao
         public string UsuarioRf { get; set; }
         public int Quantidade { get; set; }
         public bool EhRegencia { get; set; }
+        public bool EhGestor { get; set; }
         public IEnumerable<AulaConsultaDto> AulasExistentes { get; set; }
     }
 

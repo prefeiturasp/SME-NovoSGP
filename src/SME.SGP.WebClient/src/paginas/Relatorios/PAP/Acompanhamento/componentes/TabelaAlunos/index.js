@@ -3,12 +3,13 @@ import t from 'prop-types';
 import shortid from 'shortid';
 
 // Componentes
+import styled from 'styled-components';
 import IconeStatus from './componentes/IconeStatus';
 import SelectRespostas from './componentes/SelectRespostas';
 
 // Estilos
 import { Tabela, ContainerTabela } from './styles';
-import styled from 'styled-components';
+import NomeEstudanteLista from '~/componentes-sgp/NomeEstudanteLista/nomeEstudanteLista';
 
 const NumeroChamada = styled.td`
   min-width: 20px;
@@ -37,7 +38,12 @@ function TabelaAlunos({
             alunos.map((aluno, key) => (
               <tr key={shortid.generate()}>
                 <NumeroChamada>{aluno.numeroChamada}</NumeroChamada>
-                <td>{aluno.nome}</td>
+                <td className="w-100">
+                  <NomeEstudanteLista
+                    nome={aluno?.nome}
+                    exibirSinalizacao={aluno?.ehAtendidoAEE}
+                  />
+                </td>
                 <td>
                   <IconeStatus status={aluno.concluido} />
                 </td>

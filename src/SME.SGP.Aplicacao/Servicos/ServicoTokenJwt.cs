@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         public bool TokenPresente()
         {
-            return contextoAplicacao.ObterVarivel<bool>("TemAuthorizationHeader");
+            return contextoAplicacao.ObterVariavel<bool>("TemAuthorizationHeader");
         }
 
         private string ObterTokenAtual()
@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao.Servicos
             if (!string.IsNullOrEmpty(tokenGerado))
                 return tokenGerado;
 
-            return contextoAplicacao.ObterVarivel<string>("TokenAtual");
+            return contextoAplicacao.ObterVariavel<string>("TokenAtual");
         }
 
         #region Private Methods

@@ -14,7 +14,7 @@ const Campo = styled.div`
     margin-bottom: 5px;
   }
   .ant-input {
-    height: 38px;
+    height: ${({ height }) => height}px;
   }
   label {
     font-weight: bold;
@@ -44,6 +44,8 @@ const CampoTexto = React.forwardRef((props, ref) => {
     style,
     iconeBusca,
     allowClear,
+    minRowsTextArea,
+    height,
   } = props;
 
   const possuiErro = () => {
@@ -64,7 +66,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
   };
 
   return (
-    <Campo className={classNameCampo}>
+    <Campo className={classNameCampo} height={height}>
       {label ? <Label text={label} control={name || ''} /> : ''}
       {form ? (
         <>
@@ -88,6 +90,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
             style={style}
             prefix={iconeBusca ? <i className="fa fa-search fa-lg" /> : ''}
             value={value || form.values[name]}
+            rows={minRowsTextArea}
           />
           {!semMensagem && form && form.touched[name] ? (
             <span>{form.errors[name]}</span>
@@ -130,6 +133,8 @@ CampoTexto.propTypes = {
   style: PropTypes.oneOfType([PropTypes.any]),
   iconeBusca: PropTypes.bool,
   allowClear: PropTypes.bool,
+  minRowsTextArea: PropTypes.string,
+  height: PropTypes.string,
 };
 
 CampoTexto.defaultProps = {
@@ -151,6 +156,8 @@ CampoTexto.defaultProps = {
   style: {},
   iconeBusca: false,
   allowClear: true,
+  minRowsTextArea: '2',
+  height: '38',
 };
 
 export default CampoTexto;

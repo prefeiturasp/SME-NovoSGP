@@ -87,7 +87,7 @@ const CampoConceito = props => {
       setNotaConceitoPosConselhoAtual({
         id: idNotaPosConselho || idCamposNotasPosConselho,
         codigoComponenteCurricular,
-        conceito: Number(conceito),
+        conceito: conceito ? Number(conceito) : null,
         ehEdicao,
         justificativa,
         auditoria,

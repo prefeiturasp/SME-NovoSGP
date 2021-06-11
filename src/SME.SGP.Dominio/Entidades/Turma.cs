@@ -1,12 +1,17 @@
-﻿using System;
+﻿using SME.SGP.Dominio.Enumerados;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Dominio
 {
     public class Turma
     {
+        public static readonly TipoTurma[] TiposRegulares = { TipoTurma.Regular, TipoTurma.EdFisica, TipoTurma.Itinerarios2AAno };
         public string Ano { get; set; }
         public int AnoLetivo { get; set; }
         public string CodigoTurma { get; set; }
+        public TipoTurma TipoTurma { get; set; }
         public DateTime DataAtualizacao { get; set; }
         public long Id { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
@@ -14,7 +19,7 @@ namespace SME.SGP.Dominio
         {
                 get => ModalidadeCodigo == Modalidade.EJA ?
                 ModalidadeTipoCalendario.EJA :
-                ModalidadeCodigo == Modalidade.Infantil ?
+                ModalidadeCodigo == Modalidade.InfantilPreEscola ?
                     ModalidadeTipoCalendario.Infantil :
                     ModalidadeTipoCalendario.FundamentalMedio;
         }
@@ -23,7 +28,6 @@ namespace SME.SGP.Dominio
         public int Semestre { get; set; }
         public int TipoTurno { get; set; }
         public string SerieEnsino { get; set; }
-
         public Ue Ue { get; set; }
         public long UeId { get; set; }
 
@@ -64,7 +68,7 @@ namespace SME.SGP.Dominio
         public bool EhTurmaFund1 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 1 && AnoTurmaInteiro <= 5);
         public bool EhTurmaFund2 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 6 && AnoTurmaInteiro <= 9);
         public bool EhTurmaEnsinoMedio => ModalidadeCodigo == Modalidade.Medio;
-        public bool EhTurmaInfantil => ModalidadeCodigo == Modalidade.Infantil;
+        public bool EhTurmaInfantil => ModalidadeCodigo == Modalidade.InfantilPreEscola;
 
         public bool EhTurmaHistorica => AnoLetivo < DateTime.Now.Year;
 
@@ -81,6 +85,41 @@ namespace SME.SGP.Dominio
             return (EhTurmaFund1 || (EhEJA() && (anoTurma == 1 || anoTurma == 2)) && quantidadeAulasExistentesNoDia > 1) ||
                    (EhTurmaFund2 || (EhEJA() && (anoTurma == 3 || anoTurma == 4))) ||
                    (EhTurmaEnsinoMedio && quantidadeAulasExistentesNoDia > 2);
+        }
+        public string NomeComModalidade()
+                 => $"{ModalidadeCodigo.ObterNomeCurto()}-{Nome}";
+
+        public bool EhTurmaEdFisicaOuItinerario()
+        {
+            return TipoTurma.EhUmDosValores(TipoTurma.EdFisica, TipoTurma.Itinerarios2AAno);
+        }
+
+        public IEnumerable<TipoTurma> ObterTiposRegularesDiferentes()
+        {
+            return TiposRegulares
+                .Where(a => a != TipoTurma)
+                .ToList();
+        }
+        public bool DeveVerificarRegraRegulares()
+        {
+            return TiposRegulares.Any(a => a == TipoTurma);
+        }
+        public int TurnoParaComponentesCurriculares
+        {
+            get
+            {
+                return ModalidadeCodigo == Modalidade.Fundamental ? QuantidadeDuracaoAula : 0;
+            }
+        }
+
+        public bool EhTurmaRegular()
+        {
+            return TipoTurma == TipoTurma.Regular;
+        }
+
+        public bool EhAnoAnterior()
+        {
+            return AnoLetivo < DateTime.Now.Year;
         }
     }
 }

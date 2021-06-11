@@ -27,14 +27,14 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisAlunoAsync(string turmaCodigo, string alunoCodigo)
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo)
         {
-            var query = $@"{queryNotasFechamento}
-                         where t.turma_id = @turmaCodigo
-                           and fa.aluno_codigo = @alunoCodigo
-                           and pe.id is null";
+            var query = $@"{ queryNotasFechamento}
+                          where t.turma_id = ANY(@turmasCodigos) 
+                            and fa.aluno_codigo = @alunoCodigo
+                            and pe.id is null";
 
-            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, alunoCodigo });
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmasCodigos, alunoCodigo });
         }
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAnoAsync(string turmaCodigo, string alunoCodigo)
@@ -54,6 +54,17 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { fechamentoTurmaId, alunoCodigo });
         }
+
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos, string alunoCodigo, int bimestre)
+        {
+            var query = $@"{queryNotasFechamento}
+                         where t.turma_id = ANY(@turmasCodigos)
+                           and fa.aluno_codigo = @alunoCodigo 
+                           and pe.bimestre = @bimestre";
+
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmasCodigos, alunoCodigo, bimestre });
+        }
+
 
         public async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacaoPorFechamento(long fechamentoTurmaDisciplinaId)
         {

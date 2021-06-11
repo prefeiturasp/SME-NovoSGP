@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,10 +15,12 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe)
+        public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, bool consideraNovasModalidades)
         {
-            return await mediator.Send(new ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(codigoUe));
+            var login = await mediator.Send(new ObterLoginAtualQuery());
+            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+            var modadlidadesQueSeraoIgnoradas = await mediator.Send(new ObterNovasModalidadesPorAnoQuery(DateTime.Now.Year, consideraNovasModalidades));
+            return await mediator.Send(new ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(codigoUe, login, perfil, modadlidadesQueSeraoIgnoradas));
         }
-
     }
 }
