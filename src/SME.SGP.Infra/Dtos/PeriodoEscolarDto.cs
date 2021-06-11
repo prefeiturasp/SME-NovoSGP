@@ -17,6 +17,15 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "É necessário informar o início do período escolar")]
         public DateTime PeriodoInicio { get; set; }
 
-       
+        public string Descricao
+        {
+            get
+            {
+                if (Bimestre > 0)
+                    return $"{Bimestre}° Bimestre";
+                else
+                    return "";
+            }
+        }
     }
 }

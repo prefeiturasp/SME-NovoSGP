@@ -68,7 +68,7 @@ import RegistroIndividual from '~/paginas/DiarioClasse/RegistroIndividual/regist
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
-import DashboardEscolaAqui from '~/paginas/Relatorios/DashboardEscolaAqui/dashboardEscolaAqui';
+import DashboardEscolaAqui from '~/paginas/Dashboard/DashboardEscolaAqui/dashboardEscolaAqui';
 import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
 import Sondagem from '~/paginas/Sondagem/sondagem';
 import PocUploadArquivos from '~/componentes-sgp/UploadArquivos/pocUploadArquivos';
@@ -83,6 +83,18 @@ import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioL
 import ListaOcorrencias from '~/paginas/Gestao/Ocorrencia/ListaOcorrencias';
 import CadastroOcorrencias from '~/paginas/Gestao/Ocorrencia/CadastroOcorrencias';
 import RelatorioPlanejamentoDiario from '~/paginas/Relatorios/DiarioClasse/PlanejamentoDiario/relatorioPlanejamentoDiario';
+import EncaminhamentoAEELista from '~/paginas/AEE/Encaminhamento/Lista/encaminhamentoAEELista';
+import EncaminhamentoAEECadastro from '~/paginas/AEE/Encaminhamento/Cadastro/encaminhamentoAEECadastro';
+import RegistroItineranciaAEECadastro from '~/paginas/AEE/RegistroItinerancia/Cadastro/registroItineranciaAEECadastro';
+import AcompanhamentoFrequencia from '~/paginas/DiarioClasse/AcompanhamentoFrequencia/acompanhamentoFrequencia';
+import PlanoAEELista from '~/paginas/AEE/Plano/Lista/planoAEELista';
+import PlanoAEECadastro from '~/paginas/AEE/Plano/Cadastro/planoAEECadastro';
+import RegistroItineranciaAEELista from '~/paginas/AEE/RegistroItinerancia/Lista/registroItineranciaAEELista';
+import AcompanhamentoAprendizagem from '~/paginas/Fechamento/AcompanhamentoAprendizagem/acompanhamentoAprendizagem';
+import RelatorioDevolutivas from '~/paginas/Relatorios/Planejamento/Devolutivas/relatorioDevolutivas';
+import DashboardAEE from '~/paginas/Dashboard/AEE/dashboardAEE';
+import DashboardRegistroItinerancia from '~/paginas/Dashboard/DashboardRegistroItinerancia/dashboardRegistroItinerancia';
+import DashboardFrequencia from '~/paginas/Dashboard/DashboardFrequencia/dashboardFrequencia';
 
 const rotas = new Map();
 
@@ -574,6 +586,17 @@ rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {
   chavePermissao: RotasDto.FREQUENCIA_PLANO_AULA,
 });
 
+rotas.set(`${RotasDto.ACOMPANHAMENTO_FREQUENCIA}`, {
+  breadcrumbName: 'Acompanhamento de Frequência',
+  menu: ['Diário de Classe'],
+  parent: '/',
+  component: AcompanhamentoFrequencia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_FREQUENCIA,
+});
+
 rotas.set(`${RotasDto.NOTAS}/:disciplinaId/:bimestre`, {
   breadcrumbName: 'Notas',
   menu: ['Diário de Classe'],
@@ -987,15 +1010,15 @@ rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
   chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
 });
 
-rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD, {
-  breadcrumbName: 'Dashboard',
-  menu: ['Relatórios', 'Escola aqui '],
+rotas.set(RotasDto.DASHBOARD_ESCOLA_AQUI, {
+  breadcrumbName: 'Escola aqui',
+  menu: ['Dashboard'],
   parent: '/',
   component: DashboardEscolaAqui,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
-  chavePermissao: RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD,
+  chavePermissao: RotasDto.DASHBOARD_ESCOLA_AQUI,
 });
 
 rotas.set(RotasDto.CONTROLE_GRADE, {
@@ -1111,6 +1134,17 @@ rotas.set(RotasDto.RELATORIO_ALTERACAO_NOTAS, {
   chavePermissao: RotasDto.RELATORIO_ALTERACAO_NOTAS,
 });
 
+rotas.set(RotasDto.RELATORIO_DEVOLUTIVAS, {
+  breadcrumbName: 'Devolutivas',
+  menu: ['Relatórios', 'Planejamento'],
+  parent: '/',
+  component: RelatorioDevolutivas,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_DEVOLUTIVAS,
+});
+
 rotas.set(RotasDto.RELATORIO_LEITURA, {
   breadcrumbName: 'Leitura',
   menu: ['Relatórios', 'Escola aqui'],
@@ -1131,6 +1165,100 @@ rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_ADESAO, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_ESCOLA_AQUI_ADESAO,
+});
+
+rotas.set(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO, {
+  breadcrumbName: 'Encaminhamento',
+  menu: ['AEE'],
+  parent: '/',
+  component: EncaminhamentoAEELista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/novo`, {
+  breadcrumbName: 'Cadastrar',
+  parent: `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`,
+  component: EncaminhamentoAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
+  breadcrumbName: 'Editar',
+  parent: `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`,
+  component: EncaminhamentoAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}`, {
+  breadcrumbName: 'Registro de itinerância',
+  menu: ['AEE'],
+  parent: '/',
+  component: RegistroItineranciaAEELista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/novo`, {
+  breadcrumbName: 'Cadastro',
+  parent: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
+  component: RegistroItineranciaAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/editar/:id`, {
+  breadcrumbName: 'Registro de itinerância',
+  menu: ['AEE'],
+  parent: '/',
+  component: RegistroItineranciaAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
+});
+
+rotas.set(RotasDto.RELATORIO_AEE_PLANO, {
+  breadcrumbName: 'Plano',
+  menu: ['AEE'],
+  parent: '/',
+  component: PlanoAEELista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/novo`, {
+  breadcrumbName: 'Cadastro',
+  parent: RotasDto.RELATORIO_AEE_PLANO,
+  component: PlanoAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/editar/:id`, {
+  breadcrumbName: 'Editar',
+  parent: `${RotasDto.RELATORIO_AEE_PLANO}`,
+  component: PlanoAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
 });
 
 rotas.set(RotasDto.OCORRENCIAS, {
@@ -1162,6 +1290,50 @@ rotas.set(`${RotasDto.OCORRENCIAS}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.OCORRENCIAS,
+});
+
+rotas.set(RotasDto.ACOMPANHAMENTO_APRENDIZAGEM, {
+  breadcrumbName: 'Relatório do Acompanhamento da Aprendizagem',
+  menu: ['Fechamento'],
+  parent: '/',
+  component: AcompanhamentoAprendizagem,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_APRENDIZAGEM,
+});
+
+rotas.set(RotasDto.DASHBOARD_AEE, {
+  breadcrumbName: 'AEE',
+  menu: ['Dashboard'],
+  parent: '/',
+  component: DashboardAEE,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DASHBOARD_AEE,
+});
+
+rotas.set(RotasDto.DASHBOARD_REGISTRO_ITINERANCIA, {
+  breadcrumbName: 'Registro de Itinerância',
+  menu: ['Dashboard'],
+  parent: '/',
+  component: DashboardRegistroItinerancia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DASHBOARD_REGISTRO_ITINERANCIA,
+});
+
+rotas.set(RotasDto.DASHBOARD_FREQUENCIA, {
+  breadcrumbName: 'Frequência',
+  menu: ['Dashboard'],
+  parent: '/',
+  component: DashboardFrequencia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DASHBOARD_FREQUENCIA,
 });
 
 const rotasArray = [];

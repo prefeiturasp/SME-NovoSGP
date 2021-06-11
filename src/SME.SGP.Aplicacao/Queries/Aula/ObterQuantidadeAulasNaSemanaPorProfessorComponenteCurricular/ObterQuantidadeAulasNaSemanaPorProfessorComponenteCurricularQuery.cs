@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery: IRequest<int>
     {
-        public ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery(string turmaCodigo, long componenteCurricular, int semana, string professorRf, bool experienciaPedagogica, DateTime dataExcecao)
+        public ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery(string turmaCodigo, long componenteCurricular, int semana, string professorRf, bool experienciaPedagogica, DateTime dataExcecao, bool ehGestor = false)
         {
             TurmaCodigo = turmaCodigo;
             ComponenteCurricular = componenteCurricular;
@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
             ProfessorRf = professorRf;
             ExperienciaPedagogica = experienciaPedagogica;
             DataExcecao = dataExcecao;
+            EhGestor = ehGestor;
         }
 
         public string TurmaCodigo { get; set; }
@@ -22,6 +23,7 @@ namespace SME.SGP.Aplicacao
         public int Semana { get; set; }
         public string ProfessorRf { get; set; }
         public bool ExperienciaPedagogica { get; set; }
+        public bool EhGestor { get; set; }
         public DateTime DataExcecao { get; set; }
     }
 }

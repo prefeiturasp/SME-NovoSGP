@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Container } from './listaNotificacoes.css';
 
-const ListaNotificacoes = ({ obs }) => {
+const ListaNotificacoes = ({ obs, somenteLeitura }) => {
   const [usuariosNotificacao, setUsuariosNotificacao] = useState();
 
   useEffect(() => {
@@ -21,6 +21,7 @@ const ListaNotificacoes = ({ obs }) => {
         <Container
           temLinhaAlteradoPor={obs?.auditoria?.alteradoPor}
           listagemDiario={obs?.listagemDiario}
+          somenteLeitura={somenteLeitura}
         >
           <span>Usuários notificados: {usuariosNotificacao}</span>
         </Container>
@@ -31,10 +32,12 @@ const ListaNotificacoes = ({ obs }) => {
 
 ListaNotificacoes.propTypes = {
   obs: PropTypes.oneOfType([PropTypes.object]),
+  somenteLeitura: PropTypes.bool,
 };
 
 ListaNotificacoes.defaultProps = {
   obs: {},
+  somenteLeitura: false,
 };
 
 export default ListaNotificacoes;

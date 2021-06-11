@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Queries
             if (!ultimosRegistrosIndividuaisAlunosTurma?.Any() ?? true) return alunos;
 
             var alunosComAusenciaRegistroIndividualPorDias = new List<AlunoPorTurmaResposta>();
-            foreach (var aluno in alunos)
+            foreach (var aluno in alunos.Where(a => a.EstaAtivo(DateTime.Now)))
             {
                 var ultimoRegistroIndividualAlunoTurma = ultimosRegistrosIndividuaisAlunosTurma.FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno);
                 if (ultimoRegistroIndividualAlunoTurma is null)

@@ -11,5 +11,6 @@ namespace SME.SGP.Dominio
         public long Id { get; set; }
         public string RF { get; set; }
         public string Usuario { get; set; }
+        public Guid? Perfil { get; set; }
     }
 }

@@ -17,6 +17,6 @@ namespace SME.SGP.Dominio
         public ConselhoClasseParecerConclusivo ConselhoClasseParecer { get; set; }
 
         public bool Excluido { get; set; }
-        public bool Migrado { get; set; }
+        public bool Migrado { get; set; }        
     }
 }

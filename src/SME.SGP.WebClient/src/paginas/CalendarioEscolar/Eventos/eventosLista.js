@@ -308,11 +308,19 @@ const EventosLista = ({ match }) => {
     }
   }, [match, setFiltroCalendario]);
 
+  const onChangeTipoEvento = tipo => {
+    setTipoEvento(tipo);
+    filtrar('tipoEventoId', tipo);
+  };
+
   useEffect(() => {
     const obterListaEventos = async () => {
       const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
 
-      if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
+      if (tiposEvento?.data?.items) {
+        if (tiposEvento.data.items.length === 1) {
+          onChangeTipoEvento(String(tiposEvento.data.items[0].id));
+        }
         setListaTipoEvento(tiposEvento.data.items);
       } else {
         setListaTipoEvento([]);
@@ -479,11 +487,6 @@ const EventosLista = ({ match }) => {
   const onChangeNomeEvento = e => {
     setNomeEvento(e.target.value);
     filtrar('nomeEvento', e.target.value);
-  };
-
-  const onChangeTipoEvento = tipo => {
-    setTipoEvento(tipo);
-    filtrar('tipoEventoId', tipo);
   };
 
   const validaDataInicio = dataInicio => {
@@ -700,7 +703,9 @@ const EventosLista = ({ match }) => {
                     onChange={onChangeTipoEvento}
                     valueSelect={tipoEvento || undefined}
                     placeholder="Selecione um tipo"
-                    disabled={!selecionouCalendario}
+                    disabled={
+                      !selecionouCalendario || listaTipoEvento?.length === 1
+                    }
                   />
                 </div>
 

@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -16,13 +19,18 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class DiarioBordoController : ControllerBase
     {
-        [HttpGet("{id}")]
+
+        [HttpGet("{aulaId}")]
         [ProducesResponseType(typeof(DiarioBordoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> Obter([FromServices] IObterDiarioBordoUseCase useCase, long id)
+        public async Task<IActionResult> Obter([FromServices] IObterDiarioBordoUseCase useCase, long aulaId)
         {
-            return Ok(await useCase.Executar(id));
+            var result = await useCase.Executar(aulaId);
+            if (result == null)
+                return NoContent();
+				
+			return Ok(result);
         }
 
         [HttpGet("detalhes/{id}")]

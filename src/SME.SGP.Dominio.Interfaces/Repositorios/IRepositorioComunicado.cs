@@ -1,4 +1,6 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dto;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro;
 using SME.SGP.Infra.Dtos.EscolaAqui.Dashboard;
 using System.Collections.Generic;
@@ -19,6 +21,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> VerificaExistenciaComunicadoParaEvento(long eventoId);
 
         Task<IEnumerable<ComunicadoTurmaDto>> ObterComunicadosTurma(long comunicadoId);
-
+        Task<IEnumerable<ComunicadoAlunoReduzidoDto>> ObterComunicadosReduzidosPorTipo(TipoComunicado tipoComunicado);
+        Task<PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>> ObterComunicadosReduzidos(string dreCodigo, string ueCodigo, string turmaCodigo, string alunoCodigo, Paginacao paginacao);
     }
 }

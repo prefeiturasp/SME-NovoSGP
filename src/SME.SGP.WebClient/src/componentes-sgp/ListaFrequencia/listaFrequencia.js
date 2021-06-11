@@ -8,6 +8,7 @@ import { Lista, MarcadorSituacao, BtbAnotacao } from './listaFrequencia.css';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import tipoIndicativoFrequencia from '~/dtos/tipoIndicativoFrequencia';
 import ModalAnotacoesFrequencia from '~/paginas/DiarioClasse/FrequenciaPlanoAula/ModalAnotacoes/modalAnotacoes';
+import SinalizacaoAEE from '../SinalizacaoAEE/sinalizacaoAEE';
 
 const ListaFrequencia = props => {
   const {
@@ -238,7 +239,14 @@ const ListaFrequencia = props => {
                             <div className=" d-flex justify-content-start">
                               {aluno.nomeAluno}
                             </div>
-                            {btnAnotacao(aluno)}
+                            <div className=" d-flex justify-content-end">
+                              <div className="mr-3">
+                                <SinalizacaoAEE
+                                  exibirSinalizacao={aluno.ehAtendidoAEE}
+                                />
+                              </div>
+                              {btnAnotacao(aluno)}
+                            </div>
                           </div>
                         </td>
                         {dataSource[0].aulas.length > 0 ? (

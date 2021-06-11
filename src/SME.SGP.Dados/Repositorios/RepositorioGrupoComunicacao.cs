@@ -53,8 +53,8 @@ namespace SME.SGP.Dados.Repositorios
 						WHERE (gc.excluido = false)
 						{0}";
 
-		private readonly string queryObterIdGrupoPorModalidade = @"select id, etapa_ensino_id from grupo_comunicado
-																	where excluido = false and etapa_ensino_id notnull";
+		private readonly string queryObterIdGrupoPorModalidade = @"select id, etapa_ensino_id, nome from grupo_comunicado
+																	where excluido = false";
 
 
 		public RepositorioGrupoComunicacao(ISgpContext conexao) : base(conexao)
@@ -95,15 +95,9 @@ namespace SME.SGP.Dados.Repositorios
 			if (grupos == null || !grupos.Any())
 				throw new NegocioException($"Não foi encontrado grupos com a modalidade {modalidade.ToString()}");
 
-			var modalidadeString = ((int)modalidade).ToString();
+			var modalidadeNome = modalidade.Name().ToString() == "Infantil Pré-escola" ? "EMEI" : modalidade.Name().ToString();
 
-			var etapaEnsinoSplit = grupos.Select(x => new
-			{
-				Id = x.Id,
-				Etapas = x.EtapaEnsino.Split(',')
-			});
-
-			return etapaEnsinoSplit.Where(x => x.Etapas.Contains(modalidadeString)).Select(x => x.Id);
+			return  grupos.Where(x => x.Nome == modalidadeNome).Select(y => y.Id);
 		}
 	}
 }

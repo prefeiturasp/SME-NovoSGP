@@ -39,16 +39,18 @@ namespace SME.SGP.Aplicacao
                 if (abrangenciaHistorica != null && abrangenciaHistorica.Any())
                     lstAbrangencia.AddRange(abrangenciaHistorica);
 
-                var anosLetivosHistorico = await consultasAbrangencia.ObterAnosLetivos(true);
-                var anosLetivos = await consultasAbrangencia.ObterAnosLetivos(false);
+                //TODO: MELHORAR ISSO AQUI
+                var anosLetivosHistorico = await consultasAbrangencia.ObterAnosLetivos(true, 0);
+                var anosLetivos = await consultasAbrangencia.ObterAnosLetivos(false, 0);
                 int[] anosLetivosTipoCalendario = anosLetivosHistorico.Union(anosLetivos.ToArray()).ToArray();
+                //
 
                 string[] codigosUes = lstAbrangencia.Select(a => a.CodigoUe)?.Distinct()?.ToArray();
 
                 var modalidadesUes = await mediator.Send(new ObterModalidadesPorCodigosUeQuery(codigosUes));
 
                 var modalidadesTipoCalendarioUes = modalidadesUes.Select(a => a == Modalidade.EJA ? (int)ModalidadeTipoCalendario.EJA :
-                                                                              a == Modalidade.Infantil ? (int)ModalidadeTipoCalendario.Infantil :
+                                                                              a == Modalidade.InfantilPreEscola ? (int)ModalidadeTipoCalendario.Infantil :
                                                                                 (int)ModalidadeTipoCalendario.FundamentalMedio).ToArray();             
 
                 return await mediator.Send(new ObterTiposCalendariosPorAnosLetivoModalidadesQuery(anosLetivosTipoCalendario.Distinct().ToArray(), modalidadesTipoCalendarioUes));

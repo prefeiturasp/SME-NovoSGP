@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -31,6 +32,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
         public ConsultasFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
             IRepositorioTipoCalendario repositorioTipoCalendario,
@@ -50,7 +52,8 @@ namespace SME.SGP.Aplicacao
             IConsultasDisciplina consultasDisciplina,
             IConsultasFechamentoAluno consultasFechamentoAluno,
             IConsultasPeriodoFechamento consultasPeriodoFechamento,
-            IConsultasTurma consultasTurma
+            IConsultasTurma consultasTurma,
+            IMediator mediator
             )
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
@@ -72,6 +75,7 @@ namespace SME.SGP.Aplicacao
             this.consultasFehcamentoAluno = consultasFechamentoAluno ?? throw new ArgumentNullException(nameof(consultasFechamentoAluno));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public IEnumerable<Sintese> _sinteses { get; set; }
@@ -113,7 +117,7 @@ namespace SME.SGP.Aplicacao
                     periodoEscolar = consultasPeriodoEscolar.ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
             }
 
-            var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar);
+            var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
             return dadosAlunos.OrderBy(w => w.Nome);
         }
 
@@ -196,11 +200,14 @@ namespace SME.SGP.Aplicacao
                                            where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
                                            select ft).FirstOrDefault();
 
-                    var alunoDto = new NotaConceitoAlunoBimestreDto();
-                    alunoDto.CodigoAluno = aluno.CodigoAluno;
-                    alunoDto.NumeroChamada = aluno.NumeroAlunoChamada;
-                    alunoDto.Nome = aluno.NomeAluno;
-                    alunoDto.Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo);
+                    var alunoDto = new NotaConceitoAlunoBimestreDto
+                    {
+                        CodigoAluno = aluno.CodigoAluno,
+                        NumeroChamada = aluno.NumeroAlunoChamada,
+                        Nome = aluno.NomeAluno,
+                        Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo),
+                        EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
+                };
 
                     var anotacaoAluno = await consultasFehcamentoAluno.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
                     alunoDto.TemAnotacao = anotacaoAluno != null && anotacaoAluno.Anotacao != null &&
@@ -217,22 +224,21 @@ namespace SME.SGP.Aplicacao
                     {
                         alunoDto.QuantidadeFaltas = frequenciaAluno.TotalAusencias;
                         alunoDto.QuantidadeCompensacoes = frequenciaAluno.TotalCompensacoes;
-                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia;
+                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia.ToString();
                     }
                     else
-                    {
-                        // Quando não tem registro de frequencia assume 100%
+                    {                        
                         alunoDto.QuantidadeFaltas = 0;
                         alunoDto.QuantidadeCompensacoes = 0;
-                        alunoDto.PercentualFrequencia = 100;
+                        alunoDto.PercentualFrequencia = string.Empty;
                     }
 
                     // Carrega Frequencia do aluno
                     if (aluno.CodigoAluno != null)
                     {
                         if (fechamentoBimestre.EhSintese && fechamentoTurma == null)
-                        {
-                            var sinteseDto = await consultasFrequencia.ObterSinteseAluno(alunoDto.PercentualFrequencia, disciplinaEOL);
+                        {                            
+                            var sinteseDto = await consultasFrequencia.ObterSinteseAluno(frequenciaAluno.PercentualFrequencia, disciplinaEOL);
 
                             alunoDto.SinteseId = sinteseDto.Id;
                             alunoDto.Sintese = sinteseDto.Valor;

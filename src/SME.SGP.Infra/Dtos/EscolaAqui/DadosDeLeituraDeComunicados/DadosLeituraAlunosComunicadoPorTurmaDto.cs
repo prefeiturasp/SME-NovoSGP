@@ -11,6 +11,7 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados
         public string NomeResponsavel { get; set; }
         public string TelefoneResponsavel { get; set; }
         public bool PossueApp { get; set; }
+        public bool EhAtendidoAEE { get; set; }
         public bool LeuComunicado { get; set; }
         public DateTime? DataLeitura { get; set; }
         public DateTime? DataSituacaoAluno { get; set; }

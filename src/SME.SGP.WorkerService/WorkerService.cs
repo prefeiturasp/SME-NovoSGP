@@ -5,6 +5,8 @@ using Sentry;
 using SME.Background.Core;
 using SME.SGP.Api;
 using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using SME.SGP.IoC.Extensions;
 using System.Net;
@@ -70,6 +72,22 @@ namespace SME.SGP.Worker.Service
             RegistraClientesHttp.Registrar(services, configuration);
             Orquestrador.Inicializar(services.BuildServiceProvider());
             
+        }
+
+        internal static void ConfiguraVariaveisAmbiente(IServiceCollection services, IConfiguration configuration)
+        {
+            var configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
+            configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(configuracaoRabbitOptions);
+        }
+
+        internal static void ConfiguraGoogleClassroomSync(IServiceCollection services, IConfiguration configuration)
+        {
+            var googleClassroomSyncOptions = new GoogleClassroomSyncOptions();
+            configuration.GetSection(nameof(GoogleClassroomSyncOptions)).Bind(googleClassroomSyncOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(googleClassroomSyncOptions);
         }
     }
 }

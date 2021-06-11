@@ -19,7 +19,7 @@ namespace SME.SGP.Dto
         {
             get => Modalidade == Modalidade.EJA ?
                 ModalidadeTipoCalendario.EJA :
-                Modalidade == Modalidade.Infantil ?
+                Modalidade == Modalidade.InfantilPreEscola ?
                     ModalidadeTipoCalendario.Infantil :
                     ModalidadeTipoCalendario.FundamentalMedio;
         }

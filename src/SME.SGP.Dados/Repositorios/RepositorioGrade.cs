@@ -36,6 +36,38 @@ namespace SME.SGP.Dados.Repositorios
             return filtro.FirstOrDefault();
         }
 
+        public async Task<Grade> ObterGradeTurmaAno(TipoEscola tipoEscola, Modalidade modalidade, int duracao, int ano)
+        {
+            string query = @"select f.id as FiltroId, g.Id as GradeId, g.*
+                  from grade_filtro f
+                 inner join grade g on g.id = f.grade_id ";
+
+            if (ano > 0)
+                query += " inner join grade_disciplina gd on g.id = gd.grade_id ";
+
+            query += @" where f.tipo_escola = @tipoEscola
+                   and f.modalidade = @modalidade
+                   and f.duracao_turno = @duracao";
+
+            if (ano > 0)
+                query += " and gd.ano = @ano ";
+
+
+            var filtro = await database.Conexao.QueryAsync<GradeFiltro, Grade, Grade>(query,
+                (gradeFiltro, grade) =>
+                {
+                    return grade;
+                }, new
+                {
+                    tipoEscola,
+                    modalidade,
+                    duracao,
+                    ano
+                }, splitOn: "FiltroId, GradeId");
+
+            return filtro.FirstOrDefault();
+        }
+
         public async Task<int> ObterHorasComponente(long gradeId, long componenteCurricular, int ano)
         {
             var query = @"select gd.quantidade_aulas

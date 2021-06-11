@@ -2,7 +2,11 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BarraNavegacao } from '~/componentes';
-import { setPaginaAtiva } from '~/redux/modulos/devolutivas/actions';
+import {
+  setPaginaAtiva,
+  setPlanejamentoExpandido,
+  setPlanejamentoSelecionado,
+} from '~/redux/modulos/devolutivas/actions';
 
 const BarraNavegacaoPlanejamento = React.memo(props => {
   const { onChangePage } = props;
@@ -35,6 +39,8 @@ const BarraNavegacaoPlanejamento = React.memo(props => {
       setPaginaAtiva(pagina);
       dispatch(setPaginaAtiva(pagina));
       onChangePage(pagina.id);
+      dispatch(setPlanejamentoExpandido(false));
+      dispatch(setPlanejamentoSelecionado([]));
     },
     [onChangePage, dispatch]
   );

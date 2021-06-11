@@ -21,6 +21,7 @@ const RotasDto = {
   CADASTRO_DE_AVALIACAO:
     '/calendario-escolar/calendario-professor/cadastro-avaliacao',
   FREQUENCIA_PLANO_AULA: '/diario-classe/frequencia-plano-aula',
+  ACOMPANHAMENTO_FREQUENCIA: '/diario-classe/acompanhamento-frequencia',
   TIPO_AVALIACAO: '/configuracoes/tipo-avaliacao',
   NOTAS: '/diario-classe/notas',
   AULA_DADA_AULA_PREVISTA: '/diario-classe/aula-dada-aula-prevista',
@@ -49,11 +50,11 @@ const RotasDto = {
   RELATORIO_PARECER_CONCLUSIVO: '/relatorios/parecer-conclusivo',
   RELATORIO_NOTAS_CONCEITOS_FINAIS: '/relatorios/notas-conceitos-finais',
   RELATORIO_COMPENSACAO_AUSENCIA: '/relatorios/compensacao-ausencia',
-  RELATORIO_ESCOLA_AQUI_DASHBOARD: '/relatorios/escola-aqui/dashboard',
   DEVOLUTIVAS: '/diario-classe/devolutiva',
   REGISTRO_INDIVIDUAL: '/diario-classe/registro-individual',
   CONTROLE_GRADE: '/relatorios/diario-classe/controle-grade',
-  RELATORIO_PLANEJAMENTO_DIARIO: '/relatorios/diario-classe/planejamento-diario',
+  RELATORIO_PLANEJAMENTO_DIARIO:
+    '/relatorios/diario-classe/planejamento-diario',
   POC_EDITOR: '/editor',
   SONDAGEM: '/sondagem',
   POC_UPLOAD_ARQUIVOS: '/upload-arquivos',
@@ -64,7 +65,16 @@ const RotasDto = {
   RELATORIO_ALTERACAO_NOTAS: '/relatorios/fechamento/historico-alteracao-notas',
   RELATORIO_LEITURA: '/relatorios/escola-aqui/leitura',
   RELATORIO_ESCOLA_AQUI_ADESAO: '/relatorios/escola-aqui/adesao',
+  RELATORIO_AEE_ENCAMINHAMENTO: '/aee/encaminhamento',
   OCORRENCIAS: '/gestao/ocorrencias',
+  RELATORIO_AEE_REGISTRO_ITINERANCIA: '/aee/registro-itinerancia',
+  RELATORIO_AEE_PLANO: '/aee/plano',
+  ACOMPANHAMENTO_APRENDIZAGEM: '/fechamento/acompanhamento-aprendizagem',
+  RELATORIO_DEVOLUTIVAS: '/relatorios/planejamento/devolutivas',
+  DASHBOARD_ESCOLA_AQUI: '/dashboard/escola-aqui',
+  DASHBOARD_AEE: '/dashboard/aee',
+  DASHBOARD_REGISTRO_ITINERANCIA: '/dashboard/registro-itinerancia',
+  DASHBOARD_FREQUENCIA: '/dashboard/frequencia',
 };
 
 export default RotasDto;

@@ -227,7 +227,7 @@ export default function ReiniciarSenhaEA() {
   const carregarUes = useCallback(
     async dre => {
       const ues = await api.get(
-        `/v1/abrangencias/${consideraHistorico}/dres/${dre}/ues`
+        `/v1/abrangencias/${consideraHistorico}/dres/${dre}/ues?consideraNovasUEs=${true}`
       );
       if (ues.data) {
         setListaUes(ues.data);

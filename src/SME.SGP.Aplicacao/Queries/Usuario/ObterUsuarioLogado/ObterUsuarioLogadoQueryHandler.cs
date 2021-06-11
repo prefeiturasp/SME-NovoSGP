@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
         public string ObterLoginAtual()
         {
-            var loginAtual = contextoAplicacao.ObterVarivel<string>("login");
+            var loginAtual = contextoAplicacao.ObterVariavel<string>("login");
             if (loginAtual == null)
                 throw new NegocioException("Não foi possível localizar o login no token");
 
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
         }
         public string ObterClaim(string nomeClaim)
         {
-            var claim = contextoAplicacao.ObterVarivel<IEnumerable<InternalClaim>>("Claims").FirstOrDefault(a => a.Type == nomeClaim);
+            var claim = contextoAplicacao.ObterVariavel<IEnumerable<InternalClaim>>("Claims").FirstOrDefault(a => a.Type == nomeClaim);
             return claim?.Value;
         }
         public Guid ObterPerfilAtual()

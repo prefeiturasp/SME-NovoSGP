@@ -26,23 +26,35 @@ namespace SME.SGP.Aplicacao
             //TODO: Modificar para mediatr
             var parametroDiasSemRegistroIndividual = await ObterDiasDeAusenciaParaPendenciaRegistroIndividualAsync();
 
-            if (parametroDiasSemRegistroIndividual > 0)
-            {
-                var alunosDaTurmaComPendencia = (await mediator.Send(new ListarAlunosCodigosPorTurmaComponenteComPendenciaQuery(turma.Id, filtro.ComponenteCurricularId))).ToList();
+            var alunosDaTurmaComPendencia = (await mediator.Send(new ListarAlunosCodigosPorTurmaComponenteComPendenciaQuery(turma.Id, filtro.ComponenteCurricularId))).ToList();
 
-                if (alunosDaTurmaComPendencia.Any())
+            var alunosDadosBasicosDTO = await ObterAlunoTemAtendimentoPlanoAEE(turma, alunosParaRegistroIndividual);
+
+            if (parametroDiasSemRegistroIndividual > 0 && alunosDaTurmaComPendencia.Any())
+            {
+                var alunosComPendencia = alunosParaRegistroIndividual.Where(a => alunosDaTurmaComPendencia.Contains(long.Parse(a.CodigoEOL))).ToList();
+                foreach (var alunoDaTurma in alunosComPendencia)
                 {
-                    var alunosComPendencia = alunosParaRegistroIndividual.Where(a => alunosDaTurmaComPendencia.Contains(long.Parse(a.CodigoEOL))).ToList();
-                    foreach (var alunoDaTurma in alunosComPendencia)
-                    {
-                        var registroParaAlterar = alunosParaRegistroIndividual.FirstOrDefault(a => a.CodigoEOL == alunoDaTurma.CodigoEOL);
-                        registroParaAlterar.MarcaComoSemRegistroPorDias(parametroDiasSemRegistroIndividual);
-                    }
+                    var registroParaAlterar = alunosParaRegistroIndividual.FirstOrDefault(a => a.CodigoEOL == alunoDaTurma.CodigoEOL);
+                    registroParaAlterar.MarcaComoSemRegistroPorDias(parametroDiasSemRegistroIndividual);
                 }
             }
 
-            return alunosParaRegistroIndividual;
+            return alunosDadosBasicosDTO;
         }
+
+        private async Task<List<AlunoDadosBasicosDto>> ObterAlunoTemAtendimentoPlanoAEE(Turma turma, IEnumerable<AlunoDadosBasicosDto> alunosParaRegistroIndividual)
+        {
+            var alunosDadosBasicosDTO = new List<AlunoDadosBasicosDto>();
+            foreach (var aluno in alunosParaRegistroIndividual)
+            {
+                aluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoEOL, turma.AnoLetivo));
+                alunosDadosBasicosDTO.Add(aluno);
+            }
+
+            return alunosDadosBasicosDTO;
+        }
+
         private async Task<int> ObterDiasDeAusenciaParaPendenciaRegistroIndividualAsync()
         {
             var parametroDiasSemRegistroIndividual = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual));

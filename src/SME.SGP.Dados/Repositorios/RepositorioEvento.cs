@@ -1095,8 +1095,7 @@ namespace SME.SGP.Dados.Repositorios
                                     on e.tipo_calendario_id = tc.id
                         where
                             e.tipo_calendario_id = @tipoCalendarioId
-                        and extract(year from e.data_inicio) = tc.ano_letivo
-                        and extract(year from e.data_fim) = tc.ano_letivo
+                        and extract(year from e.data_inicio) = tc.ano_letivo                        
                         and not e.excluido";
             return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId });
         }
@@ -1218,6 +1217,47 @@ namespace SME.SGP.Dados.Repositorios
 
                     return evento;
                 }, new { tipoEvento = (int)tipoEvento, data });
+        }
+
+        public async Task<IEnumerable<EventoDataDto>> ListarEventosItinerancia(long tipoCalendarioId, long itineranciaId, string codigoUE, string login, Guid perfil, bool historico = false)
+        {
+            var query = @"select distinct e.id,
+		                    e.data_inicio as Data,
+		                    e.nome,
+		                    case
+			                    when e.dre_id is not null and e.ue_id is null then 'DRE'
+	      	                    when e.dre_id is not null and e.ue_id is not null then 'UE'
+			                    else 'SME'
+		                    end tipoEvento,
+		                    au.Nome as UeNome,
+                            au.TipoEscola
+                    from evento e
+	                    inner join evento_tipo et
+		                    on e.tipo_evento_id = et.id 
+	                    inner join tipo_calendario tc
+		                    on e.tipo_calendario_id = tc.id
+	                    inner join f_abrangencia_ues(@login, @perfil, @historico) au
+		                    on e.ue_id = au.codigo
+		                    and ((tc.modalidade = 1 and au.modalidade_codigo in (5, 6)) 
+		                      or (tc.modalidade = 2 and au.modalidade_codigo = 3)
+		                      or (tc.modalidade = 3 and au.modalidade_codigo = 1))
+                        left join itinerancia i on i.evento_id = e.id
+                    where et.ativo 
+	                    and not et.excluido
+	                    and not e.excluido
+                        and e.ue_id = @codigoUE
+	                    and (i.id is null or i.id = @itineranciaId)
+	                    and extract(year from e.data_inicio) = tc.ano_letivo
+	                    and et.codigo = 28
+	                    and e.tipo_calendario_id = @tipoCalendarioId";
+            return await database.Conexao.QueryAsync<EventoDataDto>(query, new { tipoCalendarioId, itineranciaId, codigoUE, login, perfil, historico });
+        }
+
+        public async Task<long> ObterTipoCalendarioIdPorEvento(long eventoId)
+        {
+            var query = @"select tipo_calendario_id from evento where id = @eventoId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { eventoId });
         }
     }
 }
