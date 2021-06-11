@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<Aula>> Handle(ObterPendenciasAulasPorTipoQuery request, CancellationToken cancellationToken)
-            => await repositorioPendenciaAula.ListarPendenciasPorTipo(request.TipoPendenciaAula, request.TabelaReferencia, request.Modalidades);
+            => await repositorioPendenciaAula.ListarPendenciasPorTipo(request.TipoPendenciaAula, request.TabelaReferencia, request.Modalidades, request.AnoLetivo);
     }
 }
