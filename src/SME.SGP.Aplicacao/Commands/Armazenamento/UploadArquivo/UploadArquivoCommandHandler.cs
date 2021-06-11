@@ -12,7 +12,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class UploadArquivoCommandHandler : IRequestHandler<UploadArquivoCommand, Guid>
+    public class UploadArquivoCommandHandler : IRequestHandler<UploadArquivoCommand, ArquivoArmazenadoDto>
     {
         private readonly IMediator mediator;
 
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<Guid> Handle(UploadArquivoCommand request, CancellationToken cancellationToken)
+        public async Task<ArquivoArmazenadoDto> Handle(UploadArquivoCommand request, CancellationToken cancellationToken)
         {
             if (request.TipoConteudo != TipoConteudoArquivo.Indefinido)
             {
@@ -30,15 +30,15 @@ namespace SME.SGP.Aplicacao
             }
 
             var nomeArquivo = request.Arquivo.FileName;
-            var caminhoArquivo = ObterCaminhoArquivo(request.Tipo, request.Arquivo);
+            var caminhoArquivo = ObterCaminhoArquivo(request.Tipo);
 
             var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, request.Tipo, request.Arquivo.ContentType));
             await mediator.Send(new ArmazenarArquivoFisicoCommand(request.Arquivo, arquivo.Codigo.ToString(), caminhoArquivo));
 
-            return arquivo.Codigo;
+            return arquivo;
         }
 
-        private string ObterCaminhoArquivo(TipoArquivo tipo, IFormFile arquivo)
+        private string ObterCaminhoArquivo(TipoArquivo tipo)
         {
             var caminho = Path.Combine(ObterCaminhoArquivos(), tipo.ToString());
             return VerificaCaminhoExiste(caminho);

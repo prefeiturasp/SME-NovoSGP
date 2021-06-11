@@ -33,5 +33,6 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
 
         [JsonProperty("grupoMatriz")]
         public GrupoMatriz GrupoMatriz { get; set; }
+        public string TurmaCodigo { get; internal set; }
     }
 }

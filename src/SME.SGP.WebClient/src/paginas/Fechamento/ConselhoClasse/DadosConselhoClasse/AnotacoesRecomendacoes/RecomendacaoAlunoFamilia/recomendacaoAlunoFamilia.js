@@ -34,7 +34,7 @@ const RecomendacaoAlunoFamilia = props => {
       <CardCollapse
         key="recomendacao-aluno-familia-collapse"
         onClick={onClickExpandirRecomendacao}
-        titulo="Recomendações ao aluno e a família"
+        titulo="Recomendações ao estudante e a família"
         indice="recomendacao-aluno-familia-collapse"
         show={exibirCardRecomendacao}
         alt="recomendacao-aluno-familia"
@@ -43,7 +43,7 @@ const RecomendacaoAlunoFamilia = props => {
           <div className="row">
             <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6">
               <JoditEditor
-                label="Recomendações ao aluno"
+                label="Recomendações ao estudante"
                 id="recomendacao-aluno"
                 value={dadosIniciais.recomendacaoAluno}
                 onChange={onChangeAluno}

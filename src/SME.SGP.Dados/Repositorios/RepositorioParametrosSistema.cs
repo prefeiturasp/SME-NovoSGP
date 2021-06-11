@@ -120,7 +120,7 @@ namespace SME.SGP.Dados.Repositorios
                            where ano = @ano
                              and tipo = @tipo";
 
-            return await database.Conexao.QueryFirstAsync<ParametrosSistema>(query, new { tipo, ano });
+            return await database.Conexao.QueryFirstOrDefaultAsync<ParametrosSistema>(query, new { tipo, ano });
         }
 
         public async Task<IEnumerable<ParametrosSistema>> ObterParametrosPorTipoEAno(TipoParametroSistema tipo, int ano)
@@ -132,6 +132,20 @@ namespace SME.SGP.Dados.Repositorios
                              and ativo";
 
             return await database.Conexao.QueryAsync<ParametrosSistema>(query.ToString(), new { tipo, ano });
+        }
+
+        public async Task<string> ObterNovosTiposUEPorAno(int anoLetivo)
+        {
+            var query = @"select STRING_AGG(valor, ',') from parametros_sistema ps where ano >= @anoLetivo and tipo = 55";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { anoLetivo });
+        }
+
+        public async Task<string> ObterNovasModalidadesAPartirDoAno(int anoLetivo)
+        {
+            var query = @"select STRING_AGG(valor, ',') from parametros_sistema ps where ano >= @anoLetivo and tipo = @tipo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { anoLetivo, tipo = TipoParametroSistema.NovasModalidades });
         }
     }
 }

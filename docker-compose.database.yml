@@ -11,19 +11,15 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: postgres      
       POSTGRES_DB: sgp_db
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - sme-network
-  sme-redis:
-    image: redis:5.0.5-alpine
-    container_name: sme-redis
-    ports:
-      - "6379:6379"
   sme-flyway:
     container_name: sme-flyway
+    restart: on-failure:5
     image: boxfuse/flyway:5.2.4
     command: -url=jdbc:postgresql://sme-db:5432/sgp_db?user=postgres&password=postgres -locations='filesystem:/opt/scripts' -outOfOrder=true migrate
     volumes:

@@ -21,6 +21,7 @@ import {
   history,
   confirmar,
   verificaSomenteConsulta,
+  ehTurmaInfantil,
 } from '~/servicos';
 
 const ListaOcorrencias = () => {
@@ -37,11 +38,22 @@ const ListaOcorrencias = () => {
   const { turmaSelecionada, permissoes } = usuario;
   const { podeExcluir, podeIncluir } = permissoes[RotasDto.OCORRENCIAS];
 
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
+
   useEffect(() => {
-    setSomenteConsulta(
-      verificaSomenteConsulta(permissoes[RotasDto.OCORRENCIAS])
+    const ehInfantil = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
     );
-  }, [permissoes]);
+
+    const soConsulta = verificaSomenteConsulta(
+      permissoes[RotasDto.OCORRENCIAS],
+      !ehInfantil
+    );
+    setSomenteConsulta(soConsulta);
+  }, [permissoes, modalidadesFiltroPrincipal, turmaSelecionada]);
 
   const ehModalidadeInfantil = () => {
     return turmaSelecionada?.turma

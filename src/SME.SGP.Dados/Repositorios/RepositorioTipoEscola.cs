@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -14,6 +15,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public RepositorioTipoEscola(ISgpContext database) : base(database)
         {
+        }
+
+        public async Task<TipoEscolaEol> ObterPorCodigoAsync(long codigo)
+        {
+            var query = "select tp.*  from tipo_escola tp where tp.cod_tipo_escola_eol = @codigo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<TipoEscolaEol>(query, new { codigo });
         }
 
         public void Sincronizar(IEnumerable<TipoEscolaEol> tiposEscola)

@@ -106,6 +106,9 @@ namespace SME.SGP.Dominio
             return Perfis.Any(c => c.CodigoPerfil == PerfilAtual && PerfilAtual == Dominio.Perfis.PERFIL_AD);
         }
 
+        public bool EhCoordenadorCEFAI()
+            => PerfilAtual == Dominio.Perfis.PERFIL_CEFAI;
+
         public bool EhPerfilProfessor()
             => EhProfessor()
             || EhProfessorCj()
@@ -150,6 +153,19 @@ namespace SME.SGP.Dominio
                 || PerfilAtual == Dominio.Perfis.PERFIL_CJ_INFANTIL;
         }
 
+        public bool EhGestorEscolar()
+            => EhCP()
+            || EhAD()
+            || EhDiretor();
+
+        private bool EhCP()
+            => PerfilAtual == Dominio.Perfis.PERFIL_CP;
+
+        private bool EhAD()
+            => PerfilAtual == Dominio.Perfis.PERFIL_AD;
+
+        private bool EhDiretor()
+            => PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR;
 
         public bool EhProfessorPoa()
         {
@@ -200,6 +216,10 @@ namespace SME.SGP.Dominio
             if (possuiPerfilPrioritario)
                 return Dominio.Perfis.PERFIL_CJ_INFANTIL;
 
+            possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilComunicadosUe() && !possuiTurmaAtiva;
+            if (possuiPerfilPrioritario)
+                return Dominio.Perfis.PERFIL_COMUNICADOS_UE;
+
             return Perfis.FirstOrDefault().CodigoPerfil;
         }
 
@@ -209,6 +229,8 @@ namespace SME.SGP.Dominio
                 perfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL)
                 Perfis = Perfis.OrderByDescending(o => o.EhPerfilInfantil());
         }
+
+
 
         public TipoPerfil? ObterTipoPerfilAtual()
         {
@@ -307,6 +329,10 @@ namespace SME.SGP.Dominio
            => Perfis != null &&
                Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR);
 
+        public bool PossuiPerfilComunicadosUe()
+           => Perfis != null &&
+               Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_COMUNICADOS_UE);
+
         public bool PossuiPerfilProfessorInfantil()
            => Perfis != null &&
                Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL);
@@ -373,6 +399,8 @@ namespace SME.SGP.Dominio
         {
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.UE);
         }
+
+
 
         public bool TemPerfilGestaoUes()
         {

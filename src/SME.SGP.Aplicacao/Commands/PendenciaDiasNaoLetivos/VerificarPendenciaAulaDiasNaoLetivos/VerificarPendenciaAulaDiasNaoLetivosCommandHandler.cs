@@ -19,12 +19,10 @@ namespace SME.SGP.Aplicacao
     public class VerificarPendenciaAulaDiasNaoLetivosCommandHandler : IRequestHandler<VerificarPendenciaAulaDiasNaoLetivosCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoNotificacao servicoNotificacao;
 
-        public VerificarPendenciaAulaDiasNaoLetivosCommandHandler(IMediator mediator, IServicoNotificacao servicoNotificacao)
+        public VerificarPendenciaAulaDiasNaoLetivosCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
         }
 
         public async Task<bool> Handle(VerificarPendenciaAulaDiasNaoLetivosCommand request, CancellationToken cancellationToken)
@@ -58,7 +56,7 @@ namespace SME.SGP.Aplicacao
         {
             var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
             var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
-            var aulas = await mediator.Send(new ObterAulasReduzidaPorTipoCalendarioQuery(tipoCalendarioId));
+            var aulas = await mediator.Send(new ObterAulasReduzidaPorTipoCalendarioQuery(tipoCalendarioId, ObterTiposDeEscolasValidos()));
 
             var diasComEventosNaoLetivos = diasLetivosENaoLetivos.Where(e => e.EhNaoLetivo);
 
@@ -110,6 +108,15 @@ namespace SME.SGP.Aplicacao
 
         private string[] ObterPerfisUsuarios()
             => new[] { "Professor", "CP" };
+
+        private static TipoEscola[] ObterTiposDeEscolasValidos()
+            => new[]
+            {
+                TipoEscola.EMEF,
+                TipoEscola.EMEFM,
+                TipoEscola.EMEBS,
+                TipoEscola.CEUEMEF
+            };
 
         private async Task<string> ObterDescricao(AulaReduzidaDto aula, TipoPendencia tipoPendencia)
         {

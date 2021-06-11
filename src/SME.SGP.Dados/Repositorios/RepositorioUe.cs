@@ -49,15 +49,17 @@ namespace SME.SGP.Dados.Repositorios
             return resultado;
         }
 
-        public async Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano)
+        public async Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas)
         {
             var query = @"select distinct t.modalidade_codigo from turma t
                                 inner join ue u
                                 on t.ue_id = u.id
-                                    where u.ue_id = @ueCodigo
-                                and t.ano_letivo = @ano";
+                            where u.ue_id = @ueCodigo
+                            and t.ano_letivo = @ano
+                            and (@modalidadesQueSeraoIgnoradas is null or not(t.modalidade_codigo = any(@modalidadesQueSeraoIgnoradas)))";
 
-            return await contexto.QueryAsync<Modalidade>(query, new { ueCodigo, ano });
+            var modalidadesQueSeraoIgnoradasArray = modalidadesQueSeraoIgnoradas.Select(x => (int)x).ToArray();
+            return await contexto.QueryAsync<Modalidade>(query, new { ueCodigo, ano, modalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradasArray });
         }
 
         public Ue ObterPorCodigo(string ueId)
@@ -76,8 +78,23 @@ namespace SME.SGP.Dados.Repositorios
             {
                 ue.AdicionarDre(dre);
                 return ue;
-            }, 
+            },
             new { ueCodigo })).FirstOrDefault();
+        }
+
+        public async Task<Ue> ObterUeComDrePorId(long ueId)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue.id = @ueId";
+
+            return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                return ue;
+            },
+            new { ueId })).FirstOrDefault();
         }
 
         public IEnumerable<Ue> ObterTodas()
@@ -141,6 +158,20 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.QueryFirstOrDefault<Ue>(query, new { turmaId });
         }
 
+        public async Task<Ue> ObterUEPorTurmaId(long turmaId)
+        {
+            var query = @"select
+                            escola.*
+                        from
+                            ue escola
+                        inner
+                        join turma t on
+                        t.ue_id = escola.id
+                        where
+                            t.id = @turmaId";
+            return await contexto.QueryFirstOrDefaultAsync<Ue>(query, new { turmaId });
+        }
+
         public async Task<IEnumerable<Ue>> SincronizarAsync(IEnumerable<Ue> entidades, IEnumerable<Dre> dres)
         {
             List<Ue> resultado = new List<Ue>();
@@ -152,17 +183,10 @@ namespace SME.SGP.Dados.Repositorios
                 var armazenados = await contexto.Conexao.QueryAsync<Ue>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoUe}'"))));
 
                 var novos = iteracao.Where(x => !armazenados.Select(y => y.CodigoUe).Contains(x.CodigoUe));
+                
+                await PersisteNovosRegistros(dres, resultado, novos);
 
-                foreach (var item in novos)
-                {
-                    item.DataAtualizacao = DateTime.Today;
-                    item.Dre = dres.First(x => x.CodigoDre == item.Dre.CodigoDre);
-                    item.DreId = item.Dre.Id;
-                    item.Id = (long)await contexto.Conexao.InsertAsync(item);
-                    resultado.Add(item);
-                }
-
-                var modificados = from c in entidades
+                var modificados = from c in iteracao
                                   join l in armazenados on c.CodigoUe equals l.CodigoUe
                                   where l.DataAtualizacao != DateTime.Today &&
                                         (c.Nome != l.Nome ||
@@ -189,6 +213,18 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return resultado;
+        }
+
+        private async Task PersisteNovosRegistros(IEnumerable<Dre> dres, List<Ue> resultado, IEnumerable<Ue> novos)
+        {
+            foreach (var item in novos)
+            {
+                item.DataAtualizacao = DateTime.Today;
+                item.Dre = dres.First(x => x.CodigoDre == item.Dre.CodigoDre);
+                item.DreId = item.Dre.Id;
+                item.Id = (long)await contexto.Conexao.InsertAsync(item);
+                resultado.Add(item);
+            }
         }
 
         public async Task<bool> ValidarUeEducacaoInfantil(long ueId)
@@ -265,6 +301,67 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select count(id) from turma where ano between '1' and '9' and ue_id = @ueId and ano_letivo = @ano";
 
             return await contexto.Conexao.QueryFirstOrDefaultAsync<int>(query, new { ueId, ano });
-       }
+        }
+
+        public async Task<IEnumerable<Ue>> ObterUesPorIds(long[] ids)
+        {
+            var query = @"select * from ue where id = ANY(@ids)";
+
+            return await contexto.QueryAsync<Ue>(query, new { ids });
+        }
+
+        public async Task<long> IncluirAsync(Ue ueParaIncluir)
+        {
+            return (long)await contexto.Conexao.InsertAsync(ueParaIncluir);
+        }
+
+        public async Task AtualizarAsync(Ue ueParaAtualizar)
+        {
+            await contexto.Conexao.UpdateAsync(ueParaAtualizar);
+        }
+
+        public async Task<IEnumerable<Ue>> ObterUEsComDREsPorIds(long[] ids)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue.id = ANY(@ids)";
+
+            return await contexto.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.Dre = dre;
+
+                return ue;
+            }, new { ids });
+        }
+
+        public async Task<Ue> ObterUePorId(long id)
+        {
+            var query = @"select ue.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue.id = @id";
+
+            return await contexto.QueryFirstAsync<Ue>(query);
+        }
+
+        public async Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo)
+        {
+            var query = "select tipo_escola from ue where ue_id = @ueCodigo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<TipoEscola>(query, new { ueCodigo });
+        }
+
+        public async Task<IEnumerable<string>> ObterUesCodigosPorDreAsync(long dreId)
+        {
+            return await contexto.Conexao.QueryAsync<string>("select ue_id from ue where dre_id = @dreId", new { dreId });
+        }
+
+        public async Task<int> ObterQuantidadeUesPorAnoLetivoAsync(int anoLetivo)
+        {
+            var query = @"select count(distinct(t.ue_id)) from turma t where t.ano_letivo = @anoLetivo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<int>(query, new { anoLetivo });
+        }
     }
 }

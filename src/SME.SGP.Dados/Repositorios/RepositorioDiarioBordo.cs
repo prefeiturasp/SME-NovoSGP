@@ -57,7 +57,16 @@ namespace SME.SGP.Dados.Repositorios
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
-            query = $"select db.planejamento, a.aula_cj as AulaCj, a.data_aula as Data {condicao} order by a.data_aula {offSet} ";
+            query = $@"select db.planejamento
+                            , regexp_replace(
+		                        regexp_replace(
+		                        regexp_replace(db.planejamento, E'<img[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi')
+		                        , E'<video[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi')
+		                        , E'<[^>]+>', ' ', 'gi') as PlanejamentoSimples
+                            , a.aula_cj as AulaCj
+                            , a.data_aula as Data 
+                            {condicao} 
+                            order by a.data_aula {offSet} ";
 
             return new PaginacaoResultadoDto<DiarioBordoDevolutivaDto>()
             {
@@ -130,7 +139,14 @@ namespace SME.SGP.Dados.Repositorios
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
                 new { devolutivaId });
 
-            query = $@"select db.planejamento, a.aula_cj as AulaCj, a.data_aula as Data
+            query = $@"select db.planejamento
+                            , regexp_replace(
+		                        regexp_replace(
+		                        regexp_replace(db.planejamento, E'<img[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi')
+		                        , E'<video[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi')
+		                        , E'<[^>]+>', ' ', 'gi') as PlanejamentoSimples
+                            , a.aula_cj as AulaCj
+                            , a.data_aula as Data
                         from diario_bordo db
                        inner join aula a on a.id = db.aula_id
                        where db.devolutiva_id = @devolutivaId

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 // Componentes
-import { Base } from '~/componentes';
+import { Base } from '~/componentes/colors';
 
 export const FundoCinza = styled.div`
   display: flex !important;

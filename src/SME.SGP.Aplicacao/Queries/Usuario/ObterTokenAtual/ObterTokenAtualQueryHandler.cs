@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Handle(ObterTokenAtualQuery request, CancellationToken cancellationToken)
         {
-            return contextoAplicacao.ObterVarivel<string>("TokenAtual");
+            return contextoAplicacao.ObterVariavel<string>("TokenAtual");
         }
     }
 }

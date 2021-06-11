@@ -36,6 +36,9 @@ namespace SME.SGP.Aplicacao
                 var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turma.CodigoTurma));
                 foreach (var periodoFechamentoBimestre in periodoFechamentoBimestres)
                 {
+                    if (periodoFechamentoBimestre.PeriodoEscolar.TipoCalendario.Modalidade == ModalidadeTipoCalendario.Infantil)
+                        continue;
+
                     var professoresTurma = await servicoEol.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
                     foreach (var professorTurma in professoresTurma)
                     {

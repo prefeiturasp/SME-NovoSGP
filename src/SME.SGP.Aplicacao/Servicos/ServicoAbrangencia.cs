@@ -373,7 +373,8 @@ namespace SME.SGP.Aplicacao.Servicos
                  DataInicio = z.DataInicioTurma,
                  SerieEnsino = z.SerieEnsino,
                  DataFim = z.DataFim,
-                 Extinta = z.Extinta
+                 Extinta = z.Extinta,
+                 TipoTurma = z.TipoTurma
              })));
 
             dres = await repositorioDre.SincronizarAsync(dres);

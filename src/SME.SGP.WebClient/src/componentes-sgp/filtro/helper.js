@@ -3,10 +3,13 @@ import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import { TOKEN_EXPIRADO } from '~/constantes';
 
 class FiltroHelper {
-  obterAnosLetivos = async ({ consideraHistorico }) => {
+  obterAnosLetivos = async ({ consideraHistorico, anoMinimo }) => {
     const anosLetivosLista = [];
 
-    return ServicoFiltro.listarAnosLetivos({ consideraHistorico })
+    return ServicoFiltro.listarAnosLetivos({
+      consideraHistorico,
+      anoMinimo: anoMinimo !== undefined ? anoMinimo : 0,
+    })
       .then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(ano => {
@@ -172,7 +175,7 @@ class FiltroHelper {
             });
           });
         }
-        return turmas.sort(this.ordenarLista('desc'));
+        return turmas;
       })
       .catch(e => {
         if (e?.message.indexOf(TOKEN_EXPIRADO) >= 0) return e;

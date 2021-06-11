@@ -48,6 +48,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioRecuperacaoParalelaPeriodo = repositorioRecuperacaoParalelaPeriodo ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalelaPeriodo));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<RecuperacaoParalelaListagemDto> Listar(FiltroRecuperacaoParalelaDto filtro)
@@ -64,14 +65,14 @@ namespace SME.SGP.Aplicacao
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId, filtro.Ordenacao, periodoEscolarAtual);
         }
 
-        public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, 
+        public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano,
             int anoLetivo, int? pagina)
         {
             var totalResumo = await repositorioRecuperacaoParalela.ListarTotalResultado(periodo, dreId, ueId, cicloId, turmaId, ano, anoLetivo, pagina);
             return MapearResultadoPaginadoParaDto(totalResumo);
         }
 
-        public async Task<IEnumerable<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, 
+        public async Task<IEnumerable<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano,
             int anoLetivo, int? pagina)
         {
             if (periodo.HasValue && periodo.Value != (int)PeriodoRecuperacaoParalela.Encaminhamento) return null;
@@ -87,7 +88,7 @@ namespace SME.SGP.Aplicacao
             return MapearParaDtoTotalEstudantes(total, totalAlunosPorSeries);
         }
 
-        public async Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, 
+        public async Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId,
             string ano, int anoLetivo)
         {
             var totalAlunosPorSeriesFrequencia = await repositorioRecuperacaoParalela.ListarTotalEstudantesPorFrequencia(periodo, dreId, ueId, cicloId, turmaId, ano, anoLetivo);
@@ -109,7 +110,7 @@ namespace SME.SGP.Aplicacao
             //adicionar na lista de recuperação paralela com o id zerado, com isso saberá que será um novo registro
             alunos.ForEach(x => alunosRecParalela.Add(new RetornoRecuperacaoParalela { AlunoId = Convert.ToInt64(x.CodigoAluno) }));
 
-            var retorno = alunosRecParalela.Select(s => new { s.AlunoId, s.Id }).Distinct();
+            var retorno = alunosRecParalela.Select(s => (s.AlunoId, s.Id)).Distinct();
             var alunoCriado = alunosRecParalela.OrderByDescending(o => o.CriadoEm).FirstOrDefault();
             var alunoAlterado = alunosRecParalela.OrderByDescending(o => o.AlteradoEm).FirstOrDefault();
 
@@ -139,32 +140,7 @@ namespace SME.SGP.Aplicacao
                     AlteradoPor = alunoAlterado.AlteradoPor,
                     AlteradoEm = alunoAlterado.AlteradoEm == DateTime.MinValue ? null : alunoAlterado.AlteradoEm,
                     AlteradoRF = alunoAlterado.AlteradoRF,
-                    Alunos = retorno.Select(a =>
-                    {
-                        var aluno = alunosEol.FirstOrDefault(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId);
-
-                        return new RecuperacaoParalelaAlunoListagemDto
-                        {
-                            Id = a.Id,
-                            Concluido = servicoRecuperacaoParalela.ObterStatusRecuperacaoParalela(
-                             alunosRecuperacaoParalela.Count(x => objetivos.Any(z => z.Id == x.ObjetivoId) && x.Id == a.Id),
-                             objetivos.Count()),
-                            ParecerConclusivo = aluno.ParecerConclusivo,
-                            Nome = aluno.NomeAluno,
-                            NumeroChamada = aluno.NumeroAlunoChamada,
-                            CodAluno = a.AlunoId,
-                            Turma = aluno.TurmaEscola,
-                            TurmaId = aluno.CodigoTurma.Equals(0) ? Convert.ToInt64(turma.CodigoTurma) : aluno.CodigoTurma,
-                            TurmaRecuperacaoParalelaId = turmaId,
-                            Respostas = alunosRecuperacaoParalela
-                                                     .Where(w => w.Id == a.Id && objetivos.Any(x => x.Id == w.ObjetivoId))
-                                                     .Select(s => new ObjetivoRespostaDto
-                                                     {
-                                                         ObjetivoId = s.ObjetivoId,
-                                                         RespostaId = s.RespostaId
-                                                     }).ToList()
-                        };
-                    }).ToList()
+                    Alunos = await ObterAlunos(retorno, alunosEol, alunosRecuperacaoParalela, objetivos, turmaId)
                 }
             };
 
@@ -181,7 +157,7 @@ namespace SME.SGP.Aplicacao
                         }));
 
             if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento && alunos.Any())
-            {   
+            {
                 //pegar as frequencias de acordo com os critérios
                 var frequencias = await servicoRecuperacaoParalela.ObterFrequencias(alunosEol.Select(w => w.CodigoAluno).ToArray(), string.Empty, alunos.First().Ano, (PeriodoRecuperacaoParalela)periodoId);
 
@@ -223,7 +199,7 @@ namespace SME.SGP.Aplicacao
             }
 
             switch (ordenacao)
-            {               
+            {
                 case RecuperacaoParalelaOrdenacao.AlfabeticoDecrescente:
                     recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderByDescending(w => w.Nome).ToList();
                     break;
@@ -241,6 +217,48 @@ namespace SME.SGP.Aplicacao
             }
 
             return recuperacaoRetorno;
+        }
+
+        private async Task<List<RecuperacaoParalelaAlunoListagemDto>> ObterAlunos(IEnumerable<(long AlunoId, long Id)> retorno, IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, IEnumerable<ObjetivoDto> objetivos, long turmaId)
+        {
+            List<RecuperacaoParalelaAlunoListagemDto> listaRetorno = new List<RecuperacaoParalelaAlunoListagemDto>();
+            foreach (var a in retorno)
+            {
+                var aluno = alunosEol.FirstOrDefault(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId);
+
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aluno.CodigoTurma.ToString()));
+
+                var ehAtendidoAEE = false;
+                if (turma != null)
+                {
+                    ehAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
+                }
+
+                listaRetorno.Add(new RecuperacaoParalelaAlunoListagemDto
+                {
+                    Id = a.Id,
+                    Concluido = servicoRecuperacaoParalela.ObterStatusRecuperacaoParalela(
+                     alunosRecuperacaoParalela.Count(x => objetivos.Any(z => z.Id == x.ObjetivoId) && x.Id == a.Id),
+                     objetivos.Count()),
+                    ParecerConclusivo = aluno.ParecerConclusivo,
+                    Nome = aluno.NomeAluno,
+                    NumeroChamada = aluno.NumeroAlunoChamada,
+                    CodAluno = a.AlunoId,
+                    Turma = aluno.TurmaEscola,
+                    TurmaId = aluno.CodigoTurma.Equals(0) ? Convert.ToInt64(turma.CodigoTurma) : aluno.CodigoTurma,
+                    TurmaRecuperacaoParalelaId = turmaId,
+                    EhAtendidoAEE = ehAtendidoAEE,
+                    Respostas = alunosRecuperacaoParalela
+                                             .Where(w => w.Id == a.Id && objetivos.Any(x => x.Id == w.ObjetivoId))
+                                             .Select(s => new ObjetivoRespostaDto
+                                             {
+                                                 ObjetivoId = s.ObjetivoId,
+                                                 RespostaId = s.RespostaId
+                                             }).ToList()
+                });
+            }
+
+            return listaRetorno;
         }
 
         private RecuperacaoParalelaTotalEstudanteDto MapearParaDtoTotalEstudantes(int total, IEnumerable<RetornoRecuperacaoParalelaTotalAlunosAnoDto> totalAlunosPorSeries)

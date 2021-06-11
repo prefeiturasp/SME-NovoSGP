@@ -45,10 +45,13 @@ import Reducer, {
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import { verificaSomenteConsulta } from '~/servicos';
 import { constant } from 'lodash';
 
 function RelatorioPAPAcompanhamento() {
   const usuario = useSelector(store => store.usuario);
+  const permissoesTela =
+    usuario.permissoes[RotasDto.RELATORIO_PAP_ACOMPANHAMENTO];
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
   const [periodo, setPeriodo] = useState(undefined);
   const [ordenacao, setOrdenacao] = useState(2);
@@ -302,7 +305,8 @@ function RelatorioPAPAcompanhamento() {
 
   useEffect(() => {
     limparTela();
-  }, [limparTela, turmaSelecionada]);
+    verificaSomenteConsulta(permissoesTela);
+  }, [limparTela, permissoesTela, turmaSelecionada]);
 
   return (
     <>
@@ -407,10 +411,12 @@ function RelatorioPAPAcompanhamento() {
               objetivoAtivo={estado.ObjetivoAtivo}
               respostas={respostasCorrentes}
               onChangeResposta={onChangeRespostaHandler}
-              somenteConsulta={permTela.podeConsultar &&
+              somenteConsulta={
+                permTela.podeConsultar &&
                 !permTela.podeIncluir &&
                 !permTela.podeAlterar &&
-                !permTela.podeExcluir}              
+                !permTela.podeExcluir
+              }
             />
           </Grid>
         </Card>

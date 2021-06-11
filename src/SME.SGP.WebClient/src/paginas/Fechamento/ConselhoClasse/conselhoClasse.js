@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Loader } from '~/componentes';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
@@ -83,14 +82,14 @@ const ConselhoClasse = () => {
   }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
-    if (turmaSelecionada.turma != turmaAtual) {
+    if (turmaSelecionada.turma !== turmaAtual) {
       setTurmaAtual(turmaSelecionada.turma);
     }
     resetarInfomacoes();
     if (
       turmaSelecionada &&
       turmaSelecionada.turma &&
-      turmaSelecionada.turma == turmaAtual &&
+      turmaSelecionada.turma === turmaAtual &&
       !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
     ) {
       obterDadosBimestresConselhoClasse();

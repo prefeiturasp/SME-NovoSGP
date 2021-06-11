@@ -29,6 +29,10 @@ const ObjectCardConselhoClasse = () => {
       store.conselhoClasse.dadosPrincipaisConselhoClasse.fechamentoTurmaId
   );
 
+  const desabilitarCampos = useSelector(
+    store => store.conselhoClasse.desabilitarCampos
+  );
+
   const gerarConselhoClasseAluno = async () => {
     setGerandoConselhoClasse(true);
     await ServicoConselhoClasse.gerarConselhoClasseAluno(
@@ -51,6 +55,7 @@ const ObjectCardConselhoClasse = () => {
         dados={dadosAlunoObjectCard}
         desabilitarImprimir={!salvouJustificativa && !conselhoClasseAlunoId}
         onClickImprimir={gerarConselhoClasseAluno}
+        permiteAlterarImagem={!desabilitarCampos}
       />
     </Loader>
   );

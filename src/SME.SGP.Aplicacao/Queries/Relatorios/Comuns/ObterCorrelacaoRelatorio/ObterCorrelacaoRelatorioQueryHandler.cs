@@ -14,11 +14,9 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioCorrelacaoRelatorio = repositorioCorrelacaoRelatorio;
         }
-        public Task<RelatorioCorrelacao> Handle(ObterCorrelacaoRelatorioQuery request, CancellationToken cancellationToken)
+        public async Task<RelatorioCorrelacao> Handle(ObterCorrelacaoRelatorioQuery request, CancellationToken cancellationToken)
         {
-            var correlacao = repositorioCorrelacaoRelatorio.ObterCorrelacaoJasperPorCodigo(request.CodigoCorrelacao);
-
-            return Task.FromResult(correlacao);
+            return await repositorioCorrelacaoRelatorio.ObterCorrelacaoJasperPorCodigoAsync(request.CodigoCorrelacao);            
         }
     }
 

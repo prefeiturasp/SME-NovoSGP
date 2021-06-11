@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPlanoAulaCommandHandler : AbstractUseCase, IRequestHandler<SalvarPlanoAulaCommand, bool>
+    public class SalvarPlanoAulaCommandHandler : AbstractUseCase, IRequestHandler<SalvarPlanoAulaCommand, AuditoriaDto>
     {
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public async Task<bool> Handle(SalvarPlanoAulaCommand request, CancellationToken cancellationToken)
+        public async Task<AuditoriaDto> Handle(SalvarPlanoAulaCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -56,7 +56,8 @@ namespace SME.SGP.Aplicacao
 
                 var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-                await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
+                if(!usuario.EhGestorEscolar())
+                    await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
 
                 PlanoAula planoAula = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(planoAulaDto.AulaId));
                 planoAula = MapearParaDominio(planoAulaDto, planoAula);
@@ -102,15 +103,14 @@ namespace SME.SGP.Aplicacao
                     {
                         await repositorioObjetivosAula.SalvarAsync(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagem.Id, objetivoAprendizagem.ComponenteCurricularId));
                     }
+
+                return (AuditoriaDto)planoAula;
             }
             catch (Exception ex)
             {
                 unitOfWork.Rollback();
                 throw;
             }
-
-
-            return true;
         }
 
         private PlanoAula MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)

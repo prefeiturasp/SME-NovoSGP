@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { Base } from '~/componentes/colors';
 import { erro, erros, sucesso } from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
-import { downloadBlob } from '~/utils/funcoes/gerais';
+import { downloadBlob, permiteInserirFormato } from '~/utils/funcoes/gerais';
 
 const { Dragger } = Upload;
 
@@ -94,8 +94,13 @@ const UploadArquivos = props => {
   };
 
   const beforeUploadDefault = arquivo => {
+    if (!permiteInserirFormato(arquivo, tiposArquivosPermitidos)) {
+      erro('Formato não permitido');
+      return false;
+    }
+
     if (excedeuLimiteMaximo(arquivo)) {
-      erro('Tamanho máximo 100mb');
+      erro('Tamanho máximo 100 MB');
       return false;
     }
 
@@ -138,6 +143,11 @@ const UploadArquivos = props => {
     const novoMap = [...novaLista];
     setListaDeArquivos(novoMap);
     onChangeListaArquivos(novoMap);
+
+    if (form && form.setFieldValue) {
+      form.setFieldValue(name, novoMap);
+      form.setFieldTouched(name, true);
+    }
   };
 
   const onChange = ({ file, fileList }) => {
@@ -148,20 +158,28 @@ const UploadArquivos = props => {
       return;
     }
 
+    if (!permiteInserirFormato(file)) {
+      atualizaListaArquivos(fileList, file);
+      return;
+    }
+
+    const novoMap = [...fileList];
+
     if (status === 'done') {
       sucesso(`${file.name} arquivo carregado com sucesso`);
     } else if (status === 'error') {
       atualizaListaArquivos(fileList, file);
       return;
     }
-    const novoMap = [...fileList];
+    if (status === 'done' || status === 'removed') {
+      if (form && form.setFieldValue) {
+        form.setFieldValue(name, novoMap);
+        form.setFieldTouched(name, true);
+      }
+    }
+
     setListaDeArquivos(novoMap);
     onChangeListaArquivos(novoMap);
-
-    if (form && form.setFieldValue) {
-      form.setFieldValue(name, novoMap);
-      form.setFieldTouched(name, true);
-    }
   };
 
   const possuiErro = () => {
@@ -193,7 +211,14 @@ const UploadArquivos = props => {
           <InboxOutlined />
         </p>
         <p className="ant-upload-text">{textoUpload}</p>
-        <p className="ant-upload-hint">{textoFormatoUpload}</p>
+        <p className="ant-upload-hint">
+          {tiposArquivosPermitidos
+            ? textoFormatoUpload.replace(
+                'Todos os formatos',
+                `Os formatos ${tiposArquivosPermitidos}`
+              )
+            : textoFormatoUpload}
+        </p>
       </ContainerDragger>
     );
   };

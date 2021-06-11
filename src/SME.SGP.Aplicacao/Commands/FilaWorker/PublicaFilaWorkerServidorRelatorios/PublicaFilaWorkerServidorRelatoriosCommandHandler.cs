@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using Sentry;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Text;
 using System.Threading;

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class EnviarNotificacaoUsuariosCommand : IRequest<bool>
+    public class EnviarNotificacaoUsuariosCommand : IRequest<IEnumerable<long>>
     {
         public EnviarNotificacaoUsuariosCommand(string titulo, string mensagem, NotificacaoCategoria notificacaoCategoria, NotificacaoTipo tipoNotificacao, IEnumerable<long> usuarios, string dreCodigo = "", string ueCodigo = "", string turmaCodigo = "")
         {

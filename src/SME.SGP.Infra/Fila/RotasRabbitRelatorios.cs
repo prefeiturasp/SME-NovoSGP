@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Infra
 {
-    public static class RotasRabbitRelatorios
+    public static class RotasRabbitSgpRelatorios
     {
         public const string WorkerRelatoriosSgp = "sme.sr.workers.sgp";
 

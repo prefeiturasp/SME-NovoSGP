@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
         
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> Executar(string codigoDre)
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> Executar(string codigoDre, bool consideraNovasUEs = false)
         {
             var ues = new List<AbrangenciaUeRetorno>();
             if (!string.IsNullOrWhiteSpace(codigoDre) && codigoDre == "-99")
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            return await mediator.Send(new ObterFiltroRelatoriosUesPorAbrangenciaQuery(usuarioLogado, codigoDre));
+            return await mediator.Send(new ObterFiltroRelatoriosUesPorAbrangenciaQuery(usuarioLogado, codigoDre, consideraNovasUEs));
         }
     }
 }
