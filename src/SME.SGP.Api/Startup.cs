@@ -142,8 +142,6 @@ namespace SME.SGP.Api
 
             Orquestrador.Inicializar(serviceProvider);
 
-            //Provisório: Caso necessite sincronizar a estrutura, descomentar a linha abaixo e iniciar o projeto
-            //serviceProvider.GetService<IServicoAbrangencia>().SincronizarEstruturaInstitucionalVigenteCompleta();
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
             {
@@ -187,6 +185,7 @@ namespace SME.SGP.Api
             var googleClassroomSyncOptions = new GoogleClassroomSyncOptions();
             Configuration.GetSection(nameof(GoogleClassroomSyncOptions)).Bind(googleClassroomSyncOptions, c => c.BindNonPublicProperties = true);
 
+            services.AddMemoryCache();
             services.AddSingleton(googleClassroomSyncOptions);
         }
     }

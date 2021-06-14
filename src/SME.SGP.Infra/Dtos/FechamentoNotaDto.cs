@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
 {
@@ -14,5 +15,11 @@ namespace SME.SGP.Infra
         public long? ConceitoId { get; set; }
         public long? SinteseId { get; set; }
         public string Anotacao { get; set; }
+        public DateTime CriadoEm { get; set; }
+        public string CriadoRf { get; set; }
+        public string CriadoPor { get; set; }
+        public DateTime? AlteradoEm { get; set; }
+        public string AlteradoRf { get; set; }
+        public string AlteradoPor { get; set; }
     }
 }

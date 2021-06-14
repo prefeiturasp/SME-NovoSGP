@@ -22,81 +22,81 @@ namespace SME.SGP.Aplicacao
         public async Task<List<DiaLetivoDto>> Handle(ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery request, CancellationToken cancellationToken)
         {
             var datasDosPeriodosEscolares = new List<DiaLetivoDto>();
-            var eventos = (await repositorioEvento.ObterEventosPorTipoDeCalendarioAsync(request.TipoCalendarioId))?.Where(c => (c.EhEventoUE() || c.EhEventoSME()));
-            var periodosEventosFeriados = eventos?.Where(e => e.EhFeriado()).Select(e => (e.DataInicio.Date, e.DataFim));
+
+            var eventos = (await repositorioEvento
+                .ObterEventosPorTipoDeCalendarioAsync(request.TipoCalendarioId, EventoLetivo.Sim, EventoLetivo.Nao))?
+                .Where(c => (c.EhEventoUE() || c.EhEventoSME()));            
 
             foreach (var periodoEscolar in request.PeriodosEscolares.OrderBy(c => c.Bimestre))
-            {
-                datasDosPeriodosEscolares.AddRange(periodoEscolar.ObterIntervaloDatas(periodosEventosFeriados).Select(c => new DiaLetivoDto
+            {                
+                foreach (var diaAtual in periodoEscolar.ObterIntervaloDatas())
                 {
-                    Data = c,
-                    EhLetivo = eventos.Any(e => e.Letivo == EventoLetivo.Sim && c.Date >= e.DataInicio.Date && c.Date <= e.DataFim.Date) ||
-                               (!c.FimDeSemana() && !eventos.Any(e => e.Letivo == EventoLetivo.Nao && c.Date >= e.DataInicio.Date && c.Date <= e.DataFim.Date)),
-                    DreIds = ObterUnidades(eventos, c.Date, true).ToList(),
-                    UesIds = ObterUnidades(eventos, c.Date, false).ToList()
-                }));
-            }
+                    var diaLetivoDto = new DiaLetivoDto()
+                    {
+                        Data = diaAtual,
+                        PossuiEvento = false
+                    };
 
-            if (eventos != null)
-            {
-                datasDosPeriodosEscolares.AddRange(ObtemEventoLetivosFimDeSemana(eventos));
+                    var eventosComData = eventos
+                        .Where(e => diaAtual.Date >= e.DataInicio.Date && diaAtual.Date <= e.DataFim.Date)
+                        .ToList();
 
-                datasDosPeriodosEscolares.AddRange(ObtemEventosNaoLetivos(eventos));
-            }
+                    if (!eventosComData.Any())
+                    {
+                        diaLetivoDto.EhLetivo = !diaAtual.FimDeSemana();
+                        datasDosPeriodosEscolares.Add(diaLetivoDto);
+                        continue;
+                    }
+
+                    var eventosSME = eventosComData
+                        .Where(e => e.EhEventoSME());
+
+                    if (eventosSME.Any())
+                    {
+                        diaLetivoDto.EhLetivo = eventosSME.Any(e => e.EhEventoLetivo());
+                        diaLetivoDto.Motivo = eventosSME.First().Nome;
+                        diaLetivoDto.PossuiEvento = true;
+                        datasDosPeriodosEscolares.Add(diaLetivoDto);
+                        continue;
+                    }
+
+                    var eventosDRE = eventosComData
+                        .Where(e => e.EhEventoDRE());
+
+                    if (eventosDRE.Any())
+                    {
+                        diaLetivoDto.EhLetivo = eventosDRE.Any(e => e.EhEventoLetivo());
+                        diaLetivoDto.Motivo = eventosDRE.First().Nome;
+                        diaLetivoDto.DreIds = eventosDRE.Select(e => e.DreId).ToList();
+                        diaLetivoDto.PossuiEvento = true;
+                        datasDosPeriodosEscolares.Add(diaLetivoDto);
+                        continue;
+                    }
+
+                    var eventosLetivosNaoLetivosUE = eventosComData
+                        .Where(e => e.EhEventoUE());
+
+                    if (eventosLetivosNaoLetivosUE.Any())
+                    {
+                        eventosLetivosNaoLetivosUE.ToList().ForEach(elue =>
+                        {
+                            datasDosPeriodosEscolares.Add(new DiaLetivoDto()
+                            {
+                                Data = diaAtual,
+                                PossuiEvento = true,
+                                EhLetivo = elue.EhEventoLetivo(),
+                                Motivo = elue.Nome,
+                                UesIds = new List<string>() { elue.UeId }
+                            });
+                        });
+                    }                          
+
+                    diaLetivoDto.EhLetivo = !diaAtual.FimDeSemana();
+                    datasDosPeriodosEscolares.Add(diaLetivoDto);
+                }
+            }           
 
             return datasDosPeriodosEscolares;
-        }
-
-        private IEnumerable<DiaLetivoDto> ObtemEventosNaoLetivos(IEnumerable<Evento> eventos)
-        {
-            var datasComEventosNaoLetivos = eventos.Where(c => c.EhEventoNaoLetivo())
-                .SelectMany(evento => evento.ObterIntervaloDatas()
-                .Where(c => !c.FimDeSemana())
-                .Select(data => new DiaLetivoDto
-                {
-                    Data = data,
-                    EhLetivo = false,
-                    EhNaoLetivo = true,
-                    Motivo = evento.Nome,
-                    UesIds = string.IsNullOrWhiteSpace(evento.UeId) ? new List<string>() : new List<string> { evento.UeId },
-                    DreIds = string.IsNullOrWhiteSpace(evento.DreId) ? new List<string>() : new List<string> { evento.DreId },
-                    PossuiEvento = true
-                }));
-
-            return datasComEventosNaoLetivos;
-        }
-
-        private IEnumerable<DiaLetivoDto> ObtemEventoLetivosFimDeSemana(IEnumerable<Evento> eventos)
-        {
-            var datasComEventosFimDeSemana = eventos.Where(c => c.EhEventoLetivo())
-                .SelectMany(evento => evento.ObterIntervaloDatas()
-                .Where(c => c.FimDeSemana())
-                .Select(data => new DiaLetivoDto
-                {
-                    Data = data,
-                    EhLetivo = true,
-                    UesIds = string.IsNullOrWhiteSpace(evento.UeId) ? new List<string>() : new List<string> { evento.UeId },
-                    DreIds = string.IsNullOrWhiteSpace(evento.DreId) ? new List<string>() : new List<string> { evento.DreId },
-                    PossuiEvento = true
-                }));
-
-            return datasComEventosFimDeSemana;
-        }
-
-        private IList<string> ObterUnidades(IEnumerable<Evento> eventos, DateTime dataConsiderada, bool obterDres)
-        {
-            var listaRetorno = new List<string>();            
-
-            var eventosPorData = eventos?
-                .Where(e => dataConsiderada >= e.DataInicio.Date && dataConsiderada <= e.DataFim.Date && (obterDres ? e.EhEventoDRE() : e.EhEventoUE()));
-
-            if (eventosPorData != null && eventosPorData.Any())
-            {
-                listaRetorno.AddRange((from e in eventosPorData
-                                       select (obterDres ? e.DreId : e.UeId)).ToList());
-            }
-
-            return listaRetorno;
         }
     }
 }

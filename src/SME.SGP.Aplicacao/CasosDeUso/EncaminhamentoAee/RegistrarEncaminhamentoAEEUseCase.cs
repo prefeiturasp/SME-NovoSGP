@@ -2,7 +2,6 @@
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -26,15 +25,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (turma == null)
                 throw new NegocioException("A turma informada não foi encontrada");
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            if (await VerificaPodeCadastrar(turma, usuarioLogado) == false) {
-                throw new NegocioException("Você não pode realizar essa ação, somente professores da turma ou o gestor da escola!");
-            }
-
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(encaminhamentoAEEDto.AlunoCodigo, DateTime.Now.Year));
             if (aluno == null)
                 throw new NegocioException("O aluno informado não foi encontrado");
+
+            var alunoEncaminhamentoAEE = await mediator.Send(new ExisteEncaminhamentoAEEPorEstudanteQuery(encaminhamentoAEEDto.AlunoCodigo));
+            if (alunoEncaminhamentoAEE && encaminhamentoAEEDto.Id == 0)
+                throw new NegocioException("Estudante/Criança já possui encaminhamento AEE em aberto");
 
             if (!encaminhamentoAEEDto.Secoes.Any())
                 throw new NegocioException("Nenhuma seção foi encontrada");
@@ -45,6 +42,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 if (encaminhamentoAEE != null)
                 {
                     await AlterarEncaminhamento(encaminhamentoAEEDto, encaminhamentoAEE);
+
+                    if (await ParametroGeracaoPendenciaAtivo())
+                        await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(encaminhamentoAEE.Id, encaminhamentoAEEDto.Situacao));
+
                     return new ResultadoEncaminhamentoAEEDto() { Id = encaminhamentoAEE.Id };
                 }
             }
@@ -52,8 +53,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var resultadoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoAeeCommand(
             encaminhamentoAEEDto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno,
             encaminhamentoAEEDto.Situacao));
-
-
 
             await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
 
@@ -63,35 +62,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             return resultadoEncaminhamento;
         }
 
-        private async Task<bool> VerificaPodeCadastrar(Dominio.Turma turma, Usuario usuarioLogado)
-        {
-            return await EhProfessorDaTurma(usuarioLogado, turma) || await EhGestorDaEscolaDaTurma(usuarioLogado, turma);
-        }
-
         private Task<bool> EhUsuarioResponsavelPeloEncaminhamento(Usuario usuarioLogado, long? responsavelId)
             => Task.FromResult(responsavelId.HasValue && usuarioLogado.Id == responsavelId.Value);
-
-        private async Task<bool> EhProfessorDaTurma(Usuario usuarioLogado, Dominio.Turma turma)
-        {
-            if (!usuarioLogado.EhProfessor())
-                return false;
-
-            var professores = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
-
-            return professores.Any(a => a.ProfessorRf.ToString() == usuarioLogado.CodigoRf);
-        }
-
-        private async Task<bool> EhGestorDaEscolaDaTurma(Usuario usuarioLogado, Dominio.Turma turma)
-        {
-            if (!usuarioLogado.EhGestorEscolar())
-                return false;
-
-            var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turma.CodigoTurma));
-            if (ue == null)
-                throw new NegocioException($"Escola da turma [{turma.CodigoTurma}] não localizada.");
-
-            return await mediator.Send(new EhGestorDaEscolaQuery(usuarioLogado.CodigoRf, ue.CodigoUe, usuarioLogado.PerfilAtual));
-        }
 
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
         {
@@ -105,10 +77,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             encaminhamentoAEE.Situacao = encaminhamentoAEEDto.Situacao;
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamentoAEE));
 
-            if(encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado)
+            if (encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado)
             {
-                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id ));
-            } 
+                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id));
+            }
 
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {

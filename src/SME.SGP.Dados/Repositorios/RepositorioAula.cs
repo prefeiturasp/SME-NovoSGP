@@ -8,8 +8,6 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
                 data = data.Date,
                 turmaCodigo,
                 componenteCurricular
-            })).Count() > 0;
+            })).Any();
         }
 
         public async Task<bool> ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(DateTime data, string turmaCodigo, string componenteCurricular, string professorRf)
@@ -72,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
                 turmaCodigo,
                 componenteCurricular,
                 professorRf
-            })).Count() > 0;
+            })).Any();
         }
 
         public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplinaProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf)
@@ -302,24 +300,31 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<Aula> ObterAulasSemFrequenciaRegistrada(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
-            var query = @"select *
+            var query = @"select a.*, t.id, t.modalidade_codigo
                             from aula a
+                            inner join componente_curricular cc on a.disciplina_id::int8 = cc.id and cc.permite_registro_frequencia
+                            inner join turma t on a.turma_id = t.turma_id
                             left join registro_frequencia r on r.aula_id = a.id
-                           where turma_id = @codigoTurma
+                           where a.turma_id = @codigoTurma
 	                            and disciplina_id = @disciplinaId
 	                            and data_aula >= @inicioPeriodo
 	                            and data_aula <= @fimPeriodo
                                 and data_aula <= @dataAtual
 	                            and r.id is null
                                 and not a.excluido;";
-            return database.Conexao.Query<Aula>(query, new
+            return database.Conexao.Query<Aula, Turma, Aula>(query, (aula, turma) =>
+            {
+                aula.Turma = turma;
+                return aula;
+            },
+            new
             {
                 codigoTurma,
                 disciplinaId,
                 inicioPeriodo,
                 fimPeriodo,
                 dataAtual = DateTime.Now
-            });
+            }, splitOn: "id");
         }
 
         public IEnumerable<Aula> ObterAulasSemPlanoAulaNaDataAtual(string codigoTurma, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
@@ -657,7 +662,7 @@ namespace SME.SGP.Dados.Repositorios
                 workflowId
             });
 
-            return qtde > 0 ? true : false;
+            return qtde > 0;
         }
 
         public async Task<int> ObterQuantidadeDeAulasPorTurmaDisciplinaPeriodoAsync(string turmaId, string disciplinaId, DateTime inicio, DateTime fim)
@@ -949,9 +954,9 @@ namespace SME.SGP.Dados.Repositorios
                             a.criado_rf
                         order by
 	                        data_aula";
-            
-                return (await database.Conexao.QueryAsync<AulaReduzidaDto>(query, new { turmaId, componenteCurricularId, tipoCalendarioId, bimestre, professorCJ }));
-            
+
+            return (await database.Conexao.QueryAsync<AulaReduzidaDto>(query, new { turmaId, componenteCurricularId, tipoCalendarioId, bimestre, professorCJ }));
+
         }
 
         public async Task<int> ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolar(long turmaId, long componenteCurricularId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds)
@@ -1019,6 +1024,17 @@ namespace SME.SGP.Dados.Repositorios
 	                               not db.excluido;";
 
             return (await database.Conexao.QueryAsync<Aula>(sqlQuery, new { codigoTurma, tipoCalendarioId }));
+        }
+
+        public async Task<PeriodoEscolarInicioFimDto> ObterPeriodoEscolarDaAula(long aulaId)
+        {
+            var query = @"select pe.id, pe.bimestre, pe.periodo_inicio as DataInicio, pe.periodo_fim as DataFim
+                          from aula a
+                         inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id 
+                         where a.id = @aulaId
+                           and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarInicioFimDto>(query, new { aulaId });
         }
     }
 }
