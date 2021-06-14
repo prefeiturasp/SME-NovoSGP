@@ -111,7 +111,8 @@
         public const string CarregarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.carregar";
         public const string SincronizarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.sync";
 
-        public const string RotaCriarAulasRegenciaAutomaticamente = "aulas.regencia.criar";
-        public const string RotaSincronizarAulasRegencia = "aulas.regencia.sincronizar";
+        public const string CarregarDadosUeTurmaRegenciaAutomaticamente = "aulas.automaticas.regencia.ue.turma.carregar";
+        public const string SincronizarDadosUeTurmaRegenciaAutomaticamente = "aulas.automaticas.regencia.ue.turma.sync";
+        public const string SincronizarAulasRegenciaAutomaticamente = "aulas.automaticas.regencia.sync";
     }
 }

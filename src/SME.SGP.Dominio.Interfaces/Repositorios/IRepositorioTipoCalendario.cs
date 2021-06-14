@@ -20,7 +20,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<TipoCalendarioBuscaDto>> ListarPorAnosLetivoEModalidades(int[] anosLetivo, int[] modalidades);
 
         Task<IEnumerable<TipoCalendario>> BuscarPorAnoLetivo(int anoLetivo);
-        Task<IEnumerable<TipoCalendarioAulasAutomaticasDto>> ObterTiposCalendariosAulaAutomaticaPorAnoLetivosEModalidadesAsync(int anoLetivo, Modalidade[] modalidades);
         Task<string> ObterNomePorId(long tipoCalendarioId);
 
         Task<IEnumerable<TipoCalendario>> ObterTiposCalendario();

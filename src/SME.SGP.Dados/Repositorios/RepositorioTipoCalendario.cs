@@ -120,17 +120,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString());
         }
 
-        public async Task<IEnumerable<TipoCalendarioAulasAutomaticasDto>> ObterTiposCalendariosAulaAutomaticaPorAnoLetivosEModalidadesAsync(int anoLetivo, Modalidade[] modalidades)
-        {
-            var query = @"select id, t.modalidade
-                            from tipo_calendario t
-                           where t.ano_letivo = @anoLetivo
-                             and not t.excluido
-                             and t.modalidade =  ANY(@modalidadesArray)";
-            var modalidadesArray = modalidades.Cast<int>().ToArray();
-            return await database.Conexao.QueryAsync<TipoCalendarioAulasAutomaticasDto>(query, new { anoLetivo, modalidadesArray});
-        }
-
         public async Task<bool> VerificarRegistroExistente(long id, string nome)
         {
             StringBuilder query = new StringBuilder();
