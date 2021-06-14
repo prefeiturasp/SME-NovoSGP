@@ -27,8 +27,8 @@ namespace SME.SGP.Aplicacao
             var listaGraficos = new List<GraficoBaseDto>();
             foreach (var item in retornoConsulta)
             {
-                listaGraficos.Add(new GraficoBaseDto() { Descricao = item.Turma, Quantidade = item.QuantidadeTotalDiariosdeBordo });
-                listaGraficos.Add(new GraficoBaseDto() { Descricao = item.Turma, Quantidade = item.QuantidadeTotalDiariosdeBordoComDevolutiva });
+                listaGraficos.Add(new GraficoBaseDto() { Descricao = item.Ano == 0 ? item.Turma : item.Ano.ToString() , Quantidade = item.QuantidadeTotalDiariosdeBordo });
+                listaGraficos.Add(new GraficoBaseDto() { Descricao = item.Ano == 0 ? item.Turma : item.Ano.ToString(), Quantidade = item.QuantidadeTotalDiariosdeBordoComDevolutiva });
             }
             return listaGraficos;
         }
