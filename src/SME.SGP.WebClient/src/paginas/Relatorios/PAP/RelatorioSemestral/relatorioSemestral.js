@@ -5,7 +5,9 @@ import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Card from '~/componentes/card';
+import { RotasDto } from '~/dtos';
 import SelectComponent from '~/componentes/select';
+import { verificaSomenteConsulta } from '~/servicos';
 import {
   limparDadosRelatorioSemestral,
   setAlunosRelatorioSemestral,
@@ -33,6 +35,8 @@ const RelatorioSemestral = () => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const { turma, anoLetivo } = turmaSelecionada;
+
+  const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_SEMESTRAL];
 
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
@@ -80,6 +84,7 @@ const RelatorioSemestral = () => {
 
   useEffect(() => {
     resetarInfomacoes();
+    verificaSomenteConsulta(permissoesTela);
     dispatch(setAlunosRelatorioSemestral([]));
     if (
       turma &&
@@ -94,6 +99,7 @@ const RelatorioSemestral = () => {
     obterListaAlunos,
     turma,
     resetarInfomacoes,
+    permissoesTela,
     dispatch,
     obterListaSemestres,
     turmaSelecionada,

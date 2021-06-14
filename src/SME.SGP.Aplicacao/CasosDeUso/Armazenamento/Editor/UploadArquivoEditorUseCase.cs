@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RetornoArquivoEditorDto> Executar(IFormFile file,string caminho, TipoArquivo tipoArquivo = TipoArquivo.Geral)
         {
-            var resposta = await mediator.Send(new UploadArquivoCommand(file, tipoArquivo));
+            Guid resposta = await mediator.Send(new UploadArquivoCommand(file, tipoArquivo));
             
             var fileName = $"{resposta}{Path.GetExtension(file.FileName)}";
 

@@ -1,8 +1,10 @@
-﻿namespace SME.SGP.Infra
+﻿using SME.SGP.Dominio;
+
+namespace SME.SGP.Infra
 {
     public class FrequenciaAulaDto
     {
-        public bool Compareceu { get; set; }
+        public string TipoFrequencia { get; set; }
         public int NumeroAula { get; set; }
     }
 }

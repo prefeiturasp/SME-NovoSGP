@@ -12,7 +12,7 @@ namespace SME.SGP.Infra
         public string CodigoAluno { get; set; }
         public int QuantidadeAulas { get; set; }
         public int QuantidadeFaltas { get; set; }
-        public Modalidade modalidadeCodigo { get; set; }
-        public int Ano { get; set; }
+        public Modalidade ModalidadeCodigo { get; set; }
+        public string Ano { get; set; }
     }
 }

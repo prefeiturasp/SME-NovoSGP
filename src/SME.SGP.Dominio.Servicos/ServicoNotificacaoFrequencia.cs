@@ -96,9 +96,9 @@ namespace SME.SGP.Dominio.Servicos
             var quantidadeDiasCP = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes));
             var quantidadeDiasDiretor = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes));
 
-            await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.Infantil, quantidadeDiasCP, quantidadeDiasDiretor);
+            //await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.Infantil, quantidadeDiasCP, quantidadeDiasDiretor);
             await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);
-            await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, quantidadeDiasCP, quantidadeDiasDiretor);
+            //await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, quantidadeDiasCP, quantidadeDiasDiretor);
         }
 
         private async Task NotificarAlunosFaltososModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidade, int quantidadeDiasCP, int quantidadeDiasDiretor)
@@ -157,10 +157,10 @@ namespace SME.SGP.Dominio.Servicos
                             , disciplinaEOL
                             , turma.CodigoTurma
                             , turma.Nome
-                            , turma.ModalidadeCodigo.GetAttribute<DisplayAttribute>().ShortName
+                            , turma.ModalidadeCodigo.ObterAtributo<DisplayAttribute>().ShortName
                             , ue.CodigoUe
                             , ue.Nome
-                            , ue.TipoEscola.GetAttribute<DisplayAttribute>().ShortName
+                            , ue.TipoEscola.ObterAtributo<DisplayAttribute>().ShortName
                             , dre.CodigoDre
                             , dre.Nome
                             , compensacao.Bimestre
@@ -270,16 +270,16 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task NotificarEscolaAlunosFaltososBimestre(string dreCodigo, string dreNome, string dreAbreviacao, TipoEscola tipoEscola, string ueCodigo, string ueNome, double percentualCritico, int bimestre, int ano, IEnumerable<IGrouping<string, AlunoFaltosoBimestreDto>> turmasAgrupadas, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
-            var titulo = $"Alunos com baixa frequência da {tipoEscola.ShortName()} {ueNome} - {modalidadeTipoCalendario.Name()}";
+            var titulo = $"Alunos com baixa frequência da {tipoEscola.ObterNomeCurto()} {ueNome} - {modalidadeTipoCalendario.Name()}";
             StringBuilder mensagem = new StringBuilder();
-            mensagem.AppendLine($"<p>Abaixo segue a lista de turmas com alunos que tiveram frequência geral abaixo de <b>{percentualCritico}%</b> no <b>{bimestre}º bimestre</b> de <b>{ano}</b> da <b>{tipoEscola.ShortName()} {ueNome} (DRE {dreAbreviacao})</b>.</p>");
+            mensagem.AppendLine($"<p>Abaixo segue a lista de turmas com alunos que tiveram frequência geral abaixo de <b>{percentualCritico}%</b> no <b>{bimestre}º bimestre</b> de <b>{ano}</b> da <b>{tipoEscola.ObterNomeCurto()} {ueNome} (DRE {dreAbreviacao})</b>.</p>");
 
             foreach (var turmaAgrupada in turmasAgrupadas)
             {
                 var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(turmaAgrupada.Key);
                 var alunosFaltososTurma = alunosDaTurma.Where(c => turmaAgrupada.Any(a => a.AlunoCodigo == c.CodigoAluno));
 
-                mensagem.AppendLine($"<p>Turma <b>{turmaAgrupada.First().TurmaModalidade.ShortName()} - {turmaAgrupada.First().TurmaNome}</b></p>");
+                mensagem.AppendLine($"<p>Turma <b>{turmaAgrupada.First().TurmaModalidade.ObterNomeCurto()} - {turmaAgrupada.First().TurmaNome}</b></p>");
                 mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
                 mensagem.AppendLine("<tr>");
                 mensagem.AppendLine("<td style='padding: 5px;'>Nº</td>");
@@ -336,8 +336,7 @@ namespace SME.SGP.Dominio.Servicos
             var alunosFaltosos = repositorioFrequencia.ObterAlunosFaltosos(dataReferencia, tipoCalendarioId);
 
             // Faltou em todas as aulas do dia e tem pelo menos 3 aulas registradas
-            var alunosFaltasTodasAulasDoDia = alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas && ((c.modalidadeCodigo == Modalidade.Fundamental && c.Ano <= 5) || c.QuantidadeAulas >= 3 || c.modalidadeCodigo == Modalidade.Infantil));
-
+            var alunosFaltasTodasAulasDoDia = ObterAlunosFaltososTodasAulas(alunosFaltosos);
 
             var alunosFaltasTodosOsDias = alunosFaltasTodasAulasDoDia
                                             .GroupBy(a => a.CodigoAluno)
@@ -363,13 +362,22 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
+        private IEnumerable<AlunosFaltososDto> ObterAlunosFaltososTodasAulas(IEnumerable<AlunosFaltososDto> alunosFaltosos)
+        {
+            var anosFundamental = new string[] { "1", "2", "3", "4", "5" };
+            return alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas &&
+                            ((c.ModalidadeCodigo == Modalidade.Fundamental && anosFundamental.Contains(c.Ano))
+                            || c.QuantidadeAulas >= 3
+                            || c.ModalidadeCodigo == Modalidade.InfantilPreEscola));
+        }
+
         private void NotificacaoAlunosFaltososTurma(string funcionarioId, IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, int quantidadeDias)
         {
             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionarioId);
 
             var titulo = $"Alunos com excesso de ausências na turma {turma.Nome} ({turma.Ue.Nome})";
             StringBuilder mensagem = new StringBuilder();
-            mensagem.AppendLine($"<p>O(s) seguinte(s) aluno(s) da turma <b>{turma.ModalidadeCodigo.ShortName()}-{turma.Nome}</b> da <b>{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})</b> está(ão) há {quantidadeDias} dias sem comparecer as aulas.</p>");
+            mensagem.AppendLine($"<p>O(s) seguinte(s) aluno(s) da turma <b>{turma.ModalidadeCodigo.ObterNomeCurto()}-{turma.Nome}</b> da <b>{turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})</b> está(ão) há {quantidadeDias} dias sem comparecer as aulas.</p>");
 
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
             mensagem.AppendLine("<tr>");
@@ -435,7 +443,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<IEnumerable<(Cargo?, Usuario)>> BuscaProfessorAula(RegistroFrequenciaFaltanteDto turma)
         {
-            if (turma.ModalidadeTurma == Modalidade.Infantil)
+            if (turma.ModalidadeTurma == Modalidade.InfantilPreEscola)
             {
                 var disciplinaEols = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
                 if (disciplinaEols != null)

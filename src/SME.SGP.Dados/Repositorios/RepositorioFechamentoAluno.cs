@@ -15,30 +15,30 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacoesTurmaAlunoBimestreAsync(string alunoCodigo, long fechamentoTurmaId)
+        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacoesTurmaAlunoBimestreAsync(string alunoCodigo, string[] turmasCodigos)
         {
-            var query = new StringBuilder();
+            var query = @"select fa.anotacao, ftd.disciplina_id,
+                          case
+                            when fa.alterado_por is null then fa.criado_por
+                            when fa.alterado_por is not null then fa.alterado_por
+                          end as professor,
+                          case
+                            when fa.alterado_em is null then fa.criado_em
+                            when fa.alterado_em is not null then fa.alterado_em
+                          end as data,
+                          case 
+                            when fa.alterado_rf is null then fa.criado_rf
+                            when fa.alterado_rf is not null then fa.alterado_rf
+                          end as professorrf
+                        from fechamento_turma_disciplina ftd 
+                        inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
+                        inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id 
+                        inner join turma t on ft.turma_id = t.id 
+                        where not ftd.excluido and not fa.excluido 
+                         and fa.aluno_codigo = @alunoCodigo 
+                         and t.turma_id =  ANY(@turmasCodigos);";
 
-            query.AppendLine("select fa.anotacao, ftd.disciplina_id,");
-            query.AppendLine("  case");
-            query.AppendLine("    when fa.alterado_por is null then fa.criado_por");
-            query.AppendLine("    when fa.alterado_por is not null then fa.alterado_por");
-            query.AppendLine("  end as professor,");
-            query.AppendLine("  case");
-            query.AppendLine("    when fa.alterado_em is null then fa.criado_em");
-            query.AppendLine("    when fa.alterado_em is not null then fa.alterado_em");
-            query.AppendLine("  end as data,");
-            query.AppendLine("  case ");
-            query.AppendLine("    when fa.alterado_rf is null then fa.criado_rf");
-            query.AppendLine("    when fa.alterado_rf is not null then fa.alterado_rf");
-            query.AppendLine("  end as professorrf");
-            query.AppendLine("from fechamento_turma_disciplina ftd ");
-            query.AppendLine("inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id");
-            query.AppendLine("where not ftd.excluido and not fa.excluido ");
-            query.AppendLine(" and fa.aluno_codigo = @alunoCodigo and ftd.fechamento_turma_id = @fechamentoTurmaId");
-            query.AppendLine(" and fa.anotacao is not null");
-
-            return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, fechamentoTurmaId });
+            return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, turmasCodigos });
         }
 
         public async Task<FechamentoAluno> ObterFechamentoAluno(long fechamentoTurmaDisciplinaId, string alunoCodigo)

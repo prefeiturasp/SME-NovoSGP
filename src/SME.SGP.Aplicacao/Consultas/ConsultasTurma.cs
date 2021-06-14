@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -18,13 +19,15 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoAluno servicoAluno;
+        private readonly IMediator mediator;
 
         public ConsultasTurma(IRepositorioTurma repositorioTurma,
                                 IConsultasTipoCalendario consultasTipoCalendario,
                                 IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                 IServicoEol servicoEOL,
-                                IServicoAluno servicoAluno
+                                IServicoAluno servicoAluno,
+                                IMediator mediator
             )
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -33,6 +36,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia, int bimestre = 0, TipoCalendario tipoCalendario = null)
@@ -115,7 +119,7 @@ namespace SME.SGP.Aplicacao
             return new TipoCalendarioSugestaoDto() { Id = tipoCalendario.Id, Nome = tipoCalendario.Nome };
         }
 
-        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, PeriodoEscolar periodoEscolar = null)
+        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, PeriodoEscolar periodoEscolar = null, bool ehInfantil = false)
         {
             var dadosAlunos = await servicoEOL.ObterAlunosPorTurma(turmaCodigo);
             if (dadosAlunos == null || !dadosAlunos.Any())
@@ -136,7 +140,9 @@ namespace SME.SGP.Aplicacao
                 dadosBasicos.TipoResponsavel = ObterTipoResponsavel(dadoAluno.TipoResponsavel);
                 // se informado periodo escolar carrega marcadores no periodo
                 if (periodoEscolar != null)
-                    dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolar);
+                    dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolar, ehInfantil);
+
+                dadosBasicos.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(dadoAluno.CodigoAluno, anoLetivo));
 
                 dadosAlunosDto.Add(dadosBasicos);
             }

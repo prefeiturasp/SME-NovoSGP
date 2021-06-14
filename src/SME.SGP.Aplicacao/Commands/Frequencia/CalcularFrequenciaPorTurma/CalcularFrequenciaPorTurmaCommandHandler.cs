@@ -2,6 +2,7 @@
 using Polly;
 using Polly.Registry;
 using SME.GoogleClassroom.Infra;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -46,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 request.Alunos = alunosDaTurma.Select(a => a.CodigoAluno).Distinct().ToList();
             }
 
-            var ausenciasDosAlunos = await repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunosETurmaAsync(request.DataAula, request.Alunos, request.TurmaId);
+            var ausenciasDosAlunos = await mediator.Send(new ObterAusenciasAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId));
 
             var periodosEscolaresParaFiltro = ausenciasDosAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
 

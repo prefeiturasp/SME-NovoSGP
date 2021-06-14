@@ -89,8 +89,8 @@ const CampoData = ({
   temErro,
   mensagemErro,
   carregando,
-  array,
   campoOpcional,
+  executarOnChangeExterno,
   valorPadrao,
   diasParaSinalizar,
 }) => {
@@ -178,10 +178,7 @@ const CampoData = ({
   const campoDataAntComValidacoes = () => {
     return (
       <Field name={name} id={name}>
-        {({
-          field: { value },
-          form: { setFieldValue, setFieldTouched, errors },
-        }) => (
+        {({ field: { value }, form: { setFieldValue, setFieldTouched } }) => (
           <div>
             <div>
               <DatePicker
@@ -199,9 +196,11 @@ const CampoData = ({
                     : ''
                 }
                 onChange={valorData => {
-                  setFieldValue(name, valorData || '');
+                  if (!executarOnChangeExterno) {
+                    setFieldValue(name, valorData || '');
+                    setFieldTouched(name, true, true);
+                  }
                   onChange(valorData);
-                  setFieldTouched(name, true, true);
                 }}
                 disabledDate={habilitarDatas}
                 showToday={false}
@@ -266,10 +265,31 @@ const CampoData = ({
     );
   };
 
+  const campoHoraAntSemValidacoes = () => {
+    return (
+      <TimePicker
+        disabled={desabilitado}
+        locale={locale}
+        format={formatoData}
+        placeholder={placeholder}
+        name={name}
+        id={id || name}
+        onBlur={executaOnBlur}
+        className={`${possuiErro() ? 'is-invalid' : ''} ${className || ''}`}
+        onChange={valorHora => {
+          onChange(valorHora);
+        }}
+        value={valor || null}
+        showToday={false}
+      />
+    );
+  };
+
   const validaTipoCampo = () => {
     if (somenteHora) {
-      return form ? campoHoraAntComValidacoes() : 'CRIAR COMPONENTE!!';
+      return form ? campoHoraAntComValidacoes() : campoHoraAntSemValidacoes();
     }
+
     return form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes();
   };
 
@@ -313,8 +333,8 @@ CampoData.propTypes = {
   temErro: PropTypes.bool,
   mensagemErro: PropTypes.string,
   carregando: PropTypes.bool,
-  array: PropTypes.bool,
   campoOpcional: PropTypes.bool,
+  executarOnChangeExterno: PropTypes.bool,
   valorPadrao: PropTypes.string,
   diasParaSinalizar: PropTypes.oneOfType([PropTypes.array]),
 };
@@ -336,8 +356,8 @@ CampoData.defaultProps = {
   temErro: null,
   mensagemErro: null,
   carregando: false,
-  array: false,
   campoOpcional: false,
+  executarOnChangeExterno: false,
   valorPadrao: '',
   diasParaSinalizar: [],
 };

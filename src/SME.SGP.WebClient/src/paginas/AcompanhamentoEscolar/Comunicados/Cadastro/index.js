@@ -30,7 +30,7 @@ import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 import ServicoComunicadoEvento from '~/servicos/Paginas/AcompanhamentoEscolar/ComunicadoEvento/ServicoComunicadoEvento';
-import { confirmar, erro, sucesso } from '~/servicos/alertas';
+import { confirmar, erro, erros, sucesso } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 
 import FiltroHelper from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper.js';
@@ -44,7 +44,22 @@ const TODAS_DRE_ID = '-99';
 const TODAS_MODALIDADES_ID = '-99';
 const TODAS_TURMAS_ID = '-99';
 const MODALIDADE_EJA_ID = '3';
-
+const TIPOS_ESCOLA_BLOQUEAR = [
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  18,
+  19,
+  22,
+  23,
+  25,
+  26,
+  27,
+  29,
+];
 
 const ComunicadosCadastro = ({ match }) => {
   const ErroValidacao = styled.span`
@@ -116,6 +131,10 @@ const ComunicadosCadastro = ({ match }) => {
 
   const [carregouInformacoes, setCarregouInformacoes] = useState(false);
   const [refForm, setRefForm] = useState({});
+  const [
+    bloquearCamposCalendarioEventos,
+    setBloquearCamposCalendarioEventos,
+  ] = useState(false);
 
   const selecionaTipoCalendario = (descricao, form, tipoCalend, onChange) => {
     let tipo = '';
@@ -208,7 +227,6 @@ const ComunicadosCadastro = ({ match }) => {
 
   const loadTiposCalendarioEffect = () => {
     let isSubscribed = true;
-
     (async () => {
       setCarregandoTipos(true);
 
@@ -216,9 +234,11 @@ const ComunicadosCadastro = ({ match }) => {
         data,
       } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
         pesquisaTipoCalendario
-      );
+      )
+        .catch(e => erros(e))
+        .finally(() => setCarregandoTipos(false));
 
-      if (isSubscribed) {
+      if (isSubscribed && !bloquearCamposCalendarioEventos) {
         let allowedList = filterAllowedCalendarTypes(data);
         setListaCalendario(allowedList);
 
@@ -244,7 +264,10 @@ const ComunicadosCadastro = ({ match }) => {
           );
         }
         setCarregandoTipos(false);
+        return;
       }
+      selecionaTipoCalendario('', refForm, '', true);
+      selecionaEvento('', refForm);
     })();
 
     return () => {
@@ -278,11 +301,13 @@ const ComunicadosCadastro = ({ match }) => {
           delete filter[key];
       });
 
-      let data = await ServicoComunicadoEvento.listarPor(filter);
+      const retorno = await ServicoComunicadoEvento.listarPor(filter)
+        .catch(e => erros(e))
+        .finally(() => setCarregandoEventos(false));
 
       if (isSubscribed) {
-        if (data && data.length > 0) {
-          data.forEach(
+        if (retorno?.data?.length) {
+          retorno.data.forEach(
             item =>
               (item.nome = `${item.id} - ${item.nome} (${item.tipoEvento})`)
           );
@@ -293,15 +318,19 @@ const ComunicadosCadastro = ({ match }) => {
             '',
             refForm,
             false,
-            data.length > 0
-              ? data?.find(t => {
+            retorno.data.length > 0
+              ? retorno.data?.find(t => {
                   return t.id === valoresIniciais.eventoId;
                 })
               : ''
           );
         }
+        if (retorno?.data?.length) {
+          setListaEvento(retorno.data);
+        } else {
+          setListaEvento([]);
+        }
 
-        setListaEvento(data);
         setCarregandoEventos(false);
       }
     })();
@@ -470,76 +499,91 @@ const ComunicadosCadastro = ({ match }) => {
     }
   }, [idComunicado]);
 
-  const [validacoes] = useState(
-    Yup.object({
-      descricao: Yup.string().required('Campo obrigatório'),
-      anoLetivo: Yup.string().required('Campo obrigatório'),
-      dataEnvio: momentSchema.required('Campo obrigatório'),
-      CodigoDre: Yup.string().required('Campo obrigatório'),
-      CodigoUe: Yup.string().required('Campo obrigatório'),
-      gruposId: Yup.string().required('Campo obrigatório'),
-      eventoId: Yup.string().test(
-        'validaEventoId',
-        'Campo obrigatório',
+  const validarBloquearCamposCalendarioEventos = ue => {
+    const ueEscolhida = ues?.find(item => item?.id?.toString() === ue);
+    const ueEncontrada = TIPOS_ESCOLA_BLOQUEAR.find(
+      id => id === ueEscolhida?.tipoEscola
+    );
+
+    return !!ueEncontrada;
+  };
+
+  const validacoes = Yup.object({
+    descricao: Yup.string().required('Campo obrigatório'),
+    anoLetivo: Yup.string().required('Campo obrigatório'),
+    dataEnvio: momentSchema.required('Campo obrigatório'),
+    CodigoDre: Yup.string().required('Campo obrigatório'),
+    CodigoUe: Yup.string().required('Campo obrigatório'),
+    gruposId: Yup.string().required('Campo obrigatório'),
+    eventoId: Yup.string().test(
+      'validaEventoId',
+      'Campo obrigatório',
+      function validar() {
+        const { CodigoUe, eventoId } = this.parent;
+        const bloquear = validarBloquearCamposCalendarioEventos(CodigoUe);
+        if (bloquear) {
+          return true;
+        }
+        if (CodigoUe !== '-99' && !eventoId) {
+          return false;
+        }
+        return true;
+      }
+    ),
+    tipoCalendarioId: Yup.string().test(
+      'validaTipoCalendarioId',
+      'Campo obrigatório',
+      function validar() {
+        const { CodigoUe, tipoCalendarioId } = this.parent;
+        const bloquear = validarBloquearCamposCalendarioEventos(CodigoUe);
+        if (bloquear) {
+          return true;
+        }
+        if (CodigoUe !== '-99' && !tipoCalendarioId) {
+          return false;
+        }
+        return true;
+      }
+    ),
+    dataExpiracao: momentSchema
+      .required('Campo obrigatório')
+      .test(
+        'validaDataMaiorQueEnvio',
+        'Data de expiração deve ser maior que a data de envio',
         function validar() {
-          const { CodigoUe, eventoId } = this.parent;
-          if (CodigoUe !== '-99' && !eventoId) {
+          const { dataEnvio } = this.parent;
+          const { dataExpiracao } = this.parent;
+          if (
+            dataEnvio &&
+            dataExpiracao &&
+            window.moment(dataExpiracao) < window.moment(dataEnvio)
+          ) {
             return false;
           }
+
+          return true;
+        }
+      )
+      .test(
+        'validaDataAnoMaiorQueAnoAtual',
+        'Data de expiração não pode ser maior que ano atual',
+        function validar() {
+          const { dataExpiracao } = this.parent;
+          if (
+            moment(dataExpiracao).format('YYYY') >
+            moment(new Date()).format('YYYY')
+          ) {
+            return false;
+          }
+
           return true;
         }
       ),
-      tipoCalendarioId: Yup.string().test(
-        'validaTipoCalendarioId',
-        'Campo obrigatório',
-        function validar() {
-          const { CodigoUe, tipoCalendarioId } = this.parent;
-          if (CodigoUe !== '-99' && !tipoCalendarioId) {
-            return false;
-          }
-          return true;
-        }
-      ),
-      dataExpiracao: momentSchema
-        .required('Campo obrigatório')
-        .test(
-          'validaDataMaiorQueEnvio',
-          'Data de expiração deve ser maior que a data de envio',
-          function validar() {
-            const { dataEnvio } = this.parent;
-            const { dataExpiracao } = this.parent;
-            if (
-              dataEnvio &&
-              dataExpiracao &&
-              window.moment(dataExpiracao) < window.moment(dataEnvio)
-            ) {
-              return false;
-            }
-
-            return true;
-          }
-        )
-        .test(
-          'validaDataAnoMaiorQueAnoAtual',
-          'Data de expiração não pode ser maior que ano atual',
-          function validar() {
-            const { dataExpiracao } = this.parent;
-            if (
-              moment(dataExpiracao).format('YYYY') >
-              moment(new Date()).format('YYYY')
-            ) {
-              return false;
-            }
-
-            return true;
-          }
-        ),
-      titulo: Yup.string()
-        .required('Campo obrigatório')
-        .min(10, 'Deve conter no mínimo 10 caracteres')
-        .max(50, 'Deve conter no máximo 50 caracteres'),
-    })
-  );
+    titulo: Yup.string()
+      .required('Campo obrigatório')
+      .min(10, 'Deve conter no mínimo 10 caracteres')
+      .max(50, 'Deve conter no máximo 50 caracteres'),
+  });
 
   const validarAntesDeSalvar = form => {
     const arrayCampos = Object.keys(valoresIniciais);
@@ -565,8 +609,6 @@ const ComunicadosCadastro = ({ match }) => {
       }
     });
   };
-
-  
 
   const [gruposLista, setGruposLista] = useState([]);
 
@@ -615,7 +657,6 @@ const ComunicadosCadastro = ({ match }) => {
   const estudantesVisiveis = useMemo(() => {
     return alunoEspecificado;
   }, [alunoEspecificado]);
-
 
   useEffect(() => {
     if (!refForm?.setFieldValue) return;
@@ -862,8 +903,24 @@ const ComunicadosCadastro = ({ match }) => {
     setUnidadeEscolarUE(true);
     onChangeModalidade('');
     ObterModalidades(ue, anoLetivo);
-    loadTiposCalendarioEffect();
   };
+
+  useEffect(() => {
+    const ue = refForm?.state?.values?.CodigoUe;
+    if (ue) {
+      const bloquear = validarBloquearCamposCalendarioEventos(ue);
+      if (bloquear) {
+        setBloquearCamposCalendarioEventos(true);
+        return;
+      }
+
+      setBloquearCamposCalendarioEventos(false);
+      loadTiposCalendarioEffect();
+    } else {
+      setBloquearCamposCalendarioEventos(false);
+      loadTiposCalendarioEffect();
+    }
+  }, [refForm?.state?.values?.CodigoUe]);
 
   useEffect(() => {
     if (
@@ -1075,6 +1132,7 @@ const ComunicadosCadastro = ({ match }) => {
     modalidadeSelecionada,
     refForm,
     valoresIniciais,
+    bloquearCamposCalendarioEventos,
   ]);
 
   useEffect(loadEventosEffect, [
@@ -1084,6 +1142,7 @@ const ComunicadosCadastro = ({ match }) => {
     modalidadeSelecionada,
     refForm,
     valoresIniciais,
+    bloquearCamposCalendarioEventos,
   ]);
 
   return (
@@ -1329,7 +1388,9 @@ const ComunicadosCadastro = ({ match }) => {
                     />
                     <Loader loading={carregandoTipos} tip="">
                       <SelectAutocomplete
-                        disabled={idComunicado}
+                        disabled={
+                          idComunicado || bloquearCamposCalendarioEventos
+                        }
                         form={form}
                         hideLabel
                         showList
@@ -1355,7 +1416,9 @@ const ComunicadosCadastro = ({ match }) => {
                     <Label control="evento" text="Evento" />
                     <Loader loading={carregandoEventos} tip="">
                       <SelectAutocomplete
-                        disabled={idComunicado}
+                        disabled={
+                          idComunicado || bloquearCamposCalendarioEventos
+                        }
                         hideLabel
                         showList
                         isHandleSearch
@@ -1448,7 +1511,7 @@ const ComunicadosCadastro = ({ match }) => {
                       alunosLoader={alunosLoader}
                       ObterAlunos={ObterAlunos}
                       modoEdicaoConsulta={modoEdicaoConsulta}
-                      onClose={() => { }}
+                      onClose={() => {}}
                       onConfirm={alunosSel => {
                         setAlunosSelecionado([
                           ...alunosSelecionados,

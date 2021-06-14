@@ -18,7 +18,7 @@ const AnotacoesAluno = () => {
       <CardCollapse
         key="anotacao-aluno-collapse"
         onClick={onClickAnotacaoAluno}
-        titulo="Anotações do aluno"
+        titulo="Anotações do estudante"
         indice="anotacao-aluno-collapse"
         show={exibirCardAnotacaoAluno}
         alt="card-collapse-anotacao-aluno"

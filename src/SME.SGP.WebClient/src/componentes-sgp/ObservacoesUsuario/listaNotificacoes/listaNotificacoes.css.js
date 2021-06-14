@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
-  position: absolute;
+  position: ${({ somenteLeitura }) => !somenteLeitura && 'absolute'};
 
   ${({ listagemDiario }) =>
     listagemDiario

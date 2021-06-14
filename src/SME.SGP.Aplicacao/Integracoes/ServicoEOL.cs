@@ -244,7 +244,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(long turmaId)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
-            var resposta = await httpClient.GetAsync($"turmas/{turmaId}");
+            var resposta = await httpClient.GetAsync($"turmas/{turmaId}/alunos-ativos");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException($"Não foi encontrado alunos ativos para a turma {turmaId}");
@@ -283,11 +283,14 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, string nome, string codigoEol)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
-            var url = $"alunos/ues/{codigoUe}/anosLetivos/{anoLetivo}/autocomplete" + (nome != null ? $"?nomeAluno={nome}" : "")
-                + (codigoEol != null ? $"{(nome != null ? "&" : "?") + $"codigoEol={codigoEol}"}" : "");
+            var url = $"alunos/ues/{codigoUe}/anosLetivos/{anoLetivo}/autocomplete"
+                + (codigoTurma > 0 ? $"?codigoTurma={codigoTurma}" : null)
+                + (codigoEol.HasValue ? $"{(codigoTurma > 0 ? "&" : "?") + $"codigoEol={codigoEol}"}" : "")
+                + (nome != null ? $"{(codigoEol != null || codigoTurma > 0 ? "&" : "?") + $"nomeAluno={nome}"}" : "");
+
             var resposta = await httpClient.GetAsync(url);
 
             if (!resposta.IsSuccessStatusCode)
@@ -1012,6 +1015,22 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             return MapearParaDtoDisciplinas(retorno);
         }
+
+        public async Task<InformacoesEscolaresAlunoDto> ObterNecessidadesEspeciaisAluno(string codigoAluno)
+        {
+
+            var url = $@"alunos/{codigoAluno}/necessidades-especiais";
+
+            var resposta = await httpClient.GetAsync(url);
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foram encontrados dados de necessidades especiais para o aluno no EOL");
+
+            
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<InformacoesEscolaresAlunoDto>(json);
+                        
+        }        
 
         public async Task<IEnumerable<string>> DefinirTurmasRegulares(string[] codigosTurmas)
         {

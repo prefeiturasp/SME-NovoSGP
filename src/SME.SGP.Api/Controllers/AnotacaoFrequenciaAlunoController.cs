@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,6 +16,16 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class AnotacaoFrequenciaAlunoController : ControllerBase
     {
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(AnotacaoFrequenciaAlunoCompletoDto), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+
+        public async Task<IActionResult> ObterJustificativaCompleto(long id, [FromServices] IObterAnotacaoFrequenciaAlunoPorIdUseCase useCase)
+        {
+            return Ok(await useCase.Executar(id));
+        }
+
         [HttpGet("{codigoAluno}/aulas/{aulaId}")]
         [ProducesResponseType(typeof(AnotacaoFrequenciaAlunoDto), 200)]
         [ProducesResponseType(204)]

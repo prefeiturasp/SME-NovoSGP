@@ -34,72 +34,101 @@ const AtaFinalResultados = () => {
   const [semestre, setSemestre] = useState(undefined);
   const [turmaId, setTurmaId] = useState(undefined);
   const [formato, setFormato] = useState('1');
-  const [consideraHistorico, setConsideraHistorico] = useState(false);  
+  const [consideraHistorico, setConsideraHistorico] = useState(false);
 
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
   const [desabilitarBtnFormato, setDesabilitarBtnFormato] = useState(true);
   const [carregandoAnosLetivos, setCarregandoAnosLetivos] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoUes, setCarregandoUes] = useState(false);
+  const [listaVisualizacao, setListaVisualizacao] = useState([]);
+  const [desabilitaVisualizacao, setDesabilitaVisualizacao] = useState(true);
+  const [visualizacao, setVisualizacao] = useState('');
+  const [listaTurmasCompletas, setListaTurmasCompletas] = useState([]);
 
   const listaFormatos = [
     { valor: '1', desc: 'PDF' },
     { valor: '4', desc: 'EXCEL' },
   ];
 
-  const obterAnosLetivos = useCallback(async (consideraHistorico) => {
+  const obterAnosLetivos = useCallback(async consideraHistorico => {
     setCarregandoAnosLetivos(true);
-    const anosLetivo = await FiltroHelper.obterAnosLetivos( { consideraHistorico }).catch(
-      e => erros(e)
-    );
+    const anosLetivo = await FiltroHelper.obterAnosLetivos({
+      consideraHistorico,
+    }).catch(e => erros(e));
     if (anosLetivo) {
       setListaAnosLetivo(anosLetivo);
-      setAnoLetivo(anosLetivo[0].valor);  
-      setDreId();      
+      setAnoLetivo(anosLetivo[0].valor);
+      setDreId();
     } else {
       setListaAnosLetivo([]);
     }
     setCarregandoAnosLetivos(false);
   }, []);
 
-  const obterModalidades = useCallback(async (ue, ano) => {
-    if (ue && ano) {
-      const { data } = await api.get(`/v1/ues/${ue}/modalidades?ano=${ano}`);
-      if (data) {
-        const lista = data.map(item => ({
-          desc: item.nome,
-          valor: String(item.id),
-        }));
+  const obterModalidades = useCallback(
+    async (ue, ano) => {
+      if (ue && ano) {
+        const { data } = await api.get(`/v1/ues/${ue}/modalidades?ano=${ano}`);
+        if (data) {
+          const lista = data.map(item => ({
+            desc: item.nome,
+            valor: String(item.id),
+          }));
 
-        if (lista && lista.length && lista.length === 1) {
-          setModalidadeId(lista[0].valor);
+          if (lista && lista.length && lista.length === 1) {
+            setModalidadeId(lista[0].valor);
+          }
+          setListaModalidades(lista);
         }
-        setListaModalidades(lista);
       }
+    },
+    [ueId]
+  );
+
+  const obterVisualizacoes = useCallback(async () => {
+    const { data } = await api.get(
+      `/v1/relatorios/filtros/ata-final/tipos-visualizacao`
+    );
+    if (data) {
+      const lista = data.map(item => ({
+        desc: item.desc,
+        valor: item.valor,
+      }));
+      setListaVisualizacao(lista);
     }
-  }, [ueId]);
+  }, []);
 
-  const obterUes = useCallback(async dre => {   
-    setCarregandoUes(true);
-    if (dre) {
-      const { data } = await AbrangenciaServico.buscarUes(dre, '', false, undefined, consideraHistorico);
-      if (data) {
-        const lista = data.map(item => ({
-          desc: item.nome,
-          valor: String(item.codigo),
-        }));
+  const obterUes = useCallback(
+    async dre => {
+      setCarregandoUes(true);
+      if (dre) {
+        const { data } = await AbrangenciaServico.buscarUes(
+          dre,
+          '',
+          false,
+          undefined,
+          consideraHistorico
+        );
+        if (data) {
+          const lista = data.map(item => ({
+            desc: item.nome,
+            valor: String(item.codigo),
+          }));
 
-        if (lista && lista.length && lista.length === 1) {
-          setUeId(lista[0].valor);
+          if (lista && lista.length && lista.length === 1) {
+            setUeId(lista[0].valor);
+          }
+
+          setListaUes(lista);
+        } else {
+          setListaUes([]);
         }
-
-        setListaUes(lista);
-      } else {
-        setListaUes([]);
       }
-    }
-    setCarregandoUes(false);    
-  }, [dreId]);
+      setCarregandoUes(false);
+    },
+    [dreId]
+  );
 
   const onChangeDre = dre => {
     setDreId(dre);
@@ -117,56 +146,66 @@ const AtaFinalResultados = () => {
     setTurmaId(undefined);
   };
 
-  const obterDres = useCallback (async () => { 
-    if (anoLetivo) {        
+  const obterDres = useCallback(async () => {
+    if (anoLetivo) {
       setCarregandoDres(true);
-      const { data } = await AbrangenciaServico.buscarDres(`v1/abrangencias/${consideraHistorico}/dres?anoLetivo=${anoLetivo}`, consideraHistorico);
+      const { data } = await AbrangenciaServico.buscarDres(
+        `v1/abrangencias/${consideraHistorico}/dres?anoLetivo=${anoLetivo}`,
+        consideraHistorico
+      );
       if (data && data.length) {
         const lista = data
-        .map(item => ({
-          desc: item.nome,
-          valor: String(item.codigo),
-          abrev: item.abreviacao,
-        }))
-        .sort(FiltroHelper.ordenarLista('desc'));
+          .map(item => ({
+            desc: item.nome,
+            valor: String(item.codigo),
+            abrev: item.abreviacao,
+          }))
+          .sort(FiltroHelper.ordenarLista('desc'));
         setListaDres(lista);
-        
+
         if (lista && lista.length && lista.length === 1) {
           setDreId(lista[0].valor);
         }
       } else {
         setListaDres([]);
       }
-      setCarregandoDres(false);  
-    }  
+      setCarregandoDres(false);
+    }
   }, [anoLetivo]);
 
-  const obterTurmas = useCallback(async (modalidadeSelecionada, ue) => {
-    if (ue && modalidadeSelecionada) {
-      const { data } = await AbrangenciaServico.buscarTurmas(
-        ue,
-        modalidadeSelecionada,
-        '',
-        anoLetivo,
-        consideraHistorico,
-        true
-      );
-      if (data) {
-        const lista = data.map(item => ({
-          desc: item.nome,
-          valor: item.codigo,
-        }));
-          
-        lista.unshift({ desc: 'Todas', valor: '-99' });
-                
-        setListaTurmas(lista);
+  const obterTurmas = useCallback(
+    async (modalidadeSelecionada, ue) => {
+      if (ue && modalidadeSelecionada) {
+        const { data } = await AbrangenciaServico.buscarTurmas(
+          ue,
+          modalidadeSelecionada,
+          '',
+          anoLetivo,
+          consideraHistorico,
+          false,
+          [1, 7]
+        );
+        if (data) {
+          setListaTurmasCompletas(data);
+          const lista = data.map(item => ({
+            desc: item.nome,
+            valor: item.codigo,
+          }));
 
-        if (lista && lista.length && lista.length === 1) {
-          setTurmaId(lista[0].valor);
+          lista.unshift({ desc: 'Todas', valor: '-99' });
+
+          setListaTurmas(lista);
+
+          if (lista && lista.length && lista.length === 1) {
+            setTurmaId(lista[0].valor);
+          }
+        } else {
+          setListaTurmasCompletas([]);
         }
       }
-    }
-  }, [modalidadeId]);
+    },
+    [modalidadeId]
+  );
 
   const obterSemestres = async (
     modalidadeSelecionada,
@@ -238,20 +277,85 @@ const AtaFinalResultados = () => {
       !turmaId?.length ||
       !formato;
 
-    if (modalidadeId === modalidade.EJA) {
-      setDesabilitarBtnGerar(!semestre || desabilitar);
-    } else {
-      setDesabilitarBtnGerar(desabilitar);
-    }
-  }, [anoLetivo, dreId, ueId, modalidadeId, turmaId, formato, semestre]);
+    let desabilitado = desabilitar;
 
-  useEffect(() => {    
-    obterAnosLetivos(consideraHistorico);    
+    if (Number(modalidadeId) === Number(modalidade.EJA)) {
+      desabilitado = semestre || desabilitar;
+    } else if (Number(modalidadeId) === Number(modalidade.ENSINO_MEDIO)) {
+      desabilitado = desabilitar || !visualizacao;
+    }
+    setDesabilitarBtnGerar(desabilitado);
+  }, [
+    anoLetivo,
+    dreId,
+    ueId,
+    modalidadeId,
+    turmaId,
+    formato,
+    semestre,
+    visualizacao,
+  ]);
+
+  useEffect(() => {
+    obterAnosLetivos(consideraHistorico);
   }, [obterAnosLetivos, consideraHistorico]);
 
   useEffect(() => {
     obterDres();
-  }, [obterDres]);
+    obterVisualizacoes();
+  }, [obterDres, obterVisualizacoes]);
+
+  const compararTurmaAno = (stringComparacao, valorComparacao, arrayTurmas) => {
+    return listaTurmasCompletas.filter(
+      turmaCompleta =>
+        arrayTurmas.find(arrayTurma => turmaCompleta.codigo === arrayTurma) &&
+        parseInt(turmaCompleta[stringComparacao], 10) ===
+          parseInt(valorComparacao, 10)
+    );
+  };
+
+  const checarTipoTurma = arrayTurmas => {
+    setVisualizacao('');
+    const turmaItinerancia = compararTurmaAno('tipoTurma', 7, arrayTurmas);
+    const turmaPrimeiro = compararTurmaAno('ano', 1, arrayTurmas);
+    const turmaSegundo = compararTurmaAno('ano', 2, arrayTurmas);
+    const turmaTerceiro = compararTurmaAno('ano', 3, arrayTurmas);
+    const ehModalidadeMedio =
+      parseInt(modalidadeId, 10) === parseInt(modalidade.ENSINO_MEDIO, 10);
+
+    if (
+      turmaItinerancia.length === arrayTurmas?.length ||
+      (ehModalidadeMedio &&
+        !turmaSegundo.length &&
+        (turmaPrimeiro.length || turmaTerceiro.length))
+    ) {
+      setVisualizacao(
+        `${
+          listaVisualizacao.find(a => a.desc?.toUpperCase() === 'TURMA')?.valor
+        }`
+      );
+      return true;
+    }
+    if (!turmaSegundo.length) {
+      return true;
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    let turmaExcecao = false;
+    if (turmaId?.length && turmaId[0] !== '-99') {
+      turmaExcecao = checarTipoTurma(turmaId);
+    }
+    const desabilita =
+      !modalidadeId ||
+      !turmaId ||
+      (turmaId.length === 1 && turmaId[0] !== '-99' && turmaExcecao) ||
+      parseInt(modalidadeId, 10) !== parseInt(modalidade.ENSINO_MEDIO, 10) ||
+      !turmaId.length ||
+      turmaExcecao;
+    setDesabilitaVisualizacao(desabilita);
+  }, [turmaId, modalidadeId, listaTurmasCompletas]);
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
@@ -271,7 +375,12 @@ const AtaFinalResultados = () => {
 
   const onClickGerar = async () => {
     if (permissoesTela.podeConsultar) {
-      const params = { turmasCodigos: [], tipoFormatoRelatorio: formato };
+      const params = {
+        turmasCodigos: [],
+        anoLetivo,
+        tipoFormatoRelatorio: formato,
+        visualizacao,
+      };
       if (turmaId.find(t => t === '-99')) {
         params.turmasCodigos = listaTurmas.map(item => String(item.valor));
       } else {
@@ -310,6 +419,7 @@ const AtaFinalResultados = () => {
 
     setListaTurmas([]);
     setTurmaId(undefined);
+    setVisualizacao('');
   };
 
   const onChangeAnoLetivo = ano => {
@@ -340,14 +450,20 @@ const AtaFinalResultados = () => {
   };
 
   const onChangeSemestre = valor => setSemestre(valor);
+
   const onChangeTurma = valor => {
     const todosSetado = turmaId?.find(a => a === '-99');
     const todos = valor.find(a => a === '-99' && !todosSetado);
     const novoValor = todosSetado && valor.length === 2 ? [valor[1]] : valor;
     setTurmaId(todos ? [todos] : novoValor);
     habilitarSelecaoFormato(valor);
+    setVisualizacao('');
   };
   const onChangeFormato = valor => setFormato(valor);
+
+  const onChangeVisualizacao = valor => {
+    if (visualizacao !== valor) setVisualizacao(valor);
+  };
 
   function onCheckedConsideraHistorico(e) {
     setConsideraHistorico(e.target.checked);
@@ -402,7 +518,8 @@ const AtaFinalResultados = () => {
               <CheckboxComponent
                 label="Exibir histórico?"
                 onChangeCheckbox={onCheckedConsideraHistorico}
-                checked={consideraHistorico} />
+                checked={consideraHistorico}
+              />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 mb-2">
               <Loader loading={carregandoAnosLetivos} tip="">
@@ -416,7 +533,7 @@ const AtaFinalResultados = () => {
                     (listaAnosLetivo && listaAnosLetivo.length === 1)
                   }
                   onChange={onChangeAnoLetivo}
-                  valueSelect={anoLetivo}                
+                  valueSelect={anoLetivo}
                 />
               </Loader>
             </div>
@@ -429,7 +546,7 @@ const AtaFinalResultados = () => {
                   valueText="desc"
                   disabled={
                     !permissoesTela.podeConsultar ||
-                    (listaDres && listaDres.length === 1) |
+                    (listaDres && listaDres.length === 1) ||
                     !anoLetivo
                   }
                   onChange={onChangeDre}
@@ -437,7 +554,7 @@ const AtaFinalResultados = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-6 col-lg-5 col-xl-5 mb-2">              
+            <div className="col-sm-12 col-md-6 col-lg-5 col-xl-5 mb-2">
               <Loader loading={carregandoUes} tip="">
                 <SelectComponent
                   label="Unidade Escolar (UE)"
@@ -485,7 +602,7 @@ const AtaFinalResultados = () => {
                 onChange={onChangeSemestre}
               />
             </div>
-            <div className="col-sm-12 col-md-3 col-lg-3 col-xl-2 mb-2">
+            <div className="col-sm-12 col-md-3 col-lg-5 col-xl-2 mb-2">
               <SelectComponent
                 lista={listaTurmas}
                 valueOption="valor"
@@ -499,6 +616,17 @@ const AtaFinalResultados = () => {
                 valueSelect={turmaId}
                 onChange={onChangeTurma}
                 multiple
+              />
+            </div>
+            <div className="col-sm-12 col-md-3 col-lg-5 col-xl-3 mb-2">
+              <SelectComponent
+                label="Visualização"
+                lista={listaVisualizacao}
+                valueOption="valor"
+                valueText="desc"
+                valueSelect={visualizacao}
+                onChange={onChangeVisualizacao}
+                disabled={desabilitaVisualizacao}
               />
             </div>
             <div className="col-sm-12 col-md-3 col-lg-2 col-xl-2 mb-2">

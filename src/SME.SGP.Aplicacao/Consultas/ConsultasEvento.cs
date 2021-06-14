@@ -15,16 +15,19 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IConsultasAbrangencia consultasAbrangencia;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
                                IContextoAplicacao contextoAplicacao,
                                IServicoUsuario servicoUsuario,
-                               IRepositorioEventoTipo repositorioEventoTipo) : base(contextoAplicacao)
+                               IRepositorioEventoTipo repositorioEventoTipo,
+                               IConsultasAbrangencia consultasAbrangencia) : base(contextoAplicacao)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
+            this.consultasAbrangencia = consultasAbrangencia ?? throw new System.ArgumentNullException(nameof(consultasAbrangencia));
         }
 
         public async Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto)
@@ -65,13 +68,19 @@ namespace SME.SGP.Aplicacao
 
             //verificar se o evento e o perfil do usuário é SME para possibilitar alteração
             bool podeAlterar = !EhEventoSME(evento) || (EhEventoSME(evento) && usuario.EhPerfilSME());
-
             if (!EhEventoSME(evento) &&
                 (evento.TipoEventoId == (long)TipoEvento.LiberacaoExcepcional ||
                  evento.TipoEventoId == (long)TipoEvento.ReposicaoNoRecesso))
                 podeAlterar = usuario.TemPerfilGestaoUes();
 
-            return MapearParaDto(evento, podeAlterar);
+            bool podeAlterarExcluirPorPerfilAbrangencia = false;
+            if (!EhEventoSME(evento) && usuario.EhPerfilAD())
+            {
+                var abrangencia = await consultasAbrangencia.ObterUes(evento.DreId, null);
+                podeAlterarExcluirPorPerfilAbrangencia = abrangencia.Any(x => x.Codigo == evento.UeId);
+            }
+
+            return MapearParaDto(evento, podeAlterar, podeAlterarExcluirPorPerfilAbrangencia);
         }
 
         public async Task<IEnumerable<CalendarioTipoEventoPorDiaDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)
@@ -121,7 +130,7 @@ namespace SME.SGP.Aplicacao
             return items?.Select(c => MapearParaDto(c));
         }
 
-        private EventoCompletoDto MapearParaDto(Evento evento, bool? podeAlterar = null)
+        private EventoCompletoDto MapearParaDto(Evento evento, bool? podeAlterar = null, bool? podeAlterarExcluirPorPerfilAbrangencia = null)
         {
             return evento == null ? null : new EventoCompletoDto
             {
@@ -145,6 +154,7 @@ namespace SME.SGP.Aplicacao
                 TipoEvento = MapearTipoEvento(evento.TipoEvento),
                 Migrado = evento.Migrado,
                 PodeAlterar = podeAlterar != null ? podeAlterar.Value && evento.PodeAlterar() : evento.PodeAlterar(),
+                PodeAlterarExcluirPorPerfilAbrangencia = podeAlterarExcluirPorPerfilAbrangencia != null ? podeAlterarExcluirPorPerfilAbrangencia : false,
                 Status = evento.Status
             };
         }
