@@ -30,7 +30,7 @@
         [PermissaoMenu(Menu = "Boletim", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 4, Url = "/relatorios/diario-classe/boletim-simples", EhConsulta = true)]
         B_C = 9,
 
-        [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", IconeDashBoard = "far fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhConsulta = true)]
+        [diar(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", IconeDashBoard = "far fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhConsulta = true)]
         C_C = 10,
 
         [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhInclusao = true)]
@@ -650,7 +650,10 @@
         ACF_C = 218,
 
         [PermissaoMenu(Menu = "Informações Escolares", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/informacoes-escolares")]
-        DIE_C = 219
+        DIE_C = 219,
+
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/diario-bordo")]
+        DB_C = 222
 
     }
 }

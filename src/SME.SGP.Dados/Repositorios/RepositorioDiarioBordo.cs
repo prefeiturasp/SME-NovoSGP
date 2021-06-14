@@ -268,5 +268,46 @@ namespace SME.SGP.Dados.Repositorios
                 TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
             };
         }
+
+        public async Task<IEnumerable<QuantidadeTotalDiariosEDevolutivasPorAnoETurmaDTO>> ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade)
+        {
+            var sql = @"select 
+	                        distinct 
+	                        dashboard.turma, 
+	                        SUM(dashboard.QuantidadeTotalDiariosdeBordo) as QuantidadeTotalDiariosdeBordo,
+	                        SUM(dashboard.QuantidadeTotalDiariosdeBordoComDevolutiva) as QuantidadeTotalDiariosdeBordoComDevolutiva
+                        from 
+                        (
+	                        select  
+		                        t.nome as turma,
+		                        count(db.id) as QuantidadeTotalDiariosdeBordo,
+		                        0 as QuantidadeTotalDiariosdeBordoComDevolutiva
+	                        from diario_bordo db 
+	                        inner join aula a on a.id = db.aula_id 
+	                        inner join turma t on t.turma_id = a.turma_id 
+	                        where not db.excluido 
+	                        and t.ano_letivo = @anoLetivo
+                            and t.modalidade_codigo = @modalidade
+	                        and db.planejamento is not null
+	                        group by t.nome
+                        union 
+	                        select  
+		                        t.nome as turma,
+		                        0 as QuantidadeTotalDiariosdeBordo,
+		                        count(db.id) as QuantidadeTotalDiariosdeBordoComDevolutiva
+	                        from diario_bordo db 
+	                        inner join aula a on a.id = db.aula_id 
+	                        inner join turma t on t.turma_id = a.turma_id 
+	                        where not db.excluido 
+	                        and t.ano_letivo = @anoLetivo
+                            and t.modalidade_codigo = @modalidade
+	                        and db.planejamento is not null
+	                        and db.devolutiva_id is not null
+	                        group by t.nome) 
+	                        as dashboard
+	                        group by dashboard.turma";
+
+            return await database.Conexao.QueryAsync<QuantidadeTotalDiariosEDevolutivasPorAnoETurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
+        }
     }
 }
