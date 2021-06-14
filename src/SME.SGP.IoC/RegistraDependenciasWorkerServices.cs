@@ -340,6 +340,10 @@ namespace SME.SGP.IoC
             // Consolidação Frequencia Turma
             services.TryAddScopedWorkerService<IRepositorioConsolidacaoFrequenciaTurma, RepositorioConsolidacaoFrequenciaTurma>();
 
+
+            // Consolidação Devolutivas
+            services.TryAddScopedWorkerService<IRepositorioConsolidacaoDevolutivas, RepositorioConsolidacaoDevolutivas>();
+
             services.TryAddScopedWorkerService<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
         }
 
@@ -591,6 +595,11 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExecutarConsolidacaoTurmaUseCase, ExecutarConsolidacaoTurmaUseCase>();
 
             services.TryAddScopedWorkerService<IExecutarConsolidacaoMatriculaTurmasUseCase, ExecutarConsolidacaoMatriculaTurmasUseCase>();
+
+            // Consolidação Devolutivas
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase, ExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase>();
+            services.TryAddScopedWorkerService<IConsolidarDevolutivasPorTurmaInfantilUseCase, ConsolidarDevolutivasPorTurmaInfantilUseCase>();
+            services.TryAddScopedWorkerService<IConsolidarFrequenciaPorTurmaUseCase, ConsolidarFrequenciaPorTurmaUseCase>();
 
             services.TryAddScopedWorkerService<INotificacaoSalvarItineranciaUseCase, NotificacaoSalvarItineranciaUseCase>();
 

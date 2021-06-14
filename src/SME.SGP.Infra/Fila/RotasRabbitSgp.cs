@@ -114,5 +114,11 @@
         public const string SincronizarDadosAulasFrequenciaMigracao = "sgp.migracao.frequencia.aulas.sync";
         public const string CarregarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.carregar";
         public const string SincronizarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.sync";
+      
+        public const string SincronizaDevolutivasPorTurmaInfantilSync = "sgp.consolidacao.devolutivas.turma.sync";
+        public const string ConsolidarDevolutivasPorTurma = "sgp.consolidacao.devolutivas.turma";
+        public const string ConsolidarDevolutivasPorTurmaInfantil = "sgp.consolidacao.devolutivas.turma.infantil";
+
+
     }
 }
