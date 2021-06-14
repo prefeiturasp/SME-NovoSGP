@@ -106,6 +106,8 @@
         public const string RotaConciliacaoFrequenciaTurmasAlunosSync = "sgp.frequencia.turma.alunos.conciliacao.sync";
         public const string RotaConciliacaoFrequenciaTurmasAlunosBuscar = "sgp.frequencia.turma.alunos.buscar.sync";
 
+        public const string RotaNotificacaoAlunosFaltosos = "sgp.aulas.alunos.faltosos.notificar";
+
         public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
         public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
 
