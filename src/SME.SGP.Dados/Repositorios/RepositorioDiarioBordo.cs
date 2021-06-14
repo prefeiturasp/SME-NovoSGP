@@ -322,16 +322,5 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<QuantidadeTotalDiariosEDevolutivasPorAnoETurmaDTO>(sql.ToString(), new { anoLetivo, dreId, ueId, modalidade });
         }
-
-        private string wherePorDreUE(long dreId, long ueId)
-        {
-            var where = "";
-            if (dreId > 0)
-                where += $" and dre.id = @dreId ";
-
-            if (ueId > 0)
-                where += $" and t.ue_id = @ueId ";
-            return where;
-        }
     }
 }
