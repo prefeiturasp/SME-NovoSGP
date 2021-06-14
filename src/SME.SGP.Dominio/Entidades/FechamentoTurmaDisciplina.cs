@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Dominio
 {
@@ -32,6 +33,16 @@ namespace SME.SGP.Dominio
 
             if (periodoEscolar != null)
                 FechamentoTurma.AdicionarPeriodoEscolar(periodoEscolar);
+        }
+
+        public void AdicionarNota(FechamentoNota fechamentoNota)
+        {
+            if(fechamentoNota != null)
+            {
+                var fechamentoAluno = FechamentoAlunos.FirstOrDefault(a => a.Id == fechamentoNota.FechamentoAlunoId);
+                if (fechamentoAluno != null)
+                    fechamentoAluno.AdicionarNota(fechamentoNota);
+            }
         }
     }
 }
