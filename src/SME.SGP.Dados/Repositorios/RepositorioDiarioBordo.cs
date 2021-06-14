@@ -268,5 +268,132 @@ namespace SME.SGP.Dados.Repositorios
                 TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
             };
         }
+
+        public async Task<IEnumerable<QuantidadeDiariosDeBordoComDevolutivaEDevolutivaPendentePorTurmaAnoDto>> ObterDiariosDeBordoComDevolutivaEDevolutivaPendenteAsync(int anoLetivo, Modalidade modalidade, DateTime dataAula, long? dreId, long? ueId)
+        {
+            var possuiFiltroUe = ueId.HasValue;
+            var query = new StringBuilder(DefinirSelectQueryDiariosDeBordoComDevolutivaEDevolutivaPendente(possuiFiltroUe));
+
+            query.AppendLine(@"
+                from 
+	                diario_bordo db 
+                left join
+	                devolutiva d 
+	                on db.devolutiva_id  = d.id 
+                inner join 
+	                aula a 
+	                on db.aula_id = a.id 
+                inner join 
+	                turma t 
+	                on a.turma_id  = t.turma_id
+                inner join 
+	                ue u 
+	                on t.ue_id  = u.id
+                where 
+	                t.ano_letivo = @anoLetivo
+	                and t.modalidade_codigo = @modalidade
+	                and a.data_aula < @dataAula ");
+
+            if (dreId.HasValue)
+                query.AppendLine("and u.dre_id = @dreId ");
+
+            if (ueId.HasValue)
+                query.AppendLine("and u.id = @ueId ");
+
+            query.AppendLine(DefinirAgrupamentoQueryDiariosDeBordoComDevolutivaEDevolutivaPendente(possuiFiltroUe));
+
+            var parametros = new
+            {
+                anoLetivo,
+                modalidade,
+                dataAula,
+                dreId,
+                ueId
+            };
+
+            return await database.QueryAsync<QuantidadeDiariosDeBordoComDevolutivaEDevolutivaPendentePorTurmaAnoDto>(query.ToString(), parametros);
+        }
+
+        public async Task<IEnumerable<QuantidadeDiariosDeBordoComESemReflexoesEReplanejamentosPorTurmaAnoDto>> ObterDiariosDeBordoComESemReflexoesEReplanejamentosAsync(int anoLetivo, Modalidade modalidade, DateTime dataAula, long? dreId, long? ueId)
+        {
+            var possuiFiltroUe = ueId.HasValue;
+            var query = new StringBuilder(DefinirSelectQueryDiariosDeBordoComESemReflexoesEReplanejamentos(possuiFiltroUe));
+
+            query.AppendLine(@"
+                from 
+	                diario_bordo db 
+                inner join 
+	                aula a 
+	                on db.aula_id = a.id 
+                inner join 
+	                turma t 
+	                on a.turma_id  = t.turma_id
+                inner join 
+	                ue u 
+	                on t.ue_id  = u.id
+                where 
+	                t.ano_letivo = @anoLetivo
+	                and t.modalidade_codigo = @modalidade
+	                and a.data_aula < @dataAula ");
+
+            if (dreId.HasValue)
+                query.AppendLine("and u.dre_id = @dreId ");
+
+            if (ueId.HasValue)
+                query.AppendLine("and u.id = @ueId ");
+
+            query.AppendLine(DefinirAgrupamentoQueryDiariosDeBordoComESemReflexoesEReplanejamentos(possuiFiltroUe));
+
+            var parametros = new
+            {
+                anoLetivo,
+                modalidade,
+                dataAula,
+                dreId,
+                ueId
+            };
+
+            return await database.QueryAsync<QuantidadeDiariosDeBordoComESemReflexoesEReplanejamentosPorTurmaAnoDto>(query.ToString(), parametros);
+        }
+
+        private string DefinirSelectQueryDiariosDeBordoComDevolutivaEDevolutivaPendente(bool possuiFiltroDeUe) 
+            => possuiFiltroDeUe
+                ? @"select
+                        t.turma_id,
+                        t.nome as TurmaAno,
+                        count(*) filter (where db.devolutiva_id is null) as DiariosComDevolutivasPendentes,
+	                    count(*) filter (where db.devolutiva_id is not null) as DiariosComDevolutivas"
+                : @"select
+                        t.ano as TurmaAno,
+                        count(*) filter (where db.devolutiva_id is null) as DiariosComDevolutivasPendentes,
+	                    count(*) filter (where db.devolutiva_id is not null) as DiariosComDevolutivas";
+
+        private string DefinirSelectQueryDiariosDeBordoComESemReflexoesEReplanejamentos(bool possuiFiltroDeUe)
+            => possuiFiltroDeUe
+                ? @"select
+                        t.turma_id,
+                        t.nome as TurmaAno,
+                        count(*) filter (where db.reflexoes_replanejamento is null) as DiariosSemReflexoesEReplanejamento,
+	                    count(*) filter (where db.reflexoes_replanejamento is not null) as DiariosComReflexoesEReplanejamento"
+                : @"select
+                        t.ano as TurmaAno,
+                        count(*) filter (where db.reflexoes_replanejamento is null) as DiariosSemReflexoesEReplanejamento,
+	                    count(*) filter (where db.reflexoes_replanejamento is not null) as DiariosComReflexoesEReplanejamento";
+
+        private string DefinirAgrupamentoQueryDiariosDeBordoComDevolutivaEDevolutivaPendente(bool possuiFiltroDeUe) 
+            => possuiFiltroDeUe
+                ? @"group by
+                        t.turma_id,
+	                    t.nome"
+                : @"group by
+                        t.ano";
+
+        private string DefinirAgrupamentoQueryDiariosDeBordoComESemReflexoesEReplanejamentos(bool possuiFiltroDeUe)
+            => possuiFiltroDeUe
+                ? @"group by
+                        t.turma_id,
+	                    t.nome"
+                : @"group by
+                        t.ano";
     }
 }
