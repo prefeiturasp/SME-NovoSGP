@@ -115,7 +115,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (codigosAlunosCompensacao.Any())
             {
-                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, periodo.Bimestre));
+                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
             }
 
             Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarCompensacaoAusencia(compensacao.Id));
@@ -345,7 +345,7 @@ namespace SME.SGP.Dominio.Servicos
 
                     if (alunosDaCompensacao.Any())
                     {
-                        await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos, periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId, periodo.Bimestre));
+                        await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos, periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId));
                     }
 
                 }

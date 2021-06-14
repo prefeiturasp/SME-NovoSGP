@@ -11,7 +11,7 @@ namespace SME.SGP.Infra
         public IEnumerable<FechamentoNotaRetornoDto> Notas { get; set; }
         public string CodigoAluno { get; set; }
         public int NumeroChamada { get; set; }
-        public double PercentualFrequencia { get; set; }
+        public string PercentualFrequencia { get; set; }
         public double QuantidadeCompensacoes { get; set; }
         public double QuantidadeFaltas { get; set; }
         public SinteseEnum SinteseId { get; set; }

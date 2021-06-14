@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasFechamentoAcompanhamentoQuery : IRequest<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>>
     {
-        public ObterTurmasFechamentoAcompanhamentoQuery(long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, bool listarTodasTurmas)
+        public ObterTurmasFechamentoAcompanhamentoQuery(long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
         {
             DreId = dreId;
             UeId = ueId;
@@ -16,6 +16,8 @@ namespace SME.SGP.Aplicacao
             Semestre = semestre;
             Bimestre = bimestre;
             AnoLetivo = anoLetivo;
+            SituacaoFechamento = situacaoFechamento;
+            SituacaoConselhoClasse = situacaoConselhoClasse;
             ListarTodasTurmas = listarTodasTurmas;
         }
 
@@ -25,13 +27,15 @@ namespace SME.SGP.Aplicacao
         public Modalidade Modalidade { get; set; }
         public int Semestre { get; set; }
         public int Bimestre { get; set; }
-        public int AnoLetivo { get; set; }        
-        public bool ListarTodasTurmas { get; set; }        
+        public int AnoLetivo { get; set; }
+        public int? SituacaoFechamento { get; set; }
+        public int? SituacaoConselhoClasse { get; set; }
+        public bool ListarTodasTurmas { get; set; }
     }
     public class ObterTurmasFechamentoAcompanhamentoQueryValidator : AbstractValidator<ObterTurmasFechamentoAcompanhamentoQuery>
     {
         public ObterTurmasFechamentoAcompanhamentoQueryValidator()
-        {            
+        {
             RuleFor(a => a.DreId)
                 .NotEmpty()
                 .WithMessage("O id da DRE deve ser informado.");

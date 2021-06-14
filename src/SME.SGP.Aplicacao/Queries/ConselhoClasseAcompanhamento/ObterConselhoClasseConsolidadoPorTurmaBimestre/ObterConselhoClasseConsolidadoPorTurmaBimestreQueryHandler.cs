@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ConselhoClasseConsolidadoTurmaAluno>> Handle(ObterConselhoClasseConsolidadoPorTurmaBimestreQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasseConsolidado.ObterConselhosClasseConsolidadoPorTurmaBimestreAsync(request.TurmaId, request.Bimestre);
+            return await repositorioConselhoClasseConsolidado.ObterConselhosClasseConsolidadoPorTurmaBimestreAsync(request.TurmaId, request.Bimestre, request.SituacaoConselhoClasse);
         }
     }
 }
