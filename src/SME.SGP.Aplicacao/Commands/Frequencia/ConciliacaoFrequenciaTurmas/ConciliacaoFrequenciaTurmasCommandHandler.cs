@@ -24,39 +24,38 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var periodosPorModalidade = await ObterPeriodosPassadosPorModalidade(request.Data);
+
                 foreach (var modalidade in periodosPorModalidade)
                 {
-                    var turmasDaModalidade = await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year);
-
-                    foreach (var periodoEscolar in modalidade)
-                        await PublicarFilaConciliacaoTurmas(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim);
+                    var turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year, request.TurmaCodigo)).ToList();
+                    
+                    if (turmasDaModalidade != null && turmasDaModalidade.Any())
+                        foreach (var periodoEscolar in modalidade)
+                            await PublicarFilaConciliacaoTurmas(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim, request.ComponenteCurricularId);
                 }
 
                 return true;
-
             }
             catch (Exception ex)
             {
                 SentrySdk.CaptureException(ex);
                 throw;
-            }        
+            }
         }
 
-        private async Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<Turma> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim)
+        private async Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<string> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
-            Parallel.ForEach(turmasDaModalidade, new ParallelOptions { MaxDegreeOfParallelism = 3 }
-                , async turma =>
-                    await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, dataInicio, dataFim))
-                );
+            foreach (var turma in turmasDaModalidade)
+                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma, bimestre, componenteCurricularId, dataInicio, dataFim));
 
             return true;
         }
 
-        private async Task<IEnumerable<Turma>> ObterTurmasPorModalidade(ModalidadeTipoCalendario modalidadeTipoCalendario, int ano)
+        private async Task<IEnumerable<string>> ObterTurmasPorModalidade(ModalidadeTipoCalendario modalidadeTipoCalendario, int ano, string turmaCodigo)
         {
             var modalidades = modalidadeTipoCalendario.ObterModalidades();
 
-            return await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(ano, modalidades));
+            return await mediator.Send(new ObterCodigosTurmasPorAnoModalidadeQuery(ano, modalidades, turmaCodigo));
         }
 
         private async Task<IEnumerable<IGrouping<ModalidadeTipoCalendario, PeriodoEscolarModalidadeDto>>> ObterPeriodosPassadosPorModalidade(DateTime data)

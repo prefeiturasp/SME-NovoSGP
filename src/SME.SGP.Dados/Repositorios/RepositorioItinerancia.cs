@@ -304,7 +304,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"select dre.abreviacao as Descricao, count(i.id ) as Quantidade");
 
             sql.AppendLine(@" from itinerancia i
-                            inner join ue on iu.ue_id = ue.id 
+                            inner join ue on i.ue_id = ue.id 
                             inner join dre on ue.dre_id = dre.id ");
 
             if (dreId > 0)

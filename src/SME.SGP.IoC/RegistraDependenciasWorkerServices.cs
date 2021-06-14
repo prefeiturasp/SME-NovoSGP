@@ -60,8 +60,6 @@ namespace SME.SGP.IoC
             IModel canalRabbit = conexaoRabbit.CreateModel();
             services.AddSingleton(conexaoRabbit);
             services.AddSingleton(canalRabbit);
-
-            canalRabbit.ExchangeDeclare(ExchangeRabbit.Sgp, ExchangeType.Topic);
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -79,7 +77,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosEvento, ComandosEvento>();
             services.TryAddScopedWorkerService<IComandosDiasLetivos, ComandosDiasLetivos>();
             services.TryAddScopedWorkerService<IComandosGrade, ComandosGrade>();
-            services.TryAddScopedWorkerService<IComandoFrequencia, ComandoFrequencia>();
             services.TryAddScopedWorkerService<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IComandosAtividadeAvaliativa, ComandosAtividadeAvaliativa>();
             services.TryAddScopedWorkerService<IComandosTipoAvaliacao, ComandosTipoAavaliacao>();
@@ -169,6 +166,11 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasRelatorioSemestralPAPAluno, ConsultasRelatorioSemestralPAPAluno>();
             services.TryAddScopedWorkerService<IConsultasRelatorioSemestralPAPAlunoSecao, ConsultasRelatorioSemestralPAPAlunoSecao>();
             services.TryAddScopedWorkerService<IConsultasSecaoRelatorioSemestralPAP, ConsultasSecaoRelatorioSemestralPAP>();
+
+            services.TryAddScoped<ICarregarDadosAulasFrequenciaUseCase, CarregarDadosAulasFrequenciaUseCase>();
+            services.TryAddScoped<IExecutarSincronizacaoDadosAulasFrequenciaUseCase, ExecutarSincronizacaoDadosAulasFrequenciaUseCase>();
+            services.TryAddScoped<IExecutarSincronizacaoRegistroFrequenciaAlunosUseCase, ExecutarSincronizacaoRegistroFrequenciaAlunosUseCase>();
+            services.TryAddScoped<ICarregarRegistroFrequenciaAlunosUseCase, CarregarRegistroFrequenciaAlunosUseCase>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -338,8 +340,11 @@ namespace SME.SGP.IoC
             // Consolidação Frequencia Turma
             services.TryAddScopedWorkerService<IRepositorioConsolidacaoFrequenciaTurma, RepositorioConsolidacaoFrequenciaTurma>();
 
+
             // Consolidação Devolutivas
             services.TryAddScopedWorkerService<IRepositorioConsolidacaoDevolutivas, RepositorioConsolidacaoDevolutivas>();
+
+            services.TryAddScopedWorkerService<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -465,8 +470,12 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsolidarFrequenciaTurmasUseCase, ConsolidarFrequenciaTurmasUseCase>();
             services.TryAddScopedWorkerService<IConsolidarFrequenciaPorTurmaUseCase, ConsolidarFrequenciaPorTurmaUseCase>();
             
+            // Fechamento
+            services.TryAddScopedWorkerService<IGerarPendenciasFechamentoUseCase, GerarPendenciasFechamentoUseCase>();
+
             // Frequência
-            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasUseCase, ConciliacaoFrequenciaTurmasUseCase>();
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasCronUseCase, ConciliacaoFrequenciaTurmasCronUseCase>();
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasSyncUseCase, ConciliacaoFrequenciaTurmasSyncUseCase>();
             services.TryAddScopedWorkerService<IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase, ValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase>();
 
             // Notificações
@@ -595,6 +604,19 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<INotificacaoSalvarItineranciaUseCase, NotificacaoSalvarItineranciaUseCase>();
 
             services.TryAddScopedWorkerService<IAlterarAulaFrequenciaTratarUseCase, AlterarAulaFrequenciaTratarUseCase>();
+
+            services.TryAddScopedWorkerService<IRabbitDeadletterSyncUseCase, RabbitDeadletterSyncUseCase>();
+            services.TryAddScopedWorkerService<IRabbitDeadletterTratarUseCase, RabbitDeadletterTratarUseCase>();
+
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasAlunosCronUseCase, ConciliacaoFrequenciaTurmasAlunosCronUseCase>();
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasAlunosSyncUseCase, ConciliacaoFrequenciaTurmasAlunosSyncUseCase>();
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasAlunosBuscarUseCase, ConciliacaoFrequenciaTurmasAlunosBuscarUseCase>();
+
+            services.TryAddScopedWorkerService<IObterNotasParaAvaliacoesUseCase, ObterNotasParaAvaliacoesUseCase>();
+            services.TryAddScopedWorkerService<IObterPeriodosParaConsultaNotasUseCase, ObterPeriodosParaConsultaNotasUseCase>();
+
+            services.TryAddScopedWorkerService<IExecutaNotificacaoAlunosFaltososUseCase, ExecutaNotificacaoAlunosFaltososUseCase>();
+            services.TryAddScopedWorkerService<INotificarAlunosFaltososUseCase, NotificarAlunosFaltososUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

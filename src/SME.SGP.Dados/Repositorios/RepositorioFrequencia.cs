@@ -44,52 +44,58 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { aulaId });
         }
 
-        public async Task<IEnumerable<AlunoComponenteCurricularDto>> ObterAlunosAusentesPorTurmaEPeriodo(string turmaCodigo, DateTime dataInicio, DateTime dataFim)
+        public async Task<IEnumerable<AlunoComponenteCurricularDto>> ObterAlunosAusentesPorTurmaEPeriodo(string turmaCodigo, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
-            var query = @"select distinct a.disciplina_id as ComponenteCurricularId, raa.codigo_aluno as AlunoCodigo
+            var query = new StringBuilder(@"select distinct a.disciplina_id as ComponenteCurricularId, raa.codigo_aluno as AlunoCodigo
                         from registro_ausencia_aluno raa 
                        inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
                        inner join aula a on a.id = rf.aula_id 
-                       where not a.excluido 
-                         and not rf.excluido 
-                         and not raa.excluido 
-                         and a.turma_id = @turmaCodigo
-                         and a.data_aula between @dataInicio and @dataFim ";
+                       where 
+                         a.turma_id = @turmaCodigo
+                         and a.data_aula between @dataInicio and @dataFim ");
 
-            return await database.Conexao.QueryAsync<AlunoComponenteCurricularDto>(query, new { turmaCodigo, dataInicio, dataFim });
+            if (!string.IsNullOrEmpty(componenteCurricularId))
+                query.AppendLine("and a.disciplina_id = @componenteCurricularId");
+
+            return await database.Conexao.QueryAsync<AlunoComponenteCurricularDto>(query.ToString(), new { turmaCodigo, dataInicio, dataFim, componenteCurricularId });
         }
 
         public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId)
         {
-            var query = new StringBuilder();
+            var query = @"select a.TurmaCodigo
+	                     , a.ModalidadeCodigo
+	                     , a.Ano
+	                     , a.DataAula
+	                     , a.CodigoAluno
+	                     , Sum(a.Aulas) as QuantidadeAulas
+	                     , Sum(a.Ausencias) as QuantidadeFaltas
+                    from (
+	                    select a.turma_id as TurmaCodigo
+	                         , t.modalidade_codigo as modalidadeCodigo
+	                         , t.ano
+	                         , a.id as AulaId
+	                         , a.data_aula as DataAula
+	                         , a.quantidade as Aulas
+	                         , raa.codigo_aluno as CodigoAluno
+	                         , count(raa.id) as Ausencias
+	
+	                    from aula a
+	                      inner join registro_frequencia rf on a.id = rf.aula_id
+	                      inner join turma t on t.turma_id = a.turma_id
+	                       left join registro_ausencia_aluno raa on raa.registro_frequencia_id = rf.id and not raa.excluido
+	                    where not a.excluido
+	                      and not rf.excluido
+	                      and a.data_aula >= @dataReferencia
+	                      and a.tipo_calendario_id = @tipoCalendarioId
+	                    group by a.turma_id, t.modalidade_codigo, t.ano, a.id, a.data_aula, a.quantidade, raa.codigo_aluno
+                    ) a
+                    group by a.TurmaCodigo
+	                     , a.ModalidadeCodigo
+	                     , a.Ano
+	                     , a.DataAula
+	                     , a.CodigoAluno";
 
-            query.AppendLine("select a.turma_id as TurmaCodigo");
-            query.AppendLine("     , a.data_aula as DataAula");
-            query.AppendLine("     , fa.codigo_aluno as CodigoAluno");
-            query.AppendLine("     , sum(a.quantidade) as QuantidadeAulas");
-            query.AppendLine("     , fa.qtd_faltas as QuantidadeFaltas");
-            query.AppendLine("     , t.modalidade_codigo as modalidadeCodigo");
-            query.AppendLine("     , t.ano");
-            query.AppendLine("from aula a");
-            query.AppendLine("  inner join registro_frequencia rf on a.id = rf.aula_id");
-            query.AppendLine("  inner join turma t on t.turma_id = a.turma_id");
-            query.AppendLine("  left join(select aa.turma_id, aa.data_aula, raa.codigo_aluno, count(raa.id) qtd_faltas");
-            query.AppendLine("            from aula aa");
-            query.AppendLine("              inner join registro_frequencia rfa on aa.id = rfa.aula_id");
-            query.AppendLine("              inner join registro_ausencia_aluno raa on rfa.id = raa.registro_frequencia_id");
-            query.AppendLine("            where not rfa.excluido");
-            query.AppendLine("              and not raa.excluido");
-            query.AppendLine("              and aa.tipo_calendario_id = @tipoCalendarioId");
-            query.AppendLine("              and aa.data_aula >= @dataReferencia");
-            query.AppendLine("            group by aa.turma_id, aa.data_aula, raa.codigo_aluno) fa");
-            query.AppendLine("  on fa.turma_id = a.turma_id and fa.data_aula = a.data_aula");
-            query.AppendLine("where not a.excluido");
-            query.AppendLine("  and not rf.excluido");
-            query.AppendLine("  and a.data_aula >= @dataReferencia");
-            query.AppendLine("  and a.tipo_calendario_id = @tipoCalendarioId");
-            query.AppendLine("group by a.turma_id, a.data_aula, fa.codigo_aluno, fa.qtd_faltas, t.modalidade_codigo, t.ano;");
-
-            return database.Conexao.Query<AlunosFaltososDto>(query.ToString(), new { dataReferencia, tipoCalendarioId });
+            return database.Conexao.Query<AlunosFaltososDto>(query, new { dataReferencia, tipoCalendarioId });
         }
 
         public RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId)
@@ -201,14 +207,14 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<RegistroAusenciaAluno>(query, new { aulaId });
         }
 
-        public RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId)
+        public async Task<RegistroFrequencia> ObterRegistroFrequenciaPorAulaId(long aulaId)
         {
             var query = @"select *
                             from registro_frequencia
                           where not excluido
                             and aula_id = @aulaId";
 
-            return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<RegistroFrequencia>(query, new { aulaId });
         }
 
         public async Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string turma, short bimestre, short anoLetivo)
@@ -285,6 +291,13 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId,
                 semestre
             });
+        }
+        public async Task SalvarConciliacaoTurma(string turmaId, string disciplinaId, DateTime dataReferencia, string alunos)
+        {
+            var query = @"insert into conciliacao_turma (turma_id, disciplina_id, data_referencia, alunos) 
+                          values (@turmaId, @disciplinaId, @dataReferencia, @alunos)";
+
+            await database.Conexao.ExecuteAsync(query, new { turmaId, disciplinaId, dataReferencia, alunos });
         }
     }
 }

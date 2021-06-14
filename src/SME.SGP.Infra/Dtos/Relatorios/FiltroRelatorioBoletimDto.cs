@@ -1,9 +1,6 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace SME.SGP.Infra.Dtos.Relatorios
+namespace SME.SGP.Infra
 {
     public class FiltroRelatorioBoletimDto
     {
@@ -18,6 +15,8 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public int AnoLetivo { get; set; }
 
         public Modalidade Modalidade { get; set; }
+
+        public ModeloBoletim Modelo { get; set; }
 
         public string[] AlunosCodigo { get; set; }
 

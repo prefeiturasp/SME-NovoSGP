@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPlanoAulaCommand : IRequest<bool>
+    public class SalvarPlanoAulaCommand : IRequest<AuditoriaDto>
     {
         public SalvarPlanoAulaCommand(PlanoAulaDto dto)
         {

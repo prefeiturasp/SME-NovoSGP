@@ -9,16 +9,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciasAulasPorTipoQuery : IRequest<IEnumerable<Aula>>
     {
-        public ObterPendenciasAulasPorTipoQuery(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades)
+        public ObterPendenciasAulasPorTipoQuery(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, int? anoLetivo = null)
         {
             TipoPendenciaAula = tipoPendenciaAula;
             TabelaReferencia = tabelaReferencia;
             Modalidades = modalidades;
+            AnoLetivo = anoLetivo ?? DateTime.Today.Year;
         }
 
         public TipoPendencia TipoPendenciaAula { get; set; }
         public string TabelaReferencia { get; set; }
         public long[] Modalidades { get; set; }
+        public int AnoLetivo { get; set; }
     }
 
     public class ObterPendenciasAulasPorTipoQueryValidator : AbstractValidator<ObterPendenciasAulasPorTipoQuery>
