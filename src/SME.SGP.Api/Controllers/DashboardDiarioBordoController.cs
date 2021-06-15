@@ -21,5 +21,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+        [HttpGet("quantidade-diarios-pendentes")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoBaseDto>), 200)]
+        //[Permissao(Permissao.DB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuantidadeTotalDeDiariosPendentesPorAnoTurma([FromQuery] FiltroDasboardDiarioBordoDto filtro, [FromServices] IObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }

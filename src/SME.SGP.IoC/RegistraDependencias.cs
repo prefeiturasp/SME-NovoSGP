@@ -967,9 +967,7 @@ namespace SME.SGP.IoC
             
             // Dashboard Diário de bordo
             services.TryAddScoped<IObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaUseCase, ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaUseCase>();
-
-
-
+            services.TryAddScoped<IObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaUseCase, ObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaUseCase >();
         }
     }
 }
