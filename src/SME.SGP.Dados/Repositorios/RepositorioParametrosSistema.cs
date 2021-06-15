@@ -147,5 +147,19 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { anoLetivo, tipo = TipoParametroSistema.NovasModalidades });
         }
+
+        public async Task<IEnumerable<ParametrosSistema>> ObterParametrosPorAnoAsync(int? ano)
+        {
+            var query = new StringBuilder(@"select *
+                            from parametros_sistema ");
+
+            if (ano.HasValue)
+                query.AppendLine("where (ano = @ano or ano is null)");                             
+            else query.AppendLine("where ano is null");
+
+            query.AppendLine(" and ativo");
+
+            return await database.Conexao.QueryAsync<ParametrosSistema>(query.ToString(), new { ano });
+        }
     }
 }

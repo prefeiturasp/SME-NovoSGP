@@ -575,5 +575,22 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<RegistroFrequenciaAlunoBimestreDto>(sql.ToString(), new { codigoAluno, codigosTurma, componentesCurricularesId, periodoEscolarId });
         }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosDataAsync(string[] alunosCodigo, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string codigoTurma, string componenteCurricularId )
+        {
+            var query = @"select fa.*
+                        from frequencia_aluno fa
+                        inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
+                        where
+	                        fa.codigo_aluno = ANY(@alunosCodigo)
+	                        and fa.tipo = @tipoFrequencia                            
+	                        and pe.periodo_inicio <= @dataAtual
+	                        and pe.periodo_fim >= @dataAtual
+                            and fa.turma_id = @codigoTurma
+                            and fa.disciplina_id = @componenteCurricularId";
+
+            return await database.Conexao.QueryAsync<FrequenciaAluno>(query, new { alunosCodigo, dataAtual, tipoFrequencia, codigoTurma, componenteCurricularId });
+        }
+
     }
 }
