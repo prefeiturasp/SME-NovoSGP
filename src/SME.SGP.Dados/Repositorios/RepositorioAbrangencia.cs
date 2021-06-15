@@ -316,7 +316,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico)
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-            return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo)
+            return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo, null)
                                                              order by 1", new { login, perfil, consideraHistorico, anoLetivo })).AsList();
         }
 
@@ -377,7 +377,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                      nome as NomeSimples,
 	                                      tipoescola,
                                           ue_id as id
-	                         from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo)
+	                         from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo, null)
                           order by 2;";
 
             var parametros = new
