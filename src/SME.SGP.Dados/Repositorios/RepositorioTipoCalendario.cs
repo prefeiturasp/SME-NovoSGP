@@ -144,7 +144,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select *");
             query.AppendLine("from tipo_calendario");
-            query.AppendLine("where excluido = false");
+            query.AppendLine("where not excluido");
             query.AppendLine("and ano_letivo = @anoLetivo");
             return query;
         }
@@ -231,7 +231,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select *, ano_letivo ||' - '|| nome as descricao");
             query.AppendLine("from tipo_calendario");
-            query.AppendLine("where excluido = false");
+            query.AppendLine("where not excluido");
             query.AppendLine("and ano_letivo = any(@anosLetivo)");
             query.AppendLine("and modalidade = any(@modalidades)");
             query.AppendLine("order by ano_letivo desc");

@@ -37,10 +37,9 @@ namespace SME.SGP.Aplicacao
                 if (periodosEscolares != null && periodosEscolares.Any())
                 {
                     var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
-
                     var diasForaDoPeriodoEscolar = await mediator.Send(new ObterDiasForaDoPeriodoEscolarQuery(periodosEscolares));
 
-                    var turmas = await mediator.Send(new ObterTurmasInfantilNaoDeProgramaQuery(anoAtual));                    
+                    var turmas = await mediator.Send(new ObterTurmasInfantilNaoDeProgramaQuery(anoAtual));
                     if (turmas != null && turmas.Any())
                     {
                         var paginador = 900;

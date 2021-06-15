@@ -47,7 +47,8 @@ namespace SME.SGP.Aplicacao
                         if (Enum.IsDefined(typeof(Modalidade), modalidade))
                         {
                             listaModalidades.Add(modalidade);
-                        } else
+                        }
+                        else
                         {
                             return false;
                         }
