@@ -38,13 +38,16 @@ namespace SME.SGP.Aplicacao
                 foreach (var titular in titulares)
                 {
                     var codigoRf = titular.Trim();
-                    var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRf));
-                    if (usuario != null)
-                        await mediator.Send(new NotificarUsuarioCommand($"Problemas na exclusão de aulas da turma {turma.Nome}",
-                                                                        mensagem.ToString(),
-                                                                        codigoRf,
-                                                                        NotificacaoCategoria.Aviso,
-                                                                        NotificacaoTipo.Calendario));
+                    if (!string.IsNullOrEmpty(codigoRf))
+                    {
+                        var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRf));
+                        if (usuario != null)
+                            await mediator.Send(new NotificarUsuarioCommand($"Problemas na exclusão de aulas da turma {turma.Nome}",
+                                                                            mensagem.ToString(),
+                                                                            codigoRf,
+                                                                            NotificacaoCategoria.Aviso,
+                                                                            NotificacaoTipo.Calendario));
+                    }
                 }
                 return true;
             }
