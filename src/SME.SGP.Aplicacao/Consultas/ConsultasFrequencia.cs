@@ -217,15 +217,9 @@ namespace SME.SGP.Aplicacao
             {
                 // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
                 // se a matrícula foi ativada após a data da aula                
-                if ((aluno.EstaInativo(aula.DataAula) && aluno.DataSituacao < bimestre.PeriodoInicio) ||
-                    (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataSituacao > aula.DataAula))
-                    continue;
-
-                if (aula.DataAula < aluno.DataMatricula.Date)
-                    continue;
-
-                if (aluno.EstaInativo(aula.DataAula) && aluno.DataSituacao < aula.DataAula)
-                    continue;
+                if ((aluno.EstaInativo(aula.DataAula) && (aluno.DataSituacao < bimestre.PeriodoInicio || aluno.DataSituacao < aula.DataAula)) ||
+                    (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataMatricula > aula.DataAula))
+                    continue;                
 
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {
