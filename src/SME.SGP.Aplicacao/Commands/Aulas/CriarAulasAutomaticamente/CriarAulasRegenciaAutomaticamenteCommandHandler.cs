@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             var diasForaDoPeriodo = request.DiasForaDoPeriodoEscolar;
             var aulasACriar = new List<Aula>();
             var aulasAExcluirComFrequenciaRegistrada = new List<DateTime>();
-            var turmas = request.DadosTurmas;
+            var dadosTurmas = request.DadosTurmas;
             var ueCodigo = request.UeCodigo;
             var modalidade = request.Modalidade;
 
@@ -39,27 +39,31 @@ namespace SME.SGP.Aplicacao
 
             var idsAulasAExcluir = new List<long>();
 
-            foreach (var turma in turmas)
+            foreach (var dadoTurma in dadosTurmas)
             {
-                var aulas = (List<Aula>)await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.TurmaCodigo, tipoCalendarioId));
-                aulas.AddRange(await repositorioAula.ObterAulasExcluidasComDiarioDeBordoAtivos(turma.TurmaCodigo, tipoCalendarioId));
+                var aulas = (List<Aula>)await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(dadoTurma.TurmaCodigo, tipoCalendarioId));
+                aulas.AddRange(await repositorioAula.ObterAulasExcluidasComDiarioDeBordoAtivos(dadoTurma.TurmaCodigo, tipoCalendarioId));
+                var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(dadoTurma.TurmaCodigo, dadoTurma.ComponenteCurricularCodigo));
+                var professorRf = professorTitular != null ? professorTitular.ProfessorRf : "";
 
-                var aulasCriarComDataInicio = diasParaCriarAula.Where(c => turma.DataInicioTurma != null || c.Data.Date >= turma.DataInicioTurma)?.ToList();
+                var aulasCriarComDataInicio = diasParaCriarAula.Where(c => dadoTurma.DataInicioTurma != null && c.Data.Date >= dadoTurma.DataInicioTurma)?.ToList();
                 if (aulas == null)
-                    aulasACriar.AddRange(ObterAulasParaCriacao(tipoCalendarioId, aulasCriarComDataInicio, turma, ueCodigo, modalidade));
+                    aulasACriar.AddRange(ObterAulasParaCriacao(tipoCalendarioId, aulasCriarComDataInicio, dadoTurma, ueCodigo, modalidade, professorRf));
                 else
                 {
                     if (!aulas.Any())
-                        aulasACriar.AddRange(ObterAulasParaCriacao(tipoCalendarioId, aulasCriarComDataInicio, turma, ueCodigo, modalidade));
+                        aulasACriar.AddRange(ObterAulasParaCriacao(tipoCalendarioId, aulasCriarComDataInicio, dadoTurma, ueCodigo, modalidade, professorRf));
                     else
                     {
-                        var diasSemAula = DeterminaDiasLetivos(diasParaCriarAula, request.UeCodigo)
-                            .Where(c => !aulas.Any(a => a.DataAula == c.Data) && (turma.DataInicioTurma != null || c.Data.Date >= turma.DataInicioTurma))?
+                        var diasLetivos = DeterminaDiasLetivos(diasParaCriarAula, request.UeCodigo);
+                        var diasNaoLetivos = DeterminaDiasNaoLetivos(diasParaCriarAula, request.UeCodigo);
+                        var diasSemAula = diasLetivos
+                            .Where(c => !aulas.Any(a => a.DataAula == c.Data) && (dadoTurma.DataInicioTurma != null && c.Data.Date >= dadoTurma.DataInicioTurma))?
                             .OrderBy(a => a.Data)?
                             .Distinct()
                             .ToList();
 
-                        var aulasParaCriacao = ObterAulasParaCriacao(tipoCalendarioId, diasSemAula, turma, ueCodigo, modalidade)?.ToList();
+                        var aulasParaCriacao = ObterAulasParaCriacao(tipoCalendarioId, diasSemAula, dadoTurma, ueCodigo, modalidade, professorRf)?.ToList();
 
                         if (aulasParaCriacao != null)
                         {
@@ -67,7 +71,7 @@ namespace SME.SGP.Aplicacao
                                 aulasACriar.Add(aulasParaCriacao[a]);
                         }
 
-                        IEnumerable<Aula> aulasDaTurmaParaExcluir = ObterAulasParaExcluir(diasParaCriarAula.ToList(), turma, aulas, request.UeCodigo);
+                        IEnumerable<Aula> aulasDaTurmaParaExcluir = ObterAulasParaExcluir(diasParaCriarAula.ToList(), dadoTurma, aulas, request.UeCodigo);
                         await ExcluirAulas(aulasAExcluirComFrequenciaRegistrada, idsAulasAExcluir, aulasDaTurmaParaExcluir.ToList());
 
                         var aulasForaDoPeriodo = aulas.Where(c => diasForaDoPeriodo.Contains(c.DataAula));
@@ -81,8 +85,9 @@ namespace SME.SGP.Aplicacao
 
                 if (aulasAExcluirComFrequenciaRegistrada.Any())
                 {
-                    //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoExclusaoAulasComFrequencia,
-                    //    new NotificarExclusaoAulasComFrequenciaDto(turma, aulasAExcluirComFrequenciaRegistrada), Guid.NewGuid(), null));
+                    var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(dadoTurma.TurmaCodigo));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoExclusaoAulasComFrequencia,
+                        new NotificarExclusaoAulasComFrequenciaDto(turma, aulasAExcluirComFrequenciaRegistrada), Guid.NewGuid(), null));
 
                     aulasAExcluirComFrequenciaRegistrada.Clear();
                 }
@@ -149,31 +154,33 @@ namespace SME.SGP.Aplicacao
                         .OrderBy(c => c.DataAula);
         }
 
-        private IEnumerable<Aula> ObterAulasParaCriacao(long tipoCalendarioId, IEnumerable<DiaLetivoDto> diasDoPeriodo, DadosTurmaAulasAutomaticaDto turma, string ueCodigo, Modalidade modalidade)
+        private IEnumerable<Aula> ObterAulasParaCriacao(long tipoCalendarioId, IEnumerable<DiaLetivoDto> diasDoPeriodo, DadosTurmaAulasAutomaticaDto turma, string ueCodigo, Modalidade modalidade, string rfProfessor)
         {
             var diasLetivos = DeterminaDiasLetivos(diasDoPeriodo, ueCodigo);
             var diasNaoLetivos = DeterminaDiasNaoLetivos(diasDoPeriodo, ueCodigo);
 
             var diasParaCriar = diasDoPeriodo.Where(l => diasLetivos != null && diasLetivos.Any(n => n.Data == l.Data) || (diasNaoLetivos == null || !diasNaoLetivos.Any(n => n.Data == l.Data)))?.ToList();
 
-            return ObterListaDeAulas(diasParaCriar?.DistinctBy(c => c.Data)?.ToList(), tipoCalendarioId, turma, ueCodigo, modalidade);
+            return ObterListaDeAulas(diasParaCriar?.DistinctBy(c => c.Data)?.ToList(), tipoCalendarioId, turma, ueCodigo, modalidade, rfProfessor);
         }
 
         private IList<DiaLetivoDto> DeterminaDiasNaoLetivos(IEnumerable<DiaLetivoDto> diasDoPeriodo, string ueCodigo)
         {
             return diasDoPeriodo.Where(c => (c.ExcluirAulaUe(ueCodigo) && c.EhNaoLetivo) ||
                                             (!c.DreIds.Any() && !c.UesIds.Any() && c.EhNaoLetivo) ||
-                                            c.ExcluirAulaSME || (c.UesIds.Any() && c.UesIds.Contains(ueCodigo) && c.EhNaoLetivo))?.ToList();
+                                            c.ExcluirAulaSME || (c.UesIds.Any() && c.UesIds.Contains(ueCodigo) && c.EhNaoLetivo) ||
+                                            (c.Data.DayOfWeek == DayOfWeek.Sunday || c.Data.DayOfWeek == DayOfWeek.Saturday))?.ToList();
         }
 
         private IList<DiaLetivoDto> DeterminaDiasLetivos(IEnumerable<DiaLetivoDto> diasDoPeriodo, string ueCodigo)
         {
             return diasDoPeriodo.Where(c => (c.CriarAulaUe(ueCodigo) && c.EhLetivo) ||
                                        (!c.DreIds.Any() && !c.UesIds.Any() && c.EhLetivo) ||
+                                       (!c.PossuiEvento && c.EhLetivo && !c.PossuiEventoSME() && !c.PossuiEventoUe(ueCodigo)) ||
                                        c.CriarAulaSME())?.OrderBy(c => c.Data)?.ToList();
         }
 
-        private IEnumerable<Aula> ObterListaDeAulas(List<DiaLetivoDto> diasLetivos, long tipoCalendarioId, DadosTurmaAulasAutomaticaDto turma, string ueCodigo, Modalidade modalidade)
+        private IEnumerable<Aula> ObterListaDeAulas(List<DiaLetivoDto> diasLetivos, long tipoCalendarioId, DadosTurmaAulasAutomaticaDto turma, string ueCodigo, Modalidade modalidade, string rfProfessor)
         {
             var lista = new List<Aula>();
             if (diasLetivos != null)
@@ -192,7 +199,9 @@ namespace SME.SGP.Aplicacao
                         TipoCalendarioId = tipoCalendarioId,
                         TurmaId = turma.TurmaCodigo,
                         UeId =ueCodigo,
-                        ProfessorRf = "Sistema"
+                        ProfessorRf = rfProfessor,
+                        CriadoPor = "Sistema",
+                        CriadoRF = "0"
                     });
                 }
             }

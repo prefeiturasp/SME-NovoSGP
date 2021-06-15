@@ -898,8 +898,8 @@ namespace SME.SGP.Dados.Repositorios
                     writer.Write(aula.UeId);
                     writer.Write(aula.ProfessorRf);
                     writer.Write(aula.CriadoEm);
-                    writer.Write("Sistema");
-                    writer.Write("Sistema");
+                    writer.Write(aula.CriadoPor != null? aula.CriadoPor: "Sistema");
+                    writer.Write(aula.CriadoRF != null? aula.CriadoRF: "Sistema");
                 }
                 writer.Complete();
             }
