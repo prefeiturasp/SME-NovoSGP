@@ -183,9 +183,10 @@ namespace SME.SGP.Aplicacao
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
 
                 var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendario.Id, periodoAtual.PeriodoFim);
-                var alunosValidosComOrdenacao = alunos.Where(a => a.NumeroAlunoChamada > 0 || 
+                var alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 || 
                                                              a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
-                                                             a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido))
+                                                             a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido)) &&
+                                                             a.DataMatricula.Date <= bimestreDoPeriodo.PeriodoFim.Date)
                                                        .OrderBy(a => a.NumeroAlunoChamada)
                                                        .ThenBy(a => a.NomeValido());
 
