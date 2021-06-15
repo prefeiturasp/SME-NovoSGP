@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
 
             // Carrega alunos
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma, turma.AnoLetivo);
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaId));
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
@@ -173,11 +173,11 @@ namespace SME.SGP.Aplicacao
             fechamentoBimestre.EhSintese = !disciplinaEOL.LancaNota;
 
             // Carrega fechamento da Turma x Disciplina x Bimestre  
-            var fechamentosTurma = await ObterFechamentosTurmaDisciplina(turmaId, disciplinaId.ToString(), bimestreAtual.Value);            
+            var fechamentosTurma = await ObterFechamentosTurmaDisciplina(turmaId, disciplinaId.ToString(), bimestreAtual.Value);
             if ((fechamentosTurma != null && fechamentosTurma.Any()) || fechamentoBimestre.EhSintese)
             {
                 if (fechamentosTurma != null && fechamentosTurma.Any())
-                {                     
+                {
                     fechamentoBimestre.Situacao = fechamentosTurma.First().Situacao;
                     fechamentoBimestre.SituacaoNome = fechamentosTurma.First().Situacao.Name();
                     fechamentoBimestre.FechamentoId = fechamentosTurma.First().Id;
@@ -187,7 +187,7 @@ namespace SME.SGP.Aplicacao
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
 
                 var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendario.Id, periodoAtual.PeriodoFim);
-                var alunosValidosComOrdenacao = alunos.Where(a => a.NumeroAlunoChamada > 0 || 
+                var alunosValidosComOrdenacao = alunos.Where(a => a.NumeroAlunoChamada > 0 ||
                                                              a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
                                                              a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido))
                                                        .OrderBy(a => a.NumeroAlunoChamada)
@@ -205,9 +205,9 @@ namespace SME.SGP.Aplicacao
                         CodigoAluno = aluno.CodigoAluno,
                         NumeroChamada = aluno.NumeroAlunoChamada,
                         Nome = aluno.NomeAluno,
-                        Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo),
+                        Ativo = aluno.EstaAtivo(periodoAtual.PeriodoFim),
                         EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
-                };
+                    };
 
                     var anotacaoAluno = await consultasFehcamentoAluno.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
                     alunoDto.TemAnotacao = anotacaoAluno != null && anotacaoAluno.Anotacao != null &&
@@ -227,7 +227,7 @@ namespace SME.SGP.Aplicacao
                         alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia.ToString();
                     }
                     else
-                    {                        
+                    {
                         alunoDto.QuantidadeFaltas = 0;
                         alunoDto.QuantidadeCompensacoes = 0;
                         alunoDto.PercentualFrequencia = string.Empty;
@@ -237,7 +237,7 @@ namespace SME.SGP.Aplicacao
                     if (aluno.CodigoAluno != null)
                     {
                         if (fechamentoBimestre.EhSintese && fechamentoTurma == null)
-                        {                            
+                        {
                             var sinteseDto = await consultasFrequencia.ObterSinteseAluno(frequenciaAluno.PercentualFrequencia, disciplinaEOL);
 
                             alunoDto.SinteseId = sinteseDto.Id;
