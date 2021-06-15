@@ -457,7 +457,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 sql = @"select  
 	                        distinct
-                            t.turma_id, 
+                            t.nome as turma, 
                             count(a.id) as quantidadeTotalDiariosPendentes
                         from aula a  
                             inner join turma t on t.turma_id = a.turma_id 
@@ -470,7 +470,7 @@ namespace SME.SGP.Dados.Repositorios
                             and t.modalidade_codigo = @modalidade
                             and a.data_aula > current_date
                             and a.id not in (select distinct db.aula_id from diario_bordo db where not db.excluido)
-                        group by t.turma_id ";
+                        group by t.nome ";
             }
 
             return await database.Conexao.QueryAsync<QuantidadeTotalDiariosPendentesPorAnoETurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
