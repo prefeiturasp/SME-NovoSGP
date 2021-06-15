@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<TipoCalendario>> Handle(ObterTiposCalendarioPorAnoLetivoModalidadeQuery request, CancellationToken cancellationToken)
         {
-            var modalidades = request.Modalidades.Cast<int>().ToArray();
+            var modalidades = request.Modalidades.Select(m => (int)m.ObterModalidadeTipoCalendario()).ToArray();
             return await repositorioTipoCalendario.ListarPorAnoLetivoEModalidades(request.AnoLetivo, modalidades);
         }
     }

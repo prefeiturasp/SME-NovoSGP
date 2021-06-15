@@ -102,10 +102,10 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("ano-letivo/{anoLetivo}")]
+        [Route("ano-letivo/{anoLetivo}/modalidade/{modalidades}")]
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> BuscarPorAnoLetivoModalidade(int anoLetivo, [FromQuery]Modalidade[] modalidades, [FromServices] IObterTiposCalendarioPorAnoLetivoModalidadeUseCase obterTiposCalendarioPorAnoLetivoModalidadeoUseCase)
+        public async Task<IActionResult> BuscarPorAnoLetivoModalidade(int anoLetivo, string modalidades, [FromServices] IObterTiposCalendarioPorAnoLetivoModalidadeUseCase obterTiposCalendarioPorAnoLetivoModalidadeoUseCase)
         {
             return Ok(await obterTiposCalendarioPorAnoLetivoModalidadeoUseCase.Executar(anoLetivo, modalidades));
         }

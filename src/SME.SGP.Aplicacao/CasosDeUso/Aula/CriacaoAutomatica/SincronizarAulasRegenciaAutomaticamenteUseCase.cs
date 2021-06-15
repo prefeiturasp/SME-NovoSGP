@@ -7,14 +7,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SincronizarAulasRegenciaAutomaticamenteUseCase : ISincronizarAulasRegenciaAutomaticamenteUseCase
+    public class SincronizarAulasRegenciaAutomaticamenteUseCase : AbstractUseCase, ISincronizarAulasRegenciaAutomaticamenteUseCase
     {
-        private readonly IMediator mediator;
-
-        public SincronizarAulasRegenciaAutomaticamenteUseCase(IMediator mediator)
+        public SincronizarAulasRegenciaAutomaticamenteUseCase(IMediator mediator) : base(mediator)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
+
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var comando = mensagemRabbit.ObterObjetoMensagem<CriarAulasRegenciaAutomaticamenteCommand>();

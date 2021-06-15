@@ -8,13 +8,10 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SincronizarUeTurmaAulaRegenciaAutomaticaUseCase : ISincronizarUeTurmaAulaRegenciaAutomaticaUseCase
+    public class SincronizarUeTurmaAulaRegenciaAutomaticaUseCase : AbstractUseCase, ISincronizarUeTurmaAulaRegenciaAutomaticaUseCase
     {
-        private readonly IMediator mediator;
-
-        public SincronizarUeTurmaAulaRegenciaAutomaticaUseCase(IMediator mediator)
+        public SincronizarUeTurmaAulaRegenciaAutomaticaUseCase(IMediator mediator) : base(mediator)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
