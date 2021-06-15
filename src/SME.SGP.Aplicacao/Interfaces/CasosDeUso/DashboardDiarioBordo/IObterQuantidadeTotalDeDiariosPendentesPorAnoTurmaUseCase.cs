@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaUseCase
     {
-        Task<IEnumerable<GraficoBaseDto>> Executar(FiltroDasboardDiarioBordoDto filtro);
+        Task<IEnumerable<GraficoTotalDiariosEDevolutivasDTO>> Executar(FiltroDasboardDiarioBordoDto filtro);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaQueryHandler : IRequestHandler<ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaQuery, IEnumerable<GraficoBaseDto>>
+    public class ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaQueryHandler : IRequestHandler<ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaQuery, IEnumerable<GraficoTotalDiariosEDevolutivasDTO>>
     {
         private readonly IRepositorioDiarioBordo repositorio;
 
@@ -16,21 +17,40 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<GraficoBaseDto>> Handle(ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GraficoTotalDiariosEDevolutivasDTO>> Handle(ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaQuery request, CancellationToken cancellationToken)
         {
-            var retornoConsulta =  await repositorio.ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade);
-            return MontarDto(retornoConsulta);
+            var retornoConsulta = await repositorio.ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade);
+            return MontarDto(retornoConsulta, request);
         }
 
-        private IEnumerable<GraficoBaseDto> MontarDto(IEnumerable<QuantidadeTotalDiariosEDevolutivasPorAnoETurmaDTO> retornoConsulta)
+        private IEnumerable<GraficoTotalDiariosEDevolutivasDTO> MontarDto(IEnumerable<QuantidadeTotalDiariosEDevolutivasPorAnoETurmaDTO> retornoConsulta, ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaQuery request)
         {
-            var listaGraficos = new List<GraficoBaseDto>();
+            var dadosGrafico = new List<GraficoTotalDiariosEDevolutivasDTO>();
             foreach (var item in retornoConsulta)
             {
-                listaGraficos.Add(new GraficoBaseDto() { Descricao = item.Ano == 0 ? item.Turma : item.Ano.ToString() , Quantidade = item.QuantidadeTotalDiariosdeBordo });
-                listaGraficos.Add(new GraficoBaseDto() { Descricao = item.Ano == 0 ? item.Turma : item.Ano.ToString(), Quantidade = item.QuantidadeTotalDiariosdeBordoComDevolutiva });
+                var quantidadeTotalDiariosdeBordo = new GraficoTotalDiariosEDevolutivasDTO()
+                {
+                    TurmaAno = ObterDescricaoTurmaAno(request.UeId > 0, item.Ano == 0 ? item.Turma : item.Ano.ToString(), request.Modalidade), 
+                    Descricao = DashboardConstants.QuantidadeTotalDeDiariosDeBordoDescricao,
+                    Quantidade = item.QuantidadeTotalDiariosdeBordo 
+                };
+
+                var quantidadeTotalDiariosdeBordoComDevolutiva = new GraficoTotalDiariosEDevolutivasDTO()
+                {
+                    TurmaAno = ObterDescricaoTurmaAno(request.UeId > 0, item.Ano == 0 ? item.Turma : item.Ano.ToString(), request.Modalidade),
+                    Descricao = DashboardConstants.QuantidadeTotalDeDiariosDeBordoComDevolutivasDescricao,
+                    Quantidade = item.QuantidadeTotalDiariosdeBordoComDevolutiva
+                };
+
+                dadosGrafico.Add(quantidadeTotalDiariosdeBordoComDevolutiva);
+                dadosGrafico.Add(quantidadeTotalDiariosdeBordo);
             }
-            return listaGraficos;
+            return dadosGrafico;
         }
+
+        private static string ObterDescricaoTurmaAno(bool possuiFiltroUe, string turmaAno, Modalidade modalidade)
+               => possuiFiltroUe
+               ? turmaAno
+               : $"{modalidade.ShortName()} - {turmaAno}";
     }
 }

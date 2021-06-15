@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaQuery : IRequest<IEnumerable<GraficoBaseDto>>
+    public class ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaQuery : IRequest<IEnumerable<GraficoTotalDiariosEDevolutivasDTO>>
     {
         public ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaQuery(int anoLetivo, long dreId, long ueId, Modalidade modalidade)
         {
