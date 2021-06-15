@@ -15,16 +15,19 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
 
         public ConsultasTipoCalendario(IRepositorioTipoCalendario repositorio,
                                        IRepositorioEvento repositorioEvento,
                                        IRepositorioAbrangencia repositorioAbrangencia,
-                                       IServicoUsuario servicoUsuario)
+                                       IServicoUsuario servicoUsuario,
+                                       IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioAbrangencia = repositorioAbrangencia?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }
 
         public async Task<IEnumerable<TipoCalendarioDto>> BuscarPorAnoLetivo(int anoLetivo)
@@ -109,6 +112,42 @@ namespace SME.SGP.Aplicacao
             var retorno = await repositorio.ListarPorAnoLetivoEModalidades(anoLetivo, modalidadesTipoCalendario.Select(a => (int)a).ToArray());
             return from t in retorno
                    select EntidadeParaDto(t);
+        }
+
+        public async Task<IEnumerable<TipoCalendarioBimentreDto>> ObterBimestresPorTipoCalendarioId(long tipoCalendarioId)
+        {
+            var listaPeriodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioAsync(tipoCalendarioId);
+
+            if (listaPeriodoEscolar == null || !listaPeriodoEscolar.Any())
+                throw new NegocioException("Não foi possível obter os bimestres deste tipo de calendário.");
+
+            return MapeiaParaDtoTipoCalendarioBimestre(listaPeriodoEscolar);
+
+        }
+
+        private static IEnumerable<TipoCalendarioBimentreDto> MapeiaParaDtoTipoCalendarioBimestre(IEnumerable<PeriodoEscolar> listaPeriodoEscolar)
+        {
+            var listaBimestres = new List<TipoCalendarioBimentreDto>();
+
+            listaBimestres.Add(new TipoCalendarioBimentreDto
+            {
+                Valor = -99,
+                Desc = "Todos"
+            });
+            listaBimestres.AddRange(listaPeriodoEscolar.Select(x => new TipoCalendarioBimentreDto
+            {
+                Valor = x.Id,
+                Desc = x.Bimestre.ToString()
+
+            }));
+
+            listaBimestres.Add(new TipoCalendarioBimentreDto
+            {
+                Valor = 0,
+                Desc = "Final"
+            });
+
+            return listaBimestres;
         }
 
         private IEnumerable<ModalidadeTipoCalendario> MapearModalidadesUsuario(IEnumerable<Modalidade> modalidadesUsuario)
