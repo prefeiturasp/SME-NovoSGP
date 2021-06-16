@@ -27,6 +27,7 @@ namespace SME.SGP.Infra
         public long? FeriadoId { get; set; }
         public EventoLetivo Letivo { get; set; }
 
+        public int?[] Bimestre { get; set; }
         public bool Migrado { get; set; }
 
         [Required(ErrorMessage = "O nome do evento deve ser informado.")]

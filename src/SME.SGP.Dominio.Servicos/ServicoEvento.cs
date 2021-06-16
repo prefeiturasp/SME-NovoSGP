@@ -29,6 +29,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoLog servicoLog;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioEventoBimestre repositorioEventoBimestre;
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
 
@@ -39,8 +40,11 @@ namespace SME.SGP.Dominio.Servicos
                              IRepositorioFeriadoCalendario repositorioFeriadoCalendario,
                              IRepositorioTipoCalendario repositorioTipoCalendario,
                              IComandosWorkflowAprovacao comandosWorkflowAprovacao,
-                             IRepositorioAbrangencia repositorioAbrangencia, IConfiguration configuration,
+                             IRepositorioAbrangencia repositorioAbrangencia,
+                             IRepositorioEventoBimestre repositorioEventoBimestre,
+                             IConfiguration configuration,
                              IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog, IServicoDiaLetivo servicoDiaLetivo, IMediator mediator)
+
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
@@ -55,7 +59,9 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.servicoDiaLetivo = servicoDiaLetivo ?? throw new ArgumentNullException(nameof(servicoDiaLetivo));
+            this.repositorioEventoBimestre = repositorioEventoBimestre ?? throw new ArgumentNullException(nameof(repositorioEventoBimestre));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            
         }
 
         public static DateTime ObterProximoDiaDaSemana(DateTime data, DayOfWeek diaDaSemana)
@@ -80,7 +86,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false)
+        public async Task<string> Salvar(Evento evento, int?[] bimestres = null, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false)
         {
             ObterTipoEvento(evento);
 
@@ -117,6 +123,8 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.IniciarTransacao();
 
             await repositorioEvento.SalvarAsync(evento);
+            if ((TipoEvento)evento.TipoEventoId == TipoEvento.LiberacaoBoletim && bimestres != null)
+                await IncluiEventoBimestres(evento, bimestres);
 
             // Envia para workflow apenas na Inclusão ou alteração apos aprovado
             var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && devePassarPorWorkflowLiberacaoExcepcional;
@@ -154,6 +162,22 @@ namespace SME.SGP.Dominio.Servicos
                 else return "Evento cadastrado com sucesso.";
             }
         }
+
+        private async Task IncluiEventoBimestres(Evento evento, int?[] bimestres)
+        {
+                foreach (var bimestre in bimestres)
+                {
+                    var eventoBimestre = new EventoBimestre()
+                    {
+                        EventoId = evento.Id,
+                        Bimestre = bimestre
+                    };
+
+                   await repositorioEventoBimestre.SalvarAsync(eventoBimestre);
+
+                }
+        }
+
 
         private async Task VerificaPendenciaParametroEvento(Evento evento, Usuario usuario)
         {

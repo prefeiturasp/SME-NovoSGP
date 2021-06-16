@@ -196,7 +196,7 @@ namespace SME.SGP.Dominio.Servicos
                 var eventoParaAtualizar = eventosParaAtualizar.FirstOrDefault();
                 eventoParaAtualizar.DataInicio = inicio;
                 eventoParaAtualizar.DataFim = fim;
-                await servicoEvento.Salvar(eventoParaAtualizar, false, false, true);
+                await servicoEvento.Salvar(eventoParaAtualizar, null, false, false, true);
             }
         }
 
@@ -242,7 +242,7 @@ namespace SME.SGP.Dominio.Servicos
                 Migrado = false,
             };
 
-            await servicoEvento.Salvar(evento, false, false, true);
+            await servicoEvento.Salvar(evento, null, false, false, true);
         }
 
         private async Task NotificarSobreAlteracaoNoFechamentoReabertura((FechamentoReabertura, bool, bool) fechamentoReaberturaParaAtualizar)

@@ -178,7 +178,7 @@ namespace SME.SGP.Aplicacao
         {
             evento.ValidarDescricaoEvento();
 
-            var retornoCadasradoEvento = await servicoEvento.Salvar(evento, eventoDto.AlterarARecorrenciaCompleta, eventoDto.DataConfirmada);
+            var retornoCadasradoEvento = await servicoEvento.Salvar(evento, eventoDto.Bimestre, eventoDto.AlterarARecorrenciaCompleta, eventoDto.DataConfirmada);
             var mensagens = new List<RetornoCopiarEventoDto>
             {
                 new RetornoCopiarEventoDto(retornoCadasradoEvento, true)

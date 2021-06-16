@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         void AlterarRecorrenciaEventos(Evento evento, bool alterarRecorrenciaCompleta);
 
-        Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false);
+        Task<string> Salvar(Evento evento, int?[] bimestres = null, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false);
 
         Task Excluir(Evento evento);
 
