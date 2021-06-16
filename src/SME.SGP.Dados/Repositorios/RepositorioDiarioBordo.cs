@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioDiarioBordo: RepositorioBase<DiarioBordo>, IRepositorioDiarioBordo
+    public class RepositorioDiarioBordo : RepositorioBase<DiarioBordo>, IRepositorioDiarioBordo
     {
         public RepositorioDiarioBordo(ISgpContext conexao) : base(conexao) { }
 
@@ -84,7 +84,7 @@ namespace SME.SGP.Dados.Repositorios
                 TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
             };
         }
-        
+
         public async Task<IEnumerable<Tuple<long, DateTime>>> ObterDatasPorIds(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim)
         {
             var query = @"select db.id as item1
@@ -97,12 +97,12 @@ namespace SME.SGP.Dados.Repositorios
                            and a.disciplina_id = @componenteCurricularCodigo
                            and a.data_aula between @periodoInicio and @periodoFim ";
 
-            var resultado = await database.Conexao.QueryAsync<Tuple<long, DateTime>>(query, new 
-            { 
-                turmaCodigo, 
-                componenteCurricularCodigo = componenteCurricularCodigo.ToString(), 
-                periodoInicio, 
-                periodoFim 
+            var resultado = await database.Conexao.QueryAsync<Tuple<long, DateTime>>(query, new
+            {
+                turmaCodigo,
+                componenteCurricularCodigo = componenteCurricularCodigo.ToString(),
+                periodoInicio,
+                periodoFim
             });
 
             return resultado;
@@ -212,7 +212,7 @@ namespace SME.SGP.Dados.Repositorios
                      inner join dre on 
                       ue.dre_id = dre.id 
                      where db.id =  @diarioBordoId";
-            return (await database.QueryAsync<DiarioBordo, Aula, Turma, Ue, Dre, DiarioBordo>(query, (diarioBordo, aula ,turma, ue, dre) =>
+            return (await database.QueryAsync<DiarioBordo, Aula, Turma, Ue, Dre, DiarioBordo>(query, (diarioBordo, aula, turma, ue, dre) =>
             {
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
@@ -267,6 +267,213 @@ namespace SME.SGP.Dados.Repositorios
                 TotalRegistros = totalRegistrosDaQuery,
                 TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
             };
+        }
+
+        public async Task<IEnumerable<QuantidadeTotalDiariosEDevolutivasPorAnoETurmaDTO>> ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade)
+        {
+            var sql = @"";
+            if (dreId == 0 && ueId == 0)
+            {
+                sql = @"select 
+	                        distinct 
+	                        dashboard.ano, 
+	                        SUM(dashboard.QuantidadeTotalDiariosdeBordo) as QuantidadeTotalDiariosdeBordo,
+	                        SUM(dashboard.QuantidadeTotalDiariosdeBordoComDevolutiva) as QuantidadeTotalDiariosdeBordoComDevolutiva
+                        from 
+                        (
+	                        select  
+		                        t.ano as ano,
+		                        count(db.id) as QuantidadeTotalDiariosdeBordo,
+		                        0 as QuantidadeTotalDiariosdeBordoComDevolutiva
+	                        from diario_bordo db 
+	                            inner join aula a on a.id = db.aula_id 
+	                            inner join turma t on t.turma_id = a.turma_id 
+	                            inner join ue on ue.id = t.ue_id 
+	                            inner join dre on dre.id = ue.dre_id 
+	                        where not db.excluido 
+	                            and t.ano_letivo = @anoLetivo
+                                and t.modalidade_codigo = @modalidade
+	                            and db.planejamento is not null
+	                        group by t.ano
+                        union 
+	                        select  
+		                        t.ano as ano,
+		                        0 as QuantidadeTotalDiariosdeBordo,
+		                        count(db.id) as QuantidadeTotalDiariosdeBordoComDevolutiva
+	                        from diario_bordo db 
+	                            inner join aula a on a.id = db.aula_id 
+	                            inner join turma t on t.turma_id = a.turma_id 
+	                            inner join ue on ue.id = t.ue_id 
+	                            inner join dre on dre.id = ue.dre_id 
+	                        where not db.excluido 
+	                            and t.ano_letivo = @anoLetivo
+                                and t.modalidade_codigo = @modalidade
+	                            and db.planejamento is not null
+	                            and db.devolutiva_id is not null
+	                        group by t.ano) 
+	                        as dashboard
+	                        group by dashboard.ano 
+                            order by dashboard.ano";
+            }
+
+            if (dreId > 0 && ueId == 0)
+            {
+                sql = @"select 
+	                        distinct 
+	                        dashboard.ano, 
+	                        SUM(dashboard.QuantidadeTotalDiariosdeBordo) as QuantidadeTotalDiariosdeBordo,
+	                        SUM(dashboard.QuantidadeTotalDiariosdeBordoComDevolutiva) as QuantidadeTotalDiariosdeBordoComDevolutiva
+                        from 
+                        (
+	                        select  
+		                        t.ano as ano,
+		                        count(db.id) as QuantidadeTotalDiariosdeBordo,
+		                        0 as QuantidadeTotalDiariosdeBordoComDevolutiva
+	                        from diario_bordo db 
+	                            inner join aula a on a.id = db.aula_id 
+	                            inner join turma t on t.turma_id = a.turma_id 
+	                            inner join ue on ue.id = t.ue_id 
+	                            inner join dre on dre.id = ue.dre_id 
+	                        where not db.excluido 
+	                            and t.ano_letivo = @anoLetivo
+                                and t.modalidade_codigo = @modalidade
+                                and dre.id = @dreId
+	                            and db.planejamento is not null
+	                        group by t.ano
+                        union 
+	                        select  
+		                        t.ano as ano,
+		                        0 as QuantidadeTotalDiariosdeBordo,
+		                        count(db.id) as QuantidadeTotalDiariosdeBordoComDevolutiva
+	                        from diario_bordo db 
+	                            inner join aula a on a.id = db.aula_id 
+	                            inner join turma t on t.turma_id = a.turma_id 
+	                            inner join ue on ue.id = t.ue_id 
+	                            inner join dre on dre.id = ue.dre_id 
+	                        where not db.excluido 
+	                            and t.ano_letivo = @anoLetivo
+                                and t.modalidade_codigo = @modalidade
+                                and dre.id = @dreId
+	                            and db.planejamento is not null
+	                            and db.devolutiva_id is not null
+	                        group by t.ano) 
+	                        as dashboard
+	                        group by dashboard.ano 
+                            order by dashboard.ano";
+            }
+
+            if (dreId > 0 && ueId > 0)
+            {
+                sql = @"select 
+	                        distinct 
+	                        dashboard.turma, 
+	                        SUM(dashboard.QuantidadeTotalDiariosdeBordo) as QuantidadeTotalDiariosdeBordo,
+	                        SUM(dashboard.QuantidadeTotalDiariosdeBordoComDevolutiva) as QuantidadeTotalDiariosdeBordoComDevolutiva
+                        from 
+                        (
+	                        select  
+		                        t.nome as turma,
+		                        count(db.id) as QuantidadeTotalDiariosdeBordo,
+		                        0 as QuantidadeTotalDiariosdeBordoComDevolutiva
+	                        from diario_bordo db 
+	                            inner join aula a on a.id = db.aula_id 
+	                            inner join turma t on t.turma_id = a.turma_id 
+	                            inner join ue on ue.id = t.ue_id 
+	                            inner join dre on dre.id = ue.dre_id 
+	                        where not db.excluido 
+	                            and t.ano_letivo = @anoLetivo
+                                and t.modalidade_codigo = @modalidade
+                                and dre.id = @dreId
+                                and t.ue_id = @ueId
+	                            and db.planejamento is not null
+	                        group by t.nome
+                        union 
+	                        select  
+		                        t.nome as turma,
+		                        0 as QuantidadeTotalDiariosdeBordo,
+		                        count(db.id) as QuantidadeTotalDiariosdeBordoComDevolutiva
+	                        from diario_bordo db 
+	                            inner join aula a on a.id = db.aula_id 
+	                            inner join turma t on t.turma_id = a.turma_id 
+	                            inner join ue on ue.id = t.ue_id 
+	                            inner join dre on dre.id = ue.dre_id 
+	                        where not db.excluido 
+	                            and t.ano_letivo = @anoLetivo
+                                and t.modalidade_codigo = @modalidade
+                                and dre.id = @dreId
+                                and t.ue_id = @ueId
+	                            and db.planejamento is not null
+	                            and db.devolutiva_id is not null
+	                        group by t.nome) 
+	                        as dashboard
+	                        group by dashboard.turma
+                            order by dashboard.turma";
+            }
+
+            return await database.Conexao.QueryAsync<QuantidadeTotalDiariosEDevolutivasPorAnoETurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
+        }
+
+        public async Task<IEnumerable<QuantidadeTotalDiariosPendentesPorAnoETurmaDTO>> ObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade)
+        {
+            var sql = @"";
+            if (dreId == 0 && ueId == 0)
+            {
+                sql = @"select  
+	                        distinct
+                            t.ano, 
+                            count(a.id) as quantidadeTotalDiariosPendentes
+                        from aula a  
+                            inner join turma t on t.turma_id = a.turma_id 
+                            inner join ue on ue.id = t.ue_id 
+                            inner join dre on dre.id = ue.dre_id 
+                        where not a.excluido 
+                            and t.ano_letivo = @anoLetivo
+                            and t.modalidade_codigo = @modalidade
+                            and a.data_aula > current_date
+                            and a.id not in (select distinct db.aula_id from diario_bordo db where not db.excluido)
+                        group by t.ano ";
+            }
+
+            if (dreId > 0 && ueId == 0)
+            {
+                sql = @"select  
+	                        distinct
+                            t.ano, 
+                            count(a.id) as quantidadeTotalDiariosPendentes
+                        from aula a  
+                            inner join turma t on t.turma_id = a.turma_id 
+                            inner join ue on ue.id = t.ue_id 
+                            inner join dre on dre.id = ue.dre_id 
+                        where not a.excluido 
+                            and t.ano_letivo = @anoLetivo
+                            and dre.id = @dreId
+                            and t.modalidade_codigo = @modalidade
+                            and a.data_aula > current_date
+                            and a.id not in (select distinct db.aula_id from diario_bordo db where not db.excluido)
+                        group by t.ano ";
+            }
+
+            if (dreId > 0 && ueId > 0)
+            {
+                sql = @"select  
+	                        distinct
+                            t.nome as turma, 
+                            count(a.id) as quantidadeTotalDiariosPendentes
+                        from aula a  
+                            inner join turma t on t.turma_id = a.turma_id 
+                            inner join ue on ue.id = t.ue_id 
+                            inner join dre on dre.id = ue.dre_id 
+                        where not a.excluido 
+                            and t.ano_letivo = @anoLetivo
+                            and dre.id = @dreId
+	                        and t.ue_id = @ueId
+                            and t.modalidade_codigo = @modalidade
+                            and a.data_aula > current_date
+                            and a.id not in (select distinct db.aula_id from diario_bordo db where not db.excluido)
+                        group by t.nome ";
+            }
+
+            return await database.Conexao.QueryAsync<QuantidadeTotalDiariosPendentesPorAnoETurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
         }
 
         public async Task<IEnumerable<QuantidadeDiariosDeBordoComDevolutivaEDevolutivaPendentePorTurmaAnoDto>> ObterDiariosDeBordoComDevolutivaEDevolutivaPendenteAsync(int anoLetivo, Modalidade modalidade, DateTime dataAula, long? dreId, long? ueId)
