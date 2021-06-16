@@ -18,27 +18,30 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var filtro = mensagem.ObterObjetoMensagem<FiltroDevolutivaTurmaDTO>();
+
+
                 var devolutivaTurma = await mediator.Send(new ObterDevolutivaPorTurmaQuery(filtro.TurmaId, filtro.AnoLetivo));
 
-                if (devolutivaTurma != null)
+                var diarioBordoTurma = await mediator.Send(new ObterDiariosDeBordoPorAnoLetivoTurmaQuery(filtro.TurmaId, filtro.AnoLetivo));
+
+                if (diarioBordoTurma != null)
                 {
+
+                    var consolidacaoDevolutivaTurma = MapearDTO(devolutivaTurma, diarioBordoTurma);
+
                     var periodoDeDiasDevolutivas = await mediator.Send(new ObterParametroSistemaPorTipoQuery(Dominio.TipoParametroSistema.PeriodoDeDiasDevolutiva));
                     if (periodoDeDiasDevolutivas == null)
                         return false;
 
-                    var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(devolutivaTurma.TurmaId));
+                    var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(diarioBordoTurma.TurmaId));
                     if (turma == null)
                         return false;
 
-                    var tipoCalendario = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
-                    if (tipoCalendario == 0)
-                        return false;
+                    var quantidadeDiarioBordoRegistrado = diarioBordoTurma == null ? 0 : diarioBordoTurma.QuantidadeDiarioBordoRegistrado;
 
-                    var diasLetivos = await mediator.Send(new ObterQuantidadeDiasLetivosPorCalendarioQuery(tipoCalendario, devolutivaTurma.DreId, devolutivaTurma.UeId));
+                    CalcularQuantidadeEstimadaDeDevolutivas(consolidacaoDevolutivaTurma, periodoDeDiasDevolutivas, quantidadeDiarioBordoRegistrado);
 
-                    CalcularQuantidadeEstimadaDeDevolutivas(devolutivaTurma, periodoDeDiasDevolutivas, diasLetivos);
-
-                    await RegistraConsolidacaoDevolutivasTurma(turma.Id, devolutivaTurma.QuantidadeEstimadaDevolutivas, devolutivaTurma.QuantidadeRegistradaDevolutivas);
+                    await RegistraConsolidacaoDevolutivasTurma(turma.Id, consolidacaoDevolutivaTurma.QuantidadeEstimadaDevolutivas, consolidacaoDevolutivaTurma.QuantidadeRegistradaDevolutivas);
                 }
 
                 return true;
@@ -50,14 +53,32 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private static void CalcularQuantidadeEstimadaDeDevolutivas(Infra.Dtos.ConsolidacaoDevolutivaTurmaDTO devolutivasTurma, string periodoDeDiasDevolutivas, Dto.DiasLetivosDto diasLetivos)
+        private static ConsolidacaoDevolutivaTurmaDTO MapearDTO(ConsolidacaoDevolutivaTurmaDTO devolutivaTurma, QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO diarioBordoTurma)
         {
-            devolutivasTurma.QuantidadeEstimadaDevolutivas = (diasLetivos.Dias / int.Parse(periodoDeDiasDevolutivas));
+            return new ConsolidacaoDevolutivaTurmaDTO
+            {
+                DreId = diarioBordoTurma.DreId,
+                UeId = diarioBordoTurma.UeId,
+                TurmaId = diarioBordoTurma.TurmaId,
+                QuantidadeRegistradaDevolutivas = devolutivaTurma == null ? 0 : devolutivaTurma.QuantidadeRegistradaDevolutivas
+            };
+        }
+
+        private static void CalcularQuantidadeEstimadaDeDevolutivas(ConsolidacaoDevolutivaTurmaDTO consolidacaoDevolutivaTurma, string periodoDeDiasDevolutivas, int quantidadeDiarioBordoRegistrado)
+        {
+            if (quantidadeDiarioBordoRegistrado >= int.Parse(periodoDeDiasDevolutivas))
+            {
+                consolidacaoDevolutivaTurma.QuantidadeEstimadaDevolutivas = (quantidadeDiarioBordoRegistrado / int.Parse(periodoDeDiasDevolutivas));
+            }
+            else
+            {
+                consolidacaoDevolutivaTurma.QuantidadeEstimadaDevolutivas = 0;
+            }
         }
 
         private async Task RegistraConsolidacaoDevolutivasTurma(long turmaId, int quantidadeEstimadaDevolutivas, int quantidadeRegistradaDevolutivas)
         {
-           await mediator.Send(new RegistraConsolidacaoDevolutivasTurmaCommand(turmaId, quantidadeEstimadaDevolutivas, quantidadeRegistradaDevolutivas));
+            await mediator.Send(new RegistraConsolidacaoDevolutivasTurmaCommand(turmaId, quantidadeEstimadaDevolutivas, quantidadeRegistradaDevolutivas));
         }
     }
 }

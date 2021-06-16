@@ -8,6 +8,14 @@
         public int QuantidadeEstimadaDevolutivas { get; set; }
         public int QuantidadeRegistradaDevolutivas { get; set; }
     }
+    
+    public class QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO
+    {
+        public string DreId { get; set; }
+        public string UeId { get; set; }
+        public string TurmaId { get; set; }
+        public int QuantidadeDiarioBordoRegistrado { get; set; }
+    }
 
     public class DevolutivaTurmaDTO
     {
