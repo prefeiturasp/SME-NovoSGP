@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
                 await ConsolidarDevolutivasAnoAtual();
 
-                await ConsolidarDevolutivasHistorico();
+                //await ConsolidarDevolutivasHistorico();
 
                 return true;
             }
