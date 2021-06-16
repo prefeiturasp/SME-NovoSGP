@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
             });
             listaBimestres.AddRange(listaPeriodoEscolar.Select(x => new TipoCalendarioBimentreDto
             {
-                Valor = x.Id,
+                Valor = x.Bimestre,
                 Desc = x.Bimestre.ToString()
 
             }));
