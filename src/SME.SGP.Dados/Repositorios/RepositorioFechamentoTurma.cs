@@ -82,6 +82,43 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, periodoId });
         }
 
+        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterPorTurmaPeriodoCCAsync(long turmaId, long periodoEscolarId, long componenteCurricularId)
+        {
+            var query = @"select f.*, fa.*, fn.*
+                         from fechamento_turma_disciplina f
+                        inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
+                         left join periodo_escolar p on p.id = ft.periodo_escolar_id 
+                        inner join turma t on t.id = ft.turma_id
+                        inner join fechamento_aluno fa on f.id = fa.fechamento_turma_disciplina_id
+                        left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 
+                        where not f.excluido
+                            and t.id = @turmaId 
+                        and f.disciplina_id = @componenteCurricularId
+                        and ft.periodo_escolar_id = @periodoEscolarId";
+
+            IList<FechamentoTurmaDisciplina> fechammentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();
+
+            await database.Conexao.QueryAsync<FechamentoTurmaDisciplina, FechamentoAluno, FechamentoNota, FechamentoTurmaDisciplina>(query.ToString(),
+                (fechamentoTurmaDiscplina, fechamentoAluno, fechamentoNota) =>
+                {
+                    var fechamentoTurmaDisciplinaLista = fechammentosTurmaDisciplina.FirstOrDefault(ftd => ftd.Id == fechamentoTurmaDiscplina.Id);
+                    if (fechamentoTurmaDisciplinaLista == null)
+                    {
+                        fechamentoTurmaDisciplinaLista = fechamentoTurmaDiscplina;
+                        fechammentosTurmaDisciplina.Add(fechamentoTurmaDiscplina);
+                    }
+                    
+                    fechamentoTurmaDisciplinaLista.FechamentoAlunos.Add(fechamentoAluno);
+
+                    fechamentoTurmaDisciplinaLista.AdicionarNota(fechamentoNota);
+
+                    return fechamentoTurmaDiscplina;
+                }, new { turmaId, componenteCurricularId, periodoEscolarId });
+
+            return fechammentosTurmaDisciplina;
+            
+        }
+
         public async Task<bool> VerificaExistePorTurmaCCPeriodoEscolar(long turmaId, long componenteCurricularId, long? periodoEscolarId)
         {
             var query = new StringBuilder(@"select 1 from fechamento_turma ft

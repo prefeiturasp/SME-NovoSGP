@@ -30,8 +30,9 @@ namespace SME.SGP.Dominio
         public string SerieEnsino { get; set; }
         public Ue Ue { get; set; }
         public long UeId { get; set; }
-
+        public string NomeFiltro { get; set; }
         public bool Historica { get; set; }
+
 
         public void AdicionarUe(Ue ue)
         {
