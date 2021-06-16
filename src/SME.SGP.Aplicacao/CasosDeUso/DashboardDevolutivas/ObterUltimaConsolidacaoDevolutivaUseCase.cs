@@ -11,13 +11,12 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<string> Executar(int anoLetivo)
+        public async Task<DateTime?> Executar(int anoLetivo)
         {
             var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoDevolutivasTurma, anoLetivo));
-            if (parametroSistema != null)
-                parametroSistema.Valor = DateTime.Now.ToString();
-
-            return parametroSistema.Valor;
+            if (!string.IsNullOrEmpty(parametroSistema.Valor))
+                return DateTime.Parse(parametroSistema.Valor);
+            return null;
         }
     }
 }
