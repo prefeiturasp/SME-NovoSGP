@@ -55,9 +55,9 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfis);
             var possuiTurmaAtiva = repositorioAbrangencia.PossuiAbrangenciaTurmaAtivaPorLogin(usuario.Login);
-            var possuiTurmaInfantilAtiva = repositorioAbrangencia.PossuiAbrangenciaTurmaInfantilAtivaPorLogin(usuario.Login);
-            var possuiTurmaCjAtiva = repositorioAbrangencia.PossuiAbrangenciaTurmaAtivaPorLogin(usuario.Login, true);
-            var possuiTurmaCjInfantilAtiva = repositorioAbrangencia.PossuiAbrangenciaTurmaInfantilAtivaPorLogin(usuario.Login, true);
+            var possuiTurmaInfantilAtiva = perfis.Contains(Perfis.PERFIL_PROFESSOR_INFANTIL) && repositorioAbrangencia.PossuiAbrangenciaTurmaInfantilAtivaPorLogin(usuario.Login);
+            var possuiTurmaCjAtiva = perfis.Contains(Perfis.PERFIL_CJ) && repositorioAbrangencia.PossuiAbrangenciaTurmaAtivaPorLogin(usuario.Login, true);
+            var possuiTurmaCjInfantilAtiva = perfis.Contains(Perfis.PERFIL_CJ_INFANTIL) && repositorioAbrangencia.PossuiAbrangenciaTurmaInfantilAtivaPorLogin(usuario.Login, true);
 
             usuario.DefinirPerfis(perfisUsuario);
 
