@@ -33,6 +33,8 @@ namespace SME.SGP.Aplicacao
             var anoAtual = DateTime.Now.Year;
             var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(modalidade, anoAtual, semestre));
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
+            var componentesCurricularesFundamental = new string[] { "508", "1105", "1112", "1115", "1117", "1121", "1124", "1211", "1212", "1213", "1290", "1301" };
+            var componentesCurricularesEja = new string[] { "1113", "1114", "1125" };
             if (periodosEscolares != null && periodosEscolares.Any())
             {
                 var diasForaDoPeriodoEscolar = (List<DateTime>)await mediator.Send(new ObterDiasForaDoPeriodoEscolarQuery(periodosEscolares));
@@ -40,7 +42,8 @@ namespace SME.SGP.Aplicacao
                 var uesCodigos = await mediator.Send(new ObterUesCodigosPorModalidadeEAnoLetivoQuery(modalidade, anoAtual));
                 foreach (var ueCodigo in uesCodigos)
                 {
-                    var dadosTurmaComponente = await mediator.Send(new ObterDadosComponenteCurricularTurmaPorUeEAnoLetivoQuery(anoAtual, ueCodigo));
+                    var componentesCurriculares = modalidade == Modalidade.Fundamental ? componentesCurricularesFundamental : componentesCurricularesEja;
+                    var dadosTurmaComponente = await mediator.Send(new ObterDadosComponenteCurricularTurmaPorUeEAnoLetivoQuery(anoAtual, ueCodigo, componentesCurriculares));
                     if (dadosTurmaComponente.Any())
                     {
                         var dados = new DadosCriacaoAulasAutomaticasDto(ueCodigo, tipoCalendarioId, diasLetivosENaoLetivos, diasForaDoPeriodoEscolar, modalidade, dadosTurmaComponente);
