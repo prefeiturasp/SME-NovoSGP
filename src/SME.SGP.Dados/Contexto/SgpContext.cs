@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Contexto
         
         public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao)
         {
-            conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP_PostgresProd"));
+            conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
             Open();
         }
