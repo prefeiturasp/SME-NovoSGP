@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Npgsql;
+using NpgsqlTypes;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -76,5 +78,36 @@ namespace SME.SGP.Dados
                 new { registroFrequenciaId });
         }
 
+        public async Task<bool> InserirVarios(IEnumerable<RegistroFrequenciaAluno> registros)
+        {
+            var sql = @"copy registro_frequencia_aluno (                                         
+                                        valor, 
+                                        codigo_aluno, 
+                                        numero_aula, 
+                                        registro_frequencia_id, 
+                                        criado_em,
+                                        criado_por,                                        
+                                        criado_rf)
+                            from
+                            stdin (FORMAT binary)";
+
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            {
+                foreach (var frequencia in registros)
+                {
+                    writer.StartRow();
+                    writer.Write(frequencia.Valor, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.CodigoAluno, NpgsqlDbType.Varchar);
+                    writer.Write(frequencia.NumeroAula, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.RegistroFrequenciaId, NpgsqlDbType.Bigint);
+                    writer.Write(frequencia.CriadoEm, NpgsqlDbType.Timestamp);
+                    writer.Write(frequencia.CriadoPor, NpgsqlDbType.Varchar);
+                    writer.Write(frequencia.CriadoRF, NpgsqlDbType.Varchar);
+                }
+                await Task.FromResult(writer.Complete());
+            }
+
+            return true;
+        }
     }
 }
