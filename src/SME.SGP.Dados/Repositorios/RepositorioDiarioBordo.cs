@@ -496,8 +496,8 @@ namespace SME.SGP.Dados.Repositorios
                 inner join 
 	                ue u 
 	                on t.ue_id  = u.id
-                where 
-	                t.ano_letivo = @anoLetivo
+                where not db.excluido 
+                    and t.ano_letivo = @anoLetivo
 	                and t.modalidade_codigo = @modalidade
 	                and a.data_aula < @dataAula ");
 
@@ -538,8 +538,8 @@ namespace SME.SGP.Dados.Repositorios
                 inner join 
 	                ue u 
 	                on t.ue_id  = u.id
-                where 
-	                t.ano_letivo = @anoLetivo
+                 where not db.excluido 
+                    and t.ano_letivo = @anoLetivo
 	                and t.modalidade_codigo = @modalidade
 	                and a.data_aula < @dataAula ");
 
