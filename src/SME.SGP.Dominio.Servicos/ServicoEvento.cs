@@ -83,7 +83,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task<string> Salvar(Evento evento, int? bimestre = null, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false)
+        public async Task<string> Salvar(Evento evento, int?[] bimestres = null, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false)
         {
             ObterTipoEvento(evento);
 
@@ -122,8 +122,8 @@ namespace SME.SGP.Dominio.Servicos
 
             await repositorioEvento.SalvarAsync(evento);
 
-            if ((TipoEvento)evento.TipoEventoId == TipoEvento.LiberacaoBoletim && bimestre != null)
-                await IncluiEventoBimestre(evento, bimestre);
+            if ((TipoEvento)evento.TipoEventoId == TipoEvento.LiberacaoBoletim && bimestres != null)
+                await IncluiEventoBimestre(evento, bimestres);
 
 
             // Envia para workflow apenas na Inclusão ou alteração apos aprovado
@@ -163,14 +163,21 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task IncluiEventoBimestre(Evento evento, int? Bimestre)
+        private async Task IncluiEventoBimestre(Evento evento, int?[] Bimestres)
         {
-            var eventoBimestre = new EventoBimestre()
+
+            await repositorioEventoBimestre.ExcluiEventoBimestre(evento.Id);
+          
+            foreach (var bimestre in Bimestres)
             {
-                EventoId = evento.Id,
-                Bimestre = Bimestre
-            };
-            await repositorioEventoBimestre.SalvarAsync(eventoBimestre);
+                var eventoBimestre = new EventoBimestre()
+                {
+                    EventoId = evento.Id,
+                    Bimestre = bimestre
+                };
+                await repositorioEventoBimestre.SalvarAsync(eventoBimestre);
+            }
+           
         }
 
         private async Task VerificaPendenciaParametroEvento(Evento evento, Usuario usuario)

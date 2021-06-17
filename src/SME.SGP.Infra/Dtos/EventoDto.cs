@@ -44,7 +44,7 @@ namespace SME.SGP.Infra
         public IEnumerable<CopiarEventoDto> TiposCalendarioParaCopiar { get; set; }
         public string UeId { get; set; }
 
-        public int? Bimestre { get; set; }
+        public int?[] Bimestre { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
