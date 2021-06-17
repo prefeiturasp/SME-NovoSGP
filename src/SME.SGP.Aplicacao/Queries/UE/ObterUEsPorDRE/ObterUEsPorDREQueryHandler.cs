@@ -25,8 +25,9 @@ namespace SME.SGP.Aplicacao.Queries.UE.ObterUEsPorDRE
             var anoNovosTiposUE = ObterAno(request.ConsideraNovasUEs, request.AnoLetivo);
             var parametroNovosTiposUE = await mediator.Send(new ObterNovosTiposUEPorAnoQuery(anoNovosTiposUE));
             var novosTiposUE = parametroNovosTiposUE?.Split(',').Select(a => int.Parse(a)).ToArray();
+            
 
-            return (await repositorioAbrangencia.ObterUes(request.CodigoDre, request.Login, request.Perfil, request.Modalidade, request.Periodo, request.ConsideraHistorico, request.AnoLetivo, novosTiposUE)).OrderBy(c => c.Nome);
+            return (await repositorioAbrangencia.ObterUes(request.CodigoDre, request.Login, request.Perfil, request.Modalidade, request.Periodo, request.ConsideraHistorico, request.AnoLetivo, novosTiposUE, request.Filtro, request.FiltroEhCodigo)).OrderBy(c => c.Nome);
         }
 
         private int ObterAno(bool consideraNovasUEs, int anoLetivo)

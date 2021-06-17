@@ -78,8 +78,12 @@ namespace SME.SGP.Background
 
             // Removido até melhoria de performance prevista
             //Cliente.ExecutarPeriodicamente<IExecutarConsolidacaoFrequenciaTurmaSyncUseCase>(c => c.Executar(), Cron.Daily(6));
-
+  
             Cliente.ExecutarPeriodicamente<IConciliacaoFrequenciaTurmasCronUseCase>(c => c.Executar(), Cron.Weekly(System.DayOfWeek.Saturday, 23));           
+          
+            Cliente.ExecutarPeriodicamente<IExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase>(c => c.Executar(), Cron.Daily(9));
+
+            Cliente.ExecutarPeriodicamente<IExecutarSincronizacaoAulasRegenciaAutomaticasUseCase>(c => c.Executar(), Cron.Daily(9));
 
             //De 10 em 10 minutos
             Cliente.ExecutarPeriodicamente<IRabbitDeadletterSyncUseCase>(c => c.Executar(), Cron.MinuteInterval(10));

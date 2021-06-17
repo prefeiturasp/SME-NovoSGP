@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioDevolutiva: RepositorioBase<Devolutiva>, IRepositorioDevolutiva
+    public class RepositorioDevolutiva : RepositorioBase<Devolutiva>, IRepositorioDevolutiva
     {
         public RepositorioDevolutiva(ISgpContext conexao) : base(conexao) { }
 
@@ -90,6 +91,69 @@ namespace SME.SGP.Dados.Repositorios
                 periodoInicio = periodoInicio.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
                 periodoFim = periodoFim.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
             });
+        }
+
+        public async Task<ConsolidacaoDevolutivaTurmaDTO> ObterDevolutivasPorTurmaEAnoLetivo(string turmaCodigo, int anoLetivo)
+        {
+            var query = @" select 
+	                            ue.ue_id as ueId,
+	                            ue.dre_id as dreId,
+                                a.turma_id as turmaId,
+                                count(db.planejamento) as quantidadeRegistradaDevolutivas
+                            from devolutiva d 
+                             inner join diario_bordo db on db.devolutiva_id = d.id
+                             inner join aula a on a.id = db.aula_id
+                             inner join turma t on t.turma_id = a.turma_id 
+                             inner join ue ue on ue.id = t.ue_id 
+                            where not d.excluido 
+	                            and not db.excluido 
+	                            and t.ano_letivo = @anoLetivo 
+	                            and t.turma_id = @turmaCodigo
+	                            and a.data_aula < current_date
+                            group by a.turma_id, ue.ue_id, ue.dre_id ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidacaoDevolutivaTurmaDTO>(query, new { turmaCodigo, anoLetivo });
+        }
+
+        public async Task<IEnumerable<DevolutivaTurmaDTO>> ObterTurmasInfantilComDevolutivasPorAno(int anoLetivo)
+        {
+            var query = @" select 
+	                        distinct
+                            t.turma_id as turmaId,
+                            t.ano_letivo as anoLetivo
+                        from diario_bordo db 
+                            inner join aula a on a.id = db.aula_id
+                            inner join turma t on t.turma_id = a.turma_id 
+                            inner join ue ue on ue.id = t.ue_id 
+                        where not db.excluido 
+                            and t.ano_letivo = @anoLetivo
+                            and t.modalidade_codigo in (1,2)
+                            and a.data_aula < current_date ";
+
+            return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo });
+        }
+
+        public async Task<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO> ObterDiariosDeBordoPorTurmaEAnoLetivo(string turmaCodigo, int anoLetivo)
+        {
+            var query = @" select 
+	                            ue.ue_id as ueid,
+	                            ue.dre_id as dreId,
+                                a.turma_id as turmaid,
+                                count(db.id) as quantidadeDiarioBordoRegistrado
+                            from diario_bordo db
+	                            inner join aula a on a.id = db.aula_id
+	                            inner join turma t on t.turma_id = a.turma_id 
+	                            inner join ue ue on ue.id = t.ue_id	
+                            where not db.excluido
+                                and t.ano_letivo = @anoLetivo 
+                                and t.turma_id = @turmaCodigo
+                                and a.data_aula < current_date 
+                            group by
+	                            ue.ue_id,
+	                            ue.dre_id,
+                                a.turma_id";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO>(query, new { turmaCodigo, anoLetivo });
         }
     }
 }
