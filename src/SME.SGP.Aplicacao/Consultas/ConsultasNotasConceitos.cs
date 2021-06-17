@@ -200,10 +200,10 @@ namespace SME.SGP.Aplicacao
                     var fechamentosTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplina(filtro.TurmaCodigo, filtro.DisciplinaCodigo, valorBimestreAtual);
 
                     var alunosForeach = from a in alunos
-                                        where (a.EstaAtivo(periodoAtual.PeriodoFim)) ||
-                                              (a.EstaInativo(periodoAtual.PeriodoFim) && a.DataSituacao.Date >= periodoAtual.PeriodoInicio.Date)
+                                        where (a.EstaAtivo(periodoAtual.PeriodoFim) ||
+                                              (a.EstaInativo(periodoAtual.PeriodoFim) && a.DataSituacao.Date >= periodoAtual.PeriodoInicio.Date)) &&
+                                              a.DataMatricula.Date <= periodoAtual.PeriodoFim.Date
                                         orderby a.NomeValido(), a.NumeroAlunoChamada
-
                                         select a;
 
                     foreach (var aluno in alunosForeach)
