@@ -580,12 +580,12 @@ namespace SME.SGP.Dados.Repositorios
                 ? @"select
                         t.turma_id,
                         t.nome as TurmaAno,
-                        count(*) filter (where db.reflexoes_replanejamento is null) as DiariosSemReflexoesEReplanejamento,
-	                    count(*) filter (where db.reflexoes_replanejamento is not null) as DiariosComReflexoesEReplanejamento"
+                        count(*) filter (where db.reflexoes_replanejamento is null or db.reflexoes_replanejamento = '') as DiariosSemReflexoesEReplanejamento,
+	                    count(*) filter (where db.reflexoes_replanejamento is not null and db.reflexoes_replanejamento != '') as DiariosComReflexoesEReplanejamento"
                 : @"select
                         t.ano as TurmaAno,
-                        count(*) filter (where db.reflexoes_replanejamento is null) as DiariosSemReflexoesEReplanejamento,
-	                    count(*) filter (where db.reflexoes_replanejamento is not null) as DiariosComReflexoesEReplanejamento";
+                        count(*) filter (where db.reflexoes_replanejamento is null or db.reflexoes_replanejamento = '') as DiariosSemReflexoesEReplanejamento,
+	                    count(*) filter (where db.reflexoes_replanejamento is not null and db.reflexoes_replanejamento != '') as DiariosComReflexoesEReplanejamento";
 
         private string DefinirAgrupamentoQueryDiariosDeBordoComDevolutivaEDevolutivaPendente(bool possuiFiltroDeUe) 
             => possuiFiltroDeUe
