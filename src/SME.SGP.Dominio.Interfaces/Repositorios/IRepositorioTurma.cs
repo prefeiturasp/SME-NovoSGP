@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -16,14 +17,21 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo);
 
-        Task<Turma> ObterTurmaComUeEDrePorId(long turmaId);       
+        Task<Turma> ObterTurmaComUeEDrePorId(long turmaId);
 
         Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo);
 
         Task<IEnumerable<Turma>> SincronizarAsync(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
 
         Task<long> ObterTurmaIdPorCodigo(string turmaCodigo);
+        Task<DreUeDaTurmaDto> ObterCodigosDreUe(string turmaCodigo);
+        Task<IEnumerable<ModalidadesPorAnoDto>> ObterModalidadesPorAnos(int anoLetivo, long dreId, long ueId, int modalidade, int semestre);
+        Task<IEnumerable<TurmaConsolidacaoFechamentoGeralDto>> ObterTurmasConsolidacaoFechamentoGeralAsync();
+        Task<IEnumerable<TurmaModalidadeDto>> ObterTurmasComModalidadePorAno(int ano);
+        Task<Turma> ObterTurmaPorAnoLetivoModalidadeTipoAsync(long ueId, int anoLetivo, TipoTurma turmaTipo);
+        Task<DreUeDaTurmaDto> ObterCodigosDreUePorId(long turmaId);
         Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo);
+        Task<IEnumerable<Turma>> ObterTurmasPorIds(long[] turmasIds);
         Task<IEnumerable<string>> ObterCodigosTurmasPorAnoModalidade(int anoLetivo, int[] modalidades, string turmaCodigo = "");
         Task<IEnumerable<TurmaComponenteDto>> ObterTurmasComponentesPorAnoLetivo(DateTime dataReferencia);
         Task<IEnumerable<Turma>> ObterTurmasPorUeModalidadesAno(long ueId, int[] modalidades, int ano);
@@ -34,5 +42,14 @@ namespace SME.SGP.Dominio.Interfaces
         Task<ObterTurmaSimplesPorIdRetornoDto> ObterTurmaSimplesPorId(long id);
         Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos);
         Task<IEnumerable<long>> ObterTurmasPorUeAnos(string ueCodigo, int anoLetivo, string[] anos, int modalidadeId);
+        Task<Modalidade> ObterModalidadePorCodigo(string turmaCodigo);
+        Task<bool> AtualizarTurmaParaHistorica(string turmaId);
+        Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId);
+        Task ExcluirTurmaExtintaAsync(string turmaCodigo, long turmaId);
+        Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false);
+        Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, bool listarTodasTurmas);
+        Task<IEnumerable<GraficoBaseDto>> ObterInformacoesEscolaresTurmasAsync(int anoLetivo, long dreId, long ueId, AnoItinerarioPrograma[] anos, Modalidade modalidade, int? semestre);
+
+        Task<Turma> ObterTurmaCompletaPorCodigo(string turmaCodigo);
     }
 }

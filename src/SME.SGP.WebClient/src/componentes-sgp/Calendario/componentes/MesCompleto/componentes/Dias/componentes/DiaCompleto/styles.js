@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
 // Componentes
-import { Base, Button } from '~/componentes';
+import { Base } from '~/componentes/colors';
+import Button from '~/componentes/button';
 
 export const DiaCompletoWrapper = styled.div`
   display: flex;

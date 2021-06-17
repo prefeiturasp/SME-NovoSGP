@@ -8,14 +8,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFiltroRelatoriosUesPorAbrangenciaQuery : IRequest<List<AbrangenciaUeRetorno>>
     {
-        public ObterFiltroRelatoriosUesPorAbrangenciaQuery(Usuario usuarioLogado, string codigoDre)
+        public ObterFiltroRelatoriosUesPorAbrangenciaQuery(Usuario usuarioLogado, string codigoDre, bool consideraNovosTiposUE = false)
         {
             UsuarioLogado = usuarioLogado;
             CodigoDre = codigoDre;
+            ConsideraNovosTiposUE = consideraNovosTiposUE;
         }
 
         public Usuario UsuarioLogado { get; }
         public string CodigoDre { get; }
+        public bool ConsideraNovosTiposUE { get; }
     }
 
     public class ObterFiltroRelatoriosUesPorAbrangenciaQueryValidator : AbstractValidator<ObterFiltroRelatoriosUesPorAbrangenciaQuery>

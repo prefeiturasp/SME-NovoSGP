@@ -213,11 +213,12 @@ namespace SME.SGP.Dados.Repositorios
                 .FirstOrDefault();
         }
 
-        public async Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico)
+        public async Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico, int anoMinimo)
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-            return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_anos_letivos(@login, @perfil, @consideraHistorico)
+            var anos = (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_anos_letivos(@login, @perfil, @consideraHistorico)
                                                              order by 1 desc", new { login, perfil, consideraHistorico }));
+            return anos.Where(a => a >= anoMinimo);
         }
 
         public async Task<IEnumerable<string>> ObterAnosTurmasPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico)
@@ -313,11 +314,12 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query, parametros)).AsList();
         }
 
-        public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico)
+        public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas)
         {
+            var query = @"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo, @modalidadesQueSeraoIgnoradas) order by 1";
+            var modalidadesQueSeraoIgnoradasArray = modalidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-            return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo)
-                                                             order by 1", new { login, perfil, consideraHistorico, anoLetivo })).AsList();
+            return (await database.Conexao.QueryAsync<int>(query, new { login, perfil, consideraHistorico, anoLetivo, modalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradasArray })).AsList();
         }
 
         public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0)
@@ -370,14 +372,14 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaUeRetorno>(query.ToString(), new { codigo, login, perfil }));
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null)
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = @"select distinct codigo,
 	                                      nome as NomeSimples,
 	                                      tipoescola,
                                           ue_id as id
-	                         from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo)
+	                         from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo, @ignorarTiposUE)
                           order by 2;";
 
             var parametros = new
@@ -388,7 +390,8 @@ namespace SME.SGP.Dados.Repositorios
                 modalidade = modalidade ?? 0,
                 semestre = periodo,
                 codigoDre,
-                anoLetivo
+                anoLetivo,
+                ignorarTiposUE
             };
 
             return await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query, parametros);
@@ -501,14 +504,17 @@ namespace SME.SGP.Dados.Repositorios
             return dados.OrderBy(x => x.Descricao);
         }
 
-        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual)
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas)
         {
             var query = @"select distinct vau.modalidade_codigo from v_abrangencia_usuario vau 
                             where vau.login = @login
                             and usuario_perfil  = @perfilAtual
-                            and vau.ue_codigo = @codigoUe";
+                            and vau.ue_codigo = @codigoUe
+                            and (@modalidadesQueSeraoIgnoradasArray::int4[] is null or not(vau.modalidade_codigo = ANY(@modalidadesQueSeraoIgnoradasArray::int4[])))";
 
-            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual });
+            var modalidadesQueSeraoIgnoradasArray = modadlidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
+
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray });
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestreAnos(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, IList<string> anos)
@@ -554,6 +560,32 @@ namespace SME.SGP.Dados.Repositorios
 	                        and ue.tipo_escola in (1,3,4,16)";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { usuarioRF, usuarioPerfil });
-        }     
+        }
+        public async Task<IEnumerable<Abrangencia>> ObterAbrangenciaGeralPorUsuarioId(long usuarioId)
+        {
+            var query = @"select id,usuario_id,dre_id,ue_id,turma_id,perfil from abrangencia where usuario_id = @usuarioId";
+            return await database.Conexao.QueryAsync<Abrangencia>(query, new { usuarioId });
+        }
+
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
+        {
+            var query = @"select ano,
+	                             anoLetivo,
+	                             codigo,
+	                             codigoModalidade,
+	                             nome,
+	                             semestre,
+	                             qtDuracaoAula,
+	                             tipoTurno,
+                                 ensinoEspecial,
+                                 turma_id as id,
+                                 tipoturma
+                            from f_abrangencia_turmas_tipos(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo, @tipos)
+                          order by 5";
+
+            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos })).AsList();
+
+            return result;
+        }
     }
 }

@@ -95,8 +95,35 @@ namespace SME.SGP.Dominio
         [Display(Name = "Pendência por ausência de registro individual")]        
         PendenciaPorAusenciaDeRegistroIndividual = 48,
 
+        GerarPendenciasEncaminhamentoAEE = 49,
+        GerarPendenciasPlanoAEE = 50,
+
+        GerarNotificacaoPlanoAEE = 51,
+        DiasGeracaoNotificacoesPlanoAEEExpirado = 52,
+        DiasParaNotificacarPlanoAEEAberto = 53,
+
+        QuantidadeFotosAcompanhamentoAluno = 54,
+
+        NovosTiposUE = 55,
+
+        NovasModalidades = 56,
+
         // Processo Executando
         TempoValidadeProcessoExecutandoEmSegundos = 57,
+
+        ExecucaoConsolidacaoFrequenciaTurma = 58,
+
+        ExecucaoConsolidacaoInformacoesEscolares = 59,
+        
+        HabilitaFrequenciaRemotaEIPre = 60,
+        HabilitaFrequenciaRemotaEICEI = 61,
+        HabilitaFrequenciaRemotaEJA = 62,
+        HabilitaFrequenciaRemotaCIEJA = 63,
+        HabilitaFrequenciaRemotaEF = 64,
+        HabilitaFrequenciaRemotaEM = 65,
+        HabilitaFrequenciaRemotaCMCT = 66,
+        HabilitaFrequenciaRemotaMOVA = 67,
+        HabilitaFrequenciaRemotaETEC = 68,
 
         //Sistema
         HabilitarServicosEmBackground = 100

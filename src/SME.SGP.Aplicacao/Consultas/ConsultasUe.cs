@@ -17,22 +17,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioUe = repositorioUe ?? throw new System.ArgumentNullException(nameof(repositorioUe));
         }
 
-        public async Task<IEnumerable<ModalidadeRetornoDto>> ObterModalidadesPorUe(string ueCodigo, int ano)
-        {
-            var listaModalidades = await repositorioUe.ObterModalidades(ueCodigo, ano);
-
-            if (listaModalidades != null && listaModalidades.Any())
-            {
-                return from b in listaModalidades
-                       select new ModalidadeRetornoDto()
-                       {
-                           Id = (int)b,
-                           Nome = b.GetAttribute<DisplayAttribute>().Name
-                       };
-            }
-            else return null;
-        }
-
         public Ue ObterPorId(long id)
             => repositorioUe.ObterPorId(id);
 

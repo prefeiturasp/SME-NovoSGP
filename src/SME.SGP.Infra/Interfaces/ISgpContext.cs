@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Data;
 
 namespace SME.SGP.Infra
@@ -7,6 +8,7 @@ namespace SME.SGP.Infra
     {
         IDbConnection Conexao { get; }
         string UsuarioLogado { get; }
+        string PerfilUsuario { get; }
         string UsuarioLogadoNomeCompleto { get; }
         string UsuarioLogadoRF { get; }
 

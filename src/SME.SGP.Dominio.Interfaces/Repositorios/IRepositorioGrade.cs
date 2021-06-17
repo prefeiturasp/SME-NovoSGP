@@ -7,5 +7,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<Grade> ObterGradeTurma(TipoEscola tipoEscola, Modalidade modalidade, int duracao);
 
         Task<int> ObterHorasComponente(long gradeId, long componenteCurricular, int ano);
+
+        Task<Grade> ObterGradeTurmaAno(TipoEscola tipoEscola, Modalidade modalidade, int duracao, int ano);
+        
     }
 }

@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface ISalvarPlanoAulaUseCase
     {
-        Task<bool> Executar(PlanoAulaDto planoAulaDto);
+        Task<AuditoriaDto> Executar(PlanoAulaDto planoAulaDto);
     }
 }

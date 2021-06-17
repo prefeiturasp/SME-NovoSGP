@@ -24,7 +24,18 @@ import dashboard from './dashboard/reducers';
 import planoAnual from './anual/reducers';
 import frequenciaPlanoAula from './frequenciaPlanoAula/reducers';
 import dashboardEscolaAqui from './dashboardEscolaAqui/reducers';
+import encaminhamentoAEE from './encaminhamentoAEE/reducers';
+import planoAEE from './planoAEE/reducers';
 import registroIndividual from './registroIndividual/reducers';
+import collapseLocalizarEstudante from './collapseLocalizarEstudante/reducers';
+import acompanhamentoFrequencia from './acompanhamentoFrequencia/reducers';
+import itinerancia from './itinerancia/reducers';
+import objectCardEstudante from './objectCardEstudante/reducers';
+import questionarioDinamico from './questionarioDinamico/reducers';
+import collapseAtribuicaoResponsavel from './collapseAtribuicaoResponsavel/reducers';
+import acompanhamentoAprendizagem from './acompanhamentoAprendizagem/reducers';
+import listaFrequenciaPorBimestre from './listaFrequenciaPorBimestre/reducers';
+import dashboardFrequencia from './dashboardFrequencia/reducers';
 
 const reducers = combineReducers({
   navegacao,
@@ -51,7 +62,18 @@ const reducers = combineReducers({
   planoAnual,
   frequenciaPlanoAula,
   dashboardEscolaAqui,
+  encaminhamentoAEE,
+  planoAEE,
   registroIndividual,
+  collapseLocalizarEstudante,
+  acompanhamentoFrequencia,
+  itinerancia,
+  objectCardEstudante,
+  questionarioDinamico,
+  collapseAtribuicaoResponsavel,
+  acompanhamentoAprendizagem,
+  listaFrequenciaPorBimestre,
+  dashboardFrequencia,
 });
 
 const rootReducer = (state, action) => {

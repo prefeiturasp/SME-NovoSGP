@@ -6,6 +6,7 @@ import { AutoComplete, Input } from 'antd';
 
 // Styles
 import { InputNomeEstilo } from './styles';
+import Loader from '~/componentes/loader';
 
 function InputNome({
   dataSource,
@@ -14,6 +15,7 @@ function InputNome({
   pessoaSelecionada,
   desabilitado,
   placeholderNome,
+  exibirLoader,
 }) {
   const [sugestoes, setSugestoes] = useState([]);
   const [valor, setValor] = useState('');
@@ -39,24 +41,26 @@ function InputNome({
     ));
 
   return (
-    <InputNomeEstilo>
-      <AutoComplete
-        onChange={onChangeValor}
-        onSearch={busca => onChange(busca)}
-        onSelect={(value, option) => onSelect(option)}
-        dataSource={options}
-        value={valor}
-        disabled={desabilitado}
-        allowClear
-      >
-        <Input
-          placeholder={placeholderNome}
-          prefix={<i className="fa fa-search fa-lg" />}
+    <Loader loading={exibirLoader}>
+      <InputNomeEstilo>
+        <AutoComplete
+          onChange={onChangeValor}
+          onSearch={busca => onChange(busca)}
+          onSelect={(value, option) => onSelect(option)}
+          dataSource={options}
+          value={valor}
           disabled={desabilitado}
           allowClear
-        />
-      </AutoComplete>
-    </InputNomeEstilo>
+        >
+          <Input
+            placeholder={placeholderNome}
+            prefix={<i className="fa fa-search fa-lg" />}
+            disabled={desabilitado}
+            allowClear
+          />
+        </AutoComplete>
+      </InputNomeEstilo>
+    </Loader>
   );
 }
 
@@ -70,6 +74,7 @@ InputNome.propTypes = {
   onChange: PropTypes.func,
   desabilitado: PropTypes.bool,
   placeholderNome: PropTypes.string.isRequired,
+  exibirLoader: PropTypes.bool,
 };
 
 InputNome.defaultProps = {
@@ -78,6 +83,7 @@ InputNome.defaultProps = {
   onSelect: null,
   onChange: null,
   desabilitado: false,
+  exibirLoader: false,
 };
 
 export default InputNome;

@@ -208,11 +208,13 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var aluno in alunosForeach)
                     {
+                        var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, filtro.AnoLetivo));
                         var notaConceitoAluno = new NotasConceitosAlunoRetornoDto()
                         {
                             Id = aluno.CodigoAluno,
                             Nome = aluno.NomeValido(),
-                            NumeroChamada = aluno.NumeroAlunoChamada
+                            NumeroChamada = aluno.NumeroAlunoChamada,
+                            EhAtendidoAEE = alunoPossuiPlanoAEE
                         };
                         var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoRetornoDto>();
 
@@ -284,11 +286,13 @@ namespace SME.SGP.Aplicacao
                                     .ThenBy(nc => nc.CriadoEm)
                                     .Select(nc => new
                                     {
-                                        AlteradoPor = !string.IsNullOrWhiteSpace(nc.AlteradoPor) && !nc.AlteradoRf.Equals(0) ? nc.AlteradoPor : nc.CriadoPor,
-                                        AlteradoRf = !string.IsNullOrWhiteSpace(nc.AlteradoRf) && !nc.AlteradoRf.Equals(0) ? nc.AlteradoRf : nc.CriadoRf,
-                                        AlteradoEm = nc.AlteradoEm.HasValue && !nc.AlteradoRf.Equals(0) ? nc.AlteradoEm.Value : nc.CriadoEm,
+                                        AlteradoPor = !string.IsNullOrWhiteSpace(nc.AlteradoPor) && !nc.AlteradoRf.Equals(0) ? nc.AlteradoPor : "",
+                                        AlteradoRf = !string.IsNullOrWhiteSpace(nc.AlteradoRf) && !nc.AlteradoRf.Equals(0) ? nc.AlteradoRf : "",
+                                        AlteradoEm = nc.AlteradoEm.HasValue && !nc.AlteradoRf.Equals(0) ? nc.AlteradoEm.Value : DateTime.MinValue,
                                     }).First();
-                                retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {(dadosAuditoriaAlteracaoBimestre.AlteradoPor)}({dadosAuditoriaAlteracaoBimestre.AlteradoRf}) em {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurma.AlteradoEm.Value.ToString("HH:mm")}.";
+
+                                if (!string.IsNullOrEmpty(dadosAuditoriaAlteracaoBimestre.AlteradoRf))
+                                    retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {(dadosAuditoriaAlteracaoBimestre.AlteradoPor)}({dadosAuditoriaAlteracaoBimestre.AlteradoRf}) em {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("dd/MM/yyyy")}, às {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("HH:mm")}.";
                             }
 
                             if (disciplinaEOL.Regencia)
@@ -342,9 +346,9 @@ namespace SME.SGP.Aplicacao
 
                         // Carrega Frequencia Aluno
                         var frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
-                        notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ?
-                                        (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0) :
-                                        100;
+                        notaConceitoAluno.PercentualFrequencia = frequenciaAluno == null ? null :
+                                        ((int)Math.Round(frequenciaAluno.PercentualFrequencia, 0)).ToString();
+                                        
 
                         listaAlunosDoBimestre.Add(notaConceitoAluno);
                     }
@@ -481,7 +485,9 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = disciplina.TerritorioSaber,
                     LancaNota = disciplina.LancaNota,
                     BaseNacional = disciplina.BaseNacional,
-                    GrupoMatriz = new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatriz.Id, Nome = disciplina.GrupoMatriz.Nome }
+                    GrupoMatriz = disciplina.GrupoMatriz != null ?
+                        new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatriz.Id, Nome = disciplina.GrupoMatriz.Nome } :
+                        new Integracoes.Respostas.GrupoMatriz()
                 };
             }
         }

@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,35 +63,40 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId)
         {
-            var query = new StringBuilder();
+            var query = @"select a.TurmaCodigo
+	                     , a.ModalidadeCodigo
+	                     , a.Ano
+	                     , a.DataAula
+	                     , a.CodigoAluno
+	                     , Sum(a.Aulas) as QuantidadeAulas
+	                     , Sum(a.Ausencias) as QuantidadeFaltas
+                    from (
+	                    select a.turma_id as TurmaCodigo
+	                         , t.modalidade_codigo as modalidadeCodigo
+	                         , t.ano
+	                         , a.id as AulaId
+	                         , a.data_aula as DataAula
+	                         , a.quantidade as Aulas
+	                         , raa.codigo_aluno as CodigoAluno
+	                         , count(raa.id) as Ausencias
+	
+	                    from aula a
+	                      inner join registro_frequencia rf on a.id = rf.aula_id
+	                      inner join turma t on t.turma_id = a.turma_id
+	                       left join registro_ausencia_aluno raa on raa.registro_frequencia_id = rf.id and not raa.excluido
+	                    where not a.excluido
+	                      and not rf.excluido
+	                      and a.data_aula >= @dataReferencia
+	                      and a.tipo_calendario_id = @tipoCalendarioId
+	                    group by a.turma_id, t.modalidade_codigo, t.ano, a.id, a.data_aula, a.quantidade, raa.codigo_aluno
+                    ) a
+                    group by a.TurmaCodigo
+	                     , a.ModalidadeCodigo
+	                     , a.Ano
+	                     , a.DataAula
+	                     , a.CodigoAluno";
 
-            query.AppendLine("select a.turma_id as TurmaCodigo");
-            query.AppendLine("     , a.data_aula as DataAula");
-            query.AppendLine("     , fa.codigo_aluno as CodigoAluno");
-            query.AppendLine("     , sum(a.quantidade) as QuantidadeAulas");
-            query.AppendLine("     , fa.qtd_faltas as QuantidadeFaltas");
-            query.AppendLine("     , t.modalidade_codigo as modalidadeCodigo");
-            query.AppendLine("     , t.ano");
-            query.AppendLine("from aula a");
-            query.AppendLine("  inner join registro_frequencia rf on a.id = rf.aula_id");
-            query.AppendLine("  inner join turma t on t.turma_id = a.turma_id");
-            query.AppendLine("  left join(select aa.turma_id, aa.data_aula, raa.codigo_aluno, count(raa.id) qtd_faltas");
-            query.AppendLine("            from aula aa");
-            query.AppendLine("              inner join registro_frequencia rfa on aa.id = rfa.aula_id");
-            query.AppendLine("              inner join registro_ausencia_aluno raa on rfa.id = raa.registro_frequencia_id");
-            query.AppendLine("            where not rfa.excluido");
-            query.AppendLine("              and not raa.excluido");
-            query.AppendLine("              and aa.tipo_calendario_id = @tipoCalendarioId");
-            query.AppendLine("              and aa.data_aula >= @dataReferencia");
-            query.AppendLine("            group by aa.turma_id, aa.data_aula, raa.codigo_aluno) fa");
-            query.AppendLine("  on fa.turma_id = a.turma_id and fa.data_aula = a.data_aula");
-            query.AppendLine("where not a.excluido");
-            query.AppendLine("  and not rf.excluido");
-            query.AppendLine("  and a.data_aula >= @dataReferencia");
-            query.AppendLine("  and a.tipo_calendario_id = @tipoCalendarioId");
-            query.AppendLine("group by a.turma_id, a.data_aula, fa.codigo_aluno, fa.qtd_faltas, t.modalidade_codigo, t.ano;");
-
-            return database.Conexao.Query<AlunosFaltososDto>(query.ToString(), new { dataReferencia, tipoCalendarioId });
+            return database.Conexao.Query<AlunosFaltososDto>(query, new { dataReferencia, tipoCalendarioId });
         }
 
         public RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId)
@@ -183,7 +189,7 @@ namespace SME.SGP.Dados.Repositorios
             if (Periodo == PeriodoRecuperacaoParalela.AcompanhamentoPrimeiroSemestre)
                 query.AppendLine("and bimestre IN  (1,2)");
             query.AppendLine("group by codigo_aluno");
-      
+
             return await database.Conexao.QueryAsync<RecuperacaoParalelaFrequenciaDto>(query.ToString(), new { CodigoAlunos, CodigoDisciplina = CodigoDisciplina.ToArray(), Ano });
         }
 
@@ -202,22 +208,125 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<RegistroAusenciaAluno>(query, new { aulaId });
         }
 
-        public RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId)
+        public async Task<RegistroFrequencia> ObterRegistroFrequenciaPorAulaId(long aulaId)
         {
             var query = @"select *
                             from registro_frequencia
                           where not excluido
                             and aula_id = @aulaId";
 
-            return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<RegistroFrequencia>(query, new { aulaId });
         }
 
+        public async Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string turma, short bimestre, short anoLetivo)
+        {
+            var sql = @"
+                select
+	                a.data_aula dataAusencia,
+	                afa.criado_por registradoPor,
+	                ma.descricao motivoAusencia,
+	                afa.anotacao justificativaAusencia
+                from 
+	                anotacao_frequencia_aluno afa 
+                inner join aula a on a.id = afa.aula_id 
+                inner join tipo_calendario tc on tc.id = a.tipo_calendario_id 
+                inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
+                 left join motivo_ausencia ma on afa.motivo_ausencia_id = ma.id 
+                where 
+	                not afa.excluido and not a.excluido and 
+	                afa.codigo_aluno = @codigoAluno and
+	                a.turma_id = @turma and
+	                tc.ano_letivo = @anoLetivo and 
+	                pe.bimestre = @bimestre
+                order by a.data_aula desc
+                limit 5
+            ";
+
+            return await database
+                .Conexao
+                .QueryAsync<AusenciaMotivoDto>(sql, new { codigoAluno, turma, bimestre, anoLetivo });
+        }
+
+        public async Task<IEnumerable<GraficoBaseDto>> ObterDashboardFrequenciaAusenciasPorMotivo(int anoLetivo, long dreId, long ueId, Modalidade? modalidade, string ano, long turmaId, int semestre)
+        {
+            var query = @"select ma.descricao, count(afa.id) as Quantidade
+                      from anotacao_frequencia_aluno afa   
+                     left join motivo_ausencia ma on ma.id = afa.motivo_ausencia_id 
+                     inner join aula a on a.id = afa.aula_id 
+                     inner join registro_frequencia rf on rf.aula_id = a.id 
+                     inner join registro_ausencia_aluno raa on raa.registro_frequencia_id = rf.id and raa.codigo_aluno = afa.codigo_aluno 
+                     inner join turma t on t.turma_id = a.turma_id 
+                     inner join ue on ue.id = t.ue_id 
+                     inner join dre on dre.id = ue.dre_id 
+                     where not a.excluido 
+                       and not afa.excluido 
+                       and t.ano_letivo = @anoLetivo ";
+
+            if (dreId > 0)
+                query += " and ue.dre_id = @dreId";
+
+            if (ueId > 0)
+                query += " and ue.id = @ueId";
+
+            if (modalidade.HasValue && modalidade.Value > 0)
+                query += " and t.modalidade_codigo = @modalidade";
+
+            if (!string.IsNullOrEmpty(ano))
+                query += " and t.ano = @ano";
+
+            if (turmaId > 0)
+                query += " and t.id = @turmaId";
+
+            if (semestre > 0)
+                query += " and t.semestre = @semestre";
+
+            query += " group by ma.descricao";
+
+            return await database.Conexao.QueryAsync<GraficoBaseDto>(query, new
+            {
+                anoLetivo,
+                dreId,
+                ueId,
+                modalidade = (int)modalidade,
+                ano,
+                turmaId,
+                semestre
+            });
+        }
         public async Task SalvarConciliacaoTurma(string turmaId, string disciplinaId, DateTime dataReferencia, string alunos)
         {
             var query = @"insert into conciliacao_turma (turma_id, disciplina_id, data_referencia, alunos) 
                           values (@turmaId, @disciplinaId, @dataReferencia, @alunos)";
 
             await database.Conexao.ExecuteAsync(query, new { turmaId, disciplinaId, dataReferencia, alunos });
+        }
+
+        public async Task<IEnumerable<string>> ObterTurmasCodigosFrequenciasExistentesPorAnoAsync(int[] anosLetivos)
+        {
+            var query = @"  select distinct(t.turma_id)
+                             from registro_frequencia rf
+                            inner join aula a on a.id = rf.aula_id 
+                            inner join turma t on t.turma_id = a.turma_id 
+                            where not a.excluido
+                              and not rf.excluido
+                              and t.ano_letivo = ANY(@anosLetivos)";
+
+            return await database.Conexao.QueryAsync<string>(query, new { anosLetivos });
+        }
+
+        public async Task<IEnumerable<AulaComFrequenciaNaDataDto>> ObterAulasComRegistroFrequenciaPorTurma(string turmaCodigo)
+        {
+            var query = @"select a.id as AulaId
+	                        , a.data_aula as DataAula
+	                        , a.quantidade as QuantidadeAulas
+	                        , rf.id as RegistroFrequenciaId
+                          from aula a 
+                         inner join registro_frequencia rf on rf.aula_id = a.id
+                         where not a.excluido 
+                           and not rf.excluido 
+                           and a.turma_id = @turmaCodigo ";
+
+            return await database.Conexao.QueryAsync<AulaComFrequenciaNaDataDto>(query, new { turmaCodigo });
         }
     }
 }

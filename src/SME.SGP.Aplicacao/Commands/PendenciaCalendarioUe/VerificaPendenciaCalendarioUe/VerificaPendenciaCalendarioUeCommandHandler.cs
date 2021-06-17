@@ -46,9 +46,12 @@ namespace SME.SGP.Aplicacao
             }        
         }
 
-        private async Task VerificaPendenciasNoCalendario(long tipoCalendarioId, Dominio.ModalidadeTipoCalendario modalidadeCalendario)
+        private async Task VerificaPendenciasNoCalendario(long tipoCalendarioId, ModalidadeTipoCalendario modalidadeCalendario)
         {
             var ues = await mediator.Send(new ObterUEsPorModalidadeCalendarioQuery(modalidadeCalendario));
+            var tiposEscolasValidos = ObterTiposDeEscolasValidos();
+            ues = ues?.Where(ue => tiposEscolasValidos.Contains(ue.TipoEscola)).ToList();
+
             foreach(var ue in ues)
             {
                 try
@@ -66,6 +69,15 @@ namespace SME.SGP.Aplicacao
                 }            
             }
         }
+
+        private static TipoEscola[] ObterTiposDeEscolasValidos()
+            => new[]
+            {
+                TipoEscola.EMEF,
+                TipoEscola.EMEFM,
+                TipoEscola.EMEBS,
+                TipoEscola.CEUEMEF
+            };
 
         private async Task GerarPendenciaCalendarioUe(Ue ue, int diasLetivos, long tipoCalendarioId)
         {

@@ -408,7 +408,7 @@ namespace SME.SGP.Dominio.Servicos
                 var ue = repositorioUe.ObterPorId(UeId);
                 if (ue != null)
                 {
-                    var nomeUe = $"{ue.TipoEscola.ShortName()} {ue.Nome}";
+                    var nomeUe = $"{ue.TipoEscola.ObterNomeCurto()} {ue.Nome}";
 
                     Notificacao notificacao = MontaNotificacao(nomeUe, "DRE", fechamentosBimestre, ue.CodigoUe, null);
                     var diretores = servicoEol.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.Diretor);

@@ -64,11 +64,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (turma == null)
                 throw new NegocioException($"Turma de codigo [{turmaCodigo}] não localizada!");
 
-            var bimestreAula = await mediator.Send(new ObterBimestreAtualQuery()
-            {
-                Turma = turma,
-                DataReferencia = dataAula
-            });
+            var bimestreAula = await mediator.Send(new ObterBimestreAtualQuery(dataAula,turma));
 
             var mesmoAnoLetivo = DateTime.Today.Year == dataAula.Year;
             return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));

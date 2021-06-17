@@ -12,6 +12,7 @@ import { InputRFEstilo } from './styles';
 
 // Funções
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+import Loader from '~/componentes/loader';
 
 function InputRF({
   pessoaSelecionada,
@@ -26,6 +27,7 @@ function InputRF({
   onKeyDown,
   style,
   placeholderRF,
+  exibirLoader,
 }) {
   const [valor, setValor] = useState('');
 
@@ -89,7 +91,7 @@ function InputRF({
   }, [form?.values]);
 
   return (
-    <>
+    <Loader loading={exibirLoader}>
       {form ? (
         <InputRFEstilo>
           <Field
@@ -129,7 +131,7 @@ function InputRF({
           />
         </InputRFEstilo>
       )}
-    </>
+    </Loader>
   );
 }
 
@@ -145,6 +147,7 @@ InputRF.propTypes = {
   onKeyDown: t.func,
   style: t.objectOf(t.object),
   placeholderRF: t.string.isRequired,
+  exibirLoader: t.bool,
 };
 
 InputRF.defaultProps = {
@@ -158,6 +161,7 @@ InputRF.defaultProps = {
   maxlength: null,
   onKeyDown: null,
   style: {},
+  exibirLoader: false,
 };
 
 export default InputRF;

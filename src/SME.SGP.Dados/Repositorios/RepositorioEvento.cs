@@ -713,7 +713,7 @@ namespace SME.SGP.Dados.Repositorios
             queryNova.AppendLine($"{!podeVisualizarEventosLocalOcorrenciaDre},");
             queryNova.AppendLine($"{ (ehTodasDres ? "null" : string.IsNullOrWhiteSpace(dreId) ? "null" : $"'{dreId}'")}, ");
             queryNova.AppendLine($"{(ehTodasUes ? "null" : string.IsNullOrWhiteSpace(ueId) ? "null" : $"'{ueId}'")},");
-            queryNova.AppendLine($"{!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme}, ");
+            queryNova.AppendLine($"{podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme}, ");
             queryNova.AppendLine($"{(dataInicio.HasValue ? $"'{dataInicio.Value.Date}'" : "null")}, ");
             queryNova.AppendLine($"{(dataFim.HasValue ? $"'{dataFim.Value.Date}'" : "null")}, ");
             queryNova.AppendLine($"{(tipoEventoId.HasValue ? tipoEventoId.ToString() : "null")}, ");
@@ -1079,7 +1079,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioAsync(long tipoCalendarioId)
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioAsync(long tipoCalendarioId, params EventoLetivo[] tiposLetivosConsiderados)
         {
             var query = @"select
 	                        data_inicio,
@@ -1095,10 +1095,15 @@ namespace SME.SGP.Dados.Repositorios
                                     on e.tipo_calendario_id = tc.id
                         where
                             e.tipo_calendario_id = @tipoCalendarioId
-                        and extract(year from e.data_inicio) = tc.ano_letivo
-                        and extract(year from e.data_fim) = tc.ano_letivo
+                        and extract(year from e.data_inicio) = tc.ano_letivo     
+                        and e.letivo = any(@tiposLetivos)
                         and not e.excluido";
-            return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId });
+            return await database.Conexao.QueryAsync<Evento>(query.ToString(), 
+                new
+                { 
+                    tipoCalendarioId,
+                    tiposLetivos = tiposLetivosConsiderados.Select(tlc => (int)tlc).ToArray()
+                });
         }
 
         public async Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario,
@@ -1173,15 +1178,15 @@ namespace SME.SGP.Dados.Repositorios
                         e.tipo_calendario_id = @tipoCalendarioId
                         and not e.excluido and data_inicio between @periodoInicio and @periodoFim;";
 
-            
-                return await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(query.ToString(),
-                    (evento, eventoTipo) =>
-                    {
-                        evento.TipoEvento = eventoTipo;
-                        return evento;
-                    },
-                    new { tipoCalendarioId, periodoInicio, periodoFim, turmaId });
-            
+
+            return await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(query.ToString(),
+                (evento, eventoTipo) =>
+                {
+                    evento.TipoEvento = eventoTipo;
+                    return evento;
+                },
+                new { tipoCalendarioId, periodoInicio, periodoFim, turmaId });
+
         }
 
 
@@ -1209,7 +1214,7 @@ namespace SME.SGP.Dados.Repositorios
                          and e.tipo_evento_id = @tipoEvento
                          and e.data_inicio = @data";
 
-            return await database.Conexao.QueryAsync<Evento, EventoTipo, Ue, Dre, Evento>(query, 
+            return await database.Conexao.QueryAsync<Evento, EventoTipo, Ue, Dre, Evento>(query,
                 (evento, eventoTipo, ue, dre) =>
                 {
                     evento.Ue = ue;
@@ -1218,6 +1223,47 @@ namespace SME.SGP.Dados.Repositorios
 
                     return evento;
                 }, new { tipoEvento = (int)tipoEvento, data });
+        }
+
+        public async Task<IEnumerable<EventoDataDto>> ListarEventosItinerancia(long tipoCalendarioId, long itineranciaId, string codigoUE, string login, Guid perfil, bool historico = false)
+        {
+            var query = @"select distinct e.id,
+		                    e.data_inicio as Data,
+		                    e.nome,
+		                    case
+			                    when e.dre_id is not null and e.ue_id is null then 'DRE'
+	      	                    when e.dre_id is not null and e.ue_id is not null then 'UE'
+			                    else 'SME'
+		                    end tipoEvento,
+		                    au.Nome as UeNome,
+                            au.TipoEscola
+                    from evento e
+	                    inner join evento_tipo et
+		                    on e.tipo_evento_id = et.id 
+	                    inner join tipo_calendario tc
+		                    on e.tipo_calendario_id = tc.id
+	                    inner join f_abrangencia_ues(@login, @perfil, @historico) au
+		                    on e.ue_id = au.codigo
+		                    and ((tc.modalidade = 1 and au.modalidade_codigo in (5, 6)) 
+		                      or (tc.modalidade = 2 and au.modalidade_codigo = 3)
+		                      or (tc.modalidade = 3 and au.modalidade_codigo = 1))
+                        left join itinerancia i on i.evento_id = e.id
+                    where et.ativo 
+	                    and not et.excluido
+	                    and not e.excluido
+                        and e.ue_id = @codigoUE
+	                    and (i.id is null or i.id = @itineranciaId)
+	                    and extract(year from e.data_inicio) = tc.ano_letivo
+	                    and et.codigo = 28
+	                    and e.tipo_calendario_id = @tipoCalendarioId";
+            return await database.Conexao.QueryAsync<EventoDataDto>(query, new { tipoCalendarioId, itineranciaId, codigoUE, login, perfil, historico });
+        }
+
+        public async Task<long> ObterTipoCalendarioIdPorEvento(long eventoId)
+        {
+            var query = @"select tipo_calendario_id from evento where id = @eventoId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { eventoId });
         }
     }
 }

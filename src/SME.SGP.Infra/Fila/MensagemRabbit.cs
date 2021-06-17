@@ -25,6 +25,11 @@ namespace SME.SGP.Infra
             PerfilUsuario = perfil?.ToString();
         }
 
+        public MensagemRabbit(object mensagem)
+        {
+            Mensagem = mensagem;
+        }
+
         protected MensagemRabbit()
         {
 

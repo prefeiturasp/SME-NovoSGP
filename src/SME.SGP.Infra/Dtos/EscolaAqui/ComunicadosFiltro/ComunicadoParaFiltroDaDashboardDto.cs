@@ -11,6 +11,7 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         public string Modalidade { get; set; }
+        public bool AgruparModalidade { get; set; }
         public List<ComunicadoTurmaDto> TurmasCodigo { get; set; }
 
         public ComunicadoParaFiltroDaDashboardDto()
