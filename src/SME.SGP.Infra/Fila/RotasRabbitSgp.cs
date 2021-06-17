@@ -106,10 +106,13 @@
         public const string RotaConciliacaoFrequenciaTurmasAlunosSync = "sgp.frequencia.turma.alunos.conciliacao.sync";
         public const string RotaConciliacaoFrequenciaTurmasAlunosBuscar = "sgp.frequencia.turma.alunos.buscar.sync";
 
+        public const string RotaNotificacaoAlunosFaltosos = "sgp.aulas.alunos.faltosos.notificar";
+
         public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
         public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
 
-        public const string SincronizarDadosAulasFrequenciaMigracao = "sgp.migracao.frequencia.aulas.sync";
+        public const string SincronizarDadosFrequenciaMigracao = "sgp.migracao.frequencia.sync";
+        public const string SincronizarDadosTurmasFrequenciaMigracao = "sgp.migracao.frequencia.turmas.sync";
         public const string CarregarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.carregar";
         public const string SincronizarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.sync";
     }

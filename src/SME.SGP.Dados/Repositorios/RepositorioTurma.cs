@@ -1234,5 +1234,22 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<TurmaComponenteDto>(query, new { anoLetivo = dataReferencia.Year, dataReferencia });
         }
+        public async Task<Turma> ObterTurmaCompletaPorCodigo(string turmaCodigo)
+        {
+            var query = @"select turma.*, ue.*, dre.* 
+                         from turma
+                        inner join ue on ue.id = turma.ue_id
+                        inner join dre on dre.id = ue.dre_id
+                        where turma_id = @turmaCodigo";
+
+            var retorno = await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                turma.AdicionarUe(ue);
+                return turma;
+            }, new { turmaCodigo });
+
+            return retorno.FirstOrDefault();
+        }
     }
 }

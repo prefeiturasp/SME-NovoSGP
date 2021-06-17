@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Npgsql;
+using NpgsqlTypes;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -63,7 +65,9 @@ namespace SME.SGP.Dados
                         rfa.valor as TipoFrequencia
                         from registro_frequencia rf 
                         inner join registro_frequencia_aluno rfa on rf.id = rfa.registro_frequencia_id 
-                        where rf.aula_id = @aulaId";
+                        where not rf.excluido
+                          and not rfa.excluido
+                          and rf.aula_id = @aulaId";
 
 			return await database.Conexao.QueryAsync<FrequenciaAlunoSimplificadoDto>(query, new { aulaId });
 		}
@@ -74,33 +78,36 @@ namespace SME.SGP.Dados
                 new { registroFrequenciaId });
         }
 
-        public async Task<IEnumerable<FiltroMigracaoFrequenciaAulasDto>> ObterTurmasIdFrequenciasExistentesPorAnoAsync(int[] anosLetivos)
+        public async Task<bool> InserirVarios(IEnumerable<RegistroFrequenciaAluno> registros)
         {
-            var query = @"  select distinct(t.turma_id) turma_codigo, 
-	                               a.id aula_id, 
-                                   a.tipo_calendario_id,
-	                               a.quantidade quantidade_aula,
-	                               a.data_aula,
-                                   rfa.registro_frequencia_id
-                             from registro_frequencia_aluno rfa 
-                            inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
-                            inner join aula a on a.id = rf.aula_id 
-                            inner join turma t on t.turma_id = a.turma_id 
-                            where t.ano_letivo = ANY(@anosLetivos)";
+            var sql = @"copy registro_frequencia_aluno (                                         
+                                        valor, 
+                                        codigo_aluno, 
+                                        numero_aula, 
+                                        registro_frequencia_id, 
+                                        criado_em,
+                                        criado_por,                                        
+                                        criado_rf)
+                            from
+                            stdin (FORMAT binary)";
 
-            return await database.Conexao.QueryAsync<FiltroMigracaoFrequenciaAulasDto>(query, new { anosLetivos });
-        }
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            {
+                foreach (var frequencia in registros)
+                {
+                    writer.StartRow();
+                    writer.Write(frequencia.Valor, NpgsqlDbType.Bigint);
+                    writer.Write(frequencia.CodigoAluno);
+                    writer.Write(frequencia.NumeroAula);
+                    writer.Write(frequencia.RegistroFrequenciaId);
+                    writer.Write(frequencia.CriadoEm);
+                    writer.Write(frequencia.CriadoPor);
+                    writer.Write(frequencia.CriadoRF);
+                }
+                writer.Complete();
+            }
 
-        public async Task<IEnumerable<string>> ObterCodigosAlunosComRegistroFrequenciaAlunoAsync(long registroFrequenciaId, string[] codigosAlunos, int numeroAula)
-        {
-            var query = @"  select distinct(codigo_aluno) 
-				              from registro_frequencia_aluno
-		  		             where registro_frequencia_id = @registroFrequenciaId
-		  		               and numero_aula = @numeroAula
-		  		               and codigo_aluno = ANY(@codigosAlunos)";
-
-            var resultado = await database.Conexao.QueryAsync<string>(query, new { registroFrequenciaId, codigosAlunos, numeroAula });
-            return resultado;
+            return true;
         }
     }
 }
