@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao
             var dadosAula = mensagemRabbit.ObterObjetoMensagem<MigracaoFrequenciaTurmaAulaDto>();
             var frequenciasAula = await mediator.Send(new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(dadosAula.AulaId));
 
+            var frequenciasPersistir = new List<RegistroFrequenciaAluno>();
             for (var numeroAula = 1; numeroAula <= dadosAula.QuantidadeAula; numeroAula++)
             {
                 foreach (var codigoAluno in dadosAula.CodigosAlunos)
@@ -32,13 +33,17 @@ namespace SME.SGP.Aplicacao
                             RegistroFrequenciaId = dadosAula.RegistroFrequenciaId,
                             CriadoEm = DateTime.Today,
                             CriadoPor = "Sistema",
-                            CriadoRF = "Sistema",
+                            CriadoRF = "0",
                             Valor = (int)TipoFrequencia.C
                         };
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDadosAlunosFrequenciaMigracao, registro, Guid.NewGuid(), null));                        
+                        frequenciasPersistir.Add(registro);
                     }
                 }
             }
+
+            if (frequenciasPersistir.Any())
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDadosAlunosFrequenciaMigracao, new ParametroFrequenciasPersistirDto(frequenciasPersistir), Guid.NewGuid(), null));
+
             return true;
         }
 
