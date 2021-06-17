@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,36 +17,39 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var dadosAula = mensagemRabbit.ObterObjetoMensagem<MigracaoFrequenciaTurmaAulaDto>();
-            var contadorAula = 1;
-            while (contadorAula <= dadosAula.QuantidadeAula)
+            var frequenciasAula = await mediator.Send(new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(dadosAula.AulaId));
+
+            var frequenciasPersistir = new List<RegistroFrequenciaAluno>();
+            for (var numeroAula = 1; numeroAula <= dadosAula.QuantidadeAula; numeroAula++)
             {
-                var codigosAlunosComRegistro = await mediator.Send(new CodigosAlunosComRegistroFrequenciaAlunoQuery(dadosAula.RegistroFrequenciaId, dadosAula.CodigosAlunos, contadorAula));
                 foreach (var codigoAluno in dadosAula.CodigosAlunos)
                 {
-                    var existeRegistro = false;
-                    if (codigosAlunosComRegistro != null && codigosAlunosComRegistro.Any())
-                    {
-                        var codigoAlunoExistente = codigosAlunosComRegistro.FirstOrDefault(c => c == codigoAluno);
-                        existeRegistro = codigoAlunoExistente != null;
-                    }
-                    if (!existeRegistro)
+                    if (!ExisteRegistroFrequenciaAluno(frequenciasAula, codigoAluno, numeroAula))
                     {
                         var registro = new RegistroFrequenciaAluno()
                         {
                             CodigoAluno = codigoAluno,
-                            NumeroAula = contadorAula,
+                            NumeroAula = numeroAula,
                             RegistroFrequenciaId = dadosAula.RegistroFrequenciaId,
                             CriadoEm = DateTime.Today,
                             CriadoPor = "Sistema",
-                            CriadoRF = "Sistema",
-                            Valor = 1
+                            CriadoRF = "0",
+                            Valor = (int)TipoFrequencia.C
                         };
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDadosAlunosFrequenciaMigracao, registro, Guid.NewGuid(), null));                        
+                        frequenciasPersistir.Add(registro);
                     }
                 }
-                contadorAula++;
             }
+
+            if (frequenciasPersistir.Any())
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDadosAlunosFrequenciaMigracao, new ParametroFrequenciasPersistirDto(frequenciasPersistir), Guid.NewGuid(), null));
+
             return true;
         }
+
+        private bool ExisteRegistroFrequenciaAluno(IEnumerable<FrequenciaAlunoSimplificadoDto> frequenciasAula, string codigoAluno, int numeroAula)
+            => frequenciasAula != null &&
+               frequenciasAula.Any(a => a.CodigoAluno == codigoAluno &&
+                                        a.NumeroAula == numeroAula);
     }
 }
