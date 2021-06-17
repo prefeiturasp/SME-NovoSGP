@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares != null && periodosEscolares.Any())
             {
                 var diasForaDoPeriodoEscolar = (List<DateTime>)await mediator.Send(new ObterDiasForaDoPeriodoEscolarQuery(periodosEscolares));
-                var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
+                var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId, true));
                 var uesCodigos = await mediator.Send(new ObterUesCodigosPorModalidadeEAnoLetivoQuery(modalidade, anoAtual));
                 foreach (var ueCodigo in uesCodigos)
                 {

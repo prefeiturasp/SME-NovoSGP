@@ -89,7 +89,10 @@ namespace SME.SGP.Aplicacao
                                 UesIds = new List<string>() { elue.UeId }
                             });
                         });
-                        continue;
+                        if (request.DesconsiderarCriacaoDiaLetivoProximasUes)
+                        {
+                            continue;
+                        }
                     }
                     diaLetivoDto.EhLetivo = !diaAtual.FimDeSemana();
                     datasDosPeriodosEscolares.Add(diaLetivoDto);

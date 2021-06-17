@@ -56,7 +56,6 @@ namespace SME.SGP.Aplicacao
                     else
                     {
                         var diasLetivos = DeterminaDiasLetivos(diasParaCriarAula, request.UeCodigo);
-                        var diasNaoLetivos = DeterminaDiasNaoLetivos(diasParaCriarAula, request.UeCodigo);
                         var diasSemAula = diasLetivos
                             .Where(c => !aulas.Any(a => a.DataAula == c.Data) && (dadoTurma.DataInicioTurma != null && c.Data.Date >= dadoTurma.DataInicioTurma))?
                             .OrderBy(a => a.Data)?
