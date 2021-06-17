@@ -13,6 +13,6 @@ namespace SME.SGP.Infra
             FrequenciasPersistir = frequenciasPersistir;
         }
 
-        public List<RegistroFrequenciaAluno> FrequenciasPersistir { get; }
+        public List<RegistroFrequenciaAluno> FrequenciasPersistir { get; set; }
     }
 }
