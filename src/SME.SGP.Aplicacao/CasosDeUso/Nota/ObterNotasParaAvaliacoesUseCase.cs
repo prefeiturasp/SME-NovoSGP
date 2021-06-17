@@ -128,10 +128,10 @@ namespace SME.SGP.Aplicacao
 
                 //Obter alunos ativos
                 var alunosAtivos = from a in alunos
-                                   where (a.EstaAtivo(periodoFim)) ||
-                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)
+                                   where (a.EstaAtivo(periodoFim) ||
+                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
+                                         a.DataMatricula.Date <= periodoFim.Date
                                    orderby a.NomeValido(), a.NumeroAlunoChamada
-
                                    select a;
                 var alunosAtivosCodigos = alunosAtivos.Select(a => a.CodigoAluno).Distinct().ToArray();
 
@@ -169,7 +169,7 @@ namespace SME.SGP.Aplicacao
                                 dataUltimaNotaConceitoAlterada = notaDoAluno.AlteradoEm;
                                 nomeAvaliacaoAuditoriaAlteracao = atividadeAvaliativa.NomeAvaliacao;
                             }
-                                           
+
                         }
 
                         var ausente = ausenciasDasAtividadesAvaliativas.Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
@@ -267,11 +267,11 @@ namespace SME.SGP.Aplicacao
                         }
                     }
 
-                        // Carrega Frequencia Aluno                        
-                        var frequenciaAluno = frequenciasDosAlunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
-                        notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ?
-                                        ((int)Math.Round(frequenciaAluno.PercentualFrequencia, 0)).ToString() :
-                                        "100";
+                    // Carrega Frequencia Aluno                        
+                    var frequenciaAluno = frequenciasDosAlunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
+                    notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ?
+                                    ((int)Math.Round(frequenciaAluno.PercentualFrequencia, 0)).ToString() :
+                                    "100";
 
                     listaAlunosDoBimestre.Add(notaConceitoAluno);
                 }
