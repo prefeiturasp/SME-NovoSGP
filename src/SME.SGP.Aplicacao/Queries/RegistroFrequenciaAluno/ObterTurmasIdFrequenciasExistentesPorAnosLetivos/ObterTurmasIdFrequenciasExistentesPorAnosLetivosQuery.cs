@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmasIdFrequenciasExistentesPorAnosLetivosQuery : IRequest<IEnumerable<FiltroMigracaoFrequenciaAulasDto>>
+    public class ObterTurmasIdFrequenciasExistentesPorAnosLetivosQuery : IRequest<IEnumerable<string>>
     {
         public ObterTurmasIdFrequenciasExistentesPorAnosLetivosQuery(int[] anosLetivos)
         {

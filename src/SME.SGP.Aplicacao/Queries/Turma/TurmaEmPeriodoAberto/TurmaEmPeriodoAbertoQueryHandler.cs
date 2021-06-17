@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,26 +13,27 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IRepositorioTurma repositorioTurma;
 
         public TurmaEmPeriodoAbertoQueryHandler(IRepositorioTipoCalendario repositorioTipoCalendario,
                                                 IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                                 IRepositorioEventoFechamento repositorioEventoFechamento,
-                                                IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
-                                                IRepositorioTurma repositorioTurma)
+                                                IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new ArgumentNullException(nameof(repositorioEventoFechamento));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
         public async Task<bool> Handle(TurmaEmPeriodoAbertoQuery request, CancellationToken cancellationToken)
         {
-            var tipoCalendarioId  = await repositorioTipoCalendario.ObterIdPorAnoLetivoEModalidadeAsync(request.Turma.AnoLetivo
+            long tipoCalendarioId;
+
+            if (request.TipoCalendarioId == 0)
+                tipoCalendarioId = await repositorioTipoCalendario.ObterIdPorAnoLetivoEModalidadeAsync(request.Turma.AnoLetivo
                                         , request.Turma.ModalidadeTipoCalendario
                                         , request.Turma.Semestre);
+            else tipoCalendarioId = request.TipoCalendarioId;
 
             if (tipoCalendarioId == 0)
                 throw new NegocioException($"Tipo de calendário para turma {request.Turma.CodigoTurma} não localizado!");
