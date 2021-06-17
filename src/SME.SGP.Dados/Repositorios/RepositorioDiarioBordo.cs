@@ -421,10 +421,12 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<QuantidadeTotalDiariosPendentesPorAnoETurmaDTO>> ObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade)
         {
-            var sql = @"";
-            if (dreId == 0 && ueId == 0)
+            try
             {
-                sql = @"select  
+                var sql = @"";
+                if (dreId == 0 && ueId == 0)
+                {
+                    sql = @"select  
 	                        distinct
                             t.ano, 
                             count(a.id) as quantidadeTotalDiariosPendentes
@@ -433,16 +435,17 @@ namespace SME.SGP.Dados.Repositorios
                             inner join ue on ue.id = t.ue_id 
                             inner join dre on dre.id = ue.dre_id 
                         where not a.excluido 
+                            and t.ano <> '0'
                             and t.ano_letivo = @anoLetivo
                             and t.modalidade_codigo = @modalidade
                             and a.data_aula < current_date
                             and a.id not in (select distinct db.aula_id from diario_bordo db where not db.excluido)
                         group by t.ano ";
-            }
+                }
 
-            if (dreId > 0 && ueId == 0)
-            {
-                sql = @"select  
+                if (dreId > 0 && ueId == 0)
+                {
+                    sql = @"select  
 	                        distinct
                             t.ano, 
                             count(a.id) as quantidadeTotalDiariosPendentes
@@ -451,17 +454,18 @@ namespace SME.SGP.Dados.Repositorios
                             inner join ue on ue.id = t.ue_id 
                             inner join dre on dre.id = ue.dre_id 
                         where not a.excluido 
+                            and t.ano <> '0'
                             and t.ano_letivo = @anoLetivo
                             and dre.id = @dreId
                             and t.modalidade_codigo = @modalidade
                             and a.data_aula < current_date
                             and a.id not in (select distinct db.aula_id from diario_bordo db where not db.excluido)
                         group by t.ano ";
-            }
+                }
 
-            if (dreId > 0 && ueId > 0)
-            {
-                sql = @"select  
+                if (dreId > 0 && ueId > 0)
+                {
+                    sql = @"select  
 	                        distinct
                             t.nome as turma, 
                             count(a.id) as quantidadeTotalDiariosPendentes
@@ -477,9 +481,14 @@ namespace SME.SGP.Dados.Repositorios
                             and a.data_aula < current_date
                             and a.id not in (select distinct db.aula_id from diario_bordo db where not db.excluido)
                         group by t.nome ";
-            }
+                }
 
-            return await database.Conexao.QueryAsync<QuantidadeTotalDiariosPendentesPorAnoETurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
+                return await database.Conexao.QueryAsync<QuantidadeTotalDiariosPendentesPorAnoETurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<IEnumerable<QuantidadeDiariosDeBordoComDevolutivaEDevolutivaPendentePorTurmaAnoDto>> ObterDiariosDeBordoComDevolutivaEDevolutivaPendenteAsync(int anoLetivo, Modalidade modalidade, DateTime dataAula, long? dreId, long? ueId)
