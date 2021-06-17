@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Devolutiva informada não existe");
 
             var turma = await ObterTurma(param.TurmaCodigo);
-            var bimestre = await mediator.Send(new ObterBimestreAtualQuery(turma.CodigoTurma, DateTime.Today, turma));
+            var bimestre = await mediator.Send(new ObterBimestreAtualQuery(DateTime.Today, turma));
             await ValidarBimestreEmAberto(turma, bimestre);
 
             devolutiva.Descricao = param.Descricao;

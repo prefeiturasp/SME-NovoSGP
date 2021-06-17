@@ -6,8 +6,8 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioPendenciaAula
     {
-        Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades);
-        Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa();
+        Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, int anoLetivo);
+        Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(int anoLetivo);
 
         Task<long[]> ListarPendenciasPorAulaId(long aulaId);
         Task<long[]> ListarPendenciasPorAulasId(long[] aulasId);

@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IExecutaVerificacaoPendenciasGeraisUseCase
     {
-        Task Executar(MensagemRabbit mensagem);
+        Task<bool> Executar(MensagemRabbit mensagem);
     }
 }

@@ -79,7 +79,18 @@ namespace SME.SGP.Dominio
         Leitura = 26,
 
         [Display(Name = "relatorios/planejamento-diario", ShortName = "Planejamento Diario", Description = "Relatório de controle de planejamento diário")]
-        PlanejamentoDiario = 27
+        PlanejamentoDiario = 27,
 
+        [Display(Name = "relatorios/devolutivas", ShortName = "Devolutivas", Description = "Relatório de Devolutiva")]
+        Devolutivas = 28,
+
+        [Display(Name = "relatorios/itinerancias", ShortName = "Itinerâncias", Description = "Relatório do Registro de Itinerância")]
+        Itinerancias = 29,
+
+        [Display(Name = "relatorios/registro-individual", ShortName = "RegistroIndividual", Description = "Relatório de Registro Individual")]
+        RegistroIndividual = 30,
+
+        [Display(Name = "relatorios/acompanhamento-aprendizagem", ShortName = "AcompanhamentoAprendizagem", Description = "Relatório do Acompanhamento da Aprendizagem")]
+        AcompanhamentoAprendizagem = 31
     }
 }

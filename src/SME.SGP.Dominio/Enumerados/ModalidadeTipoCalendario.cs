@@ -24,17 +24,13 @@ namespace SME.SGP.Dominio
             switch (modalidade)
             {
                 case ModalidadeTipoCalendario.FundamentalMedio:
-                    return new[] { Modalidade.Fundamental, Modalidade.Medio };
-                    break;
+                    return new[] { Modalidade.Fundamental, Modalidade.Medio };                    
                 case ModalidadeTipoCalendario.EJA:
-                    return new[] { Modalidade.EJA };
-                    break;
+                    return new[] { Modalidade.EJA };                    
                 case ModalidadeTipoCalendario.Infantil:
-                    return new[] { Modalidade.Infantil };
-                    break;
+                    return new[] { Modalidade.InfantilPreEscola };                    
                 default:
-                    throw new NegocioException("Modalidade de tipo de calendário não identificado para conversão de modalidade de turma");
-                    break;
+                    throw new NegocioException("Modalidade de tipo de calendário não identificado para conversão de modalidade de turma");                    
             }
         }
     }

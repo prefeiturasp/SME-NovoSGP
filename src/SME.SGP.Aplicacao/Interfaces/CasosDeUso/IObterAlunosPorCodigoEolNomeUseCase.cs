@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
-    public interface IObterAlunosPorCodigoEolNomeUseCase : IUseCase<FiltroBuscaAlunosDto, PaginacaoResultadoDto<AlunoSimplesDto>>
+    public interface IObterAlunosPorCodigoEolNomeUseCase : IUseCase<FiltroBuscaEstudanteDto, PaginacaoResultadoDto<AlunoSimplesDto>>
     {
     }
 }

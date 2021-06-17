@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -22,14 +23,21 @@ namespace SME.SGP.Aplicacao
 
         public async Task<List<AbrangenciaUeRetorno>> Handle(ObterFiltroRelatoriosUesPorAbrangenciaQuery request, CancellationToken cancellationToken)
         {
-            var ues = (await repositorioAbrangencia.ObterUes(request.CodigoDre, request.UsuarioLogado.Login, request.UsuarioLogado.PerfilAtual))?.ToList();
+            var anoReferencia = request.ConsideraNovosTiposUE ?
+                DateTime.Today.Year + 1 :
+                DateTime.Today.Year;
+
+            var parametroNovosTiposUE = await mediator.Send(new ObterNovosTiposUEPorAnoQuery(anoReferencia));
+            var novosTiposUE = parametroNovosTiposUE?.Split(',').Select(a => int.Parse(a)).ToArray();
+
+            var ues = (await repositorioAbrangencia.ObterUes(request.CodigoDre, request.UsuarioLogado.Login, request.UsuarioLogado.PerfilAtual, ignorarTiposUE: novosTiposUE))?.ToList();
 
             var possuiAbrangenciaEmTodasAsUes = await mediator.Send(new ObterUsuarioPossuiAbrangenciaEmTodasAsUesQuery(request.UsuarioLogado.PerfilAtual));
 
             if (ues != null && ues.Any())
                 ues = ues.OrderBy(c => c.Nome).ToList();
 
-            if (possuiAbrangenciaEmTodasAsUes)
+            if (possuiAbrangenciaEmTodasAsUes && ues.Count > 1)
                 ues?.Insert(0, new AbrangenciaUeRetorno { Codigo = "-99", NomeSimples = "Todas" });
 
             return ues;

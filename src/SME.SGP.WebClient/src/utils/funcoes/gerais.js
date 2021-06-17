@@ -93,6 +93,10 @@ const ordenarListaMaiorParaMenor = (conteudoParaOrdenar, nomeCampo) => {
   return dadosOrdenados;
 };
 
+const clonarObjeto = objeto => {
+  return JSON.parse(JSON.stringify(objeto));
+};
+
 const removerArrayAninhados = arr =>
   arr.reduce(
     (acc, val) =>
@@ -101,6 +105,114 @@ const removerArrayAninhados = arr =>
         : acc.concat(val),
     []
   );
+
+const permiteInserirFormato = (arquivo, tiposArquivosPermitidos) => {
+  if (tiposArquivosPermitidos?.trim()) {
+    const listaPermitidos = tiposArquivosPermitidos
+      .split(',')
+      .map(tipo => tipo?.trim()?.toLowerCase());
+
+    const tamanhoNome = arquivo?.name?.length;
+
+    const permiteTipo = listaPermitidos.find(tipo => {
+      const nomeTipoAtual = arquivo.name.substring(
+        tamanhoNome,
+        tamanhoNome - tipo.length
+      );
+
+      if (nomeTipoAtual) {
+        return tipo?.toLowerCase() === nomeTipoAtual?.toLowerCase();
+      }
+
+      return false;
+    });
+
+    return !!permiteTipo;
+  }
+  return true;
+};
+
+const getBase64DataURL = (file, type) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    const fileBlob = new Blob([file], { type });
+    reader.readAsDataURL(fileBlob);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+};
+
+const obterTamanhoImagemPorArquivo = file => {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const img = new Image();
+      img.src = reader.result;
+      img.onload = () =>
+        resolve({
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+        });
+    };
+
+    reader.readAsDataURL(file);
+  });
+};
+const obterTodosMeses = () => {
+  const meses = [
+    {
+      numeroMes: '1',
+      nome: 'Janeiro',
+    },
+    {
+      numeroMes: '2',
+      nome: 'Fevereiro',
+    },
+    {
+      numeroMes: '3',
+      nome: 'Março',
+    },
+    {
+      numeroMes: '4',
+      nome: 'Abril',
+    },
+    {
+      numeroMes: '5',
+      nome: 'Maio',
+    },
+    {
+      numeroMes: '6',
+      nome: 'Junho',
+    },
+    {
+      numeroMes: '7',
+      nome: 'Julho',
+    },
+    {
+      numeroMes: '8',
+      nome: 'Agosto',
+    },
+    {
+      numeroMes: '9',
+      nome: 'Setembro',
+    },
+    {
+      numeroMes: '10',
+      nome: 'Outubro',
+    },
+    {
+      numeroMes: '11',
+      nome: 'Novembro',
+    },
+    {
+      numeroMes: '12',
+      nome: 'Dezembro',
+    },
+  ];
+
+  return meses;
+};
 
 export {
   validaSeObjetoEhNuloOuVazio,
@@ -115,4 +227,9 @@ export {
   maskTelefone,
   ordenarListaMaiorParaMenor,
   removerArrayAninhados,
+  clonarObjeto,
+  permiteInserirFormato,
+  getBase64DataURL,
+  obterTamanhoImagemPorArquivo,
+  obterTodosMeses,
 };

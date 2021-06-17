@@ -395,4 +395,8 @@ export default createGlobalStyle`
   .ant-tooltip {    
     z-index: 999999 !important;    
   }
+
+  .ant-time-picker-panel {
+    z-index: 999999 !important;  
+  }
 `;

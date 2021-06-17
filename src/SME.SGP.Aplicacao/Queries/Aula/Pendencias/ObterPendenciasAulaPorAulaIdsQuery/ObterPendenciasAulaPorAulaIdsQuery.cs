@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
         public ObterPendenciasAulaPorAulaIdsQuery(long[] aulasId, Modalidade modalidade)
         {
             AulasId = aulasId;
-            EhModalidadeInfantil = modalidade == Modalidade.Infantil;
+            EhModalidadeInfantil = modalidade == Modalidade.InfantilPreEscola;
         }
 
         //public ObterPendenciasAulaPorAulaIdsQuery(long[] aulasId, Modalidade modalidade)

@@ -18,5 +18,6 @@ namespace SME.SGP.Infra
         public bool ObjetivosAprendizagemOpcionais { get; set; }
         public long GrupoMatrizId { get; set; }
         public string GrupoMatrizNome { get; set; }
+        public string TurmaCodigo { get; set; }
     }
 }

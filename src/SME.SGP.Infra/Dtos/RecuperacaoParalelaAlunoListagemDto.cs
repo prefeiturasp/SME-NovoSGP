@@ -16,5 +16,6 @@ namespace SME.SGP.Dto
         public string Turma { get; set; }
         public long TurmaId { get; set; }
         public long TurmaRecuperacaoParalelaId { get; set; }
+        public bool EhAtendidoAEE { get; set; }
     }
 }

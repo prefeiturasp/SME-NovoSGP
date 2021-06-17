@@ -6,6 +6,8 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -13,66 +15,125 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioPendenciaAula : IRepositorioPendenciaAula
     {
         private readonly ISgpContext database;
+        private readonly IRepositorioDre repositorioDre;
 
-        public RepositorioPendenciaAula(ISgpContext database)
+        public RepositorioPendenciaAula(ISgpContext database,
+                                        IRepositorioDre repositorioDre)
         {
-            this.database = database;
+            this.database = database ?? throw new ArgumentNullException(nameof(database));
+            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
         }
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades)
+        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, int anoLetivo)
         {
-            var query = $@"select
-	                        aula.id as Id
-                        from
-	                        aula
-                        inner join turma on 
-	                        aula.turma_id = turma.turma_id
-                        left join pendencia_aula pa on
-	                        aula.id = pa.aula_id
-	                    left join pendencia p on p.id = pa.pendencia_id and p.tipo = @tipo and not p.excluido
-                        left join {tabelaReferencia} on
-	                        aula.id = {tabelaReferencia}.aula_id
-                        where
-	                        not aula.excluido
-	                        and aula.data_aula < @hoje
-	                        and turma.modalidade_codigo = ANY(@modalidades)
-	                        and pendencia_aula.id is null
-	                        and {tabelaReferencia}.id is null
-                        group by
-	                        aula.id";
+            var listaRetorno = new List<Aula>();
+            var sqlQuery = new StringBuilder();
+            var dres = repositorioDre.ObterTodas()
+                .Where(x => x.CodigoDre.Equals("108100"))
+                .OrderBy(dre => dre.CodigoDre);
 
-            return (await database.Conexao.QueryAsync<Aula>(query, new { hoje = DateTime.Today, tipo = tipoPendenciaAula, modalidades }));
+            sqlQuery.AppendLine("select distinct a.id as Id,");
+            sqlQuery.AppendLine("                a.disciplina_id DisciplinaId,");
+            sqlQuery.AppendLine("                a.turma_id TurmaId,");
+            sqlQuery.AppendLine("                a.professor_rf ProfessorRf,");
+            sqlQuery.AppendLine("                t.id Id,");
+            sqlQuery.AppendLine("                t.modalidade_codigo ModalidadeCodigo");
+            sqlQuery.AppendLine("  	from aula a");
+            sqlQuery.AppendLine("  		inner join tipo_calendario tc");
+            sqlQuery.AppendLine("  			on tc.ano_letivo = @anoLetivo and a.tipo_calendario_id = tc.id");
+            if (tipoPendenciaAula == TipoPendencia.Frequencia)
+            {
+                sqlQuery.AppendLine("  		inner join componente_curricular cc");
+                sqlQuery.AppendLine("            on cc.permite_registro_frequencia and a.disciplina_id::int8 = cc.id");
+            }
+            sqlQuery.AppendLine("  		inner join turma t");
+            sqlQuery.AppendLine("  			on tc.ano_letivo = t.ano_letivo and t.modalidade_codigo = any(@modalidades) and a.turma_id = t.turma_id");
+            sqlQuery.AppendLine("  		inner join ue");
+            sqlQuery.AppendLine("  			on t.ue_id = ue.id");
+            sqlQuery.AppendLine("  		inner join dre");
+            sqlQuery.AppendLine("  			on dre.dre_id = @dre and ue.dre_id = dre.id");
+            sqlQuery.AppendLine("  where not a.excluido and");
+            sqlQuery.AppendLine("	a.data_aula < @hoje and");
+            sqlQuery.AppendLine("	not exists (select 1");
+            sqlQuery.AppendLine("			    from pendencia_aula pa");
+            sqlQuery.AppendLine("			    	inner join pendencia p");
+            sqlQuery.AppendLine("			    		on pa.pendencia_id = p.id");
+            sqlQuery.AppendLine("			    where not p.excluido and");
+            sqlQuery.AppendLine("			    	p.tipo = @tipo and");
+            sqlQuery.AppendLine("			    	pa.aula_id = a.id) and");
+            sqlQuery.AppendLine("	not exists (select 1");
+            sqlQuery.AppendLine($"				from {tabelaReferencia} tf");
+            sqlQuery.AppendLine("				where tf.aula_id = a.id);");
+
+            foreach (var dre in dres)
+            {
+                var retorno = await database.Conexao.QueryAsync<Aula, Turma, Aula>(sqlQuery.ToString(), (aula, turma) =>
+                {
+                    aula.Turma = turma;
+                    return aula;
+                }, new
+                {
+                    anoLetivo,
+                    hoje = DateTime.Today.Date,
+                    tipo = tipoPendenciaAula,
+                    modalidades,
+                    dre = dre.CodigoDre
+                }, splitOn: "Id", commandTimeout: 60);
+
+                if (retorno.Any())
+                    listaRetorno.AddRange(retorno);
+            }
+
+            return listaRetorno;
         }
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa()
+        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(int anoLetivo)
         {
-            var sql = @"select
-	                        a.id as Id
-                        from
-	                        atividade_avaliativa aa
-                        inner join atividade_avaliativa_disciplina aad on
-	                        aad.atividade_avaliativa_id = aa.id
-                        left join notas_conceito n on
-	                        aa.id = n.atividade_avaliativa
-                        inner join aula a on
-	                        aa.turma_id = a.turma_id
-	                        and aa.data_avaliacao::date = a.data_aula::date
-	                        and aad.disciplina_id = a.disciplina_id
-                        left join pendencia_aula pa on
-	                        a.id = pa.aula_id
-                        left join pendencia p on p.id = pa.pendencia_id
-	                        and p.tipo = @tipo
-	                        and not p.excluido
-                        where
-	                        not a.excluido
-	                        and a.data_aula::date < @hoje
-	                        and n.id is null
-	                        and pa.id is null
-	                        and p.id is null
-                        group by
-	                        a.id";
+            var listaRetorno = new List<Aula>();
+            var sqlQuery = new StringBuilder();
+            var dres = repositorioDre.ObterTodas()
+                .OrderBy(dre => dre.CodigoDre);
 
-            return (await database.Conexao.QueryAsync<Aula>(sql.ToString(), new { hoje = DateTime.Today, tipo = TipoPendencia.Avaliacao }));
+            sqlQuery.AppendLine("select distinct a.id");
+            sqlQuery.AppendLine("	from atividade_avaliativa aa");
+            sqlQuery.AppendLine("		inner join atividade_avaliativa_disciplina aad");
+            sqlQuery.AppendLine("			on extract(year from aa.data_avaliacao) = @anoLetivo and");
+            sqlQuery.AppendLine("			   aa.dre_id = @dre and");
+            sqlQuery.AppendLine("			   aa.id = aad.atividade_avaliativa_id");
+            sqlQuery.AppendLine("		inner join aula a");
+            sqlQuery.AppendLine("			on extract(year from a.data_aula) = @anoLetivo and");
+            sqlQuery.AppendLine("			   aa.turma_id = a.turma_id and");
+            sqlQuery.AppendLine("			   aa.data_avaliacao::date = a.data_aula::date and");
+            sqlQuery.AppendLine("			   aad.disciplina_id = a.disciplina_id");
+            sqlQuery.AppendLine("where not aa.excluido and");
+            sqlQuery.AppendLine("	not a.excluido and");
+            sqlQuery.AppendLine("	a.data_aula::date < @hoje and");
+            sqlQuery.AppendLine("	not exists (select 1");
+            sqlQuery.AppendLine("				from pendencia_aula pa");
+            sqlQuery.AppendLine("					inner join pendencia p");
+            sqlQuery.AppendLine("						on pa.pendencia_id = p.id");
+            sqlQuery.AppendLine("				where not p.excluido and");
+            sqlQuery.AppendLine("					p.tipo = @tipo) and");
+            sqlQuery.AppendLine("	not exists (select 1");
+            sqlQuery.AppendLine("				from notas_conceito nc");
+            sqlQuery.AppendLine("				where nc.atividade_avaliativa = aa.id);");
+
+            foreach (var dre in dres)
+            {
+                var retorno = await database.Conexao
+                    .QueryAsync<Aula>(sqlQuery.ToString(), new
+                    {
+                        anoLetivo,
+                        hoje = DateTime.Today.Date,
+                        tipo = TipoPendencia.Avaliacao,
+                        dre = dre.CodigoDre
+                    }, commandTimeout: 120);
+
+                if (retorno.Any())
+                    listaRetorno.AddRange(retorno);
+            }
+
+            return listaRetorno;
         }
 
         public async Task Excluir(long pendenciaId, long aulaId)

@@ -10,15 +10,13 @@ namespace SME.SGP.Aplicacao
         public DateTime DataAula { get; set; }
         public string TurmaId { get; set; }
         public string DisciplinaId { get; set; }
-        public int Bimestre { get; set; }                
 
-        public CalcularFrequenciaPorTurmaCommand(IEnumerable<string> alunos, DateTime dataAula, string turmaId, string disciplinaId, int bimestre)
+        public CalcularFrequenciaPorTurmaCommand(IEnumerable<string> alunos, DateTime dataAula, string turmaId, string disciplinaId)
         {
             Alunos = alunos;
             DataAula = dataAula;
             TurmaId = turmaId;
             DisciplinaId = disciplinaId;
-            Bimestre = bimestre;                        
-        }        
+        }
     }
 }

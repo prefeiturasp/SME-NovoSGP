@@ -1,5 +1,4 @@
-﻿
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -115,17 +114,19 @@ namespace SME.SGP.Dominio
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
 
-            await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId);
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+
+            await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId, usuario.EhGestorEscolar());
 
             var entidadesSalvar = new List<NotaConceito>();
 
             var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
 
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
-
             var dataConsiderada = atividadesAvaliativas.Any() ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao : DateTime.Today;
-            
-            await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, dataConsiderada, usuario);
+
+            if (!usuario.EhGestorEscolar())
+                await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, dataConsiderada, usuario);
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
@@ -250,12 +251,23 @@ namespace SME.SGP.Dominio
             if (turma == null)
                 throw new NegocioException("Não foi encontrada a turma informada");
 
-            var ciclo = repositorioCiclo.ObterCicloPorAnoModalidade(turma.Ano, turma.Modalidade);
+            string anoCicloModalidade = !String.IsNullOrEmpty(turma?.Ano) ? turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : turma.Ano : string.Empty;
+            var ciclo = repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, turma.Modalidade);
 
             if (ciclo == null)
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
 
             return repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, data);
+        }
+
+        public Task<NotaTipoValor> ObterNotaTipoPorTurmaDataReferencia(Turma turma, DateTime data, bool consideraHistorico = false)
+        {
+            var ciclo = repositorioCiclo.ObterCicloPorAnoModalidade(turma.Ano, turma.ModalidadeCodigo);
+
+            if (ciclo == null)
+                throw new NegocioException("Não foi encontrado o ciclo da turma informada");
+
+            return Task.FromResult(repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, data));
         }
 
         private void SalvarNoBanco(List<NotaConceito> EntidadesSalvar)
@@ -273,7 +285,7 @@ namespace SME.SGP.Dominio
             unitOfWork.PersistirTransacao();
         }
 
-        private async Task ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId)
+        private async Task ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId, bool gestorEscolar)
         {
             if (atividadesAvaliativas == null || !atividadesAvaliativas.Any())
                 throw new NegocioException("Não foi encontrada nenhuma da(s) avaliação(es) informada(s)");
@@ -282,26 +294,27 @@ namespace SME.SGP.Dominio
             var disciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
 
             foreach (var atividadeAvaliativa in atividadesAvaliativas)
-                await ValidarDataAvaliacaoECriador(atividadeAvaliativa, professorRf, disciplinaId, disciplinasEol);
+                await ValidarDataAvaliacaoECriador(atividadeAvaliativa, professorRf, disciplinaId, disciplinasEol, gestorEscolar);
         }
 
-        private async Task ValidarDataAvaliacaoECriador(AtividadeAvaliativa atividadeAvaliativa, string professorRf, string disciplinaId, IEnumerable<ProfessorTitularDisciplinaEol> disciplinasEol)
+        private async Task ValidarDataAvaliacaoECriador(AtividadeAvaliativa atividadeAvaliativa, string professorRf, string disciplinaId, IEnumerable<ProfessorTitularDisciplinaEol> disciplinasEol, bool gestorEscolar)
         {
             if (atividadeAvaliativa.DataAvaliacao.Date > DateTime.Today)
                 throw new NegocioException("Não é possivel atribuir notas/conceitos para avaliação(es) com data(s) futura(s)");
 
             bool ehTitular = false;
 
-            if (disciplinasEol != null && disciplinasEol.Any())
-                ehTitular = disciplinasEol.Any(d => d.DisciplinaId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
-
-            var usuarioLogado = await mediator.Send(new ObterUsuarioPorRfQuery(professorRf));
-            var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Convert.ToInt64(disciplinaId), atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, usuarioLogado));
-
-            if ((atividadeAvaliativa.EhCj && !atividadeAvaliativa.ProfessorRf.Equals(professorRf)) ||
-                (!atividadeAvaliativa.EhCj && !ehTitular && !usuarioPossuiAtribuicaoNaTurmaNaData))
+            if (!gestorEscolar)
             {
-                throw new NegocioException("Somente o professor que criou a avaliação e/ou titular, pode atribuir e/ou editar notas/conceitos");
+                if (disciplinasEol != null && disciplinasEol.Any())
+                    ehTitular = disciplinasEol.Any(d => d.DisciplinaId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
+
+                var usuarioLogado = await mediator.Send(new ObterUsuarioPorRfQuery(professorRf));
+                var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Convert.ToInt64(disciplinaId), atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, usuarioLogado));
+
+                if ((atividadeAvaliativa.EhCj && !atividadeAvaliativa.ProfessorRf.Equals(professorRf)) ||
+                    (!atividadeAvaliativa.EhCj && !ehTitular && !usuarioPossuiAtribuicaoNaTurmaNaData))
+                    throw new NegocioException("Somente o professor que criou a avaliação e/ou titular, pode atribuir e/ou editar notas/conceitos");
             }
         }
 
@@ -332,7 +345,8 @@ namespace SME.SGP.Dominio
             {
                 if (notaConceito.Id > 0)
                 {
-                    notaConceito.Validar(professorRf);
+                    if(!usuario.EhGestorEscolar())
+                        notaConceito.Validar(professorRf);
                 }
 
                 var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(notaConceito.AlunoId));

@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma.");
 
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario());
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), filtros.semestre);
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 
@@ -241,9 +241,12 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> PodeEditarNotaOuConceitoPeriodoUsuario(Usuario usuarioLogado, PeriodoEscolar periodoEscolar, Turma turma, string codigoComponenteCurricular, DateTime data)
         {
-            var usuarioPodeEditar = await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turma.CodigoTurma, codigoComponenteCurricular, data);
-            if (!usuarioPodeEditar)
-                return false;
+            if (!usuarioLogado.EhGestorEscolar())
+            {
+                var usuarioPodeEditar = await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turma.CodigoTurma, codigoComponenteCurricular, data);
+                if (!usuarioPodeEditar)
+                    return false;
+            }               
 
             var periodoFechamento = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre, periodoEscolar.Id);
 
@@ -270,7 +273,8 @@ namespace SME.SGP.Aplicacao
                 TotalAusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
                 Frequencia = percentualFrequencia,
                 TotalFaltas = frequenciaAluno?.TotalAusencias ?? 0,
-                NumeroChamada = aluno.NumeroAlunoChamada
+                NumeroChamada = aluno.NumeroAlunoChamada,
+                EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
             };
             return fechamentoFinalAluno;
         }

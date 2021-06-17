@@ -21,7 +21,7 @@ import api from '~/servicos/api';
 import history from '~/servicos/history';
 import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
-import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
+import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Dashboard/ServicoDashboardEscolaAqui';
 import ServicoRelatorioLeitura from '~/servicos/Paginas/Relatorios/EscolaAqui/Leitura/ServicoRelatorioLeitura';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 
@@ -139,13 +139,13 @@ const RelatorioLeitura = () => {
           abrev: item.abreviacao,
         }));
 
-        if (possuiPerfilSme) {
+        if (lista?.length > 1 && possuiPerfilSme) {
           lista.unshift({ valor: OPCAO_TODOS, desc: 'Enviado para todas' });
         }
 
         setListaDres(lista);
 
-        if (lista && lista.length && lista.length === 1) {
+        if (lista?.length === 1) {
           setCodigoDre(lista[0].valor);
         }
       } else {
@@ -216,7 +216,7 @@ const RelatorioLeitura = () => {
       setCarregandoUes(true);
       const resposta = await AbrangenciaServico.buscarUes(
         codigoDre,
-        `v1/abrangencias/${consideraHistorico}/dres/${codigoDre}/ues?anoLetivo=${anoLetivo}`,
+        `v1/abrangencias/${consideraHistorico}/dres/${codigoDre}/ues?anoLetivo=${anoLetivo}&consideraNovasUEs=${true}`,
         true
       )
         .catch(e => erros(e))
@@ -228,11 +228,11 @@ const RelatorioLeitura = () => {
           valor: String(item.codigo),
         }));
 
-        if (possuiPerfilSme || possuiPerfilDre) {
+        if (lista?.length > 1 && (possuiPerfilSme || possuiPerfilDre)) {
           lista.unshift({ valor: OPCAO_TODOS, desc: 'Enviado para todas' });
         }
 
-        if (lista && lista.length && lista.length === 1) {
+        if (lista?.length === 1) {
           setCodigoUe(lista[0].valor);
         }
 
@@ -263,7 +263,7 @@ const RelatorioLeitura = () => {
       setCarregandoModalidade(true);
       const {
         data,
-      } = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(ue);
+      } = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(ue, true);
 
       if (data) {
         const lista = data.map(item => ({

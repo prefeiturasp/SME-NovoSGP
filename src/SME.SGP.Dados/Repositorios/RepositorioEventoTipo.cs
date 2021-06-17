@@ -16,13 +16,19 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<EventoTipo>> ListarTipos(EventoLocalOcorrencia eventoLocalOcorrencia, EventoLetivo eventoLetivo, string descricao, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<EventoTipo>> ListarTipos(EventoLocalOcorrencia eventoLocalOcorrencia, EventoLetivo eventoLetivo, string descricao, Guid perfilCodigo, Paginacao paginacao)
         {
             var retorno = new PaginacaoResultadoDto<EventoTipo>();
 
             StringBuilder sql = MontaQueryCompleta(eventoLocalOcorrencia, eventoLetivo, descricao, paginacao);
 
-            var parametros = new { local_ocorrencia = eventoLocalOcorrencia, letivo = eventoLetivo, descricao = $"%{descricao?.ToLowerInvariant()}%" };
+            var parametros = new 
+            { 
+                local_ocorrencia = eventoLocalOcorrencia, 
+                letivo = eventoLetivo, 
+                descricao = $"%{descricao?.ToLowerInvariant()}%",
+                perfilCodigo
+            };
 
             using (var multi = await database.Conexao.QueryMultipleAsync(sql.ToString(), parametros))
             {
@@ -76,7 +82,7 @@ namespace SME.SGP.Dados.Repositorios
             ObtenhaFiltroConsulta(eventoLocalOcorrencia, eventoLetivo, descricao, sql);
 
             if (!contador)
-                sql.AppendLine("order by id desc");
+                sql.AppendLine("order by et.id desc");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
@@ -84,7 +90,8 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObtenhaCabecalhoConsulta(StringBuilder sql, bool contador)
         {
-            sql.AppendLine($"select {(contador ? "count(*)" : "*")} from evento_tipo where excluido = false");
+            sql.AppendLine($"select {(contador ? "count(et.*)" : "et.*")} from evento_tipo et");
+            sql.AppendLine($"where not et.excluido");
         }
 
         private static void ObtenhaFiltroConsulta(EventoLocalOcorrencia eventoLocalOcorrencia, EventoLetivo eventoLetivo, string descricao, StringBuilder sql)
@@ -97,6 +104,24 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrWhiteSpace(descricao))
                 sql.AppendLine("and lower(f_unaccent(descricao)) like @descricao");
+
+            sql.AppendLine(@" and (
+                -- Tem acesso exclusivo ao tipo e permite cadastro
+                exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.codigo_perfil = :perfilCodigo and pet.evento_tipo_id = et.id and pet.exclusivo)
+                --ou (não tem acesso exclusivo pro perfil
+                  or (not exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.codigo_perfil = :perfilCodigo and pet.exclusivo)
+                  --e (tem permissao de cadastro pro tipo evento
+                      and (exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.codigo_perfil = :perfilCodigo and pet.evento_tipo_id = et.id and pet.permite_cadastro)
+                  --ou nao tem configuracao pro tipo evento))
+                      or not exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.evento_tipo_id = et.id))
+                  ))");
+        }
+
+        public async Task<long> ObterIdPorCodigo(int codigo)
+        {
+            var query = "select id from evento_tipo where codigo = @codigo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { codigo });
         }
     }
 }

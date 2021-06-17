@@ -9,6 +9,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("turma");
             Map(c => c.Ano).ToColumn("ano");
+            Map(c => c.TipoTurma).ToColumn("tipo_turma");
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
             Map(c => c.CodigoTurma).ToColumn("turma_id");
             Map(c => c.DataAtualizacao).ToColumn("data_atualizacao");

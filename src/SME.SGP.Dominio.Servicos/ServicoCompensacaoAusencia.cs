@@ -75,7 +75,8 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            await ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario, periodo.PeriodoFim);
+            if(!usuario.EhGestorEscolar())
+                await ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario, periodo.PeriodoFim);
 
             // Valida mesma compensação no ano
             var compensacaoExistente = await repositorioCompensacaoAusencia.ObterPorAnoTurmaENome(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id);
@@ -114,7 +115,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (codigosAlunosCompensacao.Any())
             {
-                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, periodo.Bimestre));
+                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
             }
 
             Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarCompensacaoAusencia(compensacao.Id));
@@ -344,7 +345,7 @@ namespace SME.SGP.Dominio.Servicos
 
                     if (alunosDaCompensacao.Any())
                     {
-                        await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos, periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId, periodo.Bimestre));
+                        await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos, periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId));
                     }
 
                 }

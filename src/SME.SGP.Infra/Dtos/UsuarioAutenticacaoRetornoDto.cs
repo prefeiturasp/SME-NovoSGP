@@ -18,5 +18,6 @@ namespace SME.SGP.Infra
         public Guid UsuarioId { get; set; }
         public string UsuarioRf { get; set; }
         public string UsuarioLogin { get; set; }
+        public bool ContratoExterno { get; set; }
     }
 }

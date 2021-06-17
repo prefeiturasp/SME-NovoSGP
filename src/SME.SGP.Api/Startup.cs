@@ -12,13 +12,12 @@ using Microsoft.Extensions.FileProviders;
 using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
-using SME.SGP.Api.Filtros;
 using SME.SGP.Api.HealthCheck;
+using SME.SGP.Aplicacao;
 using SME.SGP.Background;
 using SME.SGP.Dados;
-using SME.SGP.Dados.Contexto;
+using SME.SGP.Infra.Utilitarios;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using SME.SGP.IoC;
 using SME.SGP.IoC.Extensions;
 using System;
@@ -26,6 +25,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Api
 {
@@ -81,7 +81,7 @@ namespace SME.SGP.Api
 
             app.UseStaticFiles();
 
-            Console.WriteLine("CURRENT------",Directory.GetCurrentDirectory());
+            Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
 
             if (_env.EnvironmentName != "teste-integrado")
@@ -102,7 +102,7 @@ namespace SME.SGP.Api
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });  
+            });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -135,13 +135,13 @@ namespace SME.SGP.Api
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
+            ConfiguraVariaveisAmbiente(services);
+            ConfiguraGoogleClassroomSync(services);
+
             var serviceProvider = services.BuildServiceProvider();
 
             Orquestrador.Inicializar(serviceProvider);
 
-            
-
-            //services.AdicionarRedis(Configuration, serviceProvider.GetService<IServicoLog>());
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
             {
@@ -152,11 +152,6 @@ namespace SME.SGP.Api
                 Orquestrador.Desativar();
 
             services.AddHealthChecks()
-                   //.AddRedis(
-                   //     Configuration.GetConnectionString("SGP_Redis"),
-                   //     "Redis Cache",
-                   //     null,
-                   //     tags: new string[] { "db", "redis" })
                     .AddNpgSql(
                         Configuration.GetConnectionString("SGP_Postgres"),
                         name: "Postgres")
@@ -169,20 +164,29 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
 
-            if (_env.EnvironmentName != "teste-integrado")
-            {
-                services.AddRabbit();
-            }
-
-            // Teste para injeção do client de telemetria em classe estática 
 
 
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
             DapperExtensionMethods.Init(clientTelemetry);
+         
+            services.AddMemoryCache();
+        }
 
-            //
+        private void ConfiguraVariaveisAmbiente(IServiceCollection services)
+        {
+            var configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
+            Configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
 
-            services.AddMemoryCache();            
+            services.AddSingleton(configuracaoRabbitOptions);
+        }
+
+        private void ConfiguraGoogleClassroomSync(IServiceCollection services)
+        {
+            var googleClassroomSyncOptions = new GoogleClassroomSyncOptions();
+            Configuration.GetSection(nameof(GoogleClassroomSyncOptions)).Bind(googleClassroomSyncOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddMemoryCache();
+            services.AddSingleton(googleClassroomSyncOptions);
         }
     }
 }

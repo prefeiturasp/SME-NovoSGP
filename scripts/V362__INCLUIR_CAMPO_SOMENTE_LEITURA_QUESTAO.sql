@@ -1,0 +1,1 @@
+ALTER TABLE if exists questao add column if not exists somente_leitura bool NOT NULL DEFAULT false;
