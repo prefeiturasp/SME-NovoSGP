@@ -1,6 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
+using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -8,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmasIdFrequenciasExistentesPorAnosLetivosQueryHandler : IRequestHandler<ObterTurmasIdFrequenciasExistentesPorAnosLetivosQuery, IEnumerable<FiltroMigracaoFrequenciaAulasDto>>
+    public class ObterTurmasIdFrequenciasExistentesPorAnosLetivosQueryHandler : IRequestHandler<ObterTurmasIdFrequenciasExistentesPorAnosLetivosQuery, IEnumerable<string>>
     {
-        private readonly IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno;
+        private readonly IRepositorioFrequencia repositorioFrequencia;
 
-        public ObterTurmasIdFrequenciasExistentesPorAnosLetivosQueryHandler(IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno)
+        public ObterTurmasIdFrequenciasExistentesPorAnosLetivosQueryHandler(IRepositorioFrequencia repositorioFrequencia)
         {
-            this.repositorioRegistroFrequenciaAluno = repositorioRegistroFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroFrequenciaAluno));
+            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
         }
 
-        public async Task<IEnumerable<FiltroMigracaoFrequenciaAulasDto>> Handle(ObterTurmasIdFrequenciasExistentesPorAnosLetivosQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<string>> Handle(ObterTurmasIdFrequenciasExistentesPorAnosLetivosQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioRegistroFrequenciaAluno.ObterTurmasIdFrequenciasExistentesPorAnoAsync(request.AnosLetivos);
+            return await repositorioFrequencia.ObterTurmasCodigosFrequenciasExistentesPorAnoAsync(request.AnosLetivos);
         }
     }
 }
