@@ -566,7 +566,6 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select id,usuario_id,dre_id,ue_id,turma_id,perfil from abrangencia where usuario_id = @usuarioId";
             return await database.Conexao.QueryAsync<Abrangencia>(query, new { usuarioId });
         }
-        }
 
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
         {

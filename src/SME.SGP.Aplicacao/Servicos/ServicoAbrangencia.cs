@@ -181,7 +181,7 @@ namespace SME.SGP.Aplicacao.Servicos
                     abrangencia.UeId = turmaSGP.Ue.Id;
                     abrangencia.UsuarioId = usuario.Id;
                     abrangencia.TurmaId = turmaSGP.Id;
-                    abrangencia.Perfil = (Modalidade)int.Parse(turma.CodigoModalidade) == Modalidade.Infantil ?
+                    abrangencia.Perfil = ((Modalidade)int.Parse(turma.CodigoModalidade) == Modalidade.InfantilPreEscola || (Modalidade)int.Parse(turma.CodigoModalidade) == Modalidade.InfantilCEI) ?
                         Perfis.PERFIL_PROFESSOR_INFANTIL : Perfis.PERFIL_PROFESSOR;
 
                     abrangenciaTurmasHistoricasEOL.Add(abrangencia);
