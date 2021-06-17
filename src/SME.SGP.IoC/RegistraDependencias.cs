@@ -985,6 +985,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase, ExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaUseCase, ConsolidarDevolutivasPorTurmaUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaInfantilUseCase, ConsolidarDevolutivasPorTurmaInfantilUseCase>();
+
+            //Evento Bimestre
+            services.TryAddScoped<IRepositorioEventoBimestre, RepositorioEventoBimestre>();
         }
     }
 }
