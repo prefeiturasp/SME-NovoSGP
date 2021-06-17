@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/abrangencias/{consideraHistorico}")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class AbrangenciaController : ControllerBase
     {
         private readonly IConsultasAbrangencia consultasAbrangencia;
