@@ -294,6 +294,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            and t.ano_letivo = @anoLetivo
                                 and t.modalidade_codigo = @modalidade
 	                            and db.planejamento is not null
+                                and a.data_aula < current_date
 	                        group by t.ano
                         union 
 	                        select  
@@ -310,6 +311,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and t.modalidade_codigo = @modalidade
 	                            and db.planejamento is not null
 	                            and db.devolutiva_id is not null
+                                and a.data_aula < current_date
 	                        group by t.ano) 
 	                        as dashboard
 	                        group by dashboard.ano 
@@ -339,6 +341,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and t.modalidade_codigo = @modalidade
                                 and dre.id = @dreId
 	                            and db.planejamento is not null
+                                and a.data_aula < current_date
 	                        group by t.ano
                         union 
 	                        select  
@@ -356,6 +359,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and dre.id = @dreId
 	                            and db.planejamento is not null
 	                            and db.devolutiva_id is not null
+                                and a.data_aula < current_date
 	                        group by t.ano) 
 	                        as dashboard
 	                        group by dashboard.ano 
@@ -386,6 +390,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and dre.id = @dreId
                                 and t.ue_id = @ueId
 	                            and db.planejamento is not null
+                                and a.data_aula < current_date
 	                        group by t.nome
                         union 
 	                        select  
@@ -404,6 +409,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and t.ue_id = @ueId
 	                            and db.planejamento is not null
 	                            and db.devolutiva_id is not null
+                                and a.data_aula < current_date
 	                        group by t.nome) 
 	                        as dashboard
 	                        group by dashboard.turma
@@ -429,7 +435,7 @@ namespace SME.SGP.Dados.Repositorios
                         where not a.excluido 
                             and t.ano_letivo = @anoLetivo
                             and t.modalidade_codigo = @modalidade
-                            and a.data_aula > current_date
+                            and a.data_aula < current_date
                             and a.id not in (select distinct db.aula_id from diario_bordo db where not db.excluido)
                         group by t.ano ";
             }
@@ -448,7 +454,7 @@ namespace SME.SGP.Dados.Repositorios
                             and t.ano_letivo = @anoLetivo
                             and dre.id = @dreId
                             and t.modalidade_codigo = @modalidade
-                            and a.data_aula > current_date
+                            and a.data_aula < current_date
                             and a.id not in (select distinct db.aula_id from diario_bordo db where not db.excluido)
                         group by t.ano ";
             }
@@ -468,7 +474,7 @@ namespace SME.SGP.Dados.Repositorios
                             and dre.id = @dreId
 	                        and t.ue_id = @ueId
                             and t.modalidade_codigo = @modalidade
-                            and a.data_aula > current_date
+                            and a.data_aula < current_date
                             and a.id not in (select distinct db.aula_id from diario_bordo db where not db.excluido)
                         group by t.nome ";
             }
