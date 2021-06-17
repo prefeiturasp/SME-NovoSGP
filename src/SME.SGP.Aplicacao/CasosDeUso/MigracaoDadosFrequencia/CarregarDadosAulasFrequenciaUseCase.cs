@@ -14,18 +14,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(int[] anosLetivos)
         {
-            var dadosAulas = await mediator.Send(new ObterTurmasIdFrequenciasExistentesPorAnosLetivosQuery(anosLetivos));
-            try
-            {
-                foreach (var aula in dadosAulas)
-                {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDadosAulasFrequenciaMigracao, aula, Guid.NewGuid(), null));
-                }
-            }
-            catch (Exception ex)
-            {
-                SentrySdk.CaptureException(ex);
-            }
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDadosFrequenciaMigracao, new FiltroMigracaoFrequenciaDto(anosLetivos), Guid.NewGuid(), null));
+
             return true;
         }
     }
