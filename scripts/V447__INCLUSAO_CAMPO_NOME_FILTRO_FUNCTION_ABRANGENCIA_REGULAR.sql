@@ -1,3 +1,6 @@
+drop function f_abrangencia_turmas;
+drop view v_estrutura_abrangencia_turmas;
+
 CREATE OR REPLACE VIEW public.v_estrutura_abrangencia_turmas
 AS SELECT v_abrangencia_cadeia_turmas.turma_ano AS ano,
     v_abrangencia_cadeia_turmas.turma_ano_letivo AS anoletivo,
