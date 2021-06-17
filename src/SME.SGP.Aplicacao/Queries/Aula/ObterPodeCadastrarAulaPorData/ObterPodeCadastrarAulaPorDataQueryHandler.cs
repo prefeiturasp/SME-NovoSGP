@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             {
                 // Evento Letivo
                 var temEventoLetivoNoDia = repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
-                if (!temEventoLetivoNoDia)
+                if (!temEventoLetivoNoDia && request.DataAula.Domingo())
                     return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula no domingo");
             }
 
