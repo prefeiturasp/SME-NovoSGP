@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -298,6 +299,34 @@ namespace SME.SGP.Dados.Repositorios
                           values (@turmaId, @disciplinaId, @dataReferencia, @alunos)";
 
             await database.Conexao.ExecuteAsync(query, new { turmaId, disciplinaId, dataReferencia, alunos });
+        }
+
+        public async Task<IEnumerable<string>> ObterTurmasCodigosFrequenciasExistentesPorAnoAsync(int[] anosLetivos)
+        {
+            var query = @"  select distinct(t.turma_id)
+                             from registro_frequencia rf
+                            inner join aula a on a.id = rf.aula_id 
+                            inner join turma t on t.turma_id = a.turma_id 
+                            where not a.excluido
+                              and not rf.excluido
+                              and t.ano_letivo = ANY(@anosLetivos)";
+
+            return await database.Conexao.QueryAsync<string>(query, new { anosLetivos });
+        }
+
+        public async Task<IEnumerable<AulaComFrequenciaNaDataDto>> ObterAulasComRegistroFrequenciaPorTurma(string turmaCodigo)
+        {
+            var query = @"select a.id as AulaId
+	                        , a.data_aula as DataAula
+	                        , a.quantidade as QuantidadeAulas
+	                        , rf.id as RegistroFrequenciaId
+                          from aula a 
+                         inner join registro_frequencia rf on rf.aula_id = a.id
+                         where not a.excluido 
+                           and not rf.excluido 
+                           and a.turma_id = @turmaCodigo ";
+
+            return await database.Conexao.QueryAsync<AulaComFrequenciaNaDataDto>(query, new { turmaCodigo });
         }
     }
 }
