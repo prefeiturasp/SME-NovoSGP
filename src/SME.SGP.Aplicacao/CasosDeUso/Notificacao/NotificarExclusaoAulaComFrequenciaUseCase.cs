@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRf));
                         if (usuario != null)
-                            await mediator.Send(new NotificarUsuarioCommand($"Problemas na exclusão de aulas da turma {turma.Nome}",
+                            await mediator.Send(new NotificarUsuarioCommand($"Problemas na exclusão de aulas da turma {turma.ModalidadeCodigo.ShortName()} - {turma.Nome}",
                                                                             mensagem.ToString(),
                                                                             codigoRf,
                                                                             NotificacaoCategoria.Aviso,
