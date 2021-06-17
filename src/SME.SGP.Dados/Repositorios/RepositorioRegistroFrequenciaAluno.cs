@@ -96,15 +96,15 @@ namespace SME.SGP.Dados
                 foreach (var frequencia in registros)
                 {
                     writer.StartRow();
-                    writer.Write(frequencia.Valor, NpgsqlDbType.Integer);
-                    writer.Write(frequencia.CodigoAluno, NpgsqlDbType.Varchar);
-                    writer.Write(frequencia.NumeroAula, NpgsqlDbType.Integer);
-                    writer.Write(frequencia.RegistroFrequenciaId, NpgsqlDbType.Bigint);
-                    writer.Write(frequencia.CriadoEm, NpgsqlDbType.Timestamp);
-                    writer.Write(frequencia.CriadoPor, NpgsqlDbType.Varchar);
-                    writer.Write(frequencia.CriadoRF, NpgsqlDbType.Varchar);
+                    writer.Write(frequencia.Valor, NpgsqlDbType.Bigint);
+                    writer.Write(frequencia.CodigoAluno);
+                    writer.Write(frequencia.NumeroAula);
+                    writer.Write(frequencia.RegistroFrequenciaId);
+                    writer.Write(frequencia.CriadoEm);
+                    writer.Write(frequencia.CriadoPor);
+                    writer.Write(frequencia.CriadoRF);
                 }
-                await Task.FromResult(writer.Complete());
+                writer.Complete();
             }
 
             return true;
