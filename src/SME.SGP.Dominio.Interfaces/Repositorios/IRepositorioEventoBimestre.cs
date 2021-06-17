@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioEventoBimestre : IRepositorioBase<EventoBimestre>
     {
         Task ExcluiEventoBimestre(long eventoId);
+        Task<IEnumerable<int?[]>> ObterEventoBimestres(long eventoId);
     }
 }
