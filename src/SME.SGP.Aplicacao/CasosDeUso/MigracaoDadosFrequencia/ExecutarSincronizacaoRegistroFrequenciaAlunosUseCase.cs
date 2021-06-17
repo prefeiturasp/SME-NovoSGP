@@ -1,8 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,8 +12,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var registro = mensagemRabbit.ObterObjetoMensagem<RegistroFrequenciaAluno>();
-            await mediator.Send(new SalvarRegistroFrequenciaAlunoCommand(registro));
+            var frequencias = mensagemRabbit.ObterObjetoMensagem<ParametroFrequenciasPersistirDto>();
+
+            await mediator.Send(new InserirVariosRegistrosFrequenciaAlunoCommand(frequencias.FrequenciasPersistir));
+
             return true;
         }
     }
