@@ -19,3 +19,5 @@ CREATE TABLE IF NOT EXISTS public.evento_bimestre (
 
 
 ALTER TABLE public.evento_bimestre ADD CONSTRAINT evento_bimestre_evento_fk FOREIGN KEY (evento_id) REFERENCES public.evento(id);
+
+CREATE index if not exists evento_evento_bimestre_idx ON public.evento_bimestre USING btree (evento_id);
