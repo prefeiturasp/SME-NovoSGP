@@ -24,11 +24,11 @@ namespace SME.SGP.Aplicacao
             var datasDosPeriodosEscolares = new List<DiaLetivoDto>();
 
             var eventos = (await repositorioEvento
-                .ObterEventosPorTipoDeCalendarioAsync(request.TipoCalendarioId))?
-                .Where(c => (c.EhEventoUE() || c.EhEventoSME()));            
+                .ObterEventosPorTipoDeCalendarioAsync(request.TipoCalendarioId, EventoLetivo.Sim, EventoLetivo.Nao))?
+                .Where(c => (c.EhEventoUE() || c.EhEventoSME()));
 
             foreach (var periodoEscolar in request.PeriodosEscolares.OrderBy(c => c.Bimestre))
-            {                
+            {
                 foreach (var diaAtual in periodoEscolar.ObterIntervaloDatas())
                 {
                     var diaLetivoDto = new DiaLetivoDto()
@@ -89,12 +89,15 @@ namespace SME.SGP.Aplicacao
                                 UesIds = new List<string>() { elue.UeId }
                             });
                         });
-                    }                          
-
+                        if (request.DesconsiderarCriacaoDiaLetivoProximasUes)
+                        {
+                            continue;
+                        }
+                    }
                     diaLetivoDto.EhLetivo = !diaAtual.FimDeSemana();
                     datasDosPeriodosEscolares.Add(diaLetivoDto);
                 }
-            }           
+            }
 
             return datasDosPeriodosEscolares;
         }

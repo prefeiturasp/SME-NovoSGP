@@ -56,17 +56,17 @@ namespace SME.SGP.Aplicacao
 
                     if (turma.DataStatusTurmaEscola.Date < primeiroPeriodo.PeriodoInicio.Date)
                     {
-                        await ExcluirTurnaAsync(turma.Codigo.ToString() , turmaSgpId);
+                        await ExcluirTurnaAsync(turma.Codigo.ToString(), turmaSgpId);
                         return true;
                     }
                     else
                     {
-                        return await repositorioTurma.AtualizarTurmaSincronizacaoInstitucionalAsync(turma, true);                        
+                        return await repositorioTurma.AtualizarTurmaSincronizacaoInstitucionalAsync(turma, true);
                     }
                 }
                 else
                 {
-                    await ExcluirTurnaAsync(turma.Codigo.ToString() ,turmaSgpId);
+                    await ExcluirTurnaAsync(turma.Codigo.ToString(), turmaSgpId);
                     return true;
                 }
             }
@@ -118,7 +118,10 @@ namespace SME.SGP.Aplicacao
                    turmaSgp.DataInicio.HasValue != turmaEol.DataInicioTurma.HasValue ||
                    (turmaSgp.DataInicio.HasValue && turmaEol.DataInicioTurma.HasValue && turmaSgp.DataInicio.Value.Date != turmaEol.DataInicioTurma.Value.Date) ||
                    turmaSgp.DataFim.HasValue != turmaEol.DataFim.HasValue ||
-                   (turmaSgp.DataFim.HasValue && turmaEol.DataFim.HasValue && turmaSgp.DataFim.Value.Date != turmaEol.DataFim.Value.Date))
+                   (turmaSgp.DataFim.HasValue && turmaEol.DataFim.HasValue && turmaSgp.DataFim.Value.Date != turmaEol.DataFim.Value.Date) ||
+                   turmaSgp.NomeFiltro != turmaEol.NomeFiltro)
+
+
                 {
                     await repositorioTurma.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol);
                 }

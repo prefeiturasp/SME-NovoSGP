@@ -38,18 +38,26 @@ namespace SME.SGP.Aplicacao
             var matriculasConsolidadas = await mediator.Send(new ObterMatriculasConsolidacaoPorAnoQuery(anoAtual, codigoUe));
             foreach (var matricula in matriculasConsolidadas)
             {
-                var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(matricula.TurmaCodigo));
-                matricula.TurmaId = turmaId;
-                try
-                {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasSync, matricula, Guid.NewGuid(), null));
-                }
-                catch (Exception ex)
-                {
-                    SentrySdk.CaptureException(ex);
+                var turmaId = await ObterTurmaIdDoSGP(matricula.TurmaCodigo);
+
+                // Se a turma não existir no SGP não gera consolidação
+                if (turmaId > 0)
+                { 
+                    try
+                    {
+                        matricula.TurmaId = turmaId;
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasSync, matricula, Guid.NewGuid(), null));
+                    }
+                    catch (Exception ex)
+                    {
+                        SentrySdk.CaptureException(ex);
+                    }
                 }
             }
         }
+
+        private async Task<long> ObterTurmaIdDoSGP(string turmaCodigo)
+            => await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaCodigo));
 
         private async Task ConsolidarFrequenciaTurmasHistorico(IEnumerable<int> anosParaConsolidar, string ueCodigo)
         {
