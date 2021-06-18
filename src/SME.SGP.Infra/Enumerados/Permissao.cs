@@ -656,8 +656,7 @@
         DD_C = 220,
         
         [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/diario-bordo")]
-        DB_C = 222
-        DIE_C = 219,
+        DB_C = 222,
 
         [PermissaoMenu(Menu = "Registro Individual", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/registro-individual")]
         DRIN_C = 221
