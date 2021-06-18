@@ -12,5 +12,8 @@
         public const string QuantidadeTotalDeDiariosDeBordoDescricao = "Qtd. diários de bordos preenchidos pelos professores";
         public const string QuantidadeTotalDeDiariosDeBordoComDevolutivasDescricao = "Qtd. de diários com devolutiva";
 
+        // Registro individual
+        public const string QuantidadeRegistrosIndividualPorAnoTurmaDescricao = "Qtd. registros individuais";
+
     }
 }
