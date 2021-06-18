@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -26,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("consolidacao")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(DateTime?), 200)]
         [Permissao(Permissao.DRIN_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterUltimaConsolidacao([FromQuery] int anoLetivo, [FromServices] IObterUltimaConsolidacaoMediaRegistrosIndividuaisUseCase useCase)
         {
