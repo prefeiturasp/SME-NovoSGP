@@ -18,6 +18,6 @@ namespace SME.SGP.Infra
         public bool? PodeAlterarExcluirPorPerfilAbrangencia { get; set; }
         public EntidadeStatus Status { get; set; }
 
-        public int?[] Bimestre { get; set; }
+        public int[] Bimestre { get; set; }
     }
 }

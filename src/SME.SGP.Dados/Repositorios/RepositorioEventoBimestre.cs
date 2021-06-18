@@ -17,28 +17,20 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<int?[]>> ObterEventoBimestres(long eventoId)
+        public async Task<int[]> ObterEventoBimestres(long eventoId)
         {
-            string query = ("select bimeste from evento_bimestre where evento_id = @evento_id");
-            var bimestres = (await database.Conexao.QueryAsync<int?[]>(query, new { eventoId }));
-            return bimestres;
+            string query = ("select bimestre from evento_bimestre where evento_id = @evento_id");
+            var bimestres = await database.Conexao.QueryAsync<int>(query, new { eventoId });
+
+            return bimestres.ToArray();
+
         }
 
         public Task ExcluiEventoBimestre(long eventoId)
         {
-            try
-            {
-                string query = @"delete from evento_bimestre where evento_id =  @eventoId";
+            string query = @"delete from evento_bimestre where evento_id =  @eventoId";
 
-                database.Execute(query, new { eventoId });
-
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-
+            database.Execute(query, new { eventoId });
             return Task.CompletedTask;
         }
     }

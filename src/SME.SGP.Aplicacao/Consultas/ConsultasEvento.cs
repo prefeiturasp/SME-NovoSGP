@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
                 podeAlterarExcluirPorPerfilAbrangencia = abrangencia.Any(x => x.Codigo == evento.UeId);
             }
 
-            return MapearParaDto(evento, podeAlterar, podeAlterarExcluirPorPerfilAbrangencia);
+            return MapearParaDto(evento, podeAlterar, podeAlterarExcluirPorPerfilAbrangencia, bimestres);
         }
 
         public async Task<IEnumerable<CalendarioTipoEventoPorDiaDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)
@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
             return items?.Select(c => MapearParaDto(c));
         }
 
-        private EventoCompletoDto MapearParaDto(Evento evento, bool? podeAlterar = null, bool? podeAlterarExcluirPorPerfilAbrangencia = null, int?[] bimestres = null)
+        private EventoCompletoDto MapearParaDto(Evento evento, bool? podeAlterar = null, bool? podeAlterarExcluirPorPerfilAbrangencia = null, int[] bimestres = null)
         {
             return evento == null ? null : new EventoCompletoDto
             {
