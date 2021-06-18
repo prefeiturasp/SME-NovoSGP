@@ -398,6 +398,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioFrequenciaPreDefinida, RepositorioFrequenciaPreDefinida>();
             services.TryAddScoped<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
 
+
+            //Evento Bimestre
+            services.TryAddScoped<IRepositorioEventoBimestre, RepositorioEventoBimestre>();
+
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -985,6 +989,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase, ExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaUseCase, ConsolidarDevolutivasPorTurmaUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaInfantilUseCase, ConsolidarDevolutivasPorTurmaInfantilUseCase>();
+
         }
     }
 }

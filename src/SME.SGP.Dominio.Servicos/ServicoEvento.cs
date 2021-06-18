@@ -31,6 +31,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IRepositorioEventoBimestre repositorioEventoBimestre;
 
         public ServicoEvento(IRepositorioEvento repositorioEvento,
                              IRepositorioEventoTipo repositorioEventoTipo,
@@ -40,7 +41,8 @@ namespace SME.SGP.Dominio.Servicos
                              IRepositorioTipoCalendario repositorioTipoCalendario,
                              IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                              IRepositorioAbrangencia repositorioAbrangencia, IConfiguration configuration,
-                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog, IServicoDiaLetivo servicoDiaLetivo, IMediator mediator)
+                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog, IServicoDiaLetivo servicoDiaLetivo, IMediator mediator,
+                             IRepositorioEventoBimestre repositorioEventoBimestre)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
@@ -56,6 +58,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.servicoDiaLetivo = servicoDiaLetivo ?? throw new ArgumentNullException(nameof(servicoDiaLetivo));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioEventoBimestre = repositorioEventoBimestre ?? throw new ArgumentNullException(nameof(repositorioEventoBimestre));
         }
 
         public static DateTime ObterProximoDiaDaSemana(DateTime data, DayOfWeek diaDaSemana)
@@ -80,7 +83,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false)
+        public async Task<string> Salvar(Evento evento, int?[] bimestres = null, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false)
         {
             ObterTipoEvento(evento);
 
@@ -116,7 +119,12 @@ namespace SME.SGP.Dominio.Servicos
             if (!unitOfWorkJaEmUso)
                 unitOfWork.IniciarTransacao();
 
+
             await repositorioEvento.SalvarAsync(evento);
+
+            if ((TipoEvento)evento.TipoEventoId == TipoEvento.LiberacaoBoletim && bimestres != null)
+                await IncluiEventoBimestre(evento, bimestres);
+
 
             // Envia para workflow apenas na Inclusão ou alteração apos aprovado
             var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && devePassarPorWorkflowLiberacaoExcepcional;
@@ -155,6 +163,23 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
+        private async Task IncluiEventoBimestre(Evento evento, int?[] Bimestres)
+        {
+
+            await repositorioEventoBimestre.ExcluiEventoBimestre(evento.Id);
+          
+            foreach (var bimestre in Bimestres)
+            {
+                var eventoBimestre = new EventoBimestre()
+                {
+                    EventoId = evento.Id,
+                    Bimestre = bimestre
+                };
+                await repositorioEventoBimestre.SalvarAsync(eventoBimestre);
+            }
+           
+        }
+
         private async Task VerificaPendenciaParametroEvento(Evento evento, Usuario usuario)
         {
             if (evento.GeraPendenciaParametroEvento())
@@ -166,6 +191,7 @@ namespace SME.SGP.Dominio.Servicos
             if (!enviarParaWorkflow && !ehAlteracao && evento.EhEventoLetivo())
                 await mediator.Send(new IncluirFilaExcluirPendenciasDiasLetivosInsuficientesCommand(evento.TipoCalendarioId, evento.DreId, evento.UeId, usuario));
         }
+
 
         public void SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
         {
