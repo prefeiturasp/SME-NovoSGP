@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             {
                 var quantidadeTotalDiariosPendentes = new GraficoTotalDiariosEDevolutivasDTO()
                 {
-                    Descricao = ObterDescricaoTurmaAno(request.UeId > 0, item.Ano == 0 ? item.Turma : item.Ano.ToString(), request.Modalidade),
+                    Descricao = ObterDescricaoTurmaAno(request.UeId > 0, item.Ano == null ? item.Turma : item.Ano.ToString(), request.Modalidade),
                     Quantidade = item.QuantidadeTotalDiariosPendentes
                 };
 
