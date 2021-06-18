@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
                     foreach (var objetivo in componente.ObjetivosAprendizagem)
                     {
                         var planejamentoAnualObjetivoAprendizagem = listaPlanejamentoAnualObjetivoAprendizagemExistente
-                            .SingleOrDefault(oa => oa.ObjetivoAprendizagemId.Equals(objetivo.ObjetivoAprendizagemId));
+                              .FirstOrDefault(oa => oa.ObjetivoAprendizagemId.Equals(objetivo.ObjetivoAprendizagemId));
 
                         if (planejamentoAnualObjetivoAprendizagem == null)
                             planejamentoAnualObjetivoAprendizagem = new PlanejamentoAnualObjetivoAprendizagem(planejamentoAnualComponenteId, objetivo.ObjetivoAprendizagemId);
