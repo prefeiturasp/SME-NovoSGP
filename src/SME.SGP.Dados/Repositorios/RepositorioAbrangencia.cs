@@ -356,7 +356,8 @@ namespace SME.SGP.Dados.Repositorios
 	                             qtDuracaoAula,
 	                             tipoTurno,
                                  ensinoEspecial,
-                                 turma_id as id
+                                 turma_id as id,
+                                 nome_filtro as nomeFiltro
                             from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo)
                           order by 5";
 

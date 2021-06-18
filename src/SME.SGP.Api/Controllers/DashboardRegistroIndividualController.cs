@@ -22,7 +22,5 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
-
-
     }
 }
