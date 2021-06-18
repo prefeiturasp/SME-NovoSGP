@@ -122,7 +122,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<QuantidadeRegistrosIndividuaisPorAnoTurmaDTO>> ObterQuantidadeRegistrosIndividuaisPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade)
         {
             var sql = @"";
-            if (dreId == 0 && ueId == 0)
+            if (ueId == 0)
             {
                 sql = @" select  
                             t.ano,
@@ -135,23 +135,7 @@ namespace SME.SGP.Dados.Repositorios
                             and t.ano_letivo = @anoLetivo
                         group by t.ano ";
             }
-
-            if (dreId > 0 && ueId == 0)
-            {
-                sql = @" select
-                            t.ano,
-                            count(ri.id) as quantidadeRegistrosIndividuais
-                        from registro_individual ri
-                        inner join turma t on ri.turma_id = t.id
-                        inner join ue on ue.id = t.ue_id
-                        inner join dre on dre.id = ue.dre_id
-                        where not ri.excluido
-                            and t.ano_letivo = @anoLetivo
-                            and dre.id = @dreId
-                        group by t.ano ";
-            }
-
-            if (dreId > 0 && ueId > 0)
+            else
             {
                 sql = @" select
                             t.nome as turma,
