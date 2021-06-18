@@ -399,7 +399,14 @@ namespace SME.SGP.Dominio.Servicos
                 Nivel = 1
             });
 
-            return await comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
+            try
+            {
+                return await comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         private async Task VerificaEAtualizaFechamentosReaberturasParaAlterar(FechamentoReabertura fechamentoReabertura, IEnumerable<FechamentoReabertura> fechamentoReaberturas, bool confirmacacaoAlteracaoHierarquica)
