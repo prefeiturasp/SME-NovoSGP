@@ -44,7 +44,7 @@ namespace SME.SGP.Dominio
         public double PercentualFrequencia
         {
             get
-            {
+            {                
                 if (TotalAulas == 0)
                     return 0;
 
