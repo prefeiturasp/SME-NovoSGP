@@ -9,6 +9,6 @@ namespace SME.SGP.Infra
     {
         public string Ano { get; set; }
         public Modalidade Modalidade { get; set; }
-        public int Quantidade { get; set; }
+        public double Quantidade { get; set; }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterMediaRegistrosIndividuaisPorTurmaQueryHandler : IRequestHandler<ObterMediaRegistrosIndividuaisPorTurmaQuery, IEnumerable<GraficoBaseDto>>
+    public class ObterMediaRegistrosIndividuaisPorTurmaQueryHandler : IRequestHandler<ObterMediaRegistrosIndividuaisPorTurmaQuery, IEnumerable<GraficoBaseQuantidadeDoubleDto>>
     {
         private readonly IRepositorioConsolidacaoRegistroIndividualMedia repositorioConsolidacaoRegistroIndividualMedia;
 
@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioConsolidacaoRegistroIndividualMedia = repositorioConsolidacaoRegistroIndividualMedia ?? throw new System.ArgumentNullException(nameof(repositorioConsolidacaoRegistroIndividualMedia));
         }
-        public async Task<IEnumerable<GraficoBaseDto>> Handle(ObterMediaRegistrosIndividuaisPorTurmaQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GraficoBaseQuantidadeDoubleDto>> Handle(ObterMediaRegistrosIndividuaisPorTurmaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConsolidacaoRegistroIndividualMedia.ObterRegistrosItineranciasMediaPorTurmaAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade);
+            return await repositorioConsolidacaoRegistroIndividualMedia.ObterRegistrosItineranciasMediaPorTurmaAsync(request.AnoLetivo, request.UeId, request.Modalidade);
         }
     }
 }

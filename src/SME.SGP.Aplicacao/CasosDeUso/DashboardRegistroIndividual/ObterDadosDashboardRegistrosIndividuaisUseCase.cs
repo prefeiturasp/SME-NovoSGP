@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<GraficoBaseDto>> Executar(FiltroDasboardRegistroIndividualDTO filtro)
+        public async Task<IEnumerable<GraficoBaseQuantidadeDoubleDto>> Executar(FiltroDasboardRegistroIndividualDTO filtro)
         {
             if (filtro.UeId > 0)
             {

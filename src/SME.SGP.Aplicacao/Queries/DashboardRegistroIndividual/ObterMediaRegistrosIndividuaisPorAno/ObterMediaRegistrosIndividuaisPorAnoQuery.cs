@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterMediaRegistrosIndividuaisPorAnoQuery : IRequest<IEnumerable<GraficoBaseDto>>
+    public class ObterMediaRegistrosIndividuaisPorAnoQuery : IRequest<IEnumerable<GraficoBaseQuantidadeDoubleDto>>
     {
         public ObterMediaRegistrosIndividuaisPorAnoQuery(int anoLetivo, long dreId, Modalidade modalidade = Modalidade.InfantilPreEscola)
         {
