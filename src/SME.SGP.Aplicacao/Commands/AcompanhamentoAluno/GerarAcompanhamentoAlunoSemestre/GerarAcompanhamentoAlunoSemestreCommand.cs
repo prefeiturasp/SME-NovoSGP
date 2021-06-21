@@ -1,24 +1,23 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class GerarAcompanhamentoAlunoSemestreCommand : IRequest<AcompanhamentoAlunoSemestre>
     {
-        public GerarAcompanhamentoAlunoSemestreCommand(long acompanhamentoAlunoId, int semestre, string observacoes)
+        public GerarAcompanhamentoAlunoSemestreCommand(long acompanhamentoAlunoId, int semestre, string observacoes, string percursoIndividual)
         {
             AcompanhamentoAlunoId = acompanhamentoAlunoId;
             Semestre = semestre;
             Observacoes = observacoes;
+            PercursoIndividual = percursoIndividual;
         }
 
         public long AcompanhamentoAlunoId { get; }
         public int Semestre { get; }
         public string Observacoes { get; }
+        public string PercursoIndividual { get; }
     }
 
     public class GerarAcompanhamentoAlunoSemestreCommandValidator : AbstractValidator<GerarAcompanhamentoAlunoSemestreCommand>
