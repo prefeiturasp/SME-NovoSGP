@@ -10,7 +10,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/v1/dashboard/registro_individual")]
+    [Route("api/v1/dashboard/registros_individuais")]
     public class DashboardRegistroIndividualController : Controller
     {
         [HttpGet("total-ano-turma")]
@@ -23,6 +23,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
+        [HttpGet("media")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoBaseDto>), 200)]
+        [Permissao(Permissao.DRIN_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterDadosDashboard([FromQuery] FiltroDasboardRegistroIndividualDTO filtro, [FromServices] IObterDadosDashboardRegistrosIndividuaisUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+        
         [HttpGet("consolidacao")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
