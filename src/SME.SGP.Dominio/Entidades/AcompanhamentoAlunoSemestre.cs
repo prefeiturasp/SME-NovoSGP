@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio
 
         public int Semestre { get; set; }
         public string Observacoes { get; set; }
+        public string PercursoIndividual { get; set; }
 
         public bool Excluido { get; set; }
     }
