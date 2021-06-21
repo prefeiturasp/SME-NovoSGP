@@ -23,16 +23,17 @@ namespace SME.SGP.Aplicacao
         private async Task<AcompanhamentoAlunoSemestre> MapearAcompanhamentoSemestre(AcompanhamentoAlunoDto dto)
         {
             var acompanhamentoSemestre = dto.AcompanhamentoAlunoSemestreId > 0 ?
-                await AtualizaObservacoesAcompanhamento(dto.AcompanhamentoAlunoSemestreId, dto.Observacoes) :
+                await AtualizaObservacoesAcompanhamento(dto.AcompanhamentoAlunoSemestreId, dto.Observacoes, dto.PercursoIndividual) :
                 await GerarAcompanhamentoSemestre(dto);
 
             return acompanhamentoSemestre;
         }
 
-        private async Task<AcompanhamentoAlunoSemestre> AtualizaObservacoesAcompanhamento(long acompanhamentoAlunoSemestreId, string observacoes)
+        private async Task<AcompanhamentoAlunoSemestre> AtualizaObservacoesAcompanhamento(long acompanhamentoAlunoSemestreId, string observacoes, string percursoIndividual)
         {
             var acompanhamento = await ObterAcompanhamentoSemestrePorId(acompanhamentoAlunoSemestreId);
             acompanhamento.Observacoes = observacoes;
+            acompanhamento.PercursoIndividual = percursoIndividual;
 
             return await mediator.Send(new SalvarAcompanhamentoAlunoSemestreCommand(acompanhamento));
         }
@@ -46,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 dto.AcompanhamentoAlunoId :
                 await mediator.Send(new GerarAcompanhamentoAlunoCommand(dto.TurmaId, dto.AlunoCodigo));
 
-            return await mediator.Send(new GerarAcompanhamentoAlunoSemestreCommand(acompanhamentoAlunoId, dto.Semestre, dto.Observacoes));
+            return await mediator.Send(new GerarAcompanhamentoAlunoSemestreCommand(acompanhamentoAlunoId, dto.Semestre, dto.Observacoes, dto.PercursoIndividual));
         }
     }
 }
