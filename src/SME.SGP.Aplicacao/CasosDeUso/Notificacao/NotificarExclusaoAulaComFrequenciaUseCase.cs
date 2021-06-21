@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turma.CodigoTurma));
             if (titulares != null)
             {
-                var mensagem = new StringBuilder($"As seguintes aulas da turma {turma.Nome} da {turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) não foram excluídas pela rotina automática pois já possuem registros de frequência.<br>");
+                var mensagem = new StringBuilder($"As seguintes aulas da turma {turma.ModalidadeCodigo.ShortName()} - {turma.Nome} da {turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) não foram excluídas pela rotina automática pois já possuem registros de frequência.<br>");
                 foreach (var data in datasAulas)
                 {
                     mensagem.AppendLine($"<br>{data:dd/MM/yyyy}");
@@ -38,13 +38,16 @@ namespace SME.SGP.Aplicacao
                 foreach (var titular in titulares)
                 {
                     var codigoRf = titular.Trim();
-                    var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRf));
-                    if (usuario != null)
-                        await mediator.Send(new NotificarUsuarioCommand($"Problemas na exclusão de aulas da turma {turma.Nome}",
-                                                                        mensagem.ToString(),
-                                                                        codigoRf,
-                                                                        NotificacaoCategoria.Aviso,
-                                                                        NotificacaoTipo.Calendario));
+                    if (!string.IsNullOrEmpty(codigoRf))
+                    {
+                        var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRf));
+                        if (usuario != null)
+                            await mediator.Send(new NotificarUsuarioCommand($"Problemas na exclusão de aulas da turma {turma.ModalidadeCodigo.ShortName()} - {turma.Nome}",
+                                                                            mensagem.ToString(),
+                                                                            codigoRf,
+                                                                            NotificacaoCategoria.Aviso,
+                                                                            NotificacaoTipo.Calendario));
+                    }
                 }
                 return true;
             }

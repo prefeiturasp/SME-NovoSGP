@@ -363,5 +363,16 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.Conexao.QueryFirstOrDefaultAsync<int>(query, new { anoLetivo });
         }
+
+        public async Task<IEnumerable<string>> ObterUesCodigosPorModalidadeEAnoLetivo(Modalidade modalidade, int anoLetivo)
+        {
+            var query = @"select distinct(ue.ue_id) 
+                            from turma t
+                           inner join ue on ue.id = t.ue_id 
+                           where modalidade_codigo = @modalidadeInt
+                             and t.ano_letivo = @anoLetivo";
+            var modalidadeInt = (int)modalidade;
+            return await contexto.Conexao.QueryAsync<string>(query, new { modalidadeInt, anoLetivo });
+        }
     }
 }

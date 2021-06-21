@@ -111,7 +111,8 @@
         public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
         public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
 
-        public const string SincronizarDadosAulasFrequenciaMigracao = "sgp.migracao.frequencia.aulas.sync";
+        public const string SincronizarDadosFrequenciaMigracao = "sgp.migracao.frequencia.sync";
+        public const string SincronizarDadosTurmasFrequenciaMigracao = "sgp.migracao.frequencia.turmas.sync";
         public const string CarregarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.carregar";
         public const string SincronizarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.sync";
       
@@ -119,6 +120,8 @@
         public const string ConsolidarDevolutivasPorTurma = "sgp.consolidacao.devolutivas.turma";
         public const string ConsolidarDevolutivasPorTurmaInfantil = "sgp.consolidacao.devolutivas.turma.infantil";
 
-
+        public const string CarregarDadosUeTurmaRegenciaAutomaticamente = "aulas.automaticas.regencia.ue.turma.carregar";
+        public const string SincronizarDadosUeTurmaRegenciaAutomaticamente = "aulas.automaticas.regencia.ue.turma.sync";
+        public const string SincronizarAulasRegenciaAutomaticamente = "aulas.automaticas.regencia.sync";
     }
 }

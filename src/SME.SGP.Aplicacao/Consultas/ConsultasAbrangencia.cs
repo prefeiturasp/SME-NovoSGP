@@ -148,14 +148,6 @@ namespace SME.SGP.Aplicacao
             var perfil = servicoUsuario.ObterPerfilAtual();
 
             var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo);
-
-            result.ToList().ForEach(a =>
-            {
-                var modalidadeEnum = (Modalidade)a.CodigoModalidade;
-                a.ModalidadeTurmaNome = $"{modalidadeEnum.ShortName()} - {a.Nome}";
-                a.NomeFiltro = $"{modalidadeEnum.ShortName()} - {a.NomeFiltro}";
-            });
-
             return OrdernarTurmasItinerario(result);
         }
 

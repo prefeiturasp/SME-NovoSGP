@@ -191,19 +191,19 @@ namespace SME.SGP.Aplicacao
                         else
                         {
                             IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(filtro.TurmaCodigo, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
-                            if (disciplinasRegenciaEol == null || !disciplinasRegenciaEol.Any())
+                            if (disciplinasRegenciaEol == null || !disciplinasRegenciaEol.Where(x => x.Regencia).Any())
                                 throw new NegocioException("Não foram encontradas disciplinas de regência no EOL");
-                            disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol);
+                            disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(x => x.Regencia));
                         }
                     }
 
                     var fechamentosTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplina(filtro.TurmaCodigo, filtro.DisciplinaCodigo, valorBimestreAtual);
 
                     var alunosForeach = from a in alunos
-                                        where (a.EstaAtivo(periodoAtual.PeriodoFim)) ||
-                                              (a.EstaInativo(periodoAtual.PeriodoFim) && a.DataSituacao.Date >= periodoAtual.PeriodoInicio.Date)
+                                        where (a.EstaAtivo(periodoAtual.PeriodoFim) ||
+                                              (a.EstaInativo(periodoAtual.PeriodoFim) && a.DataSituacao.Date >= periodoAtual.PeriodoInicio.Date)) &&
+                                              a.DataMatricula.Date <= periodoAtual.PeriodoFim.Date
                                         orderby a.NomeValido(), a.NumeroAlunoChamada
-
                                         select a;
 
                     foreach (var aluno in alunosForeach)

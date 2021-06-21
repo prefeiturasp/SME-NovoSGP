@@ -58,7 +58,10 @@ namespace SME.SGP.Aplicacao
             {
                 using (IModel _channel = conexaoRabbit.CreateModel())
                 {
-                    _channel.BasicPublish(ExchangeRabbit.Sgp, rota, null, body);
+                    var props = _channel.CreateBasicProperties();
+                    props.Persistent = true;
+
+                    _channel.BasicPublish(ExchangeRabbit.Sgp, rota, props, body);
                 }
             }
         }

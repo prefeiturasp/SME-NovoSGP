@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
     {
         public long DreId { get; set; }
         public long UeId { get; set; }
-        public long[] TurmasId { get; set; }
+        public string[] TurmasId { get; set; }
         public Modalidade Modalidade { get; set; }
         public int Semestre { get; set; }
         public int Bimestre { get; set; }

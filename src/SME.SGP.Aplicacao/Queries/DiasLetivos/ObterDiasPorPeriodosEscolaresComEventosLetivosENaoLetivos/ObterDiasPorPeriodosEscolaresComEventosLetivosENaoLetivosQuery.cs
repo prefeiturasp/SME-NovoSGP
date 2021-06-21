@@ -7,19 +7,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery : IRequest<List<DiaLetivoDto>>
     {
-        public ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(IEnumerable<Dominio.PeriodoEscolar> periodosEscolares, long tipoCalendarioId)
+        public ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(IEnumerable<Dominio.PeriodoEscolar> periodosEscolares, long tipoCalendarioId, bool desconsiderarCriacaoDiaLetivoProximasUes = false)
         {
             PeriodosEscolares = periodosEscolares;
             TipoCalendarioId = tipoCalendarioId;
-        }
-
-        public ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(Dominio.PeriodoEscolar periodoEscolar, long tipoCalendarioId)
-        {
-            PeriodosEscolares = new List<Dominio.PeriodoEscolar> { periodoEscolar };
-            TipoCalendarioId = tipoCalendarioId;
+            DesconsiderarCriacaoDiaLetivoProximasUes = desconsiderarCriacaoDiaLetivoProximasUes;
         }
 
         public long TipoCalendarioId { get; set; }
         public IEnumerable<Dominio.PeriodoEscolar> PeriodosEscolares { get; set; }
+        public bool DesconsiderarCriacaoDiaLetivoProximasUes { get; set; }
     }
 }
