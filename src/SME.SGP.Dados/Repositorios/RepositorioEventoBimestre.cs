@@ -1,10 +1,9 @@
-﻿using SME.SGP.Dominio.Entidades;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -19,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<int[]> ObterEventoBimestres(long eventoId)
         {
-            string query = ("select bimestre from evento_bimestre where evento_id = @evento_id");
+            string query = "select bimestre from evento_bimestre where evento_id = @evento_id";
             var bimestres = await database.Conexao.QueryAsync<int>(query, new { eventoId });
 
             return bimestres.ToArray();
@@ -32,6 +31,21 @@ namespace SME.SGP.Dados.Repositorios
 
             database.Execute(query, new { eventoId });
             return Task.CompletedTask;
+        }
+
+        public async Task<int[]> ObterBimestresEventoPorDataRefencia(DateTime dataReferencia)
+        {
+            string query = @"select bimestre from (
+                                 select MAX(e.data_inicio), bimestre from evento_bimestre eb
+                                 inner join evento e on eb.evento_id = e.id
+                                 where not e.excluido and 
+                                       e.tipo_evento_id = @tipoEvento
+                                       and e.data_inicio <= @data
+                                 group by bimestre) b ";
+
+            var bimestres = await database.Conexao.QueryAsync<int>(query, new { tipoEvento = (int)TipoEvento.LiberacaoBoletim, data = dataReferencia.Date });
+
+            return bimestres?.ToArray();
         }
     }
 }

@@ -462,6 +462,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirAulaRecorrenteUseCase, ExcluirAulaRecorrenteUseCase>();
             services.TryAddScoped<IInserirAulaRecorrenteUseCase, InserirAulaRecorrenteUseCase>();
             services.TryAddScoped<IAlterarAulaRecorrenteUseCase, AlterarAulaRecorrenteUseCase>();
+            services.TryAddScoped<IObterBimestresLiberacaoBoletimUseCase, ObterBimestresLiberacaoBoletimUseCase>();
             services.TryAddScoped<INotificarUsuarioUseCase, NotificarUsuarioUseCase>();
             services.TryAddScoped<IReceberRelatorioComErroUseCase, ReceberRelatorioComErroUseCase>();
             services.TryAddScoped<IHistoricoEscolarUseCase, HistoricoEscolarUseCase>();

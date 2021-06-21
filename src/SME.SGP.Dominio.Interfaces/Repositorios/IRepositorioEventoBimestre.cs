@@ -1,7 +1,5 @@
 ﻿using SME.SGP.Dominio.Entidades;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -10,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task ExcluiEventoBimestre(long eventoId);
         Task<int[]> ObterEventoBimestres(long eventoId);
+        Task<int[]> ObterBimestresEventoPorDataRefencia(DateTime dataReferencia);
     }
 }
