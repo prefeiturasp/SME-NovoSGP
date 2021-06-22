@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using System;
 using System.Threading.Tasks;
 
@@ -13,9 +14,19 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<int[]> Executar()
+        public async Task<int[]> Executar(string codigoTurma)
         {
-            return await mediator.Send(new ObterBimestresEventoLiberacaoBoletimQuery(DateTime.Now));
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
+
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada!");
+
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+
+            if (tipoCalendarioId <= 0)
+                throw new NegocioException("Tipo calendário da turma não encontrado!");
+
+            return await mediator.Send(new ObterBimestresEventoLiberacaoBoletimQuery(tipoCalendarioId, DateTime.Now));
         }
     }
 }
