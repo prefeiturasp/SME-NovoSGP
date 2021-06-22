@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     [Route("api/v1/dashboard/registros_individuais")]
     public class DashboardRegistroIndividualController : Controller
     {
@@ -47,7 +47,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoBaseDto>), 200)]
-        //[Permissao(Permissao.DRIN_C, Policy = "Bearer")]
+        [Permissao(Permissao.DRIN_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterDadosAlunosSemRegistro([FromQuery] FiltroDasboardRegistroIndividualDTO filtro, [FromServices] IObterDashboardQuantidadeDeAlunosSemRegistroPorPeriodoUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
