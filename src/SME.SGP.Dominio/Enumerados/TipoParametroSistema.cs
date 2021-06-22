@@ -129,7 +129,7 @@ namespace SME.SGP.Dominio
 
         ExecucaoConsolidacaoDevolutivasTurma = 70,
 
-        ExecucaoConsolidacaoMediaRegistrosIndividuaisTurma = 72,
+        ExecucaoConsolidacaoMediaRegistrosIndividuaisTurma = 71,
 
         PeriodoDeDiasSemRegistroIndividual = 73,
         //Sistema
