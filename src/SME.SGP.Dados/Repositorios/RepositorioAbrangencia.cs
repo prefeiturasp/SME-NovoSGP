@@ -356,7 +356,8 @@ namespace SME.SGP.Dados.Repositorios
 	                             qtDuracaoAula,
 	                             tipoTurno,
                                  ensinoEspecial,
-                                 turma_id as id
+                                 turma_id as id,
+                                 nome_filtro as nomeFiltro
                             from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo)
                           order by 5";
 
@@ -592,6 +593,11 @@ namespace SME.SGP.Dados.Repositorios
 	                        and ue.tipo_escola in (1,3,4,16)";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { usuarioRF, usuarioPerfil });
+        }
+        public async Task<IEnumerable<Abrangencia>> ObterAbrangenciaGeralPorUsuarioId(long usuarioId)
+        {
+            var query = @"select id,usuario_id,dre_id,ue_id,turma_id,perfil from abrangencia where usuario_id = @usuarioId";
+            return await database.Conexao.QueryAsync<Abrangencia>(query, new { usuarioId });
         }
 
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)

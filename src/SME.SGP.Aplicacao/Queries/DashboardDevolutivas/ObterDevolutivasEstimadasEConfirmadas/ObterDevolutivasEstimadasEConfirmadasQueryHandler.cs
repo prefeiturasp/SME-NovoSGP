@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao.Queries.DashboardDevolutivas.ObterDevolutivasEstimad
                 resultado.Add(devolutivasRegistradas);
             }
 
-            return resultado;
+            return resultado.OrderBy(r => r.TurmaAno);
         }
 
         private static string ObterDescricaoTurmaAno(bool possuiFiltroUe, string turmaAno, Modalidade modalidade)

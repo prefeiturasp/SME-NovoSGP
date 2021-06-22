@@ -7,11 +7,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasFechamentoAcompanhamentoQuery : IRequest<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>>
     {
-        public ObterTurmasFechamentoAcompanhamentoQuery(long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
+        public ObterTurmasFechamentoAcompanhamentoQuery(long dreId, long ueId, string[] turmasCodigo, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
         {
             DreId = dreId;
             UeId = ueId;
-            TurmasId = turmasId;
+            TurmasCodigo = turmasCodigo;
             Modalidade = modalidade;
             Semestre = semestre;
             Bimestre = bimestre;
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public long DreId { get; set; }
         public long UeId { get; set; }
-        public long[] TurmasId { get; set; }
+        public string[] TurmasCodigo { get; set; }
         public Modalidade Modalidade { get; set; }
         public int Semestre { get; set; }
         public int Bimestre { get; set; }
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.UeId)
                 .NotEmpty()
                 .WithMessage("O id da Ue deve ser informado.");
-            RuleFor(a => a.TurmasId)
+            RuleFor(a => a.TurmasCodigo)
                 .NotEmpty()
                 .WithMessage("Pelo menos uma turma deve ser informada.");
             RuleFor(a => a.Modalidade)

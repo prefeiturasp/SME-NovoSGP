@@ -972,7 +972,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno != 0;
         }
 
-        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
+        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, string[] turmasCodigo, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
         {
             var query = new StringBuilder(@"select distinct t.id as TurmaId,
                                                      t.nome       
@@ -987,7 +987,7 @@ namespace SME.SGP.Dados.Repositorios
                                                  and ue.id = @ueId and t.tipo_turma in (1,2,7) ");
 
             if (!listarTodasTurmas)
-                query.AppendLine("and t.id = ANY(@turmasId) ");
+                query.AppendLine("and t.turma_id = ANY(@turmasCodigo) ");
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
@@ -1047,7 +1047,7 @@ namespace SME.SGP.Dados.Repositorios
                                     and ue.id = @ueId ");
 
             if (!listarTodasTurmas)
-                query.AppendLine("and t.id = ANY(@turmasId) ");
+                query.AppendLine("and t.turma_id = ANY(@turmasCodigo) ");
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
@@ -1069,7 +1069,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 quantidadeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
                 quantidadeRegistros = paginacao.QuantidadeRegistros,
-                turmasId,
+                turmasCodigo,
                 dreId,
                 ueId,
                 modalidadeTipoCalendario = (int)modalidade.ObterModalidadeTipoCalendario(),
@@ -1263,6 +1263,23 @@ namespace SME.SGP.Dados.Repositorios
 
 
             return await contexto.QueryAsync<TurmaComponenteDto>(query, new { anoLetivo = dataReferencia.Year, dataReferencia });
+        }
+        public async Task<Turma> ObterTurmaCompletaPorCodigo(string turmaCodigo)
+        {
+            var query = @"select turma.*, ue.*, dre.* 
+                         from turma
+                        inner join ue on ue.id = turma.ue_id
+                        inner join dre on dre.id = ue.dre_id
+                        where turma_id = @turmaCodigo";
+
+            var retorno = await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                turma.AdicionarUe(ue);
+                return turma;
+            }, new { turmaCodigo });
+
+            return retorno.FirstOrDefault();
         }
     }
 }

@@ -93,29 +93,24 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<ConsolidacaoDevolutivaTurmaDTO> ObterDevolutivasPorTurma(string turmaCodigo, int anoLetivo)
+        public async Task<ConsolidacaoDevolutivaTurmaDTO> ObterDevolutivasPorTurmaEAnoLetivo(string turmaCodigo, int anoLetivo)
         {
-            var query = @" select
-                                devolutivas.dre_id as dreId,                                
-                                devolutivas.ue_id as ueId,
-	                            devolutivas.turma_id as turmaId,
-	                            sum(devolutivas.quantidadeRegistradaDevolutivas) as quantidadeRegistradaDevolutivas
-                            from (
-                                select 
-	                            	ue.ue_id,
-	                            	ue.dre_id,
-	                                a.turma_id,
-	                                count(db.planejamento) as quantidadeRegistradaDevolutivas
-	                            from devolutiva d 
-	                             inner join diario_bordo db on db.devolutiva_id = d.id
-	                             inner join aula a on a.id = db.aula_id
-                                  inner join turma t on t.turma_id = a.turma_id 
-                                  inner join ue ue on ue.id = t.ue_id 
-	                            where not d.excluido
-                                    and a.turma_id = @turmaCodigo
-                                    and t.ano_letivo = @anoLetivo
-	                            group by a.turma_id, ue.ue_id, ue.dre_id) as devolutivas
-                            group by devolutivas.turma_id, devolutivas.dre_id, devolutivas.ue_id";
+            var query = @" select 
+	                            ue.ue_id as ueId,
+	                            ue.dre_id as dreId,
+                                a.turma_id as turmaId,
+                                count(db.planejamento) as quantidadeRegistradaDevolutivas
+                            from devolutiva d 
+                             inner join diario_bordo db on db.devolutiva_id = d.id
+                             inner join aula a on a.id = db.aula_id
+                             inner join turma t on t.turma_id = a.turma_id 
+                             inner join ue ue on ue.id = t.ue_id 
+                            where not d.excluido 
+	                            and not db.excluido 
+	                            and t.ano_letivo = @anoLetivo 
+	                            and t.turma_id = @turmaCodigo
+	                            and a.data_aula < current_date
+                            group by a.turma_id, ue.ue_id, ue.dre_id ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidacaoDevolutivaTurmaDTO>(query, new { turmaCodigo, anoLetivo });
         }
@@ -123,19 +118,42 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<DevolutivaTurmaDTO>> ObterTurmasInfantilComDevolutivasPorAno(int anoLetivo)
         {
             var query = @" select 
-                              		distinct
-	                                t.turma_id as turmaId,
-                                    t.ano_letivo as anoLetivo
-	                            from devolutiva d 
-	                             inner join diario_bordo db on db.devolutiva_id = d.id
-	                             inner join aula a on a.id = db.aula_id
-                                  inner join turma t on t.turma_id = a.turma_id 
-                                  inner join ue ue on ue.id = t.ue_id 
-	                            where not d.excluido
-                                    and t.ano_letivo = @anoLetivo
-                                    and t.modalidade_codigo in (1,2) ";
+	                        distinct
+                            t.turma_id as turmaId,
+                            t.ano_letivo as anoLetivo
+                        from diario_bordo db 
+                            inner join aula a on a.id = db.aula_id
+                            inner join turma t on t.turma_id = a.turma_id 
+                            inner join ue ue on ue.id = t.ue_id 
+                        where not db.excluido 
+                            and t.ano_letivo = @anoLetivo
+                            and t.modalidade_codigo in (1,2)
+                            and a.data_aula < current_date ";
 
             return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo });
+        }
+
+        public async Task<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO> ObterDiariosDeBordoPorTurmaEAnoLetivo(string turmaCodigo, int anoLetivo)
+        {
+            var query = @" select 
+	                            ue.ue_id as ueid,
+	                            ue.dre_id as dreId,
+                                a.turma_id as turmaid,
+                                count(db.id) as quantidadeDiarioBordoRegistrado
+                            from diario_bordo db
+	                            inner join aula a on a.id = db.aula_id
+	                            inner join turma t on t.turma_id = a.turma_id 
+	                            inner join ue ue on ue.id = t.ue_id	
+                            where not db.excluido
+                                and t.ano_letivo = @anoLetivo 
+                                and t.turma_id = @turmaCodigo
+                                and a.data_aula < current_date 
+                            group by
+	                            ue.ue_id,
+	                            ue.dre_id,
+                                a.turma_id";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO>(query, new { turmaCodigo, anoLetivo });
         }
     }
 }

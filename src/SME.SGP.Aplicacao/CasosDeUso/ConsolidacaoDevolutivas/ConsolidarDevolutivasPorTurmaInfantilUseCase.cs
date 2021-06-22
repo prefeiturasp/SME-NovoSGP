@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         private async Task ConsolidarDevolutivasHistorico()
         {
-            for (var ano = 2014; ano < DateTime.Now.Year; ano++)
+            for (var ano = 2021; ano < DateTime.Now.Year; ano++)
             {
                 if (!await mediator.Send(new ExisteConsolidacaoDevolutivaTurmaPorAnoQuery(ano)))
                 {
@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoDevolutivasTurma, ano));
             if (parametroSistema != null)
             {
-                parametroSistema.Valor = DateTime.Now.ToString();
+                parametroSistema.Valor = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff tt");
                 await mediator.Send(new AtualizarParametroSistemaCommand(parametroSistema));
             }
         }

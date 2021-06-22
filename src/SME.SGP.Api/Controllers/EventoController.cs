@@ -52,6 +52,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasEvento.Listar(filtroEventosDto));
         }
 
+        [HttpGet("liberacao-boletim/bimestres")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.E_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterBimestresLiberacaoBoletim([FromServices] IObterBimestresLiberacaoBoletimUseCase obterBimestresLiberacaoBoletimUseCase)
+        {
+            return Ok(await obterBimestresLiberacaoBoletimUseCase.Executar());
+        }
+
         [HttpGet("meses")]
         [ProducesResponseType(typeof(IEnumerable<CalendarioEventosMesesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
