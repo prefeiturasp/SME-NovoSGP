@@ -8,6 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task ExcluiEventoBimestre(long eventoId);
         Task<int[]> ObterEventoBimestres(long eventoId);
-        Task<int[]> ObterBimestresEventoPorDataRefencia(DateTime dataReferencia);
+        Task<int[]> ObterBimestresEventoPorTipoCalendarioDataReferencia(long tipoCalendarioId, DateTime dataReferencia);
     }
 }

@@ -33,17 +33,18 @@ namespace SME.SGP.Dados.Repositorios
             return Task.CompletedTask;
         }
 
-        public async Task<int[]> ObterBimestresEventoPorDataRefencia(DateTime dataReferencia)
+        public async Task<int[]> ObterBimestresEventoPorTipoCalendarioDataReferencia(long tipoCalendarioId, DateTime dataReferencia)
         {
             string query = @"select bimestre from (
                                  select MAX(e.data_inicio), bimestre from evento_bimestre eb
                                  inner join evento e on eb.evento_id = e.id
-                                 where not e.excluido and 
-                                       e.tipo_evento_id = @tipoEvento
+                                 where not e.excluido  
+                                       and e.tipo_calendario_id = @tipoCalendarioId
+                                       and e.tipo_evento_id = @tipoEvento
                                        and e.data_inicio <= @data
                                  group by bimestre) b ";
 
-            var bimestres = await database.Conexao.QueryAsync<int>(query, new { tipoEvento = (int)TipoEvento.LiberacaoBoletim, data = dataReferencia.Date });
+            var bimestres = await database.Conexao.QueryAsync<int>(query, new { tipoCalendarioId, tipoEvento = (int)TipoEvento.LiberacaoBoletim, data = dataReferencia.Date });
 
             return bimestres?.ToArray();
         }

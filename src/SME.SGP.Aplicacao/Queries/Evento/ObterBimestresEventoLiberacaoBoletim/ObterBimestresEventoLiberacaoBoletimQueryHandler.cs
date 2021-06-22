@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<int[]> Handle(ObterBimestresEventoLiberacaoBoletimQuery request, CancellationToken cancellationToken)
         {
-            var bimestres = await repositorioEventoBimestre.ObterBimestresEventoPorDataRefencia(request.DataRefencia);
+            var bimestres = await repositorioEventoBimestre.ObterBimestresEventoPorTipoCalendarioDataReferencia(request.TipoCalendarioId, request.DataRefencia);
 
             if (bimestres == null || !bimestres.Any())
                 throw new NegocioException("Lista de bimestres não encontrada");

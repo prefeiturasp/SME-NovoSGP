@@ -4,6 +4,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterBimestresLiberacaoBoletimUseCase
     {
-        Task<int[]> Executar();
+        Task<int[]> Executar(string codigoTurma);
     }
 }
