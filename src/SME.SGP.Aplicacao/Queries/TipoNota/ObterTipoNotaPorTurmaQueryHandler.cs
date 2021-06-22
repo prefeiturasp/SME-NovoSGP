@@ -22,23 +22,29 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.repositorioCiclo = repositorioCiclo ?? throw new ArgumentNullException(nameof(repositorioCiclo));
         }
+
         public async Task<TipoNota> Handle(ObterTipoNotaPorTurmaQuery request, CancellationToken cancellationToken)
         {
             //TODO: TIPO DE TURMA NÃO EXISTE NO SGP, É NECESSÁRIO SEMPRE CONSULTAR O EOL.....
-            var turmaEOL = await servicoEol.ObterDadosTurmaPorCodigo(request.Turma.CodigoTurma);
+            var turmaEOL = await servicoEol
+                .ObterDadosTurmaPorCodigo(request.Turma.CodigoTurma);
 
             // Para turma tipo 2 o padrão é nota.
             if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
                 return TipoNota.Nota;
 
-            string anoCicloModalidade = !String.IsNullOrEmpty(request.Turma?.Ano) ? request.Turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : request.Turma.Ano : string.Empty;
-            var ciclo = repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, request.Turma.ModalidadeCodigo);
+            var anoCicloModalidade = string.Empty;
+            if (request.Turma != null)
+                anoCicloModalidade = request.Turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : request.Turma.Ano;            
+
+            var ciclo = repositorioCiclo
+                .ObterCicloPorAnoModalidade(anoCicloModalidade, request.Turma.ModalidadeCodigo);
 
             if (ciclo == null)
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
 
-            return repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, request.DataReferencia).TipoNota;
-            
+            return repositorioNotaTipoValor
+                .ObterPorCicloIdDataAvalicacao(ciclo.Id, request.DataReferencia)?.TipoNota ?? TipoNota.Nota;            
         }
     }
 }
