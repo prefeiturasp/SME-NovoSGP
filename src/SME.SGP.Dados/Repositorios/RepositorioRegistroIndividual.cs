@@ -2,6 +2,7 @@
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -152,6 +153,75 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return await database.Conexao.QueryAsync<QuantidadeRegistrosIndividuaisPorAnoTurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
+        }
+        public async Task<IEnumerable<RegistroItineranciaPorAnoDto>> ObterQuantidadeDeAunosSemRegistroPorPeriodoAsync(int anoLetivo, long dreId, Modalidade modalidade, DateTime dataInicial)
+        {
+            var condicaoDre = dreId > 0 ? "and ue.dre_id = @dreId" : "";
+            var query = $@"select sum(z.quantidade_matriculas) - sum(z.quantidade_registros) quantidade,
+	                              z.ano,
+	                              z.modalidade
+                             from
+		                           (
+		                            select count(distinct(ri.aluno_codigo))as quantidade_registros,
+		                                   0 as quantidade_matriculas,
+				                           t.ano,
+				                           t.modalidade_codigo as modalidade
+		                              from registro_individual ri
+		                              inner join turma t on t.id = ri.turma_id
+		                              inner join ue on ue.id = t.ue_id
+		                              where data_registro between @dataInicial and now()
+			                            and t.ano <> '0'
+			                            and t.modalidade_codigo = @modalidade
+                                        {condicaoDre}
+		                           group by t.ano, t.modalidade_codigo
+		                           union
+		                           select 0 as quantidade_registros,
+			                              sum(cmt.quantidade) quantidade_matriculas, 
+			                              t.ano, 
+			                              t.modalidade_codigo as modalidade
+		                            from consolidacao_matricula_turma cmt 
+		                           inner join turma t on t.id = cmt.turma_id 
+		                           inner join ue on ue.id = t.ue_id 
+		                           where t.modalidade_codigo = @modalidade
+		                             and t.ano <> '0'
+		                             and t.ano_letivo = @anoLetivo
+                                     {condicaoDre}	
+		                           group by t.ano, t.modalidade_codigo 
+		                           )z
+                           group by z.ano, z.modalidade
+                           order by z.ano, z.modalidade";
+            return await database.Conexao.QueryAsync<RegistroItineranciaPorAnoDto>(query, new { anoLetivo, dreId, modalidade, dataInicial });
+        }
+        public async Task<IEnumerable<GraficoBaseDto>> ObterQuantidadeDeAunosSemRegistroPorPeriodoUeAsync(int anoLetivo, long ueId, Modalidade modalidade, DateTime dataInicial)
+        {
+            var query = $@" select z.nome as descricao,
+	                               sum(z.quantidade_matriculas) - sum(z.quantidade_registros) quantidade
+                              from
+		                            (select count(distinct(ri.aluno_codigo))as quantidade_registros,
+		                                    0 as quantidade_matriculas,
+				                            t.nome
+		                               from registro_individual ri
+		                               inner join turma t on t.id = ri.turma_id
+		                               where data_registro between @dataInicial and now()
+			                             and t.modalidade_codigo = @modalidade
+		  	                             and t.ue_id = @ueId
+			                             and t.ano <> '0'
+		                            group by t.nome
+		                            union
+		                            select 0 as quantidade_registros,
+			                               sum(cmt.quantidade) quantidade_matriculas, 
+			                               t.nome
+		                             from consolidacao_matricula_turma cmt 
+		                            inner join turma t on t.id = cmt.turma_id 
+		                            where t.modalidade_codigo = @modalidade
+		                              and t.ue_id = @ueId
+                                      and t.ano_letivo = @anoLetivo
+		                              and t.ano <> '0'
+		                            group by t.nome
+		                            )z
+                            group by z.nome
+                            order by z.nome";
+            return await database.Conexao.QueryAsync<GraficoBaseDto>(query, new { anoLetivo, ueId, modalidade, dataInicial });
         }
     }
 }

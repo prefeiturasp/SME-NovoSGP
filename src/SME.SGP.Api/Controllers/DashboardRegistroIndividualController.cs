@@ -31,7 +31,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterDadosDashboard([FromQuery] FiltroDasboardRegistroIndividualDTO filtro, [FromServices] IObterDadosDashboardRegistrosIndividuaisUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
-        }
+        }        
         
         [HttpGet("consolidacao")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -41,6 +41,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterUltimaConsolidacao([FromQuery] int anoLetivo, [FromServices] IObterUltimaConsolidacaoMediaRegistrosIndividuaisUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo));
+        }
+
+        [HttpGet("alunos-sem-registro")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoBaseDto>), 200)]
+        [Permissao(Permissao.DRIN_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterDadosAlunosSemRegistro([FromQuery] FiltroDasboardRegistroIndividualDTO filtro, [FromServices] IObterDashboardQuantidadeDeAlunosSemRegistroPorPeriodoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
         }
     }
 }

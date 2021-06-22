@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             return ObterDadosDto(dados);
         }
 
-        private IEnumerable<GraficoBaseQuantidadeDoubleDto> ObterDadosDto(IEnumerable<RegistroItineranciaMediaPorAnoDto> dadosPorAno)
+        private IEnumerable<GraficoBaseQuantidadeDoubleDto> ObterDadosDto(IEnumerable<RegistroIndividualMediaPorAnoDto> dadosPorAno)
         {
             var listaDto = new List<GraficoBaseQuantidadeDoubleDto>();
             foreach(var registro in dadosPorAno)
