@@ -129,7 +129,7 @@ namespace SME.SGP.Dominio
 
         ExecucaoConsolidacaoDevolutivasTurma = 70,
 
-        QuantidadeImagensPercursoTurma = 71,
+        QuantidadeImagensPercursoTurma = 72,
 
         //Sistema
         HabilitarServicosEmBackground = 100
