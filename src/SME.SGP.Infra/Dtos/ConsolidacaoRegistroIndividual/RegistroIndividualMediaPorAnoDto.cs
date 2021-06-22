@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class RegistroItineranciaMediaPorAnoDto
+    public class RegistroIndividualMediaPorAnoDto
     {
         public string Ano { get; set; }
         public Modalidade Modalidade { get; set; }

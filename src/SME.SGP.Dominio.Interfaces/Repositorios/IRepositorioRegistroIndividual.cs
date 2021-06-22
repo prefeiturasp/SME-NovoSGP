@@ -16,5 +16,7 @@ namespace SME.SGP.Dominio
         Task<SugestaoTopicoRegistroIndividualDto> ObterSugestaoTopicoPorMes(int mes);
         
         Task<IEnumerable<QuantidadeRegistrosIndividuaisPorAnoTurmaDTO>> ObterQuantidadeRegistrosIndividuaisPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade);
+        Task<IEnumerable<RegistroItineranciaPorAnoDto>> ObterQuantidadeDeAunosSemRegistroPorPeriodoAsync(int anoLetivo, long dreId, Modalidade modalidade, DateTime dataInicial);
+        Task<IEnumerable<GraficoBaseDto>> ObterQuantidadeDeAunosSemRegistroPorPeriodoUeAsync(int anoLetivo, long ueId, Modalidade modalidade, DateTime dataInicial);
     }
 }

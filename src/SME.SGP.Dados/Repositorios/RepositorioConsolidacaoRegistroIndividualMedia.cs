@@ -14,7 +14,7 @@ namespace SME.SGP.Dominio
         {
             this.database = database;
         }
-        public async Task<IEnumerable<RegistroItineranciaMediaPorAnoDto>> ObterRegistrosItineranciasMediaPorAnoAsync(int anoLetivo, long dreId, Modalidade modalidade)
+        public async Task<IEnumerable<RegistroIndividualMediaPorAnoDto>> ObterRegistrosItineranciasMediaPorAnoAsync(int anoLetivo, long dreId, Modalidade modalidade)
         {
             var query = new StringBuilder($@"select (sum(cr.quantidade)/count(t.ano)) as quantidade, 
 	                                                t.ano,
@@ -31,7 +31,7 @@ namespace SME.SGP.Dominio
             query.AppendLine(@"group by t.ano, t.modalidade_codigo
                                order by t.ano, t.modalidade_codigo");
 
-            return await database.Conexao.QueryAsync<RegistroItineranciaMediaPorAnoDto>(query.ToString(), new { anoLetivo, dreId, modalidade });
+            return await database.Conexao.QueryAsync<RegistroIndividualMediaPorAnoDto>(query.ToString(), new { anoLetivo, dreId, modalidade });
         }
 
         public async Task<IEnumerable<GraficoBaseQuantidadeDoubleDto>> ObterRegistrosItineranciasMediaPorTurmaAsync(int anoLetivo, long ueId, Modalidade modalidade)
