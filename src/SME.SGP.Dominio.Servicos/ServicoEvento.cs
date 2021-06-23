@@ -83,8 +83,12 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task<string> Salvar(Evento evento, int?[] bimestres = null, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false)
+        public async Task<string> Salvar(Evento evento, int[] bimestres = null, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false)
         {
+
+            if ((TipoEvento)evento.TipoEventoId == TipoEvento.LiberacaoBoletim && bimestres.Length == 0)
+                throw new NegocioException("Ao menos um bimestre deve ser selecionado para um evento do tipo Liberação do Boletim");
+
             ObterTipoEvento(evento);
 
             evento.ValidaPeriodoEvento();
@@ -116,14 +120,15 @@ namespace SME.SGP.Dominio.Servicos
 
             AtribuirNullSeVazio(evento);
 
+
+
             if (!unitOfWorkJaEmUso)
                 unitOfWork.IniciarTransacao();
 
-
             await repositorioEvento.SalvarAsync(evento);
 
-            if ((TipoEvento)evento.TipoEventoId == TipoEvento.LiberacaoBoletim && bimestres != null)
-                await IncluiEventoBimestre(evento, bimestres);
+            if ((TipoEvento)evento.TipoEventoId == TipoEvento.LiberacaoBoletim)
+                await IncluiBimestresDoEventoLiberacaoDeBoletim(evento, bimestres, ehAlteracao);
 
 
             // Envia para workflow apenas na Inclusão ou alteração apos aprovado
@@ -163,12 +168,64 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task IncluiEventoBimestre(Evento evento, int?[] Bimestres)
+        private async Task IncluiBimestresDoEventoLiberacaoDeBoletim(Evento evento, int[] bimestres, bool ehAlteracao)
         {
 
+            var bimestresDoTipoCalendarioJaCadastrados = await repositorioEventoBimestre.ObterBimestresPorTipoCalendarioDeOutrosEventos(evento.TipoCalendarioId, evento.Id);
+
+            if (bimestresDoTipoCalendarioJaCadastrados.Length == 0 && !ehAlteracao)
+            {
+                await IncluiBimestresNoEventoDeLiberacaoDeBoletim(evento, bimestres);
+                return;
+            }
+
+            if (bimestresDoTipoCalendarioJaCadastrados.Length > 0 && bimestresDoTipoCalendarioJaCadastrados.Contains((int)Bimestre.Todos))
+                throw new NegocioException("Já existe outro evento do tipo liberação do boletim com todos os bimestres cadastrado para esse calendario.");
+
+            if (bimestresDoTipoCalendarioJaCadastrados.Length > 0)
+                VerificaSeOsBimestresJaExistemParaOCalendarioDoEvento(bimestres, bimestresDoTipoCalendarioJaCadastrados);
+
+            await AlteraBimestresDoEvento(evento, bimestres);
+
+        }
+
+        private async Task AlteraBimestresDoEvento(Evento evento, int[] bimestres)
+        {
             await repositorioEventoBimestre.ExcluiEventoBimestre(evento.Id);
-          
-            foreach (var bimestre in Bimestres)
+            await IncluiBimestresNoEventoDeLiberacaoDeBoletim(evento, bimestres);
+        }
+
+        private static void VerificaSeOsBimestresJaExistemParaOCalendarioDoEvento(int[] bimestres, int[] bimestresDoTipoCalendarioJaCadastrados)
+        {
+            List<string> BimestreDoEventoqueJaEstaCadastrado = new List<string>();
+
+            foreach (int bimestreCadastrado in bimestresDoTipoCalendarioJaCadastrados)
+            {
+                foreach (int bimestre in bimestres)
+                {
+                    if (bimestreCadastrado == bimestre)
+                    {
+                        var bimestreEnum = (Bimestre)bimestre;
+                        BimestreDoEventoqueJaEstaCadastrado.Add(bimestreEnum.Name());
+                    }
+
+                }
+            }
+
+            if (BimestreDoEventoqueJaEstaCadastrado.Count > 0)
+            {
+                string bimestresFormatados = string.Join(",", BimestreDoEventoqueJaEstaCadastrado);
+
+                if (BimestreDoEventoqueJaEstaCadastrado.Count > 1)
+                    throw new NegocioException($"Os bimestres {bimestresFormatados}  já estão cadastrados em outro evento para esse calendario");
+                throw new NegocioException($"O bimestre {bimestresFormatados}  já está cadastrado em outro evento para esse calendário");
+
+            }
+        }
+
+        private async Task IncluiBimestresNoEventoDeLiberacaoDeBoletim(Evento evento, int[] bimestres)
+        {
+            foreach (var bimestre in bimestres)
             {
                 var eventoBimestre = new EventoBimestre()
                 {
@@ -177,7 +234,6 @@ namespace SME.SGP.Dominio.Servicos
                 };
                 await repositorioEventoBimestre.SalvarAsync(eventoBimestre);
             }
-           
         }
 
         private async Task VerificaPendenciaParametroEvento(Evento evento, Usuario usuario)

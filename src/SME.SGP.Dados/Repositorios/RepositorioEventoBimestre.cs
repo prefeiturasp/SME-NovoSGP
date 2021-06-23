@@ -16,6 +16,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
+
         public async Task<int[]> ObterEventoBimestres(long eventoId)
         {
             string query = "select bimestre from evento_bimestre where evento_id = @evento_id";
@@ -45,6 +46,58 @@ namespace SME.SGP.Dados.Repositorios
                                  group by bimestre) b ";
 
             var bimestres = await database.Conexao.QueryAsync<int>(query, new { tipoCalendarioId, tipoEvento = (int)TipoEvento.LiberacaoBoletim, data = dataReferencia.Date });
+
+            return bimestres?.ToArray();
+        }
+
+        public async Task<int[]> ObterBimestresPorTipoCalendarioDeOutrosEventos(long tipoCalendarioId, long eventoId)
+        {
+            try
+            {
+                string query = @"select bimestre
+                                      from evento_bimestre  eb
+                                 inner join evento e on eb.evento_id = e.id
+                                 where not e.excluido  
+                                       and eb.evento_id  <>  @eventoId
+                                 and e.tipo_calendario_id = @tipoCalendarioId
+                                       and e.tipo_evento_id = @tipoEvento";
+
+                var bimestres = await database.Conexao.QueryAsync<int>(query, new { eventoId, tipoCalendarioId, tipoEvento = (int)TipoEvento.LiberacaoBoletim });
+
+                return bimestres?.ToArray();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+         
+        }
+
+        public async Task<int[]> ObterBimestresPorEventoId(long eventoId)
+        {
+            string query = @"select bimestre
+                                      from evento_bimestre  eb
+                                 inner join evento e on eb.evento_id = e.id
+                                 where not e.excluido  
+                                       and eb.evento_id  = @eventoId
+                                       and e.tipo_evento_id = @tipoEvento";
+
+            var bimestres = await database.Conexao.QueryAsync<int>(query, new { eventoId, tipoEvento = (int)TipoEvento.LiberacaoBoletim });
+
+            return bimestres?.ToArray();
+        }
+
+        public async Task<int[]> ObterBimestresPorCalendarioIdDiferenteEventoId(long eventoId)
+        {
+            string query = @"select bimestre
+                                      from evento_bimestre  eb
+                                 inner join evento e on eb.evento_id = e.id
+                                 where not e.excluido  
+                                       and eb.evento_id  = @eventoId
+                                       and e.tipo_evento_id = @tipoEvento";
+
+            var bimestres = await database.Conexao.QueryAsync<int>(query, new { eventoId, tipoEvento = (int)TipoEvento.LiberacaoBoletim });
 
             return bimestres?.ToArray();
         }
