@@ -62,18 +62,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<double?> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
         {
-
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
-            var tipoCalendarioId = turma.ModalidadeCodigo == Modalidade.EJA ? await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma)) : 0 ;
-            
-            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
-            
-            if (frequenciaAluno == null)
-                return null;
+            var tipoCalendarioId = turma.ModalidadeCodigo == Modalidade.EJA ? await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma)) : 0;
 
             //Particularidade de 2020
             if (turma.AnoLetivo.Equals(2020))
                 return await CalculoFrequenciaGlobal2020(alunoCodigo, turma);
+
+            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
+
+            if (frequenciaAluno == null)
+                return null;
 
             return frequenciaAluno.PercentualFrequencia;
         }
@@ -166,10 +165,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina)
         {
-            var sintese = percentualFrequencia != null ? 
+            var sintese = percentualFrequencia != null ?
                 SinteseEnum.NaoFrequente :
                 percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
-                SinteseEnum.Frequente : 
+                SinteseEnum.Frequente :
                 SinteseEnum.NaoFrequente;
 
             return new SinteseDto()
