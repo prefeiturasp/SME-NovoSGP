@@ -212,8 +212,8 @@ namespace SME.SGP.Dominio.Servicos
                 string bimestresFormatados = string.Join(",", BimestreDoEventoqueJaEstaCadastrado);
 
                 if (BimestreDoEventoqueJaEstaCadastrado.Count > 1)
-                    throw new NegocioException($"Os bimestres {bimestresFormatados}  já estão cadastrados em outro evento para esse calendário".);
-                throw new NegocioException($"O bimestre {bimestresFormatados}  já está cadastrado em outro evento para esse calendário".);
+                    throw new NegocioException($"Os bimestres {bimestresFormatados}  já estão cadastrados em outro evento para esse calendário");
+                throw new NegocioException($"O bimestre {bimestresFormatados}  já está cadastrado em outro evento para esse calendário");
 
             }
         }
