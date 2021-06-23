@@ -4,6 +4,7 @@ using SME.Background.Core;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -151,6 +152,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> MigracaoDadosFrequencia([FromQuery] int[] anosLetivos, [FromServices] ICarregarDadosAulasFrequenciaUseCase useCase)
         {
             return Ok(await useCase.Executar(anosLetivos));
+        }
+
+        [HttpGet("frequencias/ues/{ueId}/turmas/{turmaCodigo}/alunos/{alunoCodigo}/componentes-curriculares/{componenteCurricularId}")]
+        [ProducesResponseType(typeof(IEnumerable<FrequenciaAluno>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterFrequenciasPorBimestresUeAlunoTurmaComponenteCurricular(long ueId, string turmaCodigo, string alunoCodigo, long componenteCurricularId, [FromQuery] int[] bimestres, [FromServices] IObterFrequenciasPorBimestresUeAlunoTurmaComponenteCurricularUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FrequenciaPorBimestresAlunoTurmaComponenteCurricularDto(ueId, turmaCodigo, alunoCodigo, bimestres, componenteCurricularId)));
         }
     }
 }
