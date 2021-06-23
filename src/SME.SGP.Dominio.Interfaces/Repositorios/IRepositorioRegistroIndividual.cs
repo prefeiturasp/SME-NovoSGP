@@ -22,5 +22,7 @@ namespace SME.SGP.Dominio
         Task<IEnumerable<AlunoInfantilComRegistroIndividualDTO>> ObterAlunosInfantilComRegistrosIndividuaisPorTurmaAnoAsync(long turmaCodigo, int anoLetivo);
 
         Task<IEnumerable<RegistroIndividualAlunoDTO>> ObterRegistrosIndividuaisPorTurmaAlunoAsync(long turmaCodigo, long codigoAluno);
+        Task<IEnumerable<RegistroItineranciaPorAnoDto>> ObterQuantidadeDeAunosSemRegistroPorPeriodoAsync(int anoLetivo, long dreId, Modalidade modalidade, DateTime dataInicial);
+        Task<IEnumerable<GraficoBaseDto>> ObterQuantidadeDeAunosSemRegistroPorPeriodoUeAsync(int anoLetivo, long ueId, Modalidade modalidade, DateTime dataInicial);
     }
 }

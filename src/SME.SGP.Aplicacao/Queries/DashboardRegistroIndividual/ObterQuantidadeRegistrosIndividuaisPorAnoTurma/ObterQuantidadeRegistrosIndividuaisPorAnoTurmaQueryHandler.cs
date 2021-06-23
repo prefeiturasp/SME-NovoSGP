@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeRegistrosIndividuaisPorAnoTurmaQueryHandler : IRequestHandler<ObterQuantidadeRegistrosIndividuaisPorAnoTurmaQuery, IEnumerable<GraficoTotalRegistrosIndividuaisDTO>>
+    public class ObterQuantidadeRegistrosIndividuaisPorAnoTurmaQueryHandler : IRequestHandler<ObterQuantidadeRegistrosIndividuaisPorAnoTurmaQuery, IEnumerable<GraficoBaseDto>>
     {
         private readonly IRepositorioRegistroIndividual repositorio;
 
@@ -17,26 +17,22 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<GraficoTotalRegistrosIndividuaisDTO>> Handle(ObterQuantidadeRegistrosIndividuaisPorAnoTurmaQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GraficoBaseDto>> Handle(ObterQuantidadeRegistrosIndividuaisPorAnoTurmaQuery request, CancellationToken cancellationToken)
         {
             var retornoConsulta = await repositorio.ObterQuantidadeRegistrosIndividuaisPorAnoTurmaAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade);
             return MontarDto(retornoConsulta, request);
         }
 
-        private IEnumerable<GraficoTotalRegistrosIndividuaisDTO> MontarDto(IEnumerable<QuantidadeRegistrosIndividuaisPorAnoTurmaDTO> retornoConsulta, ObterQuantidadeRegistrosIndividuaisPorAnoTurmaQuery request)
+        private IEnumerable<GraficoBaseDto> MontarDto(IEnumerable<QuantidadeRegistrosIndividuaisPorAnoTurmaDTO> retornoConsulta, ObterQuantidadeRegistrosIndividuaisPorAnoTurmaQuery request)
         {
-            var dadosGrafico = new List<GraficoTotalRegistrosIndividuaisDTO>();
+            var dadosGrafico = new List<GraficoBaseDto>();
             foreach (var item in retornoConsulta)
             {
-                var quantidadeRegistrosIndividuaisPorAnoTurma = new GraficoTotalRegistrosIndividuaisDTO()
+                dadosGrafico.Add(new GraficoBaseDto()
                 {
-                    TurmaAno = ObterDescricaoTurmaAno(request.UeId > 0, item.Ano == 0 ? item.Turma : item.Ano.ToString(), request.Modalidade),
-                    Descricao = DashboardConstants.QuantidadeRegistrosIndividualPorAnoTurmaDescricao,
+                    Descricao = ObterDescricaoTurmaAno(request.UeId > 0, item.Ano == 0 ? item.Turma : item.Ano.ToString(), request.Modalidade),
                     Quantidade = item.QuantidadeRegistrosIndividuais
-                };
-
-
-                dadosGrafico.Add(quantidadeRegistrosIndividuaisPorAnoTurma);
+                });
             }
             return dadosGrafico;
         }
