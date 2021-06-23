@@ -1265,5 +1265,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { eventoId });
         }
+
+        public async Task<Evento> ObterEventoAtivoPorId(long eventoId)
+        {
+            var query = @"select * 
+                        from evento 
+                       where not excluido
+                       and id = @eventoId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<Evento>(query, new { eventoId});
+        }
     }
 }
