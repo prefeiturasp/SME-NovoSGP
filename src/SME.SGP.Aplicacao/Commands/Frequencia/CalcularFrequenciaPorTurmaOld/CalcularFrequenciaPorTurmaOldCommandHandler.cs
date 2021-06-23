@@ -59,6 +59,9 @@ namespace SME.SGP.Aplicacao
                                                             totalCompensacoesDisciplinaAluno,
                                                             TipoFrequenciaAluno.PorDisciplina);
 
+                if (frequenciaAluno.TotalAusencias > frequenciaAluno.TotalAulas)
+                    throw new Exception("Erro ao calcular frequência por Disciplina. Frequência Negativa");
+
                 if (frequenciaAluno.TotalAusencias > 0)
                     await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarAsync(frequenciaAluno);
                 else
@@ -113,6 +116,9 @@ namespace SME.SGP.Aplicacao
                                                                     totalAulasDaTurma,
                                                                     totalCompensacoesGeralAluno,
                                                                     TipoFrequenciaAluno.Geral);
+
+                if (frequenciaGeralAluno.TotalAusencias > frequenciaGeralAluno.TotalAulas)
+                    throw new Exception("Erro ao calcular frequência geral. Frequência Negativa");
 
                 if (frequenciaGeralAluno.PercentualFrequencia < 100)
                     await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarAsync(frequenciaGeralAluno);
