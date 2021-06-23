@@ -16,21 +16,23 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
         private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IRepositorioEventoBimestre> repositorioEventoBimestre;
         private readonly Mock<IConsultasAbrangencia> consultasAbrangencia;
 
-        //public ConsultasEventoTeste()
-        //{
-        //    repositorioEvento = new Mock<IRepositorioEvento>();
-        //    repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
-        //    var context = new DefaultHttpContext();
-        //    var httpContextAcessorObj = new HttpContextAccessor();
-        //    httpContextAcessorObj.HttpContext = context;
-        //    servicoUsuario = new Mock<IServicoUsuario>();
-        //    repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
-        //    consultasAbrangencia = new Mock<IConsultasAbrangencia>();
+        public ConsultasEventoTeste()
+        {
+            repositorioEvento = new Mock<IRepositorioEvento>();
+            repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
+            var context = new DefaultHttpContext();
+            var httpContextAcessorObj = new HttpContextAccessor();
+            httpContextAcessorObj.HttpContext = context;
+            servicoUsuario = new Mock<IServicoUsuario>();
+            repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
+            repositorioEventoBimestre = new Mock<IRepositorioEventoBimestre>();
+            consultasAbrangencia = new Mock<IConsultasAbrangencia>();
 
-        //    consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), servicoUsuario.Object, repositorioEventoTipo.Object, consultasAbrangencia.Object);
-        //}
+            consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), servicoUsuario.Object, repositorioEventoTipo.Object, repositorioEventoBimestre.Object ,consultasAbrangencia.Object);
+        }
 
         //[Fact]
         //public async Task DeveListarEventos()
