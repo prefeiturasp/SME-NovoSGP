@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<int[]> ObterEventoBimestres(long eventoId)
         {
-            string query = "select bimestre from evento_bimestre where evento_id = @eventoid";
+            string query = "select bimestre from evento_bimestre where evento_id = @eventoId";
             var bimestres = await database.Conexao.QueryAsync<int>(query, new { eventoId });
 
             return bimestres.ToArray();
