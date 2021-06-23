@@ -170,6 +170,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task IncluiBimestresDoEventoLiberacaoDeBoletim(Evento evento, int[] bimestres, bool ehAlteracao)
         {
+            await ValidaSeExisteEventoLiberacaoDeBoletimPorDataETipoCalendarioId(evento);
 
             var bimestresDoTipoCalendarioJaCadastrados = await repositorioEventoBimestre.ObterBimestresPorTipoCalendarioDeOutrosEventos(evento.TipoCalendarioId, evento.Id);
 
@@ -180,13 +181,20 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             if (bimestresDoTipoCalendarioJaCadastrados.Length > 0 && bimestresDoTipoCalendarioJaCadastrados.Contains((int)Bimestre.Todos))
-                throw new NegocioException("Já existe outro evento do tipo liberação do boletim com todos os bimestres cadastrado para esse calendario.");
+                throw new NegocioException("Já existe outro evento do tipo liberação do boletim com todos os bimestres cadastrado para esse calendário.");
 
             if (bimestresDoTipoCalendarioJaCadastrados.Length > 0)
                 VerificaSeOsBimestresJaExistemParaOCalendarioDoEvento(bimestres, bimestresDoTipoCalendarioJaCadastrados);
 
             await AlteraBimestresDoEvento(evento, bimestres);
 
+        }
+
+        private async Task ValidaSeExisteEventoLiberacaoDeBoletimPorDataETipoCalendarioId(Evento evento)
+        {
+            var bimestres = await repositorioEventoBimestre.ObterBimestresEventoPorTipoCalendarioDataReferencia(evento.TipoCalendarioId, evento.DataInicio.Date);
+            if (bimestres.Length > 0)
+                throw new NegocioException($"Já existe outro evento do tipo liberação do boletim com a data {evento.DataInicio.Date} cadastrada para esse calendário.");
         }
 
         private async Task AlteraBimestresDoEvento(Evento evento, int[] bimestres)
@@ -196,6 +204,21 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private static void VerificaSeOsBimestresJaExistemParaOCalendarioDoEvento(int[] bimestres, int[] bimestresDoTipoCalendarioJaCadastrados)
+        {
+            List<string> BimestreDoEventoqueJaEstaCadastrado = ComparaListaDeBimestresERetornaOsQueJaEstaoCadastrados(bimestres, bimestresDoTipoCalendarioJaCadastrados);
+
+            if (BimestreDoEventoqueJaEstaCadastrado.Count > 0)
+            {
+                string bimestresFormatados = string.Join(",", BimestreDoEventoqueJaEstaCadastrado);
+
+                if (BimestreDoEventoqueJaEstaCadastrado.Count > 1)
+                    throw new NegocioException($"Os bimestres {bimestresFormatados}  já estão cadastrados em outro evento para esse calendário".);
+                throw new NegocioException($"O bimestre {bimestresFormatados}  já está cadastrado em outro evento para esse calendário".);
+
+            }
+        }
+
+        private static List<string> ComparaListaDeBimestresERetornaOsQueJaEstaoCadastrados(int[] bimestres, int[] bimestresDoTipoCalendarioJaCadastrados)
         {
             List<string> BimestreDoEventoqueJaEstaCadastrado = new List<string>();
 
@@ -212,15 +235,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
-            if (BimestreDoEventoqueJaEstaCadastrado.Count > 0)
-            {
-                string bimestresFormatados = string.Join(",", BimestreDoEventoqueJaEstaCadastrado);
-
-                if (BimestreDoEventoqueJaEstaCadastrado.Count > 1)
-                    throw new NegocioException($"Os bimestres {bimestresFormatados}  já estão cadastrados em outro evento para esse calendario");
-                throw new NegocioException($"O bimestre {bimestresFormatados}  já está cadastrado em outro evento para esse calendário");
-
-            }
+            return BimestreDoEventoqueJaEstaCadastrado;
         }
 
         private async Task IncluiBimestresNoEventoDeLiberacaoDeBoletim(Evento evento, int[] bimestres)
