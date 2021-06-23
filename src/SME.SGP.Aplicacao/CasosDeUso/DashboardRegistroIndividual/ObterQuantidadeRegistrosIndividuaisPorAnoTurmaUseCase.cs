@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<GraficoTotalRegistrosIndividuaisDTO>> Executar(FiltroDasboardRegistroIndividualDTO filtro)
+        public async Task<IEnumerable<GraficoBaseDto>> Executar(FiltroDasboardRegistroIndividualDTO filtro)
         {
             return await mediator.Send(new ObterQuantidadeRegistrosIndividuaisPorAnoTurmaQuery(filtro.AnoLetivo, filtro.DreId, filtro.UeId, filtro.Modalidade));
         }

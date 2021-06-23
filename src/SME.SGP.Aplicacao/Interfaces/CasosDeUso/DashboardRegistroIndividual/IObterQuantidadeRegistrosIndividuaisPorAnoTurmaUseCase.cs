@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterQuantidadeRegistrosIndividuaisPorAnoTurmaUseCase
     {
-        Task<IEnumerable<GraficoTotalRegistrosIndividuaisDTO>> Executar(FiltroDasboardRegistroIndividualDTO filtro);
+        Task<IEnumerable<GraficoBaseDto>> Executar(FiltroDasboardRegistroIndividualDTO filtro);
     }
 }
