@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterFrequenciasPorBimestresUeAlunoTurmaComponenteCurricularUseCase
+    public interface IObterFrequenciasPorBimestresAlunoTurmaComponenteCurricularUseCase
     {
         Task<IEnumerable<FrequenciaAluno>> Executar(FrequenciaPorBimestresAlunoTurmaComponenteCurricularDto dto);
     }

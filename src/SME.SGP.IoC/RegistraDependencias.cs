@@ -1002,7 +1002,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ISincronizarAulasRegenciaAutomaticamenteUseCase, SincronizarAulasRegenciaAutomaticamenteUseCase>();
 
             services.TryAddScoped<IObterNotasPorBimestresUeAlunoTurmaUseCase, ObterNotasPorBimestresUeAlunoTurmaUseCase>();
-            services.TryAddScoped<IObterFrequenciasPorBimestresUeAlunoTurmaComponenteCurricularUseCase, ObterFrequenciasPorBimestresUeAlunoTurmaComponenteCurricularUseCase>();
+            services.TryAddScoped<IObterFrequenciasPorBimestresAlunoTurmaComponenteCurricularUseCase, ObterFrequenciasPorBimestresAlunoTurmaComponenteCurricularUseCase>();
 
         }
     }

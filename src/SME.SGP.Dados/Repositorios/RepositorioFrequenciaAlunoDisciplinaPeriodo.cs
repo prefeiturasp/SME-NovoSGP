@@ -406,7 +406,7 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     await transacao.RollbackAsync();
                     throw;
-                }                
+                }
             }
         }
 
@@ -447,7 +447,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and fa.disciplina_id = @disciplinaId
                                 and fa.id <> @ultimoId";
 
-                foreach(var duplicado in duplicados)
+                foreach (var duplicado in duplicados)
                 {
                     await database.Conexao.ExecuteAsync(delete, new { duplicado.TurmaCodigo, duplicado.AlunoCodigo, duplicado.PeriodoEscolarId, duplicado.DisciplinaId, duplicado.UltimoId });
                 }
@@ -554,7 +554,7 @@ namespace SME.SGP.Dados.Repositorios
             String query = BuildQueryObterTotalAulasPorDisciplinaETurma(dataAula, disciplinaId, turmaId);
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
         }
-        
+
         public async Task<IEnumerable<RegistroFrequenciaAlunoBimestreDto>> ObterFrequenciasRegistradasPorTurmasComponentesCurriculares(string codigoAluno, string[] codigosTurma, string[] componentesCurricularesId, long? periodoEscolarId)
         {
             var sql = new StringBuilder(@"select pe.bimestre, a.turma_id CodigoTurma, 
@@ -576,7 +576,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<RegistroFrequenciaAlunoBimestreDto>(sql.ToString(), new { codigoAluno, codigosTurma, componentesCurricularesId, periodoEscolarId });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosDataAsync(string[] alunosCodigo, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string codigoTurma, string componenteCurricularId )
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosDataAsync(string[] alunosCodigo, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string codigoTurma, string componenteCurricularId)
         {
             var query = @"select fa.*
                         from frequencia_aluno fa
@@ -592,7 +592,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, new { alunosCodigo, dataAtual, tipoFrequencia, codigoTurma, componenteCurricularId });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmaComponenteBimestres(string codigoAluno, TipoFrequenciaAluno tipoFrequencia, long componenteCurricularId, string turmaCodigo, int[] bimestres)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmaComponenteBimestres(string codigoAluno, TipoFrequenciaAluno tipoFrequencia, string componenteCurricularId, string turmaCodigo, int[] bimestres)
         {
             var query = new StringBuilder(@"select fa.*
                         from frequencia_aluno fa
@@ -604,7 +604,7 @@ namespace SME.SGP.Dados.Repositorios
                             and disciplina_id = @componenteCurricularId ");
 
             if (bimestres.Length > 0)
-                query.AppendLine($" and ({(bimestres.Contains(0) ? " bimestre is null or " : "")}  bimestre = any(@bimestres)) ");
+                query.AppendLine($" and ({(bimestres.Contains(0) ? " fa.bimestre is null or " : "")}  fa.bimestre = any(@bimestres)) ");
 
 
             return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new

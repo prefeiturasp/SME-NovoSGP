@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFrequenciasPorBimestresUeAlunoTurmaComponenteCurricularUseCase : IObterFrequenciasPorBimestresUeAlunoTurmaComponenteCurricularUseCase
+    public class ObterFrequenciasPorBimestresAlunoTurmaComponenteCurricularUseCase : IObterFrequenciasPorBimestresAlunoTurmaComponenteCurricularUseCase
     {
         private readonly IMediator mediator;
 
-        public ObterFrequenciasPorBimestresUeAlunoTurmaComponenteCurricularUseCase(IMediator mediator)
+        public ObterFrequenciasPorBimestresAlunoTurmaComponenteCurricularUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
