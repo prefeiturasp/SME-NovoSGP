@@ -122,35 +122,26 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<QuantidadeRegistrosIndividuaisPorAnoTurmaDTO>> ObterQuantidadeRegistrosIndividuaisPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade)
         {
-            var sql = @"";
-            if (ueId == 0)
-            {
-                sql = @" select  
-                            t.ano,
+            var condicaoSelectTurma = ueId > 0 ? " t.nome ," : "";
+            var condicaoSelectAno = ueId == 0 ? " t.ano ," : "";
+            var condicaogroupbyAno = ueId == 0 ? "group by t.ano" : "";
+            var condicaogroupbyTurma = ueId > 0 ? "group by t.nome" : "";
+            var condicaoDre = dreId > 0 ? " and ue.dre_id = @dreId " : "";
+            var condicaoUe = ueId > 0 ? " and t.ue_id = @ueId " : "";
+
+            var sql = $@" select  
+                            {condicaoSelectTurma}
+                            {condicaoSelectAno}
                             count(ri.id) as quantidadeRegistrosIndividuais
                         from registro_individual ri
                         inner join turma t on ri.turma_id = t.id  
                             inner join ue on ue.id = t.ue_id
-                            inner join dre on dre.id = ue.dre_id
                         where not ri.excluido
                             and t.ano_letivo = @anoLetivo
-                        group by t.ano ";
-            }
-            else
-            {
-                sql = @" select
-                            t.nome as turma,
-                            count(ri.id) as quantidadeRegistrosIndividuais
-                        from registro_individual ri
-                        inner join turma t on ri.turma_id = t.id
-                        inner join ue on ue.id = t.ue_id
-                        inner join dre on dre.id = ue.dre_id
-                        where not ri.excluido
-                            and t.ano_letivo = @anoLetivo
-                            and dre.id = @dreId
-	                        and t.ue_id = @ueId
-                        group by t.nome ";
-            }
+                            {condicaoDre}
+                            {condicaoUe}
+                            {condicaogroupbyAno} 
+                            {condicaogroupbyTurma} ";
 
             return await database.Conexao.QueryAsync<QuantidadeRegistrosIndividuaisPorAnoTurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
         }
