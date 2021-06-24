@@ -154,7 +154,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<QuantidadeRegistrosIndividuaisPorAnoTurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
         }
 
-        public async Task<IEnumerable<RegistroIndividualDTO>> ObterTurmasComRegistrosIndividuaisInfantilEAnoAsync(int anoLetivo)
+        public async Task<IEnumerable<RegistroIndividualDTO>> ObterTurmasComRegistrosIndividuaisInfantilEAnoAsync(int anoLetivo, int[] modalidades)
         {
             var query = @" select 
                                 distinct
@@ -164,13 +164,13 @@ namespace SME.SGP.Dados.Repositorios
                             inner join turma tu on ri.turma_id = tu.id 
                             where not ri.excluido 
 	                            and tu.ano_letivo = @anoLetivo
-	                            and tu.modalidade_codigo in (1,2)
+                                and tu.modalidade_codigo = ANY(@modalidades)
                             order by ri.turma_id ";
 
-            return await database.Conexao.QueryAsync<RegistroIndividualDTO>(query, new { anoLetivo });
+            return await database.Conexao.QueryAsync<RegistroIndividualDTO>(query, new { anoLetivo, modalidades });
         }
 
-        public async Task<IEnumerable<AlunoInfantilComRegistroIndividualDTO>> ObterAlunosInfantilComRegistrosIndividuaisPorTurmaAnoAsync(long turmaCodigo, int anoLetivo)
+        public async Task<IEnumerable<AlunoInfantilComRegistroIndividualDTO>> ObterAlunosInfantilComRegistrosIndividuaisPorTurmaAnoAsync(long turmaCodigo, int anoLetivo, int[] modalidades)
         {
             var query = @" select 
                                 distinct
@@ -181,13 +181,13 @@ namespace SME.SGP.Dados.Repositorios
                             where not ri.excluido 
 	                            and tu.ano_letivo = @anoLetivo
                                 and ri.turma_id = @turmaCodigo
-	                            and tu.modalidade_codigo in (1,2)
+	                            and tu.modalidade_codigo = ANY(@modalidades)
                             order by tu.id ";
 
-            return await database.Conexao.QueryAsync<AlunoInfantilComRegistroIndividualDTO>(query, new { turmaCodigo, anoLetivo });
+            return await database.Conexao.QueryAsync<AlunoInfantilComRegistroIndividualDTO>(query, new { turmaCodigo, anoLetivo, modalidades });
         }
 
-        public async Task<IEnumerable<RegistroIndividualAlunoDTO>> ObterRegistrosIndividuaisPorTurmaAlunoAsync(long turmaCodigo, long codigoAluno)
+        public async Task<IEnumerable<RegistroIndividualAlunoDTO>> ObterRegistrosIndividuaisPorTurmaAlunoAsync(long turmaCodigo, long codigoAluno, int[] modalidades)
         {
             var query = @" select 
                                 distinct
@@ -198,10 +198,10 @@ namespace SME.SGP.Dados.Repositorios
                             where not ri.excluido 
                                 and ri.turma_id = @turmaCodigo
                                 and ri.aluno_codigo = @codigoAluno
-	                            and tu.modalidade_codigo in (1,2)
+	                            and tu.modalidade_codigo = ANY(@modalidades)
                             order by ri.data_registro ";
 
-            return await database.Conexao.QueryAsync<RegistroIndividualAlunoDTO>(query, new { turmaCodigo, codigoAluno });
+            return await database.Conexao.QueryAsync<RegistroIndividualAlunoDTO>(query, new { turmaCodigo, codigoAluno, modalidades });
         }
     }
 }

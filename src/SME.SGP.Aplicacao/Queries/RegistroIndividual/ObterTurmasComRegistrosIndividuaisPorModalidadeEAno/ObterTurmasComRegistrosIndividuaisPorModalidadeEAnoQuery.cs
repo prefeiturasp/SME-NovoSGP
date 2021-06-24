@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 
@@ -10,9 +11,11 @@ namespace SME.SGP.Aplicacao
         public ObterTurmasComRegistrosIndividuaisPorModalidadeEAnoQuery(int anoLetivo)
         {
             AnoLetivo = anoLetivo;
+            Modalidades = new[] { (int)Modalidade.InfantilPreEscola, (int)Modalidade.InfantilCEI };
         }
 
         public int AnoLetivo { get; set; }
+        public int[] Modalidades { get; set; }
     }
 
     public class ObterTurmasComRegistrosIndividuaisPorModalidadeEAnoQueryValidator : AbstractValidator<ObterTurmasComRegistrosIndividuaisPorModalidadeEAnoQuery>

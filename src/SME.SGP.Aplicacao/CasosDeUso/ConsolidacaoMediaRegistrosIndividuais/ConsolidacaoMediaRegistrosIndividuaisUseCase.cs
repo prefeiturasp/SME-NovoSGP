@@ -32,7 +32,8 @@ namespace SME.SGP.Aplicacao
 
                         if (registrosIndividuaisAluno != null && registrosIndividuaisAluno.Any())
                         {
-                            var datasDeRegistro = ObterDatasDeRegistroIndividualAluno(registrosIndividuaisAluno);
+
+                            var datasDeRegistro = registrosIndividuaisAluno.Select(r => r.DataRegistro).ToList();
 
                             // Media por aluno
                             var mediaEntreDatasPorAluno = ObterMediaRegistroIndividualPorAluno(alunoRegistroIndividual.TurmaId, alunoRegistroIndividual.AlunoCodigo, datasDeRegistro);
@@ -53,14 +54,6 @@ namespace SME.SGP.Aplicacao
                 SentrySdk.CaptureException(ex);
                 throw;
             }
-        }
-
-        private static List<DateTime> ObterDatasDeRegistroIndividualAluno(IEnumerable<RegistroIndividualAlunoDTO> registrosIndividuaisAluno)
-        {
-            var datasDeRegistro = new List<DateTime>();
-            foreach (var item in registrosIndividuaisAluno)
-                datasDeRegistro.Add(item.DataRegistro);
-            return datasDeRegistro;
         }
 
         private static MediaRegistoIndividualCriancaDTO ObterMediaRegistroIndividualPorAluno(long turmaId, long alunoCodigo, List<DateTime> datasDeRegistro)
