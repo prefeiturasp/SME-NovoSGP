@@ -23,7 +23,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ResolverPendenciaPlanoAEECommand request, CancellationToken cancellationToken)
         {
             var pendenciasPlano = await repositorioPendencia.ObterIdsPendenciasPorPlanoAEEId(request.PlanoAEEId);
-            await ResolverPendencias((long[])pendenciasPlano);
+            if (pendenciasPlano != null)
+                await ResolverPendencias((long[])pendenciasPlano);
             return true;
         }
 
