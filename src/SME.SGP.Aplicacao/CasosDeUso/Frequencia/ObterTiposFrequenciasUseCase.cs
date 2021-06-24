@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
         {
             switch (modalidade)
             {
-                case Modalidade.InfantilCEI:
+                case Modalidade.EducacaoInfantil:
                     return TipoParametroSistema.HabilitaFrequenciaRemotaEICEI;
                 case Modalidade.EJA:
                     return TipoParametroSistema.HabilitaFrequenciaRemotaEJA;
