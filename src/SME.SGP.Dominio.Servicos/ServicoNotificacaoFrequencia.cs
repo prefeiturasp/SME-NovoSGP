@@ -368,7 +368,7 @@ namespace SME.SGP.Dominio.Servicos
             return alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas &&
                             ((c.ModalidadeCodigo == Modalidade.Fundamental && anosFundamental.Contains(c.Ano))
                             || c.QuantidadeAulas >= 3
-                            || c.ModalidadeCodigo == Modalidade.InfantilPreEscola));
+                            || c.ModalidadeCodigo == Modalidade.EducacaoInfantil));
         }
 
         private void NotificacaoAlunosFaltososTurma(string funcionarioId, IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, int quantidadeDias)
@@ -443,7 +443,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<IEnumerable<(Cargo?, Usuario)>> BuscaProfessorAula(RegistroFrequenciaFaltanteDto turma)
         {
-            if (turma.ModalidadeTurma == Modalidade.InfantilPreEscola)
+            if (turma.ModalidadeTurma == Modalidade.EducacaoInfantil)
             {
                 var disciplinaEols = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
                 if (disciplinaEols != null)

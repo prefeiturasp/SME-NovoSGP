@@ -1,0 +1,1 @@
+update turma set modalidade_codigo = 1 where modalidade_codigo = 2;
