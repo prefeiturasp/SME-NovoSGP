@@ -122,7 +122,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<QuantidadeRegistrosIndividuaisPorAnoTurmaDTO>> ObterQuantidadeRegistrosIndividuaisPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade)
         {
-            var condicaoSelectTurma = ueId > 0 ? " t.nome ," : "";
+            var condicaoSelectTurma = ueId > 0 ? " t.nome as turma," : "";
             var condicaoSelectAno = ueId == 0 ? " t.ano ," : "";
             var condicaogroupbyAno = ueId == 0 ? "group by t.ano" : "";
             var condicaogroupbyTurma = ueId > 0 ? "group by t.nome" : "";
