@@ -126,7 +126,7 @@ namespace SME.SGP.Dados.Repositorios
             var condicaoSelectAno = ueId == 0 ? " t.ano ," : "";
             var condicaogroupbyAno = ueId == 0 ? "group by t.ano" : "";
             var condicaogroupbyTurma = ueId > 0 ? "group by t.nome" : "";
-            var condicaoDre = dreId > 0 ? " and dre.id = @dreId " : "";
+            var condicaoDre = dreId > 0 ? " and ue.dre_id = @dreId " : "";
             var condicaoUe = ueId > 0 ? " and t.ue_id = @ueId " : "";
 
             var sql = $@" select  
@@ -136,7 +136,6 @@ namespace SME.SGP.Dados.Repositorios
                         from registro_individual ri
                         inner join turma t on ri.turma_id = t.id  
                             inner join ue on ue.id = t.ue_id
-                            inner join dre on dre.id = ue.dre_id
                         where not ri.excluido
                             and t.ano_letivo = @anoLetivo
                             {condicaoDre}
