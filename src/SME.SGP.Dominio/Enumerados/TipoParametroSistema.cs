@@ -132,6 +132,8 @@ namespace SME.SGP.Dominio
         ExecucaoConsolidacaoMediaRegistrosIndividuaisTurma = 71,
 
         PeriodoDeDiasSemRegistroIndividual = 73,
+
+        AgrupamentoTurmasFiltro = 74,
         //Sistema
         HabilitarServicosEmBackground = 100
     }
