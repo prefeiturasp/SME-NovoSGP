@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         {
             TurmaCodigo = turmaCodigo;
             AlunoCodigo = alunoCodigo;
-            Modalidades = new[] { (int)Modalidade.InfantilPreEscola, (int)Modalidade.InfantilCEI};
+            Modalidades = new[] { (int)Modalidade.InfantilPreEscola};
         }
 
         public long AlunoCodigo { get; set; }

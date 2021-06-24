@@ -202,7 +202,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            and tu.modalidade_codigo = ANY(@modalidades)
                             order by ri.data_registro ";
 
-            return await database.Conexao.QueryAsync<RegistroIndividualAlunoDTO>(query, new { turmaCodigo, codigoAluno });
+            return await database.Conexao.QueryAsync<RegistroIndividualAlunoDTO>(query, new { turmaCodigo, codigoAluno, modalidades });
          }
 
         public async Task<IEnumerable<RegistroItineranciaPorAnoDto>> ObterQuantidadeDeAunosSemRegistroPorPeriodoAsync(int anoLetivo, long dreId, Modalidade modalidade, DateTime dataInicial)
@@ -274,5 +274,6 @@ namespace SME.SGP.Dados.Repositorios
                             order by z.nome";
             return await database.Conexao.QueryAsync<GraficoBaseDto>(query, new { anoLetivo, ueId, modalidade, dataInicial });
         }
+
     }
 }
