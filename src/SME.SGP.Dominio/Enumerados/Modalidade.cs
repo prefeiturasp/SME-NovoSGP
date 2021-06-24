@@ -4,11 +4,8 @@ namespace SME.SGP.Dominio
 {
     public enum Modalidade
     {
-        [Display(Name = "Infantil Pré-escola", ShortName = "EI_Pré")]
-        InfantilPreEscola = 1,
-
-        [Display(Name = "Infantil CEI", ShortName = "EI_CEI")]
-        InfantilCEI = 2,
+        [Display(Name = "Infantil", ShortName = "EI")]
+        EducacaoInfantil = 1,
 
         [Display(Name = "EJA", ShortName = "EJA")]
         EJA = 3,
@@ -38,7 +35,7 @@ namespace SME.SGP.Dominio
         {
             switch (modalidade)
             {
-                case Modalidade.InfantilPreEscola:
+                case Modalidade.EducacaoInfantil:
                     return ModalidadeTipoCalendario.Infantil;
                 case Modalidade.Fundamental:
                 case Modalidade.Medio:

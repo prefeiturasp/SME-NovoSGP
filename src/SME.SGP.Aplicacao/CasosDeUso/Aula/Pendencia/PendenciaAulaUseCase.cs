@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
         private async Task VerificaPendenciasDiarioDeBordo()
         {
             var aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.DiarioBordo, "diario_bordo",
-                new long[] { (int)Modalidade.InfantilPreEscola }));
+                new long[] { (int)Modalidade.EducacaoInfantil }));
 
             if (aulas != null && aulas.Any())
                 await RegistraPendencia(aulas, TipoPendencia.DiarioBordo);
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
         private async Task VerificaPendenciasFrequencia()
         {
             var aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.Frequencia, "registro_frequencia",
-                new long[] { (int)Modalidade.InfantilPreEscola, (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio }));
+                new long[] { (int)Modalidade.EducacaoInfantil, (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio }));
 
             try
             {
