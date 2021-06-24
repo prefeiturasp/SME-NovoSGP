@@ -10,7 +10,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Authorize("Bearer")]
-    [Route("api/v1/dashboard/registro_individual")]
+    [Route("api/v1/dashboard/registros_individuais")]
     public class DashboardRegistroIndividualController : Controller
     {
         [HttpGet("total-ano-turma")]
@@ -23,12 +23,42 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
-        [HttpGet("consolidacao")]
+        [HttpGet("media")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(IEnumerable<GraficoTotalDiariosPendentesDTO>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoBaseDto>), 200)]
+        [Permissao(Permissao.DRIN_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterDadosDashboard([FromQuery] FiltroDasboardRegistroIndividualDTO filtro, [FromServices] IObterDadosDashboardRegistrosIndividuaisUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }        
+        
+        [HttpGet("ultima-consolidacao")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(string), 200)]
         [Permissao(Permissao.DRIN_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterUltimaConsolidacao([FromQuery] int anoLetivo, [FromServices] IObterUltimaConsolidacaoMediaRegistrosIndividuaisUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo));
+        }
+
+        [HttpGet("alunos-sem-registro")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoBaseDto>), 200)]
+        [Permissao(Permissao.DRIN_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterDadosAlunosSemRegistro([FromQuery] FiltroDasboardRegistroIndividualDTO filtro, [FromServices] IObterDashboardQuantidadeDeAlunosSemRegistroPorPeriodoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+        
+        [HttpGet("quantidade-dias-sem-registro")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoBaseDto>), 200)]
+        [Permissao(Permissao.DRIN_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuantidadeDiasSemRegistro(int anoLetivo, [FromServices] IObterParametroDiasSemRegistroIndividualUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo));
         }

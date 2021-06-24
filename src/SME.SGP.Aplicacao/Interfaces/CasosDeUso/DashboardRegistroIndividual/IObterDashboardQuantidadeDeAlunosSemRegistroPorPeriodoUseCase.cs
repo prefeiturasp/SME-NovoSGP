@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterQuantidadeRegistrosIndividuaisPorAnoTurmaUseCase
+    public interface IObterDashboardQuantidadeDeAlunosSemRegistroPorPeriodoUseCase
     {
         Task<IEnumerable<GraficoBaseDto>> Executar(FiltroDasboardRegistroIndividualDTO filtro);
     }
