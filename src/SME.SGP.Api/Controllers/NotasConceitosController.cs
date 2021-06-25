@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -85,6 +86,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("ues/{ueId}/turmas/{turmaId}/alunos/{alunoCodigo}")]
         [ProducesResponseType(typeof(IEnumerable<ConceitoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Authorize("Bearer")]
         public async Task<IActionResult> ObterNotasPorBimestresUeAlunoTurma(long ueId, long turmaId, string alunoCodigo, [FromQuery] int[] bimestres, [FromServices] IObterNotasPorBimestresUeAlunoTurmaUseCase useCase)
         {
             return Ok(await useCase.Executar(new NotaConceitoPorBimestresAlunoTurmaDto(ueId, turmaId, alunoCodigo, bimestres)));
