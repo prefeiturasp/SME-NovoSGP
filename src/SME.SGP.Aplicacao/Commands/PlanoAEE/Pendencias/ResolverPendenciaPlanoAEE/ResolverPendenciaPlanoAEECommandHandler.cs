@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             var pendenciasPlano = await repositorioPendencia.ObterIdsPendenciasPorPlanoAEEId(request.PlanoAEEId);
             if (pendenciasPlano != null)
-                await ResolverPendencias((long[])pendenciasPlano);
+                await ResolverPendencias(pendenciasPlano);
             return true;
         }
 

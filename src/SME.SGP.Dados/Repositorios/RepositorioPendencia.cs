@@ -66,13 +66,14 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
-        public async Task<IEnumerable<long>> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)
+        public async Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)
         {
             var query = @"select p.id 
                             from pendencia_plano_aee paee
                             inner join pendencia p on paee.pendencia_id = p.id and p.situacao != 3
                           where paee.plano_aee_id = @planoAeeId";
-            return await database.Conexao.QueryAsync<long>(query, new { planoAeeId });            
+            var idsPendencias = await database.Conexao.QueryAsync<long>(query, new { planoAeeId });
+            return idsPendencias.AsList().ToArray();
         }
 
         public async Task AtualizarStatusPendenciasPorIds(long[] ids, SituacaoPendencia situacaoPendencia)
