@@ -527,10 +527,9 @@ namespace SME.SGP.Dominio.Servicos
             var tituloMensagem = $"Título: Alteração extemporânea de frequência  da turma {registroFrequencia.NomeTurma} no componente curricular {disciplina}.";
 
             StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.Append($"O Professor {usuarioAlteracao} realizou alterações no registro de frequência do dia {registroFrequencia.DataAula} da turma {registroFrequencia.NomeTurma} ({registroFrequencia.NomeUe}) no componente curricular {disciplina}.");
-
-            var hostAplicacao = configuration["UrlFrontEnd"];
-            mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/frequencia-plano-aula'>Clique aqui para acessar esse registro.</a>");
+            mensagemUsuario.Append($"O Professor {usuarioAlteracao} realizou alterações no registro de frequência do dia {registroFrequencia.DataAula.ToString("dd/MM/yyyy")}");
+            mensagemUsuario.Append($" da turma {registroFrequencia.NomeTurma} da {registroFrequencia.NomeTipoEscola} {registroFrequencia.NomeUe} ({registroFrequencia.NomeDre}) no componente curricular {disciplina}.");
+            mensagemUsuario.Append($"Para visualizar esse registro acesse 'Diário de Classe > Frequência/Plano Aula'");
 
             var notificacao = new Notificacao()
             {

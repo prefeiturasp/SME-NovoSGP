@@ -103,12 +103,16 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select a.ue_id as codigoUe, a.turma_id as codigoTurma
                             , a.disciplina_id as codigoDisciplina, a.data_aula as DataAula
-	                        , a.professor_rf as professorRf, t.nome as nomeTurma, ue.nome as nomeUe
+                            , a.professor_rf as professorRf, t.nome as nomeTurma, ue.nome as nomeUe
                             , ue.dre_id as codigoDre
-                         from registro_frequencia rf
-                        inner join aula a on a.id = rf.aula_id
-                        inner join turma t on t.turma_id = a.turma_id
-                        inner join ue on ue.ue_id = a.ue_id
+                            , te.descricao nomeTipoEscola
+                            , d.abreviacao nomeDre
+                           from registro_frequencia rf
+                           inner join aula a on a.id = rf.aula_id
+                           inner join turma t on t.turma_id = a.turma_id
+                           inner join ue on ue.ue_id = a.ue_id
+                           inner join tipo_escola te on ue.tipo_escola = te.id
+                           inner join dre d on d.id = ue.dre_id
                         where rf.id = @registroFrequenciaId";
 
             return database.Conexao.QueryFirstOrDefault<RegistroFrequenciaAulaDto>(query, new { registroFrequenciaId });
