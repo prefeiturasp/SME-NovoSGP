@@ -211,13 +211,13 @@ namespace SME.SGP.Aplicacao
             var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
             var disciplinasDaTurmaEol = await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma);
             var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
-            var gruposMatrizes = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null).GroupBy(c => c.GrupoMatrizNome).ToList();
+            var gruposMatrizes = disciplinasDaTurma.Where(c => c.RegistraFrequencia && c.GrupoMatrizNome != null).GroupBy(c => c.GrupoMatrizNome).ToList();
             var somaFrequenciaFinal = 0.0;
             var totalDisciplinas = 0;
 
-            foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key))
+            foreach (var grupoDisciplinasMatriz in gruposMatrizes.OrderBy(k => k.Key))
             {
-                foreach (var disciplina in grupoDisiplinasMatriz)
+                foreach (var disciplina in grupoDisciplinasMatriz)
                 {
                     var somaPercentualFrequenciaDisciplinaBimestre = 0.0;
                     periodos.ToList().ForEach(p =>
@@ -230,7 +230,7 @@ namespace SME.SGP.Aplicacao
                     var mediaFinalFrequenciaDiscipina = Math.Round(somaPercentualFrequenciaDisciplinaBimestre / periodos.Count(), 2);
                     somaFrequenciaFinal += mediaFinalFrequenciaDiscipina;
                 }
-                totalDisciplinas += grupoDisiplinasMatriz.Count();
+                totalDisciplinas += grupoDisciplinasMatriz.Count();
             }
 
             return Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
