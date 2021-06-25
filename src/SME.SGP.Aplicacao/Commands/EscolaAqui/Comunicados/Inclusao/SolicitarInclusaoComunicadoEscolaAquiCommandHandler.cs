@@ -8,7 +8,6 @@ using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +18,6 @@ namespace SME.SGP.Aplicacao
         private const string TODAS = "todas";
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepositorioComunicado _repositorioComunicado;
-        private readonly IRepositorioComunicadoGrupo _repositorioComunicadoGrupo;
         private readonly IRepositorioComunicadoTurma _repositorioComunicadoTurma;
         private readonly IRepositorioComunicadoAluno _repositorioComunicadoAluno;
         private readonly IServicoAcompanhamentoEscolar _servicoAcompanhamentoEscolar;
@@ -29,7 +27,6 @@ namespace SME.SGP.Aplicacao
         public SolicitarInclusaoComunicadoEscolaAquiCommandHandler(
               IRepositorioComunicado repositorioComunicado
             , IUnitOfWork unitOfWork
-            , IRepositorioComunicadoGrupo repositorioComunicadoGrupo
             , IRepositorioComunicadoTurma repositorioComunicadoTurma
             , IRepositorioComunicadoAluno repositorioComunicadoAluno
             , IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar
@@ -39,7 +36,6 @@ namespace SME.SGP.Aplicacao
         {
             this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this._repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
-            this._repositorioComunicadoGrupo = repositorioComunicadoGrupo ?? throw new ArgumentNullException(nameof(repositorioComunicadoGrupo));
             this._repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this._repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
             this._servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new ArgumentNullException(nameof(servicoAcompanhamentoEscolar));
@@ -61,9 +57,6 @@ namespace SME.SGP.Aplicacao
                 _unitOfWork.IniciarTransacao();
 
                 var id = await _repositorioComunicado.SalvarAsync(comunicado);
-
-                // Grupos
-                await SalvarComunicadosParaGrupos(id, request);
 
                 comunicado.AtualizarIdAlunos();
                 comunicado.AtualizarIdTurmas();
@@ -253,12 +246,6 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.Semestre = comunicado.Semestre;
             comunicadoServico.SeriesResumidas = comunicado.SeriesResumidas;
             comunicadoServico.Modalidades = IdentificarModalidadePeloGrupo(comunicado.Grupos.Select(x => x.Id).ToList());
-        }
-
-        private async Task SalvarComunicadosParaGrupos(long id, SolicitarInclusaoComunicadoEscolaAquiCommand comunicado)
-        {
-            foreach (var grupoId in comunicado.GruposId)
-                await _repositorioComunicadoGrupo.SalvarAsync(new ComunicadoGrupo { ComunicadoId = id, GrupoComunicadoId = grupoId });
         }
 
         private async Task SalvarComunicadosParaTurmas(IEnumerable<ComunicadoTurma> turmas)

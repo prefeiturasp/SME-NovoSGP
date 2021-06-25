@@ -158,8 +158,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasFechamentoTurma, ConsultasFechamentoTurma>();
             services.TryAddScoped<IConsultasConselhoClasse, ConsultasConselhoClasse>();
             services.TryAddScoped<IConsultasConselhoClasseAluno, ConsultasConselhoClasseAluno>();
-            services.TryAddScoped<IConsultasConselhoClasseNota, ConsultasConselhoClasseNota>();
-            services.TryAddScoped<IConsultaGrupoComunicacao, ConsultaGrupoComunicacao>();
+            services.TryAddScoped<IConsultasConselhoClasseNota, ConsultasConselhoClasseNota>();            
             services.TryAddScoped<IConsultaComunicado, ConsultaComunicado>();
             services.TryAddScoped<IConsultasConselhoClasseRecomendacao, ConsultasConselhoClasseRecomendacao>();
             services.TryAddScoped<IConsultasRelatorioSemestralTurmaPAP, ConsultasRelatorioSemestralTurmaPAP>();
@@ -262,11 +261,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConselhoClasse, RepositorioConselhoClasse>();
             services.TryAddScoped<IRepositorioConselhoClasseAluno, RepositorioConselhoClasseAluno>();
             services.TryAddScoped<IRepositorioConselhoClasseAlunoTurmaComplementar, RepositorioConselhoClasseAlunoTurmaComplementar>();
-            services.TryAddScoped<IRepositorioConselhoClasseNota, RepositorioConselhoClasseNota>();
-            services.TryAddScoped<IRepositorioGrupoComunicacao, RepositorioGrupoComunicacao>();
+            services.TryAddScoped<IRepositorioConselhoClasseNota, RepositorioConselhoClasseNota>();            
             services.TryAddScoped<IRepositorioComunicado, RepositorioComunicado>();
-            services.TryAddScoped<IRepositorioWfAprovacaoNotaFechamento, RepositorioWfAprovacaoNotaFechamento>();
-            services.TryAddScoped<IRepositorioComunicadoGrupo, RepositorioComunicacaoGrupo>();
+            services.TryAddScoped<IRepositorioWfAprovacaoNotaFechamento, RepositorioWfAprovacaoNotaFechamento>();            
             services.TryAddScoped<IRepositorioConselhoClasseRecomendacao, RepositorioConselhoClasseRecomendacao>();
             services.TryAddScoped<IRepositorioCicloEnsino, RepositorioCicloEnsino>();
             services.TryAddScoped<IRepositorioTipoEscola, RepositorioTipoEscola>();
