@@ -19,11 +19,18 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(NotasConceitosRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
-        public async Task<IActionResult> Get([FromQuery] ListaNotasConceitosConsultaDto consultaListaNotasConceitosDto, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
+        public async Task<IActionResult> Get([FromQuery] ListaNotasConceitosConsultaRefatoradaDto consultaListaNotasConceitosDto, [FromServices] IObterNotasParaAvaliacoesUseCase obterNotasParaAvaliacoesUseCase)
         {
-            return Ok(await consultasNotasConceitos.ListarNotasConceitos(consultaListaNotasConceitosDto));
+            return Ok(await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto));                         
         }
-
+        [HttpGet("periodos")]
+        [ProducesResponseType(typeof(IEnumerable<PeriodosParaConsultaNotasDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPeriodosParaConsulta([FromQuery] ObterPeriodosParaConsultaNotasFiltroDto filtro, [FromServices] IObterPeriodosParaConsultaNotasUseCase obterNotasParaAvaliacoesUseCase)
+        {
+            return Ok(await obterNotasParaAvaliacoesUseCase.Executar(filtro));
+        }
         [HttpGet("/api/v1/avaliacoes/{atividadeAvaliativaId}/notas/{nota}/arredondamento")]
         [ProducesResponseType(typeof(double), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

@@ -62,7 +62,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<EventoCompletoDto> ObterPorId(long id)
         {
-            var evento = await repositorioEvento.ObterPorIdAsync(id);
+            var evento = await repositorioEvento.ObterEventoAtivoPorId(id);
+
+            if (evento == null)
+                return null;
+
             evento.TipoEvento = await repositorioEventoTipo.ObterPorIdAsync(evento.TipoEventoId);
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 

@@ -162,6 +162,14 @@ namespace SME.SGP.Dominio
             return !(EhAulaCompartilhada || (EhTecnologiaAprendizagem && turma.ModalidadeCodigo == Modalidade.EJA));
         }
 
+        public bool PermiteRegistroFrequencia()
+        {
+            if (Turma == null)
+                throw new NegocioException("A turma não foi preenchida.");
+
+            return !(EhAulaCompartilhada || (EhTecnologiaAprendizagem && Turma.ModalidadeCodigo == Modalidade.EJA));
+        }
+
         public void PodeSerAlterada(Usuario usuario)
         {
             if (AulaCJ && (usuario.EhProfessor() || usuario.EhProfessorCj()) && (usuario.CodigoRf != this.CriadoRF))

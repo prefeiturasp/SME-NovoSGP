@@ -64,7 +64,7 @@ namespace SME.SGP.Dominio.Servicos
             else
                 funcionarios = servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)cargo);
 
-            var funcionariosDisponiveis = funcionarios.Where(f => !f.EstaAfastado);
+            var funcionariosDisponiveis = funcionarios?.Where(f => !f.EstaAfastado);
 
             if (cargo == Cargo.Supervisor ? 
                 supervisoresEscola == null || !supervisoresEscola.Any() :

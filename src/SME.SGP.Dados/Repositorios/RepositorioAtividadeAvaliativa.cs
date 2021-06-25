@@ -516,5 +516,18 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<AvaliacoesPorTurmaComponenteDto>(query, new { ueId, dataInicio, dataFim });
         }
+        public async Task<IEnumerable<AtividadeAvaliativa>> ObterPorTurmaDisciplinasPeriodoAsync(string turmaCodigo, string[] disciplinasId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var sql = new StringBuilder();
+
+            MontaQueryCabecalho(sql, false);
+            sql.AppendLine(fromCompleto);
+            sql.AppendLine("where a.excluido = false");
+            sql.AppendLine("and a.turma_id = @turmaCodigo");
+            sql.AppendLine("and a.data_avaliacao::date >= @inicioPeriodo::date and a.data_avaliacao::date <= @fimPeriodo::date");
+            sql.AppendLine("and aad.disciplina_id = any(@disciplinasId)");
+
+            return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinasId });
+        }
     }
 }
