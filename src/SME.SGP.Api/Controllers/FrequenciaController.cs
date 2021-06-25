@@ -157,7 +157,6 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("frequencias/turmas/{turmaCodigo}/alunos/{alunoCodigo}/componentes-curriculares/{componenteCurricularId}")]
         [ProducesResponseType(typeof(IEnumerable<FrequenciaAluno>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PDA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFrequenciasPorBimestresAlunoTurmaComponenteCurricular(string turmaCodigo, string alunoCodigo, string componenteCurricularId, [FromQuery] int[] bimestres, [FromServices] IObterFrequenciasPorBimestresAlunoTurmaComponenteCurricularUseCase useCase)
         {
             return Ok(await useCase.Executar(new FrequenciaPorBimestresAlunoTurmaComponenteCurricularDto(turmaCodigo, alunoCodigo, bimestres, componenteCurricularId)));
