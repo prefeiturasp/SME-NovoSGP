@@ -7,6 +7,7 @@ namespace SME.SGP.Infra
     public class RegistroFrequenciaAulaDto
     {
         public string CodigoDre { get; set; }
+        public string NomeDre { get; set; }
         public string CodigoUe { get; set; }
         public string NomeUe { get; set; }
         public string CodigoTurma { get; set; }
@@ -14,5 +15,6 @@ namespace SME.SGP.Infra
         public string CodigoDisciplina { get; set; }
         public string ProfessorRf { get; set; }
         public DateTime DataAula { get; set; }
+        public string NomeTipoEscola { get; set; }        
     }
 }
