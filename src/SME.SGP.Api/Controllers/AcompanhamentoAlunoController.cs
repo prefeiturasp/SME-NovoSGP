@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
     public class AcompanhamentoAlunoController : Controller
     {
         [HttpPost("semestres")]
-        [ProducesResponseType(typeof(IEnumerable<AuditoriaDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AcompanhamentoAlunoSemestreAuditoriaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Salvar([FromServices] ISalvarAcompanhamentoAlunoUseCase useCase, [FromBody] AcompanhamentoAlunoDto dto)
              => Ok(await useCase.Executar(dto));
