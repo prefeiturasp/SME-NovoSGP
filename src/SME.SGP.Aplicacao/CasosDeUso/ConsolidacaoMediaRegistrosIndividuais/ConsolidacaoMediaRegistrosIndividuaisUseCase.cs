@@ -41,8 +41,11 @@ namespace SME.SGP.Aplicacao
                             mediaPorCriancaTurma.Add(mediaEntreDatasPorAluno);
                         }
                     }
+
+                    var quantidadeAlunosComRegistro = alunosInfantilComRegistrosIndividuais.Select(a => a.AlunoCodigo).Distinct().Count();
+
                     // Media Geral Turma
-                    var mediaGeralPorTurma = (mediaPorCriancaTurma.Sum(m => m.Media) / alunosInfantilComRegistrosIndividuais.Count());
+                    var mediaGeralPorTurma = (mediaPorCriancaTurma.Sum(m => m.Media) / quantidadeAlunosComRegistro);
 
                     if (mediaGeralPorTurma > 0)
                         await mediator.Send(new RegistraConsolidacaoMediaRegistroIndividualCommand(alunosInfantilComRegistrosIndividuais.FirstOrDefault().TurmaId, mediaGeralPorTurma));
@@ -71,7 +74,7 @@ namespace SME.SGP.Aplicacao
             if (datas.Count > 2)
                 return ((int)datas.ToList().LastOrDefault().Subtract(datas.FirstOrDefault()).TotalDays / (datas.ToList().Count - 1));
             else
-                return (int)datas.LastOrDefault().Subtract(datas.FirstOrDefault()).TotalDays / datas.Count;
+                return (int)datas.LastOrDefault().Subtract(datas.FirstOrDefault()).TotalDays;
         }
     }
 }
