@@ -29,7 +29,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await ObterTipoDeCalendarioDaTurmaUseCase.Executar(mediator, new ObterTipoDeCalendarioDaTurmaEntrada() { TurmaCodigo = turmaCodigo }));
         }
         [HttpGet("modalidades")]
-        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioSugestaoDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<TurmaModalidadeCodigoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterModalidades([FromQuery] string[] turmasCodigo, [FromServices] IObterTurmaModalidadesPorCodigosUseCase obterTurmaModalidadesPorCodigos)
