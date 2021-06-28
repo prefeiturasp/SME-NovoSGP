@@ -346,6 +346,11 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioConsolidacaoDevolutivas, RepositorioConsolidacaoDevolutivas>();
 
             services.TryAddScopedWorkerService<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
+
+
+            // Consolidacao de Acompanhamento Aprendizagem Aluno
+            services.TryAddScoped<IRepositorioConsolidacaoAcompanhamentoAprendizagemAluno, RepositorioConsolidacaoAcompanhamentoAprendizagemAluno>();
+
         }
 
         private static void RegistrarServicos(IServiceCollection services)

@@ -1,8 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -39,6 +37,28 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select id from acompanhamento_aluno where not excluido and turma_id = @turmaId and aluno_codigo = @alunoCodigo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, alunoCodigo });
+        }
+
+        public async Task<int> ObterTotalAlunosComAcompanhamentoPorTurmaAnoLetivoESemestre(long turmaId, int anoLetivo, int semestre)
+        {
+            try
+            {
+                var query = @"select count(distinct rfa.codigo_aluno)
+                              from registro_frequencia_aluno rfa
+                                inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id and not rf.excluido
+                                inner join aula a on a.id = rf.aula_id and not a.excluido
+                                inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim
+                                inner join turma t on t.turma_id = a.turma_id
+                              where not rfa.excluido
+                              and t.id = @turmaId
+                              and pe.bimestre in (1,2)";
+
+                return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, anoLetivo, semestre });
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

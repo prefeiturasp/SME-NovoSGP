@@ -186,6 +186,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new FrequenciaPreDefinidaMap());
                config.AddMap(new RegistroFrequenciaAlunoMap());
                config.AddMap(new ConsolidacaoRegistroIndividualMediaMap());
+               config.AddMap(new ConsolidacaoAcompanhamentoAprendizagemAlunoMap());
 
                config.ForDommel();
            });
