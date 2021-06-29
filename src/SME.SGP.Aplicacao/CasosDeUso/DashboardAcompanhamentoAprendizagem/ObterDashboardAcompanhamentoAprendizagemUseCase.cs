@@ -13,8 +13,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<DashboardAcompanhamentoAprendizagemDto>> Executar(FiltroDashboardAcompanhamentoAprendizagemDto filtro)
-        {
-            await mediator.Send(new ObterDashBoardEncaminhamentoAprendizagemQuery());
-        }
+            => await mediator.Send(new ObterDashBoardEncaminhamentoAprendizagemQuery(filtro.AnoLetivo, filtro.DreId, filtro.UeId, filtro.Semestre));
     }
 }
