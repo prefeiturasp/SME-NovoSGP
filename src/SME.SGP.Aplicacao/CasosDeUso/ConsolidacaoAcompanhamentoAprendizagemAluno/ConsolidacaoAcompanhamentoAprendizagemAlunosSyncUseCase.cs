@@ -50,17 +50,7 @@ namespace SME.SGP.Aplicacao
             if (turmas == null && !turmas.Any())
                 throw new NegocioException("Não foi possível localizar turmas para consolidar dados de Média de Registros Individuais");
 
-            var turmasTeste = new List<TurmaDTO>
-            {
-                new TurmaDTO() { TurmaId = 621623 },
-                new TurmaDTO() { TurmaId = 621624 },
-                new TurmaDTO() { TurmaId = 621625 },
-                new TurmaDTO() { TurmaId = 621626 },
-                new TurmaDTO() { TurmaId = 626178 },
-                new TurmaDTO() { TurmaId = 631597 }
-            };
-
-            foreach (var turma in turmasTeste)
+            foreach (var turma in turmas)
             {
                 try
                 {
