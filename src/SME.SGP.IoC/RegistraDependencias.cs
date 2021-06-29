@@ -280,6 +280,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioHistoricoReinicioSenha, RepositorioHistoricoReinicioSenha>();
             services.TryAddScoped<IRepositorioComunicadoAluno, RepositorioComunicadoAluno>();
             services.TryAddScoped<IRepositorioComunicadoTurma, RepositorioComunicadoTurma>();
+            services.TryAddScoped<IRepositorioComunicadoModalidade, RepositorioComunicadoModalidade>();
             services.TryAddScoped<IRepositorioDiarioBordo, RepositorioDiarioBordo>();
             services.TryAddScoped<IRepositorioDevolutiva, RepositorioDevolutiva>();
             services.TryAddScoped<IRepositorioAnoEscolar, RepositorioAnoEscolar>();
