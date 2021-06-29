@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("acompanhamento-aluno")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(IEnumerable<DashboardAcompanhamentoAprendizagemDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoBaseDto>), 200)]
         [Permissao(Permissao.DAA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterDashAcompanhamento([FromQuery] FiltroDashboardAcompanhamentoAprendizagemDto filtro, [FromServices] IObterDashboardAcompanhamentoAprendizagemUseCase useCase)
         {
