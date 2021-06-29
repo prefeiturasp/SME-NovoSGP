@@ -567,7 +567,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Abrangencia>(query, new { usuarioId });
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string[] anosInfantilDesconsiderar = null)
         {
             var query = @"select ano,
 	                             anoLetivo,
@@ -579,11 +579,12 @@ namespace SME.SGP.Dados.Repositorios
 	                             tipoTurno,
                                  ensinoEspecial,
                                  turma_id as id,
-                                 tipoturma
-                            from f_abrangencia_turmas_tipos(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo, @tipos)
+                                 tipoturma,
+                                 nome_filtro as nomeFiltro
+                            from f_abrangencia_turmas_tipos(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo, @tipos, @anosInfantilDesconsiderar)
                           order by 5";
 
-            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos })).AsList();
+            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos, anosInfantilDesconsiderar })).AsList();
 
             return result;
         }

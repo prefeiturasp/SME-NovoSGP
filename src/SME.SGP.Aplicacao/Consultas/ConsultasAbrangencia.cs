@@ -1,5 +1,7 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -8,9 +10,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Enumerados;
-using SME.SGP.Dominio.Enumerados;
-using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -136,12 +135,13 @@ namespace SME.SGP.Aplicacao
             return (await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo)).OrderBy(c => c.Nome).ToList();
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos)
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool desconsideraNovosAnosInfantil = false)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
+            var anosInfantilDesconsiderar = modalidade == Modalidade.EducacaoInfantil && desconsideraNovosAnosInfantil ? await ObterAnosInfantilParaDesconsiderar(anoLetivo) : null;
 
-            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo);
+            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
 
             result.ToList().ForEach(a =>
             {
@@ -150,6 +150,27 @@ namespace SME.SGP.Aplicacao
             });
 
             return OrdernarTurmasItinerario(result);
+        }
+
+        private async Task<string[]> ObterAnosInfantilParaDesconsiderar(int anoLetivo)
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AgrupamentoTurmasFiltro, anoLetivo));
+            if (parametro != null && !string.IsNullOrEmpty(parametro.Valor))
+            {
+                var modalidadesAnos = parametro.Valor.Split(';');
+                Dictionary<int, string[]> dictionary = new Dictionary<int, string[]>();
+                foreach (string modalidadeAno in modalidadesAnos)
+                {
+                    if (!string.IsNullOrEmpty(modalidadeAno))
+                    {
+                        string[] valor = modalidadeAno.Split('=');
+                        dictionary.Add(int.Parse(valor[0]), valor[1].Split(','));
+                    }
+                }
+                if (dictionary.ContainsKey(1))
+                    return dictionary[1];
+            }
+            return null;
         }
 
         private IEnumerable<AbrangenciaTurmaRetorno> OrdernarTurmasItinerario(IEnumerable<AbrangenciaTurmaRetorno> result)
