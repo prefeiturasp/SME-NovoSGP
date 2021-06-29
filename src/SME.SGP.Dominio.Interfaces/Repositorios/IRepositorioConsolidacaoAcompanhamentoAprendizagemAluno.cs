@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -6,6 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<long> Inserir(ConsolidacaoAcompanhamentoAprendizagemAluno consolidacao);
 
-        Task Limpar();
+        Task Limpar(int anoLetivo);
+        Task<IEnumerable<DashboardAcompanhamentoAprendizagemDto>> ObterConsolidacao(int anoLetivo, long dreId, long ueId, int semestre);
     }
 }
