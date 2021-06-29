@@ -10,6 +10,7 @@ CREATE OR REPLACE FUNCTION public.f_abrangencia_turmas_tipos(p_login character v
  RETURNS SETOF v_estrutura_abrangencia_turmas_tipos
  LANGUAGE sql
 AS $function$
+
 select distinct act.turma_ano,
     act.turma_ano_letivo,
     act.turma_codigo,
