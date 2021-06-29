@@ -17,13 +17,10 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<AbrangenciaFiltroRetorno> Handle(ObterAbrangenciaTurmaQuery request, CancellationToken cancellationToken)
-        {
-            var abrangenciaTurma = await repositorioAbrangencia.ObterAbrangenciaTurma(request.TurmaCodigo,
-                                                                                      request.Login,
-                                                                                      request.Perfil,
-                                                                                      request.ConsideraHistorico,
-                                                                                      request.AbrangenciaPermitida);
-            return abrangenciaTurma;
-        }
+            => await repositorioAbrangencia.ObterAbrangenciaTurma(request.TurmaCodigo,
+                                                                  request.Login,
+                                                                  request.Perfil,
+                                                                  request.ConsideraHistorico,
+                                                                  request.AbrangenciaPermitida);       
     }
 }

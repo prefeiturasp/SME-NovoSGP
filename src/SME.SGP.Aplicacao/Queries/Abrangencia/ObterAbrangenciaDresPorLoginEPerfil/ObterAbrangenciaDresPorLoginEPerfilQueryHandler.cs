@@ -18,10 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<AbrangenciaDreRetorno>> Handle(ObterAbrangenciaDresPorLoginEPerfilQuery request, CancellationToken cancellationToken)
-        {
-            var abrangenciaDresRetorno = await repositorioAbrangencia.ObterDres(request.Login, request.Perfil);
-
-            return abrangenciaDresRetorno;
-        }
+            => await repositorioAbrangencia.ObterDres(request.Login, request.Perfil);        
     }
 }
