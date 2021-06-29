@@ -659,7 +659,10 @@
         DB_C = 222,
 
         [PermissaoMenu(Menu = "Registro Individual", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/registro-individual")]
-        DRIN_C = 221
+        DRIN_C = 221,
+
+        [PermissaoMenu(Menu = "Relatório de Acompanhamento de Aprendizagem", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/acompanhamento-aprendizagem")]
+        DAA_C = 223
 
     }
 }
