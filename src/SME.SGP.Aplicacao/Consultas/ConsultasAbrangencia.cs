@@ -141,35 +141,15 @@ namespace SME.SGP.Aplicacao
             return (await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo)).OrderBy(c => c.Nome).ToList();
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool desconsideraNovosAnosInfantil = false)
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool consideraNovosAnosInfantil = false)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
-            var anosInfantilDesconsiderar = modalidade == Modalidade.EducacaoInfantil && desconsideraNovosAnosInfantil ? await ObterAnosInfantilParaDesconsiderar(anoLetivo) : null;
+            var anosInfantilDesconsiderar = modalidade == Modalidade.EducacaoInfantil && !consideraNovosAnosInfantil ? 
+                await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(anoLetivo, modalidade)) : null;
 
             var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
             return OrdernarTurmasItinerario(result);
-        }
-
-        private async Task<string[]> ObterAnosInfantilParaDesconsiderar(int anoLetivo)
-        {
-            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AgrupamentoTurmasFiltro, anoLetivo));
-            if (parametro != null && !string.IsNullOrEmpty(parametro.Valor))
-            {
-                var modalidadesAnos = parametro.Valor.Split(';');
-                Dictionary<int, string[]> dictionary = new Dictionary<int, string[]>();
-                foreach (string modalidadeAno in modalidadesAnos)
-                {
-                    if (!string.IsNullOrEmpty(modalidadeAno))
-                    {
-                        string[] valor = modalidadeAno.Split('=');
-                        dictionary.Add(int.Parse(valor[0]), valor[1].Split(','));
-                    }
-                }
-                if (dictionary.ContainsKey(1))
-                    return dictionary[1];
-            }
-            return null;
         }
 
         private IEnumerable<AbrangenciaTurmaRetorno> OrdernarTurmasItinerario(IEnumerable<AbrangenciaTurmaRetorno> result)

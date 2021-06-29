@@ -517,7 +517,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigosUe });
         }
 
-        public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre)
+        public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, string[] anosInfantilDesconsiderar = null)
         {
             var query = new StringBuilder();
 
@@ -532,7 +532,12 @@ namespace SME.SGP.Dados.Repositorios
             if (semestre > 0)
                 query.AppendLine("and semestre = @semestre");
 
-            var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new { codigoUe, anoLetivo, modalidade, semestre });
+            if(anosInfantilDesconsiderar != null && anosInfantilDesconsiderar.Any())
+            {
+                query.AppendLine("and t.ano <> ALL(@anosInfantilDesconsiderar)");
+            }
+
+            var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new { codigoUe, anoLetivo, modalidade, semestre, anosInfantilDesconsiderar });
 
             return dados.OrderBy(x => x.Descricao);
         }

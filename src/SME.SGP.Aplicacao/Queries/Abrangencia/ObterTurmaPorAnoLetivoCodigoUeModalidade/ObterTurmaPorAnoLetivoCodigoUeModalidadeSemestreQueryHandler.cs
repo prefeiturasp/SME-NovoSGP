@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao.Queries.Abrangencia.ObterTurmaPorAnoLetivoCodigoUeMo
 
         public async Task<IEnumerable<OpcaoDropdownDto>> Handle(ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreQuery request, CancellationToken cancellationToken)
         {
-            var retorno = await repositorioAbrangencia.ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(request.CodigoUe, request.AnoLetivo, request.Modalidade, request.Semestre);
+            var retorno = await repositorioAbrangencia.ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(request.CodigoUe, request.AnoLetivo, request.Modalidade, request.Semestre, request.AnosInfantilDesconsiderar);
 
             return retorno ?? throw new NegocioException("Não foi encontrada turmas para as informações enviadas");
         }
