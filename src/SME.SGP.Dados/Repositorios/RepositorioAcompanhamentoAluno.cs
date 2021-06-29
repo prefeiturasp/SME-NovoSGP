@@ -39,36 +39,37 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, alunoCodigo });
         }
 
-        public async Task<int> ObterTotalAlunosComAcompanhamentoPorTurmaAnoLetivoESemestre(long turmaId, int anoLetivo, int semestre)
+        public async Task<int> ObterTotalAlunosComAcompanhamentoPorTurmaSemestre(long turmaId, int semestre)
         {
-                var query = @"select count(distinct rfa.codigo_aluno) as quantidadeComAcompanhamento
-                              from registro_frequencia_aluno rfa
-                                inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id and not rf.excluido
-                                inner join aula a on a.id = rf.aula_id and not a.excluido
-                                inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim
-                                inner join turma t on t.turma_id = a.turma_id
-                              where not rfa.excluido
-                              and t.id = @turmaId
-                              and t.ano_letivo = @anoLetivo
-                              and t.semestre  = @semestre ";
+            var query = $@"select count(distinct aa.aluno_codigo)
+                              from acompanhamento_aluno_semestre aas
+                             inner join acompanhamento_aluno aa on aa.id = aas.acompanhamento_aluno_id
+                             inner join turma t on t.id = aa.turma_id
+                             where not aas.excluido
+                               and not aa.excluido
+                               and aas.semestre = @semestre
+                               and t.id = @turmaId ";
 
-                return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, anoLetivo, semestre });
+                return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, semestre });
         }
 
-        public async Task<int> ObterTotalAlunosTurmaAnoLetivoESemestre(long turmaId, int anoLetivo, int semestre)
+        public async Task<int> ObterTotalAlunosTurmaSemestre(long turmaId, int semestre)
         {
-            var query = @"select count(distinct rfa.codigo_aluno)
+
+            var whereBimestre = semestre == 1 ? " and pe.bimestre in (1,2) " : "and pe.bimestre in (3, 4)";
+
+            var query = $@"select count(distinct rfa.codigo_aluno)
                               from registro_frequencia_aluno rfa
                              inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id and not rf.excluido
                              inner join aula a on a.id = rf.aula_id and not a.excluido
-                             inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim
+                             inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id and a.data_aula 
+                             between pe.periodo_inicio and pe.periodo_fim
                              inner join turma t on t.turma_id = a.turma_id
                              where not rfa.excluido
                                and t.id = @turmaId
-                              and t.ano_letivo = @anoLetivo
-                              and t.semestre  = @semestre ";
+                              {whereBimestre}";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, anoLetivo, semestre });
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, semestre });
         }
     }
 }

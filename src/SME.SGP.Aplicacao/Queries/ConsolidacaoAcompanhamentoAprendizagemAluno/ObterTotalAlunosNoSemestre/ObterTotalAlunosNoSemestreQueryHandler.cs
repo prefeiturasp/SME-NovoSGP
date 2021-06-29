@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<int> Handle(ObterTotalAlunosNoSemestreQuery request, CancellationToken cancellationToken)
         {
-            return await repositorio.ObterTotalAlunosTurmaAnoLetivoESemestre(request.TurmaId, request.AnoLetivo, request.Semestre);
+            return await repositorio.ObterTotalAlunosTurmaSemestre(request.TurmaId, request.Semestre);
         }
     }
 }
