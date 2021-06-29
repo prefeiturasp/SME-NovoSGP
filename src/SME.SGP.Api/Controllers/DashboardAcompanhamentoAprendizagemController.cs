@@ -25,7 +25,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(anoLetivo));
         }
 
-        [HttpGet()]
+        [HttpGet("acompanhamento-aluno")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<DashboardAcompanhamentoAprendizagemDto>), 200)]
