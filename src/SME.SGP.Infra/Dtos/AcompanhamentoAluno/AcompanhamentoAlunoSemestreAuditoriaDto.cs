@@ -4,7 +4,7 @@ namespace SME.SGP.Infra
 {
     public class AcompanhamentoAlunoSemestreAuditoriaDto
     {
-        public long AcompanhamnetoAlunoId { get; set; }
+        public long AcompanhamentoAlunoId { get; set; }
         public long AcompanhamentoAlunoSemestreId { get; set; }
         public AuditoriaDto Auditoria { get; set; }
 
@@ -12,7 +12,7 @@ namespace SME.SGP.Infra
             => acompanhamento == null ? null :
             new AcompanhamentoAlunoSemestreAuditoriaDto()
             {
-                AcompanhamnetoAlunoId = acompanhamento.AcompanhamentoAlunoId,
+                AcompanhamentoAlunoId = acompanhamento.AcompanhamentoAlunoId,
                 AcompanhamentoAlunoSemestreId = acompanhamento.Id,
                 Auditoria = (AuditoriaDto)acompanhamento
             };
