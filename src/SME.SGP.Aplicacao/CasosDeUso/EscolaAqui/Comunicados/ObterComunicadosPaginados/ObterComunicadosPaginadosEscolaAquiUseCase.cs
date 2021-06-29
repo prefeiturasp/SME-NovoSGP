@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
                                                                           filtro.AnoLetivo,
                                                                           filtro.CodigoDre,
                                                                           filtro.CodigoUe,
-                                                                          filtro.Modalidade,
+                                                                          filtro.Modalidades,
                                                                           filtro.Semestre,
                                                                           filtro.Turmas));
         }

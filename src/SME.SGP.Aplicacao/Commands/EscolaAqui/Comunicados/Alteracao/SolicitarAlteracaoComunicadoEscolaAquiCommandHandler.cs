@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.DataExpiracao = comunicado.DataExpiracao;
             comunicadoServico.Mensagem = comunicado.Descricao;
             comunicadoServico.Titulo = comunicado.Titulo;
-            comunicadoServico.Grupo = string.Join(",", comunicado.Grupos.Select(x => x.Id.ToString()).ToArray());
+           // comunicadoServico.Grupo = string.Join(",", comunicado.Grupos.Select(x => x.Id.ToString()).ToArray());
             comunicadoServico.CriadoEm = comunicado.CriadoEm;
             comunicadoServico.CriadoPor = comunicado.CriadoPor;
             comunicadoServico.CriadoRF = comunicado.CriadoRF;

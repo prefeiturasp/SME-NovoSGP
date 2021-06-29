@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
                 CodigoUe = filtroDto.CodigoUe,
                 DataEnvio = filtroDto.DataEnvio ?? DateTime.Now,
                 DataExpiracao = filtroDto.DataExpiracao,
-                Modalidade = filtroDto.Modalidade,
+                Modalidades = filtroDto.Modalidades,
                 Titulo = filtroDto.Titulo,
                 Turmas = filtroDto.Turmas?.Select(x => new ComunicadoTurmaDto { CodigoTurma = x }),
                 Semestre = filtroDto.Semestre
