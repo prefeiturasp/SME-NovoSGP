@@ -151,10 +151,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] int[] tipos = null)
+        public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] int[] tipos = null, [FromQuery] bool desconsideraNovosAnosInfantil = true)
         {
             IEnumerable<AbrangenciaTurmaRetorno> turmas;
-            turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos);
+            turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos, desconsideraNovosAnosInfantil);
 
             if (!turmas.Any())
                 return NoContent();
