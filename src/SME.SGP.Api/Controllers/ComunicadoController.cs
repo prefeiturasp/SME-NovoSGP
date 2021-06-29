@@ -22,9 +22,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_I, Policy = "Bearer")]
-        public async Task<IActionResult> PostAsync([FromBody] ComunicadoInserirDto comunicadoDto, [FromServices] ISolicitarInclusaoComunicadoEscolaAquiUseCase solicitarInclusaoComunicadoEscolaAquiUseCase)
+        public async Task<IActionResult> PostAsync([FromBody] ComunicadoInserirDto comunicadoDto, [FromServices] ISolicitarInclusaoComunicadoEscolaAquiUseCase useCase)
         {
-            return Ok(await solicitarInclusaoComunicadoEscolaAquiUseCase.Executar(comunicadoDto));
+            return Ok(await useCase.Executar(comunicadoDto));
         }
 
         [HttpPut("{id}")]

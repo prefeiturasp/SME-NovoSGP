@@ -270,11 +270,8 @@ namespace SME.SGP.Aplicacao
             if (comunicadoDto.Turmas != null && comunicadoDto.Turmas.Any())
                 comunicadoDto.Turmas.ToList().ForEach(x => comunicado.AdicionarTurma(x));
 
-            if (comunicadoDto.Modalidade.HasValue)
-                comunicado.Modalidade = comunicadoDto.Modalidade;
-
-            if (comunicadoDto.GruposId.Any())
-                comunicado.Grupos = comunicadoDto.GruposId.Select(s => new ComunicadoGrupo { Id = s }).ToList();
+            if (comunicadoDto.Modalidades.Any())
+                comunicado.Modalidades = comunicadoDto.Modalidades;           
 
             if (comunicadoDto.AlunosEspecificados)
                 comunicadoDto.Alunos.ToList().ForEach(x => comunicado.AdicionarAluno(x));
@@ -299,8 +296,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.DataEnvio = comunicado.DataEnvio;
             comunicadoServico.DataExpiracao = comunicado.DataExpiracao;
             comunicadoServico.Mensagem = comunicado.Descricao;
-            comunicadoServico.Titulo = comunicado.Titulo;
-            comunicadoServico.Grupo = string.Join(",", comunicado.Grupos.Select(x => x.Id.ToString()).ToArray());
+            comunicadoServico.Titulo = comunicado.Titulo;            
             comunicadoServico.CriadoEm = comunicado.CriadoEm;
             comunicadoServico.CriadoPor = comunicado.CriadoPor;
             comunicadoServico.CriadoRF = comunicado.CriadoRF;
@@ -311,6 +307,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.Turmas = comunicado.Turmas.Select(x => x.CodigoTurma);
             comunicadoServico.TipoComunicado = comunicado.TipoComunicado;
             comunicadoServico.Semestre = comunicado.Semestre;
+            comunicadoServico.Modalidades = string.Join(",", comunicado.Modalidades.Select(x => x).ToArray());
         }
     }
 }

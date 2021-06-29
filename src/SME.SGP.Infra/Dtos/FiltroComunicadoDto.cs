@@ -16,7 +16,7 @@ namespace SME.SGP.Infra
         public string CodigoDre { get; set; }
         //[Required(ErrorMessage = "O Codigo da Ue é Obrigatório")]
         public string CodigoUe { get; set; }
-        public Modalidade Modalidade { get; set; }
+        public int[] Modalidades { get; set; }
         public int Semestre { get; set; }
         public string[] Turmas { get; set; }
     }

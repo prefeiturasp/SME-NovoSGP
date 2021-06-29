@@ -84,7 +84,7 @@ namespace SME.SGP.Dados.Repositorios
                 filtro.Titulo,
                 filtro.GruposId,
                 filtro.AnoLetivo,
-                filtro.Modalidade,
+                filtro.Modalidades,
                 filtro.Semestre,
                 filtro.CodigoDre,
                 filtro.CodigoUe,
@@ -185,7 +185,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrWhiteSpace(filtro.CodigoUe) && !filtro.CodigoUe.Equals("todas"))
                 where.AppendLine($"AND {prefixo}.codigo_ue = @CodigoUe");
 
-            if (filtro.Modalidade > 0)
+            if (filtro.Modalidades.Count() > 0)
                 where.AppendLine($"AND {prefixo}.modalidade = @Modalidade");
 
             if (filtro.Semestre > 0)

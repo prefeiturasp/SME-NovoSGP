@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 DataEnvio = request.DataEnvio,
                 DataExpiracao = request.DataExpiracao,
                 GruposId = request.GruposId,
-                Modalidade = request.Modalidade,
+                Modalidades = request.Modalidades,
                 Semestre = request.Semestre,
                 Titulo = request.Titulo,
                 Turmas = request.Turmas
@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
                 CodigoUe = filtroDto.CodigoUe,
                 DataEnvio = filtroDto.DataEnvio ?? DateTime.Now,
                 DataExpiracao = filtroDto.DataExpiracao,
-                Modalidade = filtroDto.Modalidade,
+                Modalidades = filtroDto.Modalidades,
                 Titulo = filtroDto.Titulo,
                 Turmas = filtroDto.Turmas?.Select(x => new ComunicadoTurmaDto { CodigoTurma = x }),
                 Semestre = filtroDto.Semestre
