@@ -65,10 +65,11 @@ where a.login = p_login
     )
     and(
     	p_anos_desconsiderar_turma_infantil is null
+    	or act.modalidade_codigo <> 1
     	or(
     		array_length(p_anos_desconsiderar_turma_infantil, 1) > 0 
     		and act.modalidade_codigo = 1
-    		and act.turma_ano <> ALL(p_anos_desconsiderar_turma_infantil)
+    		and not act.turma_ano = ANY(p_anos_desconsiderar_turma_infantil)
     	)
     )
 union
@@ -127,10 +128,11 @@ where a.login = p_login
     )
     and(
     	p_anos_desconsiderar_turma_infantil is null
+    	or act.modalidade_codigo <> 1
     	or(
     		array_length(p_anos_desconsiderar_turma_infantil, 1) > 0 
     		and act.modalidade_codigo = 1
-    		and act.turma_ano <> ALL(p_anos_desconsiderar_turma_infantil)
+    		and not act.turma_ano = ANY(p_anos_desconsiderar_turma_infantil)
     	)
     )
 union
@@ -189,10 +191,11 @@ where a.login = p_login
     )
     and(
     	p_anos_desconsiderar_turma_infantil is null
+    	or act.modalidade_codigo <> 1
     	or(
     		array_length(p_anos_desconsiderar_turma_infantil, 1) > 0 
     		and act.modalidade_codigo = 1
-    		and act.turma_ano <> ALL(p_anos_desconsiderar_turma_infantil)
+    		and not act.turma_ano = ANY(p_anos_desconsiderar_turma_infantil)
     	)
     )
 $function$
