@@ -21,11 +21,14 @@ namespace SME.SGP.Dominio
             return (long)(await database.Conexao.InsertAsync(consolidacao));
         }
 
-        public async Task Limpar()
+        public async Task Limpar(int anoLetivo)
         {
-            var query = @" delete from consolidacao_acompanhamento_aprendizagem_aluno ";
+            var query = @" delete from consolidacao_acompanhamento_aprendizagem_aluno c
+                            using turma t 
+                            where t.id = c.turma_id
+                              and t.ano_letivo = @anoLetivo";
 
-            await database.Conexao.ExecuteScalarAsync(query, new { });
+            await database.Conexao.ExecuteScalarAsync(query, new { anoLetivo });
         }
 
         public async Task<IEnumerable<DashboardAcompanhamentoAprendizagemDto>> ObterConsolidacao(int anoLetivo, long dreId, long ueId, int semestre)
