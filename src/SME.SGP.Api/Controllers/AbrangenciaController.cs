@@ -49,12 +49,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaFiltroRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterAbrangenciaAutoComplete(string filtro)
+        public async Task<IActionResult> ObterAbrangenciaAutoComplete(string filtro, [FromQuery]bool consideraAnosTurmasInfantil = false)
         {
             if (filtro.Length < 2)
                 return StatusCode(204);
 
-            var retorno = await consultasAbrangencia.ObterAbrangenciaPorfiltro(filtro, ConsideraHistorico);
+            var retorno = await consultasAbrangencia.ObterAbrangenciaPorfiltro(filtro, ConsideraHistorico, consideraAnosTurmasInfantil);
             if (retorno.Any())
                 return Ok(retorno);
             else return StatusCode(204);
