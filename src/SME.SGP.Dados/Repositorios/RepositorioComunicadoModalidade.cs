@@ -16,12 +16,20 @@ namespace SME.SGP.Dados.Repositorios
 
         public virtual async Task<long> SalvarAsync(ComunicadoModalidade comunicadoModalidade)
         {
-            if (comunicadoModalidade.Id > 0)
-                await database.Conexao.UpdateAsync(comunicadoModalidade);
-            else
-                comunicadoModalidade.Id = (long)(await database.Conexao.InsertAsync(comunicadoModalidade));
+            try
+            {
+                if (comunicadoModalidade.Id > 0)
+                    await database.Conexao.UpdateAsync(comunicadoModalidade);
+                else
+                    comunicadoModalidade.Id = (long)(await database.Conexao.InsertAsync(comunicadoModalidade));
 
-            return comunicadoModalidade.Id;
+                return comunicadoModalidade.Id;
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+            
         }
     }
 }
