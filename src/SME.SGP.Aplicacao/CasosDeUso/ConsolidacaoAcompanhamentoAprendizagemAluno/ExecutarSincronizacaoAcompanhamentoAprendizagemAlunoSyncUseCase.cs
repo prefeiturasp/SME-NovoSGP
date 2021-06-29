@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExecutarSincronizacaoAcompanhamentoAprendizagemAlunoSyncUseCase", "Rabbit - ExecutarSincronizacaoAcompanhamentoAprendizagemAlunoSyncUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaAcompanhamentoAprendizagemAlunoSync, string.Empty, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAluno, string.Empty, Guid.NewGuid(), null));
         }
     }
 }

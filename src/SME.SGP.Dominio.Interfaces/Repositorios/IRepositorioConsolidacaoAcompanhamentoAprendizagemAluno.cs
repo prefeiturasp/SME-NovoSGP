@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<long> Inserir(ConsolidacaoAcompanhamentoAprendizagemAluno consolidacao);
 
-        Task Limpar(int anoLetivo);
+        Task Limpar();
     }
 }

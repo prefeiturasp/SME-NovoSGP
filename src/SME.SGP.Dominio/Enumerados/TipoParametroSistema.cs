@@ -133,7 +133,7 @@ namespace SME.SGP.Dominio
 
         PeriodoDeDiasSemRegistroIndividual = 73,
 
-        ExecucaoConsolidacaoAcompanhamentoAprendizagemAlunoTurma = 74,
+        ExecucaoConsolidacaoAcompanhamentoAprendizagemAlunoTurma = 75,
 
 
         //Sistema

@@ -1284,7 +1284,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TurmaDTO>> ObterTurmasInfantilPorAno(int anoLetivo)
         {
-            var query = @"select id from turma where modalidade_codigo = 1 and ano_letivo = @anoLetivo ";
+            var query = @"select id as turmaId from turma where modalidade_codigo = 1 and ano_letivo = @anoLetivo ";
             return await contexto.QueryAsync<TurmaDTO>(query, new { anoLetivo });
         }
     }

@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                await repositorio.Limpar(request.AnoLetivo);
+                await repositorio.Limpar();
             }
             catch (Exception ex)
             {
