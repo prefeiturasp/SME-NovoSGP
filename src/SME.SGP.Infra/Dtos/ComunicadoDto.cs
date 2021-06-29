@@ -17,7 +17,7 @@ namespace SME.SGP.Dto
         public long Id { get; set; }
         public string Titulo { get; set; }
         public int AnoLetivo { get; set; }
-        public Modalidade Modalidade { get; set; }
+        public int[] Modalidades { get; set; }
         public int Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
         public string CodigoDre { get; set; }
@@ -47,7 +47,7 @@ namespace SME.SGP.Dto
             DataExpiracao = comunicado.DataExpiracao,
             Descricao = comunicado.Descricao,
             Id = comunicado.Id,
-            Modalidade = comunicado.Modalidade ?? default,
+            Modalidades = comunicado.Modalidades,
             Semestre = comunicado.Semestre ?? default,
             TipoComunicado = comunicado.TipoComunicado,
             Titulo = comunicado.Titulo,

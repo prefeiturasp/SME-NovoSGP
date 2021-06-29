@@ -1,5 +1,4 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Infra;
+﻿using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -25,10 +24,6 @@ namespace SME.SGP.Dto
         [MinLength(5, ErrorMessage = "A descrição deve conter no mínimo 5 caracteres.")]
         public string Descricao { get; set; }
 
-        [Required(ErrorMessage = "O grupo do comunicado deve ser informado.")]
-        [ListaTemElementos(ErrorMessage = "É necessário informar ao menos um grupo")]
-        public List<int> GruposId { get; set; }
-
         public long Id { get; set; }
 
         [Required(ErrorMessage = "É necessário informar o título.")]
@@ -52,7 +47,9 @@ namespace SME.SGP.Dto
 
         public bool AlunosEspecificados { get; set; }
 
-        public Modalidade? Modalidade { get; set; }
+        [Required(ErrorMessage = "A modalidade do comunicado deve ser informada.")]
+        [ListaTemElementos(ErrorMessage = "É necessário informar ao menos uma modalidade")]
+        public int[] Modalidades { get; set; }
 
         public int Semestre { get; set; }
 

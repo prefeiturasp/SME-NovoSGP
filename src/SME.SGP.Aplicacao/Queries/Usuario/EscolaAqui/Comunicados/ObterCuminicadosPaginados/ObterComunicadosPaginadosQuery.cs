@@ -15,11 +15,11 @@ namespace SME.SGP.Aplicacao
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
-        public Modalidade Modalidade { get; set; }
+        public int[] Modalidades { get; set; }
         public int Semestre { get; set; }
         public string[] Turmas { get; set; }
 
-        public ObterComunicadosPaginadosQuery(DateTime? dataEnvio, DateTime? dataExpiracao, int[] gruposId, string titulo, int anoLetivo, string codigoDre, string codigoUe, Modalidade modalidade, int semestre, string[] turmas)
+        public ObterComunicadosPaginadosQuery(DateTime? dataEnvio, DateTime? dataExpiracao, int[] gruposId, string titulo, int anoLetivo, string codigoDre, string codigoUe, int[] modalidades, int semestre, string[] turmas)
         {
             DataEnvio = dataEnvio;
             DataExpiracao = dataExpiracao;
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             AnoLetivo = anoLetivo;
             CodigoDre = codigoDre;
             CodigoUe = codigoUe;
-            Modalidade = modalidade;
+            Modalidades = modalidades;
             Semestre = semestre;
             Turmas = turmas;
         }
