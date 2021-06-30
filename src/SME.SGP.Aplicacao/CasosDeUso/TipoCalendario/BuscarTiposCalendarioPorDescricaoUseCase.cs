@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                 var modalidadesUes = await mediator.Send(new ObterModalidadesPorCodigosUeQuery(codigosUes));
 
                 var modalidadesTipoCalendarioUes = modalidadesUes.Select(a => a == Modalidade.EJA ? (int)ModalidadeTipoCalendario.EJA :
-                                                                              a == Modalidade.InfantilPreEscola ? (int)ModalidadeTipoCalendario.Infantil :
+                                                                              a == Modalidade.EducacaoInfantil ? (int)ModalidadeTipoCalendario.Infantil :
                                                                                 (int)ModalidadeTipoCalendario.FundamentalMedio).ToArray();             
 
                 return await mediator.Send(new ObterTiposCalendariosPorAnosLetivoModalidadesQuery(anosLetivosTipoCalendario.Distinct().ToArray(), modalidadesTipoCalendarioUes));

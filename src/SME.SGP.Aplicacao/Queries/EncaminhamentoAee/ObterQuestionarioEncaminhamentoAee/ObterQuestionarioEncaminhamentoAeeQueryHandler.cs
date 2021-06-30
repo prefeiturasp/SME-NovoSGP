@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<TipoParametroSistema> ObterTipoParametroFrequenciaMinima(string codigoTurma)
         {
-            return await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(codigoTurma)) == Modalidade.InfantilPreEscola ? 
+            return await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(codigoTurma)) == Modalidade.EducacaoInfantil ? 
                 TipoParametroSistema.PercentualFrequenciaMinimaInfantil : 
                 TipoParametroSistema.PercentualFrequenciaCritico;
         }

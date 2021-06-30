@@ -826,7 +826,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var modalidade = await database.Conexao.QueryFirstAsync<int>(query, new { aulaId });
 
-            return modalidade == (int)Modalidade.InfantilPreEscola;
+            return modalidade == (int)Modalidade.EducacaoInfantil;
         }
 
         public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId)
