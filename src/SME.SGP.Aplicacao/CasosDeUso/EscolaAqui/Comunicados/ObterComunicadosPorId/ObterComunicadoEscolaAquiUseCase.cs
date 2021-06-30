@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ComunicadoCompletoDto> Executar(long id)
         {
-            return await mediator.Send(new ObterComunicadoSimplesPorIdQuery(id));
+            return await mediator.Send(new ObterComunicadoPorIdQuery(id));
         }
     }
 }

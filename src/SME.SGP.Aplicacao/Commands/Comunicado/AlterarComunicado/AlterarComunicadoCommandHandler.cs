@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             var comunicado = await mediator.Send(new ObterComunicadoSimplesPorIdQuery(request.Id));
 
-            if(comunicado == null)
+            if (comunicado == null)
                 throw new NegocioException($"Comunicado não localizado");
 
             MapearAlteracao(request, comunicado);
@@ -35,10 +33,9 @@ namespace SME.SGP.Aplicacao
             {
                 unitOfWork.IniciarTransacao();
 
+                await repositorioComunicado.SalvarAsync(comunicado);
 
-                await repositorioComunicado.SalvarAsync(comunicado);                
-
-                
+                await mediator.Send(new AlterarNotificacaoEscolaAquiCommand(comunicado));
 
                 unitOfWork.PersistirTransacao();
 

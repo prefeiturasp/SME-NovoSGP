@@ -12,16 +12,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class CriarNotificacaoEscolaAquiCommandHandler : IRequestHandler<CriarNotificacaoEscolaAquiCommand, bool>
+    public class AlterarNotificacaoEscolaAquiCommandHandler : IRequestHandler<AlterarNotificacaoEscolaAquiCommand, bool>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
-        public CriarNotificacaoEscolaAquiCommandHandler(IHttpClientFactory httpClientFactory)
+        public AlterarNotificacaoEscolaAquiCommandHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<bool> Handle(CriarNotificacaoEscolaAquiCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(AlterarNotificacaoEscolaAquiCommand request, CancellationToken cancellationToken)
         {
             var comunicadoServico = new ComunicadoInserirAeDto();
 
@@ -29,13 +29,12 @@ namespace SME.SGP.Aplicacao
             var httpClient = httpClientFactory.CreateClient("servicoAcompanhamentoEscolar");
             var parametros = JsonConvert.SerializeObject(comunicadoServico);
 
-            var resposta = await httpClient.PostAsync("v1/notificacao", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+            var resposta = await httpClient.PutAsync($"v1/notificacao/{request.Comunicado.Id}", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 return true;
             else
-                throw new Exception($"Não foi possivel criar a notificação para o comunucado de id : {request.Comunicado.Id}");
-
+                throw new Exception($"Não foi possivel alterar a notificação para o comunucado de id : {request.Comunicado.Id}");
         }
 
         private void MapearParaEntidadeServico(ComunicadoInserirAeDto comunicadoServico, Comunicado comunicado)
@@ -56,10 +55,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.CodigoDre = comunicado.CodigoDre;
             comunicadoServico.CodigoUe = comunicado.CodigoUe;
             comunicadoServico.Turmas = comunicado.Turmas.Select(x => x.CodigoTurma);
-            comunicadoServico.TipoComunicado = comunicado.TipoComunicado;
-            comunicadoServico.Semestre = comunicado.Semestre;
-            comunicadoServico.SeriesResumidas = comunicado.SeriesResumidas;
-            comunicadoServico.Modalidades = string.Join(",", comunicado.Modalidades.Select(x => x).ToArray());
+            comunicadoServico.TipoComunicado = comunicado.TipoComunicado;            
         }
     }
 }

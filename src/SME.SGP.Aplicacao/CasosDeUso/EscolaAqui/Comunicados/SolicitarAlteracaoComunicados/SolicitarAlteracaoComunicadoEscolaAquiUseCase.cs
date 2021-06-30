@@ -23,25 +23,28 @@ namespace SME.SGP.Aplicacao
 
             await ValidarAbrangenciaUsuario(comunicado, usuarioLogado);
 
+            var retorno = await mediator.Send(new AlterarComunicadoCommand(id
+                                                                         , comunicado.Titulo
+                                                                         , comunicado.Descricao
+                                                                         , comunicado.DataEnvio
+                                                                         , comunicado.DataExpiracao
+                                                                         , comunicado.AnoLetivo
+                                                                         , comunicado.SeriesResumidas
+                                                                         , comunicado.CodigoDre
+                                                                         , comunicado.CodigoUe
+                                                                         , comunicado.Turmas
+                                                                         , comunicado.TipoCalendarioId
+                                                                         , comunicado.EventoId
+                                                                         , comunicado.AlunosEspecificados
+                                                                         , comunicado.Modalidades
+                                                                         , comunicado.Semestre
+                                                                         , comunicado.Alunos));
 
-            return await mediator.Send(new SolicitarAlteracaoComunicadoEscolaAquiCommand(
-                  id
-                , comunicado.DataEnvio
-                , comunicado.DataExpiracao
-                , comunicado.Descricao
-                , comunicado.GruposId
-                , comunicado.Titulo
-                , comunicado.AnoLetivo
-                , comunicado.SeriesResumidas
-                , comunicado.CodigoDre
-                , comunicado.CodigoUe
-                , comunicado.AlunosEspecificados
-                , comunicado.Modalidade
-                , comunicado.Semestre
-                , comunicado.Alunos
-                , comunicado.Turmas
-                , comunicado.TipoCalendarioId
-                , comunicado.EventoId));
+            if(retorno)
+                return "Comunicado alterado com sucesso";
+            else
+                return "Erro na alteração do Comunicado";
+
         }
 
         private async Task ValidarAbrangenciaUsuario(ComunicadoAlterarDto comunicado, Usuario usuarioLogado)
