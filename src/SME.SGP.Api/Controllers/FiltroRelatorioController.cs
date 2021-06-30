@@ -54,9 +54,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
-        public async Task<IActionResult> ObterTurmasEscolaresPorUEAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, [FromQuery] int semestre, [FromQuery] Modalidade modalidade, [FromServices] IObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase obterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase)
+        public async Task<IActionResult> ObterTurmasEscolaresPorUEAnoLetivoModalidadeSemestre([FromServices] IObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase obterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase, string codigoUe, int anoLetivo, [FromQuery] int semestre, [FromQuery] Modalidade modalidade, [FromQuery] bool consideraNovosAnosInfantil = false)
         {
-            return Ok(await obterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase.Executar(codigoUe, anoLetivo, modalidade, semestre));
+            return Ok(await obterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase.Executar(codigoUe, anoLetivo, modalidade, semestre, consideraNovosAnosInfantil));
         }
 
         [HttpGet("turmas/ues/{codigoUe}/anoletivo/{anoLetivo}")]
