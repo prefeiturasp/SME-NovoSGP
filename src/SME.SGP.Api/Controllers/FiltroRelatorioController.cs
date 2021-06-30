@@ -13,7 +13,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/relatorios/filtros")]
-    [Authorize("Bearer")]
+   // [Authorize("Bearer")]
     public class FiltroRelatorioController : ControllerBase
     {
         [HttpGet("dres")]
@@ -106,5 +106,16 @@ namespace SME.SGP.Api.Controllers
               .ToList();
             return Ok(tipoVisualizacao);
         }
+
+
+        [HttpGet("bimestres/{opcaoTodos}/{opcaoFinal}/{modalidade}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterBimestres(bool opcaoTodos, bool opcaoFinal, Modalidade modalidade, [FromServices] IObterBimestrePorModalidadeUseCase obterBimestrePorModalidadeUseCase)
+        {
+            return Ok(await (obterBimestrePorModalidadeUseCase.Executar(opcaoTodos, opcaoFinal, modalidade)));
+        }
+
+
     }
 }
