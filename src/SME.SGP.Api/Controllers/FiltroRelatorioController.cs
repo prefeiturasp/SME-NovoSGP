@@ -106,5 +106,16 @@ namespace SME.SGP.Api.Controllers
               .ToList();
             return Ok(tipoVisualizacao);
         }
+
+
+        [HttpGet("bimestres/{modalidade}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterBimestres([FromQuery]  bool opcaoTodos, [FromQuery]  bool opcaoFinal, Modalidade modalidade, [FromServices] IObterBimestrePorModalidadeUseCase obterBimestrePorModalidadeUseCase)
+        {
+            return Ok(await (obterBimestrePorModalidadeUseCase.Executar(opcaoTodos, opcaoFinal, modalidade)));
+        }
+
+
     }
 }
