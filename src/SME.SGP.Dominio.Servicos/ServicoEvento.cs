@@ -170,7 +170,8 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task IncluiBimestresDoEventoLiberacaoDeBoletim(Evento evento, int[] bimestres, bool ehAlteracao)
         {
-            await ValidaSeExisteEventoLiberacaoDeBoletimPorDataETipoCalendarioId(evento);
+            if (ehAlteracao == false)
+                await ValidaSeExisteEventoLiberacaoDeBoletimPorDataETipoCalendarioId(evento);
 
             var bimestresDoTipoCalendarioJaCadastrados = await repositorioEventoBimestre.ObterBimestresPorTipoCalendarioDeOutrosEventos(evento.TipoCalendarioId, evento.Id);
 
