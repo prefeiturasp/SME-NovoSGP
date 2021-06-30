@@ -55,7 +55,6 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("liberacao-boletim/turmas/{turmaCodigo}/bimestres")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.E_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterBimestresLiberacaoBoletim(string turmaCodigo, [FromServices] IObterBimestresLiberacaoBoletimUseCase obterBimestresLiberacaoBoletimUseCase)
         {
             return Ok(await obterBimestresLiberacaoBoletimUseCase.Executar(turmaCodigo));
