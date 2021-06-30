@@ -117,5 +117,12 @@ namespace SME.SGP.Api.Controllers
         }
 
 
+        [HttpGet("acompanhamento-fechamento/situacao/{unificarNaoIniciado}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterSituacoesFechamento (bool unificarNaoIniciado, [FromServices] IObterSituacoesFechamentoUseCase obterSituacoesFechamentoUseCase)
+        {
+            return Ok(await (obterSituacoesFechamentoUseCase.Executar(unificarNaoIniciado)));
+        }
     }
 }
