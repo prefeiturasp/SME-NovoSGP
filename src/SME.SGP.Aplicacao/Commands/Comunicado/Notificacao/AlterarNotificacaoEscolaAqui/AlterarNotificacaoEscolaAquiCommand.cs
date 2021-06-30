@@ -3,9 +3,9 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class CriarNotificacaoEscolaAquiCommand : IRequest<bool>
+    public class AlterarNotificacaoEscolaAquiCommand : IRequest<bool>
     {
-        public CriarNotificacaoEscolaAquiCommand(Comunicado comunicado)
+        public AlterarNotificacaoEscolaAquiCommand(Comunicado comunicado)
         {
             Comunicado = comunicado;
         }
