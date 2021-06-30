@@ -584,8 +584,7 @@ namespace SME.SGP.Dados.Repositorios
 	                             tipoTurno,
                                  ensinoEspecial,
                                  turma_id as id,
-                                 tipoturma,
-                                 nome_filtro as nomeFiltro
+                                 tipoturma
                             from f_abrangencia_turmas_tipos(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo, @tipos, @anosInfantilDesconsiderar)
                           order by 5";
 
