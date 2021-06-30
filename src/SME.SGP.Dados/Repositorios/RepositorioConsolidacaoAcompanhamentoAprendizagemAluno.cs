@@ -37,7 +37,7 @@ namespace SME.SGP.Dominio
             var agrupamento = ueId > 0 ? "nome" : "ano";
 
             var filtro = ueId > 0 ? "and ue.id = @ueId" :
-                            dreId > 0 ? "and dre.id = @dreId" :
+                            dreId > 0 ? "and ue.dre_id = @dreId" :
                             "";
 
             var query = $@"select {campo} as Turma
