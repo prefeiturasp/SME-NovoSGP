@@ -108,10 +108,10 @@ namespace SME.SGP.Api.Controllers
         }
 
 
-        [HttpGet("bimestres/{opcaoTodos}/{opcaoFinal}/{modalidade}")]
+        [HttpGet("bimestres/{modalidade}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterBimestres(bool opcaoTodos, bool opcaoFinal, Modalidade modalidade, [FromServices] IObterBimestrePorModalidadeUseCase obterBimestrePorModalidadeUseCase)
+        public async Task<IActionResult> ObterBimestres([FromQuery]  bool opcaoTodos, [FromQuery]  bool opcaoFinal, Modalidade modalidade, [FromServices] IObterBimestrePorModalidadeUseCase obterBimestrePorModalidadeUseCase)
         {
             return Ok(await (obterBimestrePorModalidadeUseCase.Executar(opcaoTodos, opcaoFinal, modalidade)));
         }
