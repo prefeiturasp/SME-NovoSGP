@@ -31,9 +31,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar(long id, [FromBody] ComunicadoAlterarDto comunicadoDto, [FromServices] ISolicitarAlteracaoComunicadoEscolaAquiUseCase solicitarAlteracaoComunicadoEscolaAquiUseCase)
+        public async Task<IActionResult> Alterar(long id, [FromBody] ComunicadoAlterarDto comunicadoDto, [FromServices] ISolicitarAlteracaoComunicadoEscolaAquiUseCase useCase)
         {
-            return Ok(await solicitarAlteracaoComunicadoEscolaAquiUseCase.Executar(id, comunicadoDto));
+            return Ok(await useCase.Executar(id, comunicadoDto));
         }
 
         [HttpDelete]
