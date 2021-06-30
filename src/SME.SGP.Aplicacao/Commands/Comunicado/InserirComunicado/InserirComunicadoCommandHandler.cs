@@ -33,6 +33,8 @@ namespace SME.SGP.Aplicacao
 
                 var id = await repositorioComunicado.SalvarAsync(comunicado);
 
+                await mediator.Send(new InserirComunicadoModalidadeCommand(comunicado));
+
                 if (comunicado.Turmas != null && comunicado.Turmas.Any())
                     await InserirComunicadoTurma(comunicado);
 
