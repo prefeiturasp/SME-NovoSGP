@@ -2,7 +2,7 @@
 {
     public class AlunosPorTurmaDto
     {
-        public string CodigoTurma { get; set; }
+        public string TurmaCodigo { get; set; }
         public int Quantidade { get; set; }
     }
 }
