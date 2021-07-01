@@ -87,6 +87,11 @@ namespace SME.SGP.Background
 
             //De 10 em 10 minutos
             Cliente.ExecutarPeriodicamente<IRabbitDeadletterSyncUseCase>(c => c.Executar(), Cron.MinuteInterval(10));
+
+            Cliente.ExecutarPeriodicamente<IExecutarSincronizacaoMediaRegistrosIndividuaisSyncUseCase>(c => c.Executar(), Cron.Daily(9));
+            
+            // Consolidação Acompanhamento Aprendizagem do Aluno
+            Cliente.ExecutarPeriodicamente<IExecutarSincronizacaoAcompanhamentoAprendizagemAlunoSyncUseCase>(c => c.Executar(), Cron.Daily(9));
         }
     }
 }
