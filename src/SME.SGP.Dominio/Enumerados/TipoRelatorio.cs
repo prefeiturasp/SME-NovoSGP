@@ -95,6 +95,9 @@ namespace SME.SGP.Dominio
         AcompanhamentoAprendizagem = 31,
 
         [Display(Name = "relatorios/boletimescolardetalhado", ShortName = "BoletimEscolarDetalhado", Description = "Boletim escolar detalhado")]
-        BoletimDetalhado = 32
+        BoletimDetalhado = 32,
+
+        [Display(Name = "relatorios/acompanhamento-fechamento", ShortName = "AcompanhamentoFechamento", Description = "Relatório do Acompanhamento de Fechamento")]
+        AcompanhamentoFechamento = 33
     }
 }
