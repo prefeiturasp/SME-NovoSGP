@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<int[]> ObterBimestresEventoPorTipoCalendarioDataReferencia(long tipoCalendarioId, DateTime dataReferencia);
         Task<int[]> ObterBimestresPorTipoCalendarioDeOutrosEventos(long tipoCalendarioId, long eventoId);
         Task<int[]> ObterBimestresPorEventoId(long eventoId);
+        Task<bool> VerificaSeExiteEventoPorTipoCalendarioDataReferencia(long tipoCalendarioId, DateTime dataReferencia);
     }
 
 }

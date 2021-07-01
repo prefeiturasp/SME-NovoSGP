@@ -171,7 +171,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task IncluiBimestresDoEventoLiberacaoDeBoletim(Evento evento, int[] bimestres, bool ehAlteracao)
         {
             if (ehAlteracao == false)
-                await ValidaSeExisteEventoLiberacaoDeBoletimPorDataETipoCalendarioId(evento);
+                await ValidaSeExisteOutroEventoLiberacaoDeBoletimNaMesmaDataEMesmoTipoCalendario(evento);
 
             var bimestresDoTipoCalendarioJaCadastrados = await repositorioEventoBimestre.ObterBimestresPorTipoCalendarioDeOutrosEventos(evento.TipoCalendarioId, evento.Id);
 
@@ -191,10 +191,10 @@ namespace SME.SGP.Dominio.Servicos
 
         }
 
-        private async Task ValidaSeExisteEventoLiberacaoDeBoletimPorDataETipoCalendarioId(Evento evento)
+        private async Task ValidaSeExisteOutroEventoLiberacaoDeBoletimNaMesmaDataEMesmoTipoCalendario(Evento evento)
         {
-            var bimestres = await repositorioEventoBimestre.ObterBimestresEventoPorTipoCalendarioDataReferencia(evento.TipoCalendarioId, evento.DataInicio.Date);
-            if (bimestres.Length > 0)
+            var jaExisteOutroEvento = await repositorioEventoBimestre.VerificaSeExiteEventoPorTipoCalendarioDataReferencia(evento.TipoCalendarioId, evento.DataInicio.Date);
+            if (jaExisteOutroEvento)
                 throw new NegocioException($"Já existe outro evento do tipo liberação do boletim com a data {evento.DataInicio.Date} cadastrada para esse calendário.");
         }
 
