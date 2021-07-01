@@ -589,5 +589,15 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
 
+        public async Task<IEnumerable<Comunicado>> ObterComunicadosPorIds(long[] ids)
+        {
+            var sql = @"select *  
+                          from comunicado 
+                         where id = ANY(@ids)
+                           and not excluido ";
+            var parametros = new { ids };
+            return await database.QueryAsync<Comunicado>(sql, parametros);
+        }
+
     }
 }
