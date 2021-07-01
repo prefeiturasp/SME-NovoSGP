@@ -96,8 +96,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> VerificaSeExiteEventoPorTipoCalendarioDataReferencia(long tipoCalendarioId, DateTime dataReferencia)
         {
-            try
-            {
 
             string query = @"select 1 from (
                                  select MAX(e.data_inicio), bimestre from evento_bimestre eb
@@ -110,11 +108,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { tipoCalendarioId, tipoEvento = (int)TipoEvento.LiberacaoBoletim, data = dataReferencia.Date }) > 0);
 
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
             }
         }
     }
