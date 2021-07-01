@@ -7,17 +7,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotasPorBimestresUeAlunoTurmaQuery : IRequest<IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
-        public ObterNotasPorBimestresUeAlunoTurmaQuery(int[] bimestres, long turmaId, long ueId, string alunoCodigo)
+        public ObterNotasPorBimestresUeAlunoTurmaQuery(int[] bimestres, string turmaCodigo, string ueCodigo, string alunoCodigo)
         {
             Bimestres = bimestres;
-            TurmaId = turmaId;
-            UeId = ueId;
+            TurmaCodigo = turmaCodigo;
+            UeCodigo = ueCodigo;
             AlunoCodigo = alunoCodigo;
         }
 
         public int[] Bimestres { get; set; }
-        public long TurmaId { get; set; }
-        public long UeId { get; set; }
+        public string TurmaCodigo { get; set; }
+        public string UeCodigo { get; set; }
         public string AlunoCodigo { get; set; }
     }
 
@@ -29,14 +29,14 @@ namespace SME.SGP.Aplicacao
                 .NotNull()
                 .NotEmpty()
                 .WithMessage("Necessário informar os bimestres");
-            RuleFor(a => a.TurmaId)
+            RuleFor(a => a.TurmaCodigo)
                 .NotNull()
                 .NotEmpty()
-                .WithMessage("Necessário informar o id da turma");
-            RuleFor(a => a.UeId)
+                .WithMessage("Necessário informar o código da turma");
+            RuleFor(a => a.UeCodigo)
                .NotNull()
                .NotEmpty()
-               .WithMessage("Necessário informar o id da Ue");
+               .WithMessage("Necessário informar o código da Ue");
             RuleFor(a => a.AlunoCodigo)
                .NotNull()
                .NotEmpty()

@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> Executar(NotaConceitoPorBimestresAlunoTurmaDto dto)
         {
-            return await mediator.Send(new ObterNotasPorBimestresUeAlunoTurmaQuery(dto.Bimestres, dto.TurmaId, dto.UeId, dto.AlunoCodigo));
+            return await mediator.Send(new ObterNotasPorBimestresUeAlunoTurmaQuery(dto.Bimestres, dto.TurmaCodigo, dto.UeCodigo, dto.AlunoCodigo));
         }
     }
 }
