@@ -64,16 +64,20 @@ namespace SME.SGP.Aplicacao
         {
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
+
+            if(turma == null)
+                throw new NegocioException("Turma não localizada.");
+
+            //Particularidade de 2020
+            if (turma.AnoLetivo.Equals(2020))
+                return await CalculoFrequenciaGlobal2020(alunoCodigo, turma);
+
             var tipoCalendarioId = turma.ModalidadeCodigo == Modalidade.EJA ? await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma)) : 0 ;
             
             var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
             
             if (frequenciaAluno == null)
-                return null;
-
-            //Particularidade de 2020
-            if (turma.AnoLetivo.Equals(2020))
-                return await CalculoFrequenciaGlobal2020(alunoCodigo, turma);
+                return null;            
 
             return frequenciaAluno.PercentualFrequencia;
         }

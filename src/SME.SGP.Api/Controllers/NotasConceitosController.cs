@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -21,7 +22,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
         public async Task<IActionResult> Get([FromQuery] ListaNotasConceitosConsultaRefatoradaDto consultaListaNotasConceitosDto, [FromServices] IObterNotasParaAvaliacoesUseCase obterNotasParaAvaliacoesUseCase)
         {
-            return Ok(await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto));                         
+            return Ok(await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto));
         }
         [HttpGet("periodos")]
         [ProducesResponseType(typeof(IEnumerable<PeriodosParaConsultaNotasDto>), 200)]
@@ -80,6 +81,15 @@ namespace SME.SGP.Api.Controllers
                 return NoContent();
 
             return Ok(listaConceitos);
+        }
+
+        [HttpGet("ues/{ueCodigo}/turmas/{turmaCodigo}/alunos/{alunoCodigo}")]
+        [ProducesResponseType(typeof(IEnumerable<NotaConceitoBimestreComponenteDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Authorize("Bearer")]
+        public async Task<IActionResult> ObterNotasPorBimestresUeAlunoTurma(string ueCodigo, string turmaCodigo, string alunoCodigo, [FromQuery] int[] bimestres, [FromServices] IObterNotasPorBimestresUeAlunoTurmaUseCase obterNotasPorBimestresUeAlunoTurmaUseCase)
+        {
+            return Ok(await obterNotasPorBimestresUeAlunoTurmaUseCase.Executar(new NotaConceitoPorBimestresAlunoTurmaDto(ueCodigo, turmaCodigo, alunoCodigo, bimestres)));
         }
 
     }
