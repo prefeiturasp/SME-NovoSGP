@@ -93,5 +93,22 @@ namespace SME.SGP.Dados.Repositorios
 
             return bimestres?.ToArray();
         }
+
+        public async Task<bool> VerificaSeExiteEventoPorTipoCalendarioDataReferencia(long tipoCalendarioId, DateTime dataReferencia)
+        {
+
+            string query = @"select 1 from (
+                                 select MAX(e.data_inicio), bimestre from evento_bimestre eb
+                                 inner join evento e on eb.evento_id = e.id
+                                 where not e.excluido  
+                                       and e.tipo_calendario_id = @tipoCalendarioId
+                                       and e.tipo_evento_id = @tipoEvento
+                                       and e.data_inicio = @data
+                                 group by bimestre) b ";
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { tipoCalendarioId, tipoEvento = (int)TipoEvento.LiberacaoBoletim, data = dataReferencia.Date }) > 0);
+
+            }
+        }
     }
-}
+
