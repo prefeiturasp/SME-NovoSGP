@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var turma in turmas)
             {
-                var quantidadeAlunos = quantidadesAlunosTurmas.FirstOrDefault(c => c.CodigoTurma == turma.TurmaCodigo);
+                var quantidadeAlunos = quantidadesAlunosTurmas.FirstOrDefault(c => c.TurmaCodigo == turma.TurmaCodigo);
                 var quantidade = quantidadeAlunos?.Quantidade ?? 0;
                 try
                 {
