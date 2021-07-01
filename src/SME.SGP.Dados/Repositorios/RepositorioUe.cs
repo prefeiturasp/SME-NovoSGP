@@ -97,6 +97,12 @@ namespace SME.SGP.Dados.Repositorios
             new { ueId })).FirstOrDefault();
         }
 
+        public async Task<IEnumerable<string>> ObterCodigosUEs()
+        {
+            var query = @"select ue_id from ue";
+            return await contexto.Conexao.QueryAsync<string>(query);
+        }
+
         public IEnumerable<Ue> ObterTodas()
         {
             var query = @"select

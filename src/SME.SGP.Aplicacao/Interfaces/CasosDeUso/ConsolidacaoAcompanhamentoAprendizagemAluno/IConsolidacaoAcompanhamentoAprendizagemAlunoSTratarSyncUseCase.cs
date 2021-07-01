@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase : IUseCase<MensagemRabbit, bool>
+    public interface IConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase : IRabbitUseCase
     {
     }
 }

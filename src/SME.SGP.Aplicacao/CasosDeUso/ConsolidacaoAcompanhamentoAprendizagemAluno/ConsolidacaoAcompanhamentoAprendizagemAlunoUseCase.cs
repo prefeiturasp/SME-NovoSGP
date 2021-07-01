@@ -19,9 +19,7 @@ namespace SME.SGP.Aplicacao
 
                 var totalAlunosComAcompanhamento = await mediator.Send(new ObterTotalAlunosComAcompanhamentoQuery(filtro.TurmaId, filtro.AnoLetivo, filtro.Semestre));
 
-                var  totalAlunosNoSemestre = await mediator.Send(new ObterTotalAlunosNoSemestreQuery(filtro.TurmaId, filtro.AnoLetivo, filtro.Semestre));
-
-                var totalAlunosSemAcompanhamento = (totalAlunosNoSemestre - totalAlunosComAcompanhamento);
+                var totalAlunosSemAcompanhamento = (filtro.QuantidadeAlunosTurma - totalAlunosComAcompanhamento);
 
                 await mediator.Send(new RegistraConsolidacaoAcompanhamentoAprendizagemCommand(filtro.TurmaId, totalAlunosComAcompanhamento, totalAlunosSemAcompanhamento, filtro.Semestre));
 

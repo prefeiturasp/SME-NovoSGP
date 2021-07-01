@@ -128,8 +128,8 @@
         public const string ConsolidarMediaRegistrosIndividuaisTurma = "sgp.consolidacao.media.registros.individuais.turma";
         public const string ConsolidarMediaRegistrosIndividuais = "sgp.consolidacao.media.registros.individuais";
 
-        public const string SincronizaAcompanhamentoAprendizagemAlunoSync = "sgp.sincronizacao.acompanhamento.aprendizado.aluno.sync";
         public const string ConsolidarAcompanhamentoAprendizagemAluno = "sgp.sincronizacao.acompanhamento.aprendizado.aluno";
+        public const string ConsolidarAcompanhamentoAprendizagemAlunoPorUE = "sgp.sincronizacao.acompanhamento.aprendizado.aluno.ue";
         public const string ConsolidarAcompanhamentoAprendizagemAlunoTratar = "sgp.sincronizacao.acompanhamento.aprendizado.aluno.tratar";
     }
 }

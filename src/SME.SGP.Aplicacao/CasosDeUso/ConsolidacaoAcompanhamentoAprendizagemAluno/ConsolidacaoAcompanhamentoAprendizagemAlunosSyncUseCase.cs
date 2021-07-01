@@ -35,33 +35,18 @@ namespace SME.SGP.Aplicacao
         private async Task ConsolidarAcompanhamentoAprendizagemAluno()
         {
             var anoAtual = DateTime.Now.Year;
-
-            var turmas = await mediator.Send(new ObterTurmasInfantilQuery(anoAtual));
-
             await mediator.Send(new LimparConsolidacaoAcompanhamentoAprendizagemCommand(anoAtual));
 
-            await PublicarMensagemConsolidar(turmas, anoAtual);
+            var ues = await mediator.Send(new ObterCodigosUEsQuery());
+            foreach (var ue in ues)
+                await PublicarConsolidacaoPorUe(ue);
 
             await AtualizarDataExecucao(anoAtual);
         }
 
-        private async Task PublicarMensagemConsolidar(IEnumerable<TurmaDTO> turmas, int anoLetivo)
+        private async Task PublicarConsolidacaoPorUe(string ue)
         {
-            if (turmas == null && !turmas.Any())
-                throw new NegocioException("Não foi possível localizar turmas para consolidar dados de Média de Registros Individuais");
-
-            foreach (var turma in turmas)
-            {
-                try
-                {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAlunoTratar, new FiltroAcompanhamentoAprendizagemAlunoTurmaDTO(turma.TurmaId, anoLetivo, 1), Guid.NewGuid(), null));
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAlunoTratar, new FiltroAcompanhamentoAprendizagemAlunoTurmaDTO(turma.TurmaId, anoLetivo, 2), Guid.NewGuid(), null));
-                }
-                catch (Exception ex)
-                {
-                    SentrySdk.CaptureException(ex);
-                }
-            }
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAlunoPorUE, new FiltroUEDto(ue), Guid.NewGuid(), null));
         }
 
         private async Task<bool> ExecutarConsolidacao()
