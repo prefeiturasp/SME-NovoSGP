@@ -24,10 +24,10 @@ namespace SME.SGP.Dados.Repositorios
 
             return comunicadoModalidade.Id;
         }
-        public async Task ExcluirPorIdComunicado(long id)
+        public async Task<bool> ExcluirPorIdComunicado(long id)
         {
             var query = "update comunicado_modalidade set excluido=true WHERE comunicado_id = @id";
-            await database.Conexao.ExecuteAsync(query, new { id });
+            return await database.Conexao.ExecuteAsync(query, new { id }) != 0;
         }
     }
 }
