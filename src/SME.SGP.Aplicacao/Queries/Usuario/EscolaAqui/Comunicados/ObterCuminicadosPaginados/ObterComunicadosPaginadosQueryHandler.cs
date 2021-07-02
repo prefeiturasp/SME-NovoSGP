@@ -36,27 +36,40 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<ComunicadoDto>> Handle(ObterComunicadosPaginadosQuery request, CancellationToken cancellationToken)
         {
-            var filtro = new FiltroComunicadoDto
+            try
             {
-                AnoLetivo = request.AnoLetivo,
-                CodigoDre = request.CodigoDre,
-                CodigoUe = request.CodigoUe,
-                DataEnvio = request.DataEnvio,
-                DataExpiracao = request.DataExpiracao,
-                GruposId = request.GruposId,
-                Modalidades = request.Modalidades,
-                Semestre = request.Semestre,
-                Titulo = request.Titulo,
-                Turmas = request.Turmas
-            };
+                var filtro = new FiltroComunicadoDto
+                {
+                    AnoLetivo = request.AnoLetivo,
+                    CodigoDre = request.CodigoDre,
+                    CodigoUe = request.CodigoUe,
+                    DataEnvio = request.DataEnvio,
+                    DataExpiracao = request.DataExpiracao,
+                    // GruposId = request.GruposId,
+                    Modalidades = request.Modalidades,
+                    Semestre = request.Semestre,
+                    Titulo = request.Titulo,
+                    Turmas = request.Turmas,
+                    EventoId = request.EventoId
+                };
 
-            var validacao = await ValidarAbrangenciaListagem(filtro);
-            if (!validacao)
-                return new PaginacaoResultadoDto<ComunicadoDto>();
+                var validacao = await ValidarAbrangenciaListagem(filtro);
+                if (!validacao)
+                    return new PaginacaoResultadoDto<ComunicadoDto>();
 
-            var comunicados = await _repositorioComunicado.ListarPaginado(filtro, Paginacao);
 
-            return MapearParaDtoPaginado(comunicados);
+                var comunicados = await _repositorioComunicado.ListarPaginado(filtro, Paginacao);
+
+
+
+                return MapearParaDtoPaginado(comunicados);
+            }
+
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
         private PaginacaoResultadoDto<ComunicadoDto> MapearParaDtoPaginado(PaginacaoResultadoDto<Comunicado> comunicado)
@@ -76,12 +89,6 @@ namespace SME.SGP.Aplicacao
 
                 if (comunicadoDto == null)
                     itens.Add((ComunicadoDto)item);
-                else
-                    comunicadoDto.Grupos.AddRange(item.GruposComunicacao.Select(x => new GrupoComunicacaoDto
-                    {
-                        Id = x.Id,
-                        Nome = x.Nome
-                    }));
             }
 
             retornoPaginado.Items = itens;
@@ -91,16 +98,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ValidarAbrangenciaListagem(FiltroComunicadoDto filtroDto)
         {
-            try
-            {
-                ComunicadoDto comunicado = MapearFiltroDtoValidacao(filtroDto);
-                await ValidarAbrangenciaUsuario(comunicado);
-                return true;
-            }
-            catch (NegocioException)
-            {
-                return false;
-            }
+            ComunicadoDto comunicado = MapearFiltroDtoValidacao(filtroDto);
+            await ValidarAbrangenciaUsuario(comunicado);
+            return true;
+
         }
 
         private static ComunicadoDto MapearFiltroDtoValidacao(FiltroComunicadoDto filtroDto)
@@ -115,7 +116,8 @@ namespace SME.SGP.Aplicacao
                 Modalidades = filtroDto.Modalidades,
                 Titulo = filtroDto.Titulo,
                 Turmas = filtroDto.Turmas?.Select(x => new ComunicadoTurmaDto { CodigoTurma = x }),
-                Semestre = filtroDto.Semestre
+                Semestre = filtroDto.Semestre,
+                EventoId = filtroDto.EventoId
             };
         }
 

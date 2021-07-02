@@ -66,6 +66,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<Comunicado>> ListarPaginado(FiltroComunicadoDto filtro, Paginacao paginacao)
         {
+
             StringBuilder query = new StringBuilder();
 
             var queryPrincipal = MontarConsultaPricipal(filtro, paginacao, ehContador: false);
@@ -75,42 +76,37 @@ namespace SME.SGP.Dados.Repositorios
             if (paginacao == null)
                 paginacao = new Paginacao(1, 10);
 
-            query.AppendFormat(queryComunicadoListagem(), ObterCamposListagem("c", "g", "t"), queryPrincipal);
-
             var parametros = new
             {
                 filtro.DataEnvio,
                 filtro.DataExpiracao,
                 filtro.Titulo,
-                filtro.GruposId,
                 filtro.AnoLetivo,
                 filtro.Modalidades,
                 filtro.Semestre,
                 filtro.CodigoDre,
                 filtro.CodigoUe,
-                filtro.Turmas
+                filtro.Turmas,
+                filtro.EventoId
             };
+
 
             var retornoPaginado = new PaginacaoResultadoDto<Comunicado>()
             {
-                Items = await database.Conexao.QueryAsync<Comunicado, GrupoComunicacao, Comunicado>(query.ToString(), (comunicado, grupo) =>
-                {
-                    comunicado.GruposComunicacao.Add(grupo);
-
-                    return comunicado;
-                },
-                parametros,
-                splitOn: "id,GrupoId")
+                Items = await database.Conexao.QueryAsync<Comunicado>(queryPrincipal.ToString(), parametros)
             };
+
 
             retornoPaginado.TotalRegistros = (await database.Conexao.QueryAsync<int>(queryCount.ToString(), parametros)).Sum();
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retornoPaginado;
+
+
         }
 
-        private string ObterConsultaListagemPrincipal(string whereGrupo, string limite, string where, string whereTurma, bool ehContador)
+        private string ObterConsultaListagemPrincipal(string limite, string where, string whereTurma, bool ehContador)
         {
             StringBuilder builder = new StringBuilder();
 
@@ -123,19 +119,6 @@ namespace SME.SGP.Dados.Repositorios
 
             builder.AppendLine(@" from comunicado co
                                   where co.excluido = false");
-
-            if (!string.IsNullOrWhiteSpace(whereGrupo))
-                builder.AppendLine($@"and exists(select 1
-                                      from comunidado_grupo cgr
-                                      where {whereGrupo}
-                                      and cgr.comunicado_id = co.id)");
-
-            if (!string.IsNullOrWhiteSpace(whereTurma))
-                builder.AppendLine($@"and exists(select 1
-                                      from comunicado_turma ct
-                                       where {whereTurma}
-                                       and ct.comunicado_id = co.id
-                                       and ct.excluido = false)");
 
             builder.AppendLine(where);
 
@@ -150,15 +133,13 @@ namespace SME.SGP.Dados.Repositorios
 
         private string MontarConsultaPricipal(FiltroComunicadoDto filtro, Paginacao paginacao, bool ehContador = false)
         {
-            var whereGrupo = filtro.GruposId?.Length > 0 ? "cgr.grupo_comunicado_id = ANY(@gruposId)" : "";
-
             var limite = paginacao.QuantidadeRegistros != 0 ? string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros) : "";
 
             var whereTurma = (filtro.Turmas?.Any() ?? false) ? "ct.turma_codigo = Any(@Turmas)" : "";
 
             var where = MontaWhereListar(filtro, "co");
 
-            return ObterConsultaListagemPrincipal(whereGrupo, limite, where, whereTurma, ehContador);
+            return ObterConsultaListagemPrincipal(limite, where, whereTurma, ehContador);
         }
 
         private string MontaWhereListar(FiltroComunicadoDto filtro, string prefixo)
@@ -185,11 +166,15 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrWhiteSpace(filtro.CodigoUe) && !filtro.CodigoUe.Equals("todas"))
                 where.AppendLine($"AND {prefixo}.codigo_ue = @CodigoUe");
 
-            if (filtro.Modalidades.Count() > 0)
+            if (filtro.Modalidades?.Count() > 0)
                 where.AppendLine($"AND {prefixo}.modalidade = @Modalidade");
 
             if (filtro.Semestre > 0)
                 where.AppendLine($"AND {prefixo}.semestre = @Semestre");
+
+
+            if (filtro.EventoId > 0)
+                where.AppendLine($"AND {prefixo}.evento_Id = @EventoId");
 
             return where.ToString();
         }
@@ -199,8 +184,6 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder builder = new StringBuilder();
 
             builder.AppendLine($"{camposComunicado(prefixoComunicado)},");
-
-            builder.AppendLine($@"{prefixoGrupoComunicado}.id as GrupoId,");
             builder.AppendLine($@"{prefixoGrupoComunicado}.id,");
             builder.AppendLine($@"{prefixoGrupoComunicado}.nome,");
             builder.AppendLine($@"{prefixoGrupoComunicado}.tipo_escola_id,");
