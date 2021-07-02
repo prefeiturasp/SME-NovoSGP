@@ -36,40 +36,26 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<ComunicadoDto>> Handle(ObterComunicadosPaginadosQuery request, CancellationToken cancellationToken)
         {
-            try
+            var filtro = new FiltroComunicadoDto
             {
-                var filtro = new FiltroComunicadoDto
-                {
-                    AnoLetivo = request.AnoLetivo,
-                    CodigoDre = request.CodigoDre,
-                    CodigoUe = request.CodigoUe,
-                    DataEnvio = request.DataEnvio,
-                    DataExpiracao = request.DataExpiracao,
-                    // GruposId = request.GruposId,
-                    Modalidades = request.Modalidades,
-                    Semestre = request.Semestre,
-                    Titulo = request.Titulo,
-                    Turmas = request.Turmas,
-                    EventoId = request.EventoId
-                };
+                AnoLetivo = request.AnoLetivo,
+                CodigoDre = request.CodigoDre,
+                CodigoUe = request.CodigoUe,
+                DataEnvio = request.DataEnvio,
+                DataExpiracao = request.DataExpiracao,
+                Modalidades = request.Modalidades,
+                Semestre = request.Semestre,
+                Titulo = request.Titulo,
+                Turmas = request.Turmas,
+                EventoId = request.EventoId
+            };
 
-                var validacao = await ValidarAbrangenciaListagem(filtro);
-                if (!validacao)
-                    return new PaginacaoResultadoDto<ComunicadoDto>();
+            var validacao = await ValidarAbrangenciaListagem(filtro);
+            if (!validacao)
+                return new PaginacaoResultadoDto<ComunicadoDto>();
 
-
-                var comunicados = await _repositorioComunicado.ListarPaginado(filtro, Paginacao);
-
-
-
-                return MapearParaDtoPaginado(comunicados);
-            }
-
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
+            var comunicados = await _repositorioComunicado.ListarPaginado(filtro, Paginacao);
+            return MapearParaDtoPaginado(comunicados);
         }
 
         private PaginacaoResultadoDto<ComunicadoDto> MapearParaDtoPaginado(PaginacaoResultadoDto<Comunicado> comunicado)
