@@ -372,7 +372,7 @@ namespace SME.SGP.Dados.Repositorios
             var comunicadoAlias = "cm";
             var comunicadoTumaAlias = "cmt";
             var turmaAlias = "tur";
-            var comunicadoGrupoAlias = "cmg";
+            var comunicadoModalidadeAlias = "cmm";
 
             var sql = new StringBuilder($@"SELECT
                                             {comunicadoAlias}.id AS Id,
@@ -382,9 +382,9 @@ namespace SME.SGP.Dados.Repositorios
                                             {comunicadoAlias}.codigo_ue AS CodigoUe,
                                             {comunicadoAlias}.modalidade AS Modalidade,
                                             CASE
-                                               WHEN (select count(id) from comunidado_grupo where comunicado_id = {comunicadoAlias}.id) = 0 THEN 0
-                                               WHEN (select count(id) from comunidado_grupo where comunicado_id = {comunicadoAlias}.id) = 1 THEN 0
-                                               WHEN (select count(id) from comunidado_grupo where comunicado_id = {comunicadoAlias}.id) > 1 THEN 1
+                                               WHEN (select count(id) from comunicado_modalidade where comunicado_id = {comunicadoAlias}.id) = 0 THEN 0
+                                               WHEN (select count(id) from comunicado_modalidade where comunicado_id = {comunicadoAlias}.id) = 1 THEN 0
+                                               WHEN (select count(id) from comunicado_modalidade where comunicado_id = {comunicadoAlias}.id) > 1 THEN 1
                                             END agruparModalidade
                                         FROM comunicado {comunicadoAlias} ");
 
@@ -394,12 +394,12 @@ namespace SME.SGP.Dados.Repositorios
                 sql.Append($@" INNER JOIN turma {turmaAlias} ON {comunicadoTumaAlias}.turma_codigo = {turmaAlias}.turma_id ");
             }
 
-            if (filtro.GruposIds != null && filtro.GruposIds.Any())
+            if (filtro.Modalidades != null && filtro.Modalidades.Any())
             {
-                sql.Append($@" INNER JOIN comunidado_grupo {comunicadoGrupoAlias} ON {comunicadoAlias}.id = {comunicadoGrupoAlias}.comunicado_id ");
+                sql.Append($@" INNER JOIN comunicado_modalidade {comunicadoModalidadeAlias} ON {comunicadoAlias}.id = {comunicadoModalidadeAlias}.comunicado_id ");
             }
 
-            sql.Append(MontarCondicoesDaConsultaObterComunicadosParaFiltroDaDashboard(filtro, comunicadoAlias, comunicadoTumaAlias, turmaAlias, comunicadoGrupoAlias));
+            sql.Append(MontarCondicoesDaConsultaObterComunicadosParaFiltroDaDashboard(filtro, comunicadoAlias, comunicadoTumaAlias, turmaAlias, comunicadoModalidadeAlias));
 
             sql.Append($@" ORDER BY {comunicadoAlias}.titulo LIMIT 10");
 
@@ -411,9 +411,8 @@ namespace SME.SGP.Dados.Repositorios
                 filtro.CodigoTurma,
                 filtro.CodigoUe,
                 filtro.DataEnvioFinal,
-                filtro.DataEnvioInicial,
-                filtro.GruposIds,
-                filtro.Modalidade,
+                filtro.DataEnvioInicial,                
+                filtro.Modalidades,
                 filtro.Semestre,
                 filtro.Titulo
             };
@@ -421,19 +420,16 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private string MontarCondicoesDaConsultaObterComunicadosParaFiltroDaDashboard(FiltroObterComunicadosParaFiltroDaDashboardDto filtro, string comunicadoAlias,
-            string comunicadoTumaAlias, string turmaAlias, string comunicadoGrupoAlias)
+            string comunicadoTumaAlias, string turmaAlias, string comunicadoModalidadeAlias)
         {
             var where = new StringBuilder($" WHERE {comunicadoAlias}.ano_letivo = @anoLetivo ");
 
             where.Append(!string.IsNullOrWhiteSpace(filtro.CodigoDre) ? $" AND {comunicadoAlias}.codigo_dre = @CodigoDre" : $" AND {comunicadoAlias}.codigo_dre is null");
 
             where.Append(!string.IsNullOrWhiteSpace(filtro.CodigoUe) ? $" AND {comunicadoAlias}.codigo_ue = @CodigoUe" : $" AND {comunicadoAlias}.codigo_ue is null");
-
-            if (filtro.GruposIds != null)
-                where.Append($" AND {comunicadoGrupoAlias}.grupo_comunicado_id = ANY(@GruposIds)");
-
-            if (filtro.Modalidade != null)
-                where.Append($" AND {comunicadoAlias}.modalidade = @Modalidade");
+            
+            if (filtro.Modalidades != null)
+                where.Append($" AND {comunicadoModalidadeAlias}.modalidade = ANY(@Modalidades)");
 
             if (filtro.Semestre != null)
                 where.Append($" AND {comunicadoAlias}.semestre = @Semestre");

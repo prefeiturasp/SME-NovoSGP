@@ -15,41 +15,28 @@ namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
 
         public ObterComunicadosParaFiltroDaDashboardQueryHandler(IRepositorioComunicado repositorioComunicado)
         {
-            this.repositorioComunicado = repositorioComunicado;
+            this.repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
         }
 
         public async Task<IEnumerable<ComunicadoParaFiltroDaDashboardDto>> Handle(ObterComunicadosParaFiltroDaDashboardQuery request, CancellationToken cancellationToken)
         {
-            try
+            var filtro = new FiltroObterComunicadosParaFiltroDaDashboardDto
             {
-                var comunicadosComTurmas = new List<ComunicadoParaFiltroDaDashboardDto>();
+                AnoEscolar = request.AnoEscolar,
+                AnoLetivo = request.AnoLetivo,
+                CodigoDre = request.CodigoDre,
+                CodigoTurma = request.CodigoTurma,
+                CodigoUe = request.CodigoUe,
+                DataEnvioFinal = request.DataEnvioFinal,
+                DataEnvioInicial = request.DataEnvioInicial,
+                Titulo = request.Descricao,
+                Modalidades = request.Modalidades,
+                Semestre = request.Semestre
+            };
 
-                var filtro = new FiltroObterComunicadosParaFiltroDaDashboardDto
-                {
-                    AnoEscolar = request.AnoEscolar,
-                    AnoLetivo = request.AnoLetivo,
-                    CodigoDre = request.CodigoDre,
-                    CodigoTurma = request.CodigoTurma,
-                    CodigoUe = request.CodigoUe,
-                    DataEnvioFinal = request.DataEnvioFinal,
-                    DataEnvioInicial = request.DataEnvioInicial,
-                    Titulo = request.Descricao,
-                    GruposIds = request.GruposIds,
-                    Modalidade = request.Modalidade,
-                    Semestre = request.Semestre
-                };
+            var comunicadosFiltrados = await repositorioComunicado.ObterComunicadosParaFiltroDaDashboard(filtro);
 
-                var comunicadosFiltrados = await repositorioComunicado.ObterComunicadosParaFiltroDaDashboard(filtro);
-
-                comunicadosComTurmas = await ObterTurmasAssociadas(comunicadosFiltrados);
-
-                return comunicadosComTurmas;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
+            return await ObterTurmasAssociadas(comunicadosFiltrados);            
         }
 
         private async Task<List<ComunicadoParaFiltroDaDashboardDto>> ObterTurmasAssociadas(IEnumerable<ComunicadoParaFiltroDaDashboardDto> comunicadosFiltrados)
