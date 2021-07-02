@@ -10,7 +10,6 @@ namespace SME.SGP.Aplicacao
     {
         public DateTime? DataEnvio { get; set; }
         public DateTime? DataExpiracao { get; set; }
-        public int[] GruposId { get; set; }
         public string Titulo { get; set; }
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
@@ -24,7 +23,6 @@ namespace SME.SGP.Aplicacao
         {
             DataEnvio = dataEnvio;
             DataExpiracao = dataExpiracao;
-          //  GruposId = gruposId;
             Titulo = titulo;
             AnoLetivo = anoLetivo;
             CodigoDre = codigoDre;
