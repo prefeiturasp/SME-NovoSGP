@@ -36,11 +36,6 @@ namespace SME.SGP.Dto
             AnoLetivo = comunicado.AnoLetivo,
             Turmas = comunicado.Turmas.Select(x => (ComunicadoTurmaDto)x),
             Alunos = comunicado.Alunos.Select(x => (ComunicadoAlunoDto)x),
-            Grupos = comunicado.GruposComunicacao.Select(x => new GrupoComunicacaoDto
-            {
-                Id = x.Id,
-                Nome = x.Nome
-            }).ToList(),
             CodigoDre = comunicado.CodigoDre,
             CodigoUe = comunicado.CodigoUe,
             DataEnvio = comunicado.DataEnvio,
