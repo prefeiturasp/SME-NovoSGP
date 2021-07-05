@@ -72,14 +72,8 @@ namespace SME.SGP.Aplicacao
             {
                 // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
                 // se a matrícula foi ativada após a data da aula                
-                if ((aluno.EstaInativo(aula.DataAula) && aluno.DataSituacao < periodoEscolar.PeriodoInicio) ||
-                    (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataSituacao > aula.DataAula))
-                    continue;
-
-                if (aula.DataAula < aluno.DataMatricula.Date)
-                    continue;
-
-                if (aluno.EstaInativo(aula.DataAula) && aluno.DataSituacao < aula.DataAula)
+                if ((aluno.EstaInativo(aula.DataAula) && (aluno.DataSituacao < periodoEscolar.PeriodoInicio || aluno.DataSituacao < aula.DataAula)) ||
+                    (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataMatricula > aula.DataAula))
                     continue;
 
                 var tipoFrequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(turma.Id, long.Parse(aula.DisciplinaId), aluno.CodigoAluno));
@@ -172,9 +166,11 @@ namespace SME.SGP.Aplicacao
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
         {
             var percentualFrequencia = 0;
-            if (turmaComFrequenciasRegistradas) {
+            if (turmaComFrequenciasRegistradas)
+            {
                 percentualFrequencia = (int)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
-            }else
+            }
+            else
             {
                 percentualFrequencia = int.MinValue;
             }

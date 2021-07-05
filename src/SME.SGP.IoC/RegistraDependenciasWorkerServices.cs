@@ -167,10 +167,11 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasRelatorioSemestralPAPAlunoSecao, ConsultasRelatorioSemestralPAPAlunoSecao>();
             services.TryAddScopedWorkerService<IConsultasSecaoRelatorioSemestralPAP, ConsultasSecaoRelatorioSemestralPAP>();
 
-            services.TryAddScoped<ICarregarDadosAulasFrequenciaUseCase, CarregarDadosAulasFrequenciaUseCase>();
-            services.TryAddScoped<IExecutarSincronizacaoDadosAulasFrequenciaUseCase, ExecutarSincronizacaoDadosAulasFrequenciaUseCase>();
-            services.TryAddScoped<IExecutarSincronizacaoRegistroFrequenciaAlunosUseCase, ExecutarSincronizacaoRegistroFrequenciaAlunosUseCase>();
-            services.TryAddScoped<ICarregarRegistroFrequenciaAlunosUseCase, CarregarRegistroFrequenciaAlunosUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoDadosFrequenciaUseCase, ExecutarSincronizacaoDadosFrequenciaUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoDadosTurmasFrequenciaUseCase, ExecutarSincronizacaoDadosTurmasFrequenciaUseCase>();
+            services.TryAddScopedWorkerService<ICarregarDadosAulasFrequenciaUseCase, CarregarDadosAulasFrequenciaUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoRegistroFrequenciaAlunosUseCase, ExecutarSincronizacaoRegistroFrequenciaAlunosUseCase>();
+            services.TryAddScopedWorkerService<ICarregarRegistroFrequenciaAlunosUseCase, CarregarRegistroFrequenciaAlunosUseCase>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -606,6 +607,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasAlunosCronUseCase, ConciliacaoFrequenciaTurmasAlunosCronUseCase>();
             services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasAlunosSyncUseCase, ConciliacaoFrequenciaTurmasAlunosSyncUseCase>();
             services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasAlunosBuscarUseCase, ConciliacaoFrequenciaTurmasAlunosBuscarUseCase>();
+
+            services.TryAddScopedWorkerService<IObterNotasParaAvaliacoesUseCase, ObterNotasParaAvaliacoesUseCase>();
+            services.TryAddScopedWorkerService<IObterPeriodosParaConsultaNotasUseCase, ObterPeriodosParaConsultaNotasUseCase>();
 
             services.TryAddScopedWorkerService<IExecutaNotificacaoAlunosFaltososUseCase, ExecutaNotificacaoAlunosFaltososUseCase>();
             services.TryAddScopedWorkerService<INotificarAlunosFaltososUseCase, NotificarAlunosFaltososUseCase>();

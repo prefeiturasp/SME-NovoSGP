@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio
         Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId);
         Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterAusenciasAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string turmaId, IEnumerable<string> alunos);
         Task<IEnumerable<FrequenciaAlunoSimplificadoDto>> ObterFrequenciasPorAulaId(long aulaId);
-        Task<IEnumerable<FiltroMigracaoFrequenciaAulasDto>> ObterTurmasIdFrequenciasExistentesPorAnoAsync(int[] anosLetivos);
-        Task<IEnumerable<string>> ObterCodigosAlunosComRegistroFrequenciaAlunoAsync(long registroFrequenciaId, string[] codigosAlunos, int numeroAula);
+
+        Task<bool> InserirVarios(IEnumerable<RegistroFrequenciaAluno> registros);
     }
 }
