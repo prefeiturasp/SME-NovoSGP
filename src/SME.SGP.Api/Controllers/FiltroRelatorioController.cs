@@ -106,5 +106,31 @@ namespace SME.SGP.Api.Controllers
               .ToList();
             return Ok(tipoVisualizacao);
         }
+
+
+        [HttpGet("bimestres/modalidades/{modalidade}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterBimestres([FromQuery]  bool opcaoTodos, [FromQuery]  bool opcaoFinal, Modalidade modalidade, [FromServices] IObterBimestrePorModalidadeUseCase obterBimestrePorModalidadeUseCase)
+        {
+            return Ok(await (obterBimestrePorModalidadeUseCase.Executar( opcaoTodos, opcaoFinal, modalidade)));
+        }
+
+        
+        [HttpGet("acompanhamento-fechamento/fechamentos/situacoes")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterSituacoesFechamento ([FromQuery] bool unificarNaoIniciado, [FromServices] IObterSituacoesFechamentoUseCase obterSituacoesFechamentoUseCase)
+        {
+            return Ok(await (obterSituacoesFechamentoUseCase.Executar(unificarNaoIniciado)));
+        }
+
+        [HttpGet("acompanhamento-fechamento/conselho-de-classe/situacoes")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterSituacoesConselhoClasse([FromServices] IObterSituacoesConselhoClasseUseCase obterSituacoesConselhoClasseUseCase)
+        {
+            return Ok(await (obterSituacoesConselhoClasseUseCase.Executar()));
+        }
     }
 }
