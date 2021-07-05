@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Anos;
 using SME.SGP.Dominio;
@@ -41,9 +42,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CO_E, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir([FromBody] long[] ids, [FromServices] ISolicitarExclusaoComunicadosEscolaAquiUseCase solicitarExclusaoComunicadosEscolaAquiUseCase)
+        public async Task<IActionResult> Excluir([FromBody] long[] ids, [FromServices] ISolicitarExclusaoComunicadosEscolaAquiUseCase useCase)
         {
-            return Ok(await solicitarExclusaoComunicadosEscolaAquiUseCase.Executar(ids));
+            return Ok(await useCase.Executar(ids));
         }
 
         [HttpGet("{id}")]

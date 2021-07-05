@@ -23,5 +23,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<ComunicadoTurmaDto>> ObterComunicadosTurma(long comunicadoId);
         Task<IEnumerable<ComunicadoAlunoReduzidoDto>> ObterComunicadosReduzidosPorTipo(TipoComunicado tipoComunicado);
         Task<PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>> ObterComunicadosReduzidos(string dreCodigo, string ueCodigo, string turmaCodigo, string alunoCodigo, Paginacao paginacao);
+        Task<IEnumerable<Comunicado>> ObterComunicadosPorIds(long[] ids);
     }
 }

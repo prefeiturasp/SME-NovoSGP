@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
@@ -22,6 +23,11 @@ namespace SME.SGP.Dados.Repositorios
                 comunicadoModalidade.Id = (long)(await database.Conexao.InsertAsync(comunicadoModalidade));
 
             return comunicadoModalidade.Id;
+        }
+        public async Task<bool> ExcluirPorIdComunicado(long id)
+        {
+            var query = "update comunicado_modalidade set excluido=true WHERE comunicado_id = @id";
+            return await database.Conexao.ExecuteAsync(query, new { id }) != 0;
         }
     }
 }
