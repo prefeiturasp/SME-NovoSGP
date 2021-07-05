@@ -109,5 +109,19 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterTiposCalendarioPorAnoLetivoModalidadeoUseCase.Executar(anoLetivo, modalidades));
         }
+
+        [HttpGet("{tipoCalendarioId}/bimestres")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioBimentreDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.E_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterBimestresPorTipoCalendarioId(int tipoCalendarioId)
+        {
+            var listaRetorno = await  consultas.ObterBimestresPorTipoCalendarioId(tipoCalendarioId);
+
+            if (listaRetorno.Any())
+                return Ok(listaRetorno);
+            else return StatusCode(204);
+        }
     }
 }
