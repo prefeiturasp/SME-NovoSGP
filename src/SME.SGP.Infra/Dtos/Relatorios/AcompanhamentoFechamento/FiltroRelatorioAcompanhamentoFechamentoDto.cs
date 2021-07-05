@@ -5,6 +5,11 @@ namespace SME.SGP.Infra
 {
     public class FiltroRelatorioAcompanhamentoFechamentoDto
     {
+        public FiltroRelatorioAcompanhamentoFechamentoDto()
+        {
+            TurmasCodigo = new List<string>();
+            Bimestres = new List<int>();
+        }
         public int AnoLetivo { get; set; }
         public string DreCodigo { get; set; }
         public string UeCodigo { get; set; }

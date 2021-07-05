@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao.Queries.Bimestre.ObterPorModalidade
                     listaBimestres.Add(bimestre);
                 }
 
-                var primeitoBimestre = new FiltroBimestreDto()
+                var primeiro = new FiltroBimestreDto()
                 {
                     Valor = (int)SME.SGP.Dominio.Bimestre.Primeiro,
                     Descricao = SME.SGP.Dominio.Bimestre.Primeiro.ObterNome()
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Queries.Bimestre.ObterPorModalidade
                     Descricao = SME.SGP.Dominio.Bimestre.Segundo.ObterNome()
                 };
 
-                listaBimestres.Add(primeitoBimestre);
+                listaBimestres.Add(primeiro);
                 listaBimestres.Add(segundoBimestre);
 
                 if (request.Modalidade != Modalidade.EJA)
