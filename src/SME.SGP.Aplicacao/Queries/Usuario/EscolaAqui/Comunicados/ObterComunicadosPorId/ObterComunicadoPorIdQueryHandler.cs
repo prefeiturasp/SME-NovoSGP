@@ -16,18 +16,21 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComunicado _repositorioComunicado;        
         private readonly IRepositorioComunicadoTurma _repositorioComunicadoTurma;
         private readonly IRepositorioComunicadoAluno _repositorioComunicadoAluno;
-        private readonly IConsultasAbrangencia _consultasAbrangencia;        
+        private readonly IConsultasAbrangencia _consultasAbrangencia;
+        private readonly IRepositorioComunicadoModalidade repositorioComunicadoModalidade;
 
         public ObterComunicadoPorIdQueryHandler(
-              IRepositorioComunicado repositorioComunicado            
+              IRepositorioComunicado repositorioComunicado
             , IRepositorioComunicadoTurma repositorioComunicadoTurma
             , IRepositorioComunicadoAluno repositorioComunicadoAluno
-            , IConsultasAbrangencia consultasAbrangencia)
+            , IConsultasAbrangencia consultasAbrangencia
+            , IRepositorioComunicadoModalidade repositorioComunicadoModalidade)
         {
-            this._repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));            
+            this._repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
             this._repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this._repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
-            this._consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));            
+            this._consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
+            this.repositorioComunicadoModalidade = repositorioComunicadoModalidade ?? throw new ArgumentNullException(nameof(repositorioComunicadoModalidade));
         }
 
         public async Task<ComunicadoCompletoDto> Handle(ObterComunicadoPorIdQuery request, CancellationToken cancellationToken)
@@ -39,7 +42,9 @@ namespace SME.SGP.Aplicacao
 
             comunicado.Alunos = (await _repositorioComunicadoAluno.ObterPorComunicado(comunicado.Id)).ToList();
 
-            comunicado.Turmas = (await _repositorioComunicadoTurma.ObterPorComunicado(comunicado.Id)).ToList();            
+            comunicado.Turmas = (await _repositorioComunicadoTurma.ObterPorComunicado(comunicado.Id)).ToList();
+
+            comunicado.Modalidades = (await repositorioComunicadoModalidade.ObterModalidadesPorComunicadoId(comunicado.Id)).ToArray();
 
             var dto = (ComunicadoCompletoDto)comunicado;            
 

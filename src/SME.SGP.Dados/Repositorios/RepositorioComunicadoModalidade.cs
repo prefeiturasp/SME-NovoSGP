@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -28,6 +29,15 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = "update comunicado_modalidade set excluido=true WHERE comunicado_id = @id";
             return await database.Conexao.ExecuteAsync(query, new { id }) != 0;
+        }
+        public async Task<IEnumerable<int>> ObterModalidadesPorComunicadoId(long id)
+        {
+            var sql = @"select modalidade 
+                          from comunicado_modalidade cm
+                         where cm.comunicado_id = @id
+                           and not excluido";
+            var parametros = new { id };
+            return await database.QueryAsync<int>(sql, parametros);
         }
     }
 }
