@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -6,5 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<long> SalvarAsync(ComunicadoModalidade comunicadoModalidade);
         Task<bool> ExcluirPorIdComunicado(long id);
+        Task<IEnumerable<int>> ObterModalidadesPorComunicadoId(long id);
     }
 }
