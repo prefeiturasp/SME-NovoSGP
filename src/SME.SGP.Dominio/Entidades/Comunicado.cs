@@ -24,8 +24,8 @@ namespace SME.SGP.Dominio
         public DateTime DataEnvio { get; set; }
         public DateTime? DataExpiracao { get; set; }
         public string Descricao { get; set; }
-        public bool Excluido { get; set; }
-        public Modalidade? Modalidade { get; set; }
+        public bool Excluido { get; set; }        
+        public int[] Modalidades { get; set; }
         public int? Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
         public IList<GrupoComunicacao> GruposComunicacao { get; set; }
@@ -34,12 +34,7 @@ namespace SME.SGP.Dominio
         public string Titulo { get; set; }
         public string SeriesResumidas { get; set; }
         public long? TipoCalendarioId { get; set; }
-        public long? EventoId { get; set; }
-
-        public void AdicionarGrupo(ComunicadoGrupo grupo)
-        {
-            Grupos.Add(grupo);
-        }
+        public long? EventoId { get; set; }        
 
         public void AdicionarAluno(ComunicadoAluno aluno)
         {
@@ -86,12 +81,12 @@ namespace SME.SGP.Dominio
                 return TipoComunicado.ALUNO;
 
             if (Turmas != null && Turmas.Any())
-                return TipoComunicado.TURMA;
+                return TipoComunicado.TURMA;            
 
-            if (Grupos != null && Grupos.Count == 1 && CodigoUe != null && CodigoUe != "todas" && SeriesResumidas.Any())
-                return TipoComunicado.UEMOD;
-
-            if (Grupos!= null && Grupos.Count == 1 && CodigoUe != null && CodigoUe != "todas")
+            if (Modalidades != null && Modalidades.Length == 1 && CodigoUe != null && CodigoUe != "todas" && SeriesResumidas.Any())
+                return TipoComunicado.UEMOD;            
+            
+            if (Modalidades != null && Modalidades.Length == 1 && CodigoUe != null && CodigoUe != "todas")
                 return TipoComunicado.UEMOD;
 
             if (CodigoDre == null && CodigoUe == null && SeriesResumidas.Any())

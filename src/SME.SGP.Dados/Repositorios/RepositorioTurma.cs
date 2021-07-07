@@ -1282,6 +1282,13 @@ namespace SME.SGP.Dados.Repositorios
             return retorno.FirstOrDefault();
         }
 
+        public async Task<IEnumerable<TurmaModalidadeCodigoDto>> ObterModalidadePorCodigos(string[] turmasCodigo)
+        {
+            var query = @"select t.turma_id as TurmaCodigo, t.modalidade_codigo as ModalidadeCodigo from turma t where t.turma_id = Any(@turmasCodigo) ";
+
+            return await contexto.Conexao.QueryAsync<TurmaModalidadeCodigoDto>(query, new { turmasCodigo });
+        }
+        
         public async Task<IEnumerable<TurmaDTO>> ObterTurmasInfantilPorAno(int anoLetivo, string ueCodigo)
         {
             var query = @"select t.id as turmaId 

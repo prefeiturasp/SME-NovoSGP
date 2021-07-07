@@ -100,8 +100,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosFechamentoTurma, ComandosFechamentoTurma>();
             services.TryAddScopedWorkerService<IComandosConselhoClasse, ComandosConselhoClasse>();
             services.TryAddScopedWorkerService<IComandosConselhoClasseAluno, ComandosConselhoClasseAluno>();
-            services.TryAddScopedWorkerService<IComandosConselhoClasseNota, ComandosConselhoClasseNota>();
-            services.TryAddScopedWorkerService<IComandosGrupoComunicacao, ComandosGrupoComunicacao>();
+            services.TryAddScopedWorkerService<IComandosConselhoClasseNota, ComandosConselhoClasseNota>();            
             services.TryAddScopedWorkerService<IComandosRelatorioSemestralTurmaPAP, ComandosRelatorioSemestralTurmaPAP>();
             services.TryAddScopedWorkerService<IComandosRelatorioSemestralPAPAluno, ComandosRelatorioSemestralPAPAluno>();
             services.TryAddScopedWorkerService<IComandosRelatorioSemestralPAPAlunoSecao, ComandosRelatorioSemestralPAPAlunoSecao>();
@@ -159,8 +158,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasFechamentoTurma, ConsultasFechamentoTurma>();
             services.TryAddScopedWorkerService<IConsultasConselhoClasse, ConsultasConselhoClasse>();
             services.TryAddScopedWorkerService<IConsultasConselhoClasseAluno, ConsultasConselhoClasseAluno>();
-            services.TryAddScopedWorkerService<IConsultasConselhoClasseNota, ConsultasConselhoClasseNota>();
-            services.TryAddScopedWorkerService<IConsultaGrupoComunicacao, ConsultaGrupoComunicacao>();
+            services.TryAddScopedWorkerService<IConsultasConselhoClasseNota, ConsultasConselhoClasseNota>();            
             services.TryAddScopedWorkerService<IConsultasConselhoClasseRecomendacao, ConsultasConselhoClasseRecomendacao>();
             services.TryAddScopedWorkerService<IConsultasRelatorioSemestralTurmaPAP, ConsultasRelatorioSemestralTurmaPAP>();
             services.TryAddScopedWorkerService<IConsultasRelatorioSemestralPAPAluno, ConsultasRelatorioSemestralPAPAluno>();
@@ -261,8 +259,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioConselhoClasse, RepositorioConselhoClasse>();
             services.TryAddScopedWorkerService<IRepositorioConselhoClasseAluno, RepositorioConselhoClasseAluno>();
             services.TryAddScopedWorkerService<IRepositorioConselhoClasseAlunoTurmaComplementar, RepositorioConselhoClasseAlunoTurmaComplementar>();
-            services.TryAddScopedWorkerService<IRepositorioConselhoClasseNota, RepositorioConselhoClasseNota>();
-            services.TryAddScopedWorkerService<IRepositorioGrupoComunicacao, RepositorioGrupoComunicacao>();
+            services.TryAddScopedWorkerService<IRepositorioConselhoClasseNota, RepositorioConselhoClasseNota>();            
             services.TryAddScopedWorkerService<IRepositorioWfAprovacaoNotaFechamento, RepositorioWfAprovacaoNotaFechamento>();
             services.TryAddScopedWorkerService<IRepositorioConselhoClasseRecomendacao, RepositorioConselhoClasseRecomendacao>();
             services.TryAddScopedWorkerService<IRepositorioCicloEnsino, RepositorioCicloEnsino>();

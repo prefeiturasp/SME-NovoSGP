@@ -8,7 +8,6 @@ using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +18,6 @@ namespace SME.SGP.Aplicacao
         private const string TODAS = "todas";
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepositorioComunicado _repositorioComunicado;
-        private readonly IRepositorioComunicadoGrupo _repositorioComunicadoGrupo;
         private readonly IRepositorioComunicadoTurma _repositorioComunicadoTurma;
         private readonly IRepositorioComunicadoAluno _repositorioComunicadoAluno;
         private readonly IServicoAcompanhamentoEscolar _servicoAcompanhamentoEscolar;
@@ -29,7 +27,6 @@ namespace SME.SGP.Aplicacao
         public SolicitarInclusaoComunicadoEscolaAquiCommandHandler(
               IRepositorioComunicado repositorioComunicado
             , IUnitOfWork unitOfWork
-            , IRepositorioComunicadoGrupo repositorioComunicadoGrupo
             , IRepositorioComunicadoTurma repositorioComunicadoTurma
             , IRepositorioComunicadoAluno repositorioComunicadoAluno
             , IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar
@@ -39,7 +36,6 @@ namespace SME.SGP.Aplicacao
         {
             this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this._repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
-            this._repositorioComunicadoGrupo = repositorioComunicadoGrupo ?? throw new ArgumentNullException(nameof(repositorioComunicadoGrupo));
             this._repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this._repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
             this._servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new ArgumentNullException(nameof(servicoAcompanhamentoEscolar));
@@ -61,9 +57,6 @@ namespace SME.SGP.Aplicacao
                 _unitOfWork.IniciarTransacao();
 
                 var id = await _repositorioComunicado.SalvarAsync(comunicado);
-
-                // Grupos
-                await SalvarComunicadosParaGrupos(id, request);
 
                 comunicado.AtualizarIdAlunos();
                 comunicado.AtualizarIdTurmas();
@@ -177,11 +170,8 @@ namespace SME.SGP.Aplicacao
             if (request.Turmas != null && request.Turmas.Any())
                 request.Turmas.ToList().ForEach(x => comunicado.AdicionarTurma(x));
 
-            if (request.Modalidade.HasValue)
-                comunicado.Modalidade = request.Modalidade;
-
-            if (request.GruposId.Any())
-                comunicado.Grupos = request.GruposId.Select(s => new ComunicadoGrupo { Id = s }).ToList();
+            if (request.Modalidades.Any())
+                comunicado.Modalidades = request.Modalidades;            
 
             if (request.AlunosEspecificados)
                 request.Alunos.ToList().ForEach(x => comunicado.AdicionarAluno(x));
@@ -192,44 +182,6 @@ namespace SME.SGP.Aplicacao
             comunicado.SetarTipoComunicado();
         }
 
-        private string IdentificarModalidadePeloGrupo(List<long> grupos)
-        {
-            List<long> modalidades = new List<long>();
-            var gruposModalidade = string.Join(",", grupos.Select(x => x).ToArray());
-
-            if (gruposModalidade.Contains("3"))
-                modalidades.Add(1); // infantil Pré
-
-            if (gruposModalidade.Contains("2"))
-                modalidades.Add(2); // infantil CEI
-
-            if (gruposModalidade.Contains("6")) // eja
-                modalidades.Add(3);
-
-            if (gruposModalidade.Contains("7")) // cieja
-                modalidades.Add(4);
-
-            if (gruposModalidade.Contains("4")) // fundamental
-                modalidades.Add(5);
-
-            if (gruposModalidade.Contains("5")) // médio
-                modalidades.Add(6);
-
-            if (gruposModalidade.Contains("8")) // cmct
-                modalidades.Add(7);
-
-            if (gruposModalidade.Contains("9")) // mova
-                modalidades.Add(8);
-
-            if (gruposModalidade.Contains("10")) // etec
-                modalidades.Add(9);
-
-
-
-            return string.Join(",", modalidades); ;
-        }
-
-
         private void MapearParaEntidadeServico(ComunicadoInserirAeDto comunicadoServico, Comunicado comunicado)
         {
             comunicadoServico.Id = comunicado.Id;
@@ -239,8 +191,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.DataEnvio = comunicado.DataEnvio;
             comunicadoServico.DataExpiracao = comunicado.DataExpiracao;
             comunicadoServico.Mensagem = comunicado.Descricao;
-            comunicadoServico.Titulo = comunicado.Titulo;
-            comunicadoServico.Grupo = string.Join(",", comunicado.Grupos.Select(x => x.Id.ToString()).ToArray());
+            comunicadoServico.Titulo = comunicado.Titulo;            
             comunicadoServico.CriadoEm = comunicado.CriadoEm;
             comunicadoServico.CriadoPor = comunicado.CriadoPor;
             comunicadoServico.CriadoRF = comunicado.CriadoRF;
@@ -252,13 +203,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.TipoComunicado = comunicado.TipoComunicado;
             comunicadoServico.Semestre = comunicado.Semestre;
             comunicadoServico.SeriesResumidas = comunicado.SeriesResumidas;
-            comunicadoServico.Modalidades = IdentificarModalidadePeloGrupo(comunicado.Grupos.Select(x => x.Id).ToList());
-        }
-
-        private async Task SalvarComunicadosParaGrupos(long id, SolicitarInclusaoComunicadoEscolaAquiCommand comunicado)
-        {
-            foreach (var grupoId in comunicado.GruposId)
-                await _repositorioComunicadoGrupo.SalvarAsync(new ComunicadoGrupo { ComunicadoId = id, GrupoComunicadoId = grupoId });
+            comunicadoServico.Modalidades = string.Join(",", comunicado.Modalidades.Select(x => x).ToArray());
         }
 
         private async Task SalvarComunicadosParaTurmas(IEnumerable<ComunicadoTurma> turmas)

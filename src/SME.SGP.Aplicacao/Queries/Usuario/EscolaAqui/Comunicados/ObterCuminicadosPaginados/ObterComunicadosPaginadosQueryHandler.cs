@@ -43,11 +43,11 @@ namespace SME.SGP.Aplicacao
                 CodigoUe = request.CodigoUe,
                 DataEnvio = request.DataEnvio,
                 DataExpiracao = request.DataExpiracao,
-                GruposId = request.GruposId,
-                Modalidade = request.Modalidade,
+                Modalidades = request.Modalidades,
                 Semestre = request.Semestre,
                 Titulo = request.Titulo,
-                Turmas = request.Turmas
+                Turmas = request.Turmas,
+                EventoId = request.EventoId
             };
 
             var validacao = await ValidarAbrangenciaListagem(filtro);
@@ -55,7 +55,6 @@ namespace SME.SGP.Aplicacao
                 return new PaginacaoResultadoDto<ComunicadoDto>();
 
             var comunicados = await _repositorioComunicado.ListarPaginado(filtro, Paginacao);
-
             return MapearParaDtoPaginado(comunicados);
         }
 
@@ -76,12 +75,6 @@ namespace SME.SGP.Aplicacao
 
                 if (comunicadoDto == null)
                     itens.Add((ComunicadoDto)item);
-                else
-                    comunicadoDto.Grupos.AddRange(item.GruposComunicacao.Select(x => new GrupoComunicacaoDto
-                    {
-                        Id = x.Id,
-                        Nome = x.Nome
-                    }));
             }
 
             retornoPaginado.Items = itens;
@@ -91,16 +84,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ValidarAbrangenciaListagem(FiltroComunicadoDto filtroDto)
         {
-            try
-            {
-                ComunicadoDto comunicado = MapearFiltroDtoValidacao(filtroDto);
-                await ValidarAbrangenciaUsuario(comunicado);
-                return true;
-            }
-            catch (NegocioException)
-            {
-                return false;
-            }
+            ComunicadoDto comunicado = MapearFiltroDtoValidacao(filtroDto);
+            await ValidarAbrangenciaUsuario(comunicado);
+            return true;
+
         }
 
         private static ComunicadoDto MapearFiltroDtoValidacao(FiltroComunicadoDto filtroDto)
@@ -112,10 +99,11 @@ namespace SME.SGP.Aplicacao
                 CodigoUe = filtroDto.CodigoUe,
                 DataEnvio = filtroDto.DataEnvio ?? DateTime.Now,
                 DataExpiracao = filtroDto.DataExpiracao,
-                Modalidade = filtroDto.Modalidade,
+                Modalidades = filtroDto.Modalidades,
                 Titulo = filtroDto.Titulo,
                 Turmas = filtroDto.Turmas?.Select(x => new ComunicadoTurmaDto { CodigoTurma = x }),
-                Semestre = filtroDto.Semestre
+                Semestre = filtroDto.Semestre,
+                EventoId = filtroDto.EventoId
             };
         }
 
