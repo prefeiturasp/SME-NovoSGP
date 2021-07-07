@@ -13,27 +13,24 @@ namespace SME.SGP.Aplicacao
     public class ObterComunicadoPorIdQueryHandler : IRequestHandler<ObterComunicadoPorIdQuery, ComunicadoCompletoDto>
     {
         private const string TODAS = "todas";
-        private readonly IRepositorioComunicado _repositorioComunicado;
-        private readonly IRepositorioComunicadoGrupo _repositorioComunicadoGrupo;
+        private readonly IRepositorioComunicado _repositorioComunicado;        
         private readonly IRepositorioComunicadoTurma _repositorioComunicadoTurma;
         private readonly IRepositorioComunicadoAluno _repositorioComunicadoAluno;
         private readonly IConsultasAbrangencia _consultasAbrangencia;
-        private readonly IConsultaGrupoComunicacao _consultaGrupoComunicacao;
+        private readonly IRepositorioComunicadoModalidade repositorioComunicadoModalidade;
 
         public ObterComunicadoPorIdQueryHandler(
               IRepositorioComunicado repositorioComunicado
-            , IRepositorioComunicadoGrupo repositorioComunicadoGrupo
             , IRepositorioComunicadoTurma repositorioComunicadoTurma
             , IRepositorioComunicadoAluno repositorioComunicadoAluno
             , IConsultasAbrangencia consultasAbrangencia
-            , IConsultaGrupoComunicacao consultaGrupoComunicacao)
+            , IRepositorioComunicadoModalidade repositorioComunicadoModalidade)
         {
             this._repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
-            this._repositorioComunicadoGrupo = repositorioComunicadoGrupo ?? throw new ArgumentNullException(nameof(repositorioComunicadoGrupo));
             this._repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this._repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
             this._consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
-            this._consultaGrupoComunicacao = consultaGrupoComunicacao ?? throw new ArgumentNullException(nameof(consultaGrupoComunicacao));
+            this.repositorioComunicadoModalidade = repositorioComunicadoModalidade ?? throw new ArgumentNullException(nameof(repositorioComunicadoModalidade));
         }
 
         public async Task<ComunicadoCompletoDto> Handle(ObterComunicadoPorIdQuery request, CancellationToken cancellationToken)
@@ -47,11 +44,9 @@ namespace SME.SGP.Aplicacao
 
             comunicado.Turmas = (await _repositorioComunicadoTurma.ObterPorComunicado(comunicado.Id)).ToList();
 
-            comunicado.Grupos = (await _repositorioComunicadoGrupo.ObterPorComunicado(comunicado.Id)).ToList();
+            comunicado.Modalidades = (await repositorioComunicadoModalidade.ObterModalidadesPorComunicadoId(comunicado.Id)).ToArray();
 
-            var dto = (ComunicadoCompletoDto)comunicado;
-
-            dto.Grupos = (await _consultaGrupoComunicacao.Listar(comunicado.Grupos.Select(x => x.GrupoComunicadoId))).ToList();
+            var dto = (ComunicadoCompletoDto)comunicado;            
 
             await ValidarAbrangenciaUsuario(dto);
 

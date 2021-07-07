@@ -1,10 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui
+﻿namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface ISolicitarExclusaoComunicadosEscolaAquiUseCase
+    public interface ISolicitarExclusaoComunicadosEscolaAquiUseCase : IUseCase<long[], string>
     {
-        Task<string> Executar(long[] ids);
     }
 
 }
