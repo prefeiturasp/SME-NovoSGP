@@ -664,7 +664,7 @@
         [PermissaoMenu(Menu = "Relatório do Acompanhamento do fechamento", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 6, EhConsulta = true, Url = "/fechamento/relatorio-acompanhamento-fechamento")]
         RACF_C = 223,
 
-        [PermissaoMenu(Menu = "Relatório do Acompanhamento do Fechamento", Icone = "fas fa-print", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 6, EhConsulta = true, Url = "/fechamento/relatorio-acompanhamento-fechamento")]
+        [PermissaoMenu(Menu = "Relatório do Acompanhamento do Fechamento", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 6, EhConsulta = true, Url = "/fechamento/relatorio-acompanhamento-fechamento")]
         RACF_C = 224
     }
 }
