@@ -48,7 +48,7 @@ pipeline {
               imagename3 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-workerservice"              
               dockerImage1 = docker.build(imagename1, "-f src/SME.SGP.Api/Dockerfile .")
               dockerImage2 = docker.build(imagename2, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")
-              dockerImage2 = docker.build(imagename3, "-f src/SME.SGP.WorkerService/Dockerfile .")
+              dockerImage3 = docker.build(imagename3, "-f src/SME.SGP.WorkerService/Dockerfile .")
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
               dockerImage1.push()
               dockerImage2.push()
