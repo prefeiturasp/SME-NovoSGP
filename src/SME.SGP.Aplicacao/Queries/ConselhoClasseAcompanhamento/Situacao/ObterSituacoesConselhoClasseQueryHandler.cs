@@ -15,14 +15,14 @@ namespace SME.SGP.Aplicacao
         public async Task<List<SituacaoDto>> Handle(ObterSituacoesConselhoClasseQuery request, CancellationToken cancellationToken)
         {
             var listaSituacoes = new List<SituacaoDto>();
-            foreach (var status in Enum.GetValues(typeof(StatusConselhoClasse)))
+            foreach (var status in Enum.GetValues(typeof(SituacaoConselhoClasse)))
             {
-                var situacao = new SituacaoDto
-                {
-                    Codigo = (int)status,
-                    Descricao = ((StatusConselhoClasse)status).ObterAtributo<DisplayAttribute>().Description
-                };
-                listaSituacoes.Add(situacao);
+                    var situacao = new SituacaoDto
+                    {
+                        Codigo = (int)status,
+                        Descricao = ((SituacaoConselhoClasse)status).ObterNome()
+                    };
+                    listaSituacoes.Add(situacao);
             }
             return listaSituacoes;
         }
