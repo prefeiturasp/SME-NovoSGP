@@ -183,8 +183,10 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConsolidacaoMatriculaTurmaMap());
                config.AddMap(new FrequenciaPreDefinidaMap());
                config.AddMap(new RegistroFrequenciaAlunoMap());
+               config.AddMap(new EventoBimestreMap());
                config.AddMap(new ConsolidacaoRegistroIndividualMediaMap());
                config.AddMap(new ComunicadoModalidadeMap());
+               config.AddMap(new ConsolidacaoAcompanhamentoAprendizagemAlunoMap());
 
                config.ForDommel();
            });

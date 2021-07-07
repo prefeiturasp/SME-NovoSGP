@@ -341,8 +341,11 @@ namespace SME.SGP.IoC
 
             // Consolidação Devolutivas
             services.TryAddScopedWorkerService<IRepositorioConsolidacaoDevolutivas, RepositorioConsolidacaoDevolutivas>();
-
             services.TryAddScopedWorkerService<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
+
+
+            // Consolidacao de Acompanhamento Aprendizagem Aluno
+            services.TryAddScoped<IRepositorioConsolidacaoAcompanhamentoAprendizagemAluno, RepositorioConsolidacaoAcompanhamentoAprendizagemAluno>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -616,16 +619,21 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExecutaNotificacaoAlunosFaltososUseCase, ExecutaNotificacaoAlunosFaltososUseCase>();
             services.TryAddScopedWorkerService<INotificarAlunosFaltososUseCase, NotificarAlunosFaltososUseCase>();
             //Aulas automáticas regencia
-            services.TryAddScoped<IExecutarSincronizacaoAulasRegenciaAutomaticasUseCase, ExecutarSincronizacaoAulasRegenciaAutomaticasUseCase>();
-            services.TryAddScoped<ICarregarUesTurmasRegenciaAulaAutomaticaUseCase, CarregarUesTurmasRegenciaAulaAutomaticaUseCase>();
-            services.TryAddScoped<ISincronizarUeTurmaAulaRegenciaAutomaticaUseCase, SincronizarUeTurmaAulaRegenciaAutomaticaUseCase>();
-            services.TryAddScoped<ISincronizarAulasRegenciaAutomaticamenteUseCase, SincronizarAulasRegenciaAutomaticamenteUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoAulasRegenciaAutomaticasUseCase, ExecutarSincronizacaoAulasRegenciaAutomaticasUseCase>();
+            services.TryAddScopedWorkerService<ICarregarUesTurmasRegenciaAulaAutomaticaUseCase, CarregarUesTurmasRegenciaAulaAutomaticaUseCase>();
+            services.TryAddScopedWorkerService<ISincronizarUeTurmaAulaRegenciaAutomaticaUseCase, SincronizarUeTurmaAulaRegenciaAutomaticaUseCase>();
+            services.TryAddScopedWorkerService<ISincronizarAulasRegenciaAutomaticamenteUseCase, SincronizarAulasRegenciaAutomaticamenteUseCase>();
 
             // Sincronização de Média dos Registros Individuais
-            services.TryAddScoped<IExecutarSincronizacaoMediaRegistrosIndividuaisSyncUseCase, ExecutarSincronizacaoMediaRegistrosIndividuaisSyncUseCase>();
-            services.TryAddScoped<IConsolidacaoMediaRegistrosIndividuaisTurmaUseCase, ConsolidacaoMediaRegistrosIndividuaisTurmaUseCase>();
-            services.TryAddScoped<IConsolidacaoMediaRegistrosIndividuaisUseCase, ConsolidacaoMediaRegistrosIndividuaisUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoMediaRegistrosIndividuaisSyncUseCase, ExecutarSincronizacaoMediaRegistrosIndividuaisSyncUseCase>();
+            services.TryAddScopedWorkerService<IConsolidacaoMediaRegistrosIndividuaisTurmaUseCase, ConsolidacaoMediaRegistrosIndividuaisTurmaUseCase>();
+            services.TryAddScopedWorkerService<IConsolidacaoMediaRegistrosIndividuaisUseCase, ConsolidacaoMediaRegistrosIndividuaisUseCase>();
 
+            // Sincronizacao Acompanhamento Aprendizagem
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoAcompanhamentoAprendizagemAlunoSyncUseCase, ExecutarSincronizacaoAcompanhamentoAprendizagemAlunoSyncUseCase>();
+            services.TryAddScopedWorkerService<IConsolidacaoAcompanhamentoAprendizagemAlunosSyncUseCase, ConsolidacaoAcompanhamentoAprendizagemAlunosSyncUseCase>();
+            services.TryAddScopedWorkerService<IConsolidacaoAcompanhamentoAprendizagemAlunosPorUEUseCase, ConsolidacaoAcompanhamentoAprendizagemAlunosPorUEUseCase>();
+            services.TryAddScopedWorkerService<IConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase, ConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
