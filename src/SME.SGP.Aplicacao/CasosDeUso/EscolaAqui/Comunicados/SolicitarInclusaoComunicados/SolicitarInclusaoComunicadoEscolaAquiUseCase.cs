@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,6 +21,12 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Executar(ComunicadoInserirDto comunicado)
         {
             await ValidarInsercao(comunicado);
+
+            if (comunicado.Modalidades.Any() && comunicado.Modalidades.Any(c => c == -99))
+                comunicado.Modalidades = Enum.GetValues(typeof(Modalidade))
+                        .Cast<Modalidade>()
+                        .Select(d => (int)d)
+                        .ToArray();
 
             var retorno = await mediator.Send(new InserirComunicadoCommand(comunicado.Titulo,
                                                                            comunicado.Descricao,
