@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<Aviso> ObterPorClassroomId(long avisoClassroomId)
         {
-            var query = @"selec * from aviso where aviso_classroom_id = @avisoClassroomId";
+            var query = @"select * from aviso where aviso_classroom_id = @avisoClassroomId";
             return await database.Conexao.QueryFirstOrDefaultAsync<Aviso>(query, new { avisoClassroomId });
         }
     }
