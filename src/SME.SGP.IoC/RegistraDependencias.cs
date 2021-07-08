@@ -319,6 +319,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioAcompanhamentoAlunoSemestre, RepositorioAcompanhamentoAlunoSemestre>();
             services.TryAddScoped<IRepositorioAcompanhamentoAlunoFoto, RepositorioAcompanhamentoAlunoFoto>();
 
+            // Mural de Avisos
+            services.TryAddScoped<IRepositorioAviso, RepositorioAviso>();
+
             // Encaminhamento AEE
             services.TryAddScoped<IRepositorioSecaoEncaminhamentoAEE, RepositorioSecaoEncaminhamentoAEE>();
             services.TryAddScoped<IRepositorioEncaminhamentoAEE, RepositorioEncaminhamentoAEE>();
