@@ -36,6 +36,7 @@ namespace SME.SGP.Aplicacao
             aviso.CriadoEm = request.DataCriacao;
             aviso.AlteradoRF = request.DataAlteracao.HasValue ? request.UsuarioRf : String.Empty;
             aviso.AlteradoEm = request.DataAlteracao;
+            aviso.Email = request.Email;
         }
     }
 }
