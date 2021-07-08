@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             var ueDre = $"{plano.Turma.Ue.TipoEscola.ShortName()} {plano.Turma.Ue.Nome} ({plano.Turma.Ue.Dre.Abreviacao})";
             var hostAplicacao = configuration["UrlFrontEnd"];
-            var estudanteOuCrianca = plano.Turma.ModalidadeCodigo == Modalidade.InfantilPreEscola ? "da criança" : "do estudante";
+            var estudanteOuCrianca = plano.Turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? "da criança" : "do estudante";
 
             var titulo = $"Plano AEE encerrado - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
             var descricao = $@"O Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {plano.Turma.NomeComModalidade()} da {ueDre} foi encerrado.<br/>

@@ -14,5 +14,7 @@ namespace SME.SGP.Dominio
 
         Task<IEnumerable<UltimoRegistroIndividualAlunoTurmaDto>> ObterUltimosRegistrosPorAlunoTurma(long turmaId);
         Task<SugestaoTopicoRegistroIndividualDto> ObterSugestaoTopicoPorMes(int mes);
+
+        Task<IEnumerable<RegistroIndividualResumoDto>> ObterDescricaoRegistrosIndividuaisPorPeriodo(long turmaId, long componenteCurricularId, long alunoCodigo, DateTime dataInicio, DateTime dataFim);
     }
 }

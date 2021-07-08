@@ -4,22 +4,19 @@ namespace SME.SGP.Dominio
 {
     public enum Modalidade
     {
-        [Display(Name = "Infantil Pré-escola", ShortName = "EI_Pré")]
-        InfantilPreEscola = 1,
+        [Display(Name = "Educação Infantil", ShortName = "EI")]
+        EducacaoInfantil = 1,
 
-        [Display(Name = "Infantil CEI", ShortName = "EI_CEI")]
-        InfantilCEI = 2,
-
-        [Display(Name = "EJA", ShortName = "EJA")]
+        [Display(Name = "Educação de Jovens e Adultos", ShortName = "EJA")]
         EJA = 3,
 
         [Display(Name = "CIEJA", ShortName = "CIEJA")]
         CIEJA = 4,
 
-        [Display(Name = "Fundamental", ShortName = "EF")]
+        [Display(Name = "Ensino Fundamental", ShortName = "EF")]
         Fundamental = 5,
 
-        [Display(Name = "Médio", ShortName = "EM")]
+        [Display(Name = "Ensino Médio", ShortName = "EM")]
         Medio = 6,
 
         [Display(Name = "CMCT", ShortName = "CMCT")]
@@ -38,7 +35,7 @@ namespace SME.SGP.Dominio
         {
             switch (modalidade)
             {
-                case Modalidade.InfantilPreEscola:
+                case Modalidade.EducacaoInfantil:
                     return ModalidadeTipoCalendario.Infantil;
                 case Modalidade.Fundamental:
                 case Modalidade.Medio:
