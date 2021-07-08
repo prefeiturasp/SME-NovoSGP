@@ -1036,5 +1036,19 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarInicioFimDto>(query, new { aulaId });
         }
+
+        public async Task<long> ObterAulaPorCodigoTurmaComponenteEData(string turmaId, string componenteCurricularId, DateTime dataCriacao)
+        {
+            var query = @"select id 
+                        from aula 
+                       where not excluido 
+                         and turma_id = @turmaId
+                         and disciplina_id = @componenteCurricularId
+                         and data_aula >= @dataCriacao
+                       order by data_aula
+                       limit 1";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, componenteCurricularId, dataCriacao });
+        }
     }
 }
