@@ -18,10 +18,10 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<Aviso>(query, new { avisoClassroomId });
         }
         
-        public async Task<IEnumerable<Aviso>> ObterPorAulaId(long aulaId)
+        public async Task<IEnumerable<MuralAvisosRetornoDto>> ObterPorAulaId(long aulaId)
         {
-            var query = @"select * from aviso where aula_id = @aulaId";
-            return await database.Conexao.QueryAsync<Aviso>(query, new { aulaId });
+            var query = @"select criado_em as DataPublicacao, mensagem, email from aviso where aula_id = @aulaId";
+            return await database.Conexao.QueryAsync<MuralAvisosRetornoDto>(query, new { aulaId });
         }
     }
 }

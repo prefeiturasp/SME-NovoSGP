@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterMuralAvisosUseCase
     {
-        Task<IList<MuralAvisosRetornoDto>> BuscarPorAulaId(long aulaId);
+        Task<IEnumerable<MuralAvisosRetornoDto>> BuscarPorAulaId(long aulaId);
     }
 }

@@ -8,7 +8,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterMuralAvisoPorAulaIdQueryHandler : IRequestHandler<ObterMuralAvisoPorAulaIdQuery, IList<MuralAvisosRetornoDto>>
+    public class ObterMuralAvisoPorAulaIdQueryHandler : IRequestHandler<ObterMuralAvisoPorAulaIdQuery, IEnumerable<MuralAvisosRetornoDto>>
     {
 
         private readonly IRepositorioAviso _repositorioAviso;
@@ -18,10 +18,9 @@ namespace SME.SGP.Aplicacao
             _repositorioAviso = repositorioAviso;
         }
 
-        public async Task<IList<MuralAvisosRetornoDto>> Handle(ObterMuralAvisoPorAulaIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<MuralAvisosRetornoDto>> Handle(ObterMuralAvisoPorAulaIdQuery request, CancellationToken cancellationToken)
         {
-            var avisos = await _repositorioAviso.ObterPorAulaId(request.AulaId);
-            return avisos.Select(x => new MuralAvisosRetornoDto(x.CriadoEm, x.Mensagem, "")).ToList();
+            return  await _repositorioAviso.ObterPorAulaId(request.AulaId);
         }
     }
 }

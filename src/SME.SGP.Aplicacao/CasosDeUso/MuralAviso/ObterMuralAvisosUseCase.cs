@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IList<MuralAvisosRetornoDto>> BuscarPorAulaId(long aulaId)
+        public async Task<IEnumerable<MuralAvisosRetornoDto>> BuscarPorAulaId(long aulaId)
         {
             return await mediator.Send(new ObterMuralAvisoPorAulaIdQuery(aulaId));
         }
