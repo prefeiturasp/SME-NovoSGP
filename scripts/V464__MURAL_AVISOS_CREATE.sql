@@ -19,3 +19,4 @@ CREATE TABLE public.aviso (
 
 ALTER TABLE public.aviso ADD CONSTRAINT avisos_aula_fk FOREIGN KEY (aula_id) REFERENCES aula(id);
 CREATE INDEX aviso_aula_idx ON public.aviso USING btree (aula_id);
+CREATE INDEX aviso_classroom_id_idx ON public.aviso USING btree (aviso_classroom_id);
