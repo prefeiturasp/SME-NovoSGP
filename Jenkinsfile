@@ -40,7 +40,7 @@ pipeline {
        // }
 
         stage('Build') {
-          when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release';  } } 
+          when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; } } 
           steps {
             script {
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-sgp-backend"
@@ -62,10 +62,10 @@ pipeline {
         }
 	    
         stage('Deploy'){
-            when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; } }        
+            when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }        
             steps {
                 script{
-                    if ( env.branchname == 'main' ||  env.branchname == 'master' || env.branchname == 'homolog' || env.branchname == 'release' ) {
+                    if ( env.branchname == 'main' ||  env.branchname == 'master' || env.branchname == 'homolog' || env.branchname == 'release' || env.branchname == 'release-r2' ) {
                         sendTelegram("🤩 [Deploy ${env.branchname}] Job Name: ${JOB_NAME} \nBuild: ${BUILD_DISPLAY_NAME} \nMe aprove! \nLog: \n${env.BUILD_URL}")
                         timeout(time: 24, unit: "HOURS") {
                             input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marlon_goncalves, bruno_alevato, robson_silva, rafael_losi'
@@ -116,6 +116,7 @@ def getKubeconf(branchName) {
     else if ("master".equals(branchName)) { return "config_prd"; }
     else if ("homolog".equals(branchName)) { return "config_hom"; }
     else if ("release".equals(branchName)) { return "config_hom"; }
+    else if ("release-r2".equals(branchName)) { return "config_hom"; }
     else if ("development".equals(branchName)) { return "config_dev"; }
     else if ("develop".equals(branchName)) { return "config_dev"; }
 }
