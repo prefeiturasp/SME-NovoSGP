@@ -30,7 +30,8 @@ namespace SME.SGP.Aplicacao
                                                                       request.AvisoDto.Mensagem,
                                                                       request.AvisoDto.AvisoClassroomId,
                                                                       request.AvisoDto.DataCriacao,
-                                                                      request.AvisoDto.DataAlteracao));
+                                                                      request.AvisoDto.DataAlteracao,
+                                                                      request.AvisoDto.Email));
         }
 
         private bool ReagendarImportacao(long aulaId, DateTime dataCriacao)

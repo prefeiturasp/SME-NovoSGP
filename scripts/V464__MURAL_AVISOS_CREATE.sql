@@ -6,6 +6,7 @@ CREATE TABLE public.aviso (
 	aula_id int8 not null,
 	aviso_classroom_id int8 not null,
 	mensagem varchar not null,
+	email varchar not null,
 	
 	excluido bool NOT NULL DEFAULT false,
 	criado_em timestamp NOT NULL,

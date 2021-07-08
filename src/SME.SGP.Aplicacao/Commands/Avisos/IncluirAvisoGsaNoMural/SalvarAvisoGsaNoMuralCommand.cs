@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarAvisoGsaNoMuralCommand : IRequest
     {
-        public SalvarAvisoGsaNoMuralCommand(long aulaId, string usuarioRf, string mensagem, long avisoClassroomId, DateTime dataCriacao, DateTime? dataAlteracao)
+        public SalvarAvisoGsaNoMuralCommand(long aulaId, string usuarioRf, string mensagem, long avisoClassroomId, DateTime dataCriacao, DateTime? dataAlteracao, string email)
         {
             AulaId = aulaId;
             UsuarioRf = usuarioRf;
@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
             AvisoClassroomId = avisoClassroomId;
             DataCriacao = dataCriacao;
             DataAlteracao = dataAlteracao;
+            Email = email;
         }
 
         public long AulaId { get; }
@@ -21,5 +22,6 @@ namespace SME.SGP.Aplicacao
         public long AvisoClassroomId { get; }
         public DateTime DataCriacao { get; }
         public DateTime? DataAlteracao { get; }
+        public string Email { get; }
     }
 }
