@@ -3,6 +3,9 @@ pipeline {
       branchname =  env.BRANCH_NAME.toLowerCase()
       kubeconfig = getKubeconf(env.branchname)
       registryCredential = 'jenkins_registry'
+      deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"
+      deployment2 = "${env.branchname == 'release-r2' ? 'sme-pedagogico-worker-r2' : 'sme-pedagogico-worker' }"
+      deployment3 = "${env.branchname == 'release-r2' ? 'sme-workerservice-rc2' : 'sme-workerservice' }"
     }
   
     agent {
@@ -54,9 +57,7 @@ pipeline {
               dockerImage2.push()
               dockerImage3.push()
               }
-              sh "docker rmi $imagename1"
-              sh "docker rmi $imagename2"
-              sh "docker rmi $imagename3"
+              sh "docker rmi $imagename1 $imagename2 $imagename3"
             }
           }
         }
@@ -68,13 +69,13 @@ pipeline {
                     if ( env.branchname == 'main' ||  env.branchname == 'master' || env.branchname == 'homolog' || env.branchname == 'release' || env.branchname == 'release-r2' ) {
                         sendTelegram("🤩 [Deploy ${env.branchname}] Job Name: ${JOB_NAME} \nBuild: ${BUILD_DISPLAY_NAME} \nMe aprove! \nLog: \n${env.BUILD_URL}")
                         timeout(time: 24, unit: "HOURS") {
-                            input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marlon_goncalves, bruno_alevato, robson_silva, rafael_losi'
+                            input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marlon_goncalves, bruno_alevato, robson_silva, luiz_araujo, rafael_losi'
                         }
                         withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
                             sh('cp $config '+"$home"+'/.kube/config')
-                            sh 'kubectl rollout restart deployment/sme-api -n sme-novosgp'
-                            sh 'kubectl rollout restart deployment/sme-pedagogico-worker -n sme-novosgp'
-                            sh 'kubectl rollout restart deployment/sme-workerservice -n sme-novosgp'                            
+                            sh "kubectl rollout restart deployment/${deployment1} -n sme-novosgp"
+                            sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"
+                            sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"                           
                             sh('rm -f '+"$home"+'/.kube/config')
                         }
                     }
