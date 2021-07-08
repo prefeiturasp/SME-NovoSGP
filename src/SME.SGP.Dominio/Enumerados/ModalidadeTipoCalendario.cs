@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio
                 case ModalidadeTipoCalendario.EJA:
                     return new[] { Modalidade.EJA };                    
                 case ModalidadeTipoCalendario.Infantil:
-                    return new[] { Modalidade.InfantilPreEscola };                    
+                    return new[] { Modalidade.EducacaoInfantil };                    
                 default:
                     throw new NegocioException("Modalidade de tipo de calendário não identificado para conversão de modalidade de turma");                    
             }
