@@ -87,7 +87,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
-        public async Task<IActionResult> ObterFrequenciasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, [FromQuery] int anoTurma, [FromQuery] DateTime dataInicio, [FromQuery] DateTime datafim, [FromQuery] int tipoPeriodoDashboard)
+        public async Task<IActionResult> ObterFrequenciasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade,[FromQuery] int semestre, [FromQuery] int anoTurma, [FromQuery] DateTime dataInicio, [FromQuery] DateTime datafim, [FromQuery] int tipoPeriodoDashboard)
         {
             var dadosGraficoDiario = new GraficoFrequenciaAlunoDto
             {
@@ -156,7 +156,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
-        public async Task<IActionResult> ObterFrequenciasAlunosPorDre(int anoLetivo, int modalidade, [FromQuery] int anoTurma, [FromQuery] DateTime dataInicio, [FromQuery] DateTime datafim, [FromQuery] int tipoPeriodoDashboard)
+        public async Task<IActionResult> ObterFrequenciasAlunosPorDre(int anoLetivo, int modalidade, [FromQuery] int semestre, [FromQuery] int anoTurma, [FromQuery] DateTime dataInicio, [FromQuery] DateTime datafim, [FromQuery] int tipoPeriodoDashboard)
         {
             var dadosGraficoDiario = new GraficoFrequenciaAlunoDto
             {
