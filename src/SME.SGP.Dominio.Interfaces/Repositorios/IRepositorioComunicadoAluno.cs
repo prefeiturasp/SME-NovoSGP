@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<ComunicadoAluno>> ObterPorComunicado(long comunicadoId);
 
-        Task RemoverTodosAlunosComunicado(long comunicadoId);
+        Task<bool> RemoverTodosAlunosComunicado(long comunicadoId);
     }
 }

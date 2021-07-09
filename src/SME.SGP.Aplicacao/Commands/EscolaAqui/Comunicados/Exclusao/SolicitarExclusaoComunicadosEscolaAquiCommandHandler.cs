@@ -14,30 +14,21 @@ namespace SME.SGP.Aplicacao
     public class SolicitarExclusaoComunicadosEscolaAquiCommandHandler : IRequestHandler<SolicitarExclusaoComunicadosEscolaAquiCommand, string>
     {
         private readonly IRepositorioComunicado _repositorioComunicado;
-        private readonly IRepositorioComunicadoGrupo _repositorioComunicadoGrupo;
         private readonly IRepositorioComunicadoTurma _repositorioComunicadoTurma;
         private readonly IRepositorioComunicadoAluno _repositorioComunicadoAluno;
-        private readonly IServicoAcompanhamentoEscolar _servicoAcompanhamentoEscolar;
-        private readonly IConsultasAbrangencia _consultasAbrangencia;
-        private readonly IRepositorioEvento _repositorioEvento;
+        private readonly IServicoAcompanhamentoEscolar _servicoAcompanhamentoEscolar;        
 
         public SolicitarExclusaoComunicadosEscolaAquiCommandHandler(
               IRepositorioComunicado repositorioComunicado
-            , IRepositorioComunicadoGrupo repositorioComunicadoGrupo
             , IRepositorioComunicadoTurma repositorioComunicadoTurma
             , IRepositorioComunicadoAluno repositorioComunicadoAluno
-            , IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar
-            , IConsultasAbrangencia consultasAbrangencia
-            , IRepositorioEvento repositorioEvento
+            , IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar            
             )
         {
             this._repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
-            this._repositorioComunicadoGrupo = repositorioComunicadoGrupo ?? throw new ArgumentNullException(nameof(repositorioComunicadoGrupo));
             this._repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this._repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
-            this._servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new ArgumentNullException(nameof(servicoAcompanhamentoEscolar));
-            this._consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
-            this._repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
+            this._servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new ArgumentNullException(nameof(servicoAcompanhamentoEscolar));            
         }
 
         public async Task<string> Handle(SolicitarExclusaoComunicadosEscolaAquiCommand request, CancellationToken cancellationToken)
@@ -54,13 +45,13 @@ namespace SME.SGP.Aplicacao
                 return comunicado;
             });
 
-            if (string.IsNullOrEmpty(erros.ToString())) {
+            if (string.IsNullOrEmpty(erros.ToString()))
+            {
                 await _servicoAcompanhamentoEscolar.ExcluirComunicado(request.Ids);
                 foreach (var comunicado in comunicados)
                 {
                     try
                     {
-                        await _repositorioComunicadoGrupo.ExcluirPorIdComunicado(comunicado.Id);
                         await _repositorioComunicadoAluno.RemoverTodosAlunosComunicado(comunicado.Id);
                         await _repositorioComunicadoTurma.RemoverTodasTurmasComunicado(comunicado.Id);
 

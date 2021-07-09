@@ -17,7 +17,7 @@ namespace SME.SGP.Dto
         public long Id { get; set; }
         public string Titulo { get; set; }
         public int AnoLetivo { get; set; }
-        public Modalidade Modalidade { get; set; }
+        public int[] Modalidades { get; set; }
         public int Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
         public string CodigoDre { get; set; }
@@ -36,18 +36,13 @@ namespace SME.SGP.Dto
             AnoLetivo = comunicado.AnoLetivo,
             Turmas = comunicado.Turmas.Select(x => (ComunicadoTurmaDto)x),
             Alunos = comunicado.Alunos.Select(x => (ComunicadoAlunoDto)x),
-            Grupos = comunicado.GruposComunicacao.Select(x => new GrupoComunicacaoDto
-            {
-                Id = x.Id,
-                Nome = x.Nome
-            }).ToList(),
             CodigoDre = comunicado.CodigoDre,
             CodigoUe = comunicado.CodigoUe,
             DataEnvio = comunicado.DataEnvio,
             DataExpiracao = comunicado.DataExpiracao,
             Descricao = comunicado.Descricao,
             Id = comunicado.Id,
-            Modalidade = comunicado.Modalidade ?? default,
+            Modalidades = comunicado.Modalidades,
             Semestre = comunicado.Semestre ?? default,
             TipoComunicado = comunicado.TipoComunicado,
             Titulo = comunicado.Titulo,

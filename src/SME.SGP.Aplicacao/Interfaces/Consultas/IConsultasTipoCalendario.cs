@@ -21,5 +21,7 @@ namespace SME.SGP.Aplicacao
         Task<TipoCalendario> ObterPorTurma(Turma turma);
 
         Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false);
+
+        Task<IEnumerable<TipoCalendarioBimentreDto>> ObterBimestresPorTipoCalendarioId(long tipoCalendarioId);
     }
 }

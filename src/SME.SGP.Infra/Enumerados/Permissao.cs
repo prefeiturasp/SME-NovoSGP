@@ -609,7 +609,7 @@
 
         [PermissaoMenu(Menu = "Plano", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/aee/plano")]
         PAEE_A = 205,
-        
+
         [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhConsulta = true, Url = "/aee/registro-itinerancia")]
         RI_C = 206,
 
@@ -654,7 +654,7 @@
 
         [PermissaoMenu(Menu = "Devolutivas", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/devolutivas")]
         DD_C = 220,
-        
+
         [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/diario-bordo")]
         DB_C = 222,
 
@@ -662,7 +662,9 @@
         DRIN_C = 221,
 
         [PermissaoMenu(Menu = "Relatório de Acompanhamento de Aprendizagem", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/acompanhamento-aprendizagem")]
-        DAA_C = 223
+        DAA_C = 223,
 
+        [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/fechamentos/acompanhamento-fechamento", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Acompanhamento do fechamento")]
+        RACF_C = 224
     }
 }

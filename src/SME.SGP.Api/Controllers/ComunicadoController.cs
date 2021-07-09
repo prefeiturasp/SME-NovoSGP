@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Anos;
 using SME.SGP.Dominio;
@@ -22,18 +23,18 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_I, Policy = "Bearer")]
-        public async Task<IActionResult> PostAsync([FromBody] ComunicadoInserirDto comunicadoDto, [FromServices] ISolicitarInclusaoComunicadoEscolaAquiUseCase solicitarInclusaoComunicadoEscolaAquiUseCase)
+        public async Task<IActionResult> PostAsync([FromBody] ComunicadoInserirDto comunicadoDto, [FromServices] ISolicitarInclusaoComunicadoEscolaAquiUseCase useCase)
         {
-            return Ok(await solicitarInclusaoComunicadoEscolaAquiUseCase.Executar(comunicadoDto));
+            return Ok(await useCase.Executar(comunicadoDto));
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar(long id, [FromBody] ComunicadoAlterarDto comunicadoDto, [FromServices] ISolicitarAlteracaoComunicadoEscolaAquiUseCase solicitarAlteracaoComunicadoEscolaAquiUseCase)
+        public async Task<IActionResult> Alterar(long id, [FromBody] ComunicadoAlterarDto comunicadoDto, [FromServices] ISolicitarAlteracaoComunicadoEscolaAquiUseCase useCase)
         {
-            return Ok(await solicitarAlteracaoComunicadoEscolaAquiUseCase.Executar(id, comunicadoDto));
+            return Ok(await useCase.Executar(id, comunicadoDto));
         }
 
         [HttpDelete]
@@ -41,9 +42,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CO_E, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir([FromBody] long[] ids, [FromServices] ISolicitarExclusaoComunicadosEscolaAquiUseCase solicitarExclusaoComunicadosEscolaAquiUseCase)
+        public async Task<IActionResult> Excluir([FromBody] long[] ids, [FromServices] ISolicitarExclusaoComunicadosEscolaAquiUseCase useCase)
         {
-            return Ok(await solicitarExclusaoComunicadosEscolaAquiUseCase.Executar(ids));
+            return Ok(await useCase.Executar(ids));
         }
 
         [HttpGet("{id}")]

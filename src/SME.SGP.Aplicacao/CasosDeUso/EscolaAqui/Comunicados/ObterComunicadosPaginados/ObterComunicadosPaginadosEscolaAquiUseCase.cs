@@ -19,14 +19,14 @@ namespace SME.SGP.Aplicacao
         {
             return await mediator.Send(new ObterComunicadosPaginadosQuery(filtro.DataEnvio,
                                                                           filtro.DataExpiracao,
-                                                                          filtro.GruposId,
                                                                           filtro.Titulo,
                                                                           filtro.AnoLetivo,
                                                                           filtro.CodigoDre,
                                                                           filtro.CodigoUe,
-                                                                          filtro.Modalidade,
+                                                                          filtro.Modalidades,
                                                                           filtro.Semestre,
-                                                                          filtro.Turmas));
+                                                                          filtro.Turmas,
+                                                                          filtro.EventoId));
         }
     }
 }
