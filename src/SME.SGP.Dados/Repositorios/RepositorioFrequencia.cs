@@ -369,14 +369,14 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and t.semestre = @semestre ");
 
             if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine("and rfa.criado_em = @dataInicio ");
+                query.AppendLine("and a.data_aula = @dataInicio ");
 
             if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine("and rfa.criado_em between @dataInicio and @dataFim ");
+                query.AppendLine("and a.data_aula between @dataInicio and @dataFim ");
 
             if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Mensal)
-                query.AppendLine(@"and extract(month from rfa.criado_em) = @mes 
-                                   and extract(year from rfa.criado_em) = @anoLetivo ");
+                query.AppendLine(@"and extract(month from a.data_aula) = @mes 
+                                   and extract(year from a.data_aula) = @anoLetivo ");
 
             if (ueId == -99)
                 query.AppendLine("group by t.ano, rfa.valor, t.modalidade_codigo");
