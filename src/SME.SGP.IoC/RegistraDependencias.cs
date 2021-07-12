@@ -553,6 +553,7 @@ namespace SME.SGP.IoC
 
             // Avisos do Mural Gsa
             services.TryAddScoped<IImportarAvisoDoMuralGsaUseCase, ImportarAvisoDoMuralGsaUseCase>();
+            services.TryAddScoped<IObterMuralAvisosUseCase, ObterMuralAvisosUseCase>();
 
             //Carta Intenções Observacao
             services.TryAddScoped<IListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase, ListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase>();

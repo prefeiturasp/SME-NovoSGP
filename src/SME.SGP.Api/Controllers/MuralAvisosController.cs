@@ -11,20 +11,13 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class MuralAvisosController : ControllerBase
     {
-        private readonly IObterMuralAvisosUseCase _obterMuralAvisosUse;
-
-        public MuralAvisosController(IObterMuralAvisosUseCase obterMuralAvisosUse)
-        {
-            _obterMuralAvisosUse = obterMuralAvisosUse;
-        }
-
         [HttpGet]
         [ProducesResponseType(typeof(MuralAvisosRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PDA_C, Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> Get([FromQuery] long aulaId)
+        public async Task<IActionResult> Get([FromQuery] long aulaId, [FromServices] IObterMuralAvisosUseCase useCase)
         {
-            return Ok(await _obterMuralAvisosUse.BuscarPorAulaId(aulaId));
+            return Ok(await useCase.BuscarPorAulaId(aulaId));
         }
     }
 }

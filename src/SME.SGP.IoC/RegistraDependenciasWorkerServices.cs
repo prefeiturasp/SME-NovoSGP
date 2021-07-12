@@ -468,6 +468,7 @@ namespace SME.SGP.IoC
 
             // Avisos do Mural Gsa
             services.TryAddScopedWorkerService<IImportarAvisoDoMuralGsaUseCase, ImportarAvisoDoMuralGsaUseCase>();
+            services.TryAddScopedWorkerService<IObterMuralAvisosUseCase, ObterMuralAvisosUseCase>();
 
             // Conselho de classe
             services.TryAddScopedWorkerService<IAtualizarSituacaoConselhoClasseUseCase, AtualizarSituacaoConselhoClasseUseCase>();
