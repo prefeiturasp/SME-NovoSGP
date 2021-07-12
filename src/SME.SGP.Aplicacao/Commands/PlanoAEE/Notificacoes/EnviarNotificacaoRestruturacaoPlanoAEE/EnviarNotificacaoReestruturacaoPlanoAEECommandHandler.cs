@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
             var ueDre = $"{plano.Turma.Ue.TipoEscola.ShortName()} {plano.Turma.Ue.Nome} ({plano.Turma.Ue.Dre.Abreviacao})";
             var hostAplicacao = configuration["UrlFrontEnd"];
-            var estudanteOuCrianca = plano.Turma.ModalidadeCodigo == Modalidade.InfantilPreEscola ? "da criança" : "do estudante";
+            var estudanteOuCrianca = plano.Turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? "da criança" : "do estudante";
 
             var titulo = $"Reestruturação do plano AEE - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
             var descricao = $@"O usuário {request.Usuario.Nome} ({request.Usuario.CodigoRf}) registrou a reestruturação {reestruturacao.Semestre}º semestre do Plano AEE 

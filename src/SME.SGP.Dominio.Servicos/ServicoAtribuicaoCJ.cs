@@ -68,7 +68,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais)
         {
-            var perfil = atribuicaoCJ.Modalidade == Modalidade.InfantilPreEscola ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
+            var perfil = atribuicaoCJ.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
             var abrangenciasAtuais = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, perfil, atribuicaoCJ.TurmaId);
 

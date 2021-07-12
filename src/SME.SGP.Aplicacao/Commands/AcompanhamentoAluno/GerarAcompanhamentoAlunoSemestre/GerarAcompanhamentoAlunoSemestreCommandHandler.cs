@@ -24,7 +24,8 @@ namespace SME.SGP.Aplicacao
             {
                 AcompanhamentoAlunoId = request.AcompanhamentoAlunoId,
                 Semestre = request.Semestre,
-                Observacoes = request.Observacoes
+                Observacoes = request.Observacoes,
+                PercursoIndividual = request.PercursoIndividual
             };
 
             await repositorioAcompanhamentoAlunoSemestre.SalvarAsync(acompanhamento);

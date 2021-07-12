@@ -10,18 +10,20 @@ namespace SME.SGP.Aplicacao.Queries.Abrangencia.ObterTurmaPorAnoLetivoCodigoUeMo
 {
     public class ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreQuery : IRequest<IEnumerable<OpcaoDropdownDto>>
     {
-        public ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreQuery(int anoLetivo, string codigoUe, Modalidade? modalidade, int semestre)
+        public ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreQuery(int anoLetivo, string codigoUe, Modalidade? modalidade, int semestre, string[] anosInfantilDesconsiderar = null)
         {
             AnoLetivo = anoLetivo;
             CodigoUe = codigoUe;
             Modalidade = modalidade;
             Semestre = semestre;
+            AnosInfantilDesconsiderar = anosInfantilDesconsiderar;
         }
 
         public int AnoLetivo { get; set; }
         public string CodigoUe { get; set; }
         public Modalidade? Modalidade { get; set; }
         public int Semestre { get; set; }
+        public string[] AnosInfantilDesconsiderar { get; set; }
     }
 
     public class ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreQueryValidator : AbstractValidator<ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreQuery>
