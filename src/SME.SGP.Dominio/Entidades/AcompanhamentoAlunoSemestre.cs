@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public class AcompanhamentoAlunoSemestre : EntidadeBase
     {
@@ -11,6 +7,7 @@ namespace SME.SGP.Dominio
 
         public int Semestre { get; set; }
         public string Observacoes { get; set; }
+        public string PercursoIndividual { get; set; }
 
         public bool Excluido { get; set; }
     }

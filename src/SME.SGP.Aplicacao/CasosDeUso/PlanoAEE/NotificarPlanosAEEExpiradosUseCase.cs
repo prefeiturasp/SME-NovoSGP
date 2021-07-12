@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
             var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
             var hostAplicacao = configuration["UrlFrontEnd"];
-            var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.InfantilPreEscola ? "da criança" : "do estudante";
+            var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? "da criança" : "do estudante";
 
             var titulo = $"Plano AEE Expirado - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
             var descricao = $@"O Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} expirou em {dataFim:dd/MM/yyyy} e até o momento não teve sua vigência prorrogada ou foi encerrado.<br/>

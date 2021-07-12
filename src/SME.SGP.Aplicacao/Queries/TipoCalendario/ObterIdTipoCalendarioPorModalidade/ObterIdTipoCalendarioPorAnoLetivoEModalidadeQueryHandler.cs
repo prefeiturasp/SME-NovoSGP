@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
             switch (request.Modalidade)
             {
-                case Modalidade.InfantilPreEscola:
+                case Modalidade.EducacaoInfantil:
                     modalidade = ModalidadeTipoCalendario.Infantil;
                     break;
                 case Modalidade.EJA:
