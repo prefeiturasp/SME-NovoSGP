@@ -12,6 +12,7 @@ namespace SME.SGP.Dados
             Map(a => a.ProfessorRf).ToColumn("professor_rf");
             Map(a => a.DataFim).ToColumn("data_fim");
             Map(a => a.DataInicio).ToColumn("data_inicio");
+            Map(a => a.AnoLetivo).ToColumn("ano_letivo");
         }
     }
 }
