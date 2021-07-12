@@ -355,6 +355,13 @@ namespace SME.SGP.Dados.Repositorios
                          where t.ano_letivo = @anoLetivo
                            and not rfa.excluido
                            and t.modalidade_codigo = @modalidade ");
+
+            if(dreId != -99)
+                query.AppendLine("and dre.id = @dreId ");
+
+            if (ueId != -99)
+                query.AppendLine("and ue.id = @ueId ");
+
             if (anoTurma > 0)
                 query.AppendLine("and t.ano = @anoTurma ");
 
