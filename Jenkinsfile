@@ -67,7 +67,7 @@ pipeline {
             steps{
               withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
                 checkout scm
-                sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 update --url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+                sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
             }
           }		
         }
