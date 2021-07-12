@@ -115,7 +115,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> AlteracaoNotas([FromBody] FiltroRelatorioAlteracaoNotas filtro, [FromServices] IRelatorioAlteracaoNotasUseCase relatorioUseCase)
         {
-            if (filtro.ModalidadeTurma == Dominio.Modalidade.InfantilPreEscola)
+            if (filtro.ModalidadeTurma == Dominio.Modalidade.EducacaoInfantil)
                 throw new NegocioException("Não é possível gerar este relatório para a modalidade infantil.");
             return Ok(await relatorioUseCase.Executar(filtro));
         }
