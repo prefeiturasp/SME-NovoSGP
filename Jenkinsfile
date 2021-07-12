@@ -61,16 +61,6 @@ pipeline {
             }
           }
         }
-	 
-	stage('Flyway') {
-          agent { label 'master' }
-            steps{
-              withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
-                checkout scm
-                sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
-            }
-          }		
-        }
 	    
         stage('Deploy'){
             when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }        
@@ -100,7 +90,17 @@ pipeline {
                     }
                 }
             }           
-        }    
+        }
+        	 
+      stage('Flyway') {
+        agent { label 'master' }
+        steps{
+          withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
+            checkout scm
+            sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+          }
+        }		
+      }    
     }
 
   post {
