@@ -56,7 +56,8 @@ namespace SME.SGP.Aplicacao
                             break;
 
                         var mensagem = Encoding.UTF8.GetString(mensagemParaEnviar.Body.ToArray());
-                        var mensagemAgendamento = JsonConvert.DeserializeObject<MensagemAgendamentoSyncDto>(mensagem);
+                        var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
+                        var mensagemAgendamento = mensagemRabbit.ObterObjetoMensagem<MensagemAgendamentoSyncDto>();
 
                         await mediator.Send(new PublicarFilaSgpCommand(mensagemAgendamento.Rota, mensagemAgendamento.Objeto, Guid.NewGuid(), null));
                     }

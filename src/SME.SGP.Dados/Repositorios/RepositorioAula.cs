@@ -1048,7 +1048,7 @@ namespace SME.SGP.Dados.Repositorios
                        order by data_aula
                        limit 1";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, componenteCurricularId, dataCriacao });
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, componenteCurricularId, dataCriacao = dataCriacao.Date });
         }
     }
 }

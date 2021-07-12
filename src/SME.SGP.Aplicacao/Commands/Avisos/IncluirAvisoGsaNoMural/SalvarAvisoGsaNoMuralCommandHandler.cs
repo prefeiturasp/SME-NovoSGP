@@ -19,12 +19,12 @@ namespace SME.SGP.Aplicacao
         {
             var aviso = await repositorioAviso.ObterPorClassroomId(request.AvisoClassroomId);
 
-            MapearParaEntidade(request, aviso);
+            aviso = MapearParaEntidade(request, aviso);
 
             await repositorioAviso.SalvarAsync(aviso);
         }
 
-        private void MapearParaEntidade(SalvarAvisoGsaNoMuralCommand request, Dominio.Aviso aviso)
+        private Dominio.Aviso MapearParaEntidade(SalvarAvisoGsaNoMuralCommand request, Dominio.Aviso aviso)
         {
             if (aviso == null)
                 aviso = new Dominio.Aviso();
@@ -37,6 +37,8 @@ namespace SME.SGP.Aplicacao
             aviso.AlteradoRF = request.DataAlteracao.HasValue ? request.UsuarioRf : String.Empty;
             aviso.AlteradoEm = request.DataAlteracao;
             aviso.Email = request.Email;
+
+            return aviso;
         }
     }
 }
