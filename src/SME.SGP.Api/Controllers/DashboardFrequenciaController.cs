@@ -87,7 +87,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
-        public async Task<IActionResult> ObterFrequenciasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, [FromQuery] int anoTurma, [FromQuery] DateTime dataInicio, [FromQuery] DateTime datafim, [FromQuery] int tipoPeriodoDashboard)
+        public async Task<IActionResult> ObterFrequenciasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade,[FromQuery] int semestre, int anoTurma, DateTime dataInicio, DateTime datafim, int tipoPeriodoDashboard)
         {
             var dadosGraficoDiario = new GraficoFrequenciaAlunoDto
             {
@@ -95,68 +95,61 @@ namespace SME.SGP.Api.Controllers
                 PorcentagemAulas = 25,
                 DadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>()
                 {
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-1", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-2", QuantidadePresentes = 200, QuantidadeRemotos = 150, QuantidadeAusentes = 160, TotalAlunos = 480},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-3", QuantidadePresentes = 300, QuantidadeRemotos = 267, QuantidadeAusentes = 180, TotalAlunos = 567},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-4", QuantidadePresentes = 400, QuantidadeRemotos = 345, QuantidadeAusentes = 200, TotalAlunos = 876},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-5", QuantidadePresentes = 500, QuantidadeRemotos = 456, QuantidadeAusentes = 300, TotalAlunos = 1356},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-6", QuantidadePresentes = 600, QuantidadeRemotos = 500, QuantidadeAusentes = 400, TotalAlunos = 1900},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-7", QuantidadePresentes = 200, QuantidadeRemotos = 534, QuantidadeAusentes = 130, TotalAlunos = 1345},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-8", QuantidadePresentes = 120, QuantidadeRemotos = 267, QuantidadeAusentes = 148, TotalAlunos = 765},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-9", QuantidadePresentes = 150, QuantidadeRemotos = 345, QuantidadeAusentes = 187, TotalAlunos = 876}
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-1", Quantidade = 120},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-1", Quantidade = 170},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-1", Quantidade = 130},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-1", Quantidade = 420},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-2", Quantidade = 200},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-2", Quantidade = 150},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-2", Quantidade = 160},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-2", Quantidade = 480},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-3", Quantidade = 300},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-3", Quantidade = 267},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-3", Quantidade = 180},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-3", Quantidade = 567},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-4", Quantidade = 400},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-4", Quantidade = 345},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-4", Quantidade = 200},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-4", Quantidade = 867},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-5", Quantidade = 500},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-5", Quantidade = 456},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-5", Quantidade = 300},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-5", Quantidade = 988},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-6", Quantidade = 600},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-6", Quantidade = 500},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-6", Quantidade = 400},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-6", Quantidade = 1000},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-7", Quantidade = 200},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-7", Quantidade = 534},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-7", Quantidade = 130},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-7", Quantidade = 987},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-8", Quantidade = 120},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-8", Quantidade = 267},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-8", Quantidade = 148},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-8", Quantidade = 765},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-9", Quantidade = 150},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-9", Quantidade = 345},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-9", Quantidade = 187},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-9", Quantidade = 876},                    
                 }
-            };
+            };           
 
-            var dadosGraficoSemanal = new GraficoFrequenciaAlunoDto
-            {
-                QuantidadeFrequenciaRegistrada = 20000,
-                PorcentagemAulas = 25,
-                DadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>()
-                {
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-1", QuantidadePresentes = 200, QuantidadeRemotos = 170, QuantidadeAusentes = 300, TotalAlunos = 600},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-2", QuantidadePresentes = 400, QuantidadeRemotos = 150, QuantidadeAusentes = 345, TotalAlunos = 765},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-3", QuantidadePresentes = 400, QuantidadeRemotos = 267, QuantidadeAusentes = 400, TotalAlunos = 876},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-4", QuantidadePresentes = 300, QuantidadeRemotos = 345, QuantidadeAusentes = 123, TotalAlunos = 987},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-5", QuantidadePresentes = 500, QuantidadeRemotos = 456, QuantidadeAusentes = 300, TotalAlunos = 890},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-6", QuantidadePresentes = 600, QuantidadeRemotos = 500, QuantidadeAusentes = 400, TotalAlunos = 987},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-7", QuantidadePresentes = 200, QuantidadeRemotos = 534, QuantidadeAusentes = 130, TotalAlunos = 945},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-8", QuantidadePresentes = 800, QuantidadeRemotos = 267, QuantidadeAusentes = 150, TotalAlunos = 1345},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-9", QuantidadePresentes = 750, QuantidadeRemotos = 345, QuantidadeAusentes = 187, TotalAlunos = 1678}
-                }
-            };
-
-            var dadosGraficoMensal = new GraficoFrequenciaAlunoDto
-            {
-                QuantidadeFrequenciaRegistrada = 65000,
-                PorcentagemAulas = 25,
-                DadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>()
-                {
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-1", QuantidadePresentes = 800, QuantidadeRemotos = 546, QuantidadeAusentes = 130, TotalAlunos = 1234},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-2", QuantidadePresentes = 765, QuantidadeRemotos = 654, QuantidadeAusentes = 160, TotalAlunos = 1467},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-3", QuantidadePresentes = 345, QuantidadeRemotos = 765, QuantidadeAusentes = 180, TotalAlunos = 1678},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-4", QuantidadePresentes = 768, QuantidadeRemotos = 345, QuantidadeAusentes = 200, TotalAlunos = 1567},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-5", QuantidadePresentes = 987, QuantidadeRemotos = 834, QuantidadeAusentes = 300, TotalAlunos = 1356},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-6", QuantidadePresentes = 678, QuantidadeRemotos = 934, QuantidadeAusentes = 400, TotalAlunos = 1900},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-7", QuantidadePresentes = 543, QuantidadeRemotos = 658, QuantidadeAusentes = 130, TotalAlunos = 1345},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-8", QuantidadePresentes = 987, QuantidadeRemotos = 938, QuantidadeAusentes = 148, TotalAlunos = 1678},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "EF-9", QuantidadePresentes = 615, QuantidadeRemotos = 734, QuantidadeAusentes = 187, TotalAlunos = 1654}
-                }
-            };
-
-            if(tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
-                return Ok(dadosGraficoDiario);
-
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Semanal)
-                return Ok(dadosGraficoSemanal);
-
-            return Ok(dadosGraficoMensal);
+            return Ok(dadosGraficoDiario);
         }
 
         [HttpGet("anos/{anoLetivo}/modalidades/{modalidade}/consolidado/dres")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
-        public async Task<IActionResult> ObterFrequenciasAlunosPorDre(int anoLetivo, int modalidade, [FromQuery] int anoTurma, [FromQuery] DateTime dataInicio, [FromQuery] DateTime datafim, [FromQuery] int tipoPeriodoDashboard)
+        public async Task<IActionResult> ObterFrequenciasAlunosPorDre(int anoLetivo, int modalidade, [FromQuery] int semestre, [FromQuery] int anoTurma, [FromQuery] DateTime dataInicio, [FromQuery] DateTime datafim, [FromQuery] int tipoPeriodoDashboard)
         {
             var dadosGraficoDiario = new GraficoFrequenciaAlunoDto
             {
@@ -164,72 +157,74 @@ namespace SME.SGP.Api.Controllers
                 PorcentagemAulas = 20,
                 DadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>()
                 {
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "BT", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "CL", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "CS", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "FB", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "G", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "IP", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "IQ", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "JT", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "PE", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "PJ", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "SA", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "SM", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "MP", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420}
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "BT", Quantidade = 120},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "BT", Quantidade = 170},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "BT", Quantidade = 130},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "BT", Quantidade = 420},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "CL", Quantidade = 200},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "CL", Quantidade = 150},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "CL", Quantidade = 160},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "CL", Quantidade = 480},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "CS", Quantidade = 300},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "CS", Quantidade = 267},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "CS", Quantidade = 180},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "CS", Quantidade = 567},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "FB", Quantidade = 400},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "FB", Quantidade = 345},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "FB", Quantidade = 200},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "FB", Quantidade = 867},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "G", Quantidade = 500},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EG", Quantidade = 456},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "G", Quantidade = 300},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "G", Quantidade = 1356},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "IP", Quantidade = 600},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "IP", Quantidade = 500},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "IP", Quantidade = 400},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "IP", Quantidade = 1900},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "IQ", Quantidade = 200},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "IQ", Quantidade = 534},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "IQ", Quantidade = 130},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "IQ", Quantidade = 1345},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "JT", Quantidade = 120},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "JT", Quantidade = 267},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "JT", Quantidade = 148},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "JT", Quantidade = 765},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "PE", Quantidade = 150},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "PE", Quantidade = 345},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "PE", Quantidade = 187},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "PE", Quantidade = 876},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "PJ", Quantidade = 150},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "PJ", Quantidade = 345},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "PJ", Quantidade = 187},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "PJ", Quantidade = 876},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "SA", Quantidade = 150},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "SA", Quantidade = 345},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "SA", Quantidade = 187},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "SA", Quantidade = 876},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "SM", Quantidade = 150},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "SM", Quantidade = 345},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "SM", Quantidade = 187},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "SM", Quantidade = 876},
+
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "MP", Quantidade = 150},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "MP", Quantidade = 345},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "MP", Quantidade = 187},
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "MP", Quantidade = 876},                    
                 }
-            };
+            };           
 
-            var dadosGraficosSemanal = new GraficoFrequenciaAlunoDto
-            {
-                QuantidadeFrequenciaRegistrada = 35000,
-                PorcentagemAulas = 25,
-                DadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>()
-                {
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "BT", QuantidadePresentes = 500, QuantidadeRemotos = 600, QuantidadeAusentes = 400, TotalAlunos = 1500},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "CL", QuantidadePresentes = 800, QuantidadeRemotos = 500, QuantidadeAusentes = 600, TotalAlunos = 1900},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "CS", QuantidadePresentes = 300, QuantidadeRemotos = 500, QuantidadeAusentes = 200, TotalAlunos = 1000},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "FB", QuantidadePresentes = 600, QuantidadeRemotos = 200, QuantidadeAusentes = 500, TotalAlunos = 1300},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "G", QuantidadePresentes = 200, QuantidadeRemotos = 300, QuantidadeAusentes = 250, TotalAlunos = 750},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "IP", QuantidadePresentes = 350, QuantidadeRemotos = 650, QuantidadeAusentes = 450, TotalAlunos = 1450},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "IQ", QuantidadePresentes = 600, QuantidadeRemotos = 200, QuantidadeAusentes = 500, TotalAlunos = 1300},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "JT", QuantidadePresentes = 800, QuantidadeRemotos = 500, QuantidadeAusentes = 600, TotalAlunos = 1900},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "PE", QuantidadePresentes = 200, QuantidadeRemotos = 300, QuantidadeAusentes = 250, TotalAlunos = 750},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "PJ", QuantidadePresentes = 120, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 420},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "SA", QuantidadePresentes = 800, QuantidadeRemotos = 500, QuantidadeAusentes = 600, TotalAlunos = 1900},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "SM", QuantidadePresentes = 200, QuantidadeRemotos = 300, QuantidadeAusentes = 250, TotalAlunos = 750},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "MP", QuantidadePresentes = 600, QuantidadeRemotos = 200, QuantidadeAusentes = 500, TotalAlunos = 1300}
-                }
-            };
-
-            var dadosGraficosMensal = new GraficoFrequenciaAlunoDto
-            {
-                QuantidadeFrequenciaRegistrada = 65000,
-                PorcentagemAulas = 25,
-                DadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>()
-                {
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "BT", QuantidadePresentes = 900, QuantidadeRemotos = 600, QuantidadeAusentes = 400, TotalAlunos = 2700},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "CL", QuantidadePresentes = 1200, QuantidadeRemotos = 500, QuantidadeAusentes = 600, TotalAlunos = 2365},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "CS", QuantidadePresentes = 964, QuantidadeRemotos = 500, QuantidadeAusentes = 200, TotalAlunos = 2654},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "FB", QuantidadePresentes = 1234, QuantidadeRemotos = 200, QuantidadeAusentes = 500, TotalAlunos = 1908},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "G", QuantidadePresentes = 1567, QuantidadeRemotos = 300, QuantidadeAusentes = 250, TotalAlunos = 2876},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "IP", QuantidadePresentes = 1876, QuantidadeRemotos = 650, QuantidadeAusentes = 450, TotalAlunos = 2765},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "IQ", QuantidadePresentes = 1456, QuantidadeRemotos = 200, QuantidadeAusentes = 500, TotalAlunos = 2654},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "JT", QuantidadePresentes = 1478, QuantidadeRemotos = 500, QuantidadeAusentes = 600, TotalAlunos = 2435},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "PE", QuantidadePresentes = 986, QuantidadeRemotos = 300, QuantidadeAusentes = 250, TotalAlunos = 2765},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "PJ", QuantidadePresentes = 894, QuantidadeRemotos = 170, QuantidadeAusentes = 130, TotalAlunos = 2345},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "SA", QuantidadePresentes = 800, QuantidadeRemotos = 500, QuantidadeAusentes = 600, TotalAlunos = 1900},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "SM", QuantidadePresentes = 1754, QuantidadeRemotos = 300, QuantidadeAusentes = 250, TotalAlunos = 2675},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "MP", QuantidadePresentes = 1286, QuantidadeRemotos = 200, QuantidadeAusentes = 500, TotalAlunos = 2546}
-                }
-            };
-
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
-                return Ok(dadosGraficoDiario);
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Semanal)
-                return Ok(dadosGraficosSemanal);
-
-            return Ok(dadosGraficosMensal);
+            return Ok(dadosGraficoDiario);
 
         }
     }
