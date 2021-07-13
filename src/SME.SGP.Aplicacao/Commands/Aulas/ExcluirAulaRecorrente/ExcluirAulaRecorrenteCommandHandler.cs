@@ -105,7 +105,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task PulicaFilaSgp(string fila, long id, Usuario usuario)
         {
-            // await mediator.Send(new ExcluirWorkflowCommand(workflowId));
             await mediator.Send(new PublicarFilaSgpCommand(fila, new FiltroIdDto(id), Guid.NewGuid(), usuario));
         }
 
