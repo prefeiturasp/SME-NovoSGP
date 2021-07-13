@@ -174,5 +174,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(dadosGraficoDiario);
 
         }
+
+        [HttpGet("filtro/anos/{anoLetivo}/semanas")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoAusenciasComJustificativaResultadoDto>), 200)]
+        public async Task<IActionResult> ObterSemanasFiltro(int anoLetivo, [FromServices] IObterFiltroSemanaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo));
+        }
     }
 }
