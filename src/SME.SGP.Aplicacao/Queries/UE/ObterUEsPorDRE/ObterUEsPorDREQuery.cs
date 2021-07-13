@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUEsPorDREQuery : IRequest<IEnumerable<AbrangenciaUeRetorno>>
     {
-        public ObterUEsPorDREQuery(string codigoDre, string login, Guid perfil, Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, bool consideraNovasUEs = false, string filtro = "", bool filtroEhCodigo = false)
+        public ObterUEsPorDREQuery(string codigoDre, string login, Guid perfil, Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, bool consideraNovasUEs = false, bool filtrarTipoEscolaPorAnoLetivo = false, string filtro = "", bool filtroEhCodigo = false)
         {
             CodigoDre = codigoDre;
             Login = login;
@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao
             ConsideraHistorico = consideraHistorico;
             AnoLetivo = anoLetivo;
             ConsideraNovasUEs = consideraNovasUEs;
+            FiltrarTipoEscolaPorAnoLetivo = filtrarTipoEscolaPorAnoLetivo;
             Filtro = filtro;
             FiltroEhCodigo = filtroEhCodigo;
         }
@@ -31,6 +32,7 @@ namespace SME.SGP.Aplicacao
         public bool ConsideraHistorico { get; }
         public int AnoLetivo { get; }
         public bool ConsideraNovasUEs { get; }
+        public bool FiltrarTipoEscolaPorAnoLetivo { get; }
         public string Filtro { get; }
         public bool FiltroEhCodigo { get; }
     }

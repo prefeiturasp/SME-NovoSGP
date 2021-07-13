@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> Executar(string codigoDre, Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, bool consideraNovasUEs = false, string filtro = "")
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> Executar(string codigoDre, Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, bool consideraNovasUEs = false, bool filtrarTipoEscolaPorAnoLetivo = false, string filtro = "")
         {
             var login = await mediator.Send(new ObterLoginAtualQuery());
             var perfil = await mediator.Send(new ObterPerfilAtualQuery());
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                     filtroEhCodigo = true;
             }
 
-            return await mediator.Send(new ObterUEsPorDREQuery(codigoDre, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, consideraNovasUEs, filtro, filtroEhCodigo));
+            return await mediator.Send(new ObterUEsPorDREQuery(codigoDre, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, consideraNovasUEs, filtrarTipoEscolaPorAnoLetivo, filtro, filtroEhCodigo));
         }
     }
 }
