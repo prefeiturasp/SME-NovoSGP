@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-   // [Authorize("Bearer")]
+    // [Authorize("Bearer")]
     [Route("api/v1/dashboard/frequencias")]
     public class DashboardFrequenciaController : Controller
     {
@@ -87,7 +87,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
-        public async Task<IActionResult> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int tipoPeriodoDashboard,[FromQuery] int semestre, int anoTurma, DateTime dataInicio, DateTime datafim, int mes, [FromServices] IObterDadosDashboardFrequenciaPorAnoTurmaUseCase useCase)
+        public async Task<IActionResult> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int tipoPeriodoDashboard, [FromQuery] int semestre, int anoTurma, DateTime dataInicio, DateTime datafim, int mes, [FromServices] IObterDadosDashboardFrequenciaPorAnoTurmaUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre, anoTurma, dataInicio, datafim, mes, tipoPeriodoDashboard));
         }
@@ -100,8 +100,7 @@ namespace SME.SGP.Api.Controllers
         {
             var dadosGraficoDiario = new GraficoFrequenciaAlunoDto
             {
-                QuantidadeFrequenciaRegistrada = 2000,
-                PorcentagemAulas = 20,
+                TagTotalFrequencia = $"65.000 frequências registradas (25% das aulas)",
                 DadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>()
                 {
                     new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "BT", Quantidade = 120},
@@ -167,9 +166,9 @@ namespace SME.SGP.Api.Controllers
                     new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "MP", Quantidade = 150},
                     new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "MP", Quantidade = 345},
                     new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "MP", Quantidade = 187},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "MP", Quantidade = 876},                    
+                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "MP", Quantidade = 876},
                 }
-            };           
+            };
 
             return Ok(dadosGraficoDiario);
 

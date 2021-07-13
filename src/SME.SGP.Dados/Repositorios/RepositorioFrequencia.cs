@@ -400,8 +400,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<TotalFrequenciaEAulasPorPeriodoDto> ObterTotalFrequenciaEAulasPorPeriodo(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, int anoTurma, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard)
-        {           
-
+        {
             var query = new StringBuilder(@"select 
                                                 count(a.id) as TotalAulas,
                                                 count(rf.id) as TotalFrequencias

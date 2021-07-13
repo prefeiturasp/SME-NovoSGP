@@ -6,7 +6,10 @@ namespace SME.SGP.Infra
     {
         public long TotalAulas { get; set; }
         public long TotalFrequencias { get; set; }
-
+        public string TotalFrequenciaFormatado
+        {
+            get => $"{TotalFrequencias} frequências registradas ({PercentualFrequencia}% das aulas)";
+        }
         public double PercentualFrequencia
         {
             get
