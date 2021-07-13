@@ -135,7 +135,10 @@ namespace SME.SGP.Dominio
 
         ExecucaoConsolidacaoAcompanhamentoAprendizagemAlunoTurma = 75,
 
+        AtualizacaoDeAtividadesAvaliativas = 76,
 
+        AtividadeAvaliativa = 77,
+        
         //Sistema
         HabilitarServicosEmBackground = 100
     }
