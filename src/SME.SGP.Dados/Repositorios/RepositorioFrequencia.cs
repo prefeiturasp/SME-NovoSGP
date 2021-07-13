@@ -398,5 +398,62 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<FrequenciaAlunoDashboardDto>(query.ToString(), paramentros);
         }
+
+        public async Task<TotalFrequenciaEAulasPorPeriodoDto> ObterTotalFrequenciaEAulasPorPeriodo(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, int anoTurma, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard)
+        {           
+
+            var query = new StringBuilder(@"select 
+                                                count(a.id) as TotalAulas,
+                                                count(rf.id) as TotalFrequencias
+                                            from 
+                                                aula a 
+                                            inner join turma t on a.turma_id = t.turma_id       
+                                                left join registro_frequencia rf on a.id = rf.aula_id
+                                            inner join componente_curricular cc on cc.id = cast(a.disciplina_id as int)
+                                            inner join ue on ue.id = t.ue_id 
+     	                                    inner join dre on dre.id = ue.dre_id
+                                            where 
+                                                not a.excluido
+                                                and cc.permite_registro_frequencia 
+                                                and t.ano_letivo = @anoLetivo
+                                                and t.modalidade_codigo = @modalidade ");
+
+            if (dreId != -99)
+                query.AppendLine("and dre.id = @dreId ");
+
+            if (ueId != -99)
+                query.AppendLine("and ue.id = @ueId ");
+
+            if (anoTurma > 0)
+                query.AppendLine("and t.ano = @anoTurma ");
+
+            if (semestre > 0)
+                query.AppendLine("and t.semestre = @semestre ");
+
+            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
+                query.AppendLine("and a.data_aula = @dataInicio ");
+
+            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Semanal)
+                query.AppendLine("and a.data_aula between @dataInicio and @dataFim ");
+
+            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Mensal)
+                query.AppendLine(@"and extract(month from a.data_aula) = @mes 
+                                   and extract(year from a.data_aula) = @anoLetivo ");           
+
+            var paramentros = new
+            {
+                dreId,
+                ueId,
+                anoLetivo,
+                modalidade,
+                anoTurma,
+                semestre,
+                dataInicio,
+                datafim,
+                mes
+            };
+
+            return await database.Conexao.QueryFirstAsync<TotalFrequenciaEAulasPorPeriodoDto>(query.ToString(), paramentros);
+        }
     }
 }
