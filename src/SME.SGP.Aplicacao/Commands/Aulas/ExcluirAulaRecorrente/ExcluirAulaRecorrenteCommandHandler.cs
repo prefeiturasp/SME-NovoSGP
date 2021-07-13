@@ -2,6 +2,7 @@
 using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,30 +89,24 @@ namespace SME.SGP.Aplicacao
 
             await ValidarComponentesDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId), aula.DataAula, usuario);
 
-            unitOfWork.IniciarTransacao();
-            try
-            {
-                // TODO validar transacao e conections 
-                if (aula.WorkflowAprovacaoId.HasValue)
-                    await mediator.Send(new ExcluirWorkflowCommand(aula.WorkflowAprovacaoId.Value));
+            if (aula.WorkflowAprovacaoId.HasValue)
+                await PulicaFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, aula.WorkflowAprovacaoId.Value, usuario);
 
-                await mediator.Send(new ExcluirNotificacoesDaAulaCommand(aula.Id));
-                await mediator.Send(new ExcluirFrequenciaDaAulaCommand(aula.Id));
-                await mediator.Send(new ExcluirPlanoAulaDaAulaCommand(aula.Id));
-                await mediator.Send(new ExcluirAnotacoesFrequencciaDaAulaCommand(aula.Id));
-                await mediator.Send(new ExcluirDiarioBordoDaAulaCommand(aula.Id));
-                await mediator.Send(new IncluirFilaExclusaoPendenciasAulaCommand(aula.Id, usuario));
+            await PulicaFilaSgp(RotasRabbitSgp.NotificacoesDaAulaExcluir, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgp.FrequenciaDaAulaExcluir, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgp.PlanoAulaDaAulaExcluir, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgp.AnotacoesFrequenciaDaAulaExcluir, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgp.DiarioBordoDaAulaExcluir, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula, aula.Id, usuario);
 
-                aula.Excluido = true;
-                await repositorioAula.SalvarAsync(aula);
+            aula.Excluido = true;
+            await repositorioAula.SalvarAsync(aula);
+        }
 
-                unitOfWork.PersistirTransacao();
-            }
-            catch (Exception)
-            {
-                unitOfWork.Rollback();
-                throw;
-            }
+        private async Task PulicaFilaSgp(string fila, long id, Usuario usuario)
+        {
+            // await mediator.Send(new ExcluirWorkflowCommand(workflowId));
+            await mediator.Send(new PublicarFilaSgpCommand(fila, new FiltroIdDto(id), Guid.NewGuid(), usuario));
         }
 
         private async Task ValidarComponentesDoProfessor(string codigoTurma, long componenteCurricularCodigo, DateTime dataAula, Usuario usuario)
