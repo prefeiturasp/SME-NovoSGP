@@ -132,5 +132,29 @@ namespace SME.SGP.Dados.Repositorios
             var infantil = Modalidade.InfantilPreEscola;
             return database.Conexao.QueryFirstOrDefault<AtribuicaoEsporadica>(sql, new { codigoRF, infantil });
         }
+
+        public async Task<bool> PossuiAtribuicaoPorAnoData(int? anoLetivo, string dreCodigo, string ueCodigo, string codigoRF, DateTime? data)
+        {
+            StringBuilder sql = new StringBuilder();
+
+            sql.AppendLine(@"select 1 from atribuicao_esporadica where not excluido ");
+
+            if (anoLetivo.HasValue && anoLetivo.Value > 0)
+                sql.AppendLine(" and ano_letivo = @anoLetivo ");
+
+            if (!string.IsNullOrEmpty(dreCodigo))
+                sql.AppendLine(" and dre_id = @dreCodigo ");
+
+            if (!string.IsNullOrEmpty(ueCodigo))
+                sql.AppendLine(" and ue_id = @ueCodigo ");
+
+            if (!string.IsNullOrEmpty(codigoRF))
+                sql.AppendLine(" and professor_rf = @codigoRF ");
+
+            if (data.HasValue)
+                sql.AppendLine(" and data_inicio >= @data and data_fim <= @data ");
+
+            return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql.ToString(), new { anoLetivo, dreCodigo, ueCodigo, codigoRF, data = data.HasValue ? data.Value.Date : DateTime.MinValue });
+        }
     }
 }
