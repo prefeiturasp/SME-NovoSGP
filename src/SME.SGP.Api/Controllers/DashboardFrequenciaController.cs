@@ -87,69 +87,16 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
-        public async Task<IActionResult> ObterFrequenciasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade,[FromQuery] int semestre, int anoTurma, DateTime dataInicio, DateTime datafim, int tipoPeriodoDashboard)
+        public async Task<IActionResult> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int tipoPeriodoDashboard,[FromQuery] int semestre, int anoTurma, DateTime dataInicio, DateTime datafim, int mes, [FromServices] IObterDadosDashboardFrequenciaPorAnoTurmaUseCase useCase)
         {
-            var dadosGraficoDiario = new GraficoFrequenciaAlunoDto
-            {
-                QuantidadeFrequenciaRegistrada = 2000,
-                PorcentagemAulas = 25,
-                DadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>()
-                {
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-1", Quantidade = 120},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-1", Quantidade = 170},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-1", Quantidade = 130},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-1", Quantidade = 420},
-
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-2", Quantidade = 200},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-2", Quantidade = 150},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-2", Quantidade = 160},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-2", Quantidade = 480},
-
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-3", Quantidade = 300},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-3", Quantidade = 267},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-3", Quantidade = 180},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-3", Quantidade = 567},
-
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-4", Quantidade = 400},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-4", Quantidade = 345},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-4", Quantidade = 200},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-4", Quantidade = 867},
-
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-5", Quantidade = 500},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-5", Quantidade = 456},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-5", Quantidade = 300},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-5", Quantidade = 988},
-
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-6", Quantidade = 600},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-6", Quantidade = 500},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-6", Quantidade = 400},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-6", Quantidade = 1000},
-
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-7", Quantidade = 200},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-7", Quantidade = 534},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-7", Quantidade = 130},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-7", Quantidade = 987},
-
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-8", Quantidade = 120},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-8", Quantidade = 267},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-8", Quantidade = 148},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-8", Quantidade = 765},
-
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Presentes", TurmaAno = "EF-9", Quantidade = 150},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Remotos", TurmaAno = "EF-9", Quantidade = 345},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Ausentes", TurmaAno = "EF-9", Quantidade = 187},
-                    new DadosRetornoFrequenciaAlunoDashboardDto(){Descricao = "Total de Estudantes", TurmaAno = "EF-9", Quantidade = 876},                    
-                }
-            };           
-
-            return Ok(dadosGraficoDiario);
+            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre, anoTurma, dataInicio, datafim, mes, tipoPeriodoDashboard));
         }
 
         [HttpGet("anos/{anoLetivo}/modalidades/{modalidade}/consolidado/dres")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
-        public async Task<IActionResult> ObterFrequenciasAlunosPorDre(int anoLetivo, int modalidade, [FromQuery] int semestre, [FromQuery] int anoTurma, [FromQuery] DateTime dataInicio, [FromQuery] DateTime datafim, [FromQuery] int tipoPeriodoDashboard)
+        public async Task<IActionResult> ObterFrequenciasConsolidadasPorDre(int anoLetivo, int modalidade, [FromQuery] int semestre, [FromQuery] int anoTurma, [FromQuery] DateTime dataInicio, [FromQuery] DateTime datafim, [FromQuery] int tipoPeriodoDashboard)
         {
             var dadosGraficoDiario = new GraficoFrequenciaAlunoDto
             {
