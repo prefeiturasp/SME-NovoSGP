@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var sql = MontaQueryCompleta(paginacao, codigoRF);
 
-            var parametros = new { inicioAno = new DateTime(anoLetivo, 1, 1), fimAno = new DateTime(anoLetivo, 12, 31), dreId, ueId, codigoRF };
+            var parametros = new { anoLetivo, dreId, ueId, codigoRF };
 
             using (var multi = await database.Conexao.QueryMultipleAsync(sql, parametros))
             {
@@ -99,7 +99,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObtenhaCabecalho(StringBuilder sql, bool contador)
         {
-            sql.AppendLine($"select {(contador ? "count(*)" : "id,professor_rf,ue_id,dre_id,data_inicio, data_fim")} from atribuicao_esporadica where excluido = false");
+            sql.AppendLine($"select {(contador ? "count(*)" : "id,professor_rf,ue_id,dre_id,data_inicio, data_fim, ano_letivo")} from atribuicao_esporadica where excluido = false");
         }
 
         private static void ObtenhaFiltro(StringBuilder sql, string codigoRF)
@@ -109,8 +109,7 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.AppendLine("and dre_id = @dreId");
             sql.AppendLine("and ue_id = @ueId");
-            sql.AppendLine("and data_inicio >= @inicioAno and data_inicio <= @fimAno");
-            sql.AppendLine("and data_fim >= @inicioAno and data_fim <= @fimAno");
+            sql.AppendLine("and ano_letivo = @anoLetivo");
         }
 
         public AtribuicaoEsporadica ObterUltimaPorRF(string codigoRF, bool somenteInfantil)
