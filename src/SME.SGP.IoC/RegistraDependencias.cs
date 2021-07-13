@@ -1037,6 +1037,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase, ConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase>();
 
             services.TryAddScoped<IObterFiltroSemanaUseCase, ObterFiltroSemanaUseCase>();
+            // Dashboard Frequencia Aluno
+            services.TryAddScoped<IObterDadosDashboardFrequenciaPorAnoTurmaUseCase, ObterDadosDashboardFrequenciaPorAnoTurmaUseCase>();
         }
     }
 }
