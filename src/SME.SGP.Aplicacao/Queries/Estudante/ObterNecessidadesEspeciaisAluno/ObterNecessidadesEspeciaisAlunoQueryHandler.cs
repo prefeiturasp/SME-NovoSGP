@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
 
             if (frequenciasAluno == null || !frequenciasAluno.Any())
             {
-                informacoesEscolaresAluno.FrequenciaGlobal = 100;
+                informacoesEscolaresAluno.FrequenciaGlobal = "";
                 return informacoesEscolaresAluno;
             }                
 
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
                 TotalCompensacoes = frequenciasAluno.Sum(f => f.TotalCompensacoes),
             };
 
-            informacoesEscolaresAluno.FrequenciaGlobal = frequenciaAluno.PercentualFrequencia;
+            informacoesEscolaresAluno.FrequenciaGlobal = frequenciaAluno.PercentualFrequencia.ToString() ;
 
             return informacoesEscolaresAluno;
         }
