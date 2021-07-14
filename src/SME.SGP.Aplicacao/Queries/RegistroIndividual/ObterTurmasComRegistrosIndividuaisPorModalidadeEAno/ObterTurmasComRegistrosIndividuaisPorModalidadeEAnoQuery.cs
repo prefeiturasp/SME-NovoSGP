@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
         public ObterTurmasComRegistrosIndividuaisPorModalidadeEAnoQuery(int anoLetivo)
         {
             AnoLetivo = anoLetivo;
-            Modalidades = new[] { (int)Modalidade.InfantilPreEscola };
+            Modalidades = new[] { (int)Modalidade.EducacaoInfantil };
         }
 
         public int AnoLetivo { get; set; }

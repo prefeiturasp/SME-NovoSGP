@@ -31,6 +31,7 @@
   <ItemGroup>
     <Folder Include="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\" />
     <Folder Include="Interfaces\CasosDeUso\Aluno\" />
+    <Folder Include="obj\" />
     <Folder Include="Queries\AcompanhamentoFrequencia\" />
     <Folder Include="Queries\TipoCalendario\ObterTiposCalendariosAulaAutomaticaPorAnoLetivoEModalidades\" />
     <Folder Include="Servicos\Interfaces\" />

@@ -3,6 +3,9 @@ pipeline {
       branchname =  env.BRANCH_NAME.toLowerCase()
       kubeconfig = getKubeconf(env.branchname)
       registryCredential = 'jenkins_registry'
+      deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"
+      deployment2 = "${env.branchname == 'release-r2' ? 'sme-pedagogico-worker-r2' : 'sme-pedagogico-worker' }"
+      deployment3 = "${env.branchname == 'release-r2' ? 'sme-workerservice-rc2' : 'sme-workerservice' }"
     }
   
     agent {
@@ -40,7 +43,7 @@ pipeline {
        // }
 
         stage('Build') {
-          when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release';  } } 
+          when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; } } 
           steps {
             script {
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-sgp-backend"
@@ -54,27 +57,25 @@ pipeline {
               dockerImage2.push()
               dockerImage3.push()
               }
-              sh "docker rmi $imagename1"
-              sh "docker rmi $imagename2"
-              sh "docker rmi $imagename3"
+              sh "docker rmi $imagename1 $imagename2 $imagename3"
             }
           }
         }
 	    
         stage('Deploy'){
-            when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; } }        
+            when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }        
             steps {
                 script{
-                    if ( env.branchname == 'main' ||  env.branchname == 'master' || env.branchname == 'homolog' || env.branchname == 'release' ) {
+                    if ( env.branchname == 'main' ||  env.branchname == 'master' || env.branchname == 'homolog' || env.branchname == 'release' || env.branchname == 'release-r2' ) {
                         sendTelegram("🤩 [Deploy ${env.branchname}] Job Name: ${JOB_NAME} \nBuild: ${BUILD_DISPLAY_NAME} \nMe aprove! \nLog: \n${env.BUILD_URL}")
                         timeout(time: 24, unit: "HOURS") {
-                            input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marlon_goncalves, bruno_alevato, robson_silva, rafael_losi'
+                            input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marlon_goncalves, bruno_alevato, robson_silva, luiz_araujo, rafael_losi'
                         }
                         withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
                             sh('cp $config '+"$home"+'/.kube/config')
-                            sh 'kubectl rollout restart deployment/sme-api -n sme-novosgp'
-                            sh 'kubectl rollout restart deployment/sme-pedagogico-worker -n sme-novosgp'
-                            sh 'kubectl rollout restart deployment/sme-workerservice -n sme-novosgp'                            
+                            sh "kubectl rollout restart deployment/${deployment1} -n sme-novosgp"
+                            sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"
+                            sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"                           
                             sh('rm -f '+"$home"+'/.kube/config')
                         }
                     }
@@ -89,7 +90,17 @@ pipeline {
                     }
                 }
             }           
-        }    
+        }
+        	 
+      stage('Flyway') {
+        agent { label 'master' }
+        steps{
+          withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
+            checkout scm
+            sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+          }
+        }		
+      }    
     }
 
   post {
@@ -116,6 +127,7 @@ def getKubeconf(branchName) {
     else if ("master".equals(branchName)) { return "config_prd"; }
     else if ("homolog".equals(branchName)) { return "config_hom"; }
     else if ("release".equals(branchName)) { return "config_hom"; }
+    else if ("release-r2".equals(branchName)) { return "config_hom"; }
     else if ("development".equals(branchName)) { return "config_dev"; }
     else if ("develop".equals(branchName)) { return "config_dev"; }
 }

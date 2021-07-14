@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterMediaRegistrosIndividuaisPorAnoQuery : IRequest<IEnumerable<GraficoBaseQuantidadeDoubleDto>>
     {
-        public ObterMediaRegistrosIndividuaisPorAnoQuery(int anoLetivo, long dreId, Modalidade modalidade = Modalidade.InfantilPreEscola)
+        public ObterMediaRegistrosIndividuaisPorAnoQuery(int anoLetivo, long dreId, Modalidade modalidade = Modalidade.EducacaoInfantil)
         {
             AnoLetivo = anoLetivo;
             DreId = dreId;

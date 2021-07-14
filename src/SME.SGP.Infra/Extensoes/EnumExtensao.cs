@@ -31,7 +31,7 @@ namespace SME.SGP.Infra
                 case ModalidadeTipoCalendario.EJA:
                     return new[] { Modalidade.EJA };
                 case ModalidadeTipoCalendario.Infantil:
-                    return new[] { Modalidade.InfantilPreEscola };
+                    return new[] { Modalidade.EducacaoInfantil };
                 default:
                     throw new NegocioException("ModalidadeTipoCalendario não implementada.");
             }

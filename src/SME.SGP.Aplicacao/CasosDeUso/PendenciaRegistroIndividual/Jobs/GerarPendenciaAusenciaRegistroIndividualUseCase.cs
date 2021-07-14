@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                 if (string.IsNullOrWhiteSpace(parametroCorrespondente))
                     return true;
 
-                var turmasDoEnsinoInfantil = await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(DateTime.Now.Year, Modalidade.InfantilPreEscola));
+                var turmasDoEnsinoInfantil = await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(DateTime.Now.Year, Modalidade.EducacaoInfantil));
                 if (!turmasDoEnsinoInfantil?.Any() ?? true)
                 {
                     SentrySdk.AddBreadcrumb($"Não foram encontradas turmas para geração de pendências de ausência de registro individual .", $"Rabbit - {nameof(GerarPendenciaAusenciaRegistroIndividualUseCase)}");
