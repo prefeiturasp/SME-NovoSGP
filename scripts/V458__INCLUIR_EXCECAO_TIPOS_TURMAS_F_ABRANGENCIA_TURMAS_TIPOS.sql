@@ -1,3 +1,5 @@
+drop function f_abrangencia_turmas_tipos;
+
 CREATE OR REPLACE FUNCTION public.f_abrangencia_turmas_tipos(p_login character varying, 
 	p_perfil_id uuid, 
 	p_historico boolean, 
@@ -21,8 +23,7 @@ select distinct act.turma_ano,
     act.tipo_turno,
     act.ensino_especial,
     act.turma_id,
-    act.tipo_turma,
-    act.nome_filtro
+    act.tipo_turma
 from v_abrangencia_nivel_dre a
     inner join v_abrangencia_cadeia_turmas act on a.dre_id = act.dre_id
 where a.login = p_login
@@ -83,8 +84,7 @@ select distinct act.turma_ano,
     act.tipo_turno,
     act.ensino_especial,
     act.turma_id,
-    act.tipo_turma,
-    act.nome_filtro
+    act.tipo_turma
 from v_abrangencia_nivel_ue a
     inner join v_abrangencia_cadeia_turmas act on a.ue_id = act.ue_id
     inner join ue on act.ue_id = ue.id
@@ -146,8 +146,7 @@ select distinct act.turma_ano,
     act.tipo_turno,
     act.ensino_especial,
     act.turma_id,
-    act.tipo_turma,
-    act.nome_filtro
+    act.tipo_turma
 from v_abrangencia_nivel_turma a
     inner join v_abrangencia_cadeia_turmas act on a.turma_id = act.turma_id
     inner join ue on act.ue_id = ue.id

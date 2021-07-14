@@ -6,6 +6,7 @@ pipeline {
       deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"
       deployment2 = "${env.branchname == 'release-r2' ? 'sme-pedagogico-worker-r2' : 'sme-pedagogico-worker' }"
       deployment3 = "${env.branchname == 'release-r2' ? 'sme-workerservice-rc2' : 'sme-workerservice' }"
+      deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-rabbit-r2' : 'sme-worker-rabbit' }"
     }
   
     agent {
@@ -75,7 +76,8 @@ pipeline {
                             sh('cp $config '+"$home"+'/.kube/config')
                             sh "kubectl rollout restart deployment/${deployment1} -n sme-novosgp"
                             sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"
-                            sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"                           
+                            sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"
+			    sh "kubectl rollout restart deployment/${deployment4} -n sme-novosgp"
                             sh('rm -f '+"$home"+'/.kube/config')
                         }
                     }
@@ -84,7 +86,8 @@ pipeline {
                             sh('cp $config '+"$home"+'/.kube/config')
                             sh 'kubectl rollout restart deployment/sme-api -n sme-novosgp'
                             sh 'kubectl rollout restart deployment/sme-pedagogico-worker -n sme-novosgp'
-                            sh 'kubectl rollout restart deployment/sme-workerservice -n sme-novosgp'  
+                            sh 'kubectl rollout restart deployment/sme-workerservice -n sme-novosgp'
+			    sh 'kubectl rollout restart deployment/sme-worker-rabbit -n sme-novosgp'
                             sh('rm -f '+"$home"+'/.kube/config')
                         }
                     }

@@ -33,7 +33,8 @@ namespace SME.SGP.Aplicacao
                         AulasQuantidade = a.AulasQuantidade,
                         ComponenteCurricularCodigo = a.ComponenteCurricularCodigo,
                         TurmaCodigo = a.TurmaCodigo,
-                        Bimestre = a.Bimestre
+                        Bimestre = a.Bimestre,
+                        PeriodoEscolarId = a.PeriodoEscolarId
                     }
                 );
 
