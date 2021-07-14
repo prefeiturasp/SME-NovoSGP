@@ -6,5 +6,6 @@
     public static class RotasRabbitSgpAgendamento
     {
         public const string RotaMuralAvisosSync = "sgp.mural.avisos.sync.agendado";
+        public const string RotaAtividadesSync = "sgp.atividade.avaliativa.sync.agendado";
     }
 }
