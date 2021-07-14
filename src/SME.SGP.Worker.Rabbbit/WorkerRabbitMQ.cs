@@ -210,7 +210,8 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAlunoTratar, new ComandoRabbit("Tratar Acompanhamento Aprendizagem", typeof(IConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase)));
 
             // Mural de Avisos Gsa
-            comandos.Add(RotasRabbitSgp.RotaMuralAvisosSync, new ComandoRabbit("Tratar Acompanhamento Aprendizagem", typeof(IImportarAvisoDoMuralGsaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaMuralAvisosSync, new ComandoRabbit("Importar avisos do mural do GSA", typeof(IImportarAvisoDoMuralGsaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaAtividadesSync, new ComandoRabbit("Importar atividades avaliativas do GSA", typeof(IImportarAtividadesGsaUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaAgendamentoTratar, new ComandoRabbit("Tratar mensagens de processamento periodico", typeof(IRotasAgendamentoTratarUseCase)));
         }

@@ -137,7 +137,7 @@ namespace SME.SGP.Dominio
 
         AtualizacaoDeAtividadesAvaliativas = 76,
 
-        AtividadeAvaliativa = 77,
+        TipoAtividadeAvaliativaClassroom = 77,
         
         //Sistema
         HabilitarServicosEmBackground = 100
