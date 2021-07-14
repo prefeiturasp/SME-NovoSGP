@@ -43,7 +43,8 @@ namespace SME.SGP.Aplicacao
                                                        from disciplina in avaliacao.Disciplinas
                                                        where avaliacao.EhCj == aulaParaVisualizar.AulaCJ &&
                                                              disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId &&
-                                                             avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf
+                                                             (avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf || 
+                                                             avaliacao.TurmaId == aulaParaVisualizar.TurmaId)
                                                        select avaliacao);
 
                     if (atividadesAvaliativasDaAula.Any())
