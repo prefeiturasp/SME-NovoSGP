@@ -319,6 +319,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioAcompanhamentoAlunoSemestre, RepositorioAcompanhamentoAlunoSemestre>();
             services.TryAddScoped<IRepositorioAcompanhamentoAlunoFoto, RepositorioAcompanhamentoAlunoFoto>();
 
+            // Mural de Avisos
+            services.TryAddScoped<IRepositorioAviso, RepositorioAviso>();
+
             // Encaminhamento AEE
             services.TryAddScoped<IRepositorioSecaoEncaminhamentoAEE, RepositorioSecaoEncaminhamentoAEE>();
             services.TryAddScoped<IRepositorioEncaminhamentoAEE, RepositorioEncaminhamentoAEE>();
@@ -551,6 +554,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IUploadDeArquivoUseCase, UploadDeArquivoUseCase>();
             services.TryAddScoped<IDownloadDeArquivoUseCase, DownloadDeArquivoUseCase>();
             services.TryAddScoped<IExcluirArquivoUseCase, ExcluirArquivoUseCase>();
+
+            // Avisos do Mural Gsa
+            services.TryAddScoped<IImportarAvisoDoMuralGsaUseCase, ImportarAvisoDoMuralGsaUseCase>();
+            services.TryAddScoped<IObterMuralAvisosUseCase, ObterMuralAvisosUseCase>();
 
             //Carta Intenções Observacao
             services.TryAddScoped<IListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase, ListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase>();
@@ -1038,6 +1045,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidacaoAcompanhamentoAprendizagemAlunosSyncUseCase, ConsolidacaoAcompanhamentoAprendizagemAlunosSyncUseCase>();
             services.TryAddScoped<IConsolidacaoAcompanhamentoAprendizagemAlunosPorUEUseCase, ConsolidacaoAcompanhamentoAprendizagemAlunosPorUEUseCase>();
             services.TryAddScoped<IConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase, ConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase>();
+
+            // Rotas Agendamento Sync
+            services.TryAddScoped<IRotasAgendamentoSyncUseCase, RotasAgendamentoSyncUseCase>();
+            services.TryAddScoped<IRotasAgendamentoTratarUseCase, RotasAgendamentoTratarUseCase>();
         }
     }
 }

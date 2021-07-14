@@ -56,7 +56,13 @@ namespace SME.SGP.Worker.RabbitMQ
 
         private void DeclararFilasSgp()
         {
-            foreach (var fila in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>())
+            DeclararFilasPorRota(typeof(RotasRabbitSgp));
+            DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento));
+        }
+
+        private void DeclararFilasPorRota(Type tipoRotas)
+        {
+            foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
             {
                 var args = new Dictionary<string, object>()
                     {
@@ -202,6 +208,11 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAluno, new ComandoRabbit("Consolidar Acompanhamento Aprendizagem", typeof(IConsolidacaoAcompanhamentoAprendizagemAlunosSyncUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAlunoPorUE, new ComandoRabbit("Consolidar Acompanhamento Aprendizagem por UE", typeof(IConsolidacaoAcompanhamentoAprendizagemAlunosPorUEUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAlunoTratar, new ComandoRabbit("Tratar Acompanhamento Aprendizagem", typeof(IConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase)));
+
+            // Mural de Avisos Gsa
+            comandos.Add(RotasRabbitSgp.RotaMuralAvisosSync, new ComandoRabbit("Tratar Acompanhamento Aprendizagem", typeof(IImportarAvisoDoMuralGsaUseCase)));
+
+            comandos.Add(RotasRabbitSgp.RotaAgendamentoTratar, new ComandoRabbit("Tratar mensagens de processamento periodico", typeof(IRotasAgendamentoTratarUseCase)));
         }
 
 

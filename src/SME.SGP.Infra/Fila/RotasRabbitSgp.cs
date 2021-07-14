@@ -131,5 +131,9 @@
         public const string ConsolidarAcompanhamentoAprendizagemAluno = "sgp.sincronizacao.acompanhamento.aprendizado.aluno";
         public const string ConsolidarAcompanhamentoAprendizagemAlunoPorUE = "sgp.sincronizacao.acompanhamento.aprendizado.aluno.ue";
         public const string ConsolidarAcompanhamentoAprendizagemAlunoTratar = "sgp.sincronizacao.acompanhamento.aprendizado.aluno.tratar";
+
+        public const string RotaMuralAvisosSync = "sgp.mural.avisos.sync";
+
+        public const string RotaAgendamentoTratar = "sgp.agendamento.tratar";
     }
 }
