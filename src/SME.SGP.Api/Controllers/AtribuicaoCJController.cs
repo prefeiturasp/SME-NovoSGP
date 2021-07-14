@@ -19,9 +19,18 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AtribuicaoCJListaRetornoDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Get([FromQuery]AtribuicaoCJListaFiltroDto atribuicaoCJListaFiltroDto, [FromServices]IConsultasAtribuicaoCJ consultasAtribuicaoCJ)
+        public async Task<IActionResult> Get([FromQuery]AtribuicaoCJListaFiltroDto atribuicaoCJListaFiltroDto, [FromServices] IListarAtribuicoesCJPorFiltroUseCase useCase)
         {
-            return Ok(await consultasAtribuicaoCJ.Listar(atribuicaoCJListaFiltroDto));
+            return Ok(await useCase.Executar(atribuicaoCJListaFiltroDto));
+        }
+
+        [HttpGet("anos-letivos")]
+        [ProducesResponseType(typeof(int[]), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterAnosLetivosAtribuicao([FromServices] IObterAnosLetivosAtribuicaoCJUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
         }
 
         [HttpGet("ues/{ueId}/modalidades/{modalidadeId}/turmas/{turmaId}/professores/{professorRf}/")]
