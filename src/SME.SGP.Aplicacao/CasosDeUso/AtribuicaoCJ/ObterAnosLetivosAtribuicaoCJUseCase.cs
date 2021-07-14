@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             if (listaRetorno == null || !listaRetorno.Any())
                 return null;
 
-            var anosLetivos = listaRetorno.Select(a => a.Turma.AnoLetivo).OrderByDescending(a => a);
+            var anosLetivos = listaRetorno.Select(a => a.Turma.AnoLetivo).Distinct().OrderByDescending(a => a);
 
             return anosLetivos.ToArray();
         }
