@@ -63,8 +63,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             foreach (var item in abrangencias)
             {
-                const string comando = @"insert into public.abrangencia (usuario_id, dre_id, ue_id, turma_id, perfil)
-                                        values ((select id from usuario where login = @login), @dreId, @ueId, @turmaId, @perfil)
+                const string comando = @"insert into public.abrangencia (usuario_id, dre_id, ue_id, turma_id, perfil, historico)
+                                        values ((select id from usuario where login = @login), @dreId, @ueId, @turmaId, @perfil, @historico)
                                         RETURNING id";
 
                 database.Conexao.Execute(comando,
@@ -74,7 +74,8 @@ namespace SME.SGP.Dados.Repositorios
                         dreId = item.DreId,
                         ueId = item.UeId,
                         turmaId = item.TurmaId,
-                        perfil = item.Perfil
+                        perfil = item.Perfil,
+                        historico = item.Historico
                     });
             }
         }
