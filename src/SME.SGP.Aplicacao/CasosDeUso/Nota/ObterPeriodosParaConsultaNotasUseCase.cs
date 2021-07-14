@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<PeriodosParaConsultaNotasDto>> Executar(ObterPeriodosParaConsultaNotasFiltroDto filtro)
         {
-            var periodos = await mediator.Send(new ObterPeriodoCalendarioBimestrePorAnoLetivoModalidadeQuery(filtro.AnoLetivo, ObterModalidadeCalendario(filtro.Modalidade)));
+            var periodos = await mediator.Send(new ObterPeriodoCalendarioBimestrePorAnoLetivoModalidadeQuery(filtro.AnoLetivo, ObterModalidadeCalendario(filtro.Modalidade), filtro.Semestre));
             if (periodos == null || !periodos.Any())
                 throw new NegocioException("Não foram encontrados períodos escolares para esta turma.");
 
