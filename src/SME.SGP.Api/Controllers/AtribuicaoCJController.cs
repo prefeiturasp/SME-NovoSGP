@@ -46,9 +46,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Post([FromBody]AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, [FromServices] IComandosAtribuicaoCJ comandosAtribuicaoCJ)
+        public async Task<IActionResult> Post([FromBody]AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, [FromServices] ISalvarAtribuicaoCJUseCase useCase)
         {
-            await comandosAtribuicaoCJ.Salvar(atribuicaoCJPersistenciaDto);
+            await useCase.Executar(atribuicaoCJPersistenciaDto);
             return Ok();
         }
     }

@@ -34,7 +34,9 @@ namespace SME.SGP.Aplicacao
             {
                 var atribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
 
-                await servicoAtribuicaoCJ.Salvar(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais);
+                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+                await mediator.Send(new InserirAtribuicaoCJCommand(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais, usuario));
 
                 Guid perfilCJ = atribuicao.Modalidade == Modalidade.InfantilPreEscola ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
@@ -51,7 +53,8 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new AtribuirPerfilCommand(atribuicaoCJPersistenciaDto.UsuarioRf, perfil));
 
-            servicoUsuario.RemoverPerfisUsuarioAtual();
+            var codigoRf = await mediator.Send(new ObterUsuarioLogadoRFQuery());
+            await mediator.Send(new RemoverPerfisUsuarioAtualCommand(codigoRf));
 
             return true;
         }
@@ -59,7 +62,7 @@ namespace SME.SGP.Aplicacao
         private async Task RemoverDisciplinasCache(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
         {
             var chaveCache = $"Disciplinas-{atribuicaoCJPersistenciaDto.TurmaId}-{atribuicaoCJPersistenciaDto.UsuarioRf}--{Perfis.PERFIL_CJ}";
-            await repositorioCache.RemoverAsync(chaveCache);
+            await mediator.Send(new RemoverChaveCacheCommand(chaveCache));
         }
 
         private AtribuicaoCJ TransformaDtoEmEntidade(AtribuicaoCJPersistenciaDto dto, AtribuicaoCJPersistenciaItemDto itemDto)
