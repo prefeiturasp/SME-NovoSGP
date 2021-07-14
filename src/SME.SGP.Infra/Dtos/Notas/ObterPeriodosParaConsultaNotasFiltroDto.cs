@@ -6,5 +6,6 @@ namespace SME.SGP.Infra
     {
         public Modalidade Modalidade { get; set; }
         public int AnoLetivo { get; set; }
+        public int Semestre { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> Handle(ObterPeriodoCalendarioBimestrePorAnoLetivoModalidadeQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTipoCalendario.ObterPeriodoTipoCalendarioBimestreAsync(request.AnoLetivo, (int)request.Modalidade);
+            return await repositorioTipoCalendario.ObterPeriodoTipoCalendarioBimestreAsync(request.AnoLetivo, (int)request.Modalidade, request.Semestre);
         }
     }
 }
