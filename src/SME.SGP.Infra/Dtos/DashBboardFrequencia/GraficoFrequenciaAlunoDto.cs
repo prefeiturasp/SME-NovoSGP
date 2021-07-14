@@ -9,12 +9,9 @@ namespace SME.SGP.Infra
             DadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>();
         }
 
-        public long QuantidadeFrequenciaRegistrada { get; set; }
-        public double PorcentagemAulas { get; set; }
-        public string TotalFrequenciaFormatado 
-        {
-            get => $"{QuantidadeFrequenciaRegistrada} frequência registrada ({PorcentagemAulas}% das aulas)";
-        }
+        public string TagTotalFrequencia { get; set; }
+
+        public string TotalFrequenciaFormatado { get; set; }        
 
         public IEnumerable<DadosRetornoFrequenciaAlunoDashboardDto> DadosFrequenciaDashboard { get; set; }
     }
