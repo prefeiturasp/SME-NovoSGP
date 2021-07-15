@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -104,7 +105,7 @@ namespace SME.SGP.Dados
 
             if (semestre > 0)
                 query.AppendLine("and t.semestre = @semestre ");
-            
+
             if (ueId == -99)
                 query.AppendLine("group by t.nome, t.modalidade_codigo");
             else
@@ -115,7 +116,7 @@ namespace SME.SGP.Dados
                 dreId,
                 ueId,
                 anoLetivo,
-                modalidade,                
+                modalidade,
                 semestre,
                 bimestre
             };
@@ -193,7 +194,7 @@ namespace SME.SGP.Dados
 
             if (bimestre != 0)
                 query.AppendLine(" and pe.bimestre = @bimestre ");
-            
+
             query.AppendLine(" group by t.ano_letivo) as query");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<TotalCompensacaoAusenciaDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre, bimestre });

@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
                 .NotEmpty()
                 .WithMessage("O ano letivo é obrigatório.")
                 .Must(x => x.ToString().Length == 4)
-                .WithMessage("O ano letivo informado é inválido.")  
+                .WithMessage("O ano letivo informado é inválido.");
         }
     }
 }
