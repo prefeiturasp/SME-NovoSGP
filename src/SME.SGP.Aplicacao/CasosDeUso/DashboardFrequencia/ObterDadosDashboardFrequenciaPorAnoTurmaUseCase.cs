@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<GraficoFrequenciaAlunoDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, int anoTurma, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard)
+        public async Task<GraficoFrequenciaAlunoDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, int anoTurma, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
         {
             var dadosFrequenciaAlunos = await mediator.Send(new ObterDadosDashboardFrequenciaPorAnoTurmaQuery(anoLetivo,
                                                                                                               dreId,
@@ -26,7 +26,8 @@ namespace SME.SGP.Aplicacao
                                                                                                               dataInicio,
                                                                                                               datafim,
                                                                                                               mes,
-                                                                                                              tipoPeriodoDashboard));
+                                                                                                              tipoPeriodoDashboard,
+                                                                                                              visaoDre));
 
             if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any())
                 throw new NegocioException("Não foi possível obter as frequências para o filtro selecionado.");
@@ -58,12 +59,12 @@ namespace SME.SGP.Aplicacao
             else if (dreId != -99)
                 dreCodigo = await mediator.Send(new ObterCodigoDREPorUeIdQuery(dreId));
 
-            var totalEstudantesAgrupado = await ObterQuantidadeAlunosMatriculadosEol(anoLetivo, ueId, modalidade, anoTurma, dreCodigo, ueCodigo);
+            var totalEstudantesAgrupado = await ObterQuantidadeAlunosMatriculadosEol(anoLetivo, ueId, modalidade, anoTurma, dreCodigo, ueCodigo, visaoDre);
 
             return MapearParaDto(dadosFrequenciaAlunos.GroupBy(c => c.DescricaoAnoTurma), dadosTotais.TotalFrequenciaFormatado, totalEstudantesAgrupado);
         }
 
-        private async Task<IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>>> ObterQuantidadeAlunosMatriculadosEol(int anoLetivo, long ueId, int modalidade, int anoTurma, string dreCodigo, string ueCodigo)
+        private async Task<IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>>> ObterQuantidadeAlunosMatriculadosEol(int anoLetivo, long ueId, int modalidade, int anoTurma, string dreCodigo, string ueCodigo, bool visaoDre)
         {
             var totalAlunos = await mediator.Send(new ObterQuantidadeAlunosEolMatriculadosQuery(anoLetivo, dreCodigo, ueCodigo, modalidade, anoTurma));
 
@@ -72,10 +73,12 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>> totalEstudantesAgrupado;
 
-            if (ueId != -99)
+            if(visaoDre)
+                totalEstudantesAgrupado = totalAlunos.GroupBy(c => c.DreCodigo);
+            else if (ueId != -99)
                 totalEstudantesAgrupado = totalAlunos.GroupBy(c => c.Turma);
             else
-                totalEstudantesAgrupado = totalAlunos.GroupBy(c => c.Ano);
+                totalEstudantesAgrupado = totalAlunos.GroupBy(c => c.Ano);            
 
             return totalEstudantesAgrupado;
         }
@@ -110,8 +113,8 @@ namespace SME.SGP.Aplicacao
                     Descricao = TipoFrequenciaDashboard.Ausentes.Name(),
                     TurmaAno = frequenciaAusentes != null ? frequenciaAusentes.DescricaoAnoTurmaFormatado : anoTurma,
                     Quantidade = frequenciaAusentes != null ? frequenciaAusentes.Quantidade : 0
-                });
-                
+                });                
+
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.TotalEstudantes.Name(),

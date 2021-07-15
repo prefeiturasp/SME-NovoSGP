@@ -27,6 +27,7 @@ namespace SME.SGP.Aplicacao
                                                                                     request.DataInicio,
                                                                                     request.DataFim,
                                                                                     request.Mes,
-                                                                                    request.TipoPeriodoDashboard);
+                                                                                    request.TipoPeriodoDashboard,
+                                                                                    request.VisaoDre);
     }
 }
