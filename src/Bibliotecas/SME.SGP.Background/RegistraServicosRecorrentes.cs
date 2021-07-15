@@ -13,7 +13,7 @@ namespace SME.SGP.Background
         {
             Cliente.ExecutarPeriodicamente<IServicoNotificacaoFrequencia>(c => c.ExecutaNotificacaoRegistroFrequencia(), Cron.Daily(2));
 
-            Cliente.ExecutarPeriodicamente<IServicoNotificacaoAulaPrevista>(c => c.ExecutaNotificacaoAulaPrevista(), Cron.Daily(2));
+            Cliente.ExecutarPeriodicamente<IExecutaNotificacaoAulasPrevistasUseCase>(c => c.Executar(), Cron.Daily(2));
 
             // Estamos removendo pois essa rotina está sendo refeita e será executada através do Rabbit.
             // de segunda a sexta as 10, 14 e 16 horas

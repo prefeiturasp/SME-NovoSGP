@@ -52,11 +52,5 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
-        [HttpPost("notificar")]
-        public IActionResult Notificar([FromServices] IServicoNotificacaoAulaPrevista servicoNotificacaoAulaPrevista)
-        {
-            servicoNotificacaoAulaPrevista.ExecutaNotificacaoAulaPrevista();
-            return Ok();
-        }
     }
 }

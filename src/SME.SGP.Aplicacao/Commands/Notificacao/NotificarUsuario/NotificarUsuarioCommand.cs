@@ -18,7 +18,8 @@ namespace SME.SGP.Aplicacao
                                        int ano = 0,
                                        long codigo = 0, 
                                        DateTime? criadoEm = null,
-                                       string nomeUsuario = "")
+                                       string nomeUsuario = "",
+                                       long usuarioId = 0)
         {
             Titulo = titulo;
             Mensagem = mensagem;
@@ -31,6 +32,7 @@ namespace SME.SGP.Aplicacao
             UsuarioRf = usuarioRf;
             Codigo = codigo;
             CriadoEm = criadoEm;
+            UsuarioId = usuarioId;
             NomeUsuario = NomeUsuario;
         }
 
@@ -45,6 +47,7 @@ namespace SME.SGP.Aplicacao
         public string UsuarioRf { get; set; }
         public long Codigo { get; set; }
         public DateTime? CriadoEm { get; set; }
+        public long UsuarioId { get; }
         public string NomeUsuario { get; set; }
     }
 

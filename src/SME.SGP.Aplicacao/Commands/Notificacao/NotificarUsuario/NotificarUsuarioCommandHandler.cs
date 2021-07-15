@@ -21,7 +21,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(NotificarUsuarioCommand request, CancellationToken cancellationToken)
         {
-            var usuarioId = await mediator.Send(new ObterOuAdicionarUsuarioIdCommand(request.UsuarioRf, request.NomeUsuario));
+            var usuarioId = request.UsuarioId > 0 ?
+                request.UsuarioId :
+                await mediator.Send(new ObterOuAdicionarUsuarioIdCommand(request.UsuarioRf, request.NomeUsuario));
 
             var notificacao = new Notificacao()
             {
