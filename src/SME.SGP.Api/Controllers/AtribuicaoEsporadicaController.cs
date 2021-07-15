@@ -55,5 +55,14 @@ namespace SME.SGP.Api.Controllers
 
             return Ok();
         }
+
+        [HttpGet("periodos/ues/{ueId}/anoletivo/{anoLetivo}")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<AtribuicaoEsporadicaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPeriodoAtribuicaoPorUe(long ueId, int anoLetivo, [FromServices] IObterPeriodoAtribuicaoPorUeUseCase useCase)
+        {
+            return Ok(await useCase.Executar(ueId, anoLetivo));
+        }
     }
 }
