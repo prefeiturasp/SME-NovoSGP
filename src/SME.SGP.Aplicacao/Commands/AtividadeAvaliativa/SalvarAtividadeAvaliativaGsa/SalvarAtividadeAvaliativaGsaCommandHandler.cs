@@ -34,15 +34,15 @@ namespace SME.SGP.Aplicacao
             var ano = request.DataCriacao.Year;
 
             var parametroTipoAtividade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.TipoAtividadeAvaliativaClassroom, ano));
-            if (parametroTipoAtividade != null)
-            {
-                int.TryParse(parametroTipoAtividade.Valor, out int codigoTipoAtividade);
-                var tipoAvaliacaoId = await mediator.Send(new ObterTipoAvaliacaoPorCodigoQuery(codigoTipoAtividade));
-                var turma = await mediator.Send(new ObterCodigosDreUePorTurmaQuery(request.TurmaCodigo));
+            if (parametroTipoAtividade is null)
+                throw new Exception($"Parametro de tipo de atividade avaliativa do classroom não localizado para o ano {ano}");
 
-                var atividadeAvaliativa = MapearEntidade(request, tipoAvaliacaoId, turma);
-                await SalvarAtividade(atividadeAvaliativa, request.ComponenteCurricularId);
-            }
+            int.TryParse(parametroTipoAtividade.Valor, out int codigoTipoAtividade);
+            var tipoAvaliacaoId = await mediator.Send(new ObterTipoAvaliacaoPorCodigoQuery(codigoTipoAtividade));
+            var turma = await mediator.Send(new ObterCodigosDreUePorTurmaQuery(request.TurmaCodigo));
+
+            var atividadeAvaliativa = MapearEntidade(request, tipoAvaliacaoId, turma);
+            await SalvarAtividade(atividadeAvaliativa, request.ComponenteCurricularId);
         }
 
         private async Task SalvarAtividade(AtividadeAvaliativa atividadeAvaliativa, long componenteCurricularId)
