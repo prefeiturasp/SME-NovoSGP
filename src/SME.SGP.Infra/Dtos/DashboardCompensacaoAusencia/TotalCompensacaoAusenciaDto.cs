@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class TotalAusenciasCompensadasDto
+    public class TotalCompensacaoAusenciaDto
     {
         public string DescricaoAnoTurma { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
