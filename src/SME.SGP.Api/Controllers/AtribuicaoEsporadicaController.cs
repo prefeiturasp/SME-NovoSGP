@@ -56,7 +56,7 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpGet("periodos/ues/{ueId}/anoletivo/{anoLetivo}")]
+        [HttpGet("periodos/ues/{ueId}/anos/{anoLetivo}")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<AtribuicaoEsporadicaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AE_C, Policy = "Bearer")]
