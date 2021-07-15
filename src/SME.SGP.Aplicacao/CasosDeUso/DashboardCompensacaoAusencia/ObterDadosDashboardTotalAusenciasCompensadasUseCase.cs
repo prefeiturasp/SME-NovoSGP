@@ -21,9 +21,11 @@ namespace SME.SGP.Aplicacao
                                                                                                           bimestre,
                                                                                                           semestre));
 
-            // obter total compessação ausência
 
-            return MapearParaDto(dadosAusenciaAlunos, "");
+            var totalCompensacoes = await mediator.Send(new ObterTotalCompensacaoAusenciaPorAnoLetivoQuery(anoLetivo, dreId, ueId, modalidade, semestre, bimestre));
+            
+
+            return MapearParaDto(dadosAusenciaAlunos, totalCompensacoes.TotalCompensacoesFormatado);
         }
 
         private GraficoCompensacaoAusenciaDto MapearParaDto(IEnumerable<TotalAusenciasCompensadasDto> dadosAusenciaAlunos, string tagTotalAusencia)
