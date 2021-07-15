@@ -13,6 +13,7 @@ namespace SME.SGP.Dominio
         public bool Migrado { get; set; }
         public string ProfessorRf { get; set; }
         public string UeId { get; set; }
+        public int AnoLetivo { get; set; }
 
         public void Excluir()
         {
