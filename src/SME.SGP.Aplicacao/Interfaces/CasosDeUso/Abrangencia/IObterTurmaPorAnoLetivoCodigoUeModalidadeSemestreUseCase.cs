@@ -9,6 +9,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase
     {
-        Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre);
+        Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, bool desconsideraNovosAnosInfantil = true);
     }
 }

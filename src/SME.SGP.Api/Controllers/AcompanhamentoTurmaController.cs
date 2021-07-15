@@ -26,5 +26,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(dto));
         }
+
+        [HttpGet("quantidade-imagens")]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        public async Task<IActionResult> ObterParametroQuantidadeImagens([FromQuery] int ano, [FromServices] IObterParametroQuantidadeImagensPercursoColetivoTurmaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(ano));
+        }
     }
 }

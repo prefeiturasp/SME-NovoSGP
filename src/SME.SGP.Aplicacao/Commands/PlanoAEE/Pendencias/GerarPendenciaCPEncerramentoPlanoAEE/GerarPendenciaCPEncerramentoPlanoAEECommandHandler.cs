@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
 
                 var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
                 var hostAplicacao = configuration["UrlFrontEnd"];
-                var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.InfantilPreEscola ? "da criança" : "do estudante";
+                var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? "da criança" : "do estudante";
 
                 var titulo = $"Plano AEE a encerrar - {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) - {ueDre}";
                 var descricao = $"Foi solicitado o encerramento do Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre}. <br/><a href='{hostAplicacao}aee/plano/editar/{planoAEE.Id}'>Clique aqui</a> para acessar o plano e registrar a devolutiva. " +
