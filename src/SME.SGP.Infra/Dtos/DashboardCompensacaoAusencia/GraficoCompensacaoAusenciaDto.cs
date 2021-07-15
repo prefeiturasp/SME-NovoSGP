@@ -8,14 +8,7 @@ namespace SME.SGP.Infra
         {
             DadosCompensacaoAusenciaDashboard = new List<DadosRetornoAusenciasCompensadasDashboardDto>();
         }
-
-        public long QuantidadeAusenciasRegistrada { get; set; }
-        public double PorcentagemAulas { get; set; }
-        public string TotalAusenciasFormatado
-        {
-            get => $"{QuantidadeAusenciasRegistrada} ausências compensadas ({PorcentagemAulas}% das aulas)";
-        }
-
+        public string TagTotalCompensacaoAusencia { get; set; }
         public IEnumerable<DadosRetornoAusenciasCompensadasDashboardDto> DadosCompensacaoAusenciaDashboard { get; set; }
     }
 }
