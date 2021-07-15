@@ -24,5 +24,12 @@ namespace SME.SGP.Dominio
                 DreId = dre.Id;
             }
         }
+
+        public bool EhUnidadeInfantil()
+        {
+            return TipoEscola == TipoEscola.EMEI || TipoEscola == TipoEscola.CEUEMEI
+                || TipoEscola == TipoEscola.CEMEI || TipoEscola == TipoEscola.CECI
+                || TipoEscola == TipoEscola.CEUCEMEI;
+        }
     }
 }
