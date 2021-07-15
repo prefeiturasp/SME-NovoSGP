@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDadosDashboardTotalAusenciasCompensadasQueryHandler : IRequestHandler<ObterDadosDashboardTotalAusenciasCompensadasQuery, IEnumerable<TotalCompensacaoAusenciaDto>>
+    public class ObterDadosDashboardTotalAtividadesCompensacaoQueryHandler : IRequestHandler<ObterDadosDashboardTotalAtividadesCompensacaoQuery, IEnumerable<TotalCompensacaoAusenciaDto>>
     {
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
 
-        public ObterDadosDashboardTotalAusenciasCompensadasQueryHandler(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia)
+        public ObterDadosDashboardTotalAtividadesCompensacaoQueryHandler(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia)
         {
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
         }
 
-        public async Task<IEnumerable<TotalCompensacaoAusenciaDto>> Handle(ObterDadosDashboardTotalAusenciasCompensadasQuery request, CancellationToken cancellationToken)
-            => await repositorioCompensacaoAusencia.ObterCompesacoesAusenciasConsolidadasPorTurmaEAno(request.AnoLetivo,
+        public async Task<IEnumerable<TotalCompensacaoAusenciaDto>> Handle(ObterDadosDashboardTotalAtividadesCompensacaoQuery request, CancellationToken cancellationToken)
+            => await repositorioCompensacaoAusencia.ObterAtividadesCompensacaoConsolidadasPorTurmaEAno(request.Anoletivo,
                                                                                                       request.DreId,
                                                                                                       request.UeId,
                                                                                                       request.ModalidadeCodigo,

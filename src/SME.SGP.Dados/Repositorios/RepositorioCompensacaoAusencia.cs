@@ -74,7 +74,7 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryFirstOrDefaultAsync<CompensacaoAusencia>(query, new { anoLetivo, turmaId, nome, idIgnorar });
         }
 
-        public async Task<IEnumerable<TotalAusenciasCompensadasDto>> ObterCompesacoesAusenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int bimestre, int semestre)
+        public async Task<IEnumerable<Infra.TotalCompensacaoAusenciaDto>> ObterCompesacoesAusenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int bimestre, int semestre)
         {
             var query = new StringBuilder(@"select ");
 
@@ -121,10 +121,10 @@ namespace SME.SGP.Dados
                 bimestre
             };
 
-            return await database.Conexao.QueryAsync<TotalAusenciasCompensadasDto>(query.ToString(), paramentros);
+            return await database.Conexao.QueryAsync<Infra.TotalCompensacaoAusenciaDto>(query.ToString(), paramentros);
         }
 
-        public async Task<TotalCompensacaoAusenciaDto> ObterTotalPorAno(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, int bimestre)
+        public async Task<Infra.Dtos.TotalCompensacaoAusenciaDto> ObterTotalPorAno(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, int bimestre)
         {
             var query = new StringBuilder(@"select max(totalaulas) as totalaulas, max(totalcompensacoes) as totalcompensacoes from ");
             query.AppendLine(@"(select
@@ -181,7 +181,7 @@ namespace SME.SGP.Dados
                                         and t.ano_letivo = tc.ano_letivo
                                     inner join periodo_escolar pe on 
                                         tc.id = pe.tipo_calendario_id 
-                                    where t.ano_letivo = @anoLetivo and not a.excluido ");
+                                    where t.ano_letivo = @anoLetivo and not a.excluido and cc.permite_registro_frequencia ");
 
             if (dreId != -99)
                 query.AppendLine(" and dre.id = @dreId ");
@@ -199,7 +199,56 @@ namespace SME.SGP.Dados
 
             query.AppendLine(" group by t.ano_letivo) as query");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<TotalCompensacaoAusenciaDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre, bimestre, modalidadeTipoCalendario });
+            return await database.Conexao.QueryFirstOrDefaultAsync<Infra.Dtos.TotalCompensacaoAusenciaDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre, bimestre, modalidadeTipoCalendario });
+        }
+
+        public async Task<IEnumerable<Infra.TotalCompensacaoAusenciaDto>> ObterAtividadesCompensacaoConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int bimestre, int semestre)
+        {
+            var query = new StringBuilder(@"select ");
+
+            if (ueId == -99)
+                query.AppendLine("t.nome as DescricaoAnoTurma, ");
+            else
+                query.AppendLine("t.ano as DescricaoAnoTurma, ");
+
+            query.AppendLine(@"t.modalidade_codigo as ModalidadeCodigo,
+           		               count(ca.id) as Quantidade FROM
+                            compensacao_ausencia ca
+	                     inner join turma t on t.id = ca.turma_id 
+     		             inner join ue on ue.id = t.ue_id 
+     		             inner join dre on dre.id = ue.dre_id 
+     		             where t.ano_letivo = @anoLetivo
+     		               and not ca.excluido
+       		               and t.modalidade_codigo = @modalidade ");
+
+            if (dreId != -99)
+                query.AppendLine("and dre.id = @dreId ");
+
+            if (ueId != -99)
+                query.AppendLine("and ue.id = @ueId ");
+
+            if (bimestre != -99 && bimestre > 0)
+                query.AppendLine("and ca.bimestre = @bimestre ");
+
+            if (semestre > 0)
+                query.AppendLine("and t.semestre = @semestre ");
+
+            if (ueId == -99)
+                query.AppendLine("group by t.nome, t.modalidade_codigo");
+            else
+                query.AppendLine("group by t.ano, t.modalidade_codigo");
+
+            var paramentros = new
+            {
+                dreId,
+                ueId,
+                anoLetivo,
+                modalidade,
+                semestre,
+                bimestre
+            };
+
+            return await database.Conexao.QueryAsync<Infra.TotalCompensacaoAusenciaDto>(query.ToString(), paramentros);
         }
     }
 }

@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDadosDashboardTotalAusenciasCompensadasQuery : IRequest<IEnumerable<TotalCompensacaoAusenciaDto>>
+    public class ObterDadosDashboardTotalAtividadesCompensacaoQuery : IRequest<IEnumerable<TotalCompensacaoAusenciaDto>>
     {
-        public ObterDadosDashboardTotalAusenciasCompensadasQuery(int anoLetivo, long dreId, long ueId, int modalidadeCodigo, int bimestre, int semestre)
+        public ObterDadosDashboardTotalAtividadesCompensacaoQuery(int anoletivo, long dreId, long ueId, int modalidadeCodigo, int bimestre, int semestre)
         {
-            AnoLetivo = anoLetivo;
+            Anoletivo = anoletivo;
             DreId = dreId;
             UeId = ueId;
             ModalidadeCodigo = modalidadeCodigo;
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             Semestre = semestre;
         }
 
-        public int AnoLetivo { get; set; }
+        public int Anoletivo { get; set; }
         public long DreId { get; set; }
         public long UeId { get; set; }
         public int ModalidadeCodigo { get; set; }

@@ -6,26 +6,22 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDadosDashboardTotalAusenciasCompensadasUseCase : AbstractUseCase, IObterDadosDashboardTotalAusenciasCompensadasUseCase
+    public class ObterDadosDashboardTotalAtividadesCompensacaoUseCase : AbstractUseCase, IObterDadosDashboardTotalAtividadesCompensacaoUseCase
     {
-        public ObterDadosDashboardTotalAusenciasCompensadasUseCase(IMediator mediator) : base(mediator)
+        public ObterDadosDashboardTotalAtividadesCompensacaoUseCase(IMediator mediator) : base(mediator)
         {
         }
 
         public async Task<GraficoCompensacaoAusenciaDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, int bimestre, int semestre)
         {
-            var dadosAusenciaAlunos = await mediator.Send(new ObterDadosDashboardTotalAusenciasCompensadasQuery(anoLetivo,
+            var dadosAtividadesCompensadas = await mediator.Send(new ObterDadosDashboardTotalAtividadesCompensacaoQuery(anoLetivo,
                                                                                                           dreId,
                                                                                                           ueId,
                                                                                                           modalidade,
                                                                                                           bimestre,
                                                                                                           semestre));
 
-
-            var totalCompensacoes = await mediator.Send(new ObterTotalCompensacaoAusenciaPorAnoLetivoQuery(anoLetivo, dreId, ueId, modalidade, semestre, bimestre));
-            
-
-            return MapearParaDto(dadosAusenciaAlunos, totalCompensacoes.TotalCompensacoesFormatado);
+            return MapearParaDto(dadosAtividadesCompensadas, "");
         }
 
         private GraficoCompensacaoAusenciaDto MapearParaDto(IEnumerable<TotalCompensacaoAusenciaDto> dadosAusenciaAlunos, string tagTotalAusencia)
