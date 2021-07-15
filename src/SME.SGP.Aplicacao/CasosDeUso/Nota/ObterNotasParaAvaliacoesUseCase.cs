@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             if (turmaCompleta == null)
                 throw new NegocioException("Não foi possível obter a turma.");
 
-            var disciplinasDoProfessorLogado = await consultasDisciplina
+              var disciplinasDoProfessorLogado = await consultasDisciplina
                 .ObterComponentesCurricularesPorProfessorETurma(filtro.TurmaCodigo, true);
 
             if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
@@ -274,7 +274,7 @@ namespace SME.SGP.Aplicacao
                 var frequenciaAluno = frequenciasDosAlunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
                 notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ?
                                 ((int)Math.Round(frequenciaAluno.PercentualFrequencia, 0)).ToString() :
-                                "100";
+                                "";
 
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }
