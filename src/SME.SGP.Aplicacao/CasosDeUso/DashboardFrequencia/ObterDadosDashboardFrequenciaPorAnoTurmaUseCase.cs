@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
             var totalAlunos = await mediator.Send(new ObterQuantidadeAlunosEolMatriculadosQuery(anoLetivo, dreCodigo, ueCodigo, modalidade, anoTurma));
 
             if (totalAlunos == null || !totalAlunos.Any())
-                throw new NegocioException("Não foi possível obter a quantidae de alunos do eol");
+                return null;
 
             IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>> totalEstudantesAgrupado;
 
@@ -131,7 +131,7 @@ namespace SME.SGP.Aplicacao
                     TurmaAno = !string.IsNullOrEmpty(dreAbreviacao) ?
                     FormatarAbreviacaoDre(dreAbreviacao) :
                     anoTurma,
-                    Quantidade = totalEstudantesAgrupado.First(c => c.Key == frequenciasAlunos.Key).Select(x => x.Quantidade).Sum() 
+                    Quantidade = totalEstudantesAgrupado !=null ? totalEstudantesAgrupado.First(c => c.Key == frequenciasAlunos.Key).Select(x => x.Quantidade).Sum() : 0 
                 });
             }
 

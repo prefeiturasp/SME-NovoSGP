@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,8 +24,26 @@ namespace SME.SGP.Aplicacao
             var quantidadeAlunosMatriculados = new List<QuantidadeAlunoMatriculadoDTO>();
 
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"alunos/ano-letivo/{request.AnoLetivo}/matriculados/quantidade?dreCodigo={request.DreCodigo}&ueCodigo={request.UeCodigo}&modalidade={request.Modalidade}&ano={request.AnoTurma}");
+            
+            var parametros = "";
+            
+            if (!string.IsNullOrEmpty(request.DreCodigo) && !request.DreCodigo.Contains("-99"))
+                parametros += $"dreCodigo={request.DreCodigo}";
 
+            if (!string.IsNullOrEmpty(request.UeCodigo) && !request.DreCodigo.Contains("-99"))
+                parametros += $"&ueCodigo={request.UeCodigo}";
+
+            if (request.Modalidade > 0)
+                parametros += $"&modalidade={request.Modalidade}";
+
+            if (request.AnoTurma > 0)
+                parametros += $"&ano={request.AnoTurma}";
+
+            if (parametros.StartsWith("&"))
+                parametros = parametros.Substring(1);
+            var resposta = await httpClient.GetAsync($"alunos/ano-letivo/{request.AnoLetivo}/matriculados/quantidade" + (parametros.Length > 0 ? $"?{parametros}" : ""));
+
+           
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

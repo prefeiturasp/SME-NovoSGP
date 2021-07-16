@@ -174,7 +174,7 @@ namespace SME.SGP.Dados
 	                                    ue.id = t.ue_id
                                     inner join dre on
 	                                    dre.id = ue.dre_id                                   
-                                    inner join periodo_escolar pe on 
+                                    inner join tipo_calendario tc on
                                         a.tipo_calendario_id = pe.tipo_calendario_id 
                                     where t.ano_letivo = @anoLetivo and not a.excluido and cc.permite_registro_frequencia ");
 
