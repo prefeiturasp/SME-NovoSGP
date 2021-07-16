@@ -153,7 +153,7 @@ namespace SME.SGP.Dados
             if (semestre != 0)
                 query.AppendLine(" and t.semestre = @semestre ");
 
-            if (bimestre != 0)
+            if (bimestre > 0)
                 query.AppendLine(" and ca.bimestre = @bimestre ");            
 
             query.AppendLine(@"group by t.ano_letivo 
@@ -174,8 +174,8 @@ namespace SME.SGP.Dados
 	                                    ue.id = t.ue_id
                                     inner join dre on
 	                                    dre.id = ue.dre_id                                   
-                                    inner join tipo_calendario tc on
-                                        a.tipo_calendario_id = tc.tipo_calendario_id 
+                                    inner join periodo_escolar pe on
+                                        a.tipo_calendario_id = pe.tipo_calendario_id 
                                     where t.ano_letivo = @anoLetivo and not a.excluido and cc.permite_registro_frequencia ");
 
             if (dreId != -99)
@@ -189,12 +189,12 @@ namespace SME.SGP.Dados
             if (semestre != 0)
                 query.AppendLine(" and t.semestre = @semestre ");
 
-            if (bimestre != 0)
+            if (bimestre > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre ");
 
             query.AppendLine(" group by t.ano_letivo) as query");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<Infra.Dtos.TotalCompensacaoAusenciaDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre, bimestre });
+            return await database.Conexao.QueryFirstOrDefaultAsync<Infra.Dtos.TotalCompensacaoAusenciaDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre, bimestre });                        
         }
 
         public async Task<IEnumerable<Infra.TotalCompensacaoAusenciaDto>> ObterAtividadesCompensacaoConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int bimestre, int semestre)
