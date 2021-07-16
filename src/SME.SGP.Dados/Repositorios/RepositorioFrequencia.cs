@@ -339,7 +339,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select ");
 
             if(visaoDre)
-                query.AppendLine("dre.dre_id as DescricaoAnoTurma, ");
+                query.AppendLine("dre.dre_id as DescricaoAnoTurma, dre.abreviacao as DreAbreviacao, ");
             else if (ueId == -99)
                 query.AppendLine("t.ano as DescricaoAnoTurma, ");
             else  if(ueId != -99 && !visaoDre)
@@ -381,7 +381,7 @@ namespace SME.SGP.Dados.Repositorios
                                    and extract(year from a.data_aula) = @anoLetivo ");
 
             if(visaoDre)
-                query.AppendLine("group by dre.dre_id, rfa.valor, t.modalidade_codigo");
+                query.AppendLine("group by dre.dre_id, dre.abreviacao, rfa.valor, t.modalidade_codigo");
             else if (ueId == -99)
                 query.AppendLine("group by t.ano, rfa.valor, t.modalidade_codigo");
             else if (ueId != -99 && !visaoDre)

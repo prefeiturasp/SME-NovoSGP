@@ -90,12 +90,16 @@ namespace SME.SGP.Aplicacao
             foreach (var frequenciasAlunos in frequenciasAlunosAgrupadas)
             {
                 var anoTurma = frequenciasAlunos.First().DescricaoAnoTurmaFormatado;
-                
+                var dreAbreviacao = frequenciasAlunos.First().DreAbreviacao;
+
                 var frequenciaPresente = frequenciasAlunos.FirstOrDefault(f => f.TipoFrequenciaAluno == TipoFrequenciaDashboard.Presentes);
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Presentes.Name(),
-                    TurmaAno = frequenciaPresente != null ? frequenciaPresente.DescricaoAnoTurmaFormatado : anoTurma,
+                    TurmaAno = !string.IsNullOrEmpty(dreAbreviacao) ?
+                    FormatarAbreviacaoDre(dreAbreviacao) :
+                    frequenciaPresente != null ?
+                    frequenciaPresente.DescricaoAnoTurmaFormatado : anoTurma,
                     Quantidade = frequenciaPresente != null ? frequenciaPresente.Quantidade : 0
                 });
                 
@@ -103,7 +107,10 @@ namespace SME.SGP.Aplicacao
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Remotos.Name(),
-                    TurmaAno = frequenciaRemotos != null ? frequenciaRemotos.DescricaoAnoTurmaFormatado : anoTurma,
+                    TurmaAno = !string.IsNullOrEmpty(dreAbreviacao) ?
+                    FormatarAbreviacaoDre(dreAbreviacao) :
+                    frequenciaPresente != null ?
+                    frequenciaPresente.DescricaoAnoTurmaFormatado : anoTurma,
                     Quantidade = frequenciaRemotos != null ? frequenciaRemotos.Quantidade : 0
                 });
                 
@@ -111,14 +118,19 @@ namespace SME.SGP.Aplicacao
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Ausentes.Name(),
-                    TurmaAno = frequenciaAusentes != null ? frequenciaAusentes.DescricaoAnoTurmaFormatado : anoTurma,
+                    TurmaAno = !string.IsNullOrEmpty(dreAbreviacao) ?
+                    FormatarAbreviacaoDre(dreAbreviacao) :
+                    frequenciaPresente != null ?
+                    frequenciaPresente.DescricaoAnoTurmaFormatado : anoTurma,
                     Quantidade = frequenciaAusentes != null ? frequenciaAusentes.Quantidade : 0
                 });                
 
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.TotalEstudantes.Name(),
-                    TurmaAno = anoTurma,
+                    TurmaAno = !string.IsNullOrEmpty(dreAbreviacao) ?
+                    FormatarAbreviacaoDre(dreAbreviacao) :
+                    anoTurma,
                     Quantidade = totalEstudantesAgrupado.First(c => c.Key == frequenciasAlunos.Key).Select(x => x.Quantidade).Sum() 
                 });
             }
@@ -129,6 +141,9 @@ namespace SME.SGP.Aplicacao
                 TotalFrequenciaFormatado = tagTotalFrequencia,
                 DadosFrequenciaDashboard = dadosFrequenciaDashboard
             };
-        }        
+        }
+
+        private static string FormatarAbreviacaoDre(string abreviacaoDre)
+            => abreviacaoDre.Replace(DashboardConstants.PrefixoDreParaSerRemovido, string.Empty).Trim();
     }
 }
