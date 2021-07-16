@@ -132,6 +132,10 @@ namespace SME.SGP.Aplicacao
                 .OrderBy(a => a.NumeroAlunoChamada)
                 .ThenBy(a => a.NomeValido());
 
+
+          
+            
+
             foreach (var aluno in alunosValidosOrdenados)
             {
                 FechamentoFinalConsultaRetornoAlunoDto fechamentoFinalAluno = await TrataFrequenciaAluno(filtros, periodosEscolares, aluno, turma);
@@ -264,7 +268,6 @@ namespace SME.SGP.Aplicacao
             var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAlunoPorTurmaEComponente(aluno.CodigoAluno, turma.CodigoTurma, filtros.DisciplinaCodigo.ToString());
 
             var percentualFrequencia = frequenciaAluno?.PercentualFrequencia ?? 100;
-            var percentualFrequenciaRetorno = frequenciaAluno?.PercentualFrequencia ?? 0;
 
             if (frequenciaAluno != null && turma.AnoLetivo.Equals(2020))
                 percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
@@ -273,8 +276,7 @@ namespace SME.SGP.Aplicacao
             {
                 Nome = aluno.NomeAluno,
                 TotalAusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                FrequenciaValor = percentualFrequencia,
-                Frequencia = percentualFrequenciaRetorno == 0 ? "" : percentualFrequencia.ToString(),
+                Frequencia = percentualFrequencia.ToString(),
                 TotalFaltas = frequenciaAluno?.TotalAusencias ?? 0,
                 NumeroChamada = aluno.NumeroAlunoChamada,
                 EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
