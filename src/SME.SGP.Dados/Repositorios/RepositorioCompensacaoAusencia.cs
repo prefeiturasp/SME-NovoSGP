@@ -154,9 +154,7 @@ namespace SME.SGP.Dados
                 query.AppendLine(" and t.semestre = @semestre ");
 
             if (bimestre != 0)
-                query.AppendLine(" and ca.bimestre = @bimestre ");
-
-            var modalidadeTipoCalendario = (int)((Modalidade)modalidade).ObterModalidadeTipoCalendario();
+                query.AppendLine(" and ca.bimestre = @bimestre ");            
 
             query.AppendLine(@"group by t.ano_letivo 
                                     union
@@ -175,12 +173,9 @@ namespace SME.SGP.Dados
                                     inner join ue on
 	                                    ue.id = t.ue_id
                                     inner join dre on
-	                                    dre.id = ue.dre_id
-                                    inner join tipo_calendario tc on
-                                        tc.modalidade = @modalidadeTipoCalendario
-                                        and t.ano_letivo = tc.ano_letivo
+	                                    dre.id = ue.dre_id                                   
                                     inner join periodo_escolar pe on 
-                                        tc.id = pe.tipo_calendario_id 
+                                        a.tipo_calendario_id = pe.tipo_calendario_id 
                                     where t.ano_letivo = @anoLetivo and not a.excluido and cc.permite_registro_frequencia ");
 
             if (dreId != -99)
@@ -199,7 +194,7 @@ namespace SME.SGP.Dados
 
             query.AppendLine(" group by t.ano_letivo) as query");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<Infra.Dtos.TotalCompensacaoAusenciaDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre, bimestre, modalidadeTipoCalendario });
+            return await database.Conexao.QueryFirstOrDefaultAsync<Infra.Dtos.TotalCompensacaoAusenciaDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre, bimestre });
         }
 
         public async Task<IEnumerable<Infra.TotalCompensacaoAusenciaDto>> ObterAtividadesCompensacaoConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int bimestre, int semestre)
