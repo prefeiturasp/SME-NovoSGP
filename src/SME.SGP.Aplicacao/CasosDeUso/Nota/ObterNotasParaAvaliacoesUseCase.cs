@@ -272,8 +272,6 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                // Carrega Frequencia Aluno
-                // 
                 var frequenciaAluno = frequenciasDosAlunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
                 if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada)
                     notaConceitoAluno.PercentualFrequencia = "100";
