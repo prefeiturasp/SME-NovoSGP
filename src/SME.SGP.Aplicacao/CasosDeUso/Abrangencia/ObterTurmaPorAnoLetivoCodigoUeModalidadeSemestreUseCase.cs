@@ -17,9 +17,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Abrangencia
 
         }
 
-        public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre)
+        public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, bool consideraNovosAnosInfantil = false)
         {
-            return await mediator.Send(new ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreQuery(anoLetivo, codigoUe, modalidade, semestre));
+            var anosInfantilDesconsiderar = modalidade == Modalidade.EducacaoInfantil && !consideraNovosAnosInfantil ?
+                await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(anoLetivo, Modalidade.EducacaoInfantil)) : null;
+            return await mediator.Send(new ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreQuery(anoLetivo, codigoUe, modalidade, semestre, anosInfantilDesconsiderar));
         }
     }
 }

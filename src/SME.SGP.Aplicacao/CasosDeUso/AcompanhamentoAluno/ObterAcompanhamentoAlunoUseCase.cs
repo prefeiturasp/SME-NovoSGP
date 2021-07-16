@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -24,9 +25,28 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
 
             TratamentoSemestre(acompanhamentoAlunoTurmaSemestre, periodosEscolares, filtro.Semestre, turma.ModalidadeCodigo);
+            await TratamentoPercursoIndividual(acompanhamentoAlunoTurmaSemestre, filtro.TurmaId, filtro.AlunoId, filtro.ComponenteCurricularId);
             await ParametroQuantidadeFotosAluno(acompanhamentoAlunoTurmaSemestre, turma.AnoLetivo);
 
             return acompanhamentoAlunoTurmaSemestre;
+        }
+
+        private async Task TratamentoPercursoIndividual(AcompanhamentoAlunoTurmaSemestreDto acompanhamentoAlunoTurmaSemestre, long turmaId, string alunoCodigo, long componenteCurricularId)
+        {
+            if (string.IsNullOrEmpty(acompanhamentoAlunoTurmaSemestre.PercursoIndividual))
+                await CarregarSugestaoPercursoIndividual(acompanhamentoAlunoTurmaSemestre, turmaId, alunoCodigo, componenteCurricularId);
+        }
+
+        private async Task CarregarSugestaoPercursoIndividual(AcompanhamentoAlunoTurmaSemestreDto acompanhamentoAlunoTurmaSemestre, long turmaId, string alunoCodigo, long componenteCurricularId)
+        {
+            var percursoIndividual = new StringBuilder();
+            var registrosIndividuais = await mediator.Send(new ObterDescricoesRegistrosIndividuaisPorPeriodoQuery(turmaId, long.Parse(alunoCodigo), componenteCurricularId, acompanhamentoAlunoTurmaSemestre.PeriodoInicio, acompanhamentoAlunoTurmaSemestre.PeriodoFim));
+            foreach(var registroIndividual in registrosIndividuais.OrderBy(a => a.DataRegistro))
+            {
+                percursoIndividual.AppendLine(registroIndividual.Registro);
+            }
+
+            acompanhamentoAlunoTurmaSemestre.PercursoIndividual = percursoIndividual.ToString();
         }
 
         private async Task ParametroQuantidadeFotosAluno(AcompanhamentoAlunoTurmaSemestreDto acompanhamentoAlunoTurmaSemestre, int anoLetivo)
@@ -70,6 +90,7 @@ namespace SME.SGP.Aplicacao
                 AcompanhamentoAlunoId = acompanhamentoSemestre?.AcompanhamentoAlunoId ?? await ObterAcompanhamentoAluno(turmaId, alunoId),
                 AcompanhamentoAlunoSemestreId = acompanhamentoSemestre?.Id ?? 0,
                 Observacoes = acompanhamentoSemestre?.Observacoes,
+                PercursoIndividual = acompanhamentoSemestre?.PercursoIndividual,
                 Auditoria = (AuditoriaDto)acompanhamentoSemestre
             };
         }

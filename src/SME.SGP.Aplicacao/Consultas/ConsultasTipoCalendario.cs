@@ -155,7 +155,7 @@ namespace SME.SGP.Aplicacao
             foreach (var modalidade in modalidadesUsuario)
                 yield return modalidade == Modalidade.EJA ?
                             ModalidadeTipoCalendario.EJA :
-                            modalidade == Modalidade.InfantilPreEscola ?
+                            modalidade == Modalidade.EducacaoInfantil ?
                             ModalidadeTipoCalendario.Infantil :
                             ModalidadeTipoCalendario.FundamentalMedio;
         }
