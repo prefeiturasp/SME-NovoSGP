@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                                                                                                               visaoDre));
 
             if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any())
-                throw new NegocioException("Não foi possível obter as frequências para o filtro selecionado.");
+                return null;
 
 
             var dadosTotais = await mediator.Send(new ObterTotalFrequenciaEAulasPorPeriodoQuery(anoLetivo,
@@ -43,8 +43,11 @@ namespace SME.SGP.Aplicacao
                                                                                                 datafim,
                                                                                                 mes,
                                                                                                 tipoPeriodoDashboard));
-            if (dadosTotais == null)
-                throw new NegocioException("Não foi possível obter os dados de totalização das frequências por período");
+            var totalFrequencia = dadosTotais != null
+                ?
+                dadosTotais.TotalFrequenciaFormatado
+                :
+                "";
 
             var dreCodigo = "";
             var ueCodigo = "";
@@ -61,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
             var totalEstudantesAgrupado = await ObterQuantidadeAlunosMatriculadosEol(anoLetivo, ueId, modalidade, anoTurma, dreCodigo, ueCodigo, visaoDre);
 
-            return MapearParaDto(dadosFrequenciaAlunos.GroupBy(c => c.DescricaoAnoTurma), dadosTotais.TotalFrequenciaFormatado, totalEstudantesAgrupado);
+            return MapearParaDto(dadosFrequenciaAlunos.GroupBy(c => c.DescricaoAnoTurma), totalFrequencia, totalEstudantesAgrupado);
         }
 
         private async Task<IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>>> ObterQuantidadeAlunosMatriculadosEol(int anoLetivo, long ueId, int modalidade, int anoTurma, string dreCodigo, string ueCodigo, bool visaoDre)
