@@ -32,6 +32,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<TipoCalendario>> BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, DateTime dataReferencia);
 
         Task<IEnumerable<TipoCalendarioBuscaDto>> ObterTiposCalendarioPorDescricaoAsync(string descricao);
-        Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, int modalidadeTipoCalendarioId);
+        Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, int modalidadeTipoCalendarioId, int semestre = 0);
     }
 }
