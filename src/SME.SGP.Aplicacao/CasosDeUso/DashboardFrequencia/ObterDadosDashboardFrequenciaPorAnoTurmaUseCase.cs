@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
                     TurmaAno = !string.IsNullOrEmpty(dreAbreviacao) ?
                     FormatarAbreviacaoDre(dreAbreviacao) :
                     anoTurma,
-                    Quantidade = totalEstudantesAgrupado !=null ?(totalEstudantesAgrupado.First(c => c.Key == frequenciasAlunos.Key) !=null ? totalEstudantesAgrupado.First(c => c.Key == frequenciasAlunos.Key).Select(x => x.Quantidade).Sum(): 0) : 0 
+                    Quantidade = totalEstudantesAgrupado !=null ?(totalEstudantesAgrupado.FirstOrDefault(c => c.Key == frequenciasAlunos.Key) != null ? totalEstudantesAgrupado.First(c => c.Key == frequenciasAlunos.Key).Select(x => x.Quantidade).Sum(): 0) : 0 
                 });
             }
 
