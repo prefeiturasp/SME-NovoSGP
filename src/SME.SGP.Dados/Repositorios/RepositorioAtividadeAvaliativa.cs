@@ -529,5 +529,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinasId });
         }
+
+        public async Task<AtividadeAvaliativa> ObterPorAtividadeClassroomId(long atividadeClassroomId)
+        {
+            var query = @"select * from atividade_avaliativa where atividade_classroom_id = @atividadeClassroomId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AtividadeAvaliativa>(query, new { atividadeClassroomId });
+        }
     }
 }

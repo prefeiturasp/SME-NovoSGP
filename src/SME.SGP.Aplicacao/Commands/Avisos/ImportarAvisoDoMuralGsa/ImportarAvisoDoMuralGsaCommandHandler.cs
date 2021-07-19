@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Threading;
@@ -17,15 +18,16 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ImportarAvisoDoMuralGsaCommand request, CancellationToken cancellationToken)
         {
-            var aulaId = await mediator.Send(new ObterAulaPorCodigoTurmaComponenteEDataQuery(request.AvisoDto.TurmaId, request.AvisoDto.ComponenteCurricularId.ToString(), request.AvisoDto.DataCriacao));
+            ValidarDataAviso(request.AvisoDto.DataCriacao);
 
-            if (ReagendarImportacao(aulaId, request.AvisoDto.DataCriacao))
+            var aula = await mediator.Send(new ObterAulaPorCodigoTurmaComponenteEDataQuery(request.AvisoDto.TurmaId, request.AvisoDto.ComponenteCurricularId.ToString(), request.AvisoDto.DataCriacao));
+            if (ReagendarImportacao(aula))
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAgendamento.RotaMuralAvisosSync,
                                                                new MensagemAgendamentoSyncDto(RotasRabbitSgp.RotaMuralAvisosSync, request.AvisoDto),
                                                                Guid.NewGuid(),
                                                                null));
             else
-                await mediator.Send(new SalvarAvisoGsaNoMuralCommand(aulaId,
+                await mediator.Send(new SalvarAvisoGsaNoMuralCommand(aula.AulaId,
                                                                       request.AvisoDto.UsuarioRf,
                                                                       request.AvisoDto.Mensagem,
                                                                       request.AvisoDto.AvisoClassroomId,
@@ -34,8 +36,14 @@ namespace SME.SGP.Aplicacao
                                                                       request.AvisoDto.Email));
         }
 
-        private bool ReagendarImportacao(long aulaId, DateTime dataCriacao)
-            => aulaId == 0 
-            && dataCriacao.Year == DateTime.Now.Year;
+        private void ValidarDataAviso(DateTime dataCriacao)
+        {
+            if (dataCriacao.Year < DateTime.Now.Year)
+                throw new NegocioException($"Avisos do Mural Classroom de ano anterior não serão importados. Data Aviso: {dataCriacao:dd/MM/yyyy}");
+        }
+
+        private bool ReagendarImportacao(DataAulaDto aula)
+            => aula == null
+            || aula.AulaId == 0;
     }
 }

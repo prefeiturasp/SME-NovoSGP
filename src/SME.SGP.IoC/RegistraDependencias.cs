@@ -555,6 +555,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IDownloadDeArquivoUseCase, DownloadDeArquivoUseCase>();
             services.TryAddScoped<IExcluirArquivoUseCase, ExcluirArquivoUseCase>();
 
+            // Atividades
+            services.TryAddScoped<IImportarAtividadesGsaUseCase, ImportarAtividadesGsaUseCase>();
+
             // Avisos do Mural Gsa
             services.TryAddScoped<IImportarAvisoDoMuralGsaUseCase, ImportarAvisoDoMuralGsaUseCase>();
             services.TryAddScoped<IObterMuralAvisosUseCase, ObterMuralAvisosUseCase>();
@@ -1040,6 +1043,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterSituacoesConselhoClasseUseCase, ObterSituacoesConselhoClasseUseCase>();
 
             services.TryAddScoped<IRelatorioAcompanhamentoFechamentoUseCase, RelatorioAcompanhamentoFechamentoUseCase>();
+
             // Sincronização de Acompanhamento de Aprendizagem 
             services.TryAddScoped<IExecutarSincronizacaoAcompanhamentoAprendizagemAlunoSyncUseCase, ExecutarSincronizacaoAcompanhamentoAprendizagemAlunoSyncUseCase>();
             services.TryAddScoped<IConsolidacaoAcompanhamentoAprendizagemAlunosSyncUseCase, ConsolidacaoAcompanhamentoAprendizagemAlunosSyncUseCase>();

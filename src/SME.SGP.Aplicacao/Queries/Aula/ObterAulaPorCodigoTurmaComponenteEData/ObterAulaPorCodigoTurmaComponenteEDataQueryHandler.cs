@@ -1,12 +1,13 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulaPorCodigoTurmaComponenteEDataQueryHandler : IRequestHandler<ObterAulaPorCodigoTurmaComponenteEDataQuery, long>
+    public class ObterAulaPorCodigoTurmaComponenteEDataQueryHandler : IRequestHandler<ObterAulaPorCodigoTurmaComponenteEDataQuery, DataAulaDto>
     {
         private readonly IRepositorioAula repositorio;
 
@@ -15,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<long> Handle(ObterAulaPorCodigoTurmaComponenteEDataQuery request, CancellationToken cancellationToken)
+        public async Task<DataAulaDto> Handle(ObterAulaPorCodigoTurmaComponenteEDataQuery request, CancellationToken cancellationToken)
             => await repositorio.ObterAulaPorCodigoTurmaComponenteEData(request.TurmaId, request.ComponenteCurricularId, request.DataCriacao);
     }
 }
