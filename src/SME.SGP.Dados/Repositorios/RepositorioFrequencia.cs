@@ -412,7 +412,7 @@ namespace SME.SGP.Dados.Repositorios
                                                 aula a 
                                             inner join turma t on a.turma_id = t.turma_id       
                                                 left join registro_frequencia rf on a.id = rf.aula_id
-                                            inner join componente_curricular cc on cc.id = cast(a.disciplina_id as int)
+                                            inner join componente_curricular cc on cc.id = cast(a.disciplina_id as bigint)
                                             inner join ue on ue.id = t.ue_id 
      	                                    inner join dre on dre.id = ue.dre_id
                                             where 
@@ -437,7 +437,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.data_aula = @dataInicio ");
 
             if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine("and a.data_aula between @dataInicio and @dataFim ");
+                query.AppendLine("and a.data_aula between @dataInicio::date and @dataFim::date ");
 
             if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Mensal)
                 query.AppendLine(@"and extract(month from a.data_aula) = @mes 
