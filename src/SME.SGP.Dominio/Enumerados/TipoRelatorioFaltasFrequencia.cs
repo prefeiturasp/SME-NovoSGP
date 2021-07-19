@@ -2,8 +2,7 @@
 {
     public enum TipoRelatorioFaltasFrequencia
     {
-        Faltas = 1,
-        Frequencia = 2,
-        Ambos = 3
+        Turma = 1,
+        Ano = 2
     }
 }

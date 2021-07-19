@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao
                 CodigoDre = ue.Dre.CodigoDre,
                 CodigoUe = ue.CodigoUe,
                 ComponentesCurriculares = new List<string>() { "1060", "1061", "1322" },
-                TipoRelatorio = TipoRelatorioFaltasFrequencia.Ambos,
+                TipoRelatorio = TipoRelatorioFaltasFrequencia.Ano,
                 Condicao = CondicoesRelatorioFaltasFrequencia.TodosEstudantes,
                 TipoFormatoRelatorio = TipoFormatoRelatorio.Pdf,
                 NomeUsuario = "Processo automático",
