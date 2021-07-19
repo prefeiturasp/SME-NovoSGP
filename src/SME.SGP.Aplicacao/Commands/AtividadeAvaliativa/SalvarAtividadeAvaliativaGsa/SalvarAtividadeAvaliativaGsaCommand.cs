@@ -6,9 +6,9 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarAtividadeAvaliativaGsaCommand : IRequest
     {
-        public SalvarAtividadeAvaliativaGsaCommand(long aulaId, string usuarioRf, string turmaCodigo, long componenteCurricularId, string titulo, string descricao, DateTime dataCriacao, DateTime? dataAlteracao, long atividadeClassroomId)
+        public SalvarAtividadeAvaliativaGsaCommand(DateTime dataAula, string usuarioRf, string turmaCodigo, long componenteCurricularId, string titulo, string descricao, DateTime dataCriacao, DateTime? dataAlteracao, long atividadeClassroomId)
         {
-            AulaId = aulaId;
+            DataAula = dataAula;
             UsuarioRf = usuarioRf;
             TurmaCodigo = turmaCodigo;
             ComponenteCurricularId = componenteCurricularId;
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             AtividadeClassroomId = atividadeClassroomId;
         }
 
-        public long AulaId { get; }
+        public DateTime DataAula { get; }
         public string UsuarioRf { get; }
         public string TurmaCodigo { get; }
         public long ComponenteCurricularId { get; }
@@ -34,9 +34,9 @@ namespace SME.SGP.Aplicacao
     {
         public SalvarAtividadeAvaliativaGsaCommandValidator()
         {
-            RuleFor(a => a.AulaId)
+            RuleFor(a => a.DataAula)
                 .NotEmpty()
-                .WithMessage("O id da aula deve ser informado para importação da atividade do GSA");
+                .WithMessage("A data da aula deve ser informada para importação da atividade do GSA");
 
             RuleFor(a => a.UsuarioRf)
                 .NotEmpty()

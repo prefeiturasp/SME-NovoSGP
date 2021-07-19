@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Threading;
@@ -16,15 +17,18 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ImportarAtividadeGsaCommand request, CancellationToken cancellationToken)
         {
-            var aulaId = await mediator.Send(new ObterAulaPorCodigoTurmaComponenteEDataQuery(request.AtividadeGsa.TurmaId, request.AtividadeGsa.ComponenteCurricularId.ToString(), request.AtividadeGsa.DataCriacao));
+            await ValidarLancamentoNotaComponente(request.AtividadeGsa.ComponenteCurricularId);
+            await ValidarImportacaoAtividade(request.AtividadeGsa.DataCriacao);
 
-            if (ReagendarImportacao(aulaId, request.AtividadeGsa.DataCriacao))
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAgendamento.RotaMuralAvisosSync,
+            var aula = await mediator.Send(new ObterAulaPorCodigoTurmaComponenteEDataQuery(request.AtividadeGsa.TurmaId, request.AtividadeGsa.ComponenteCurricularId.ToString(), request.AtividadeGsa.DataCriacao));
+
+            if (ReagendarImportacao(aula))
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAgendamento.RotaAtividadesSync,
                                                                new MensagemAgendamentoSyncDto(RotasRabbitSgp.RotaAtividadesSync, request.AtividadeGsa),
                                                                Guid.NewGuid(),
                                                                null));
             else
-                await mediator.Send(new SalvarAtividadeAvaliativaGsaCommand(aulaId,
+                await mediator.Send(new SalvarAtividadeAvaliativaGsaCommand(aula.DataAula,
                                                                       request.AtividadeGsa.UsuarioRf,
                                                                       request.AtividadeGsa.TurmaId,
                                                                       request.AtividadeGsa.ComponenteCurricularId,
@@ -36,8 +40,29 @@ namespace SME.SGP.Aplicacao
                                                                       ));
         }
 
-        private bool ReagendarImportacao(long aulaId, DateTime dataCriacao)
-            => aulaId == 0
-            && dataCriacao.Year == DateTime.Now.Year;
+        private async Task ValidarLancamentoNotaComponente(long componenteCurricularId)
+        {
+            if (!await mediator.Send(new ObterComponenteLancaNotaQuery(componenteCurricularId)))
+                throw new NegocioException($"Componentes que não lançam nota não terão atividades avaliativas importada do classroom. Componente Curricular: {componenteCurricularId}");
+        }
+
+        private async Task ValidarImportacaoAtividade(DateTime dataCriacao)
+        {
+            var anoAtual = DateTime.Now.Year;
+
+            if (dataCriacao.Year < anoAtual)
+                throw new NegocioException($"Atividade Avaliativa do Classroom de ano anterior não será importada. Data Atividade: {dataCriacao:dd/MM/yyyy}");
+
+            var parametroInicioImportacao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AtualizacaoDeAtividadesAvaliativas, anoAtual));
+            if (!DateTime.TryParse(parametroInicioImportacao.Valor, out var dataInicioImportacao))
+                throw new Exception("Erro ao obter parâmetro de data de início de integração das atividades classroom");
+
+            if (dataCriacao < dataInicioImportacao)
+                new NegocioException($"Atividade Avaliativa Classroom com data anterior ao parâmetro de início da integração de atividades não será importada para o SGP. Data Atividade: {dataCriacao:dd/MM/yyyy}");
+        }
+
+        private bool ReagendarImportacao(DataAulaDto dataAula)
+            => dataAula == null 
+            || dataAula.AulaId == 0;
     }
 }

@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
                 DreId = turma.DreCodigo,
                 AtividadeClassroomId = request.AtividadeClassroomId,
                 Categoria = CategoriaAtividadeAvaliativa.Normal,
-                DataAvaliacao = request.DataCriacao,
+                DataAvaliacao = request.DataAula,
                 NomeAvaliacao = request.Titulo,
                 DescricaoAvaliacao = request.Descricao,
                 ProfessorRf = request.UsuarioRf,
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
         {
             atividadeAvaliativa.NomeAvaliacao = request.Titulo;
             atividadeAvaliativa.DescricaoAvaliacao = request.Descricao;
-            atividadeAvaliativa.DataAvaliacao = request.DataCriacao;
+            atividadeAvaliativa.DataAvaliacao = request.DataAula;
 
             await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
         }

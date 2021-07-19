@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Infra;
 using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulaPorCodigoTurmaComponenteEDataQuery : IRequest<long>
+    public class ObterAulaPorCodigoTurmaComponenteEDataQuery : IRequest<DataAulaDto>
     {
         public ObterAulaPorCodigoTurmaComponenteEDataQuery(string turmaId, string componenteCurricularId, DateTime dataCriacao)
         {
