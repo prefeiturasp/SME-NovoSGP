@@ -9,12 +9,12 @@ namespace SME.SGP.Aplicacao
 {
     public class SolicitaRelatorioFaltasFrequenciaCommand : IRequest<Guid>
     {
-        public SolicitaRelatorioFaltasFrequenciaCommand(FiltroRelatorioFaltasFrequenciaDto filtro)
+        public SolicitaRelatorioFaltasFrequenciaCommand(FiltroRelatorioFrequenciaDto filtro)
         {
             Filtro = filtro;
         }
 
-        public FiltroRelatorioFaltasFrequenciaDto Filtro { get; set; }
+        public FiltroRelatorioFrequenciaDto Filtro { get; set; }
     }
 
     public class SolicitaRelatorioFaltasFrequenciaCommandValidator : AbstractValidator<SolicitaRelatorioFaltasFrequenciaCommand>

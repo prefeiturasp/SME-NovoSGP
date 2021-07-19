@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Guid> SolicitarRelatorioBimestral(int bimestre, Ue ue)
         {
-            var filtro = new FiltroRelatorioFaltasFrequenciaDto()
+            var filtro = new FiltroRelatorioFrequenciaDto()
             {
                 AnoLetivo = DateTime.Now.Year,
                 AnosEscolares = new[] { "-99" },

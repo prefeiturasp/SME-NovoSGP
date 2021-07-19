@@ -38,9 +38,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("faltas-frequencia")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> FaltasFrequencia([FromBody] FiltroRelatorioFaltasFrequenciaDto filtroRelatorioFaltasFrequenciaDto, [FromServices] IGerarRelatorioFaltasFrequenciaUseCase gerarRelatorioFaltasFrequenciaUseCase)
+        public async Task<IActionResult> Frequencia([FromBody] FiltroRelatorioFrequenciaDto filtroRelatorioFaltasFrequenciaDto, [FromServices] IGerarRelatorioFrequenciaUseCase gerarRelatorioFrequenciaUseCase)
         {
-            return Ok(await gerarRelatorioFaltasFrequenciaUseCase.Executar(filtroRelatorioFaltasFrequenciaDto));
+            return Ok(await gerarRelatorioFrequenciaUseCase.Executar(filtroRelatorioFaltasFrequenciaDto));
         }
 
         [HttpPost("calendarios/impressao")]

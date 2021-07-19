@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
-    public class FiltroRelatorioFaltasFrequenciaDto
+    public class FiltroRelatorioFrequenciaDto
     {
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
@@ -25,7 +25,7 @@ namespace SME.SGP.Infra
     }
 
 
-    public class FiltroRelatorioFaltasFrequenciaDtoValidator : AbstractValidator<FiltroRelatorioFaltasFrequenciaDto>
+    public class FiltroRelatorioFaltasFrequenciaDtoValidator : AbstractValidator<FiltroRelatorioFrequenciaDto>
     {
         public FiltroRelatorioFaltasFrequenciaDtoValidator()
         {
