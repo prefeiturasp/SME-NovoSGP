@@ -39,6 +39,30 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<RegistroIndividual>(query, new { turmaId, componenteCurricularId, alunoCodigo, data });
         }
 
+        public async Task<IEnumerable<RegistroIndividualResumoDto>> ObterDescricaoRegistrosIndividuaisPorPeriodo(long turmaId, long componenteCurricularId, long alunoCodigo, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = $@"select 
+	                          data_registro as DataRegistro,
+	                          registro as Registro
+                        from registro_individual 
+                       where not excluido 
+                        and turma_id = @turmaId
+                        and componente_curricular_id = @componenteCurricularId
+                        and aluno_codigo = @alunoCodigo
+                        and data_registro::date between @dataInicio and @dataFim 
+                      order by data_registro desc";
+
+            return await database.Conexao.QueryAsync<RegistroIndividualResumoDto>(query,
+                                                  new
+                                                  {
+                                                      turmaId,
+                                                      componenteCurricularId,
+                                                      alunoCodigo,
+                                                      dataInicio,
+                                                      dataFim
+                                                  });
+        }
+
         public async Task<PaginacaoResultadoDto<RegistroIndividual>> ObterPorAlunoPeriodoPaginado(long turmaId, long componenteCurricularId, long alunoCodigo, DateTime dataInicio, DateTime dataFim, Paginacao paginacao)
         {
             var condicao = @" from registro_individual 

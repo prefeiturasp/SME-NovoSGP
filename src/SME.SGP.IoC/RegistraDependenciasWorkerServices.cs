@@ -300,6 +300,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioAcompanhamentoAlunoSemestre, RepositorioAcompanhamentoAlunoSemestre>();
             services.TryAddScopedWorkerService<IRepositorioAcompanhamentoAlunoFoto, RepositorioAcompanhamentoAlunoFoto>();
 
+            // Acompanhamento Turma
+            services.TryAddScopedWorkerService<IObterParametroQuantidadeImagensPercursoColetivoTurmaUseCase, ObterParametroQuantidadeImagensPercursoColetivoTurmaUseCase>();
+
             // Mural de Avisos
             services.TryAddScopedWorkerService<IRepositorioAviso, RepositorioAviso>();
 

@@ -57,12 +57,8 @@ namespace SME.SGP.Dados.Repositorios
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
-            query = $@"select db.planejamento
-                            , regexp_replace(
-		                        regexp_replace(
-		                        regexp_replace(db.planejamento, E'<img[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi')
-		                        , E'<video[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi')
-		                        , E'<[^>]+>', ' ', 'gi') as PlanejamentoSimples
+            query = $@"select db.planejamento as DescricaoPlanejamento
+                            , db.reflexoes_replanejamento as DescricaoReflexoes
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data 
                             {condicao} 
@@ -139,12 +135,8 @@ namespace SME.SGP.Dados.Repositorios
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
                 new { devolutivaId });
 
-            query = $@"select db.planejamento
-                            , regexp_replace(
-		                        regexp_replace(
-		                        regexp_replace(db.planejamento, E'<img[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi')
-		                        , E'<video[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi')
-		                        , E'<[^>]+>', ' ', 'gi') as PlanejamentoSimples
+            query = $@"select db.planejamento as DescricaoPlanejamento
+                            , db.reflexoes_replanejamento as DescricaoReflexoes
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data
                         from diario_bordo db

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -331,6 +332,131 @@ namespace SME.SGP.Dados.Repositorios
                            and a.turma_id = @turmaCodigo ";
 
             return await database.Conexao.QueryAsync<AulaComFrequenciaNaDataDto>(query, new { turmaCodigo });
+        }
+
+        public async Task<IEnumerable<FrequenciaAlunoDashboardDto>> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, int anoTurma, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
+        {
+            var query = new StringBuilder(@"select ");
+
+            if(visaoDre)
+                query.AppendLine("dre.dre_id as DescricaoAnoTurma, dre.abreviacao as DreAbreviacao, ");
+            else if (ueId == -99)
+                query.AppendLine("t.ano as DescricaoAnoTurma, ");
+            else  if(ueId != -99 && !visaoDre)
+                query.AppendLine("t.nome as DescricaoAnoTurma, ");
+
+            query.AppendLine(@"rfa.valor as TipoFrequenciaAluno,
+                               t.modalidade_codigo as ModalidadeCodigo,
+                               sum(rfa.valor) as Quantidade         
+                          from registro_frequencia_aluno rfa 
+                         inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
+                         inner join aula a on a.id = rf.aula_id 
+                         inner join turma t on t.turma_id = a.turma_id 
+                         inner join ue on ue.id = t.ue_id 
+                         inner join dre on dre.id = ue.dre_id 
+                         where t.ano_letivo = @anoLetivo
+                           and not rfa.excluido
+                           and t.modalidade_codigo = @modalidade ");
+
+            if (dreId != -99)
+                query.AppendLine("and dre.id = @dreId ");
+
+            if (ueId != -99)
+                query.AppendLine("and ue.id = @ueId ");
+
+            if (anoTurma > 0)
+                query.AppendLine("and t.ano = @anoTurma ");
+
+            if (semestre > 0)
+                query.AppendLine("and t.semestre = @semestre ");
+
+            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
+                query.AppendLine("and a.data_aula = @dataInicio ");
+
+            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Semanal)
+                query.AppendLine("and a.data_aula between @dataInicio and @dataFim ");
+
+            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Mensal)
+                query.AppendLine(@"and extract(month from a.data_aula) = @mes 
+                                   and extract(year from a.data_aula) = @anoLetivo ");
+
+            if(visaoDre)
+                query.AppendLine("group by dre.dre_id, dre.abreviacao, rfa.valor, t.modalidade_codigo");
+            else if (ueId == -99)
+                query.AppendLine("group by t.ano, rfa.valor, t.modalidade_codigo");
+            else if (ueId != -99 && !visaoDre)
+                query.AppendLine("group by t.nome, rfa.valor, t.modalidade_codigo");
+
+            var paramentros = new
+            {
+                dreId,
+                ueId,
+                anoLetivo,
+                modalidade,
+                anoTurma = anoTurma.ToString(),
+                semestre,
+                dataInicio,
+                datafim,
+                mes
+            };
+
+            return await database.Conexao.QueryAsync<FrequenciaAlunoDashboardDto>(query.ToString(), paramentros);
+        }
+
+        public async Task<TotalFrequenciaEAulasPorPeriodoDto> ObterTotalFrequenciaEAulasPorPeriodo(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, int anoTurma, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard)
+        {
+            var query = new StringBuilder(@"select 
+                                                count(a.id) as TotalAulas,
+                                                count(rf.id) as TotalFrequencias
+                                            from 
+                                                aula a 
+                                            inner join turma t on a.turma_id = t.turma_id       
+                                                left join registro_frequencia rf on a.id = rf.aula_id
+                                            inner join componente_curricular cc on cc.id = cast(a.disciplina_id as int)
+                                            inner join ue on ue.id = t.ue_id 
+     	                                    inner join dre on dre.id = ue.dre_id
+                                            where 
+                                                not a.excluido
+                                                and cc.permite_registro_frequencia 
+                                                and t.ano_letivo = @anoLetivo
+                                                and t.modalidade_codigo = @modalidade ");
+
+            if (dreId != -99)
+                query.AppendLine("and dre.id = @dreId ");
+
+            if (ueId != -99)
+                query.AppendLine("and ue.id = @ueId ");
+
+            if (anoTurma > 0)
+                query.AppendLine("and t.ano = @anoTurma ");
+
+            if (semestre > 0)
+                query.AppendLine("and t.semestre = @semestre ");
+
+            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
+                query.AppendLine("and a.data_aula = @dataInicio ");
+
+            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Semanal)
+                query.AppendLine("and a.data_aula between @dataInicio and @dataFim ");
+
+            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Mensal)
+                query.AppendLine(@"and extract(month from a.data_aula) = @mes 
+                                   and extract(year from a.data_aula) = @anoLetivo ");
+
+            var paramentros = new
+            {
+                dreId,
+                ueId,
+                anoLetivo,
+                modalidade,
+                anoTurma = anoTurma.ToString(),
+                semestre,
+                dataInicio,
+                datafim,
+                mes
+            };
+
+            return await database.Conexao.QueryFirstAsync<TotalFrequenciaEAulasPorPeriodoDto>(query.ToString(), paramentros);
         }
     }
 }
