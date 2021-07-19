@@ -42,11 +42,11 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(a => a.DataInicio)
                 .NotEmpty()
-                .WithMessage("A Data de Início deve ser informado para consulta de Registros Individuais do Estudante");
+                .WithMessage("A Data de Início deve ser informada para consulta de Registros Individuais do Estudante");
 
             RuleFor(a => a.DataFim)
                 .NotEmpty()
-                .WithMessage("A Data de Fim deve ser informado para consulta de Registros Individuais do Estudante");
+                .WithMessage("A Data de Fim deve ser informada para consulta de Registros Individuais do Estudante");
         }
     }
 }
