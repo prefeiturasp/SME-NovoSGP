@@ -941,7 +941,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, string[] anosEscolares, int anoLetivo)
         {
 
-            var url = $@"v1/componentes-curriculares/ues/{codigoUe}/modalidades/{modalidade}/anos/{anoLetivo}/anos-escolares?anosEscolares={string.Join("&anosEscolares=", anosEscolares)}";
+            var url = $@"v1/componentes-curriculares/ues/{codigoUe}/modalidades/{(int)modalidade}/anos/{anoLetivo}/anos-escolares?anosEscolares={string.Join("&anosEscolares=", anosEscolares)}";
 
             var resposta = await httpClient.GetAsync(url);
 
