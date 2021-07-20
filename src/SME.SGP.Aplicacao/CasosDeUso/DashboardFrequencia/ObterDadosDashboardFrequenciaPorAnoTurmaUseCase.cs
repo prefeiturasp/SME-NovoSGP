@@ -29,6 +29,9 @@ namespace SME.SGP.Aplicacao
                                                                                                               tipoPeriodoDashboard,
                                                                                                               visaoDre));
 
+            if (!string.IsNullOrEmpty(anoTurma) && dadosFrequenciaAlunos != null)
+                dadosFrequenciaAlunos = dadosFrequenciaAlunos.Where(a => a.DescricaoAnoTurma == anoTurma);
+
             if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any())
                 return null;
 
@@ -43,15 +46,19 @@ namespace SME.SGP.Aplicacao
                                                                                                 datafim,
                                                                                                 mes,
                                                                                                 tipoPeriodoDashboard));
+
+            if (!string.IsNullOrEmpty(anoTurma) && dadosTotais != null)
+                dadosTotais = dadosTotais.Where(a => a.DescricaoAnoTurma == anoTurma);
+
             var totalFrequencia = dadosTotais != null
                 ?
-                dadosTotais.TotalFrequenciaFormatado
+                dadosTotais.FirstOrDefault().TotalFrequenciaFormatado
                 :
                 "";
 
             var dreCodigo = "";
             var ueCodigo = "";
-            
+
 
             if (ueId != -99)
             {
@@ -63,7 +70,7 @@ namespace SME.SGP.Aplicacao
                 dreCodigo = await mediator.Send(new ObterCodigoDREPorUeIdQuery(dreId));
 
             var totalEstudantesAgrupado = await ObterQuantidadeAlunosMatriculadosEol(anoLetivo, ueId, modalidade, anoTurma, dreCodigo, ueCodigo, visaoDre);
-            return MapearParaDto(dadosFrequenciaAlunos.GroupBy(c => c.DescricaoAnoTurma), totalFrequencia, null);
+            return MapearParaDto(dadosFrequenciaAlunos.GroupBy(c => c.DescricaoAnoTurma), totalFrequencia, totalEstudantesAgrupado);
         }
 
         private async Task<IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>>> ObterQuantidadeAlunosMatriculadosEol(int anoLetivo, long ueId, int modalidade, string anoTurma, string dreCodigo, string ueCodigo, bool visaoDre)
@@ -75,12 +82,12 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>> totalEstudantesAgrupado;
 
-            if(visaoDre)
+            if (visaoDre)
                 totalEstudantesAgrupado = totalAlunos.GroupBy(c => c.DreCodigo);
             else if (ueId != -99)
                 totalEstudantesAgrupado = totalAlunos.GroupBy(c => c.Turma);
             else
-                totalEstudantesAgrupado = totalAlunos.GroupBy(c => c.Ano);            
+                totalEstudantesAgrupado = totalAlunos.GroupBy(c => c.Ano);
 
             return totalEstudantesAgrupado;
         }
@@ -104,7 +111,7 @@ namespace SME.SGP.Aplicacao
                     frequenciaPresente.DescricaoAnoTurmaFormatado : anoTurma,
                     Quantidade = frequenciaPresente != null ? frequenciaPresente.Quantidade : 0
                 });
-                
+
                 var frequenciaRemotos = frequenciasAlunos.FirstOrDefault(f => f.TipoFrequenciaAluno == TipoFrequenciaDashboard.Remotos);
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
@@ -115,7 +122,7 @@ namespace SME.SGP.Aplicacao
                     frequenciaPresente.DescricaoAnoTurmaFormatado : anoTurma,
                     Quantidade = frequenciaRemotos != null ? frequenciaRemotos.Quantidade : 0
                 });
-                
+
                 var frequenciaAusentes = frequenciasAlunos.FirstOrDefault(f => f.TipoFrequenciaAluno == TipoFrequenciaDashboard.Ausentes);
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
@@ -125,7 +132,7 @@ namespace SME.SGP.Aplicacao
                     frequenciaPresente != null ?
                     frequenciaPresente.DescricaoAnoTurmaFormatado : anoTurma,
                     Quantidade = frequenciaAusentes != null ? frequenciaAusentes.Quantidade : 0
-                });                
+                });
 
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
@@ -133,7 +140,7 @@ namespace SME.SGP.Aplicacao
                     TurmaAno = !string.IsNullOrEmpty(dreAbreviacao) ?
                     FormatarAbreviacaoDre(dreAbreviacao) :
                     anoTurma,
-                    Quantidade = totalEstudantesAgrupado !=null ?(totalEstudantesAgrupado.FirstOrDefault(c => c.Key == frequenciasAlunos.Key) != null ? totalEstudantesAgrupado.First(c => c.Key == frequenciasAlunos.Key).Select(x => x.Quantidade).Sum(): 0) : 0 
+                    Quantidade = totalEstudantesAgrupado != null ? (totalEstudantesAgrupado.FirstOrDefault(c => c.Key == frequenciasAlunos.Key) != null ? totalEstudantesAgrupado.First(c => c.Key == frequenciasAlunos.Key).Select(x => x.Quantidade).Sum() : 0) : 0
                 });
             }
 

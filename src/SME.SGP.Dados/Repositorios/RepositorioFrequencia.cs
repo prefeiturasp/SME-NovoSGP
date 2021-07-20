@@ -364,8 +364,8 @@ namespace SME.SGP.Dados.Repositorios
             if (ueId != -99)
                 query.AppendLine("and ue.id = @ueId ");
 
-            if (!string.IsNullOrEmpty(anoTurma))
-                query.AppendLine("and t.ano = @anoTurma ");
+            //if (!string.IsNullOrEmpty(anoTurma))
+            //    query.AppendLine("and t.ano = @anoTurma ");
 
             if (semestre > 0)
                 query.AppendLine("and t.semestre = @semestre ");
@@ -387,25 +387,22 @@ namespace SME.SGP.Dados.Repositorios
             else if (ueId != -99 && !visaoDre)
                 query.AppendLine("group by t.nome, rfa.valor, t.modalidade_codigo");
 
-            var paramentros = new
+            return await database.Conexao.QueryAsync<FrequenciaAlunoDashboardDto>(query.ToString(), new
             {
                 dreId,
                 ueId,
                 anoLetivo,
                 modalidade,
-                anoTurma,
                 semestre,
                 dataInicio,
                 datafim,
                 mes
-            };
-
-            return await database.Conexao.QueryAsync<FrequenciaAlunoDashboardDto>(query.ToString(), paramentros);
+            });
         }
 
-        public async Task<TotalFrequenciaEAulasPorPeriodoDto> ObterTotalFrequenciaEAulasPorPeriodo(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard)
+        public async Task<IEnumerable<TotalFrequenciaEAulasPorPeriodoDto>> ObterTotalFrequenciaEAulasPorPeriodo(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard)
         {
-            var query = new StringBuilder(@"select 
+            var query = new StringBuilder(@"select  t.ano as DescricaoAnoTurma,
                                                 count(a.id) as TotalAulas,
                                                 count(rf.id) as TotalFrequencias
                                             from 
@@ -427,9 +424,6 @@ namespace SME.SGP.Dados.Repositorios
             if (ueId != -99)
                 query.AppendLine("and ue.id = @ueId ");
 
-            if (!string.IsNullOrEmpty(anoTurma))
-                query.AppendLine("and t.ano = @anoTurma ");
-
             if (semestre > 0)
                 query.AppendLine("and t.semestre = @semestre ");
 
@@ -442,21 +436,19 @@ namespace SME.SGP.Dados.Repositorios
             if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Mensal)
                 query.AppendLine(@"and extract(month from a.data_aula) = @mes 
                                    and extract(year from a.data_aula) = @anoLetivo ");
+            query.AppendLine(" group by t.ano ");
 
-            var paramentros = new
+            return await database.Conexao.QueryAsync<TotalFrequenciaEAulasPorPeriodoDto>(query.ToString(), new
             {
                 dreId,
                 ueId,
                 anoLetivo,
                 modalidade,
-                anoTurma,
                 semestre,
                 dataInicio,
                 datafim,
                 mes
-            };
-
-            return await database.Conexao.QueryFirstAsync<TotalFrequenciaEAulasPorPeriodoDto>(query.ToString(), paramentros);
+            });
         }
     }
 }
