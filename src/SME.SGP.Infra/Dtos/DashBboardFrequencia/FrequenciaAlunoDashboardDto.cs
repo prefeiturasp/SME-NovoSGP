@@ -8,7 +8,7 @@ namespace SME.SGP.Infra
         public string DescricaoAnoTurma { get; set; }
         public string DreAbreviacao { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
-        public TipoFrequenciaDashboard TipoFrequenciaAluno { get; set; }
+        public TipoFrequencia TipoFrequenciaAluno { get; set; }
         public int Quantidade { get; set; } 
 
         public string DescricaoAnoTurmaFormatado
