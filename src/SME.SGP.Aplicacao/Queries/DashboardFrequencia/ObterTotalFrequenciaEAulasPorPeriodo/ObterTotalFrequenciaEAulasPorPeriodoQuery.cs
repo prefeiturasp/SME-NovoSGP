@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTotalFrequenciaEAulasPorPeriodoQuery : IRequest<TotalFrequenciaEAulasPorPeriodoDto>
+    public class ObterTotalFrequenciaEAulasPorPeriodoQuery : IRequest<IEnumerable<TotalFrequenciaEAulasPorPeriodoDto>>
     {
         public ObterTotalFrequenciaEAulasPorPeriodoQuery(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataInicio, DateTime dataFim, int mes, int tipoPeriodoDashboard)
         {
