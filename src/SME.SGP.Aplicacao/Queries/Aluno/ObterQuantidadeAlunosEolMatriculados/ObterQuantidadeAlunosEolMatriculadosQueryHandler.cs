@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             if (request.Modalidade > 0)
                 parametros += $"&modalidade={request.Modalidade}";
 
-            if (request.AnoTurma > 0)
+            if (!string.IsNullOrEmpty(request.AnoTurma))
                 parametros += $"&ano={request.AnoTurma}";
 
             if (parametros.StartsWith("&"))
