@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTotalFrequenciaEAulasPorPeriodoQuery : IRequest<TotalFrequenciaEAulasPorPeriodoDto>
     {
-        public ObterTotalFrequenciaEAulasPorPeriodoQuery(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, int anoTurma, DateTime dataInicio, DateTime dataFim, int mes, int tipoPeriodoDashboard)
+        public ObterTotalFrequenciaEAulasPorPeriodoQuery(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataInicio, DateTime dataFim, int mes, int tipoPeriodoDashboard)
         {
             AnoLetivo = anoLetivo;
             DreId = dreId;
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         public long UeId { get; set; }
         public int Modalidade { get; set; }
         public int Semestre { get; set; }
-        public int AnoTurma { get; set; }
+        public string AnoTurma { get; set; }
         public DateTime DataInicio { get; set; }
         public DateTime DataFim { get; set; }
         public int Mes { get; set; }

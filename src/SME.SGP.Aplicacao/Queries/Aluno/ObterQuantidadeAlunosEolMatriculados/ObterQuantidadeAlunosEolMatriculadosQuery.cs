@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuantidadeAlunosEolMatriculadosQuery : IRequest<IEnumerable<QuantidadeAlunoMatriculadoDTO>>
     {
-        public ObterQuantidadeAlunosEolMatriculadosQuery(int anoLetivo, string dreCodigo, string ueCodigo, int modalidade, int anoTurma)
+        public ObterQuantidadeAlunosEolMatriculadosQuery(int anoLetivo, string dreCodigo, string ueCodigo, int modalidade, string anoTurma)
         {
             AnoLetivo = anoLetivo;
             DreCodigo = dreCodigo;
@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
         public string DreCodigo { get; set; }
         public string UeCodigo { get; set; }
         public int Modalidade { get; set; }
-        public int AnoTurma { get; set; }
+        public string AnoTurma { get; set; }
     }
 }
