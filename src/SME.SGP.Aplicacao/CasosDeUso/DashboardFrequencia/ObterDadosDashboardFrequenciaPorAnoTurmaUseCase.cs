@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                                                                                                               tipoPeriodoDashboard,
                                                                                                               visaoDre));
 
-            if (!string.IsNullOrEmpty(anoTurma) && dadosFrequenciaAlunos != null)
+            if ((!string.IsNullOrEmpty(anoTurma) && anoTurma != "-99") && dadosFrequenciaAlunos != null)
                 dadosFrequenciaAlunos = dadosFrequenciaAlunos.Where(a => a.DescricaoAnoTurma == anoTurma);
 
             if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any())
@@ -47,14 +47,15 @@ namespace SME.SGP.Aplicacao
                                                                                                 mes,
                                                                                                 tipoPeriodoDashboard));
 
-            if (!string.IsNullOrEmpty(anoTurma) && dadosTotais != null)
+            if ((!string.IsNullOrEmpty(anoTurma) && anoTurma != "-99") && dadosTotais != null)
                 dadosTotais = dadosTotais.Where(a => a.DescricaoAnoTurma == anoTurma);
 
-            var totalFrequencia = dadosTotais != null
-                ?
-                dadosTotais.FirstOrDefault().TotalFrequenciaFormatado
-                :
-                "";
+            var dadosTotal = new TotalFrequenciaEAulasPorPeriodoDto()
+            {
+                TotalAulas = dadosTotais.Select(a => a.TotalAulas).Sum(),
+                TotalFrequencias = dadosTotais.Select(a => a.TotalFrequencias).Sum(),
+            };
+            var totalFrequencia = dadosTotal != null ? dadosTotal.TotalFrequenciaFormatado : "";
 
             var dreCodigo = "";
             var ueCodigo = "";
@@ -101,7 +102,7 @@ namespace SME.SGP.Aplicacao
                 var anoTurma = frequenciasAlunos.First().DescricaoAnoTurmaFormatado;
                 var dreAbreviacao = frequenciasAlunos.First().DreAbreviacao;
 
-                var frequenciaPresente = frequenciasAlunos.FirstOrDefault(f => f.TipoFrequenciaAluno == TipoFrequenciaDashboard.Presentes);
+                var frequenciaPresente = frequenciasAlunos.FirstOrDefault(f => f.TipoFrequenciaAluno == TipoFrequencia.C);
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Presentes.Name(),
@@ -112,7 +113,7 @@ namespace SME.SGP.Aplicacao
                     Quantidade = frequenciaPresente != null ? frequenciaPresente.Quantidade : 0
                 });
 
-                var frequenciaRemotos = frequenciasAlunos.FirstOrDefault(f => f.TipoFrequenciaAluno == TipoFrequenciaDashboard.Remotos);
+                var frequenciaRemotos = frequenciasAlunos.FirstOrDefault(f => f.TipoFrequenciaAluno == TipoFrequencia.R);
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Remotos.Name(),
@@ -123,7 +124,7 @@ namespace SME.SGP.Aplicacao
                     Quantidade = frequenciaRemotos != null ? frequenciaRemotos.Quantidade : 0
                 });
 
-                var frequenciaAusentes = frequenciasAlunos.FirstOrDefault(f => f.TipoFrequenciaAluno == TipoFrequenciaDashboard.Ausentes);
+                var frequenciaAusentes = frequenciasAlunos.FirstOrDefault(f => f.TipoFrequenciaAluno == TipoFrequencia.F);
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Ausentes.Name(),

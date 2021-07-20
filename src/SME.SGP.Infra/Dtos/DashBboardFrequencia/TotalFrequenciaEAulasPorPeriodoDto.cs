@@ -18,7 +18,7 @@ namespace SME.SGP.Infra
                 if (TotalAulas == 0)
                     return 0;
 
-                var porcentagem = 100 - ((double)TotalFrequencias / TotalAulas) * 100;
+                var porcentagem = ((double)TotalFrequencias / TotalAulas) * 100;
 
                 return Math.Round(porcentagem > 100 ? 100 : porcentagem, 2);
             }
