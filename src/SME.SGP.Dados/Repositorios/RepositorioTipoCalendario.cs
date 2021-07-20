@@ -239,7 +239,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query.ToString(), new { anosLetivo, modalidades });
         }
-        public async Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, int modalidadeTipoCalendarioId)
+        public async Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, int modalidadeTipoCalendarioId, int semestre = 0)
         {
             var query = @"select
 	                        pe.id as periodoEscolarId,
@@ -253,9 +253,17 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        tc.ano_letivo = @anoLetivo
 	                        and tc.modalidade = @modalidadeTipoCalendarioId
-	                        and not tc.excluido";
+	                        and not tc.excluido ";
+            var dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
 
-            return await database.Conexao.QueryAsync<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>(query.ToString(), new { anoLetivo, modalidadeTipoCalendarioId });
+            if (modalidadeTipoCalendarioId == (int)Modalidade.EJA.ObterModalidadeTipoCalendario() && semestre > 0)
+            {
+                if (semestre == 1)
+                    query += $"and pe.periodo_inicio < @dataReferencia";
+                else query += $"and pe.periodo_fim > @dataReferencia";
+            }
+
+            return await database.Conexao.QueryAsync<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>(query.ToString(), new { anoLetivo, modalidadeTipoCalendarioId, dataReferencia });
         }
     }
 }
