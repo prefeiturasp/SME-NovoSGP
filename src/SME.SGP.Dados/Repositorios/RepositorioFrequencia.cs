@@ -364,9 +364,6 @@ namespace SME.SGP.Dados.Repositorios
             if (ueId != -99)
                 query.AppendLine("and ue.id = @ueId ");
 
-            //if (!string.IsNullOrEmpty(anoTurma))
-            //    query.AppendLine("and t.ano = @anoTurma ");
-
             if (semestre > 0)
                 query.AppendLine("and t.semestre = @semestre ");
 
