@@ -278,7 +278,7 @@ namespace SME.SGP.Aplicacao
 
                 else
                     notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ?
-                                                   ((int)Math.Round(frequenciaAluno.PercentualFrequencia, 0)).ToString() :
+                                                   (Math.Round(frequenciaAluno.PercentualFrequencia, 2)).ToString() :
                                                    "";
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }
