@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
                     ComponenteSinteses = new List<ConselhoDeClasseComponenteSinteseDto>()
                 };
 
-                foreach (var componenteCurricular in grupoDisiplinasMatriz.Where(x => x.LancaNota))
+                foreach (var componenteCurricular in grupoDisiplinasMatriz.Where(x => !x.LancaNota))
                 {
                     var componenteCurricularDto = await MapearDto(frequenciaAluno, componenteCurricular, bimestre);
                     grupoMatriz.ComponenteSinteses.Add(componenteCurricularDto);
@@ -187,14 +187,14 @@ namespace SME.SGP.Aplicacao
 
             var registrosFrequencia = await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, turmasCodigos, disciplinasCodigo.Select(d => d.ToString()).ToArray(), periodoEscolar?.Id));
 
-            var gruposMatrizes = disciplinasDaTurma.Where(c => c.RegistraFrequencia && c.GrupoMatrizNome != null).OrderBy(d => d.GrupoMatrizId).GroupBy(c => c.GrupoMatrizNome).ToList();
+            var gruposMatrizes = disciplinasDaTurma.Where(c => c.RegistraFrequencia && c.GrupoMatrizNome != null && c.LancaNota).OrderBy(d => d.GrupoMatrizId).GroupBy(c => c.GrupoMatrizNome).ToList();
 
             foreach (var grupoDisiplinasMatriz in gruposMatrizes)
             {
                 var conselhoClasseAlunoNotas = new ConselhoClasseAlunoNotasConceitosDto();
                 conselhoClasseAlunoNotas.GrupoMatriz = grupoDisiplinasMatriz.Key;
 
-                foreach (var disciplina in grupoDisiplinasMatriz.OrderBy(g => g.Nome))
+                foreach (var disciplina in grupoDisiplinasMatriz.Where(d => d.LancaNota).OrderBy(g => g.Nome))
                 {
                     var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
 
