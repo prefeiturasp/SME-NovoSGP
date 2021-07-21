@@ -336,7 +336,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FrequenciaAlunoDashboardDto>> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
         {
-            var query = new StringBuilder(@"select ");
+            var query = new StringBuilder(@"select t.ano as ano, ");
 
             if (visaoDre)
                 query.AppendLine("dre.dre_id as DescricaoAnoTurma, dre.abreviacao as DreAbreviacao, ");
@@ -347,7 +347,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine(@"rfa.valor as TipoFrequenciaAluno,
                                t.modalidade_codigo as ModalidadeCodigo,
-                               sum(rfa.valor) as Quantidade         
+                               sum(rfa.numero_aula) as Quantidade         
                           from registro_frequencia_aluno rfa 
                          inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
                          inner join aula a on a.id = rf.aula_id 
@@ -380,10 +380,11 @@ namespace SME.SGP.Dados.Repositorios
             if (visaoDre)
                 query.AppendLine("group by dre.dre_id, dre.abreviacao, rfa.valor, t.modalidade_codigo");
             else if (ueId == -99)
-                query.AppendLine("group by t.ano, rfa.valor, t.modalidade_codigo");
+                query.AppendLine("group by rfa.valor, t.modalidade_codigo");
             else if (ueId != -99 && !visaoDre)
                 query.AppendLine("group by t.nome, rfa.valor, t.modalidade_codigo");
 
+            query.AppendLine(", t.ano");
             return await database.Conexao.QueryAsync<FrequenciaAlunoDashboardDto>(query.ToString(), new
             {
                 dreId,
@@ -399,7 +400,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TotalFrequenciaEAulasPorPeriodoDto>> ObterTotalFrequenciaEAulasPorPeriodo(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard)
         {
-            var query = new StringBuilder(@"select  t.ano as DescricaoAnoTurma,
+            var query = new StringBuilder(@"select t.ano as DescricaoAnoTurma,
                                                 count(a.id) as TotalAulas,
                                                 count(rf.id) as TotalFrequencias
                                             from 

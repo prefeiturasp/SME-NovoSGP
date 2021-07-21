@@ -30,13 +30,13 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(request.DreCodigo) && !request.DreCodigo.Contains("-99"))
                 parametros += $"dreCodigo={request.DreCodigo}";
 
-            if (!string.IsNullOrEmpty(request.UeCodigo) && !request.DreCodigo.Contains("-99"))
+            if (!string.IsNullOrEmpty(request.UeCodigo) && !request.UeCodigo.Contains("-99"))
                 parametros += $"&ueCodigo={request.UeCodigo}";
 
             if (request.Modalidade > 0)
                 parametros += $"&modalidade={request.Modalidade}";
 
-            if (!string.IsNullOrEmpty(request.AnoTurma))
+            if (!string.IsNullOrEmpty(request.AnoTurma) && !request.AnoTurma.Contains("-99"))
                 parametros += $"&ano={request.AnoTurma}";
 
             if (parametros.StartsWith("&"))

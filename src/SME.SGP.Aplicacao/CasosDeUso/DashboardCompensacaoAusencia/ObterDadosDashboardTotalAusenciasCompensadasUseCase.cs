@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             {
                 dadosCompensacaoAusenciaDashboard.Add(new DadosRetornoAusenciasCompensadasDashboardDto()
                 {
-                    Descricao = compensacaoAusencia.DescricaoAnoTurma,
+                    Descricao = compensacaoAusencia.DescricaoAnoTurmaFormatado,
                     Quantidade = compensacaoAusencia.Quantidade
                 });
             }
