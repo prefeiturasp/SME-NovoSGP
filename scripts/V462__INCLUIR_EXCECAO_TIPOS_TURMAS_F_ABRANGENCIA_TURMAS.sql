@@ -11,7 +11,8 @@ AS SELECT v_abrangencia_cadeia_turmas.turma_ano AS ano,
     v_abrangencia_cadeia_turmas.qt_duracao_aula AS qtduracaoaula,
     v_abrangencia_cadeia_turmas.tipo_turno AS tipoturno,
     v_abrangencia_cadeia_turmas.ensino_especial AS ensinoespecial,
-    v_abrangencia_cadeia_turmas.turma_id
+    v_abrangencia_cadeia_turmas.turma_id,
+    v_abrangencia_cadeia_turmas.nome_filtro
    FROM v_abrangencia_cadeia_turmas;
    
    
@@ -36,7 +37,8 @@ select distinct act.turma_ano,
 				act.qt_duracao_aula,
 				act.tipo_turno,
 				act.ensino_especial,
-				act.turma_id
+				act.turma_id,
+				act.nome_filtro
 	from v_abrangencia_nivel_dre a
 		inner join v_abrangencia_cadeia_turmas act
 			on a.dre_id = act.dre_id
@@ -67,7 +69,8 @@ select distinct act.turma_ano,
 				act.qt_duracao_aula,
 				act.tipo_turno,
 				act.ensino_especial ,
-				act.turma_id
+				act.turma_id,
+				act.nome_filtro
 	from v_abrangencia_nivel_ue a
 		inner join v_abrangencia_cadeia_turmas act
 			on a.ue_id = act.ue_id
@@ -100,7 +103,8 @@ select distinct act.turma_ano,
 				act.qt_duracao_aula,
 				act.tipo_turno,
 				act.ensino_especial,
-				act.turma_id
+				act.turma_id,
+				act.nome_filtro
 	from v_abrangencia_nivel_turma a
 		inner join v_abrangencia_cadeia_turmas act
 			on a.turma_id = act.turma_id

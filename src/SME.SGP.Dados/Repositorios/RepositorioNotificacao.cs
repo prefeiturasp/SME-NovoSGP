@@ -343,6 +343,12 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(sql, new { ids, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
         }
 
+        public async Task<long> ObterCodigoPorId(long notificacaoId)
+        {
+            var query = @"select codigo from notificacao where id = @notificacaoId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { notificacaoId });
+        }
     }
 
 
