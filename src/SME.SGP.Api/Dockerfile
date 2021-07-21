@@ -24,13 +24,19 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
 RUN mkdir Imagens
-ENTRYPOINT ["dotnet", "SME.SGP.Api.dll"]
 
-# install System.Drawing native dependencies
+ENV TZ=America/Sao_Paulo
+
 RUN apt-get update \
+    && apt-get install -yq tzdata locales -y \
+    && dpkg-reconfigure --frontend noninteractive tzdata \ 
+	&& locale-gen en_US.UTF-8 \
     && apt-get install -y --allow-unauthenticated \
         libc6-dev \
         libgdiplus \
         libx11-dev \
      && rm -rf /var/lib/apt/lists/* 
+
+ENTRYPOINT ["dotnet", "SME.SGP.Api.dll"]
+
 

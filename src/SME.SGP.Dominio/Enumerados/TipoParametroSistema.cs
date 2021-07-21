@@ -125,6 +125,14 @@ namespace SME.SGP.Dominio
         HabilitaFrequenciaRemotaMOVA = 67,
         HabilitaFrequenciaRemotaETEC = 68,
 
+        PeriodoDeDiasDevolutiva = 69,
+
+        ExecucaoConsolidacaoDevolutivasTurma = 70,
+
+        QuantidadeImagensPercursoTurma = 72,
+        PeriodoDeDiasSemRegistroIndividual = 73,
+        AgrupamentoTurmasFiltro = 74,
+        
         //Sistema
         HabilitarServicosEmBackground = 100
     }

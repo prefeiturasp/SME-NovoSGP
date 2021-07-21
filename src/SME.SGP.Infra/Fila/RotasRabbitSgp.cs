@@ -108,6 +108,9 @@
 
         public const string RotaNotificacaoAlunosFaltosos = "sgp.aulas.alunos.faltosos.notificar";
 
+        public const string RotaNotificacaoAulasPrevistasSync = "sgp.aulas.previstas.notificacao.sync";
+        public const string RotaNotificacaoAulasPrevistas = "sgp.aulas.previstas.notificacao";
+
         public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
         public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
 
@@ -115,5 +118,12 @@
         public const string SincronizarDadosTurmasFrequenciaMigracao = "sgp.migracao.frequencia.turmas.sync";
         public const string CarregarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.carregar";
         public const string SincronizarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.sync";
+
+        public const string WorkflowAprovacaoExcluir = "sgp.workflow.aprovacao.excluir";
+        public const string NotificacoesDaAulaExcluir = "sgp.notificacoes.aula.excluir";
+        public const string FrequenciaDaAulaExcluir = "sgp.frequencia.aula.excluir";
+        public const string PlanoAulaDaAulaExcluir = "sgp.plano.aula.excluir";
+        public const string AnotacoesFrequenciaDaAulaExcluir = "sgp.anotacoes.frequencia.aula.excluir";
+        public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";
     }
 }
