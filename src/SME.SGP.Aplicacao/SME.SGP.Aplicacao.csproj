@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Commands\PendenciaAula\IncluirFilaExclusaoPendenciasAula\" />
     <Folder Include="Interfaces\CasosDeUso\Aluno\" />
     <Folder Include="obj\" />
     <Folder Include="Queries\AcompanhamentoFrequencia\" />

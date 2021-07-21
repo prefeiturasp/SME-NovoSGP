@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task ExcluirFrequenciaAula(long aulaId)
         {
             // Exclui registros de ausencia do aluno
-            var command = @"update registro_ausencia_aluno
+            var command = @"update registro_frequencia_aluno
                                 set excluido = true
                             where not excluido
                               and registro_frequencia_id in (
