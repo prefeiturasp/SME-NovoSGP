@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
                 throw new Exception("Erro ao obter parâmetro de data de início de integração das atividades classroom");
 
             if (dataCriacao < dataInicioImportacao)
-                new NegocioException($"Atividade Avaliativa Classroom com data anterior ao parâmetro de início da integração de atividades não será importada para o SGP. Data Atividade: {dataCriacao:dd/MM/yyyy}");
+                throw new NegocioException($"Atividade Avaliativa Classroom com data anterior ao parâmetro de início da integração de atividades não será importada para o SGP. Data Atividade: {dataCriacao:dd/MM/yyyy}");
         }
 
         private bool ReagendarImportacao(DataAulaDto dataAula)
