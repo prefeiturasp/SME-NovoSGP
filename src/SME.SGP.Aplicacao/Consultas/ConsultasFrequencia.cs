@@ -165,7 +165,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina)
         {
-            var sintese = percentualFrequencia != null ?
+            var sintese = percentualFrequencia == null ? 
                 SinteseEnum.NaoFrequente :
                 percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
                 SinteseEnum.Frequente :
