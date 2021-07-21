@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                                                                                                               visaoDre));
 
             if ((!string.IsNullOrEmpty(anoTurma) && anoTurma != "-99") && dadosFrequenciaAlunos != null)
-                dadosFrequenciaAlunos = dadosFrequenciaAlunos.Where(a => a.DescricaoAnoTurma == anoTurma);
+                dadosFrequenciaAlunos = dadosFrequenciaAlunos.Where(a => a.Ano == anoTurma).ToList();
 
             if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any())
                 return null;
@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                                                                                                 tipoPeriodoDashboard));
 
             if ((!string.IsNullOrEmpty(anoTurma) && anoTurma != "-99") && dadosTotais != null)
-                dadosTotais = dadosTotais.Where(a => a.DescricaoAnoTurma == anoTurma);
+                dadosTotais = dadosTotais.Where(a => a.DescricaoAnoTurma == anoTurma).ToList();
 
             var dadosTotal = new TotalFrequenciaEAulasPorPeriodoDto()
             {

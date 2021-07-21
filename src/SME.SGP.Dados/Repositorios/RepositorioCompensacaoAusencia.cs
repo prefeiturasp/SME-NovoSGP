@@ -78,7 +78,7 @@ namespace SME.SGP.Dados
         {
             var query = new StringBuilder(@"select ");
 
-            if (ueId == -99)
+            if (ueId != -99)
                 query.AppendLine("t.nome as DescricaoAnoTurma, ");
             else
                 query.AppendLine("t.ano as DescricaoAnoTurma, ");
@@ -106,7 +106,7 @@ namespace SME.SGP.Dados
             if (semestre > 0)
                 query.AppendLine("and t.semestre = @semestre ");
 
-            if (ueId == -99)
+            if (ueId != -99)
                 query.AppendLine("group by t.nome, t.modalidade_codigo");
             else
                 query.AppendLine("group by t.ano, t.modalidade_codigo");
@@ -201,7 +201,7 @@ namespace SME.SGP.Dados
         {
             var query = new StringBuilder(@"select ");
 
-            if (ueId == -99)
+            if (ueId != -99)
                 query.AppendLine("t.nome as DescricaoAnoTurma, ");
             else
                 query.AppendLine("t.ano as DescricaoAnoTurma, ");
@@ -228,7 +228,7 @@ namespace SME.SGP.Dados
             if (semestre > 0)
                 query.AppendLine("and t.semestre = @semestre ");
 
-            if (ueId == -99)
+            if (ueId != -99)
                 query.AppendLine("group by t.nome, t.modalidade_codigo");
             else
                 query.AppendLine("group by t.ano, t.modalidade_codigo");

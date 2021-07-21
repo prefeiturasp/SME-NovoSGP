@@ -5,6 +5,7 @@ namespace SME.SGP.Infra
 {
     public class FrequenciaAlunoDashboardDto
     {
+        public string Ano { get; set; }
         public string DescricaoAnoTurma { get; set; }
         public string DreAbreviacao { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
