@@ -12,7 +12,8 @@ namespace SME.SGP.Infra
         }
 
         public string Codigo { get; set; }
-        public double Frequencia { get; set; }
+        public double FrequenciaValor{ get; set; }
+        public string Frequencia { get; set; }
         public string Informacao { get; set; }
         public string Nome { get; set; }
         public IList<FechamentoFinalConsultaRetornoAlunoNotaConceitoDto> NotasConceitoBimestre { get; set; }
