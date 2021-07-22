@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao
                 var frequenciaAluno = frequenciaAlunosRegistrada.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, percentualAlerta, percentualCritico, turmaPossuiFrequenciaRegistrada);
 
-                if (!componenteCurricularAula.FirstOrDefault().RegistraFrequencia)
+                if (!componenteCurricularAula.FirstOrDefault().RegistraFrequencia || !aula.PermiteRegistroFrequencia(turma))
                 {
                     registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
                     continue;
@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
                 registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
             }
 
-            registroFrequenciaDto.Desabilitado = registroFrequenciaDto.ListaFrequencia.All(c => c.Desabilitado) || aula.EhDataSelecionadaFutura;
+            registroFrequenciaDto.Desabilitado = registroFrequenciaDto.ListaFrequencia.All(c => c.Desabilitado) || aula.EhDataSelecionadaFutura || !aula.PermiteRegistroFrequencia(turma);
 
             return registroFrequenciaDto;
         }

@@ -140,6 +140,18 @@ namespace SME.SGP.Aplicacao
                     await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
             }
 
+            //Exceção para disciplinas 1060 e 1061 que são compartilhadas entre EF e EJA
+            if(turma.ModalidadeCodigo == Modalidade.EJA && disciplinasDto.Any())
+            {
+                var idComponenteInformaticaOie = 1060;
+                var idComponenteLeituraOsl = 1061;
+                foreach(var disciplina in disciplinasDto)
+                {
+                    if (disciplina.CodigoComponenteCurricular == idComponenteInformaticaOie || disciplina.CodigoComponenteCurricular == idComponenteLeituraOsl)
+                        disciplina.RegistraFrequencia = false;
+                }
+            }
+
             return disciplinasDto;
         }
 
