@@ -75,7 +75,8 @@ namespace SME.SGP.Aplicacao
 
                 dto.AulasRealizadas = await mediator.Send(new ObterAulasDadasPorTurmaIdEPeriodoEscolarQuery(turma.Id, new List<long> { periodoEscolar.Id }, tipoCalendarioId));
                 dto.Ausencias = 0;
-                dto.Frequencia = turmaPossuiFrequenciaRegistrada ? 100 : null;
+                if (turmaPossuiFrequenciaRegistrada)
+                    dto.Frequencia = 100;                
             }
             return dto;
         }
