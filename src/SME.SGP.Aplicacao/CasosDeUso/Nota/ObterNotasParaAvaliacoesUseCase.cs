@@ -124,8 +124,8 @@ namespace SME.SGP.Aplicacao
 
             //Obter alunos ativos
             var alunosAtivos = from a in alunos
-                               where (a.EstaAtivo(periodoFim) ||
-                                     (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
+                               where (a.EstaAtivo(periodoFim) || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido) ||
+                                       (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
                                      a.DataMatricula.Date <= periodoFim.Date
                                orderby a.NomeValido(), a.NumeroAlunoChamada
                                select a;

@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
                 // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
                 // se a matrícula foi ativada após a data da aula                
                 if ((aluno.EstaInativo(aula.DataAula) && (aluno.DataSituacao < periodoEscolar.PeriodoInicio || aluno.DataSituacao < aula.DataAula)) ||
-                    (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataMatricula > aula.DataAula))
+                    (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo || aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido) && aluno.DataMatricula > aula.DataAula))
                     continue;
 
                 var tipoFrequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(turma.Id, long.Parse(aula.DisciplinaId), aluno.CodigoAluno));
