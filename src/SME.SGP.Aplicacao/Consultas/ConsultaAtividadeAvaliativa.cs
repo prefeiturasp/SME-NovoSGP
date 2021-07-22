@@ -247,6 +247,7 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = atividadeAvaliativa.CriadoRF,
                 Categoria = atividadeAvaliativa.TipoAvaliacao?.Descricao,
                 EhRegencia = atividadeAvaliativa.EhRegencia,
+                Importado = atividadeAvaliativa.AtividadeClassroomId.HasValue,
                 AtividadesRegencia = regencias?.Select(x => new AtividadeAvaliativaRegenciaDto
                 {
                     AtividadeAvaliativaId = x.AtividadeAvaliativaId,

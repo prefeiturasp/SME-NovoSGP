@@ -134,6 +134,9 @@ namespace SME.SGP.Dominio
         PeriodoDeDiasSemRegistroIndividual = 73,
         AgrupamentoTurmasFiltro = 74,
         ExecucaoConsolidacaoAcompanhamentoAprendizagemAlunoTurma = 75,
+
+        AtualizacaoDeAtividadesAvaliativas = 76,
+        TipoAtividadeAvaliativaClassroom = 77,
        
         
         //Sistema
