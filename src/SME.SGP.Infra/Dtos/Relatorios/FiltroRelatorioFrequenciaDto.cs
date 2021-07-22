@@ -14,7 +14,7 @@ namespace SME.SGP.Infra
         public TipoRelatorioFaltasFrequencia TipoRelatorio { get; set; }
         public IEnumerable<string> AnosEscolares { get; set; }
         public bool TurmasPrograma { get; set; }
-        public string CodigoTurma { get; set; }
+        public List<string> CodigosTurma { get; set; }
         public IEnumerable<string> ComponentesCurriculares { get; set; }
         public List<int> Bimestres { get; set; }
         public CondicoesRelatorioFaltasFrequencia Condicao { get; set; }
