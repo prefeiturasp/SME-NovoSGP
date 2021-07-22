@@ -536,5 +536,11 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AtividadeAvaliativa>(query, new { atividadeClassroomId });
         }
+
+        public async Task<bool> AtividadeImportada(long atividadeId)
+        {
+            var query = @"select atividade_classroom_id from atividade_avaliativa where id = @atividadeId";
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { atividadeId });
+        }
     }
 }
