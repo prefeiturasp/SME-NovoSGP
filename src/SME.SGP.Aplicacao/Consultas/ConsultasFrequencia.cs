@@ -62,18 +62,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<double?> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
         {
-
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
-            var tipoCalendarioId = turma.ModalidadeCodigo == Modalidade.EJA ? await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma)) : 0 ;
-            
-            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
-            
-            if (frequenciaAluno == null)
-                return null;
+            var tipoCalendarioId = turma.ModalidadeCodigo == Modalidade.EJA ? await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma)) : 0;
 
             //Particularidade de 2020
             if (turma.AnoLetivo.Equals(2020))
                 return await CalculoFrequenciaGlobal2020(alunoCodigo, turma);
+
+            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
+
+            if (frequenciaAluno == null)
+                return null;
 
             return frequenciaAluno.PercentualFrequencia;
         }
@@ -166,10 +165,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina)
         {
-            var sintese = percentualFrequencia != null ? 
+            var sintese = percentualFrequencia == null ? 
                 SinteseEnum.NaoFrequente :
                 percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
-                SinteseEnum.Frequente : 
+                SinteseEnum.Frequente :
                 SinteseEnum.NaoFrequente;
 
             return new SinteseDto()
@@ -212,13 +211,13 @@ namespace SME.SGP.Aplicacao
             var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
             var disciplinasDaTurmaEol = await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma);
             var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
-            var gruposMatrizes = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null).GroupBy(c => c.GrupoMatrizNome).ToList();
+            var gruposMatrizes = disciplinasDaTurma.Where(c => c.RegistraFrequencia && c.GrupoMatrizNome != null).GroupBy(c => c.GrupoMatrizNome).ToList();
             var somaFrequenciaFinal = 0.0;
             var totalDisciplinas = 0;
 
-            foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key))
+            foreach (var grupoDisciplinasMatriz in gruposMatrizes.OrderBy(k => k.Key))
             {
-                foreach (var disciplina in grupoDisiplinasMatriz)
+                foreach (var disciplina in grupoDisciplinasMatriz)
                 {
                     var somaPercentualFrequenciaDisciplinaBimestre = 0.0;
                     periodos.ToList().ForEach(p =>
@@ -231,7 +230,7 @@ namespace SME.SGP.Aplicacao
                     var mediaFinalFrequenciaDiscipina = Math.Round(somaPercentualFrequenciaDisciplinaBimestre / periodos.Count(), 2);
                     somaFrequenciaFinal += mediaFinalFrequenciaDiscipina;
                 }
-                totalDisciplinas += grupoDisiplinasMatriz.Count();
+                totalDisciplinas += grupoDisciplinasMatriz.Count();
             }
 
             return Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
