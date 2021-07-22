@@ -123,6 +123,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join turma t on
 	                        t.ue_id = u.id
                         where
+                            not ae.excluido and 
 	                        ae.professor_rf = @codigoRF
 	                        {(somenteInfantil ? "and t.modalidade_codigo = @infantil " : string.Empty)}
                         order by
@@ -151,7 +152,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and professor_rf = @codigoRF ");
 
             if (data.HasValue)
-                sql.AppendLine(" and data_inicio >= @data and data_fim <= @data ");
+                sql.AppendLine(" and data_inicio <= @data and data_fim >= @data ");
 
             return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql.ToString(), new { anoLetivo, dreCodigo, ueCodigo, codigoRF, data = data.HasValue ? data.Value.Date : DateTime.MinValue });
         }

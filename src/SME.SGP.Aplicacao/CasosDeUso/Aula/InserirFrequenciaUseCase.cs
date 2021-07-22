@@ -33,10 +33,19 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma informada não foi encontrada");
 
+            if (usuario.EhProfessorCj())
+            {
+                var possuiAtribuicao = await mediator.Send(new PossuiAtribuicaoEsporadicaPorAnoDataQuery(aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, usuario.CodigoRf, aula.DataAula));
+
+                if (!possuiAtribuicao)
+                    throw new NegocioException("Você não possui permissão para cadastrar aulas neste período");
+            }
+
             if (!aula.PermiteRegistroFrequencia(turma))
             {
                 throw new NegocioException("Não é permitido registro de frequência para este componente curricular.");
             }
+
 
             if (!usuario.EhGestorEscolar())
             {

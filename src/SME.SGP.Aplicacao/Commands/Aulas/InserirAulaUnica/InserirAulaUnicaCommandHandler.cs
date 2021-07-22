@@ -29,12 +29,20 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
 
+            if (request.Usuario.EhProfessorCj())
+            {
+                var possuiAtribuicao = await mediator.Send(new PossuiAtribuicaoEsporadicaPorAnoDataQuery(request.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, request.Usuario.CodigoRf, request.DataAula));
+
+                if (!possuiAtribuicao)
+                    throw new NegocioException("Você não possui permissão para cadastrar aulas neste período");
+            }
+
             var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularQuery(request.DataAula, request.CodigoTurma, request.CodigoComponenteCurricular, request.Usuario.EhProfessorCj()));
             if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
             {
                 if (request.Usuario.EhProfessorCj())
                 {
-                    if(aulasExistentes.Any(a => a.ProfessorRf == request.Usuario.CodigoRf))
+                    if (aulasExistentes.Any(a => a.ProfessorRf == request.Usuario.CodigoRf))
                         throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
                 }
                 else
@@ -51,7 +59,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 
             aula.Id = await repositorioAula.SalvarAsync(aula);
 
-            if(request.Usuario.PerfilAtual != Perfis.PERFIL_DIRETOR)
+            if (request.Usuario.PerfilAtual != Perfis.PERFIL_DIRETOR)
                 await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens, request.Usuario);
 
             retorno.Mensagens.Add("Aula cadastrada com sucesso.");

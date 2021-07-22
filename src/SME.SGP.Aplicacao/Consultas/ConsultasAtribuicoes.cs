@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres()
+        public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres()
         {
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
@@ -147,9 +147,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private AbrangenciaDreRetorno TransformaDreEmDto(Dre dre)
+        private AbrangenciaDreRetornoDto TransformaDreEmDto(Dre dre)
         {
-            return new AbrangenciaDreRetorno()
+            return new AbrangenciaDreRetornoDto()
             {
                 Abreviacao = dre.Abreviacao,
                 Codigo = dre.CodigoDre,
@@ -157,7 +157,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private IEnumerable<AbrangenciaDreRetorno> TransformarDresEmDresDto(IEnumerable<Dre> dres)
+        private IEnumerable<AbrangenciaDreRetornoDto> TransformarDresEmDresDto(IEnumerable<Dre> dres)
         {
             foreach (var dre in dres)
             {

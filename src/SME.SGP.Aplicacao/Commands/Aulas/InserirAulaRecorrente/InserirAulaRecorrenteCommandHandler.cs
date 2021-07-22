@@ -60,6 +60,12 @@ namespace SME.SGP.Aplicacao
         {
             if (usuarioLogado.EhProfessorCj())
             {
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aulaRecorrente.CodigoTurma));
+                var possuiAtribuicao = await mediator.Send(new PossuiAtribuicaoEsporadicaPorAnoDataQuery(aulaRecorrente.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, usuarioLogado.CodigoRf, aulaRecorrente.DataAula));
+
+                if (!possuiAtribuicao)
+                    throw new NegocioException("Você não possui permissão para cadastrar aulas neste período");
+
                 await ValidaComponentesQuandoCj(aulaRecorrente, usuarioLogado);
                 return;
             }

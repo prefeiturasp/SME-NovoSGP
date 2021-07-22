@@ -49,16 +49,15 @@ namespace SME.SGP.Dominio.Servicos
 
             atribuicaoEsporadica.Validar(ehPerfilSelecionadoSME, anoLetivo, periodosEscolares);
 
-            using (var transacao = unitOfWork.IniciarTransacao())
-            {
-                repositorioAtribuicaoEsporadica.Salvar(atribuicaoEsporadica);
+            unitOfWork.IniciarTransacao();
 
-                Guid perfilAtribuicao = ehInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
+            repositorioAtribuicaoEsporadica.Salvar(atribuicaoEsporadica);
 
-                await AdicionarAtribuicaoEOL(atribuicaoEsporadica.ProfessorRf, perfilAtribuicao);
+            Guid perfilAtribuicao = ehInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
-                unitOfWork.PersistirTransacao();
-            }
+            await AdicionarAtribuicaoEOL(atribuicaoEsporadica.ProfessorRf, perfilAtribuicao);
+
+            unitOfWork.PersistirTransacao();
         }
 
         private async Task AdicionarAtribuicaoEOL(string codigoRF, Guid perfil)

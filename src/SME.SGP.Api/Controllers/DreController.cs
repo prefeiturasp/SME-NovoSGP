@@ -14,13 +14,13 @@ namespace SME.SGP.Api.Controllers
     public class DreController : ControllerBase
     {
         [HttpGet("atribuicoes")]
-        [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetorno>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetornoDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterDresAtribuicoes([FromServices] IConsultasAtribuicoes consultasAtribuicoes)
         {
-            IEnumerable<AbrangenciaDreRetorno> dres = await consultasAtribuicoes.ObterDres();
+            IEnumerable<AbrangenciaDreRetornoDto> dres = await consultasAtribuicoes.ObterDres();
 
             return Ok(dres);
         }

@@ -103,15 +103,15 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("dres")]
-        [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetorno>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetornoDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDres([FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery]  string filtro = "")
+        public async Task<IActionResult> ObterDres([FromServices] IObterAbrangenciaDresUseCase useCase, [FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery]  string filtro = "")
         {
              if (filtro.Length < 3)
                 filtro = "";
 
-            var dres = await consultasAbrangencia.ObterDres(modalidade, periodo, ConsideraHistorico, anoLetivo, filtro);
+            var dres = await useCase.Executar(modalidade, periodo, ConsideraHistorico, anoLetivo, filtro);
 
             if (dres.Any())
                 return Ok(dres);

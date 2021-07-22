@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
             return Task.FromResult(anos);
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "")
+        public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "")
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
