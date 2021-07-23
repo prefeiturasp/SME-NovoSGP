@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IObterMuralAvisosUseCase
     {
