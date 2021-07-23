@@ -20,12 +20,13 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<EventoAulaDto>> Handle(ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery request, CancellationToken cancellationToken)
         {
             var retorno = new List<EventoAulaDto>();
-
+            var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(request.TurmaCodigo));
             if (request.Aulas.Any())
             {
                 foreach (var aulaParaVisualizar in request.Aulas)
                 {
                     var componenteCurricular = request.ComponentesCurricularesParaVisualizacao.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId));
+                    var professorTitular = professoresTitulares != null ? professoresTitulares.FirstOrDefault(p => p.DisciplinaId == long.Parse(aulaParaVisualizar.DisciplinaId)) : null;
 
                     var eventoAulaDto = new EventoAulaDto()
                     {
@@ -43,7 +44,8 @@ namespace SME.SGP.Aplicacao
                                                        from disciplina in avaliacao.Disciplinas
                                                        where avaliacao.EhCj == aulaParaVisualizar.AulaCJ &&
                                                              disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId &&
-                                                             avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf
+                                                             (avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf || 
+                                                             (professorTitular != null && professorTitular.ProfessorRf == avaliacao.ProfessorRf && !avaliacao.EhCj))
                                                        select avaliacao);
 
                     if (atividadesAvaliativasDaAula.Any())

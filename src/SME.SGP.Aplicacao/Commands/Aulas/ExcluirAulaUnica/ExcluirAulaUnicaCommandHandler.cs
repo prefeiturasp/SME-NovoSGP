@@ -33,33 +33,29 @@ namespace SME.SGP.Aplicacao
             if(!request.Usuario.EhGestorEscolar())
                 await ValidarComponentesDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId), aula.DataAula, request.Usuario);
 
-            unitOfWork.IniciarTransacao();
-            try
-            {
-                if (aula.WorkflowAprovacaoId.HasValue)
-                    await mediator.Send(new ExcluirWorkflowCommand(aula.WorkflowAprovacaoId.Value));
+            if (aula.WorkflowAprovacaoId.HasValue)
+                await PulicaFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, aula.WorkflowAprovacaoId.Value, request.Usuario);
 
-                await mediator.Send(new ExcluirNotificacoesDaAulaCommand(aula.Id));
-                await mediator.Send(new ExcluirFrequenciaDaAulaCommand(aula.Id));
-                await mediator.Send(new ExcluirPlanoAulaDaAulaCommand(aula.Id));
-                await mediator.Send(new ExcluirAnotacoesFrequencciaDaAulaCommand(aula.Id));
-                await mediator.Send(new ExcluirDiarioBordoDaAulaCommand(aula.Id));
-                await mediator.Send(new IncluirFilaExclusaoPendenciasAulaCommand(aula.Id, request.Usuario));
-                aula.Excluido = true;
-                await repositorioAula.SalvarAsync(aula);
+            await PulicaFilaSgp(RotasRabbitSgp.NotificacoesDaAulaExcluir, aula.Id, request.Usuario);
+            await PulicaFilaSgp(RotasRabbitSgp.FrequenciaDaAulaExcluir, aula.Id, request.Usuario);
+            await PulicaFilaSgp(RotasRabbitSgp.PlanoAulaDaAulaExcluir, aula.Id, request.Usuario);
+            await PulicaFilaSgp(RotasRabbitSgp.AnotacoesFrequenciaDaAulaExcluir, aula.Id, request.Usuario);
+            await PulicaFilaSgp(RotasRabbitSgp.DiarioBordoDaAulaExcluir, aula.Id, request.Usuario);
+            await PulicaFilaSgp(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula, aula.Id, request.Usuario);
 
-                unitOfWork.PersistirTransacao();
+            aula.Excluido = true;
+            await repositorioAula.SalvarAsync(aula);
 
-                await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aula.TurmaId, aula.DisciplinaId, aula.Id));
-            }
-            catch (Exception)
-            {
-                unitOfWork.Rollback();
-                throw;
-            }
+            await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aula.TurmaId, aula.DisciplinaId, aula.Id));
+
             var retorno = new RetornoBaseDto();
             retorno.Mensagens.Add("Aula excluída com sucesso.");
             return retorno;
+        }
+
+        private async Task PulicaFilaSgp(string fila, long id, Usuario usuario)
+        {
+            await mediator.Send(new PublicarFilaSgpCommand(fila, new FiltroIdDto(id), Guid.NewGuid(), usuario));
         }
 
         private async Task ValidarComponentesDoProfessor(string codigoTurma, long componenteCurricularCodigo, DateTime dataAula, Usuario usuario)
