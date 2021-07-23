@@ -20,7 +20,7 @@ namespace SME.SGP.Dados.Repositorios
         
         public async Task<IEnumerable<MuralAvisosRetornoDto>> ObterPorAulaId(long aulaId)
         {
-            var query = @"select criado_em as DataPublicacao, mensagem, email from aviso where aula_id = @aulaId";
+            var query = @"select id, criado_em as DataPublicacao, mensagem, email from aviso where aula_id = @aulaId";
             return await database.Conexao.QueryAsync<MuralAvisosRetornoDto>(query, new { aulaId });
         }
     }

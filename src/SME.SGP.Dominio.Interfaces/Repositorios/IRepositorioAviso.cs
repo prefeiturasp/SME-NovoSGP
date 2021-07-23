@@ -8,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<Aviso> ObterPorClassroomId(long avisoClassroomId);
         Task<IEnumerable<MuralAvisosRetornoDto>> ObterPorAulaId(long aulaId);
+        Task AlterarAviso(long id, string mensagem);
     }
 }
