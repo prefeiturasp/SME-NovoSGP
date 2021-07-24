@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterTurmaModalidadesPorCodigosUseCase
     {
-        public Task<IEnumerable<TurmaModalidadeCodigoDto>> Executar(string[] turmaCodigos);
+        Task<IEnumerable<TurmaModalidadeCodigoDto>> Executar(string[] turmaCodigos);
     }
 }
