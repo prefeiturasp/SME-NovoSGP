@@ -47,7 +47,7 @@ namespace SME.SGP.Dominio.Servicos
 
             bool ehPerfilSelecionadoSME = servicoUsuario.UsuarioLogadoPossuiPerfilSme();
 
-            atribuicaoEsporadica.Validar(ehPerfilSelecionadoSME, anoLetivo, periodosEscolares);
+            atribuicaoEsporadica.Validar(ehPerfilSelecionadoSME, anoLetivo, periodosEscolares, modalidade);
 
             unitOfWork.IniciarTransacao();
 

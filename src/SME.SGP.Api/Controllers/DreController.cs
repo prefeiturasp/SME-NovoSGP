@@ -18,9 +18,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterDresAtribuicoes([FromServices] IConsultasAtribuicoes consultasAtribuicoes)
+        public async Task<IActionResult> ObterDresAtribuicoes([FromQuery] int anoLetivo, [FromServices] IConsultasAtribuicoes consultasAtribuicoes)
         {
-            IEnumerable<AbrangenciaDreRetornoDto> dres = await consultasAtribuicoes.ObterDres();
+            IEnumerable<AbrangenciaDreRetornoDto> dres = await consultasAtribuicoes.ObterDres(anoLetivo);
 
             return Ok(dres);
         }

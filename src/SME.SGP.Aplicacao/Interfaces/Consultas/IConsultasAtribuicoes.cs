@@ -6,8 +6,8 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasAtribuicoes
     {
-        Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres();
+        Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres(int anoLetivo);
 
-        Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre);
+        Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, int anoLetivo);
     }
 }

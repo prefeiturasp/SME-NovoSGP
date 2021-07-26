@@ -37,9 +37,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterUesAtribuicoes(string codigoDre, [FromServices] IConsultasAtribuicoes consultasAtribuicoes)
+        public async Task<IActionResult> ObterUesAtribuicoes(string codigoDre, [FromQuery] int anoLetivo, [FromServices] IConsultasAtribuicoes consultasAtribuicoes)
         {
-            return Ok(await consultasAtribuicoes.ObterUes(codigoDre));
+            return Ok(await consultasAtribuicoes.ObterUes(codigoDre, anoLetivo));
         }
     }
 }

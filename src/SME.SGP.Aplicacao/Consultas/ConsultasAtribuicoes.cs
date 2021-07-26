@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -18,9 +19,10 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
         public ConsultasAtribuicoes(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioDre repositorioDre, IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica,
-            IServicoEol servicoEol, IRepositorioUe repositorioUe, IServicoUsuario servicoUsuario, IConsultasAbrangencia consultasAbrangencia)
+            IServicoEol servicoEol, IRepositorioUe repositorioUe, IServicoUsuario servicoUsuario, IConsultasAbrangencia consultasAbrangencia, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
@@ -29,9 +31,10 @@ namespace SME.SGP.Aplicacao
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres()
+        public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres(int anoLetivo)
         {
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
@@ -46,7 +49,10 @@ namespace SME.SGP.Aplicacao
                 else
                     ObterAtribuicoesCjDre(loginAtual, codigosDres);
 
-                ObterAtribuicoesEsporadicasDre(loginAtual, codigosDres, somenteInfantil);
+                if (anoLetivo == 0)
+                    anoLetivo = DateTime.Now.Year;
+
+                await ObterAtribuicoesEsporadicasDreAsync(loginAtual, codigosDres, somenteInfantil, anoLetivo);
                 await ObterAtribuicoesEolDre(loginAtual, perfilAtual, codigosDres);
 
                 var dres = repositorioDre.ListarPorCodigos(codigosDres.Distinct().ToArray());
@@ -59,7 +65,7 @@ namespace SME.SGP.Aplicacao
                 return await consultasAbrangencia.ObterDres(null, 0);
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre)
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, int anoLetivo)
         {
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
@@ -75,7 +81,10 @@ namespace SME.SGP.Aplicacao
                 else
                     await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre);
 
-                ObterAtribuicoesEsporadicasUe(loginAtual, codigosUes, codigoDre, somenteInfantil);
+                if (anoLetivo == 0)
+                    anoLetivo = DateTime.Now.Year;
+
+                await ObterAtribuicoesEsporadicasUeAsync(loginAtual, codigosUes, codigoDre, somenteInfantil, anoLetivo);
 
                 IEnumerable<Ue> ues = repositorioUe.ListarPorCodigos(codigosUes.Distinct().ToArray());
 
@@ -126,24 +135,35 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void ObterAtribuicoesEsporadicasDre(string professorRf, List<string> codigosDres, bool somenteInfantil)
+        private async Task ObterAtribuicoesEsporadicasDreAsync(string professorRf, List<string> codigosDres, bool somenteInfantil, int anoLetivo)
         {
-            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(professorRf, somenteInfantil);
-            if (atribuicaoEsporadica != null && !codigosDres.Any(a => a == atribuicaoEsporadica.DreId))
+            var atribuicoesEsporadicas = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(professorRf, somenteInfantil, anoLetivo));
+            if (atribuicoesEsporadicas != null && atribuicoesEsporadicas.Any())
             {
-                codigosDres.Add(atribuicaoEsporadica.DreId);
+                foreach (var atribuicaoEsporadica in atribuicoesEsporadicas)
+                {
+                    if (!codigosDres.Any(a => a == atribuicaoEsporadica.DreId))
+                    {
+                        codigosDres.Add(atribuicaoEsporadica.DreId);
+                    }
+                }
             }
         }
 
-        private void ObterAtribuicoesEsporadicasUe(string professorRf, List<string> codigosUes, string codigoDre, bool somenteInfantil)
+        private async Task ObterAtribuicoesEsporadicasUeAsync(string professorRf, List<string> codigosUes, string codigoDre, bool somenteInfantil, int anoLetivo)
         {
-            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(professorRf, somenteInfantil);
-            if (atribuicaoEsporadica != null)
+            
+            var atribuicoesEsporadicas = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(professorRf, somenteInfantil, anoLetivo));
+            if (atribuicoesEsporadicas != null && atribuicoesEsporadicas.Any())
             {
-                if (atribuicaoEsporadica.DreId == codigoDre && (!codigosUes.Any(a => a == atribuicaoEsporadica.UeId)))
+                foreach(var atribuicaoEsporadica in atribuicoesEsporadicas)
                 {
-                    codigosUes.Add(atribuicaoEsporadica.UeId);
+                    if (atribuicaoEsporadica.DreId == codigoDre && (!codigosUes.Any(a => a == atribuicaoEsporadica.UeId)))
+                    {
+                        codigosUes.Add(atribuicaoEsporadica.UeId);
+                    }
                 }
+                
             }
         }
 
