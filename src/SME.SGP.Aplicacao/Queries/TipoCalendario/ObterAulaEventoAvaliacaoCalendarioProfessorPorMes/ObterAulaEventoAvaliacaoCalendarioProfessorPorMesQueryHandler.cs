@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -57,7 +58,17 @@ namespace SME.SGP.Aplicacao
 
                     }
 
-                    eventoAula.PossuiPendencia = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasDoDia.Select(a => a.Id).ToArray(), turma.ModalidadeCodigo));
+                    var aulasId = aulasDoDia.Select(a => a.Id).ToArray();
+                    if (turma.ModalidadeCodigo == Modalidade.EJA)
+                    {
+                        var aulas = aulasDoDia.Where(a => !a.EhTecnologiaAprendizagem);
+                        aulasId = aulas!= null && aulas.Any() ? aulas.Select(a => a.Id).ToArray() : null;
+                    }
+
+                    if (aulasId != null && aulasId.Any())
+                        eventoAula.PossuiPendencia = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasId, turma.ModalidadeCodigo));
+                    else
+                        eventoAula.PossuiPendencia = false;
                 }
                 listaRetorno.Add(eventoAula);
             }
