@@ -193,7 +193,9 @@ namespace SME.SGP.Aplicacao
                                                              a.DataMatricula.Date <= bimestreDoPeriodo.PeriodoFim.Date)
                                                        .OrderBy(a => a.NumeroAlunoChamada)
                                                        .ThenBy(a => a.NomeValido());
-
+              
+                var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, disciplinaId.ToString(), periodoAtual.Id));
+                
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
                     var fechamentoTurma = (from ft in fechamentosTurma
@@ -239,6 +241,10 @@ namespace SME.SGP.Aplicacao
                     {
                         if (fechamentoBimestre.EhSintese && fechamentoTurma == null)
                         {
+                            if (!turmaPossuiFrequenciaRegistrada)
+                                throw new NegocioException("Não é possivel registrar fechamento pois não há registros de frequência no bimestre.");
+
+                            var percentualFrequencia = frequenciaAluno == null ? 100 : frequenciaAluno.PercentualFrequencia;
                             var sinteseDto = await consultasFrequencia.ObterSinteseAluno(frequenciaAluno.PercentualFrequencia, disciplinaEOL);
 
                             alunoDto.SinteseId = sinteseDto.Id;
