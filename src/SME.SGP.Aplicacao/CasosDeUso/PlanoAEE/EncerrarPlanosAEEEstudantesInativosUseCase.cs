@@ -37,6 +37,7 @@ namespace SME.SGP.Aplicacao
             planoAEE.Situacao = SituacaoPlanoAEE.EncerradoAutomaticamento;
 
             await mediator.Send(new PersistirPlanoAEECommand(planoAEE));
+            await mediator.Send(new ResolverPendenciaPlanoAEECommand(planoAEE.Id));
 
             if (await ParametroNotificarPlanosAEE())
                 await NotificarEncerramento(planoAEE, situacaoMatricula, dataSituacao);
