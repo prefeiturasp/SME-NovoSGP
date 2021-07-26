@@ -194,106 +194,103 @@ namespace SME.SGP.Aplicacao
                                                        .OrderBy(a => a.NumeroAlunoChamada)
                                                        .ThenBy(a => a.NomeValido());
 
+                var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, disciplinaId.ToString(), periodoAtual.Id));
+
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
-                    try
+                    var fechamentoTurma = (from ft in fechamentosTurma
+                                           from fa in ft.FechamentoAlunos
+                                           where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
+                                           select ft).FirstOrDefault();
+
+                    var alunoDto = new NotaConceitoAlunoBimestreDto
                     {
+                        CodigoAluno = aluno.CodigoAluno,
+                        NumeroChamada = aluno.NumeroAlunoChamada,
+                        Nome = aluno.NomeAluno,
+                        Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo),
+                        EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
+                    };
 
+                    var anotacaoAluno = await consultasFehcamentoAluno.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
+                    alunoDto.TemAnotacao = anotacaoAluno != null && anotacaoAluno.Anotacao != null &&
+                                        !string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim());
 
-                        var fechamentoTurma = (from ft in fechamentosTurma
-                                               from fa in ft.FechamentoAlunos
-                                               where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
-                                               select ft).FirstOrDefault();
+                    var marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
+                    if (marcador != null)
+                    {
+                        alunoDto.Informacao = marcador.Descricao;
+                    }
 
-                        var alunoDto = new NotaConceitoAlunoBimestreDto
+                    var frequenciaAluno = consultasFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim);
+                    if (frequenciaAluno != null)
+                    {
+                        alunoDto.QuantidadeFaltas = frequenciaAluno.TotalAusencias;
+                        alunoDto.QuantidadeCompensacoes = frequenciaAluno.TotalCompensacoes;
+                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia.ToString();
+                    }
+                    else
+                    {
+                        alunoDto.QuantidadeFaltas = 0;
+                        alunoDto.QuantidadeCompensacoes = 0;
+                        alunoDto.PercentualFrequencia = string.Empty;
+                    }
+
+                    // Carrega Frequencia do aluno
+                    if (aluno.CodigoAluno != null)
+                    {
+                        if (fechamentoBimestre.EhSintese && fechamentoTurma == null)
                         {
-                            CodigoAluno = aluno.CodigoAluno,
-                            NumeroChamada = aluno.NumeroAlunoChamada,
-                            Nome = aluno.NomeAluno,
-                            Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo),
-                            EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
-                        };
+                            if (!turmaPossuiFrequenciaRegistrada)
+                                throw new NegocioException("Não é possivel registrar fechamento pois não há registros de frequência no bimestre.");
+                               
+                            var percentualFrequencia = frequenciaAluno == null ? 100 : frequenciaAluno.PercentualFrequencia;
+                            var sinteseDto = await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplinaEOL);
 
-                        var anotacaoAluno = await consultasFehcamentoAluno.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
-                        alunoDto.TemAnotacao = anotacaoAluno != null && anotacaoAluno.Anotacao != null &&
-                                            !string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim());
-
-                        var marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
-                        if (marcador != null)
-                        {
-                            alunoDto.Informacao = marcador.Descricao;
-                        }
-
-                        var frequenciaAluno = consultasFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim);
-                        if (frequenciaAluno != null)
-                        {
-                            alunoDto.QuantidadeFaltas = frequenciaAluno.TotalAusencias;
-                            alunoDto.QuantidadeCompensacoes = frequenciaAluno.TotalCompensacoes;
-                            alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia.ToString();
+                            alunoDto.SinteseId = sinteseDto.Id;
+                            alunoDto.Sintese = sinteseDto.Valor;
                         }
                         else
                         {
-                            alunoDto.QuantidadeFaltas = 0;
-                            alunoDto.QuantidadeCompensacoes = 0;
-                            alunoDto.PercentualFrequencia = string.Empty;
-                        }
+                            // Carrega notas do bimestre
+                            var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma != null ? fechamentoTurma.Id : 0);
 
-                        // Carrega Frequencia do aluno
-                        if (aluno.CodigoAluno != null)
-                        {
-                            if (fechamentoBimestre.EhSintese && fechamentoTurma == null)
+                            if (notasConceitoBimestre.Any())
+                                alunoDto.Notas = new List<FechamentoNotaRetornoDto>();
+
+                            if (fechamentoBimestre.EhSintese)
                             {
-                                var percentualFrequencia = frequenciaAluno == null ? 100 : frequenciaAluno.PercentualFrequencia;
-                                var sinteseDto = await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplinaEOL);
-
-                                alunoDto.SinteseId = sinteseDto.Id;
-                                alunoDto.Sintese = sinteseDto.Valor;
+                                var notaConceitoBimestre = notasConceitoBimestre.FirstOrDefault();
+                                if (notaConceitoBimestre != null && notaConceitoBimestre.SinteseId.HasValue)
+                                {
+                                    alunoDto.SinteseId = (SinteseEnum)notaConceitoBimestre.SinteseId.Value;
+                                    alunoDto.Sintese = ObterSintese(notaConceitoBimestre.SinteseId.Value);
+                                }
                             }
                             else
-                            {
-                                // Carrega notas do bimestre
-                                var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma != null ? fechamentoTurma.Id : 0);
-
-                                if (notasConceitoBimestre.Any())
-                                    alunoDto.Notas = new List<FechamentoNotaRetornoDto>();
-
-                                if (fechamentoBimestre.EhSintese)
+                                foreach (var notaConceitoBimestre in notasConceitoBimestre)
                                 {
-                                    var notaConceitoBimestre = notasConceitoBimestre.FirstOrDefault();
-                                    if (notaConceitoBimestre != null && notaConceitoBimestre.SinteseId.HasValue)
+                                    string nomeDisciplina;
+                                    if (disciplinaEOL.Regencia)
+                                        nomeDisciplina = disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId)?.Nome;
+                                    else nomeDisciplina = disciplinaEOL.Nome;
+
+                                    ((List<FechamentoNotaRetornoDto>)alunoDto.Notas).Add(new FechamentoNotaRetornoDto()
                                     {
-                                        alunoDto.SinteseId = (SinteseEnum)notaConceitoBimestre.SinteseId.Value;
-                                        alunoDto.Sintese = ObterSintese(notaConceitoBimestre.SinteseId.Value);
-                                    }
+                                        DisciplinaId = notaConceitoBimestre.DisciplinaId,
+                                        Disciplina = nomeDisciplina,
+                                        NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota,
+                                        EhConceito = notaConceitoBimestre.ConceitoId.HasValue,
+                                        ConceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : string.Empty
+                                    });
                                 }
-                                else
-                                    foreach (var notaConceitoBimestre in notasConceitoBimestre)
-                                    {
-                                        string nomeDisciplina;
-                                        if (disciplinaEOL.Regencia)
-                                            nomeDisciplina = disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId)?.Nome;
-                                        else nomeDisciplina = disciplinaEOL.Nome;
-
-                                        ((List<FechamentoNotaRetornoDto>)alunoDto.Notas).Add(new FechamentoNotaRetornoDto()
-                                        {
-                                            DisciplinaId = notaConceitoBimestre.DisciplinaId,
-                                            Disciplina = nomeDisciplina,
-                                            NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota,
-                                            EhConceito = notaConceitoBimestre.ConceitoId.HasValue,
-                                            ConceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : string.Empty
-                                        });
-                                    }
-                            }
-
-                            fechamentoBimestre.Alunos.Add(alunoDto);
-
                         }
 
+                        fechamentoBimestre.Alunos.Add(alunoDto);
+
                     }
-                    catch (Exception ex)
-                    {
-                        throw ex;
-                    }
+
+
                 }
             }
 
