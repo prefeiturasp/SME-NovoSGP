@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,14 +39,15 @@ namespace SME.SGP.Aplicacao
             {
                 var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, usuario.CodigoRf));
 
-                if (!possuiAtribuicaoCJ)
-                {
-                    var possuiAtribuicaoEsporadica = await mediator.Send(new PossuiAtribuicaoEsporadicaPorAnoDataQuery(aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, usuario.CodigoRf, aula.DataAula));
+                var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuario.CodigoRf, false, aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
 
-                    if (!possuiAtribuicaoEsporadica)
+                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
+                {
+                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
                         throw new NegocioException($"Você não possui permissão para alterar o registro de diário de bordo neste período");
                 }
             }
+
 
             var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId);
             if (diarioBordo == null)

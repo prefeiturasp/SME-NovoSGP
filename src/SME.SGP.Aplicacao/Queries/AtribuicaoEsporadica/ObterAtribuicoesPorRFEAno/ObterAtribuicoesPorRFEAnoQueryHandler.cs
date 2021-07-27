@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<AtribuicaoEsporadica>> Handle(ObterAtribuicoesPorRFEAnoQuery request, CancellationToken cancellationToken)
-            => await repositorioAtribuicaoEsporadica.ObterAtribuicoesPorRFEAno(request.ProfessorRf, request.SomenteInfantil, request.AnoLetivo);
+            => await repositorioAtribuicaoEsporadica.ObterAtribuicoesPorRFEAno(request.ProfessorRf, request.SomenteInfantil, request.AnoLetivo, request.DreCodigo, request.UeCodigo);
 
     }
 }

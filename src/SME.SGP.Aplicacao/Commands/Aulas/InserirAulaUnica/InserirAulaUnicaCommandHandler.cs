@@ -32,13 +32,13 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             if (request.Usuario.EhProfessorCj())
             {
                 var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, request.Usuario.CodigoRf));
+                var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(request.Usuario.CodigoRf, false, request.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
 
-                if(!possuiAtribuicaoCJ)
+                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
                 {
-                    var possuiAtribuicaoEsporadica = await mediator.Send(new PossuiAtribuicaoEsporadicaPorAnoDataQuery(request.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, request.Usuario.CodigoRf, request.DataAula));
-
-                    if (!possuiAtribuicaoEsporadica)
+                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= request.DataAula.Date && a.DataFim >= request.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
                         throw new NegocioException("Você não possui permissão para cadastrar aulas neste período");
+
                 }                
             }
 

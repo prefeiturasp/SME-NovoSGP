@@ -16,6 +16,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<bool> PossuiAtribuicaoPorAnoData(int? anoLetivo, string dreCodigo, string ueCodigo, string codigoRF, DateTime? data);
 
-        Task<IEnumerable<AtribuicaoEsporadica>> ObterAtribuicoesPorRFEAno(string codigoRF, bool somenteInfantil, int anoLetivo);
+        Task<IEnumerable<AtribuicaoEsporadica>> ObterAtribuicoesPorRFEAno(string codigoRF, bool somenteInfantil, int anoLetivo, string dreCodigo, string ueCodigo);
     }
 }
