@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
                 atribuiuCj = await AtribuirPerfilCJ(atribuicaoCJPersistenciaDto, perfilCJ, atribuiuCj);
 
-                if(DateTime.Now.Year != anoLetivo)
+                if(DateTime.Now.Year == anoLetivo)
                     await PublicarAtribuicaoNoGoogleClassroomApiAsync(atribuicao);
             }
         }
