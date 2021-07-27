@@ -27,7 +27,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Listar([FromQuery] FiltroFrequenciaDto filtro, [FromServices] IObterFrequenciaPorAulaUseCase useCase)
         {
             var retorno = await useCase.Executar(filtro);            
-            //var retorno = await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId, componenteCurricularId);
             if (retorno == null)
                 return NoContent();
 

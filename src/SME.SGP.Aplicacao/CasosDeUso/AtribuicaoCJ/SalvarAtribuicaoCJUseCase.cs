@@ -15,8 +15,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task Executar(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
         {
+            var anoLetivo = int.Parse(atribuicaoCJPersistenciaDto.AnoLetivo);
+
             var atribuicoesAtuais = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(atribuicaoCJPersistenciaDto.Modalidade, atribuicaoCJPersistenciaDto.TurmaId,
-              atribuicaoCJPersistenciaDto.UeId, 0, atribuicaoCJPersistenciaDto.UsuarioRf, string.Empty, null));
+              atribuicaoCJPersistenciaDto.UeId, 0, atribuicaoCJPersistenciaDto.UsuarioRf, string.Empty, null, "", null, anoLetivo));
 
             bool atribuiuCj = false;
 
@@ -42,7 +44,8 @@ namespace SME.SGP.Aplicacao
 
                 atribuiuCj = await AtribuirPerfilCJ(atribuicaoCJPersistenciaDto, perfilCJ, atribuiuCj);
 
-                await PublicarAtribuicaoNoGoogleClassroomApiAsync(atribuicao);
+                if(DateTime.Now.Year == anoLetivo)
+                    await PublicarAtribuicaoNoGoogleClassroomApiAsync(atribuicao);
             }
         }
 

@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo, bool ehInfantil)
         {
-            var atribuicoesConflitantes = repositorioAtribuicaoEsporadica.ObterAtribuicoesDatasConflitantes(atribuicaoEsporadica.DataInicio, atribuicaoEsporadica.DataFim, atribuicaoEsporadica.ProfessorRf, atribuicaoEsporadica.Id);
+            var atribuicoesConflitantes = repositorioAtribuicaoEsporadica.ObterAtribuicoesDatasConflitantes(atribuicaoEsporadica.DataInicio, atribuicaoEsporadica.DataFim, atribuicaoEsporadica.ProfessorRf, atribuicaoEsporadica.DreId, atribuicaoEsporadica.UeId, atribuicaoEsporadica.Id);
 
             if (atribuicoesConflitantes != null && atribuicoesConflitantes.Any())
                 throw new NegocioException("Já existem outras atribuições, para este professor, no periodo especificado");
@@ -47,18 +47,17 @@ namespace SME.SGP.Dominio.Servicos
 
             bool ehPerfilSelecionadoSME = servicoUsuario.UsuarioLogadoPossuiPerfilSme();
 
-            atribuicaoEsporadica.Validar(ehPerfilSelecionadoSME, anoLetivo, periodosEscolares);
+            atribuicaoEsporadica.Validar(ehPerfilSelecionadoSME, anoLetivo, periodosEscolares, modalidade);
 
-            using (var transacao = unitOfWork.IniciarTransacao())
-            {
-                repositorioAtribuicaoEsporadica.Salvar(atribuicaoEsporadica);
+            unitOfWork.IniciarTransacao();
 
-                Guid perfilAtribuicao = ehInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
+            repositorioAtribuicaoEsporadica.Salvar(atribuicaoEsporadica);
 
-                await AdicionarAtribuicaoEOL(atribuicaoEsporadica.ProfessorRf, perfilAtribuicao);
+            Guid perfilAtribuicao = ehInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
-                unitOfWork.PersistirTransacao();
-            }
+            await AdicionarAtribuicaoEOL(atribuicaoEsporadica.ProfessorRf, perfilAtribuicao);
+
+            unitOfWork.PersistirTransacao();
         }
 
         private async Task AdicionarAtribuicaoEOL(string codigoRF, Guid perfil)

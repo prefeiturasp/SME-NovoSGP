@@ -29,12 +29,25 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
 
+            if (request.Usuario.EhProfessorCj())
+            {
+                var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, request.Usuario.CodigoRf));
+                var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(request.Usuario.CodigoRf, false, request.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
+
+                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
+                {
+                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= request.DataAula.Date && a.DataFim >= request.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
+                        throw new NegocioException("Você não possui permissão para cadastrar aulas neste período");
+
+                }                
+            }
+
             var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularQuery(request.DataAula, request.CodigoTurma, request.CodigoComponenteCurricular, request.Usuario.EhProfessorCj()));
             if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
             {
                 if (request.Usuario.EhProfessorCj())
                 {
-                    if(aulasExistentes.Any(a => a.ProfessorRf == request.Usuario.CodigoRf))
+                    if (aulasExistentes.Any(a => a.ProfessorRf == request.Usuario.CodigoRf))
                         throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
                 }
                 else
@@ -51,7 +64,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 
             aula.Id = await repositorioAula.SalvarAsync(aula);
 
-            if(request.Usuario.PerfilAtual != Perfis.PERFIL_DIRETOR)
+            if (request.Usuario.PerfilAtual != Perfis.PERFIL_DIRETOR)
                 await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens, request.Usuario);
 
             retorno.Mensagens.Add("Aula cadastrada com sucesso.");

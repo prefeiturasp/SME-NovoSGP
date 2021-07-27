@@ -36,11 +36,11 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        public IEnumerable<AtribuicaoEsporadica> ObterAtribuicoesDatasConflitantes(DateTime dataInicio, DateTime dataFim, string professorRF, long id = 0)
+        public IEnumerable<AtribuicaoEsporadica> ObterAtribuicoesDatasConflitantes(DateTime dataInicio, DateTime dataFim, string professorRF, string dreCodigo, string ueCodigo, long id = 0)
         {
             var sql = ObterSqlConflitante(id > 0);
 
-            var parametros = new { professorRF, dataInicio, dataFim, id };
+            var parametros = new { professorRF, dataInicio, dataFim, dreCodigo, ueCodigo, id };
 
             return database.Conexao.Query<AtribuicaoEsporadica>(sql, parametros);
         }
@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
             var sql = new StringBuilder();
 
             sql.AppendLine(@"select * from atribuicao_esporadica
-                    where not excluido and professor_rf = @professorRF and
+                    where not excluido and professor_rf = @professorRF and dre_id = @dreCodigo and ue_id = @ueCodigo and
                     ((@dataInicio >= data_inicio and @dataInicio <= data_fim) or
                     (@dataFim  >= data_inicio and @dataFim <= data_fim) or
                     (data_inicio >= @dataInicio and data_inicio <= @dataFim) or
@@ -123,6 +123,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join turma t on
 	                        t.ue_id = u.id
                         where
+                            not ae.excluido and 
 	                        ae.professor_rf = @codigoRF
 	                        {(somenteInfantil ? "and t.modalidade_codigo = @infantil " : string.Empty)}
                         order by
@@ -130,6 +131,34 @@ namespace SME.SGP.Dados.Repositorios
 
             var infantil = Modalidade.InfantilPreEscola;
             return database.Conexao.QueryFirstOrDefault<AtribuicaoEsporadica>(sql, new { codigoRF, infantil });
+        }
+
+        public async Task<IEnumerable<AtribuicaoEsporadica>> ObterAtribuicoesPorRFEAno(string codigoRF, bool somenteInfantil, int anoLetivo, string dreCodigo, string ueCodigo)
+        {
+            var sql = $@"select
+	                        distinct ae.*
+                        from
+	                        atribuicao_esporadica ae
+                        inner join ue u on
+	                        u.ue_id = ae.ue_id
+                        inner join turma t on
+	                        t.ue_id = u.id
+                        where
+                            not ae.excluido and 
+                            ae.ano_letivo = @anoLetivo and
+	                        ae.professor_rf = @codigoRF
+	                        {(somenteInfantil ? "and t.modalidade_codigo = @infantil " : string.Empty)}";
+
+
+            if (!String.IsNullOrEmpty(dreCodigo))
+                sql += " and ae.dre_id = @dreCodigo ";
+            if (!String.IsNullOrEmpty(ueCodigo))
+                sql += " and ae.ue_id = @ueCodigo ";
+
+            sql += " order by ae.data_fim desc";
+
+            var infantil = Modalidade.InfantilPreEscola;
+            return await database.Conexao.QueryAsync<AtribuicaoEsporadica>(sql, new { codigoRF, infantil, anoLetivo, dreCodigo, ueCodigo });
         }
 
         public async Task<bool> PossuiAtribuicaoPorAnoData(int? anoLetivo, string dreCodigo, string ueCodigo, string codigoRF, DateTime? data)
@@ -151,7 +180,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and professor_rf = @codigoRF ");
 
             if (data.HasValue)
-                sql.AppendLine(" and data_inicio >= @data and data_fim <= @data ");
+                sql.AppendLine(" and data_inicio <= @data and data_fim >= @data ");
 
             return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql.ToString(), new { anoLetivo, dreCodigo, ueCodigo, codigoRF, data = data.HasValue ? data.Value.Date : DateTime.MinValue });
         }
