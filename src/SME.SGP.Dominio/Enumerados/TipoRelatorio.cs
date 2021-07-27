@@ -19,8 +19,8 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/conselhoclasseatafinal", ShortName = "Ata de resultados finais", Description = "Ata de resultados finais")]
         ConselhoClasseAtaFinal = 5,
 
-        [Display(Name = "relatorios/faltas-frequencia", ShortName = "RelatorioFaltasFrequencia", Description = "Relatório de faltas e frequência")]
-        FaltasFrequencia = 6,
+        [Display(Name = "relatorios/frequencia", ShortName = "RelatorioFrequencia", Description = "Relatório de frequência")]
+        Frequencia = 6,
 
         [Display(Name = "relatorios/historicoescolarfundamental", ShortName = "HistoricoEscolar", Description = "Histórico Escolar")]
         HistoricoEscolarFundamental = 7,

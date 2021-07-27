@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class GerarRelatorioFaltasFrequenciaUseCase : IGerarRelatorioFaltasFrequenciaUseCase
+    public class GerarRelatorioFrequenciaUseCase : IGerarRelatorioFrequenciaUseCase
     {
         private readonly IMediator mediator;
 
-        public GerarRelatorioFaltasFrequenciaUseCase(IMediator mediator)
+        public GerarRelatorioFrequenciaUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        public async Task<bool> Executar(FiltroRelatorioFaltasFrequenciaDto filtro)
+        public async Task<bool> Executar(FiltroRelatorioFrequenciaDto filtro)
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
@@ -35,15 +35,15 @@ namespace SME.SGP.Aplicacao
                     case Modalidade.Fundamental:
                     case Modalidade.EducacaoInfantil:
                     case Modalidade.Medio:
-                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, 3, 4, -99 });
+                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, 3, 4});
                         break;
                     case Modalidade.EJA:
-                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2, -99 });
+                        filtro.Bimestres.AddRange(new int[] { 0, 1, 2});
                         break;
                 }
             }
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FaltasFrequencia, filtro, usuario, filtro.TipoFormatoRelatorio));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Frequencia, filtro, usuario, filtro.TipoFormatoRelatorio));
         }
     }
 }
