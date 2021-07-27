@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface ISalvarAcompanhamentoAlunoUseCase : IUseCase<AcompanhamentoAlunoDto, AuditoriaDto>
+    public interface ISalvarAcompanhamentoAlunoUseCase : IUseCase<AcompanhamentoAlunoDto, AcompanhamentoAlunoSemestreAuditoriaDto>
     {
     }
 }

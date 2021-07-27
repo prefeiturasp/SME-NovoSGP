@@ -14,5 +14,13 @@ namespace SME.SGP.Infra.Utilitarios
             texto = Regex.Replace(texto, @"&nbsp;", " ").Trim();
             return texto.Trim();
         }
+
+        public static string RemoverTagsHtmlMidia(string texto)
+        {
+            texto = Regex.Replace(texto, @"<img[^>]*>", " [arquivo indisponível na visualização] ");
+            texto = Regex.Replace(texto, @"<iframe[^>]*>", " [arquivo indisponível na visualização] ");
+            texto = Regex.Replace(texto, @"<video.+</video>", " [arquivo indisponível na visualização] ");
+            return texto;
+        }
     }
 }

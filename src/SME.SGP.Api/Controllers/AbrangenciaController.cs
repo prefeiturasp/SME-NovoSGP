@@ -49,12 +49,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaFiltroRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterAbrangenciaAutoComplete(string filtro)
+        public async Task<IActionResult> ObterAbrangenciaAutoComplete(string filtro, [FromQuery]bool consideraAnosTurmasInfantil = false)
         {
             if (filtro.Length < 2)
                 return StatusCode(204);
 
-            var retorno = await consultasAbrangencia.ObterAbrangenciaPorfiltro(filtro, ConsideraHistorico);
+            var retorno = await consultasAbrangencia.ObterAbrangenciaPorfiltro(filtro, ConsideraHistorico, consideraAnosTurmasInfantil);
             if (retorno.Any())
                 return Ok(retorno);
             else return StatusCode(204);
@@ -151,10 +151,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] int[] tipos = null)
+        public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] int[] tipos = null, [FromQuery] bool consideraNovosAnosInfantil = false)
         {
             IEnumerable<AbrangenciaTurmaRetorno> turmas;
-            turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos);
+            turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil);
 
             if (!turmas.Any())
                 return NoContent();

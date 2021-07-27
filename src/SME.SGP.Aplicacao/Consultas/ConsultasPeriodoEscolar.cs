@@ -144,7 +144,7 @@ namespace SME.SGP.Aplicacao.Consultas
         private async Task<TipoCalendarioCompletoDto> ObterTipoCalendario(Modalidade modalidade, int anoLetivo, int semestre = 0)
         {
             var modalidadeCalendario = modalidade == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : 
-                                        modalidade == Modalidade.InfantilPreEscola ? ModalidadeTipoCalendario.Infantil :
+                                        modalidade == Modalidade.EducacaoInfantil ? ModalidadeTipoCalendario.Infantil :
                                         ModalidadeTipoCalendario.FundamentalMedio;
 
             var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCalendario, semestre);

@@ -15,6 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId);
 
         Task<AulaConsultaDto> ObterAulaDataTurmaDisciplinaProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf);
+        Task<DataAulaDto> ObterAulaPorCodigoTurmaComponenteEData(string turmaId, string componenteCurricularId, DateTime dataCriacao);
         Task<int> ObterAulasDadasPorTurmaEPeriodoEscolar(long turmaId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds);
         Task<PeriodoEscolarInicioFimDto> ObterPeriodoEscolarDaAula(long aulaId);
         Task<AulaConsultaDto> ObterAulaIntervaloTurmaDisciplina(DateTime dataInicio, DateTime dataFim, string turmaId, long atividadeAvaliativaId);

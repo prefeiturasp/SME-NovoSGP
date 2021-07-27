@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
             => await repositorioFrequencia.FrequenciaAulaRegistrada(aulaId);
 
-        public async Task<double?> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
+        public async Task<string> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
         {
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
@@ -76,10 +76,10 @@ namespace SME.SGP.Aplicacao
             
             var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
             
-            if (frequenciaAluno == null)
-                return null;            
+            if (frequenciaAluno == null || frequenciaAluno.PercentualFrequencia == 0)
+                return "";            
 
-            return frequenciaAluno.PercentualFrequencia;
+            return frequenciaAluno.PercentualFrequencia.ToString();
         }
 
         public async Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
             foreach (var alunoEOL in alunosAtivos)
             {
                 var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(alunoEOL.CodigoAluno, disciplinaId, periodo.PeriodoFim);
-                if (frequenciaAluno == null || frequenciaAluno.NumeroFaltasNaoCompensadas == 0)
+                if (frequenciaAluno == null || frequenciaAluno.NumeroFaltasNaoCompensadas <= 0 || frequenciaAluno.PercentualFrequencia == 100)
                     continue;
 
                 var faltasNaoCompensadas = int.Parse(frequenciaAluno.NumeroFaltasNaoCompensadas.ToString());
@@ -170,7 +170,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina)
         {
-            var sintese = percentualFrequencia != null ? 
+            var sintese = percentualFrequencia == null ? 
                 SinteseEnum.NaoFrequente :
                 percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
                 SinteseEnum.Frequente : 
@@ -210,7 +210,7 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private async Task<double> CalculoFrequenciaGlobal2020(string alunoCodigo, Turma turma)
+        private async Task<string> CalculoFrequenciaGlobal2020(string alunoCodigo, Turma turma)
         {
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
@@ -238,7 +238,10 @@ namespace SME.SGP.Aplicacao
                 totalDisciplinas += grupoDisiplinasMatriz.Count();
             }
 
-            return Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
+            var frequenciaGlobal2020 =  Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
+
+            return frequenciaGlobal2020 == 0 ? "" : frequenciaGlobal2020.ToString();
+
         }
 
 

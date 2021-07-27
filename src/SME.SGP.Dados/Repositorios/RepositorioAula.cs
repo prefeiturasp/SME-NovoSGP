@@ -826,7 +826,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var modalidade = await database.Conexao.QueryFirstAsync<int>(query, new { aulaId });
 
-            return modalidade == (int)Modalidade.InfantilPreEscola;
+            return modalidade == (int)Modalidade.EducacaoInfantil;
         }
 
         public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId)
@@ -1033,6 +1033,21 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarInicioFimDto>(query, new { aulaId });
+        }
+
+        public async Task<DataAulaDto> ObterAulaPorCodigoTurmaComponenteEData(string turmaId, string componenteCurricularId, DateTime dataCriacao)
+        {
+            var query = @"select id as AulaId
+                            , data_aula as DataAula
+                        from aula 
+                       where not excluido 
+                         and turma_id = @turmaId
+                         and disciplina_id = @componenteCurricularId
+                         and data_aula >= @dataCriacao
+                       order by data_aula
+                       limit 1";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<DataAulaDto>(query, new { turmaId, componenteCurricularId, dataCriacao = dataCriacao.Date });
         }
     }
 }

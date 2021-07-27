@@ -19,7 +19,7 @@ namespace SME.SGP.Dominio
         {
                 get => ModalidadeCodigo == Modalidade.EJA ?
                 ModalidadeTipoCalendario.EJA :
-                ModalidadeCodigo == Modalidade.InfantilPreEscola ?
+                ModalidadeCodigo == Modalidade.EducacaoInfantil ?
                     ModalidadeTipoCalendario.Infantil :
                     ModalidadeTipoCalendario.FundamentalMedio;
         }
@@ -69,7 +69,7 @@ namespace SME.SGP.Dominio
         public bool EhTurmaFund1 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 1 && AnoTurmaInteiro <= 5);
         public bool EhTurmaFund2 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 6 && AnoTurmaInteiro <= 9);
         public bool EhTurmaEnsinoMedio => ModalidadeCodigo == Modalidade.Medio;
-        public bool EhTurmaInfantil => ModalidadeCodigo == Modalidade.InfantilPreEscola;
+        public bool EhTurmaInfantil => ModalidadeCodigo == Modalidade.EducacaoInfantil;
 
         public bool EhTurmaHistorica => AnoLetivo < DateTime.Now.Year;
 

@@ -107,5 +107,12 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select * from tipo_avaliacao where codigo = @tipoAvaliacao";
             return await database.Conexao.QueryFirstAsync<TipoAvaliacao>(query, new { tipoAvaliacao = TipoAvaliacaoCodigo.AvaliacaoBimestral });
         }
+
+        public async Task<long> ObterIdPorCodigo(int codigo)
+        {
+            var query = @"select id from tipo_avaliacao where codigo = @codigo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { codigo });
+        }
     }
 }

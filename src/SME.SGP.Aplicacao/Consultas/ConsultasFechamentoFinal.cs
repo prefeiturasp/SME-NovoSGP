@@ -132,6 +132,10 @@ namespace SME.SGP.Aplicacao
                 .OrderBy(a => a.NumeroAlunoChamada)
                 .ThenBy(a => a.NomeValido());
 
+
+          
+            
+
             foreach (var aluno in alunosValidosOrdenados)
             {
                 FechamentoFinalConsultaRetornoAlunoDto fechamentoFinalAluno = await TrataFrequenciaAluno(filtros, periodosEscolares, aluno, turma);
@@ -142,7 +146,7 @@ namespace SME.SGP.Aplicacao
 
                 if (retorno.EhSintese)
                 {
-                    var sinteseDto = await consultasFrequencia.ObterSinteseAluno(fechamentoFinalAluno.Frequencia, disciplinaEOL);
+                    var sinteseDto = await consultasFrequencia.ObterSinteseAluno(fechamentoFinalAluno.FrequenciaValor, disciplinaEOL);
                     fechamentoFinalAluno.Sintese = sinteseDto.Valor;
                 }
                 else
@@ -160,7 +164,8 @@ namespace SME.SGP.Aplicacao
                                 Bimestre = periodo.Bimestre,
                                 Disciplina = disciplinaParaAdicionar.Nome,
                                 DisciplinaCodigo = disciplinaParaAdicionar.CodigoComponenteCurricular,
-                                NotaConceito = notaParaAdicionar
+                                NotaConceito = notaParaAdicionar,
+                                
                             });
                         }
                     }
@@ -271,7 +276,7 @@ namespace SME.SGP.Aplicacao
             {
                 Nome = aluno.NomeAluno,
                 TotalAusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = percentualFrequencia,
+                Frequencia = percentualFrequencia.ToString(),
                 TotalFaltas = frequenciaAluno?.TotalAusencias ?? 0,
                 NumeroChamada = aluno.NumeroAlunoChamada,
                 EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))

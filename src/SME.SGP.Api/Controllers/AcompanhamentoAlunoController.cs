@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
     public class AcompanhamentoAlunoController : Controller
     {
         [HttpPost("semestres")]
-        [ProducesResponseType(typeof(IEnumerable<AuditoriaDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AcompanhamentoAlunoSemestreAuditoriaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Salvar([FromServices] ISalvarAcompanhamentoAlunoUseCase useCase, [FromBody] AcompanhamentoAlunoDto dto)
              => Ok(await useCase.Executar(dto));
@@ -46,9 +46,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AcompanhamentoAlunoTurmaSemestreDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterAcompanhamentoAluno([FromQuery] long turmaId, string alunoId, int semestre, [FromServices] IObterAcompanhamentoAlunoUseCase useCase)
+        public async Task<IActionResult> ObterAcompanhamentoAluno([FromQuery] long turmaId, string alunoId, int semestre, long componenteCurricularId, [FromServices] IObterAcompanhamentoAlunoUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroAcompanhamentoTurmaAlunoSemestreDto(turmaId, alunoId, semestre)));
+            return Ok(await useCase.Executar(new FiltroAcompanhamentoTurmaAlunoSemestreDto(turmaId, alunoId, semestre, componenteCurricularId)));
         }
 
         [HttpDelete("semestres/{acompanhamentoAlunoSemestreId}/fotos/{codigoFoto}")]

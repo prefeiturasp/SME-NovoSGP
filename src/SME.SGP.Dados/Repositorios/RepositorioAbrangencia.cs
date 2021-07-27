@@ -94,7 +94,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<bool>(query, new { login, perfil })).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil, bool consideraHistorico)
+        public async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil, bool consideraHistorico, string[] anosInfantilDesconsiderar = null)
         {
             texto = $"%{texto.ToUpper()}%";
 
@@ -115,7 +115,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("                ue.tipo_escola tipoEscola,");
             query.AppendLine("                abt.turma_id TurmaId,");
             query.AppendLine("                abt.ensinoespecial");
-            query.AppendLine("    from f_abrangencia_turmas(@login, @perfil, @consideraHistorico) abt");
+            query.AppendLine("    from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, 0, 0, null, 0, @anosInfantilDesconsiderar) abt");
             query.AppendLine("        inner join turma t");
             query.AppendLine("            on abt.codigo = t.turma_id");
             query.AppendLine("        inner join ue");
@@ -126,7 +126,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by ue.nome");
             query.AppendLine("limit 10;");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { texto, login, perfil, consideraHistorico })).AsList();
+            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { texto, login, perfil, consideraHistorico, anosInfantilDesconsiderar})).AsList();
         }
 
         public Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "", bool consideraHistorico = false)
@@ -518,7 +518,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigosUe });
         }
 
-        public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre)
+        public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, string[] anosInfantilDesconsiderar = null)
         {
             var query = new StringBuilder();
 
@@ -533,7 +533,12 @@ namespace SME.SGP.Dados.Repositorios
             if (semestre > 0)
                 query.AppendLine("and semestre = @semestre");
 
-            var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new { codigoUe, anoLetivo, modalidade, semestre });
+            if(anosInfantilDesconsiderar != null && anosInfantilDesconsiderar.Any())
+            {
+                query.AppendLine("and t.ano <> ALL(@anosInfantilDesconsiderar)");
+            }
+
+            var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new { codigoUe, anoLetivo, modalidade, semestre, anosInfantilDesconsiderar });
 
             return dados.OrderBy(x => x.Descricao);
         }
@@ -601,7 +606,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Abrangencia>(query, new { usuarioId });
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string[] anosInfantilDesconsiderar = null)
         {
             var query = @"select ano,
 	                             anoLetivo,
@@ -614,11 +619,11 @@ namespace SME.SGP.Dados.Repositorios
                                  ensinoEspecial,
                                  turma_id as id,
                                  tipoturma,
-                                 nome_filtro as nomeFiltro
-                            from f_abrangencia_turmas_tipos(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo, @tipos)
+                                 nome_filtro as nomeFiltro 
+                            from f_abrangencia_turmas_tipos(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo, @tipos, @anosInfantilDesconsiderar)
                           order by 5";
 
-            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos })).AsList();
+            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos, anosInfantilDesconsiderar })).AsList();
 
             return result;
         }

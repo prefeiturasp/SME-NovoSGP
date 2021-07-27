@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
                 acompanhamento.AcompanhamentoAlunoId :
                 await mediator.Send(new GerarAcompanhamentoAlunoCommand(acompanhamento.TurmaId, acompanhamento.AlunoCodigo));
 
-            return await mediator.Send(new GerarAcompanhamentoAlunoSemestreCommand(acompanhamentoAlunoId, acompanhamento.Semestre, ""));
+            return await mediator.Send(new GerarAcompanhamentoAlunoSemestreCommand(acompanhamentoAlunoId, acompanhamento.Semestre, "", ""));
         }
 
         private string ObterNomeMiniatura(string nomeArquivo)

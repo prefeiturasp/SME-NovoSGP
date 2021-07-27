@@ -191,7 +191,7 @@ namespace SME.SGP.Dominio.Servicos
                         if (conselhoClasseNotaDto.Nota.HasValue)
                         {
                             // Gera histórico de alteração
-                            if (conselhoClasseNota.Nota != conselhoClasseNotaDto.Nota.Value)
+                            if (conselhoClasseNota.Nota != null && conselhoClasseNota.Nota != conselhoClasseNotaDto.Nota.Value)
                                 await mediator.Send(new SalvarHistoricoNotaConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.Nota.Value, conselhoClasseNotaDto.Nota.Value));
 
                             conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;

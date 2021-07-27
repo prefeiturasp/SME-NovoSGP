@@ -14,6 +14,7 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<AtividadeAvaliativa> ListarPorIds(IEnumerable<long> ids);
 
         Task<IEnumerable<AtividadeAvaliativa>> ListarPorTurmaDisciplinaPeriodo(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo);
+        Task<AtividadeAvaliativa> ObterPorAtividadeClassroomId(long atividadeClassroomId);
         Task<IEnumerable<AvaliacoesPorTurmaComponenteDto>> ObterAvaliacoesTurmaComponentePorUeNoPeriodo(long ueId, DateTime dataInicio, DateTime dataFim);
         Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId);
         Task<IEnumerable<TurmaEComponenteDto>> ObterTurmaEComponenteSemAvaliacaoNoPeriodo(long ueId, long tipoCalendarioId, DateTime dataInicio, DateTime dataFim);
@@ -33,5 +34,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<bool> VerificarSeJaExistePorTipoAvaliacao(long tipoAvaliacaoId);
         Task<IEnumerable<AtividadeAvaliativa>> ObterPorTurmaDisciplinasPeriodoAsync(string turmaCodigo, string[] disciplinasId, DateTime inicioPeriodo, DateTime fimPeriodo);
+        Task<bool> AtividadeImportada(long atividadeId);
     }
 }

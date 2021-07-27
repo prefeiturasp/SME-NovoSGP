@@ -21,7 +21,10 @@ namespace SME.SGP.Dados.Repositorios
                           left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                          inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
                          inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
-                         inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id";
+                         inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
+                         inner join componente_curricular cc on cc.id = fn.disciplina_id
+                         where cc.permite_lancamento_nota 
+                         ";
 
         public RepositorioFechamentoNota(ISgpContext database) : base(database)
         {
@@ -30,7 +33,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo)
         {
             var query = $@"{ queryNotasFechamento}
-                          where t.turma_id = ANY(@turmasCodigos) 
+                            and t.turma_id = ANY(@turmasCodigos) 
                             and fa.aluno_codigo = @alunoCodigo
                             and pe.id is null";
 
@@ -40,7 +43,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAnoAsync(string turmaCodigo, string alunoCodigo)
         {
             var query = $@"{queryNotasFechamento}
-                         where t.turma_id = @turmaCodigo
+                           and t.turma_id = @turmaCodigo
                            and fa.aluno_codigo = @alunoCodigo";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, alunoCodigo });
@@ -49,7 +52,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoBimestreAsync(long fechamentoTurmaId, string alunoCodigo)
         {
             var query = $@"{queryNotasFechamento}
-                         where ftd.fechamento_turma_id = @fechamentoTurmaId
+                           and ftd.fechamento_turma_id = @fechamentoTurmaId
                            and fa.aluno_codigo = @alunoCodigo";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { fechamentoTurmaId, alunoCodigo });
@@ -58,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos, string alunoCodigo, int bimestre)
         {
             var query = $@"{queryNotasFechamento}
-                         where t.turma_id = ANY(@turmasCodigos)
+                           and t.turma_id = ANY(@turmasCodigos)
                            and fa.aluno_codigo = @alunoCodigo 
                            and pe.bimestre = @bimestre";
 

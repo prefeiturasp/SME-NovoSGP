@@ -11,6 +11,7 @@ namespace SME.SGP.Api
                   .ConfigureAppConfiguration((hostingContext, config) =>
                   {
                       config.AddEnvironmentVariables();
+                      config.AddUserSecrets<Program>();
                   })
                 .UseStartup<Startup>();
 

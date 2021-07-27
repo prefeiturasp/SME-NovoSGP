@@ -53,6 +53,9 @@ namespace SME.SGP.Dominio
         TrabalhoIndividual = 15,
 
         [Display(Name = "Trabalho em grupo")]
-        TrabalhoEmGrupo = 16
+        TrabalhoEmGrupo = 16,
+
+        [Display(Name = "Atividade no Google Classroom")]
+        AtividadeClassroom = 17
     }
 }
