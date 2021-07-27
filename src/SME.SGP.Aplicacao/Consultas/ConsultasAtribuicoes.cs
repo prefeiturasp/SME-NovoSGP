@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
                 else return null;
             }
             else
-                return await consultasAbrangencia.ObterDres(null, 0);
+                return await consultasAbrangencia.ObterDres(null, 0, anoLetivo != DateTime.Now.Year, anoLetivo);
         }
 
         public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, int anoLetivo)
@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
                     return TransformarUesEmUesDto(ues);
                 else return null;
             }
-            else return await consultasAbrangencia.ObterUes(codigoDre, null, 0);
+            else return await consultasAbrangencia.ObterUes(codigoDre, null, 0, anoLetivo != DateTime.Now.Year, anoLetivo);
         }
 
         private void ObterAtribuicoesCjDre(string professorRf, List<string> codigosDres, Modalidade? modalidade = null)

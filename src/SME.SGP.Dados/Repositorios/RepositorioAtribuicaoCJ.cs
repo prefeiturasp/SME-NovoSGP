@@ -98,5 +98,14 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo
             }, splitOn: "id,id"));
         }
+
+        public async Task<bool> PossuiAtribuicaoPorDreUeETurma(string turmaId, string dreCodigo, string ueCodigo, string professorRf)
+        {
+            StringBuilder sql = new StringBuilder();
+
+            sql.AppendLine(@"select 1 from atribuicao_cj where dre_id = @dreCodigo and ue_id = @ueCodigo and professor_rf = @professorRf and turma_id = @turmaId;");
+
+            return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql.ToString(), new { turmaId, dreCodigo, ueCodigo, professorRf  });
+        }
     }
 }

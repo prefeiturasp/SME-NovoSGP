@@ -33,12 +33,18 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma informada não foi encontrada");
 
+
             if (usuario.EhProfessorCj())
             {
-                var possuiAtribuicao = await mediator.Send(new PossuiAtribuicaoEsporadicaPorAnoDataQuery(aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, usuario.CodigoRf, aula.DataAula));
+                var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, usuario.CodigoRf));
 
-                if (!possuiAtribuicao)
-                    throw new NegocioException($"Você não possui permissão para inserir registro de frequência neste período");
+                if (!possuiAtribuicaoCJ)
+                {
+                    var possuiAtribuicaoEsporadica = await mediator.Send(new PossuiAtribuicaoEsporadicaPorAnoDataQuery(aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, usuario.CodigoRf, aula.DataAula));
+
+                    if (!possuiAtribuicaoEsporadica)
+                        throw new NegocioException($"Você não possui permissão para inserir registro de frequência neste período");
+                }
             }
 
             if (!aula.PermiteRegistroFrequencia(turma))

@@ -24,8 +24,28 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Handle(AlterarDiarioBordoCommand request, CancellationToken cancellationToken)
         {
-            if (!await mediator.Send(new AulaExisteQuery(request.AulaId)))
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
+
+            if (aula == null)
                 throw new NegocioException("Aula informada não existe");
+
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
+            if (turma == null)
+                throw new NegocioException("Turma informada não encontrada");
+
+            if (usuario.EhProfessorCj())
+            {
+                var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, usuario.CodigoRf));
+
+                if (!possuiAtribuicaoCJ)
+                {
+                    var possuiAtribuicaoEsporadica = await mediator.Send(new PossuiAtribuicaoEsporadicaPorAnoDataQuery(aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, usuario.CodigoRf, aula.DataAula));
+
+                    if (!possuiAtribuicaoEsporadica)
+                        throw new NegocioException($"Você não possui permissão para alterar o registro de diário de bordo neste período");
+                }
+            }
 
             var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId);
             if (diarioBordo == null)

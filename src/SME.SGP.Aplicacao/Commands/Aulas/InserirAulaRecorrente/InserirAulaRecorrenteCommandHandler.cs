@@ -58,13 +58,19 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarComponentesProfessor(InserirAulaRecorrenteCommand aulaRecorrente,
             Usuario usuarioLogado)
         {
+
             if (usuarioLogado.EhProfessorCj())
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aulaRecorrente.CodigoTurma));
-                var possuiAtribuicao = await mediator.Send(new PossuiAtribuicaoEsporadicaPorAnoDataQuery(aulaRecorrente.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, usuarioLogado.CodigoRf, aulaRecorrente.DataAula));
+                var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, usuarioLogado.CodigoRf));
 
-                if (!possuiAtribuicao)
-                    throw new NegocioException("Você não possui permissão para cadastrar aulas neste período");
+                if (!possuiAtribuicaoCJ)
+                {
+                    var possuiAtribuicaoEsporadica = await mediator.Send(new PossuiAtribuicaoEsporadicaPorAnoDataQuery(aulaRecorrente.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, usuarioLogado.CodigoRf, aulaRecorrente.DataAula));
+
+                    if (!possuiAtribuicaoEsporadica)
+                        throw new NegocioException(MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA);
+                }
 
                 await ValidaComponentesQuandoCj(aulaRecorrente, usuarioLogado);
                 return;
