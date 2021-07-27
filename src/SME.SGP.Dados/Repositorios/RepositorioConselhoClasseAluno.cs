@@ -113,9 +113,11 @@ namespace SME.SGP.Dados.Repositorios
                                            ON fa.fechamento_turma_disciplina_id = ftd.id
                                    INNER JOIN fechamento_nota fn
                                            ON fn.fechamento_aluno_id = fa.id
+                                   inner join componente_curricular ccr on fn.disciplina_id = ccr.id
                             WHERE  t.turma_id = ANY(@turmasCodigos)
                                    AND fa.aluno_codigo = @alunoCodigo
                                    AND pe.bimestre IS NULL
+                                   and ccr.permite_lancamento_nota
                             UNION
                             SELECT cca.id                                    AS ConselhoClasseAlunoId,
                                    ccn.componente_curricular_codigo          AS ComponenteCurricularCodigo,
@@ -132,6 +134,7 @@ namespace SME.SGP.Dados.Repositorios
                                            ON cca.conselho_classe_id = cc.id
                                    INNER JOIN conselho_classe_nota ccn
                                            ON ccn.conselho_classe_aluno_id = cca.id
+                                   inner join componente_curricular ccr on ccn.componente_curricular_codigo  = ccr.id 
                                    LEFT JOIN fechamento_turma_disciplina ftd
                                           ON ftd.fechamento_turma_id = ft.id
                                    LEFT JOIN fechamento_aluno fa
@@ -142,7 +145,8 @@ namespace SME.SGP.Dados.Repositorios
                                              AND ccn.componente_curricular_codigo = fn.disciplina_id
                             WHERE  t.turma_id = ANY(@turmasCodigos)
                                    AND cca.aluno_codigo = @alunoCodigo
-                                   AND bimestre IS NULL )  x";
+                                   AND bimestre IS NULL 
+                                   and ccr.permite_lancamento_nota)  x";
 
             return await database.Conexao.QueryAsync<NotaConceitoFechamentoConselhoFinalDto>(query, new { turmasCodigos, alunoCodigo });
         }
