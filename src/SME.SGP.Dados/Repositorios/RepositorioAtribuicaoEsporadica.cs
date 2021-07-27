@@ -36,11 +36,11 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        public IEnumerable<AtribuicaoEsporadica> ObterAtribuicoesDatasConflitantes(DateTime dataInicio, DateTime dataFim, string professorRF, long id = 0)
+        public IEnumerable<AtribuicaoEsporadica> ObterAtribuicoesDatasConflitantes(DateTime dataInicio, DateTime dataFim, string professorRF, string dreCodigo, string ueCodigo, long id = 0)
         {
             var sql = ObterSqlConflitante(id > 0);
 
-            var parametros = new { professorRF, dataInicio, dataFim, id };
+            var parametros = new { professorRF, dataInicio, dataFim, dreCodigo, ueCodigo, id };
 
             return database.Conexao.Query<AtribuicaoEsporadica>(sql, parametros);
         }
@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
             var sql = new StringBuilder();
 
             sql.AppendLine(@"select * from atribuicao_esporadica
-                    where not excluido and professor_rf = @professorRF and
+                    where not excluido and professor_rf = @professorRF and dre_id = @dreCodigo and ue_id = @ueCodigo and
                     ((@dataInicio >= data_inicio and @dataInicio <= data_fim) or
                     (@dataFim  >= data_inicio and @dataFim <= data_fim) or
                     (data_inicio >= @dataInicio and data_inicio <= @dataFim) or

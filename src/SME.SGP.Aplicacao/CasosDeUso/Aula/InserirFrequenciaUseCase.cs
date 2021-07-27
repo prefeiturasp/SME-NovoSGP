@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             if (aula == null)
                 throw new NegocioException("A aula informada não foi encontrada");
 
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
             if (turma == null)
                 throw new NegocioException("Turma informada não foi encontrada");
 
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 var possuiAtribuicao = await mediator.Send(new PossuiAtribuicaoEsporadicaPorAnoDataQuery(aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, usuario.CodigoRf, aula.DataAula));
 
                 if (!possuiAtribuicao)
-                    throw new NegocioException("Você não possui permissão para cadastrar aulas neste período");
+                    throw new NegocioException($"Você não possui permissão para inserir registro de frequência neste período");
             }
 
             if (!aula.PermiteRegistroFrequencia(turma))

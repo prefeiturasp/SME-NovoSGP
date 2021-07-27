@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         AtribuicaoEsporadica ObterUltimaPorRF(string codigoRF);
 
-        IEnumerable<AtribuicaoEsporadica> ObterAtribuicoesDatasConflitantes(DateTime dataInicio, DateTime dataFim, string professorRF, long id = 0);
+        IEnumerable<AtribuicaoEsporadica> ObterAtribuicoesDatasConflitantes(DateTime dataInicio, DateTime dataFim, string professorRF, string dreCodigo, string ueCodigo, long id = 0);
         AtribuicaoEsporadica ObterUltimaPorRF(string codigoRF, bool somenteInfantil);
 
         Task<bool> PossuiAtribuicaoPorAnoData(int? anoLetivo, string dreCodigo, string ueCodigo, string codigoRF, DateTime? data);
