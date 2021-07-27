@@ -157,7 +157,7 @@ namespace SME.SGP.Dados.Repositorios
 
             sql += " order by ae.data_fim desc";
 
-            var infantil = Modalidade.InfantilPreEscola;
+            var infantil = Modalidade.EducacaoInfantil;
             return await database.Conexao.QueryAsync<AtribuicaoEsporadica>(sql, new { codigoRF, infantil, anoLetivo, dreCodigo, ueCodigo });
         }
 
