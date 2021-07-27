@@ -22,7 +22,7 @@ namespace SME.SGP.Dominio
             Excluido = true;
         }
 
-        public void Validar(bool ehSme, int anoLetivo, IEnumerable<PeriodoEscolar> periodosEscolares, ModalidadeTipoCalendario modalidade)
+        public void Validar(bool ehSme, int anoLetivo, IEnumerable<PeriodoEscolar> periodosEscolares, ModalidadeTipoCalendario modalidade = ModalidadeTipoCalendario.FundamentalMedio)
         {
             if (modalidade == ModalidadeTipoCalendario.Infantil)
                 if (anoLetivo < 2021)
