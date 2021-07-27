@@ -535,6 +535,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IUsuarioPossuiAbrangenciaAcessoSondagemUseCase, UsuarioPossuiAbrangenciaAcessoSondagemUseCase>();
             services.TryAddScoped<IUsuarioPossuiAbrangenciaAdmUseCase, UsuarioPossuiAbrangenciaAdmUseCase>();
             services.TryAddScoped<IObterModalidadesPorAnoUseCase, ObterModalidadesPorAnoUseCase>();
+            services.TryAddScoped<IObterAbrangenciaDresUseCase, ObterAbrangenciaDresUseCase>();
+            
 
 
             // Acompanhamento Aluno
@@ -1051,6 +1053,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidacaoAcompanhamentoAprendizagemAlunosPorUEUseCase, ConsolidacaoAcompanhamentoAprendizagemAlunosPorUEUseCase>();
             services.TryAddScoped<IConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase, ConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase>();
 
+            services.TryAddScoped<IListarAtribuicaoEsporadicaUseCase, ListarAtribuicaoEsporadicaUseCase>();
+            services.TryAddScoped<IObterPeriodoAtribuicaoPorUeUseCase, ObterPeriodoAtribuicaoPorUeUseCase>();
+
+            services.TryAddScoped<IObterAnosLetivosAtribuicaoCJUseCase, ObterAnosLetivosAtribuicaoCJUseCase>();
+            services.TryAddScoped<ISalvarAtribuicaoCJUseCase, SalvarAtribuicaoCJUseCase>();
+            services.TryAddScoped<IListarAtribuicoesCJPorFiltroUseCase, ListarAtribuicoesCJPorFiltroUseCase>();
             services.TryAddScoped<IObterFiltroSemanaUseCase, ObterFiltroSemanaUseCase>();
             // Dashboard Frequencia Aluno
             services.TryAddScoped<IObterDadosDashboardFrequenciaPorAnoTurmaUseCase, ObterDadosDashboardFrequenciaPorAnoTurmaUseCase>();

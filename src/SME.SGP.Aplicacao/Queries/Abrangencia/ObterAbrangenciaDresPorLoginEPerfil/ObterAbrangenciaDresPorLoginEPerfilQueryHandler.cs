@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAbrangenciaDresPorLoginEPerfilQueryHandler : IRequestHandler<ObterAbrangenciaDresPorLoginEPerfilQuery, IEnumerable<AbrangenciaDreRetorno>>
+    public class ObterAbrangenciaDresPorLoginEPerfilQueryHandler : IRequestHandler<ObterAbrangenciaDresPorLoginEPerfilQuery, IEnumerable<AbrangenciaDreRetornoDto>>
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
 
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> Handle(ObterAbrangenciaDresPorLoginEPerfilQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<AbrangenciaDreRetornoDto>> Handle(ObterAbrangenciaDresPorLoginEPerfilQuery request, CancellationToken cancellationToken)
             => await repositorioAbrangencia.ObterDres(request.Login, request.Perfil);        
     }
 }

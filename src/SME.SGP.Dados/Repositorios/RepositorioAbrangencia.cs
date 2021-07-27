@@ -63,8 +63,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             foreach (var item in abrangencias)
             {
-                const string comando = @"insert into public.abrangencia (usuario_id, dre_id, ue_id, turma_id, perfil)
-                                        values ((select id from usuario where login = @login), @dreId, @ueId, @turmaId, @perfil)
+                const string comando = @"insert into public.abrangencia (usuario_id, dre_id, ue_id, turma_id, perfil, historico)
+                                        values ((select id from usuario where login = @login), @dreId, @ueId, @turmaId, @perfil, @historico)
                                         RETURNING id";
 
                 database.Conexao.Execute(comando,
@@ -74,7 +74,8 @@ namespace SME.SGP.Dados.Repositorios
                         dreId = item.DreId,
                         ueId = item.UeId,
                         turmaId = item.TurmaId,
-                        perfil = item.Perfil
+                        perfil = item.Perfil,
+                        historico = item.Historico
                     });
             }
         }
@@ -268,7 +269,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<string>(query, new { login, perfil, codigoUe, modalidade = (int)modalidade, consideraHistorico }));
         }
 
-        public async Task<AbrangenciaDreRetorno> ObterDre(string dreCodigo, string ueCodigo, string login, Guid perfil)
+        public async Task<AbrangenciaDreRetornoDto> ObterDre(string dreCodigo, string ueCodigo, string login, Guid perfil)
         {
             var query = new StringBuilder();
 
@@ -288,10 +289,10 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(ueCodigo))
                 query.AppendLine("and va.ue_codigo = @ueCodigo");
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaDreRetorno>(query.ToString(), new { dreCodigo, ueCodigo, login, perfil }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaDreRetornoDto>(query.ToString(), new { dreCodigo, ueCodigo, login, perfil }));
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "", bool filtroEhCodigo = false)
+        public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "", bool filtroEhCodigo = false)
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = new StringBuilder();
@@ -322,7 +323,7 @@ namespace SME.SGP.Dados.Repositorios
                 filtro
             };
 
-            return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query.ToString(), parametros)).AsList();
+            return (await database.Conexao.QueryAsync<AbrangenciaDreRetornoDto>(query.ToString(), parametros)).AsList();
 
 
         }
@@ -626,5 +627,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return result;
         }
+
     }
 }

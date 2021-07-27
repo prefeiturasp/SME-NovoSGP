@@ -26,9 +26,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PaginacaoResultadoDto<AtribuicaoEsporadicaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AE_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar([FromQuery] FiltroAtribuicaoEsporadicaDto filtro, [FromServices] IConsultasAtribuicaoEsporadica consultasAtribuicaoEsporadica)
+        public async Task<IActionResult> Listar([FromQuery] FiltroAtribuicaoEsporadicaDto filtro, [FromServices] IListarAtribuicaoEsporadicaUseCase useCase)
         {
-            return Ok(await consultasAtribuicaoEsporadica.Listar(filtro));
+            return Ok(await useCase.Executar(filtro));
         }
 
         [HttpGet("{id}")]
@@ -54,6 +54,15 @@ namespace SME.SGP.Api.Controllers
             await comandosAtribuicaoEsporadica.Salvar(atribuicaoEsporadicaDto);
 
             return Ok();
+        }
+
+        [HttpGet("periodos/ues/{ueId}/anos/{anoLetivo}")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<AtribuicaoEsporadicaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPeriodoAtribuicaoPorUe(long ueId, int anoLetivo, [FromServices] IObterPeriodoAtribuicaoPorUeUseCase useCase)
+        {
+            return Ok(await useCase.Executar(ueId, anoLetivo));
         }
     }
 }

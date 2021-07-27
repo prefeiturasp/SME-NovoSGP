@@ -103,15 +103,15 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("dres")]
-        [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetorno>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetornoDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDres([FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery]  string filtro = "")
+        public async Task<IActionResult> ObterDres([FromServices] IObterAbrangenciaDresUseCase useCase, [FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery]  string filtro = "")
         {
              if (filtro.Length < 3)
                 filtro = "";
 
-            var dres = await consultasAbrangencia.ObterDres(modalidade, periodo, ConsideraHistorico, anoLetivo, filtro);
+            var dres = await useCase.Executar(modalidade, periodo, ConsideraHistorico, anoLetivo, filtro);
 
             if (dres.Any())
                 return Ok(dres);
@@ -183,13 +183,13 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterUes([FromServices] IObterUEsPorDreUseCase useCase, string codigoDre, [FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] bool consideraNovasUEs = false, string filtro = "")
+        public async Task<IActionResult> ObterUes([FromServices] IObterUEsPorDreUseCase useCase, string codigoDre, [FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] bool consideraNovasUEs = false, [FromQuery] bool filtrarTipoEscolaPorAnoLetivo = false, string filtro = "")
         {
 
             if (filtro.Length < 3)
                 filtro = "";
            
-            var ues = await useCase.Executar(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo, consideraNovasUEs, filtro);
+            var ues = await useCase.Executar(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo, consideraNovasUEs, filtrarTipoEscolaPorAnoLetivo, filtro);
 
             if (!ues.Any())
                 return NoContent();

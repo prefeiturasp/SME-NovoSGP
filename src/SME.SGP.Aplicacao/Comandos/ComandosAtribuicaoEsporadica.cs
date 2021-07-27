@@ -43,7 +43,8 @@ namespace SME.SGP.Aplicacao
                 DataInicio = Dto.DataInicio.Local().Date,
                 DreId = Dto.DreId,
                 Id = Dto.Id,
-                ProfessorRf = Dto.ProfessorRf
+                ProfessorRf = Dto.ProfessorRf,
+                AnoLetivo = Dto.AnoLetivo
             };
         }
 
@@ -59,6 +60,7 @@ namespace SME.SGP.Aplicacao
 
             entidade.DataFim = atribuicaoEsporadicaDto.DataFim.Local();
             entidade.DataInicio = atribuicaoEsporadicaDto.DataInicio.Local();
+            entidade.AnoLetivo = atribuicaoEsporadicaDto.AnoLetivo;
 
             return entidade;
         }
