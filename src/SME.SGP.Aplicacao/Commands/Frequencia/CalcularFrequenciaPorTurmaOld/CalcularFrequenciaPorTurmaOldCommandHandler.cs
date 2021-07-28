@@ -71,9 +71,11 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDataAsync(codigoAluno, dataAtual, TipoFrequenciaAluno.PorDisciplina, disciplinaId);
-
                 if (frequenciaAluno != null)
-                    await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverAsync(frequenciaAluno);
+                {
+                    frequenciaAluno.TotalAusencias = 0;
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarAsync(frequenciaAluno);
+                }
             }
         }
 
