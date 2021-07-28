@@ -39,21 +39,26 @@ namespace SME.SGP.Aplicacao
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
+            if (anoLetivo == 0)
+                anoLetivo = DateTime.Now.Year;
+
             if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
                 var somenteInfantil = perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
                 var codigosDres = new List<string>();
 
-                if (somenteInfantil)
-                    ObterAtribuicoesCjDre(loginAtual, codigosDres, Modalidade.EducacaoInfantil);
-                else
-                    ObterAtribuicoesCjDre(loginAtual, codigosDres);
+                if (anoLetivo == DateTime.Now.Year)
+                {
+                    await ObterAtribuicoesEolDre(loginAtual, perfilAtual, codigosDres);
 
-                if (anoLetivo == 0)
-                    anoLetivo = DateTime.Now.Year;
+                    if (somenteInfantil)
+                        ObterAtribuicoesCjDre(loginAtual, codigosDres, Modalidade.EducacaoInfantil);
+                    else
+                        ObterAtribuicoesCjDre(loginAtual, codigosDres);
+                }
 
                 await ObterAtribuicoesEsporadicasDreAsync(loginAtual, codigosDres, somenteInfantil, anoLetivo);
-                await ObterAtribuicoesEolDre(loginAtual, perfilAtual, codigosDres);
+                
 
                 var dres = repositorioDre.ListarPorCodigos(codigosDres.Distinct().ToArray());
 
@@ -70,19 +75,23 @@ namespace SME.SGP.Aplicacao
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
+            if (anoLetivo == 0)
+                anoLetivo = DateTime.Now.Year;
+
             if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
                 var codigosUes = new List<string>();
-                await ObterAtribuicoesEolUe(loginAtual, perfilAtual, codigosUes, codigoDre);
-
                 var somenteInfantil = perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
-                if (somenteInfantil)
-                    await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre, Modalidade.EducacaoInfantil);
-                else
-                    await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre);
 
-                if (anoLetivo == 0)
-                    anoLetivo = DateTime.Now.Year;
+                if (anoLetivo == DateTime.Now.Year)
+                {
+                    await ObterAtribuicoesEolUe(loginAtual, perfilAtual, codigosUes, codigoDre);
+
+                    if (somenteInfantil)
+                        await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre, Modalidade.EducacaoInfantil);
+                    else
+                        await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre);
+                }    
 
                 await ObterAtribuicoesEsporadicasUeAsync(loginAtual, codigosUes, codigoDre, somenteInfantil, anoLetivo);
 
