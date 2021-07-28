@@ -160,12 +160,20 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            List<Turma> turmas;
+            List<Turma> turmas;    
 
             if (turmasCodigos.Length > 0)
+            {
                 turmas = (await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos))).ToList();
+                if (turmas.Select(t => t.TipoTurma).Distinct().Count() == 1 && turma.ModalidadeCodigo == Modalidade.EJA)
+                {
+                    turmas = turmas.Where(t => t.Id == turma.Id).ToList();
+                    turmasCodigos = new string[1] { turma.CodigoTurma };
+                }
+                    
+            }
             else turmas = new List<Turma>() { turma };
-
+            
             //Verificar as notas finais
             var notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
                await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)) :
