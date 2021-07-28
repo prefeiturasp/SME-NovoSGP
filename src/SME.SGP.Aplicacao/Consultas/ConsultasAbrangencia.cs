@@ -60,8 +60,19 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
+            List<int> anosLetivos = new List<int>();
+            var anos = await mediator.Send(new ObterUsuarioAbrangenciaAnosLetivosQuery(login, consideraHistorico, perfil, anoMinimo));
 
-            return await mediator.Send(new ObterUsuarioAbrangenciaAnosLetivosQuery(login, consideraHistorico, perfil, anoMinimo));
+            anosLetivos.AddRange(anos);
+
+            if ((perfil == Perfis.PERFIL_CJ || perfil == Perfis.PERFIL_CJ_INFANTIL) && consideraHistorico)
+            {
+                var anosCJ = await mediator.Send(new ObterAnosAtribuicaoCJQuery(login, consideraHistorico));
+                if (anosCJ.Any())
+                    anosLetivos.AddRange(anosCJ);
+            }
+
+            return anosLetivos.Distinct().ToList();
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico)
