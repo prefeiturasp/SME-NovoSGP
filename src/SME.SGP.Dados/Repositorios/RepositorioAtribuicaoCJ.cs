@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,22 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public async Task<IEnumerable<int>> ObterAnosDisponiveis(string professorRF, bool consideraHistorico)
+        {
+            var query = @"select distinct ano_letivo from atribuicao_esporadica ae 
+                    where not ae.excluido and ae.professor_rf = @professorRF ";
+            if (consideraHistorico)
+                query += $" and ae.ano_letivo < {DateTime.Now.Year}";
+            
+            query += @"union 
+                            select t.ano_letivo from atribuicao_cj ac
+                            inner join turma t on ac.turma_id = t.turma_id where ac.professor_rf = @professorRF";
+            if (consideraHistorico)
+                query += $" and t.ano_letivo < {DateTime.Now.Year} ";
+
+            return await database.QueryAsync<int>(query, new { professorRF });
+        }
+
         public IEnumerable<AtribuicaoCJ> ObterAtribuicaoAtiva(string professorRf)
         {
             var query = @"select id, disciplina_id, dre_id, ue_id, professor_rf, turma_id, modalidade, substituir,
@@ -24,7 +41,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Query<AtribuicaoCJ>(query, parametros);
         }
-        
+
         public async Task<IEnumerable<AtribuicaoCJ>> ObterAtribuicaoAtivaAsync(string professorRf)
         {
             var query = @"select id, disciplina_id, dre_id, ue_id, professor_rf, turma_id, modalidade, substituir,
@@ -105,7 +122,7 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.AppendLine(@"select 1 from atribuicao_cj where dre_id = @dreCodigo and ue_id = @ueCodigo and professor_rf = @professorRf and turma_id = @turmaId;");
 
-            return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql.ToString(), new { turmaId, dreCodigo, ueCodigo, professorRf  });
+            return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql.ToString(), new { turmaId, dreCodigo, ueCodigo, professorRf });
         }
     }
 }
