@@ -335,7 +335,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var frequencia = consultasFrequencia.ObterPorAlunoDisciplinaData(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia);
                     var percentualFrequencia = frequencia == null ? 100 : frequencia.PercentualFrequencia;
-                    var sinteseDto = consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplina);
+                    var sinteseDto =  await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplina);
 
                     fechamentoNota.SinteseId = (long)sinteseDto.Id;
                 }
