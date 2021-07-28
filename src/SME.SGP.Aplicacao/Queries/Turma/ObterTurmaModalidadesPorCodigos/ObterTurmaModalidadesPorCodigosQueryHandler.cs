@@ -3,9 +3,9 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<TurmaModalidadeCodigoDto>> Handle(ObterTurmaModalidadesPorCodigosQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTurma.ObterModalidadePorCodigos(request.TurmasCodigo);
+            return await repositorioTurma.ObterModalidadePorCodigos(request.TurmasCodigo);            
         }
     }
 }

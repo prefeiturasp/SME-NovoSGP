@@ -1,8 +1,11 @@
-﻿namespace SME.SGP.Infra
+﻿using SME.SGP.Dominio;
+
+namespace SME.SGP.Infra
 {
     public class TurmaModalidadeCodigoDto
     {
-        public long Codigo { get; set; }
-        public int Modalidade { get; set; }
+        public long TurmaCodigo { get; set; }
+        public int ModalidadeCodigo { get; set; }
+        public string ModalidadeDescricao { get { return ((Modalidade)this.ModalidadeCodigo).Name(); } }
     }
 }
