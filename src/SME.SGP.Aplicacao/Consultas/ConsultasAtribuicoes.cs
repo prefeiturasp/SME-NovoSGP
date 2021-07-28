@@ -70,19 +70,23 @@ namespace SME.SGP.Aplicacao
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
+            if (anoLetivo == 0)
+                anoLetivo = DateTime.Now.Year;
+
             if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
                 var codigosUes = new List<string>();
-                await ObterAtribuicoesEolUe(loginAtual, perfilAtual, codigosUes, codigoDre);
-
                 var somenteInfantil = perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
-                if (somenteInfantil)
-                    await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre, Modalidade.EducacaoInfantil);
-                else
-                    await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre);
 
-                if (anoLetivo == 0)
-                    anoLetivo = DateTime.Now.Year;
+                if (anoLetivo == DateTime.Now.Year)
+                {
+                    await ObterAtribuicoesEolUe(loginAtual, perfilAtual, codigosUes, codigoDre);
+
+                    if (somenteInfantil)
+                        await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre, Modalidade.EducacaoInfantil);
+                    else
+                        await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre);
+                }    
 
                 await ObterAtribuicoesEsporadicasUeAsync(loginAtual, codigosUes, codigoDre, somenteInfantil, anoLetivo);
 
