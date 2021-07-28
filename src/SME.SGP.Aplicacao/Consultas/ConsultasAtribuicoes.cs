@@ -39,21 +39,26 @@ namespace SME.SGP.Aplicacao
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
+            if (anoLetivo == 0)
+                anoLetivo = DateTime.Now.Year;
+
             if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
                 var somenteInfantil = perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
                 var codigosDres = new List<string>();
 
-                if (somenteInfantil)
-                    ObterAtribuicoesCjDre(loginAtual, codigosDres, Modalidade.EducacaoInfantil);
-                else
-                    ObterAtribuicoesCjDre(loginAtual, codigosDres);
+                if (anoLetivo == DateTime.Now.Year)
+                {
+                    await ObterAtribuicoesEolDre(loginAtual, perfilAtual, codigosDres);
 
-                if (anoLetivo == 0)
-                    anoLetivo = DateTime.Now.Year;
+                    if (somenteInfantil)
+                        ObterAtribuicoesCjDre(loginAtual, codigosDres, Modalidade.EducacaoInfantil);
+                    else
+                        ObterAtribuicoesCjDre(loginAtual, codigosDres);
+                }
 
                 await ObterAtribuicoesEsporadicasDreAsync(loginAtual, codigosDres, somenteInfantil, anoLetivo);
-                await ObterAtribuicoesEolDre(loginAtual, perfilAtual, codigosDres);
+                
 
                 var dres = repositorioDre.ListarPorCodigos(codigosDres.Distinct().ToArray());
 
