@@ -567,15 +567,16 @@ namespace SME.SGP.Dados.Repositorios
             inner join periodo_escolar p on 
             a.tipo_calendario_id = p.tipo_calendario_id 
             where not a.excluido 
-            and p.bimestre = any(@bimestres)
             and a.tipo_calendario_id = @tipoCalendarioId
             and a.data_aula >= p.periodo_inicio 
             and a.data_aula <= p.periodo_fim ");
 
             if (componentesCurricularesId.Length > 0)
                 query.AppendLine("and a.disciplina_id = any(@componentesCurricularesId) ");
+            if (bimestres.Length > 0)
+                query.AppendLine(" and p.bimestre = any(@bimestres) ");
 
-            query.AppendLine("and a.turma_id = any(@turmasCodigo) group by a.disciplina_id, a.turma_id, p.bimestre");
+            query.AppendLine(" and a.turma_id = any(@turmasCodigo) group by a.disciplina_id, a.turma_id, p.bimestre");
             
             return await database.Conexao.QueryAsync<TurmaComponenteQntAulasDto>(query.ToString(), new { turmasCodigo, componentesCurricularesId, tipoCalendarioId, bimestres });
         }

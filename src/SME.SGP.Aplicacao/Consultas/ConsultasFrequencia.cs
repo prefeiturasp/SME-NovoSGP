@@ -72,12 +72,14 @@ namespace SME.SGP.Aplicacao
             if (turma.AnoLetivo.Equals(2020))
                 return await CalculoFrequenciaGlobal2020(alunoCodigo, turma);
 
-            var tipoCalendarioId = turma.ModalidadeCodigo == Modalidade.EJA ? await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma)) : 0 ;
-            
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+
             var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
             
-            if (frequenciaAluno == null || frequenciaAluno.PercentualFrequencia == 0)
-                return "";            
+            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(new string[] { turma.CodigoTurma }, tipoCalendarioId, new string[] { }, new int[] { }));
+
+            if (frequenciaAluno == null || frequenciaAluno.PercentualFrequencia == 0 && turmaPossuiFrequenciaRegistrada.Any())
+                return "100";            
 
             return frequenciaAluno.PercentualFrequencia.ToString();
         }
