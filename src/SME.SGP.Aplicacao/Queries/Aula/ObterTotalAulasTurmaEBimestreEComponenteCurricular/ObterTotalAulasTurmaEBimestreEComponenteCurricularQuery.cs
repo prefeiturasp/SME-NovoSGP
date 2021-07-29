@@ -27,22 +27,13 @@ namespace SME.SGP.Aplicacao
     {
         public ObterTotalAulasTurmaEBimestreEComponenteCurricularQueryValidator()
         {
-            RuleFor(x => x.ComponentesCurricularesId)
+            RuleFor(x => x.TurmasCodigo)
                 .NotEmpty()
                 .WithMessage("A turma deve ser informada.");
 
             RuleFor(x => x.TipoCalendarioId)
                 .NotEmpty()
                 .WithMessage("O tipo de calendário deve ser informado.");
-
-            RuleFor(x => x.ComponentesCurricularesId)
-                .NotEmpty()
-                .WithMessage("O componente curricular deve ser informado.");
-
-            RuleFor(x => x.Bimestres)
-                .NotEmpty()
-                .When(x => x.Bimestres != null)
-                .WithMessage("O bimestre deve ser informado.");
         }
     }
 }
