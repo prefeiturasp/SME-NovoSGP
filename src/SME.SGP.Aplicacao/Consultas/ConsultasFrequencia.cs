@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
 
-            if(turma == null)
+            if (turma == null)
                 throw new NegocioException("Turma não localizada.");
 
             //Particularidade de 2020
@@ -75,18 +75,19 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
 
             var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
-            
+
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(new string[] { turma.CodigoTurma }, tipoCalendarioId, new string[] { }, new int[] { }));
 
             if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada == null)
                 return "0";
-            if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)
+            else if(frequenciaAluno?.PercentualFrequencia > 0)
+                return frequenciaAluno.PercentualFrequencia.ToString();
+            else if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)
                 return "0";
-            if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas > 0 && frequenciaAluno?.TotalAusencias == 0 && frequenciaAluno?.TotalCompensacoes > 0 || turmaPossuiFrequenciaRegistrada.Any())
+            else if (turmaPossuiFrequenciaRegistrada.Any())
                 return "100";
 
-
-            return frequenciaAluno.PercentualFrequencia.ToString();
+            return "0";
         }
 
         public async Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
@@ -177,10 +178,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina)
         {
-            var sintese = percentualFrequencia == null ? 
+            var sintese = percentualFrequencia == null ?
                 SinteseEnum.NaoFrequente :
                 percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
-                SinteseEnum.Frequente : 
+                SinteseEnum.Frequente :
                 SinteseEnum.NaoFrequente;
 
             return new SinteseDto()
@@ -245,7 +246,7 @@ namespace SME.SGP.Aplicacao
                 totalDisciplinas += grupoDisiplinasMatriz.Count();
             }
 
-            var frequenciaGlobal2020 =  Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
+            var frequenciaGlobal2020 = Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
 
             return frequenciaGlobal2020 == 0 ? "" : frequenciaGlobal2020.ToString();
 
