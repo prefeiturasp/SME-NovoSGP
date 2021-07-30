@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
                         aulasACriar.AddRange(ObterListaDeAulas(diasSemAula, tipoCalendarioId, turma).ToList());
 
-                        IEnumerable<Aula> aulasDaTurmaParaExcluir = ObterAulasParaExcluir(diasNaoLetivos, turma, aulas.Where(a => !a.AulaCJ));
+                        IEnumerable<Aula> aulasDaTurmaParaExcluir = ObterAulasParaExcluir(diasNaoLetivos, turma, aulas.Where(a => !a.AulaCJ), diasLetivos);
                         await ExcluirAulas(aulasAExcluirComFrequenciaRegistrada, idsAulasAExcluir, aulasDaTurmaParaExcluir.ToList());
 
                         var aulasForaDoPeriodo = aulas.Where(c => diasForaDoPeriodo.Contains(c.DataAula) && !c.AulaCJ);
@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
             idsAulasAExcluir.Clear();
             return contadorAulasExcluidas;
         }
-        private IEnumerable<Aula> ObterAulasParaExcluir(IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<Aula> aulas)
+        private IEnumerable<Aula> ObterAulasParaExcluir(IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<Aula> aulas, IEnumerable<DiaLetivoDto> diasLetivos)
         {
             var aulasExclusao = new List<Aula>();
             var aulasNaoExcluidasOrdenadas = aulas
@@ -143,10 +143,11 @@ namespace SME.SGP.Aplicacao
 
             foreach (var aula in aulasNaoExcluidasOrdenadas)
             {
-                var excluirAula = (diasNaoLetivos != null && diasNaoLetivos.Any(a => a.Data == aula.DataAula)) ||
+                var excluirAula = ((diasNaoLetivos != null && diasNaoLetivos.Any(a => a.Data == aula.DataAula)) ||
                                   !turma.DataInicio.HasValue || 
                                   aula.DataAula.Date < turma.DataInicio.Value.Date ||
-                                  aulas.Any(a => a.DataAula.Date.Equals(aula.DataAula.Date) && !a.Excluido && a.Id < aula.Id);
+                                  aulas.Any(a => a.DataAula.Date.Equals(aula.DataAula.Date) && !a.Excluido && a.Id < aula.Id)) &&
+                                  !diasLetivos.Any(d => d.Data == aula.DataAula);
 
                 if (excluirAula)
                     aulasExclusao.Add(aula);
