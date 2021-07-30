@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
             {
                 var frequencia = frequenciasRegistradas.FirstOrDefault();
                 dto.Ausencias = frequencia.QuantidadeAusencias;
-                dto.Frequencia = frequencia.Frequencia;
+                dto.Frequencia = frequencia?.Frequencia != null ? frequencia.Frequencia : 0 ;
                 dto.AulasRealizadas = frequencia.TotalAulas;
             }
             else
@@ -76,7 +76,9 @@ namespace SME.SGP.Aplicacao
                 dto.AulasRealizadas = await mediator.Send(new ObterAulasDadasPorTurmaIdEPeriodoEscolarQuery(turma.Id, new List<long> { periodoEscolar.Id }, tipoCalendarioId));
                 dto.Ausencias = 0;
                 if (turmaPossuiFrequenciaRegistrada)
-                    dto.Frequencia = 100;                
+                    dto.Frequencia = 100;
+                else
+                    dto.Frequencia = 0;
             }
             return dto;
         }
