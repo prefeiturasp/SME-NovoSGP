@@ -78,12 +78,15 @@ namespace SME.SGP.Aplicacao
 
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(new string[] { turma.CodigoTurma }, tipoCalendarioId, new string[] { }, new int[] { }));
 
-            if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada == null)
+            if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada == null || turmaPossuiFrequenciaRegistrada.Count() == 0 )
                 return "0";
+            
             else if(frequenciaAluno?.PercentualFrequencia > 0)
                 return frequenciaAluno.PercentualFrequencia.ToString();
+
             else if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)
                 return "0";
+            
             else if (turmaPossuiFrequenciaRegistrada.Any())
                 return "100";
 
