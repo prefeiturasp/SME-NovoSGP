@@ -120,7 +120,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder sql = new StringBuilder();
 
-            sql.AppendLine(@"select 1 from atribuicao_cj where dre_id = @dreCodigo and ue_id = @ueCodigo and professor_rf = @professorRf and turma_id = @turmaId;");
+            sql.AppendLine(@"select distinct 1 from atribuicao_cj where dre_id = @dreCodigo and ue_id = @ueCodigo and professor_rf = @professorRf and turma_id = @turmaId;");
 
             return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql.ToString(), new { turmaId, dreCodigo, ueCodigo, professorRf });
         }
