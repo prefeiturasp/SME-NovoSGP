@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Bimestre = frequencia.Bimestre,
                     CodigoAluno = frequencia.CodigoAluno,
-                    Frequencia = frequencia.PercentualFrequencia,
+                    Frequencia = frequencia?.PercentualFrequencia != null ? frequencia.PercentualFrequencia : 0,
                     QuantidadeAusencias = frequencia.TotalAusencias,
                     QuantidadeCompensacoes = frequencia.TotalCompensacoes,
                     TotalAulas = frequencia.TotalAulas
