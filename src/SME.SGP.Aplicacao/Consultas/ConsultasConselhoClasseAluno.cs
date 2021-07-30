@@ -96,6 +96,18 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaBimestresAsync(alunoCodigo, bimestre, turma.CodigoTurma);
 
+            var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
+
+            if (fechamentoTurma != null) turma = fechamentoTurma?.Turma;
+            else
+            {
+                if (bimestre > 0)
+                    periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
+            }
+
+            var registrosFrequencia = await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, new string[] { turma.CodigoTurma  } , disciplinas.Select(d => d.CodigoComponenteCurricular.ToString()).ToArray(),
+                periodoEscolar.Id));
+
             foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key.Nome))
             {
                 var grupoMatriz = new ConselhoDeClasseGrupoMatrizDto()
@@ -107,7 +119,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var componenteCurricular in grupoDisiplinasMatriz.Where(x => !x.LancaNota))
                 {
-                    var componenteCurricularDto = await MapearDto(frequenciaAluno, componenteCurricular, bimestre);
+                    var componenteCurricularDto = await MapearDto(frequenciaAluno, componenteCurricular, bimestre, registrosFrequencia);
                     grupoMatriz.ComponenteSinteses.Add(componenteCurricularDto);
                 }
 
@@ -165,7 +177,7 @@ namespace SME.SGP.Aplicacao
             if (turmasCodigos.Length > 0)
             {
                 turmas = (await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos))).ToList();
-                if (turmas.Select(t => t.TipoTurma).Distinct().Count() == 1 && turma.ModalidadeCodigo == Modalidade.EJA)
+                if (turmas.Select(t => t.TipoTurma).Distinct().Count() == 1)
                 {
                     turmas = turmas.Where(t => t.Id == turma.Id).ToList();
                     turmasCodigos = new string[1] { turma.CodigoTurma };
@@ -365,11 +377,13 @@ namespace SME.SGP.Aplicacao
             return frequenciaDisciplina.Any() ? frequenciaDisciplina.Sum(x => x.PercentualFrequencia) / frequenciaDisciplina.Count() : 0;
         }
 
-        private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre)
+        private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia)
         {
             var frequenciaDisciplina = ObterFrequenciaPorDisciplina(frequenciaAluno, componenteCurricular);
 
             var percentualFrequencia = ObterPercentualDeFrequencia(frequenciaDisciplina);
+            if (!frequenciaDisciplina.Any() && registrosFrequencia.Where(a => a.CodigoComponenteCurricular == componenteCurricular.CodigoComponenteCurricular).Any())
+                percentualFrequencia = 100;
 
             var dto = MapeaderDisciplinasDto(componenteCurricular);
 
