@@ -395,17 +395,15 @@ namespace SME.SGP.Dominio.Servicos
                             {                                
                                 if (fechamentoNotaDto.Nota != notaFechamento.Nota)                                    
                                     await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota != null ? notaFechamento.Nota.Value : (double?)null , fechamentoNotaDto.Nota != null ? fechamentoNotaDto.Nota.Value : (double?)null, notaFechamento.Id));
-
-                                notaFechamento.Nota = fechamentoNotaDto.Nota;
                             }
                             else
                             {
                                 if (fechamentoNotaDto.ConceitoId != notaFechamento.ConceitoId)
                                     await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaFechamento.ConceitoId != null ? notaFechamento.ConceitoId.Value : (long?)null, fechamentoNotaDto.ConceitoId != null ? fechamentoNotaDto.ConceitoId.Value : (long?)null, notaFechamento.Id));
-                            
-                                notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
                             }
 
+                            notaFechamento.Nota = fechamentoNotaDto.Nota;
+                            notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
                             notaFechamento.SinteseId = fechamentoNotaDto.SinteseId;
                         }
                     }
