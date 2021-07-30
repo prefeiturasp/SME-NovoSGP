@@ -77,8 +77,6 @@ namespace SME.SGP.Aplicacao
                 dto.Ausencias = 0;
                 if (turmaPossuiFrequenciaRegistrada)
                     dto.Frequencia = 100;
-                else
-                    dto.Frequencia = 0;
             }
             return dto;
         }
