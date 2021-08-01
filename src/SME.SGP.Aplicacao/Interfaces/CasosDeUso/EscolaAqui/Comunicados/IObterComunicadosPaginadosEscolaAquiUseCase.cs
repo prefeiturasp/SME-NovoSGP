@@ -1,11 +1,9 @@
 ﻿using SME.SGP.Dto;
 using SME.SGP.Infra;
-using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui
+namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IObterComunicadosPaginadosEscolaAquiUseCase
+    public interface IObterComunicadosPaginadosEscolaAquiUseCase : IUseCase<FiltroComunicadoDto, PaginacaoResultadoDto<ComunicadoDto>>
     {
-        Task<PaginacaoResultadoDto<ComunicadoDto>> Executar(FiltroComunicadoDto filtro);
     }
 }

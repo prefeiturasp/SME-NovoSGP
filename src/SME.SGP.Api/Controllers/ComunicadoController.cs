@@ -47,6 +47,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(ids));
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<PaginacaoResultadoDto<ComunicadoDto>>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ComunicadoCompletoDto>), 204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CO_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarComunicados([FromQuery] FiltroComunicadoDto filtro, [FromServices] IObterComunicadosPaginadosEscolaAquiUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));            
+        }
+
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ComunicadoCompletoDto), 200)]
         [ProducesResponseType(typeof(IEnumerable<ComunicadoCompletoDto>), 204)]

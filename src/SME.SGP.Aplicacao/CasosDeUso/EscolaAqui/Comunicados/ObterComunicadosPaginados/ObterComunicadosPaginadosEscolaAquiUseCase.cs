@@ -1,18 +1,15 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComunicadosPaginadosEscolaAquiUseCase : IObterComunicadosPaginadosEscolaAquiUseCase
+    public class ObterComunicadosPaginadosEscolaAquiUseCase : AbstractUseCase, IObterComunicadosPaginadosEscolaAquiUseCase
     {
-        private readonly IMediator mediator;
-
-        public ObterComunicadosPaginadosEscolaAquiUseCase(IMediator mediator)
+        public ObterComunicadosPaginadosEscolaAquiUseCase(IMediator mediator) : base(mediator)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<PaginacaoResultadoDto<ComunicadoDto>> Executar(FiltroComunicadoDto filtro)
