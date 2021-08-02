@@ -42,7 +42,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasAtribuicoes.ObterUes(codigoDre, anoLetivo));
         }
 
-        [HttpGet("dres/{dreCodigo}/ues/{ueCodigo}/tipo-escolas")]
+        [HttpGet("dres/{dreCodigo}/ues/{ueCodigo}/tipos-escolas")]
         [ProducesResponseType(typeof(IEnumerable<TipoEscolaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
         public async Task<IActionResult> ObterTipoEscolaPorDreEUe(string dreCodigo, string ueCodigo, [FromServices] IObterTipoEscolaPorDreEUeUseCase useCase)
