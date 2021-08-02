@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 }
             }
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.NotasEConceitosFinais, filtro, usuarioLogado, filtro.TipoFormatoRelatorio));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.NotasEConceitosFinais, filtro, usuarioLogado, formato: filtro.TipoFormatoRelatorio));
         }
     }
 }
