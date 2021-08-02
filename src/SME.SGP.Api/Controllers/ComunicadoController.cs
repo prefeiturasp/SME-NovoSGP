@@ -116,6 +116,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterAnosLetivos([FromServices] IObterAnosLetivosComunicadoUseCase useCase)
         {
             return Ok(await useCase.Executar());
-        }
+        }        
     }
 }

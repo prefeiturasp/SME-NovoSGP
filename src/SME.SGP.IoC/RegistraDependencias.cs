@@ -1071,6 +1071,9 @@ namespace SME.SGP.IoC
             // Rotas Agendamento Sync
             services.TryAddScoped<IRotasAgendamentoSyncUseCase, RotasAgendamentoSyncUseCase>();
             services.TryAddScoped<IRotasAgendamentoTratarUseCase, RotasAgendamentoTratarUseCase>();
+
+            // Tipo Escola 
+            services.TryAddScoped<IObterTipoEscolaPorDreEUeUseCase, ObterTipoEscolaPorDreEUeUseCase>();
         }
     }
 }
