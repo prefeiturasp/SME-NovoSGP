@@ -20,7 +20,7 @@ namespace SME.SGP.Infra
         public List<Modalidade> Modalidades { get; set; }
         public string Modalidade 
         {
-            get => string.Join(",", Modalidades.Select(c => c.ShortName()));
+            get => string.Join(", ", Modalidades.Select(c => c.ShortName()));
         }
 
         public void AdicionarModalidade(int modalidadeCodigo)

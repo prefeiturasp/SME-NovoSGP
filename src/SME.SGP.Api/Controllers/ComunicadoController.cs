@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/comunicado")]
-    [Authorize("Bearer")]
+   // [Authorize("Bearer")]
     public class ComunicadoController : ControllerBase
     {
         [HttpPost]
@@ -51,7 +51,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<PaginacaoResultadoDto<ComunicadoListaPaginadaDto>>), 200)]
         [ProducesResponseType(typeof(IEnumerable<ComunicadoListaPaginadaDto>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CO_C, Policy = "Bearer")]
+        //[Permissao(Permissao.CO_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarComunicados([FromQuery] FiltroComunicadoDto filtro, [FromServices] IObterComunicadosPaginadosEscolaAquiUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));            
@@ -126,6 +126,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterAnosLetivos([FromServices] IObterAnosLetivosComunicadoUseCase useCase)
         {
             return Ok(await useCase.Executar());
-        }        
+        }
+
+        [HttpGet("ues/{codigoUe}/anoletivo/{anoLetivo}/turmas")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
+        public async Task<IActionResult> ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolares(int anoLetivo, string codigoUe, [FromQuery] int semestre, [FromQuery] int[] modalidades, [FromQuery] string[] anos, [FromServices] IObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo, codigoUe, modalidades, semestre, anos));
+        }
     }
 }

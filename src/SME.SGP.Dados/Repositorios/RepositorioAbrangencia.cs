@@ -587,6 +587,47 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
+        public async Task<IEnumerable<OpcaoDropdownDto>> ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolares(int anoLetivo, string codigoUe, int[] modalidades, int semestre, string[] anos)
+        {
+            try
+            {
+                var query = new StringBuilder(@"select distinct t.turma_id as valor, 
+                                                       t.nome as descricao 
+                                                  from turma t
+                                                 inner join ue ue on ue.id = t.ue_id
+                                                 inner join tipo_ciclo_ano tca on tca.ano = t.ano
+                                                 where ano_letivo = @anoLetivo
+                                                   and ue.ue_id = @codigoUe ");
+
+                if (modalidades.Any() && !modalidades.Any(c => c == -99))
+                    query.AppendLine("and t.modalidade_codigo = any(@modalidades) ");
+
+                if (semestre > 0)
+                    query.AppendLine("and semestre = @semestre ");
+
+                if (anos != null && anos.Any(a => a == "-99"))
+                    query.AppendLine(" and tca.ano = any(@anos)");
+
+                var parametros = new
+                {
+                    codigoUe,
+                    anoLetivo,
+                    modalidades,
+                    semestre,
+                    anos
+                };
+
+                var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), parametros);
+
+                return dados.OrderBy(x => x.Descricao);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public async Task<bool> ObterUsuarioPossuiAbrangenciaAcessoSondagemTiposEscola(string usuarioRF, Guid usuarioPerfil)
         {
             var query = @"select 1 from abrangencia a 
