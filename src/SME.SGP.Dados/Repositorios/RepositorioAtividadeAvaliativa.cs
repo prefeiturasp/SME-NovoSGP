@@ -539,7 +539,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> AtividadeImportada(long atividadeId)
         {
-            var query = @"select atividade_classroom_id from atividade_avaliativa where id = @atividadeId";
+            var query = @"select atividade_classroom_id from atividade_avaliativa where id = @atividadeId and atividade_classroom_id is not null";
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { atividadeId });
         }
     }
