@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Frequencia, filtro, usuario, formato:filtro.TipoFormatoRelatorio));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Frequencia, filtro, usuario, formato:filtro.TipoFormatoRelatorio, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequencia));
         }
     }
 }
