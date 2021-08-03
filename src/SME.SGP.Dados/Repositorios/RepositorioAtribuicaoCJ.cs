@@ -124,5 +124,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql.ToString(), new { turmaId, dreCodigo, ueCodigo, professorRf });
         }
+
+        public async Task<bool> RemoverRegistros(string dreCodigo, string ueCodigo, string turmaCodigo, string professorRf)
+        {
+            StringBuilder sql = new StringBuilder();
+
+            sql.AppendLine(@"delete from atribuicao_cj where dre_id = @dreCodigo and ue_id = @ueCodigo and professor_rf = @professorRf and turma_id = @turmaCodigo;");
+
+            return await database.Conexao.ExecuteScalarAsync<bool>(sql.ToString(), new { turmaCodigo, dreCodigo, ueCodigo, professorRf });
+        }
     }
 }
