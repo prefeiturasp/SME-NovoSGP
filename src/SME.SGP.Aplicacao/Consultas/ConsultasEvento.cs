@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
                 podeAlterar = usuario.TemPerfilGestaoUes();
 
             bool podeAlterarExcluirPorPerfilAbrangencia = false;
-            if (!EhEventoSME(evento) && usuario.EhPerfilAD())
+            if (!EhEventoSME(evento))
             {
                 var abrangencia = await consultasAbrangencia.ObterUes(evento.DreId, null);
                 podeAlterarExcluirPorPerfilAbrangencia = abrangencia.Any(x => x.Codigo == evento.UeId);
