@@ -610,6 +610,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IListarEventosPorCalendarioUseCase, ListarEventosPorCalendarioUseCase>();
             services.TryAddScoped<IObterDadosDeLeituraDeComunicadosUseCase, ObterDadosDeLeituraDeComunicadosUseCase>();
             services.TryAddScoped<IObterComunicadosPaginadosAlunoUseCase, ObterComunicadosPaginadosAlunoUseCase>();
+            services.TryAddScoped<IObterAnosLetivosComunicadoUseCase, ObterAnosLetivosComunicadoUseCase>();
 
             // Dashboard - Acompanhamento de Aprendizagem
             services.TryAddScoped<IObterUltimaConsolidacaoAcompanhamentoAprendizagemUseCase, ObterUltimaConsolidacaoAcompanhamentoAprendizagemUseCase>();
@@ -1070,6 +1071,9 @@ namespace SME.SGP.IoC
             // Rotas Agendamento Sync
             services.TryAddScoped<IRotasAgendamentoSyncUseCase, RotasAgendamentoSyncUseCase>();
             services.TryAddScoped<IRotasAgendamentoTratarUseCase, RotasAgendamentoTratarUseCase>();
+
+            // Tipo Escola 
+            services.TryAddScoped<IObterTipoEscolaPorDreEUeUseCase, ObterTipoEscolaPorDreEUeUseCase>();
         }
     }
 }

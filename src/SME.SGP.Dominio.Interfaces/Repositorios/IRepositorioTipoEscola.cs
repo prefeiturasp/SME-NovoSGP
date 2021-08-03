@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -7,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         void Sincronizar(IEnumerable<TipoEscolaEol> tiposEscolas);
         Task<TipoEscolaEol> ObterPorCodigoAsync(long codigo);
+        Task<IEnumerable<TipoEscolaDto>> ObterTipoEscolaPorDreEUe(string dreCodigo, string ueCodigo);
     }
 }

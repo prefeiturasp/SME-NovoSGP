@@ -118,5 +118,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(new FiltroTurmaAlunoSemestreDto(turmaId, alunoCodigo, semestre)));
         }
+
+        [HttpGet("anos-letivos")]
+        [ProducesResponseType(typeof(IEnumerable<long>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CO_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterAnosLetivos([FromServices] IObterAnosLetivosComunicadoUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
+        }        
     }
 }
