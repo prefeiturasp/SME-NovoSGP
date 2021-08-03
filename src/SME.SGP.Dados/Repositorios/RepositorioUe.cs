@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -138,16 +139,19 @@ namespace SME.SGP.Dados.Repositorios
         public Ue ObterPorId(long id)
                     => contexto.Conexao.QueryFirst<Ue>("select * from ue where id = @id", new { id });
 
-        public async Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano)
+        public async Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano, bool ehHistorico)
         {
-            var query = @"select t.* from turma t
+            var query = new StringBuilder(@"select t.* from turma t
                             inner join ue u
                             on t.ue_id = u.id
                             where u.ue_id = @ueCodigo
                             and t.modalidade_codigo = @modalidade
-                            and t.ano_letivo = @ano";
+                            and t.ano_letivo = @ano");
 
-            return await contexto.QueryAsync<Turma>(query, new { ueCodigo, modalidade, ano });
+            if (ehHistorico)
+                query.AppendLine(" and t.historica");
+
+            return await contexto.QueryAsync<Turma>(query.ToString(), new { ueCodigo, modalidade, ano, ehHistorico });
         }
 
         public Ue ObterUEPorTurma(string turmaId)
