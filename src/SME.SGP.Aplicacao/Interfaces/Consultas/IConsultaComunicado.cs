@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
     {
         Task<ComunicadoCompletoDto> BuscarPorIdAsync(long id);
 
-        Task<PaginacaoResultadoDto<ComunicadoDto>> ListarPaginado(FiltroComunicadoDto filtro);
+        //Task<PaginacaoResultadoDto<ComunicadoDto>> ListarPaginado(FiltroComunicadoDto filtro);
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string codigoTurma, int anoLetivo);
     }

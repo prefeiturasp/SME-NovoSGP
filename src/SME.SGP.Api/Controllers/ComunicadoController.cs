@@ -48,8 +48,8 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<PaginacaoResultadoDto<ComunicadoDto>>), 200)]
-        [ProducesResponseType(typeof(IEnumerable<ComunicadoCompletoDto>), 204)]
+        [ProducesResponseType(typeof(IEnumerable<PaginacaoResultadoDto<ComunicadoListaPaginadaDto>>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ComunicadoListaPaginadaDto>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarComunicados([FromQuery] FiltroComunicadoDto filtro, [FromServices] IObterComunicadosPaginadosEscolaAquiUseCase useCase)

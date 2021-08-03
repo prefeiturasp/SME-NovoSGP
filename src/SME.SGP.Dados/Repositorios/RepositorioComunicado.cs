@@ -62,123 +62,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public RepositorioComunicado(ISgpContext conexao) : base(conexao)
         {
-        }
-
-        public async Task<PaginacaoResultadoDto<Comunicado>> ListarPaginado(FiltroComunicadoDto filtro, Paginacao paginacao)
-        {
-
-            StringBuilder query = new StringBuilder();
-
-            var queryPrincipal = MontarConsultaPricipal(filtro, paginacao, ehContador: false);
-
-            var queryCount = MontarConsultaPricipal(filtro, paginacao, ehContador: true);
-
-            if (paginacao == null)
-                paginacao = new Paginacao(1, 10);
-
-            var parametros = new
-            {
-                filtro.DataEnvio,
-                filtro.DataExpiracao,
-                filtro.Titulo,
-                filtro.AnoLetivo,
-                filtro.Modalidades,
-                filtro.Semestre,
-                filtro.CodigoDre,
-                filtro.CodigoUe,
-                filtro.Turmas,
-                filtro.EventoId
-            };
-
-
-            var retornoPaginado = new PaginacaoResultadoDto<Comunicado>()
-            {
-                Items = await database.Conexao.QueryAsync<Comunicado>(queryPrincipal.ToString(), parametros)
-            };
-
-
-            retornoPaginado.TotalRegistros = (await database.Conexao.QueryAsync<int>(queryCount.ToString(), parametros)).Sum();
-
-            retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
-
-            return retornoPaginado;
-
-
-        }
-
-        private string ObterConsultaListagemPrincipal(string limite, string where, string whereTurma, bool ehContador)
-        {
-            StringBuilder builder = new StringBuilder();
-
-            builder.AppendLine("select");
-
-            if (!ehContador)
-                builder.AppendLine(camposComunicado("co"));
-            else
-                builder.AppendLine("count(*)");
-
-            builder.AppendLine(@" from comunicado co
-                                  where co.excluido = false");
-
-            builder.AppendLine(where);
-
-            if (!ehContador)
-                builder.AppendLine("order by co.id");
-
-            if (!ehContador && !string.IsNullOrWhiteSpace(limite))
-                builder.AppendLine(limite);
-
-            return builder.ToString();
-        }
-
-        private string MontarConsultaPricipal(FiltroComunicadoDto filtro, Paginacao paginacao, bool ehContador = false)
-        {
-            var limite = paginacao.QuantidadeRegistros != 0 ? string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros) : "";
-
-            var whereTurma = (filtro.Turmas?.Any() ?? false) ? "ct.turma_codigo = Any(@Turmas)" : "";
-
-            var where = MontaWhereListar(filtro, "co");
-
-            return ObterConsultaListagemPrincipal(limite, where, whereTurma, ehContador);
-        }
-
-        private string MontaWhereListar(FiltroComunicadoDto filtro, string prefixo)
-        {
-            var where = new StringBuilder();
-
-            where.AppendLine($"AND {prefixo}.ano_letivo = @AnoLetivo");
-
-            if (!string.IsNullOrEmpty(filtro.Titulo))
-            {
-                filtro.Titulo = $"%{filtro.Titulo.ToUpperInvariant()}%";
-                where.AppendLine($"AND (upper(f_unaccent({prefixo}.titulo)) LIKE @titulo)");
-            }
-
-            if (filtro.DataEnvio.HasValue)
-                where.AppendLine($"AND (date({prefixo}.data_envio) = @DataEnvio)");
-
-            if (filtro.DataExpiracao.HasValue)
-                where.AppendLine($"AND (date({prefixo}.data_expiracao) = @DataExpiracao)");
-
-            if (!string.IsNullOrWhiteSpace(filtro.CodigoDre) && !filtro.CodigoDre.Equals("todas"))
-                where.AppendLine($"AND {prefixo}.codigo_dre = @CodigoDre");
-
-            if (!string.IsNullOrWhiteSpace(filtro.CodigoUe) && !filtro.CodigoUe.Equals("todas"))
-                where.AppendLine($"AND {prefixo}.codigo_ue = @CodigoUe");
-
-            if (filtro.Modalidades?.Count() > 0)
-                where.AppendLine($"AND {prefixo}.modalidade = @Modalidade");
-
-            if (filtro.Semestre > 0)
-                where.AppendLine($"AND {prefixo}.semestre = @Semestre");
-
-
-            if (filtro.EventoId > 0)
-                where.AppendLine($"AND {prefixo}.evento_Id = @EventoId");
-
-            return where.ToString();
-        }
-
+        } 
         private string ObterCamposListagem(string prefixoComunicado, string prefixoGrupoComunicado, string prefixoTurmaComunicado)
         {
             StringBuilder builder = new StringBuilder();
@@ -394,7 +278,7 @@ namespace SME.SGP.Dados.Repositorios
                 filtro.CodigoTurma,
                 filtro.CodigoUe,
                 filtro.DataEnvioFinal,
-                filtro.DataEnvioInicial,                
+                filtro.DataEnvioInicial,
                 filtro.Modalidades,
                 filtro.Semestre,
                 filtro.Titulo
@@ -410,7 +294,7 @@ namespace SME.SGP.Dados.Repositorios
             where.Append(!string.IsNullOrWhiteSpace(filtro.CodigoDre) ? $" AND {comunicadoAlias}.codigo_dre = @CodigoDre" : $" AND {comunicadoAlias}.codigo_dre is null");
 
             where.Append(!string.IsNullOrWhiteSpace(filtro.CodigoUe) ? $" AND {comunicadoAlias}.codigo_ue = @CodigoUe" : $" AND {comunicadoAlias}.codigo_ue is null");
-            
+
             if (filtro.Modalidades != null)
                 where.Append($" AND {comunicadoModalidadeAlias}.modalidade = ANY(@Modalidades)");
 
@@ -578,5 +462,121 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QueryAsync<Comunicado>(sql, parametros);
         }
 
+        public async Task<PaginacaoResultadoDto<ComunicadoListaPaginadaDto>> ListarComunicados(int anoLetivo, string dreCodigo, string ueCodigo, int[] modalidades, int semestre, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas, Paginacao paginacao)
+        {
+            var query = new StringBuilder(@"DROP TABLE IF EXISTS comunicadoTempPaginado;
+                                            select c.id,
+	                                               c.titulo,
+	                                               c.data_envio,
+	                                               c.data_expiracao,
+	                                               cm.modalidade
+                                              into temporary table comunicadoTempPaginado
+                                              from comunicado c 
+                                             inner join comunicado_modalidade cm on cm.comunicado_id = c.id 
+                                              left join comunicado_turma ct on ct.comunicado_id = c.id
+                                             inner join turma t on t.turma_id = ct.turma_codigo 
+                                             where c.ano_letivo = @anoLetivo
+                                               and not c.excluido ");
+
+            if (!string.IsNullOrEmpty(dreCodigo) && dreCodigo != "-99")
+                query.AppendLine("and c.codigo_dre = @dreCodigo ");
+            else
+                query.AppendLine("and c.codigo_dre is null ");
+
+            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
+                query.AppendLine("and c.codigo_ue = @ueCodigo ");
+            else
+                query.AppendLine("and c.codigo_ue is null ");
+
+            if (modalidades != null && !modalidades.Any(c => c == -99))
+                query.AppendLine("and cm.modalidade = any(@modalidades) ");
+
+            if (semestre > 0)
+                query.AppendLine("and t.semestre = @semestre ");
+
+            if (anosEscolares != null && !anosEscolares.Any(c => c == "-99"))
+                query.AppendLine("and t.ano = any(@anos) ");
+
+            if (turmasCodigo != null && !turmasCodigo.Any(c => c == "-99"))
+                query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
+
+            if (tiposEscolas != null && !tiposEscolas.Any(c => c == -99))
+                query.AppendLine("and ue.tipo_escola = any(@tipoescola) ");
+
+            if (!string.IsNullOrEmpty(titulo))
+            {
+                var tituloQuery = $"%{titulo.ToUpperInvariant()}%";
+                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloQuery) ");
+            }
+
+            if (dataEnvioInicio.HasValue && dataEnvioFim.HasValue)
+                query.AppendLine("and c.data_envio between @dataEnvioInicio::date and @dataEnvioFim::date ");
+
+            if (dataExpiracaoInicio.HasValue && dataExpiracaoFim.HasValue)
+                query.AppendLine("and c.data_expiracao between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
+
+            query.AppendLine("order by c.data_envio desc ");
+
+            if (paginacao.QuantidadeRegistros > 0)
+                query.AppendLine($" OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY ");
+
+            query.AppendLine("; ");
+
+            query.AppendLine(@"select temp.id,
+	                                  temp.titulo,
+	                                  temp.data_envio as DataEnvio,
+	                                  temp.data_expiracao as DataExpiracao,
+	                                  temp.modalidade as modalidadeCodigo                                 
+                                 from comunicadoTempPaginado temp; ");
+
+            query.AppendLine("select count(distinct temp.id) from comunicadoTempPaginado temp");
+
+            var retorno = new PaginacaoResultadoDto<ComunicadoListaPaginadaDto>();
+
+            var parametros = new
+            {
+                paginacao.QuantidadeRegistrosIgnorados,
+                paginacao.QuantidadeRegistros,
+                anoLetivo,
+                dreCodigo,
+                ueCodigo,
+                modalidades,
+                semestre,
+                dataEnvioInicio,
+                dataEnvioFim,
+                dataExpiracaoInicio,
+                dataExpiracaoFim,
+                titulo,
+                turmasCodigo,
+                anosEscolares,
+                tiposEscolas
+            };
+
+            var multiResult = await database.QueryMultipleAsync(query.ToString(), parametros);
+
+            var dic = new Dictionary<long, ComunicadoListaPaginadaDto>();
+
+            multiResult.Read<ComunicadoListaPaginadaDto, ComunicadoModalidadeDto, ComunicadoListaPaginadaDto>(
+                (comunicado, modalidade) =>
+                {
+                    if (!dic.TryGetValue(comunicado.Id, out var comunicadoResultado))
+                    {
+                        comunicado.AdicionarModalidade(modalidade.ModalidadeCodigo);
+                        dic.Add(comunicado.Id, comunicado);
+                        return comunicado;
+                    }
+
+                    comunicadoResultado.AdicionarModalidade(modalidade.ModalidadeCodigo);
+
+                    return comunicadoResultado;
+                }
+                , splitOn: "Id,modalidadeCodigo");
+
+            retorno.Items = dic.Values;
+            retorno.TotalRegistros = multiResult.ReadFirst<int>();
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retorno;
+        }
     }
 }
