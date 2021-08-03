@@ -51,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long componenteCurricularId,
-            string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaCodigos = null, int? anoLetivo = null)
+            string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaCodigos = null, int? anoLetivo = 0)
         {
             var query = new StringBuilder();
 
@@ -94,7 +94,7 @@ namespace SME.SGP.Dados.Repositorios
             if (turmaCodigos != null)
                 query.AppendLine("and t.turma_id = ANY(@turmaCodigos)");
 
-            if (anoLetivo != null)
+            if (anoLetivo > 0)
                 query.AppendLine("and t.ano_letivo = @anoLetivo");
 
             return (await database.Conexao.QueryAsync<AtribuicaoCJ, Turma, AtribuicaoCJ>(query.ToString(), (atribuicaoCJ, turma) =>
