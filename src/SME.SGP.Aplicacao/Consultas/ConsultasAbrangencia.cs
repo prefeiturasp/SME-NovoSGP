@@ -70,8 +70,9 @@ namespace SME.SGP.Aplicacao
                 var anosCJ = await mediator.Send(new ObterAnosAtribuicaoCJQuery(login, consideraHistorico));
                 if (anosCJ.Any())
                     anosLetivos.AddRange(anosCJ);
+                
             }
-
+            anosLetivos.Add(DateTime.Now.Year);
             return anosLetivos.Distinct().ToList();
         }
 
