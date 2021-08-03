@@ -33,14 +33,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar());
         }
 
-        [HttpGet("ues/{ueId}/modalidades/{modalidadeId}/turmas/{turmaId}/professores/{professorRf}/")]
+        [HttpGet("ues/{ueId}/modalidades/{modalidadeId}/turmas/{turmaId}/professores/{professorRf}")]
         [ProducesResponseType(typeof(AtribuicaoCJTitularesRetornoDto), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterAtribuicaoDeProfessores(string ueId, string turmaId,
-            string professorRf, Modalidade modalidadeId, [FromServices] IConsultasAtribuicaoCJ consultasAtribuicaoCJ)
+            string professorRf, Modalidade modalidadeId,[FromQuery] int anoLetivo, [FromServices] IObterProfessoresTitularesECjsUseCase useCase)
         {
-            return Ok(await consultasAtribuicaoCJ.ObterProfessoresTitularesECjs(ueId, turmaId, professorRf, modalidadeId));
+            return Ok(await useCase.Executar(ueId, turmaId, professorRf, modalidadeId, anoLetivo));
         }
 
         [HttpPost]
