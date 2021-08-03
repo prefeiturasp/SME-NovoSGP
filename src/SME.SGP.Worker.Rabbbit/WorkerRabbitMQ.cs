@@ -56,24 +56,25 @@ namespace SME.SGP.Worker.RabbitMQ
 
         private void DeclararFilasSgp()
         {
-            DeclararFilasPorRota(typeof(RotasRabbitSgp));
-            DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento));
+            DeclararFilasPorRota(typeof(RotasRabbitSgp), ExchangeRabbit.Sgp, ExchangeRabbit.SgpDeadLetter);
+            DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento), ExchangeRabbit.Sgp, ExchangeRabbit.SgpDeadLetter);
+            DeclararFilasPorRota(typeof(RotasRabbitSgpRelatorios), ExchangeRabbit.ServidorRelatorios, ExchangeRabbit.ServidorRelatoriosDeadLetter);
         }
 
-        private void DeclararFilasPorRota(Type tipoRotas)
+        private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter)
         {
             foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
             {
                 var args = new Dictionary<string, object>()
                     {
-                        { "x-dead-letter-exchange", ExchangeRabbit.SgpDeadLetter }
+                        { "x-dead-letter-exchange", exchange }
                     };
                 canalRabbit.QueueDeclare(fila, true, false, false, args);
-                canalRabbit.QueueBind(fila, ExchangeRabbit.Sgp, fila, null);
+                canalRabbit.QueueBind(fila, exchange, fila, null);
 
                 var filaDeadLetter = $"{fila}.deadletter";
                 canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
-                canalRabbit.QueueBind(filaDeadLetter, ExchangeRabbit.SgpDeadLetter, fila, null);
+                canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
             }
         }
 

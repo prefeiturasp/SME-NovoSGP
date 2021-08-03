@@ -2,12 +2,10 @@
 {
     public static class RotasRabbitSgpRelatorios
     {
-        public const string WorkerRelatoriosSgp = "sme.sr.workers.sgp";
+        //public const string WorkerRelatoriosSgp = "sme.sr.workers.sgp";
 
         public const string RotaRelatoriosSolicitados = "relatorios.solicitados";
-
         public const string RotaRelatoriosSolicitadosBoletim = "relatorios.solicitados.boletim";
-
         public const string RotaRelatoriosSolicitadosBoletimDetalhado = "relatorios.solicitados.boletimdetalhado";
         public const string RotaRelatoriosSolicitadosPlanoDeAula = "relatorios.solicitados.planodeaula";
         public const string RotaRelatoriosSolicitadosRegistroIndividual = "relatorios.solicitados.registroindividual";
