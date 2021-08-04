@@ -32,7 +32,7 @@
         public const string RotaRelatoriosSolicitadosAtaFinalResultados = "relatorios.solicitados.atafinalresultados";
         public const string RotaRelatoriosSolicitadosHistoricoEscolar = "relatorios.solicitados.historicoescolar";
 
-        public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
-        public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
+        public const string RotaRabbitDeadletterTratar = "sgp.sr.rabbit.deadletter.tratar";
+        public const string RotaRabbitDeadletterSync = "sgp.sr.rabbit.deadletter.sync";
     }
 }
