@@ -30,13 +30,7 @@ namespace SME.SGP.Aplicacao.Commands
             // diario_bordo <- observacao <- notificacao
             var idDiarioBordo = (await repositorioDiarioBordo.RemoverLogico(request.AulaId, "aula_id"));
             if (idDiarioBordo > 0)
-            {
-                var observacoesId = await repositorioDiarioBordoObservacaoNotificacao.ObterObservacaoPorId(idDiarioBordo);
-                foreach (long observacaoId in observacoesId)
-                {
-                    await mediator.Send(new ExcluirObservacaoDiarioBordoCommand(observacaoId));
-                }
-            }
+                await mediator.Send(new ExcluirObservacaoDiarioBordoCommand(idDiarioBordo));
 
             return true;
         }

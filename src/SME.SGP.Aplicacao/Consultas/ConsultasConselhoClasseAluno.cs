@@ -217,11 +217,10 @@ namespace SME.SGP.Aplicacao
                             CodigoAluno = alunoCodigo
                         };
 
-
                         frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
                         frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
                         frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
-
+                        frequenciasAlunoParaTratar.ToList().ForEach(f => frequenciaAluno.AdicionarFrequenciaBimestre(f.Bimestre, tipoCalendario.AnoLetivo.Equals(2020) && f.TotalAulas.Equals(0) ? 100 : f.PercentualFrequencia));
                     }
 
                     if (disciplina.Regencia)
@@ -372,8 +371,6 @@ namespace SME.SGP.Aplicacao
             long tipoCalendarioId, int bimestre)
         {
             var frequenciasAlunoRetorno = new List<FrequenciaAluno>();
-
-
             var disciplinasId = disciplinasDaTurma.Select(a => a.CodigoComponenteCurricular.ToString()).Distinct().ToArray();
             var turmasCodigo = disciplinasDaTurma.Select(a => a.TurmaCodigo).Distinct().ToArray();
 
@@ -396,10 +393,8 @@ namespace SME.SGP.Aplicacao
 
             var aulasComponentesTurmas = await mediator.Send(new ObterAulasDadasTurmaEBimestreEComponenteCurricularQuery(turmasCodigo, tipoCalendarioId, disciplinasId, bimestres));
 
-
             if (frequenciasAluno != null && frequenciasAluno.Any())
                 frequenciasAlunoRetorno.AddRange(frequenciasAluno);
-
 
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)
             {
@@ -411,7 +406,8 @@ namespace SME.SGP.Aplicacao
                         DisciplinaId = aulaComponenteTurma.ComponenteCurricularCodigo,
                         TurmaId = aulaComponenteTurma.TurmaCodigo,
                         TotalAulas = aulaComponenteTurma.AulasQuantidade,
-                        Bimestre = aulaComponenteTurma.Bimestre
+                        Bimestre = aulaComponenteTurma.Bimestre,
+                        PeriodoEscolarId = aulaComponenteTurma.PeriodoEscolarId
                     });
                 }
             }
@@ -489,13 +485,13 @@ namespace SME.SGP.Aplicacao
             var percentualFrequencia = 0.0;
 
             if (turmaPossuiRegistroFrequencia)
-            {
                 percentualFrequencia = (int)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
-            }
 
             // Cálculo de frequência particular do ano de 2020
             if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))
                 percentualFrequencia = frequenciaAluno?.PercentualFrequenciaFinal ?? 0;
+            else if (turma.AnoLetivo.Equals(2020) && frequenciaAluno?.TotalAulas == 0)
+                percentualFrequencia = 100;
 
             var conselhoClasseComponente = new ConselhoClasseComponenteFrequenciaDto()
             {

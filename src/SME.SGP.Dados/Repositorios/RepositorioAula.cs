@@ -54,7 +54,7 @@ namespace SME.SGP.Dados.Repositorios
             })).Any();
         }
 
-        public async Task<bool> ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(DateTime data, string turmaCodigo, string componenteCurricular, string professorRf)
+        public async Task<bool> ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(DateTime data, string turmaCodigo, string componenteCurricular, string professorRf, TipoAula tipoAula)
         {
             var query = @"select 1
                  from aula
@@ -62,14 +62,16 @@ namespace SME.SGP.Dados.Repositorios
                   and DATE(data_aula) = @data
                   and turma_id = @turmaCodigo
                   and disciplina_id = @componenteCurricular
-                  and professor_rf = @professorRf";
+                  and professor_rf = @professorRf
+                  and tipo_aula = @tipoAula";
 
             return (await database.Conexao.QueryAsync<int>(query, new
             {
                 data = data.Date,
                 turmaCodigo,
                 componenteCurricular,
-                professorRf
+                professorRf,
+                tipoAula
             })).Any();
         }
 

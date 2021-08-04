@@ -22,20 +22,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirObservacaoDiarioBordoCommand request, CancellationToken cancellationToken)
         {
-            var diarioBordoObservacao = await repositorioDiarioBordoObservacao.ObterPorIdAsync(request.ObservacaoId);
-            if (diarioBordoObservacao == null)
-                throw new NegocioException("Observação do diário de bordo não encontrada.");
-
-            // na exclusão de aula o usuario da exclusão pode não ser o mesmo que inseriu a observação
-            if (request.UsuarioId.HasValue)
-                diarioBordoObservacao.ValidarUsuarioAlteracao(request.UsuarioId.Value);
-
-            diarioBordoObservacao.Remover();
-
-            await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);
+            await repositorioDiarioBordoObservacao.ExcluirObservacoesPorDiarioBordoId(request.DiarioBordoId, request.UsuarioId);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoDiarioBordo,
-                      new ExcluirNotificacaoDiarioBordoDto(request.ObservacaoId), Guid.NewGuid(), null));
+                      new ExcluirNotificacaoDiarioBordoDto(request.DiarioBordoId), Guid.NewGuid(), null));
 
             return true;
         }

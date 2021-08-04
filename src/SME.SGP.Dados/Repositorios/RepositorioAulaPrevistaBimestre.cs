@@ -105,12 +105,13 @@ namespace SME.SGP.Dados.Repositorios
         {
 
             var query = new StringBuilder(@"select
+                            p.id PeriodoEscolarId,
 	                        p.bimestre,
 	                        ap.turma_id as TurmaCodigo,
 	                        ap.disciplina_id as ComponenteCurricularCodigo,	
 	                        SUM(a.quantidade) filter (
 	                        where a.tipo_aula = 1
-	                        and rf.id is not null) as AulasQuantidade
+	                        and rf.id is not null) as AulasQuantidade                            
                         from
 	                        periodo_escolar p
                         inner join tipo_calendario tp on
@@ -140,9 +141,10 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(" AND p.bimestre = any(@bimestres)");
 
             query.AppendLine(@" group by
+                            p.id,
 	                        p.bimestre,
 	                        ap.turma_id,
-	                        ap.disciplina_id ;");
+	                        ap.disciplina_id;");
 
             return (await database.Conexao.QueryAsync<AulaPrevistaTurmaComponenteDto>(query.ToString(), new { bimestres, turmasCodigos, componentesCurricularesId, tipoCalendarioId }));
         }
