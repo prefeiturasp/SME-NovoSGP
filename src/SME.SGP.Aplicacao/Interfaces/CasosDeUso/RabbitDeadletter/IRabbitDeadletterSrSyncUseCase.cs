@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IRabbitDeadletterSyncUseCase
+    public interface IRabbitDeadletterSrSyncUseCase
     {
         Task<bool> Executar();
     }
