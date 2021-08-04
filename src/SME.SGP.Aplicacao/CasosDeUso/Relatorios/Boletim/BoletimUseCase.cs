@@ -53,9 +53,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             bool retorno;
 
             if (filtroRelatorioBoletimDto.Modelo == ModeloBoletim.Detalhado)
-                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhado, filtroRelatorioBoletimDto, usuarioLogado));
+                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhado, filtroRelatorioBoletimDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhado));
             else
-                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, filtroRelatorioBoletimDto, usuarioLogado));
+                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, filtroRelatorioBoletimDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletim));
 
             unitOfWork.PersistirTransacao();
             return retorno;

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (filtro.DataInicio.GetValueOrDefault().Date > filtro.DataFim.GetValueOrDefault().Date)
                 throw new NegocioException("A data de início não pode ser maior que a data fim");
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Leitura, filtro, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Leitura, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosEscolaAquiLeitura));
         }
 
     }

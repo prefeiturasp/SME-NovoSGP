@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using SME.SGP.Infra.Enumerados;
 using System;
@@ -32,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
             filtroRelatorioConselhoClasseDto.Usuario = usuario;
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseTurma, filtroRelatorioConselhoClasseDto, usuario));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseTurma, filtroRelatorioConselhoClasseDto, usuario, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosConselhoDeClasse));
         }
     }
 }

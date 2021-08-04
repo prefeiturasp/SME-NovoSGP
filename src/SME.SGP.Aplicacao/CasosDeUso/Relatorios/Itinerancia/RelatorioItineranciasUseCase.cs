@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                 UsuarioRF = usuarioLogado.CodigoRf
             };
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Itinerancias, filtro, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Itinerancias, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRegistroItinerancia));
         }
     }
 }
