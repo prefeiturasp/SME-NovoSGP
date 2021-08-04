@@ -5,6 +5,7 @@ using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             filtroHistoricoEscolarDto.Usuario = usuarioLogado ?? throw new NegocioException("Não foi possível localizar o usuário.");
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.HistoricoEscolarFundamental, filtroHistoricoEscolarDto, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.HistoricoEscolarFundamental, filtroHistoricoEscolarDto, usuarioLogado,rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosHistoricoEscolar));
 
         }
     }
