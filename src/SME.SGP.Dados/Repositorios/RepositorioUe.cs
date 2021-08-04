@@ -146,8 +146,10 @@ namespace SME.SGP.Dados.Repositorios
                             on t.ue_id = u.id
                             where u.ue_id = @ueCodigo
                             and t.modalidade_codigo = @modalidade
-                            and t.ano_letivo = @ano
-                            and t.historica = @ehHistorico");
+                            and t.ano_letivo = @ano ");
+
+            if(modalidade == Modalidade.EJA)
+                query.AppendLine(" and t.historica = @ehHistorico ");
 
             return await contexto.QueryAsync<Turma>(query.ToString(), new { ueCodigo, modalidade, ano, ehHistorico });
         }
