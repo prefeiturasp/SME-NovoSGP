@@ -461,15 +461,20 @@ namespace SME.SGP.Dados.Repositorios
             var parametros = new { ids };
             return await database.QueryAsync<Comunicado>(sql, parametros);
         }
-        public async Task<IEnumerable<int>> ObterAnosLetivosComunicados()
+        public async Task<IEnumerable<int>> ObterAnosLetivosComHistoricoDeComunicados(DateTime? dataInicio, DateTime dataAtual)
         {
-            var query = @"select distinct ano_letivo 
-                            from comunicado c 
-                           where not excluido
-                             and ano_letivo >= 2021
-                           order by ano_letivo desc";
+            var query = new StringBuilder(@"select distinct c.ano_letivo 
+                                              from comunicado c 
+                                             where not c.excluido ");
 
-            return await database.QueryAsync<int>(query);
+            if (dataInicio.HasValue)
+                query.AppendLine("and c.criado_em between @dataInicio::date and @dataAtual::date  ");
+            else
+                query.AppendLine("and c.criado_em < @dataAtual::date ");
+
+            query.AppendLine("order by c.ano_letivo desc ");
+
+            return await database.QueryAsync<int>(query.ToString(), new { dataInicio, dataAtual });
         }
 
         public async Task<PaginacaoResultadoDto<ComunicadoListaPaginadaDto>> ListarComunicados(int anoLetivo, string dreCodigo, string ueCodigo, int[] modalidades, int semestre, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas, Paginacao paginacao)

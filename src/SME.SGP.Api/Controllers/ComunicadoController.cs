@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/comunicado")]
-    [Authorize("Bearer")]
+   // [Authorize("Bearer")]
     public class ComunicadoController : ControllerBase
     {
         [HttpPost]
@@ -122,10 +122,10 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("anos-letivos")]
         [ProducesResponseType(typeof(IEnumerable<long>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CO_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterAnosLetivos([FromServices] IObterAnosLetivosComunicadoUseCase useCase)
+       // [Permissao(Permissao.CO_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterAnosLetivos([FromQuery] int anoMinimo, [FromServices] IObterAnosLetivosComunicadoUseCase useCase)
         {
-            return Ok(await useCase.Executar());
+            return Ok(await useCase.Executar(anoMinimo));
         }
 
         [HttpGet("ues/{codigoUe}/anoletivo/{anoLetivo}/turmas")]
