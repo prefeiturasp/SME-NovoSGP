@@ -123,9 +123,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<long>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterAnosLetivos([FromServices] IObterAnosLetivosComunicadoUseCase useCase)
+        public async Task<IActionResult> ObterAnosLetivos([FromQuery] int anoMinimo, [FromServices] IObterAnosLetivosComunicadoUseCase useCase)
         {
-            return Ok(await useCase.Executar());
+            return Ok(await useCase.Executar(anoMinimo));
         }
 
         [HttpGet("ues/{codigoUe}/anoletivo/{anoLetivo}/turmas")]
