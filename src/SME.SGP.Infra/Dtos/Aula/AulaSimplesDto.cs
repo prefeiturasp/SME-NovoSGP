@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
@@ -11,5 +9,6 @@ namespace SME.SGP.Infra
         public string ProfessorRf { get; set; }
         public string CriadoPor { get; set; }
         public bool PossuiFrequenciaRegistrada { get; set; }
+        public TipoAula TipoAula { get; set; }
     }
 }

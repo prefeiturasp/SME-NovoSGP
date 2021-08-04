@@ -30,23 +30,23 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.TurmaId)
                 .NotEmpty()
-                .WithMessage("O Código da Turma deve ser informado para consulta de Registros Individuáis do Estudante");
+                .WithMessage("O Código da Turma deve ser informado para consulta de Registros Individuais do Estudante");
 
             RuleFor(a => a.AlunoCodigo)
                 .NotEmpty()
-                .WithMessage("O Código do Aluno deve ser informado para consulta de Registros Individuáis do Estudante");
+                .WithMessage("O Código do Aluno deve ser informado para consulta de Registros Individuais do Estudante");
 
             RuleFor(a => a.ComponenteCurricularId)
                 .NotEmpty()
-                .WithMessage("O Código do Componente Curricular deve ser informado para consulta de Registros Individuáis do Estudante");
+                .WithMessage("O Código do Componente Curricular deve ser informado para consulta de Registros Individuais do Estudante");
 
             RuleFor(a => a.DataInicio)
                 .NotEmpty()
-                .WithMessage("A Data de Início deve ser informado para consulta de Registros Individuáis do Estudante");
+                .WithMessage("A Data de Início deve ser informada para consulta de Registros Individuais do Estudante");
 
             RuleFor(a => a.DataFim)
                 .NotEmpty()
-                .WithMessage("A Data de Fim deve ser informado para consulta de Registros Individuáis do Estudante");
+                .WithMessage("A Data de Fim deve ser informada para consulta de Registros Individuais do Estudante");
         }
     }
 }
