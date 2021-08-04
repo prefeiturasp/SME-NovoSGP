@@ -62,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public RepositorioComunicado(ISgpContext conexao) : base(conexao)
         {
-        } 
+        }
         private string ObterCamposListagem(string prefixoComunicado, string prefixoGrupoComunicado, string prefixoTurmaComunicado)
         {
             StringBuilder builder = new StringBuilder();
@@ -484,7 +484,8 @@ namespace SME.SGP.Dados.Repositorios
                                               from comunicado c 
                                              inner join comunicado_modalidade cm on cm.comunicado_id = c.id 
                                               left join comunicado_turma ct on ct.comunicado_id = c.id
-                                             inner join turma t on t.turma_id = ct.turma_codigo 
+                                              left join turma t on t.turma_id = ct.turma_codigo
+                                              left join ue on ue.ue_id = c.codigo_ue
                                              where c.ano_letivo = @anoLetivo
                                                and not c.excluido ");
 
@@ -505,13 +506,13 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and t.semestre = @semestre ");
 
             if (anosEscolares != null && !anosEscolares.Any(c => c == "-99"))
-                query.AppendLine("and t.ano = any(@anos) ");
+                query.AppendLine("and t.ano = any(@anosEscolares) ");
 
             if (turmasCodigo != null && !turmasCodigo.Any(c => c == "-99"))
                 query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
 
             if (tiposEscolas != null && !tiposEscolas.Any(c => c == -99))
-                query.AppendLine("and ue.tipo_escola = any(@tipoescola) ");
+                query.AppendLine("and ue.tipo_escola = any(@tiposEscolas) ");
 
             if (!string.IsNullOrEmpty(titulo))
             {
