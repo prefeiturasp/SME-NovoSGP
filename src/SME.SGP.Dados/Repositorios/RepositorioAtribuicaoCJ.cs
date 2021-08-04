@@ -51,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long componenteCurricularId,
-            string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaCodigos = null, int? anoLetivo = 0)
+            string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaCodigos = null, int? anoLetivo = 0, bool? historico = null)
         {
             var query = new StringBuilder();
 
@@ -65,37 +65,40 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where 1 = 1");
 
             if (modalidade.HasValue)
-                query.AppendLine("and a.modalidade = @modalidade");
+                query.AppendLine(" and a.modalidade = @modalidade ");
 
             if (!string.IsNullOrEmpty(ueId))
-                query.AppendLine("and a.ue_id = @ueId");
+                query.AppendLine(" and a.ue_id = @ueId ");
 
             if (!string.IsNullOrEmpty(turmaId))
-                query.AppendLine("and a.turma_id = @turmaId");
+                query.AppendLine(" and a.turma_id = @turmaId ");
 
             if (componenteCurricularId > 0)
-                query.AppendLine("and a.disciplina_id = @componenteCurricularId");
+                query.AppendLine(" and a.disciplina_id = @componenteCurricularId ");
 
             if (!string.IsNullOrEmpty(usuarioRf))
-                query.AppendLine("and a.professor_rf = @usuarioRf");
+                query.AppendLine(" and a.professor_rf = @usuarioRf ");
 
             if (!string.IsNullOrEmpty(usuarioNome))
             {
                 usuarioNome = $"%{usuarioNome.ToUpper()}%";
-                query.AppendLine("and upper(f_unaccent(u.nome)) LIKE upper(f_unaccent(@usuarioNome))");
+                query.AppendLine(" and upper(f_unaccent(u.nome)) LIKE upper(f_unaccent(@usuarioNome)) ");
             }
 
             if (substituir.HasValue)
-                query.AppendLine("and a.substituir = @substituir");
+                query.AppendLine(" and a.substituir = @substituir ");
 
             if (!string.IsNullOrEmpty(dreCodigo))
-                query.AppendLine("and a.dre_id = @dreCodigo");
+                query.AppendLine(" and a.dre_id = @dreCodigo ");
 
             if (turmaCodigos != null)
-                query.AppendLine("and t.turma_id = ANY(@turmaCodigos)");
+                query.AppendLine(" and t.turma_id = ANY(@turmaCodigos) ");
 
             if (anoLetivo > 0)
-                query.AppendLine("and t.ano_letivo = @anoLetivo");
+                query.AppendLine(" and t.ano_letivo = @anoLetivo ");
+
+            if (historico.HasValue)
+                query.AppendLine(" and t.historica = @historico ");
 
             return (await database.Conexao.QueryAsync<AtribuicaoCJ, Turma, AtribuicaoCJ>(query.ToString(), (atribuicaoCJ, turma) =>
             {
@@ -112,7 +115,8 @@ namespace SME.SGP.Dados.Repositorios
                 substituir,
                 dreCodigo,
                 turmaCodigos,
-                anoLetivo
+                anoLetivo,
+                historico
             }, splitOn: "id,id"));
         }
 

@@ -28,7 +28,8 @@ namespace SME.SGP.Aplicacao
                 request.Substituir,
                 request.DreCodigo,
                 request.TurmaIds,
-                request.AnoLetivo
+                request.AnoLetivo,
+                request.Historico
                 );
     }
 }
