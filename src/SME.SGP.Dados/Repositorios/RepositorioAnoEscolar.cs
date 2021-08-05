@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>> ObterAnosPorCodigoUeModalidade(string codigoUe, Modalidade modalidade)
+        public async Task<IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>> ObterAnosPorCodigoUeModalidade(string codigoUe, int[] modalidades)
         {
             try
             {
@@ -45,13 +45,14 @@ namespace SME.SGP.Dados.Repositorios
                                                     inner join turma t on t.ano = tca.ano
                                                     inner join ue ue on t.ue_id = ue.id
                                                     where tc.descricao is not null
-                                                    and tca.modalidade = @modalidadeId ");
+                                                    and tca.modalidade = any(@modalidades)");
 
                 if (!String.IsNullOrEmpty(codigoUe))
                     query.AppendLine(" and ue.ue_id = @codigoUe");
+
                 query.AppendLine(" order by tca.ano ");
 
-                return await database.Conexao.QueryAsync<AnosPorCodigoUeModalidadeEscolaAquiResult>(query.ToString(), new { codigoUe, modalidadeId = (int)modalidade });
+                return await database.Conexao.QueryAsync<AnosPorCodigoUeModalidadeEscolaAquiResult>(query.ToString(), new { codigoUe, modalidades });
             }
             catch (Exception ex)
             {

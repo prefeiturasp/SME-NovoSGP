@@ -1,24 +1,18 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Anos;
-using SME.SGP.Dominio;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra.Dtos.EscolaAqui.Anos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Anos
+namespace SME.SGP.Aplicacao
 {
-    public class ObterAnosPorCodigoUeModalidadeEscolaAquiUseCase : IObterAnosPorCodigoUeModalidadeEscolaAquiUseCase
+    public class ObterAnosPorCodigoUeModalidadeEscolaAquiUseCase : AbstractUseCase, IObterAnosPorCodigoUeModalidadeEscolaAquiUseCase
     {
-        private readonly IMediator mediator;
-
-        public ObterAnosPorCodigoUeModalidadeEscolaAquiUseCase(IMediator mediator)
+        public ObterAnosPorCodigoUeModalidadeEscolaAquiUseCase(IMediator mediator) : base(mediator)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>> Executar(string codigoUe, Modalidade modalidade)
-        {
-            return await mediator.Send(new ObterAnosPorCodigoUeModalidadeQuery(codigoUe, modalidade));
-        }
+        public async Task<IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>> Executar(string codigoUe, int[] modalidades)
+            => await mediator.Send(new ObterAnosPorCodigoUeModalidadeQuery(codigoUe, modalidades));
     }
 }

@@ -480,11 +480,13 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PaginacaoResultadoDto<ComunicadoListaPaginadaDto>> ListarComunicados(int anoLetivo, string dreCodigo, string ueCodigo, int[] modalidades, int semestre, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas, Paginacao paginacao)
         {
             var query = new StringBuilder(@"DROP TABLE IF EXISTS comunicadoTempPaginado;
-                                            select c.id,
+                                            select distinct c.id,
 	                                               c.titulo,
 	                                               c.data_envio,
 	                                               c.data_expiracao,
-	                                               cm.modalidade
+	                                               (select array_agg(modalidade) 
+                                                      from comunicado_modalidade cm2 
+                                                     where cm2.comunicado_id = c.id) as Modalidade
                                               into temporary table comunicadoTempPaginado
                                               from comunicado c 
                                              inner join comunicado_modalidade cm on cm.comunicado_id = c.id 
@@ -543,7 +545,8 @@ namespace SME.SGP.Dados.Repositorios
 	                                  temp.data_envio as DataEnvio,
 	                                  temp.data_expiracao as DataExpiracao,
 	                                  temp.modalidade as modalidadeCodigo                                 
-                                 from comunicadoTempPaginado temp; ");
+                                 from comunicadoTempPaginado temp
+                                order by temp.id desc, temp.data_envio desc, temp.modalidade; ");
 
             query.AppendLine("select count(distinct temp.id) from comunicadoTempPaginado temp");
 
@@ -567,30 +570,39 @@ namespace SME.SGP.Dados.Repositorios
                 anosEscolares,
                 tiposEscolas
             };
+                        
 
-            var multiResult = await database.QueryMultipleAsync(query.ToString(), parametros);
+            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), parametros))
+            {
+                retorno.Items = multi.Read<ComunicadoListaPaginadaDto>();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
+            }
 
-            var dic = new Dictionary<long, ComunicadoListaPaginadaDto>();
-
-            multiResult.Read<ComunicadoListaPaginadaDto, ComunicadoModalidadeDto, ComunicadoListaPaginadaDto>(
-                (comunicado, modalidade) =>
-                {
-                    if (!dic.TryGetValue(comunicado.Id, out var comunicadoResultado))
-                    {
-                        comunicado.AdicionarModalidade(modalidade.ModalidadeCodigo);
-                        dic.Add(comunicado.Id, comunicado);
-                        return comunicado;
-                    }
-
-                    comunicadoResultado.AdicionarModalidade(modalidade.ModalidadeCodigo);
-
-                    return comunicadoResultado;
-                }
-                , splitOn: "Id,modalidadeCodigo");
-
-            retorno.Items = dic.Values;
-            retorno.TotalRegistros = multiResult.ReadFirst<int>();
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            //var multiResult = await database.QueryMultipleAsync(query.ToString(), parametros);
+
+            //var dic = new Dictionary<long, ComunicadoListaPaginadaDto>();
+
+            //multiResult.Read<ComunicadoListaPaginadaDto, ComunicadoModalidadeDto, ComunicadoListaPaginadaDto>(
+            //    (comunicado, modalidade) =>
+            //    {
+            //        if (!dic.TryGetValue(comunicado.Id, out var comunicadoResultado))
+            //        {
+            //            comunicado.AdicionarModalidade(modalidade.ModalidadeCodigo);
+            //            dic.Add(comunicado.Id, comunicado);
+            //            return comunicado;
+            //        }
+
+            //        comunicadoResultado.AdicionarModalidade(modalidade.ModalidadeCodigo);
+
+            //        return comunicadoResultado;
+            //    }
+            //    , splitOn: "Id,modalidadeCodigo");
+
+            //retorno.Items = dic.Values;
+            //retorno.TotalRegistros = multiResult.ReadFirst<int>();
+            //retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
         }

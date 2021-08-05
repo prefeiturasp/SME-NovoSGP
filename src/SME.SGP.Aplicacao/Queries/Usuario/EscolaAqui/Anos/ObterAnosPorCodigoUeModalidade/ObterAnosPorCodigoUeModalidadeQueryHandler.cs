@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAnosPorCodigoUeModalidadeHandler : IRequestHandler<ObterAnosPorCodigoUeModalidadeQuery, IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>>
+    public class ObterAnosPorCodigoUeModalidadeQueryHandler : IRequestHandler<ObterAnosPorCodigoUeModalidadeQuery, IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>>
     {
         private readonly IRepositorioAnoEscolar _repositorioAnoEscolar;
 
-        public ObterAnosPorCodigoUeModalidadeHandler(IRepositorioAnoEscolar repositorioAnoEscolar)
+        public ObterAnosPorCodigoUeModalidadeQueryHandler(IRepositorioAnoEscolar repositorioAnoEscolar)
         {
             this._repositorioAnoEscolar = repositorioAnoEscolar ?? throw new ArgumentNullException(nameof(repositorioAnoEscolar));
         }
 
         public async Task<IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>> Handle(ObterAnosPorCodigoUeModalidadeQuery request, CancellationToken cancellationToken)
         {
-            return await _repositorioAnoEscolar.ObterAnosPorCodigoUeModalidade(request.CodigoUe, request.Modalidade);
+            return await _repositorioAnoEscolar.ObterAnosPorCodigoUeModalidade(request.CodigoUe, request.Modalidades);
         }
     }
 }
