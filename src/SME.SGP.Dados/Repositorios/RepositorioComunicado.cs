@@ -468,11 +468,11 @@ namespace SME.SGP.Dados.Repositorios
                                              where not c.excluido ");
 
             if (dataInicio.HasValue)
-                query.AppendLine("and c.criado_em between @dataInicio::date and @dataAtual::date  ");
+                query.AppendLine("and c.criado_em::date between @dataInicio::date and @dataAtual::date  ");
             else
-                query.AppendLine("and c.criado_em < @dataAtual::date ");
+                query.AppendLine("and c.criado_em::date < @dataAtual::date ");
 
-            query.AppendLine("order by c.ano_letivo desc ");
+            query.AppendLine("order by c.ano_letivo desc");
 
             return await database.QueryAsync<int>(query.ToString(), new { dataInicio, dataAtual });
         }
@@ -521,15 +521,15 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(titulo))
             {
-                var tituloQuery = $"%{titulo.ToUpperInvariant()}%";
-                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloQuery) ");
+                titulo = $"%{titulo.ToUpperInvariant()}%";
+                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @titulo) ");
             }
 
             if (dataEnvioInicio.HasValue && dataEnvioFim.HasValue)
-                query.AppendLine("and c.data_envio between @dataEnvioInicio::date and @dataEnvioFim::date ");
+                query.AppendLine("and c.data_envio::date between @dataEnvioInicio::date and @dataEnvioFim::date ");
 
             if (dataExpiracaoInicio.HasValue && dataExpiracaoFim.HasValue)
-                query.AppendLine("and c.data_expiracao between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
+                query.AppendLine("and c.data_expiracao::date between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
 
             query.AppendLine("order by c.data_envio desc ");
 
