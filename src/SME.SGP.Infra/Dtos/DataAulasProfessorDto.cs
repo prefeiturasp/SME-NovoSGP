@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Infra
 {
@@ -10,5 +11,6 @@ namespace SME.SGP.Infra
         public int Bimestre { get; set; }
         public string ProfessorRf { get; set; }
         public string CriadoPor { get; set; }
+        public TipoAula TipoAula { get; set; }
     }
 }

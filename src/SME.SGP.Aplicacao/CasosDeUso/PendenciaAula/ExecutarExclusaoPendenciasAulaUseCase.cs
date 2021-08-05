@@ -16,12 +16,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var command = mensagem.ObterObjetoMensagem<ExcluirTodasPendenciasAulaCommand>();
+            var filtro = mensagem.ObterObjetoMensagem<FiltroIdDto>();
 
-            LogSentry(command, "Inicio");
-            await mediator.Send(command);
-            LogSentry(command, "Fim");
-
+            await mediator.Send(new ExcluirTodasPendenciasAulaCommand(filtro.Id));
             return true;
         }
 

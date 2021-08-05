@@ -55,7 +55,8 @@ namespace SME.SGP.Aplicacao
                             AulaCJ = a.AulaCJ,
                             ProfessorRf = a.ProfessorRf,
                             CriadoPor = a.CriadoPor,
-                            PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula))
+                            PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula)),
+                            TipoAula = a.TipoAula
                         }).Select(a => a.Result)
                     });
         }
@@ -100,7 +101,8 @@ namespace SME.SGP.Aplicacao
                         AulaCJ = aula.AulaCJ,
                         Bimestre = periodoEscolar.Bimestre,
                         ProfessorRf = aula.ProfessorRf,
-                        CriadoPor = aula.CriadoPor
+                        CriadoPor = aula.CriadoPor,
+                        TipoAula = aula.TipoAula
                     };
                 }
             }
