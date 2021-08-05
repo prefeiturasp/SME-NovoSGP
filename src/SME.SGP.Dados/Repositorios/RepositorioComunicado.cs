@@ -578,31 +578,7 @@ namespace SME.SGP.Dados.Repositorios
                 retorno.TotalRegistros = multi.ReadFirst<int>();
             }
 
-            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
-
-            //var multiResult = await database.QueryMultipleAsync(query.ToString(), parametros);
-
-            //var dic = new Dictionary<long, ComunicadoListaPaginadaDto>();
-
-            //multiResult.Read<ComunicadoListaPaginadaDto, ComunicadoModalidadeDto, ComunicadoListaPaginadaDto>(
-            //    (comunicado, modalidade) =>
-            //    {
-            //        if (!dic.TryGetValue(comunicado.Id, out var comunicadoResultado))
-            //        {
-            //            comunicado.AdicionarModalidade(modalidade.ModalidadeCodigo);
-            //            dic.Add(comunicado.Id, comunicado);
-            //            return comunicado;
-            //        }
-
-            //        comunicadoResultado.AdicionarModalidade(modalidade.ModalidadeCodigo);
-
-            //        return comunicadoResultado;
-            //    }
-            //    , splitOn: "Id,modalidadeCodigo");
-
-            //retorno.Items = dic.Values;
-            //retorno.TotalRegistros = multiResult.ReadFirst<int>();
-            //retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);            
 
             return retorno;
         }
