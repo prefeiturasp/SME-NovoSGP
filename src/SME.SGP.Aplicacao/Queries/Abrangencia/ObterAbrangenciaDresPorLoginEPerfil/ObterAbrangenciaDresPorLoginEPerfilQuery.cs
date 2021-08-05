@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAbrangenciaDresPorLoginEPerfilQuery : IRequest<IEnumerable<AbrangenciaDreRetorno>>
+    public class ObterAbrangenciaDresPorLoginEPerfilQuery : IRequest<IEnumerable<AbrangenciaDreRetornoDto>>
     {
         public ObterAbrangenciaDresPorLoginEPerfilQuery(string login, Guid perfil)
         {

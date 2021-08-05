@@ -194,8 +194,7 @@ namespace SME.SGP.Aplicacao
                                                        .OrderBy(a => a.NumeroAlunoChamada)
                                                        .ThenBy(a => a.NomeValido());
 
-                var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, disciplinaId.ToString(), periodoAtual.Id));
-
+                var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, disciplinaId.ToString(), bimestreDoPeriodo.Id));
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
                     var fechamentoTurma = (from ft in fechamentosTurma
@@ -233,7 +232,10 @@ namespace SME.SGP.Aplicacao
                     {
                         alunoDto.QuantidadeFaltas = 0;
                         alunoDto.QuantidadeCompensacoes = 0;
-                        alunoDto.PercentualFrequencia = string.Empty;
+                        if (turmaPossuiFrequenciaRegistrada)
+                            alunoDto.PercentualFrequencia = "100";
+                        else
+                            alunoDto.PercentualFrequencia = string.Empty;
                     }
 
                     // Carrega Frequencia do aluno

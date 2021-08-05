@@ -5,8 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosAtribuicaoEsporadica
     {
-        Task Excluir(long idAtribuicaoEsporadica);
-
         Task Salvar(AtribuicaoEsporadicaDto atruibuicaoEsporadicaDto);
     }
 }

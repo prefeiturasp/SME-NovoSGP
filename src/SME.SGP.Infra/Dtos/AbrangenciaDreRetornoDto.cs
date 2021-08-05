@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dto
 {
-    public class AbrangenciaDreRetorno
+    public class AbrangenciaDreRetornoDto
     {
         public string Abreviacao { get; set; }
         public string Codigo { get; set; }

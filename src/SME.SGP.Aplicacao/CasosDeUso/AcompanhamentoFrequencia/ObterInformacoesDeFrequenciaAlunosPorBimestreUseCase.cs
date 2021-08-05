@@ -75,6 +75,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunoFrequenciaDto>> DefinirFrequenciaAlunoListagemAsync(IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, IEnumerable<FrequenciaAluno> frequenciaAlunosRegistrada, PeriodoEscolar periodoEscolar)
         {
+
+
+            var turmaPossuiFrequenciasRegistradas = frequenciaAlunosRegistrada.ToList().Count > 0;
+
             List<AlunoFrequenciaDto> novaListaAlunos = new List<AlunoFrequenciaDto>();
             foreach (var aluno in alunos)
             {
@@ -84,12 +88,14 @@ namespace SME.SGP.Aplicacao
                 var marcador = periodoEscolar != null ? await mediator.Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, periodoEscolar, turma.ModalidadeCodigo)) : null;
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
 
+                double percentualFrequenciaRetorno = CriaPercentualFrequenciaRetorno(turmaPossuiFrequenciasRegistradas, frequenciaAlunoRegistrada);
+
                 novaListaAlunos.Add(new AlunoFrequenciaDto
                 {
                     AlunoRf = long.Parse(aluno.CodigoAluno),
                     Ausencias = ausencias,
                     Compensacoes = compensacoes,
-                    Frequencia = frequenciaAlunoRegistrada == null ? string.Empty :  frequenciaAlunoRegistrada.PercentualFrequencia.ToString(),
+                    Frequencia = percentualFrequenciaRetorno < 0 ? string.Empty : percentualFrequenciaRetorno.ToString(),
                     MarcadorFrequencia = marcador,
                     Nome = aluno.NomeAluno,
                     NumeroChamada = aluno.NumeroAlunoChamada,
@@ -99,6 +105,19 @@ namespace SME.SGP.Aplicacao
             }
 
             return novaListaAlunos;
+        }
+
+        private static double CriaPercentualFrequenciaRetorno(bool turmaPossuiFrequenciasRegistradas, FrequenciaAluno frequenciaAlunoRegistrada)
+        {
+
+            if (turmaPossuiFrequenciasRegistradas)
+            {
+                if (frequenciaAlunoRegistrada != null)
+                    return frequenciaAlunoRegistrada.PercentualFrequencia;
+
+                return 100;
+            }
+            return double.MinValue;
         }
 
         private async Task<DisciplinaDto> ObterComponenteCurricularAsync(long componenteCurricularId)

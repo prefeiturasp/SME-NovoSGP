@@ -23,9 +23,9 @@ namespace SME.SGP.Aplicacao
         public Ue ObterPorCodigo(string codigoUe)
             => repositorioUe.ObterPorCodigo(codigoUe);
 
-        public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmas(string ueCodigo, int modalidadeId, int ano)
+        public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmas(string ueCodigo, int modalidadeId, int ano, bool ehHistorico)
         {
-            var listaTurmas = await repositorioUe.ObterTurmas(ueCodigo, (Modalidade)modalidadeId, ano);
+            var listaTurmas = await repositorioUe.ObterTurmas(ueCodigo, (Modalidade)modalidadeId, ano, ehHistorico);
 
             if (listaTurmas != null && listaTurmas.Any())
             {

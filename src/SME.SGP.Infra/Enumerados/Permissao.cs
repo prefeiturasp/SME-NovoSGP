@@ -469,7 +469,7 @@
         [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 5, EhAlteracao = true, Url = "/relatorios/historico-escolar")]
         HE_A = 155,
 
-        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-print", IconeDashBoard = "far fa-check-square", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/faltas-frequencia", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Faltas e frequência")]
+        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-print", IconeDashBoard = "far fa-check-square", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/frequencia", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Frequência")]
         FF_C = 156,
 
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pendencias-fechamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Pendências do Fechamento")]

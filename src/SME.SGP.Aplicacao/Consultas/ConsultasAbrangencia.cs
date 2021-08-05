@@ -60,8 +60,20 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
+            List<int> anosLetivos = new List<int>();
+            var anos = await mediator.Send(new ObterUsuarioAbrangenciaAnosLetivosQuery(login, consideraHistorico, perfil, anoMinimo));
 
-            return await mediator.Send(new ObterUsuarioAbrangenciaAnosLetivosQuery(login, consideraHistorico, perfil, anoMinimo));
+            anosLetivos.AddRange(anos);
+
+            if ((perfil == Perfis.PERFIL_CJ || perfil == Perfis.PERFIL_CJ_INFANTIL) && consideraHistorico)
+            {
+                var anosCJ = await mediator.Send(new ObterAnosAtribuicaoCJQuery(login, consideraHistorico));
+                if (anosCJ.Any())
+                    anosLetivos.AddRange(anosCJ);
+                
+            }
+            anosLetivos.Add(DateTime.Now.Year);
+            return anosLetivos.Distinct().ToList();
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico)
@@ -99,7 +111,7 @@ namespace SME.SGP.Aplicacao
             return Task.FromResult(anos);
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "")
+        public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "")
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();

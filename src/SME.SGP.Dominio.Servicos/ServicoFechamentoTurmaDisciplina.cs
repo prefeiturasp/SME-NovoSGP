@@ -211,7 +211,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var fechamentoTurmaDisciplina = MapearParaEntidade(id, entidadeDto);
 
-           // await CarregarTurma(entidadeDto.TurmaId);
+           await CarregarTurma(entidadeDto.TurmaId);
 
             // Valida periodo de fechamento
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turmaFechamento.AnoLetivo
