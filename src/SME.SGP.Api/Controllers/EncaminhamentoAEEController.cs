@@ -195,7 +195,7 @@ namespace SME.SGP.Api.Controllers
         [Route("responsavel/pesquisa")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<UsuarioEolRetornoDto>), 200)]
-        [Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> PesquisaResponsavel([FromBody] FiltroPesquisaFuncionarioDto filtro, [FromServices] IPesquisaResponsavelEncaminhamentoPorDreUEUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
