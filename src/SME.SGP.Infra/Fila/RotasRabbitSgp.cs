@@ -149,7 +149,7 @@
         public const string RotaRelatoriosComErroAcompanhamentoFechamento = "relatorios.erro.acompanhamentofechamento";
         public const string RotaRelatoriosComErroParecerConclusivo = "relatorios.erro.parecerconclusivo";
         public const string RotaRelatoriosComErroNotasConceitosFinais = "relatorios.erro.notasconceitosfinais";
-        public const string RotaRelatoriosComErroRelatorioAlteraçãoNotas = "relatorios.erro.relatorioalteracaonotas";
+        public const string RotaRelatoriosComErroRelatorioAlteracaoNotas = "relatorios.erro.relatorioalteracaonotas";
         public const string RotaRelatoriosComErroPapResumos = "relatorios.erro.papresumos";
         public const string RotaRelatoriosComErroPapGraficos = "relatorios.erro.papgraficos";
         public const string RotaRelatoriosComErroPapRelatorioSemestral = "relatorios.erro.paprelatoriosemestral";
