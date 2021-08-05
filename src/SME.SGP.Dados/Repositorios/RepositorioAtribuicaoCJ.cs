@@ -133,7 +133,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder sql = new StringBuilder();
 
-            sql.AppendLine(@"delete from atribuicao_cj where dre_id = @dreCodigo and ue_id = @ueCodigo and professor_rf = @professorRf and turma_id = @turmaCodigo;");
+            sql.AppendLine(@"delete from atribuicao_cj where dre_id = @dreCodigo and ue_id = @ueCodigo and professor_rf = @professorRf and turma_id = @turmaCodigo ");
             if (disciplinaId > 0)
                 sql.AppendLine(" and disciplina_id = @disciplinaId");
 
