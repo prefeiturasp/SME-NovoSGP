@@ -334,7 +334,8 @@ namespace SME.SGP.Dominio.Servicos
                 foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                 {
                     var frequencia = consultasFrequencia.ObterPorAlunoDisciplinaData(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia);
-                    var sinteseDto = consultasFrequencia.ObterSinteseAluno(frequencia.PercentualFrequencia, disciplina);
+                    var percentualFrequencia = frequencia == null ? 100 : frequencia.PercentualFrequencia;
+                    var sinteseDto =  await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplina);
 
                     fechamentoNota.SinteseId = (long)sinteseDto.Id;
                 }
@@ -395,17 +396,15 @@ namespace SME.SGP.Dominio.Servicos
                             {                                
                                 if (fechamentoNotaDto.Nota != notaFechamento.Nota)                                    
                                     await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota != null ? notaFechamento.Nota.Value : (double?)null , fechamentoNotaDto.Nota != null ? fechamentoNotaDto.Nota.Value : (double?)null, notaFechamento.Id));
-
-                                notaFechamento.Nota = fechamentoNotaDto.Nota;
                             }
                             else
                             {
                                 if (fechamentoNotaDto.ConceitoId != notaFechamento.ConceitoId)
                                     await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaFechamento.ConceitoId != null ? notaFechamento.ConceitoId.Value : (long?)null, fechamentoNotaDto.ConceitoId != null ? fechamentoNotaDto.ConceitoId.Value : (long?)null, notaFechamento.Id));
-                            
-                                notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
                             }
 
+                            notaFechamento.Nota = fechamentoNotaDto.Nota;
+                            notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
                             notaFechamento.SinteseId = fechamentoNotaDto.SinteseId;
                         }
                     }

@@ -22,7 +22,7 @@ namespace SME.SGP.Infra
         {
             byte[] body = FormataBodyWorker(adicionaFilaDto);
 
-            rabbitChannel.BasicPublish(ExchangeRabbit.ServidorRelatorios, adicionaFilaDto.Fila, null, body);
+            rabbitChannel.BasicPublish(ExchangeSgpRabbit.ServidorRelatorios, adicionaFilaDto.Fila, null, body);
 
             SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
         }
@@ -39,7 +39,7 @@ namespace SME.SGP.Infra
             var mensagem = JsonConvert.SerializeObject(request);
             var body = Encoding.UTF8.GetBytes(mensagem);
 
-            rabbitChannel.BasicPublish(ExchangeRabbit.Sgp, publicaFilaSgpDto.NomeFila, null, body);
+            rabbitChannel.BasicPublish(ExchangeSgpRabbit.Sgp, publicaFilaSgpDto.NomeFila, null, body);
         }
 
         private static byte[] FormataBodyWorker(PublicaFilaRelatoriosDto adicionaFilaDto)

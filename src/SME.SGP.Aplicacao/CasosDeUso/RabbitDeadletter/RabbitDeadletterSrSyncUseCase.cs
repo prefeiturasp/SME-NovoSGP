@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class RabbitDeadletterSyncUseCase : IRabbitDeadletterSyncUseCase
+    public class RabbitDeadletterSrSyncUseCase : IRabbitDeadletterSrSyncUseCase
     {
         private readonly IMediator mediator;
 
-        public RabbitDeadletterSyncUseCase(IMediator mediator)
+        public RabbitDeadletterSrSyncUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Executar()
         {
-            foreach (var fila in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>())
+            foreach (var fila in typeof(RotasRabbitSgpRelatorios).ObterConstantesPublicas<string>())
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaRabbitDeadletterTratar, fila, Guid.NewGuid(), null, false));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpRelatorios.RotaRabbitDeadletterTratar, fila, Guid.NewGuid(), null, false));
             }
 
             return true;

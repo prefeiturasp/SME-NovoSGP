@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
                     var props = _channel.CreateBasicProperties();
                     props.Persistent = true;
 
-                    _channel.BasicPublish(ExchangeRabbit.Sgp, rota, props, body);
+                    _channel.BasicPublish(ExchangeSgpRabbit.Sgp, rota, props, body);
                 }
             }
         }

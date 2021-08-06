@@ -27,9 +27,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TurmaRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterTurmas(string codigoUe, int idModalidade, [FromQuery]int ano, [FromServices]IConsultasUe consultasUe)
+        public async Task<IActionResult> ObterTurmas(string codigoUe, int idModalidade, [FromQuery]int ano, [FromQuery] bool historico, [FromServices]IConsultasUe consultasUe)
         {
-            return Ok(await consultasUe.ObterTurmas(codigoUe, idModalidade, ano));
+            return Ok(await consultasUe.ObterTurmas(codigoUe, idModalidade, ano, historico));
         }
 
         [HttpGet("/api/v1/dres/{codigoDre}/ues/atribuicoes")]

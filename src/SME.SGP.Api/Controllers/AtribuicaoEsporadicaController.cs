@@ -16,10 +16,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AE_E, Permissao.AE_I, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir([FromServices] IComandosAtribuicaoEsporadica comandosAtribuicaoEsporadica, long id)
+        public async Task<IActionResult> Excluir([FromServices] IExcluirAtribuicaoEsporadicaUseCase useCase, long id)
         {
-            await comandosAtribuicaoEsporadica.Excluir(id);
-            return Ok();
+            return Ok(await useCase.Executar(id));
         }
 
         [HttpGet("listar")]

@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class RabbitDeadletterTratarUseCase : IRabbitDeadletterTratarUseCase
+    public class RabbitDeadletterSgpTratarUseCase : IRabbitDeadletterSgpTratarUseCase
     {
         private readonly IConfiguration configuration;
         private readonly IAsyncPolicy policy;
 
-        public RabbitDeadletterTratarUseCase(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry)
+        public RabbitDeadletterSgpTratarUseCase(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                             break;
                         else
                         {
-                            await Task.Run(() => _channel.BasicPublish(ExchangeRabbit.Sgp, fila, null, mensagemParaEnviar.Body.ToArray()));
+                            await Task.Run(() => _channel.BasicPublish(ExchangeSgpRabbit.Sgp, fila, null, mensagemParaEnviar.Body.ToArray()));
                         }                        
                     }
                 }

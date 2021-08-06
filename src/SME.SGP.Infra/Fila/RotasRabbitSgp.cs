@@ -108,6 +108,9 @@
 
         public const string RotaNotificacaoAlunosFaltosos = "sgp.aulas.alunos.faltosos.notificar";
 
+        public const string RotaNotificacaoAulasPrevistasSync = "sgp.aulas.previstas.notificacao.sync";
+        public const string RotaNotificacaoAulasPrevistas = "sgp.aulas.previstas.notificacao";
+
         public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
         public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
 
@@ -136,5 +139,41 @@
         public const string RotaAtividadesSync = "sgp.atividade.avaliativa.sync";
 
         public const string RotaAgendamentoTratar = "sgp.agendamento.tratar";
+
+        public const string RotaRelatoriosComErroBoletim = "relatorios.erro.boletim";
+        public const string RotaRelatoriosComErroBoletimDetalhado = "relatorios.erro.boletimdetalhado";
+        public const string RotaRelatoriosComErroPlanoDeAula = "relatorios.erro.planodeaula";
+        public const string RotaRelatoriosComErroRegistroIndividual = "relatorios.erro.registroindividual";
+        public const string RotaRelatoriosComErroConselhoDeClasse = "relatorios.erro.conselhodeclasse";
+        public const string RotaRelatoriosComErroRelatorioAcompanhamentoAprendizagem = "relatorios.erro.relatorioacompanhamentoaprendizagem";
+        public const string RotaRelatoriosComErroCalendarioEscolar = "relatorios.erro.calendárioescolar";
+        public const string RotaRelatoriosComErroRegistroItinerancia = "relatorios.erro.registroitinerancia";
+        public const string RotaRelatoriosComErroPendencias = "relatorios.erro.pendencias";
+        public const string RotaRelatoriosComErroAcompanhamentoFechamento = "relatorios.erro.acompanhamentofechamento";
+        public const string RotaRelatoriosComErroParecerConclusivo = "relatorios.erro.parecerconclusivo";
+        public const string RotaRelatoriosComErroNotasConceitosFinais = "relatorios.erro.notasconceitosfinais";
+        public const string RotaRelatoriosComErroRelatorioAlteracaoNotas = "relatorios.erro.relatorioalteracaonotas";
+        public const string RotaRelatoriosComErroPapResumos = "relatorios.erro.papresumos";
+        public const string RotaRelatoriosComErroPapGraficos = "relatorios.erro.papgraficos";
+        public const string RotaRelatoriosComErroPapRelatorioSemestral = "relatorios.erro.paprelatoriosemestral";
+        public const string RotaRelatoriosComErroFrequencia = "relatorios.erro.frequencia";
+        public const string RotaRelatoriosComErroCompensacaoAusencia = "relatorios.erro.compensacaoausencia";
+        public const string RotaRelatoriosComErroControleGrade = "relatorios.erro.controlegrade";
+        public const string RotaRelatoriosComErroControlePlanejamentoDiario = "relatorios.erro.controleplanejamentodiario";
+        public const string RotaRelatoriosComErroDevolutivas = "relatorios.erro.devolutivas";
+        public const string RotaRelatoriosComErroUsuarios = "relatorios.erro.usuarios";
+        public const string RotaRelatoriosComErroAtribuicoes = "relatorios.erro.atribuicoes";
+        public const string RotaRelatoriosComErroNotificacoes = "relatorios.erro.notificacoes";
+        public const string RotaRelatoriosComErroEscolaAquiLeitura = "relatorios.erro.escolaaquileitura";
+        public const string RotaRelatoriosComErroEscolaAquiAdesao = "relatorios.erro.escolaaquiadesao";
+        public const string RotaRelatoriosComErroAtaFinalResultados = "relatorios.erro.atafinalresultados";
+        public const string RotaRelatoriosComErroHistoricoEscolar = "relatorios.erro.historicoescolar";
+
+        public const string WorkflowAprovacaoExcluir = "sgp.workflow.aprovacao.excluir";
+        public const string NotificacoesDaAulaExcluir = "sgp.notificacoes.aula.excluir";
+        public const string FrequenciaDaAulaExcluir = "sgp.frequencia.aula.excluir";
+        public const string PlanoAulaDaAulaExcluir = "sgp.plano.aula.excluir";
+        public const string AnotacoesFrequenciaDaAulaExcluir = "sgp.anotacoes.frequencia.aula.excluir";
+        public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";
     }
 }

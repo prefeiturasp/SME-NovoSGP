@@ -23,7 +23,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<string>> ObterCodigosUEs();
         IEnumerable<Ue> ObterTodas();
 
-        Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano);
+        Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano, bool ehHistorico);
         Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo);
         Task<int> ObterQuantidadeTurmasSeriadas(long ueId, int ano);
         Ue ObterUEPorTurma(string turmaId);
