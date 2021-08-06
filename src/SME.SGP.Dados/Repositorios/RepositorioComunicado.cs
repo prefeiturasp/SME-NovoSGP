@@ -570,7 +570,7 @@ namespace SME.SGP.Dados.Repositorios
                 anosEscolares,
                 tiposEscolas
             };
-                        
+
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), parametros))
             {
@@ -578,9 +578,70 @@ namespace SME.SGP.Dados.Repositorios
                 retorno.TotalRegistros = multi.ReadFirst<int>();
             }
 
-            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);            
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
+        }
+
+        public async Task<IEnumerable<int>> ObterSemestresPorAnoLetivoModalidadeEUeCodigo(string login, Guid perfil, int modalidade, bool consideraHistorico, int anoLetivo, string ueCodigo)
+        {
+            var query = new StringBuilder(@"select distinct act.turma_semestre
+                                              from v_abrangencia_nivel_dre a
+                                             inner join v_abrangencia_cadeia_turmas act on a.dre_id = act.dre_id
+                                             where a.login = @login
+                                               and a.perfil_id = @perfil
+                                               and act.turma_historica = @consideraHistorico ");
+
+            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
+                query.AppendLine("and act.ue_codigo = @ueCodigo ");
+
+            query.AppendLine(@"and (@modalidade = 0 or (@modalidade <> 0 and act.modalidade_codigo = @modalidade))
+                               and(@anoLetivo = 0 or(@anoLetivo <> 0 and act.turma_ano_letivo = @anoLetivo)) ");
+
+            query.AppendLine("union ");
+
+            query.AppendLine(@"select distinct act.turma_semestre
+                                 from v_abrangencia_nivel_ue a
+                                inner join v_abrangencia_cadeia_turmas act on a.ue_id = act.ue_id
+                                where a.login = @login
+                                  and a.perfil_id = @perfil
+                                  and act.turma_historica = @consideraHistorico ");
+
+            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
+                query.AppendLine("and act.ue_codigo = @ueCodigo ");
+
+            query.AppendLine(@"and (@modalidade = 0 or (@modalidade <> 0 and act.modalidade_codigo = @modalidade))
+                               and(@anoLetivo = 0 or(@anoLetivo <> 0 and act.turma_ano_letivo = @anoLetivo)) ");
+
+
+            query.AppendLine("union ");
+
+
+            query.AppendLine(@"select distinct act.turma_semestre
+                                 from v_abrangencia_nivel_turma a
+                                inner join v_abrangencia_cadeia_turmas act on a.turma_id = act.turma_id
+                                where a.login = @login
+                                  and a.perfil_id = @perfil");
+
+            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
+                query.AppendLine("and act.ue_codigo = @ueCodigo ");
+
+            query.AppendLine(@"and ((@consideraHistorico = true and a.historico = true) or 
+                                   (@consideraHistorico = false and a.historico = false and act.turma_historica = @consideraHistorico)) 
+                               and (@modalidade = 0 or(@modalidade <> 0 and act.modalidade_codigo = @modalidade))
+                               and (@anoLetivo = 0 or(@anoLetivo <> 0 and act.turma_ano_letivo = @anoLetivo)) ");
+
+            var parametros = new
+            {
+                login,
+                perfil,
+                modalidade,
+                consideraHistorico,
+                anoLetivo,
+                ueCodigo
+            };
+
+            return await database.QueryAsync<int>(query.ToString(), parametros);
         }
     }
 }

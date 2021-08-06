@@ -130,5 +130,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(anoLetivo, codigoUe, modalidades, semestre, anos));
         }
+
+        [HttpGet("semestres/consideraHistorico/{consideraHistorico}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<int>), 200)]        
+        public async Task<IActionResult> ObterSemestres(bool consideraHistorico, [FromQuery] int modalidade, [FromQuery] int anoLetivo, [FromQuery] string ueCodigo, [FromServices] IObterSemestresPorAnoLetivoModalidadeEUeCodigoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(consideraHistorico, modalidade, anoLetivo, ueCodigo));            
+        }
     }
 }
