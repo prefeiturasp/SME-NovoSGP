@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
                 var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-                await mediator.Send(new InserirAtribuicaoCJCommand(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais, usuario));
+                await mediator.Send(new InserirAtribuicaoCJCommand(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais, usuario, atribuicaoCJPersistenciaDto.Historico));
 
                 Guid perfilCJ = atribuicao.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
@@ -48,6 +48,11 @@ namespace SME.SGP.Aplicacao
                     await PublicarAtribuicaoNoGoogleClassroomApiAsync(atribuicao);
             }
         }
+        private async Task RemoverAtribuicaoAtual(AtribuicaoCJPersistenciaDto dto)
+        {
+            await mediator.Send(new RemoverAtribuicaoCJCommand(dto.DreId, dto.UeId, dto.TurmaId, dto.UsuarioRf));
+        }
+
 
         private async Task<bool> AtribuirPerfilCJ(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, Guid perfil, bool atribuiuCj)
         {

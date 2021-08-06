@@ -18,10 +18,13 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> Executar(AtribuicaoCJListaFiltroDto filtroDto)
         {
             var listaRetorno = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, null, filtroDto.UeId, 0,
-               filtroDto.UsuarioRf, filtroDto.UsuarioNome, true, anoLetivo: filtroDto.AnoLetivo));
+               filtroDto.UsuarioRf, filtroDto.UsuarioNome, true, anoLetivo: filtroDto.AnoLetivo, historico: filtroDto.Historico));
 
             if (listaRetorno.Any())
+            {
                 return await TransformaEntidadesEmDtosListaRetorno(listaRetorno);
+            }
+                
             else return null;
         }
 

@@ -12,15 +12,15 @@ namespace SME.SGP.Aplicacao
     public class InserirAtribuicaoCJCommandHandler : IRequestHandler<InserirAtribuicaoCJCommand>
     {
         private static readonly long[] componentesQueNaoPodemSerSubstituidos = { 1033, 1051, 1052, 1053, 1054, 1030 };
-        
+
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioAula repositorioAula;
 
-        public InserirAtribuicaoCJCommandHandler(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioAbrangencia repositorioAbrangencia, 
-                                                 IRepositorioTurma repositorioTurma, IRepositorioComponenteCurricular repositorioComponenteCurricular, 
+        public InserirAtribuicaoCJCommandHandler(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioAbrangencia repositorioAbrangencia,
+                                                 IRepositorioTurma repositorioTurma, IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                                  IRepositorioAula repositorioAula)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
@@ -66,16 +66,16 @@ namespace SME.SGP.Aplicacao
             ValidaSePerfilPodeIncluir(request.Usuario);
 
             await repositorioAtribuicaoCJ.SalvarAsync(atribuicaoCJ);
-            await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais);
+            await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais, request.EhHistorico);
 
             return Unit.Value;
         }
 
-        private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais)
+        private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais, bool ehHistorico)
         {
             var perfil = atribuicaoCJ.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
-            var abrangenciasAtuais = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, perfil, atribuicaoCJ.TurmaId);
+            var abrangenciasAtuais = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, perfil, atribuicaoCJ.TurmaId, ehHistorico);
 
             if (atribuicaoCJ.Substituir)
             {
@@ -93,7 +93,13 @@ namespace SME.SGP.Aplicacao
             else if ((abrangenciasAtuais != null && abrangenciasAtuais.Any()) &&
                      (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir)))
             {
-               repositorioAbrangencia.ExcluirAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
+                if (ehHistorico)
+                    repositorioAbrangencia.ExcluirAbrangenciasHistoricas(abrangenciasAtuais.Select(a => a.Id).ToArray());
+                else
+                    repositorioAbrangencia.ExcluirAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
+
+                await repositorioAtribuicaoCJ.RemoverRegistros(atribuicaoCJ.DreId, atribuicaoCJ.UeId, atribuicaoCJ.TurmaId, atribuicaoCJ.ProfessorRf, atribuicaoCJ.DisciplinaId);
+
             }
         }
 
