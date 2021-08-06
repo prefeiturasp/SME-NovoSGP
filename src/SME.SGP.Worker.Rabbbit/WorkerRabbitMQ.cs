@@ -68,7 +68,7 @@ namespace SME.SGP.Worker.RabbitMQ
             {
                 var args = new Dictionary<string, object>()
                     {
-                        { "x-dead-letter-exchange", exchange }
+                        { "x-dead-letter-exchange", exchangeDeadLetter }
                     };
                 canalRabbit.QueueDeclare(fila, true, false, false, args);
                 canalRabbit.QueueBind(fila, exchange, fila, null);
