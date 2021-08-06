@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var tiposTurma = String.Join("&tiposTurma=", Enumerable.Cast<int>(request.TiposTurmas));
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"turmas/anos-letivos/{request.AnoLetivo}/alunos/{request.CodigoAluno}/regulares?tiposTurma={tiposTurma}");
+            var resposta = await httpClient.GetAsync($"turmas/anos-letivos/{request.AnoLetivo}/alunos/{request.CodigoAluno}/regulares?tiposTurma={tiposTurma}&consideraHistorico={request.ConsideraHistorico}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
