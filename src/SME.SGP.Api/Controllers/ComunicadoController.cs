@@ -124,7 +124,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("ues/{codigoUe}/anoletivo/{anoLetivo}/turmas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<DropdownTurmaRetornoDto>), 200)]
         [Permissao(Permissao.CO_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolares(int anoLetivo, string codigoUe, [FromQuery] int semestre, [FromQuery] int[] modalidades, [FromQuery] string[] anos, [FromServices] IObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresUseCase useCase)
         {

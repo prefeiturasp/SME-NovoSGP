@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<OpcaoDropdownDto>> Executar(int anoLetivo, string ueCodigo, int[] modalidades, int semestre, string[] anos)
+        public async Task<IEnumerable<DropdownTurmaRetornoDto>> Executar(int anoLetivo, string ueCodigo, int[] modalidades, int semestre, string[] anos)
             => await mediator.Send(new ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQuery(anoLetivo,
                                                                                                       ueCodigo,
                                                                                                       modalidades,
