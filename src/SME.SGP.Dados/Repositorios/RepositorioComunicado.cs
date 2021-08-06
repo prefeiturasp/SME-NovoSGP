@@ -480,11 +480,13 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PaginacaoResultadoDto<ComunicadoListaPaginadaDto>> ListarComunicados(int anoLetivo, string dreCodigo, string ueCodigo, int[] modalidades, int semestre, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas, Paginacao paginacao)
         {
             var query = new StringBuilder(@"DROP TABLE IF EXISTS comunicadoTempPaginado;
-                                            select c.id,
+                                            select distinct c.id,
 	                                               c.titulo,
 	                                               c.data_envio,
 	                                               c.data_expiracao,
-	                                               cm.modalidade
+	                                               (select array_agg(modalidade) 
+                                                      from comunicado_modalidade cm2 
+                                                     where cm2.comunicado_id = c.id) as Modalidade
                                               into temporary table comunicadoTempPaginado
                                               from comunicado c 
                                              inner join comunicado_modalidade cm on cm.comunicado_id = c.id 
@@ -531,19 +533,20 @@ namespace SME.SGP.Dados.Repositorios
             if (dataExpiracaoInicio.HasValue && dataExpiracaoFim.HasValue)
                 query.AppendLine("and c.data_expiracao::date between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
 
-            query.AppendLine("order by c.data_envio desc ");
-
-            if (paginacao.QuantidadeRegistros > 0)
-                query.AppendLine($" OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY ");
-
-            query.AppendLine("; ");
+            query.AppendLine("order by c.data_envio desc; ");
 
             query.AppendLine(@"select temp.id,
 	                                  temp.titulo,
 	                                  temp.data_envio as DataEnvio,
 	                                  temp.data_expiracao as DataExpiracao,
 	                                  temp.modalidade as modalidadeCodigo                                 
-                                 from comunicadoTempPaginado temp; ");
+                                 from comunicadoTempPaginado temp
+                                order by temp.data_envio desc ");
+
+            if (paginacao.QuantidadeRegistros > 0)
+                query.AppendLine($" OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY ");
+
+            query.AppendLine("; ");
 
             query.AppendLine("select count(distinct temp.id) from comunicadoTempPaginado temp");
 
@@ -568,31 +571,77 @@ namespace SME.SGP.Dados.Repositorios
                 tiposEscolas
             };
 
-            var multiResult = await database.QueryMultipleAsync(query.ToString(), parametros);
 
-            var dic = new Dictionary<long, ComunicadoListaPaginadaDto>();
+            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), parametros))
+            {
+                retorno.Items = multi.Read<ComunicadoListaPaginadaDto>();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
+            }
 
-            multiResult.Read<ComunicadoListaPaginadaDto, ComunicadoModalidadeDto, ComunicadoListaPaginadaDto>(
-                (comunicado, modalidade) =>
-                {
-                    if (!dic.TryGetValue(comunicado.Id, out var comunicadoResultado))
-                    {
-                        comunicado.AdicionarModalidade(modalidade.ModalidadeCodigo);
-                        dic.Add(comunicado.Id, comunicado);
-                        return comunicado;
-                    }
-
-                    comunicadoResultado.AdicionarModalidade(modalidade.ModalidadeCodigo);
-
-                    return comunicadoResultado;
-                }
-                , splitOn: "Id,modalidadeCodigo");
-
-            retorno.Items = dic.Values;
-            retorno.TotalRegistros = multiResult.ReadFirst<int>();
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
+        }
+
+        public async Task<IEnumerable<int>> ObterSemestresPorAnoLetivoModalidadeEUeCodigo(string login, Guid perfil, int modalidade, bool consideraHistorico, int anoLetivo, string ueCodigo)
+        {
+            var query = new StringBuilder(@"select distinct act.turma_semestre
+                                              from v_abrangencia_nivel_dre a
+                                             inner join v_abrangencia_cadeia_turmas act on a.dre_id = act.dre_id
+                                             where a.login = @login
+                                               and a.perfil_id = @perfil
+                                               and act.turma_historica = @consideraHistorico ");
+
+            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
+                query.AppendLine("and act.ue_codigo = @ueCodigo ");
+
+            query.AppendLine(@"and (@modalidade = 0 or (@modalidade <> 0 and act.modalidade_codigo = @modalidade))
+                               and(@anoLetivo = 0 or(@anoLetivo <> 0 and act.turma_ano_letivo = @anoLetivo)) ");
+
+            query.AppendLine("union ");
+
+            query.AppendLine(@"select distinct act.turma_semestre
+                                 from v_abrangencia_nivel_ue a
+                                inner join v_abrangencia_cadeia_turmas act on a.ue_id = act.ue_id
+                                where a.login = @login
+                                  and a.perfil_id = @perfil
+                                  and act.turma_historica = @consideraHistorico ");
+
+            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
+                query.AppendLine("and act.ue_codigo = @ueCodigo ");
+
+            query.AppendLine(@"and (@modalidade = 0 or (@modalidade <> 0 and act.modalidade_codigo = @modalidade))
+                               and(@anoLetivo = 0 or(@anoLetivo <> 0 and act.turma_ano_letivo = @anoLetivo)) ");
+
+
+            query.AppendLine("union ");
+
+
+            query.AppendLine(@"select distinct act.turma_semestre
+                                 from v_abrangencia_nivel_turma a
+                                inner join v_abrangencia_cadeia_turmas act on a.turma_id = act.turma_id
+                                where a.login = @login
+                                  and a.perfil_id = @perfil");
+
+            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
+                query.AppendLine("and act.ue_codigo = @ueCodigo ");
+
+            query.AppendLine(@"and ((@consideraHistorico = true and a.historico = true) or 
+                                   (@consideraHistorico = false and a.historico = false and act.turma_historica = @consideraHistorico)) 
+                               and (@modalidade = 0 or(@modalidade <> 0 and act.modalidade_codigo = @modalidade))
+                               and (@anoLetivo = 0 or(@anoLetivo <> 0 and act.turma_ano_letivo = @anoLetivo)) ");
+
+            var parametros = new
+            {
+                login,
+                perfil,
+                modalidade,
+                consideraHistorico,
+                anoLetivo,
+                ueCodigo
+            };
+
+            return await database.QueryAsync<int>(query.ToString(), parametros);
         }
     }
 }

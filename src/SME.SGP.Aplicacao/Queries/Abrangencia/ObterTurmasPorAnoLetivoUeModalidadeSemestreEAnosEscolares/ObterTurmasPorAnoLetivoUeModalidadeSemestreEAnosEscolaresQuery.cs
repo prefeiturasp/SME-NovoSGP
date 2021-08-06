@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQuery : IRequest<IEnumerable<OpcaoDropdownDto>>
+    public class ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQuery : IRequest<IEnumerable<DropdownTurmaRetornoDto>>
     {
         public ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQuery(int anoLetivo, string codigoUe, int[] modalidades, int semestre, string[] anos)
         {

@@ -579,10 +579,11 @@ namespace SME.SGP.Dados.Repositorios
             return dados.OrderBy(x => x.Descricao);
         }
 
-        public async Task<IEnumerable<OpcaoDropdownDto>> ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolares(int anoLetivo, string codigoUe, int[] modalidades, int semestre, string[] anos)
+        public async Task<IEnumerable<DropdownTurmaRetornoDto>> ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolares(int anoLetivo, string codigoUe, int[] modalidades, int semestre, string[] anos)
         {
             var query = new StringBuilder(@"select distinct t.turma_id as valor, 
-                                                   coalesce(t.nome_filtro, t.nome) as descricao 
+                                                   coalesce(t.nome_filtro, t.nome) as descricao,
+                                                   t.modalidade_codigo as modalidade
                                               from turma t
                                              inner join ue ue on ue.id = t.ue_id
                                              inner join tipo_ciclo_ano tca on tca.ano = t.ano
@@ -607,7 +608,7 @@ namespace SME.SGP.Dados.Repositorios
                 anos
             };
 
-            var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), parametros);
+            var dados = await database.Conexao.QueryAsync<DropdownTurmaRetornoDto>(query.ToString(), parametros);
 
             return dados.OrderBy(x => x.Descricao);
         }
