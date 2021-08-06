@@ -6,5 +6,9 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.Anos
     {
         public Modalidade Modalidade { get; set; }
         public string Ano { get; set; }
+        public string AnoComModalidade
+        {
+            get => $"{Modalidade.ShortName()} - {Ano}º ano";
+        }
     }
 }
