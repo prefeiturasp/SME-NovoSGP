@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             filtro.Usuario = usuarioLogado;
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AcompanhamentoFechamento, filtro, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AcompanhamentoFechamento, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosAcompanhamentoFechamento));
         }
     }
 }

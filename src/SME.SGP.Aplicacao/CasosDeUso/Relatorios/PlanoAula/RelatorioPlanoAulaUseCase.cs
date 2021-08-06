@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             await mediator.Send(new ValidaSeExistePlanoAulaPorIdQuery(filtro.PlanoAulaId));
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.PlanoAula, filtro, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.PlanoAula, filtro, usuarioLogado,rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPlanoDeAula));
         }
     }
 }

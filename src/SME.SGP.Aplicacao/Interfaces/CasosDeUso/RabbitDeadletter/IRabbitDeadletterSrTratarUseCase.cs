@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IRabbitDeadletterTratarUseCase
+    public interface IRabbitDeadletterSrTratarUseCase
     {
         Task<bool> Executar(MensagemRabbit mensagem);
     }
