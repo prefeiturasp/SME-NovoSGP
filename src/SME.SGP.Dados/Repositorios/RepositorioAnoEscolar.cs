@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
-                var query = new StringBuilder(@"select distinct tca.modalidade, tca.ano from tipo_ciclo tc 
+                var query = new StringBuilder(@"select distinct tca.id, tca.modalidade, tca.ano from tipo_ciclo tc 
                                                     inner join tipo_ciclo_ano tca on tca.tipo_ciclo_id = tc.id
                                                     inner join turma t on t.ano = tca.ano
                                                     inner join ue ue on t.ue_id = ue.id

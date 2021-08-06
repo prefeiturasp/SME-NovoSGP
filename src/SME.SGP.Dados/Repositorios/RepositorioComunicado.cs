@@ -533,12 +533,7 @@ namespace SME.SGP.Dados.Repositorios
             if (dataExpiracaoInicio.HasValue && dataExpiracaoFim.HasValue)
                 query.AppendLine("and c.data_expiracao::date between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
 
-            query.AppendLine("order by c.data_envio desc ");
-
-            if (paginacao.QuantidadeRegistros > 0)
-                query.AppendLine($" OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY ");
-
-            query.AppendLine("; ");
+            query.AppendLine("order by c.data_envio desc; ");
 
             query.AppendLine(@"select temp.id,
 	                                  temp.titulo,
@@ -546,7 +541,12 @@ namespace SME.SGP.Dados.Repositorios
 	                                  temp.data_expiracao as DataExpiracao,
 	                                  temp.modalidade as modalidadeCodigo                                 
                                  from comunicadoTempPaginado temp
-                                order by temp.id desc, temp.data_envio desc, temp.modalidade; ");
+                                order by temp.data_envio desc ");
+
+            if (paginacao.QuantidadeRegistros > 0)
+                query.AppendLine($" OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY ");
+
+            query.AppendLine("; ");
 
             query.AppendLine("select count(distinct temp.id) from comunicadoTempPaginado temp");
 
