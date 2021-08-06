@@ -169,5 +169,11 @@
         public const string RotaRelatoriosComErroAtaFinalResultados = "relatorios.erro.atafinalresultados";
         public const string RotaRelatoriosComErroHistoricoEscolar = "relatorios.erro.historicoescolar";
 
+        public const string WorkflowAprovacaoExcluir = "sgp.workflow.aprovacao.excluir";
+        public const string NotificacoesDaAulaExcluir = "sgp.notificacoes.aula.excluir";
+        public const string FrequenciaDaAulaExcluir = "sgp.frequencia.aula.excluir";
+        public const string PlanoAulaDaAulaExcluir = "sgp.plano.aula.excluir";
+        public const string AnotacoesFrequenciaDaAulaExcluir = "sgp.anotacoes.frequencia.aula.excluir";
+        public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";
     }
 }
