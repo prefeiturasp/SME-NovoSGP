@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/calendarios/tipos")]
     [ValidaDto]
-    [Authorize("Bearer")]
+   // [Authorize("Bearer")]
     public class TipoCalendarioController : ControllerBase
     {
         private readonly IComandosTipoCalendario comandos;
@@ -108,6 +109,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> BuscarPorAnoLetivoModalidade(int anoLetivo, string modalidades, [FromServices] IObterTiposCalendarioPorAnoLetivoModalidadeUseCase obterTiposCalendarioPorAnoLetivoModalidadeoUseCase)
         {
             return Ok(await obterTiposCalendarioPorAnoLetivoModalidadeoUseCase.Executar(anoLetivo, modalidades));
+        }
+
+        [HttpGet("ano-letivo/{anoLetivo}/modalidades")]        
+        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> BuscarPorAnoLetivoEDescricaoEModalidades(int anoLetivo, [FromQuery]  Modalidade[] modalidades, [FromQuery] string descricao, [FromServices] IObterTiposCalendarioPorAnoLetivoDescricaoEModalidadesUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo, modalidades, descricao));
         }
 
         [HttpGet("{tipoCalendarioId}/bimestres")]
