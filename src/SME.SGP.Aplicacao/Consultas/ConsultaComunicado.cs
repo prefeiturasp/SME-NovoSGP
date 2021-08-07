@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,7 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioComunicadoTurma repositorioComunicadoTurma;
-        private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;        
+        private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;
         private readonly IServicoEol servicoEol;
         private const string Todas = "todas";
 
@@ -29,14 +28,14 @@ namespace SME.SGP.Aplicacao
             IServicoUsuario servicoUsuario,
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioComunicadoTurma repositorioComunicadoTurma,
-            IRepositorioComunicadoAluno repositorioComunicadoAluno,            
+            IRepositorioComunicadoAluno repositorioComunicadoAluno,
             IServicoEol servicoEol) : base(contextoAplicacao)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
-            this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));            
+            this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
             this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
@@ -49,25 +48,13 @@ namespace SME.SGP.Aplicacao
 
             comunicado.Alunos = (await repositorioComunicadoAluno.ObterPorComunicado(comunicado.Id)).ToList();
 
-            comunicado.Turmas = (await repositorioComunicadoTurma.ObterPorComunicado(comunicado.Id)).ToList();            
+            comunicado.Turmas = (await repositorioComunicadoTurma.ObterPorComunicado(comunicado.Id)).ToList();
 
-            var dto = (ComunicadoCompletoDto)comunicado;            
+            var dto = (ComunicadoCompletoDto)comunicado;
 
             await ValidarAbrangenciaUsuario(dto);
 
             return dto;
-        }
-
-        public async Task<PaginacaoResultadoDto<ComunicadoDto>> ListarPaginado(FiltroComunicadoDto filtro)
-        {
-            var validacao = await ValidarAbrangenciaListagem(filtro);
-
-            if (!validacao)
-                return new PaginacaoResultadoDto<ComunicadoDto>();
-
-            var comunicados = await repositorio.ListarPaginado(filtro, Paginacao);
-
-            return MapearParaDtoPaginado(comunicados);
         }
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string codigoTurma, int anoLetivo)
@@ -108,37 +95,6 @@ namespace SME.SGP.Aplicacao
             retornoPaginado.Items = itens;
 
             return retornoPaginado;
-        }
-
-        private async Task<bool> ValidarAbrangenciaListagem(FiltroComunicadoDto filtroDto)
-        {
-            try
-            {
-                ComunicadoDto comunicado = MapearFiltroDtoValidacao(filtroDto);
-
-                await ValidarAbrangenciaUsuario(comunicado);
-
-                return true;
-            }
-            catch (NegocioException)
-            {
-                return false;
-            }
-        }
-        private static ComunicadoDto MapearFiltroDtoValidacao(FiltroComunicadoDto filtroDto)
-        {
-            return new ComunicadoDto
-            {
-                AnoLetivo = filtroDto.AnoLetivo,
-                CodigoDre = filtroDto.CodigoDre,
-                CodigoUe = filtroDto.CodigoUe,
-                DataEnvio = filtroDto.DataEnvio ?? DateTime.Now,
-                DataExpiracao = filtroDto.DataExpiracao,
-                Modalidades = filtroDto.Modalidades,
-                Titulo = filtroDto.Titulo,
-                Turmas = filtroDto.Turmas?.Select(x => new ComunicadoTurmaDto { CodigoTurma = x }),
-                Semestre = filtroDto.Semestre
-            };
         }
 
         private async Task ValidarAbrangenciaUsuario(ComunicadoDto filtroDto)

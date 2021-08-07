@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -68,6 +69,9 @@ namespace SME.SGP.Aplicacao
                     unitOfWork.Rollback();
                     throw;
                 }
+            else
+                SentrySdk.CaptureMessage(erros.ToString());
+
             return true;
         }
     }
