@@ -20,9 +20,20 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> Handle(ListarEventosPorCalendarioQuery request, CancellationToken cancellationToken)
         {
-            var modalidadesCalendario = request.Modalidades.Select(c => (int)c.ObterModalidadeTipoCalendario()).Distinct().ToArray();
+            IEnumerable<int> modalidadesTipoCalendario;
 
-            return await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeEModalidades(request.TipoCalendario, request.AnoLetivo, request.CodigoDre, request.CodigoUe, modalidadesCalendario);
+            if (request.Modalidades.Any(c => c == -99))
+            {
+                modalidadesTipoCalendario = request.Modalidades;
+            }
+            else
+            {
+                var modalidades = request.Modalidades.Select(m => (Modalidade)m);
+
+                modalidadesTipoCalendario = modalidades.Select(m => (int)m.ObterModalidadeTipoCalendario()).Distinct().ToArray();
+            }           
+
+            return await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeEModalidades(request.TipoCalendario, request.AnoLetivo, request.CodigoDre, request.CodigoUe, modalidadesTipoCalendario);
         }
     }
 }

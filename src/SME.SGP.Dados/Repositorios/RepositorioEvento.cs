@@ -1280,7 +1280,7 @@ namespace SME.SGP.Dados.Repositorios
                                                                                                                               int anoLetivo,
                                                                                                                               string dreCodigo,
                                                                                                                               string ueCodigo,
-                                                                                                                              int[] modalidades)
+                                                                                                                              IEnumerable<int> modalidades)
         {
             var query = new StringBuilder(@"select e.Id As Id,
                                                    e.Nome as Nome,

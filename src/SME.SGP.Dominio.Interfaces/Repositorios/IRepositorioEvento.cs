@@ -55,6 +55,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario, int anoLetivo, string codigoDre, string codigoUe, int? modalidade);
         Task<IEnumerable<Evento>> ObterEventosPorTipoCalendarioIdEPeriodoInicioEFim(long tipoCalendarioId, DateTime periodoInicio, DateTime periodoFim, long? turmaId = null);
         Task<Evento> ObterEventoAtivoPorId(long eventoId);
-        Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeEModalidades(long tipoCalendario, int anoLetivo, string dreCodigo, string ueCodigo, int[] modalidades);
+        Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeEModalidades(long tipoCalendario, int anoLetivo, string dreCodigo, string ueCodigo, IEnumerable<int> modalidades);
     }
 }
