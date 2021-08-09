@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
 using SME.SGP.Dto;
@@ -138,6 +139,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterSemestres(bool consideraHistorico, [FromQuery] int modalidade, [FromQuery] int anoLetivo, [FromQuery] string ueCodigo, [FromServices] IObterSemestresPorAnoLetivoModalidadeEUeCodigoUseCase useCase)
         {
             return Ok(await useCase.Executar(consideraHistorico, modalidade, anoLetivo, ueCodigo));            
+        }
+
+        [HttpGet("filtro/anoTurma/{anoTurma}/turma/{turma}/dre/{dreId}/ue/{ueId}/modalidade/{modalidade}/anoLetivo/{anoLetivo}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [Permissao(Permissao.DF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuantidadeCrianca(string anoTurma, string turma , string dreId, string ueId, int modalidade,int anoLetivo, [FromServices] IObterQuantidadeCriancaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoTurma,turma,dreId,ueId,modalidade,anoLetivo));
         }
     }
 }
