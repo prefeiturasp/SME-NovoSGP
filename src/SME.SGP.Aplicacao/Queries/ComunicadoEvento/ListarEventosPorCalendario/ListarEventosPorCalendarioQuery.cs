@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 
@@ -12,7 +11,7 @@ namespace SME.SGP.Aplicacao
                                                int anoLetivo,
                                                string codigoDre,
                                                string codigoUe,
-                                               IEnumerable<Modalidade> modalidades)
+                                               IEnumerable<int> modalidades)
         {
             TipoCalendario = tipoCalendario;
             AnoLetivo = anoLetivo;
@@ -25,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public int AnoLetivo { get; }
         public string CodigoDre { get; }
         public string CodigoUe { get; }
-        public IEnumerable<Modalidade> Modalidades { get; }
+        public IEnumerable<int> Modalidades { get; }
     }
     public class ListarEventosPorCalendarioQueryValidator : AbstractValidator<ListarEventosPorCalendarioQuery>
     {
