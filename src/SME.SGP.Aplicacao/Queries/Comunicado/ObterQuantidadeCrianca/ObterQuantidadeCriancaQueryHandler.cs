@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             if (parametros.StartsWith("&"))
                 parametros = parametros.Substring(1);
 
-            var resposta = await httpClient.GetAsync($"api/alunos/ano-letivo/{request.AnoLetivo}/matriculados/quantidade" + (parametros.Length > 0 ? $"?{parametros}" : ""));
+            var resposta = await httpClient.GetAsync($"alunos/ano-letivo/{request.AnoLetivo}/matriculados/quantidade" + (parametros.Length > 0 ? $"?{parametros}" : ""));
 
             if (resposta.IsSuccessStatusCode)
             {
