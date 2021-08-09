@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<TipoCalendarioRetornoDto>> Executar(int anoLetivo, Modalidade[] modalidades, string descricao)
+        public async Task<IEnumerable<TipoCalendarioRetornoDto>> Executar(int anoLetivo, IEnumerable<Modalidade> modalidades, string descricao)
             => await mediator.Send(new ObterTiposCalendarioPorAnoLetivoDescricaoEModalidadesQuery(anoLetivo,
                                                                                                   modalidades,
                                                                                                   descricao));

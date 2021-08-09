@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTiposCalendarioPorAnoLetivoDescricaoEModalidadesQuery : IRequest<IEnumerable<TipoCalendarioRetornoDto>>
     {
-        public ObterTiposCalendarioPorAnoLetivoDescricaoEModalidadesQuery(int anoLetivo, Modalidade[] modalidades, string descricao)
+        public ObterTiposCalendarioPorAnoLetivoDescricaoEModalidadesQuery(int anoLetivo, IEnumerable<Modalidade> modalidades, string descricao)
         {
             AnoLetivo = anoLetivo;
             Modalidades = modalidades;
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public int AnoLetivo { get; set; }
-        public Modalidade[] Modalidades { get; set; }
+        public IEnumerable<Modalidade> Modalidades { get; set; }
         public string Descricao { get; set; }
     }
 }
