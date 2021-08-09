@@ -45,7 +45,7 @@ namespace SME.SGP.Dados.Repositorios
                                                     where tc.descricao is not null
                                                     and tca.modalidade = any(@modalidades) ");
 
-            if (!String.IsNullOrEmpty(codigoUe))
+            if (!String.IsNullOrEmpty(codigoUe) && codigoUe != "-99")
                 query.AppendLine(" and ue.ue_id = @codigoUe");
 
             query.AppendLine(" order by tca.ano ");
