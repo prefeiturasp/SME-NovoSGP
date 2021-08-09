@@ -200,7 +200,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString(), new { anoLetivo, modalidades });
         }
 
-        public async Task<IEnumerable<TipoCalendarioRetornoDto>> ListarPorAnoLetivoDescricaoEModalidades(int anoLetivo, string descricao, int[] modalidades)
+        public async Task<IEnumerable<TipoCalendarioRetornoDto>> ListarPorAnoLetivoDescricaoEModalidades(int anoLetivo, string descricao, IEnumerable<int> modalidades)
         {
             var query = new StringBuilder(@"select tc.id,
    		                                           tc.ano_letivo as AnoLetivo,   		  

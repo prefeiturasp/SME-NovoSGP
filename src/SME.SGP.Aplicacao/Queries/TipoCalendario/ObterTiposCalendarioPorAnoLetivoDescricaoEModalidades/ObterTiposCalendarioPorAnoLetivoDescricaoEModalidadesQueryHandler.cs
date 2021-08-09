@@ -21,7 +21,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TipoCalendarioRetornoDto>> Handle(ObterTiposCalendarioPorAnoLetivoDescricaoEModalidadesQuery request, CancellationToken cancellationToken)
         {
-            var modalidadesTipoCalendario = request.Modalidades.Select(m => (int)m.ObterModalidadeTipoCalendario()).Distinct().ToArray();
+            IEnumerable<int> modalidadesTipoCalendario;
+
+            if (request.Modalidades.Any(c => c == -99))
+            {
+                modalidadesTipoCalendario = request.Modalidades;
+            }
+            else
+            {
+                var modalidades = request.Modalidades.Select(m => (Modalidade)m);
+
+                modalidadesTipoCalendario = modalidades.Select(m => (int)m.ObterModalidadeTipoCalendario()).Distinct().ToArray();
+            }            
 
             return await repositorioTipoCalendario.ListarPorAnoLetivoDescricaoEModalidades(request.AnoLetivo, request.Descricao, modalidadesTipoCalendario);
         }
