@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/comunicado")]
+    [Route("api/v1/comunicados")]
     [Authorize("Bearer")]
     public class ComunicadoController : ControllerBase
     {

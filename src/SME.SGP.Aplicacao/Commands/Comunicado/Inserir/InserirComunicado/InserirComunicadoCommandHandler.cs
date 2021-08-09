@@ -25,6 +25,10 @@ namespace SME.SGP.Aplicacao
         {
             var comunicado = new Comunicado();
 
+            if (request.DataExpiracao.HasValue && request.DataExpiracao.Value < request.DataEnvio)
+                throw new NegocioException("A data de expiração deve ser maior ou igual a data de envio.");
+
+
             MapearParaEntidade(request, comunicado);
 
             try
