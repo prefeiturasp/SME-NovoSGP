@@ -1,12 +1,13 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepcional
+namespace SME.SGP.Aplicacao
 {
     public class ListarEventosPorCalendarioQueryHandler : IRequestHandler<ListarEventosPorCalendarioQuery, IEnumerable<ListarEventosPorCalendarioRetornoDto>>
     {
@@ -19,12 +20,9 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
 
         public async Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> Handle(ListarEventosPorCalendarioQuery request, CancellationToken cancellationToken)
         {
-            int? modalidade = null;
-            if (request.Modalidade.HasValue)
-            {
-                modalidade = (int)((Modalidade)request.Modalidade).ObterModalidadeTipoCalendario();
-            }
-            return await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(request.TipoCalendario, request.AnoLetivo, request.CodigoDre, request.CodigoUe, modalidade);
+            var modalidadesCalendario = request.Modalidades.Select(c => (int)c.ObterModalidadeTipoCalendario()).Distinct().ToArray();
+
+            return await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeEModalidades(request.TipoCalendario, request.AnoLetivo, request.CodigoDre, request.CodigoUe, modalidadesCalendario);
         }
     }
 }

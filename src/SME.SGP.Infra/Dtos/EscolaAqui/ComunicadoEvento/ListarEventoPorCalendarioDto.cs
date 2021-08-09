@@ -1,8 +1,7 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
 using System.Collections.Generic;
-using System.Text;
 
-namespace SME.SGP.Infra.Dtos.EscolaAqui.ComunicadoEvento
+namespace SME.SGP.Infra
 {
     public class ListarEventoPorCalendarioDto
     {
@@ -10,6 +9,6 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.ComunicadoEvento
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
-        public int? Modalidade { get; set; }
+        public IEnumerable<Modalidade> Modalidades { get; set; }
     }
 }
