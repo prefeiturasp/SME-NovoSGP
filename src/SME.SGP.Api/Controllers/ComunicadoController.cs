@@ -141,7 +141,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(consideraHistorico, modalidade, anoLetivo, ueCodigo));            
         }
 
-        [HttpGet("filtro/anoTurma/{anoTurma}/turma/{turma}/dre/{dreId}/ue/{ueId}/modalidade/{modalidade}/anoLetivo/{anoLetivo}")]
+        [HttpGet("filtro/anos-turmas/{anoTurma}/turmas/{turma}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/anos-letivos/{anoLetivo}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
