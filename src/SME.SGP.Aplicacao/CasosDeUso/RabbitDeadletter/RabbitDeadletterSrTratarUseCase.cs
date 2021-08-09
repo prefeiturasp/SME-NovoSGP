@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                             break;
                         else
                         {
-                            await Task.Run(() => _channel.BasicPublish(ExchangeSgpRabbit.Sgp, fila, null, mensagemParaEnviar.Body.ToArray()));
+                            await Task.Run(() => _channel.BasicPublish(ExchangeSgpRabbit.ServidorRelatorios, fila, null, mensagemParaEnviar.Body.ToArray()));
                         }                        
                     }
                 }
