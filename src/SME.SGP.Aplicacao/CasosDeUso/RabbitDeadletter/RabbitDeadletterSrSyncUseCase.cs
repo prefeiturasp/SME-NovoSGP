@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             foreach (var fila in typeof(RotasRabbitSgpRelatorios).ObterConstantesPublicas<string>())
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpRelatorios.RotaRabbitDeadletterTratar, fila, Guid.NewGuid(), null, false));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaRabbitSRDeadletterTratar, fila, Guid.NewGuid(), null, false));
             }
 
             return true;

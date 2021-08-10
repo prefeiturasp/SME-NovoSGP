@@ -59,7 +59,7 @@ namespace SME.SGP.Worker.RabbitMQ
         {
             DeclararFilasPorRota(typeof(RotasRabbitSgp), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
             DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
-            DeclararFilasPorRota(typeof(RotasRabbitSgpRelatorios), ExchangeSgpRabbit.ServidorRelatorios, ExchangeSgpRabbit.ServidorRelatoriosDeadLetter);
+            //DeclararFilasPorRota(typeof(RotasRabbitSgpRelatorios), ExchangeSgpRabbit.ServidorRelatorios, ExchangeSgpRabbit.ServidorRelatoriosDeadLetter);
         }
 
         private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter)
@@ -80,7 +80,7 @@ namespace SME.SGP.Worker.RabbitMQ
         }
         private void RegistrarFilaComErro()
         {
-            foreach (var rota in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>().Where(a => a.Contains("relatorios.erro")))
+            foreach (var rota in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>().Where(a => a.Contains("sr.relatorios.erro")))
             {
 
                 comandos.Add(rota, new ComandoRabbit("Notificar relatório com erro", typeof(IReceberRelatorioComErroUseCase)));
@@ -193,8 +193,8 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaRabbitDeadletterSync, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSgpSyncUseCase)));
             comandos.Add(RotasRabbitSgp.RotaRabbitDeadletterTratar, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSgpTratarUseCase)));
 
-            comandos.Add(RotasRabbitSgpRelatorios.RotaRabbitDeadletterSync, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSrSyncUseCase)));
-            comandos.Add(RotasRabbitSgpRelatorios.RotaRabbitDeadletterTratar, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSrTratarUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaRabbitSRDeadletterSync, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSrSyncUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaRabbitSRDeadletterTratar, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSrTratarUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasAlunosSync, new ComandoRabbit("Conciliação de frequência da turma sync", typeof(IConciliacaoFrequenciaTurmasAlunosSyncUseCase)));
             comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasAlunosBuscar, new ComandoRabbit("Conciliação de frequência da turma buscar", typeof(IConciliacaoFrequenciaTurmasAlunosBuscarUseCase)));
