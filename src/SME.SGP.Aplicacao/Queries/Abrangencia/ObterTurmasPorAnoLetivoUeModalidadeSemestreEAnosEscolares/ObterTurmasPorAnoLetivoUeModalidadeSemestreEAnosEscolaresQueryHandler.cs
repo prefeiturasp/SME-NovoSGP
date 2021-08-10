@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DropdownTurmaRetornoDto>> Handle(ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQuery request, CancellationToken cancellationToken)
         {
-            var turmas = await repositorioAbrangencia.ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolares(request.AnoLetivo, request.CodigoUe, request.Modalidades, request.Semestre, request.Anos);
+            var turmas = await repositorioAbrangencia.ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolares(request.AnoLetivo, request.CodigoUe, request.Modalidades, request.Semestre, request.Anos, request.Historico);
 
             return turmas.OrderBy(x => x.Modalidade.ShortName()).ThenBy(y => y.Descricao);
         }
