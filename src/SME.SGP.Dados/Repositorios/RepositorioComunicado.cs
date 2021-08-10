@@ -479,12 +479,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<ComunicadoListaPaginadaDto>> ListarComunicados(int anoLetivo, string dreCodigo, string ueCodigo, int[] modalidades, int semestre, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas, Paginacao paginacao)
         {
+
+            var query = new StringBuilder();
+
+            var modalidadeEja = 0;
+            var modalidadesSemEja = new int[] { };
+
+            if (modalidades.Any() && !modalidades.Any(c => c == -99))
+                modalidadesSemEja = modalidades.Where(m => (Modalidade)m != Modalidade.EJA).ToArray();
+
             var query = new StringBuilder(@"DROP TABLE IF EXISTS comunicadoTempPaginado;
                                             select distinct c.id,
-	                                               c.titulo,
-	                                               c.data_envio,
-	                                               c.data_expiracao,
-	                                               (select array_agg(modalidade) 
+                                                c.titulo,
+                                                c.data_envio,
+                                                c.data_expiracao,
+                                                (select array_agg(modalidade) 
                                                       from comunicado_modalidade cm2 
                                                      where cm2.comunicado_id = c.id) as Modalidade
                                               into temporary table comunicadoTempPaginado
@@ -535,6 +544,11 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("order by c.data_envio desc; ");
 
+
+            MontaQueryListarComunicados(query, dreCodigo, ueCodigo, modalidades, dataEnvioInicio, dataEnvioFim, dataExpiracaoInicio, dataExpiracaoFim, titulo, turmasCodigo, anosEscolares, tiposEscolas);
+
+            MontaQueryListarComunicadosEja(query, dreCodigo, ueCodigo, dataEnvioInicio, dataEnvioFim, dataExpiracaoInicio, dataExpiracaoFim, titulo, turmasCodigo, anosEscolares, tiposEscolas);
+
             query.AppendLine(@"select temp.id,
 	                                  temp.titulo,
 	                                  temp.data_envio as DataEnvio,
@@ -581,6 +595,116 @@ namespace SME.SGP.Dados.Repositorios
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
+        }
+
+
+        private void MontaQueryListarComunicados(StringBuilder query, string dreCodigo, string ueCodigo, int[] modalidades, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
+        {
+            query.AppendLine(@"DROP TABLE IF EXISTS comunicadoTempPaginado;
+                                            select distinct c.id,
+	                                               c.titulo,
+	                                               c.data_envio,
+	                                               c.data_expiracao,
+	                                               (select array_agg(modalidade) 
+                                                      from comunicado_modalidade cm2 
+                                                     where cm2.comunicado_id = c.id) as Modalidade
+                                              into temporary table comunicadoTempPaginado
+                                              from comunicado c 
+                                             inner join comunicado_modalidade cm on cm.comunicado_id = c.id 
+                                              left join comunicado_turma ct on ct.comunicado_id = c.id
+                                              left join turma t on t.turma_id = ct.turma_codigo
+                                              left join ue on ue.ue_id = c.codigo_ue
+                                             where c.ano_letivo = @anoLetivo
+                                               and not c.excluido");
+
+            if (!string.IsNullOrEmpty(dreCodigo) && dreCodigo != "-99")
+                query.AppendLine("and c.codigo_dre = @dreCodigo ");
+            else
+                query.AppendLine("and c.codigo_dre is null ");
+
+            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
+                query.AppendLine("and c.codigo_ue = @ueCodigo ");
+            else
+                query.AppendLine("and c.codigo_ue is null ");
+
+            if (modalidades != null && !modalidades.Any(c => c == -99))
+                query.AppendLine("and cm.modalidade = any(@modalidades) ");           
+
+            if (anosEscolares != null && !anosEscolares.Any(c => c == "-99"))
+                query.AppendLine("and t.ano = any(@anosEscolares) ");
+
+            if (turmasCodigo != null && !turmasCodigo.Any(c => c == "-99"))
+                query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
+
+            if (tiposEscolas != null && !tiposEscolas.Any(c => c == -99))
+                query.AppendLine("and ue.tipo_escola = any(@tiposEscolas) ");
+
+            if (!string.IsNullOrEmpty(titulo))
+            {
+                titulo = $"%{titulo.ToUpperInvariant()}%";
+                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @titulo) ");
+            }
+
+            if (dataEnvioInicio.HasValue && dataEnvioFim.HasValue)
+                query.AppendLine("and c.data_envio::date between @dataEnvioInicio::date and @dataEnvioFim::date ");
+
+            if (dataExpiracaoInicio.HasValue && dataExpiracaoFim.HasValue)
+                query.AppendLine("and c.data_expiracao::date between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
+
+
+        }
+
+        private void MontaQueryListarComunicadosEja(StringBuilder query, string dreCodigo, string ueCodigo, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
+        {
+            query.AppendLine(@"DROP TABLE IF EXISTS comunicadoTempPaginadoEja;
+                                            select distinct c.id,
+	                                               c.titulo,
+	                                               c.data_envio,
+	                                               c.data_expiracao,
+	                                               (select array_agg(modalidade) 
+                                                      from comunicado_modalidade cm2 
+                                                     where cm2.comunicado_id = c.id) as Modalidade
+                                              into temporary table comunicadoTempPaginadoEja
+                                              from comunicado c 
+                                             inner join comunicado_modalidade cm on cm.comunicado_id = c.id 
+                                              left join comunicado_turma ct on ct.comunicado_id = c.id
+                                              left join turma t on t.turma_id = ct.turma_codigo
+                                              left join ue on ue.ue_id = c.codigo_ue
+                                             where c.ano_letivo = @anoLetivo
+                                               and not c.excluido
+                                               and cm.modalidade = any(@modalidades)
+                                               and t.semestre = @semestre");
+
+            if (!string.IsNullOrEmpty(dreCodigo) && dreCodigo != "-99")
+                query.AppendLine("and c.codigo_dre = @dreCodigo ");
+            else
+                query.AppendLine("and c.codigo_dre is null ");
+
+            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
+                query.AppendLine("and c.codigo_ue = @ueCodigo ");
+            else
+                query.AppendLine("and c.codigo_ue is null ");            
+
+            if (anosEscolares != null && !anosEscolares.Any(c => c == "-99"))
+                query.AppendLine("and t.ano = any(@anosEscolares) ");
+
+            if (turmasCodigo != null && !turmasCodigo.Any(c => c == "-99"))
+                query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
+
+            if (tiposEscolas != null && !tiposEscolas.Any(c => c == -99))
+                query.AppendLine("and ue.tipo_escola = any(@tiposEscolas) ");            
+
+            if (!string.IsNullOrEmpty(titulo))
+            {
+                titulo = $"%{titulo.ToUpperInvariant()}%";
+                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @titulo) ");
+            }
+
+            if (dataEnvioInicio.HasValue && dataEnvioFim.HasValue)
+                query.AppendLine("and c.data_envio::date between @dataEnvioInicio::date and @dataEnvioFim::date ");
+
+            if (dataExpiracaoInicio.HasValue && dataExpiracaoFim.HasValue)
+                query.AppendLine("and c.data_expiracao::date between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
         }
 
         public async Task<IEnumerable<int>> ObterSemestresPorAnoLetivoModalidadeEUeCodigo(string login, Guid perfil, int modalidade, bool consideraHistorico, int anoLetivo, string ueCodigo)
