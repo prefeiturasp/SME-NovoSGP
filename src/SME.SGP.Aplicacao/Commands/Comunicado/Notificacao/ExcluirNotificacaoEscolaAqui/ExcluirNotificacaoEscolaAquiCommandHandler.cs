@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
             var requestMessage = new HttpRequestMessage
             {
-                RequestUri = new Uri(httpClient.BaseAddress.ToString() + "v1/notificacao"),
+                RequestUri = new Uri(httpClient.BaseAddress.ToString() + "v1/Notificacao"),
                 Method = HttpMethod.Delete,
                 Content = new StringContent(JsonConvert.SerializeObject(request.Ids), Encoding.UTF8, "application/json"),
             };           
