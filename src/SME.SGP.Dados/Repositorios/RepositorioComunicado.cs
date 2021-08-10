@@ -510,7 +510,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and cm.modalidade = any(@modalidades) ");
 
             if (semestre > 0)
-                query.AppendLine("and t.semestre = @semestre ");
+                query.AppendLine("and c.semestre = @semestre ");
 
             if (anosEscolares != null && !anosEscolares.Any(c => c == "-99"))
                 query.AppendLine("and t.ano = any(@anosEscolares) ");
