@@ -579,7 +579,7 @@ namespace SME.SGP.Dados.Repositorios
             return dados.OrderBy(x => x.Descricao);
         }
 
-        public async Task<IEnumerable<DropdownTurmaRetornoDto>> ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolares(int anoLetivo, string codigoUe, int[] modalidades, int semestre, string[] anos)
+        public async Task<IEnumerable<DropdownTurmaRetornoDto>> ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolares(int anoLetivo, string codigoUe, int[] modalidades, int semestre, string[] anos, bool historico)
         {
             var query = new StringBuilder();
             var modalidadeEja = 0;
@@ -595,18 +595,36 @@ namespace SME.SGP.Dados.Repositorios
                                                    t.modalidade_codigo as modalidade
                                               from turma t
                                              inner join ue ue on ue.id = t.ue_id
-                                             inner join tipo_ciclo_ano tca on tca.ano = t.ano
-                                             where ano_letivo = @anoLetivo
-                                               and ue.ue_id = @codigoUe ");
+                                             inner join tipo_ciclo_ano tca on tca.ano = t.ano ");
+
+                query.AppendLine(@"where ano_letivo = @anoLetivo
+                                               and ue.ue_id = @codigoUe and t.historica = @historico ");
 
                 if (modalidades.Any() && !modalidades.Any(c => c == -99))
                     query.AppendLine("and t.modalidade_codigo = any(@modalidadesSemEja) ");
 
-                if (anos != null && anos.Any() && !anos.Any(a => a == "-99"))
+                if (anos != null && anos.Any() && !anos.Any(a => a == "-99") && !modalidadesSemEja.Any(a => a == (int)Modalidade.MOVA))
                     query.AppendLine(" and tca.ano = any(@anos)");
-            }            
 
-            if(modalidadesSemEja.Any() && modalidades.Any(m => (Modalidade)m == Modalidade.EJA))
+                if (anos.Any(a => a == "-99"))
+                {
+                    query.AppendLine(@"union");
+                    query.AppendLine(@"select distinct t.turma_id as valor, 
+                                                   coalesce(t.nome_filtro, t.nome) as descricao,
+                                                   t.modalidade_codigo as modalidade
+                                              from turma t
+                                             inner join ue ue on ue.id = t.ue_id");
+
+                    query.AppendLine(@"where ano_letivo = @anoLetivo
+                                               and ue.ue_id = @codigoUe and t.historica = @historico  and t.ano = '0' and t.tipo_turma = 3 ");
+
+                    if (modalidades.Any() && !modalidades.Any(c => c == -99))
+                        query.AppendLine("and t.modalidade_codigo = any(@modalidadesSemEja) ");
+                }
+
+            }
+
+            if (modalidadesSemEja.Any() && modalidades.Any(m => (Modalidade)m == Modalidade.EJA))
                 query.AppendLine(" union ");
 
             if (modalidades.Any(m => (Modalidade)m == Modalidade.EJA))
@@ -622,7 +640,7 @@ namespace SME.SGP.Dados.Repositorios
                                              where ano_letivo = @anoLetivo
                                                and ue.ue_id = @codigoUe 
                                                and t.modalidade_codigo = @modalidadeEja 
-                                               and semestre = @semestre ");
+                                               and semestre = @semestre and t.historica = @historico ");
 
                 if (anos != null && anos.Any() && !anos.Any(a => a == "-99"))
                     query.AppendLine(" and tca.ano = any(@anos)");
@@ -635,7 +653,8 @@ namespace SME.SGP.Dados.Repositorios
                 modalidadesSemEja,
                 semestre,
                 anos,
-                modalidadeEja
+                modalidadeEja,
+                historico
             };
 
             var dados = await database.Conexao.QueryAsync<DropdownTurmaRetornoDto>(query.ToString(), parametros);
