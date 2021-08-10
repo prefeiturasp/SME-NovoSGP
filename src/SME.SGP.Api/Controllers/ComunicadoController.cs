@@ -141,14 +141,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(consideraHistorico, modalidade, anoLetivo, ueCodigo));            
         }
 
-        [HttpGet("filtro/anos-turmas/{anoTurma}/turmas/{turma}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/anos-letivos/{anoLetivo}")]
+        [HttpGet("filtro/anos-letivos/{anoLetivo}/dres/{dreId}/ues/{ueId}/quantidade-alunos")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(QuantidadeCriancaDto), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuantidadeCrianca(string anoTurma, string turma , string dreId, string ueId, int modalidade,int anoLetivo, [FromServices] IObterQuantidadeCriancaUseCase useCase)
+        public async Task<IActionResult> ObterQuantidadeCrianca(int anoLetivo, string dreId, string ueId, [FromQuery] string[] turmas ,[FromQuery] int[] modalidades, [FromQuery]string anoTurma, [FromServices] IObterQuantidadeCriancaUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoTurma,turma,dreId,ueId,modalidade,anoLetivo));
+            return Ok(await useCase.Executar(anoLetivo,turmas,dreId,ueId,modalidades,anoTurma));
         }
     }
 }
