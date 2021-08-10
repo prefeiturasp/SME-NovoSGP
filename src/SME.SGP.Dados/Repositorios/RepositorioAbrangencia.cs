@@ -594,19 +594,22 @@ namespace SME.SGP.Dados.Repositorios
                                                    coalesce(t.nome_filtro, t.nome) as descricao,
                                                    t.modalidade_codigo as modalidade
                                               from turma t
-                                             inner join ue ue on ue.id = t.ue_id
-                                             inner join tipo_ciclo_ano tca on tca.ano = t.ano
-                                             where ano_letivo = @anoLetivo
+                                             inner join ue ue on ue.id = t.ue_id");
+
+                if (!modalidadesSemEja.Any(a => a == (int)Modalidade.MOVA))
+                    query.AppendLine(@" inner join tipo_ciclo_ano tca on tca.ano = t.ano ");
+
+                query.AppendLine(@"where ano_letivo = @anoLetivo
                                                and ue.ue_id = @codigoUe and t.historica = @historico ");
 
                 if (modalidades.Any() && !modalidades.Any(c => c == -99))
                     query.AppendLine("and t.modalidade_codigo = any(@modalidadesSemEja) ");
 
-                if (anos != null && anos.Any() && !anos.Any(a => a == "-99"))
+                if (anos != null && anos.Any() && !anos.Any(a => a == "-99") && !modalidadesSemEja.Any(a => a == (int)Modalidade.MOVA))
                     query.AppendLine(" and tca.ano = any(@anos)");
-            }            
+            }
 
-            if(modalidadesSemEja.Any() && modalidades.Any(m => (Modalidade)m == Modalidade.EJA))
+            if (modalidadesSemEja.Any() && modalidades.Any(m => (Modalidade)m == Modalidade.EJA))
                 query.AppendLine(" union ");
 
             if (modalidades.Any(m => (Modalidade)m == Modalidade.EJA))
