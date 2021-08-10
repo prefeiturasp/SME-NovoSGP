@@ -141,12 +141,12 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(consideraHistorico, modalidade, anoLetivo, ueCodigo));            
         }
 
-        [HttpGet("filtro/anos-letivo/{anoLetivo}/quantidade-alunos")]
+        [HttpGet("filtro/anos-letivo/{anoLetivo}/dre/{dreId}/ues/{ueId}/quantidade-alunos")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(QuantidadeCriancaDto), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuantidadeCrianca(int anoLetivo,[FromQuery] string[] turmas , [FromQuery] string dreId, [FromQuery] string ueId,[FromQuery] int[] modalidades, [FromQuery]string anoTurma, [FromServices] IObterQuantidadeCriancaUseCase useCase)
+        public async Task<IActionResult> ObterQuantidadeCrianca(int anoLetivo, string dreId, string ueId, [FromQuery] string[] turmas ,[FromQuery] int[] modalidades, [FromQuery]string anoTurma, [FromServices] IObterQuantidadeCriancaUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo,turmas,dreId,ueId,modalidades,anoTurma));
         }
