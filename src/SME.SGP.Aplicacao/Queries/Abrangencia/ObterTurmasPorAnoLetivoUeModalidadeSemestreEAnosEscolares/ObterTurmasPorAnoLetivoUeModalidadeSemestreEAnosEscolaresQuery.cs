@@ -7,13 +7,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQuery : IRequest<IEnumerable<DropdownTurmaRetornoDto>>
     {
-        public ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQuery(int anoLetivo, string codigoUe, int[] modalidades, int semestre, string[] anos)
+        public ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQuery(int anoLetivo, string codigoUe, int[] modalidades, int semestre, string[] anos, bool historico)
         {
             AnoLetivo = anoLetivo;
             CodigoUe = codigoUe;
             Modalidades = modalidades;
             Semestre = semestre;
             Anos = anos;
+            Historico = historico;
         }
 
         public int AnoLetivo { get; set; }
@@ -21,6 +22,7 @@ namespace SME.SGP.Aplicacao
         public int[] Modalidades { get; set; }
         public int Semestre { get; set; }
         public string[] Anos { get; set; }
+        public  bool Historico { get; set; }
     }
     public class ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQueryValidator : AbstractValidator<ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQuery>
     {

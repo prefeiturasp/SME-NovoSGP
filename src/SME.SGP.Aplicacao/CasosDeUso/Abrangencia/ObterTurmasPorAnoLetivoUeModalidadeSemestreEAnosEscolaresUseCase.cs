@@ -12,11 +12,11 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<DropdownTurmaRetornoDto>> Executar(int anoLetivo, string ueCodigo, int[] modalidades, int semestre, string[] anos)
+        public async Task<IEnumerable<DropdownTurmaRetornoDto>> Executar(int anoLetivo, string ueCodigo, int[] modalidades, int semestre, string[] anos, bool historico)
             => await mediator.Send(new ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresQuery(anoLetivo,
                                                                                                       ueCodigo,
                                                                                                       modalidades,
                                                                                                       semestre,
-                                                                                                      anos));
+                                                                                                      anos, historico));
     }
 }
