@@ -16,8 +16,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>> Executar(string codigoUe, int[] modalidades)
         {
-            if (modalidades.Any(m => (Modalidade)m != Modalidade.Fundamental ||
-                                     (Modalidade)m != Modalidade.Medio ||
+            if (modalidades.Any(m => (Modalidade)m != Modalidade.Fundamental &&
+                                     (Modalidade)m != Modalidade.Medio &&
                                      (Modalidade)m != Modalidade.EJA))
             {                
                  return new List<AnosPorCodigoUeModalidadeEscolaAquiResult>()
