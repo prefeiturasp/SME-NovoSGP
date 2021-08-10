@@ -35,14 +35,25 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(request.UeId) && !request.UeId.Contains("-99"))
                 parametros += $"&ueCodigo={request.UeId}";
 
-            if (request.Modalidade > 0)
-                parametros += $"&modalidade={request.Modalidade}";
+            if (request.Modalidade != null && request.Modalidade.Count() > 0)
+            {
+                foreach (var item in request.Modalidade)
+                {
+                    parametros += $"&modalidade={item}";
+                }
+            }
+                
 
             if (!string.IsNullOrEmpty(request.AnoTurma))
                 parametros += $"&ano={request.AnoTurma}";
 
-            if (!string.IsNullOrEmpty(request.Turma) && !request.Turma.Contains("-99"))
-                parametros += $"&turma={request.Turma}";
+            if (request.Turma !=null  && !request.Turma.Contains("-99"))
+            {
+                foreach (var item in request.Turma)
+                {
+                    parametros += $"&turma={item}";
+                }
+            }
 
             if (parametros.StartsWith("&"))
                 parametros = parametros.Substring(1);
