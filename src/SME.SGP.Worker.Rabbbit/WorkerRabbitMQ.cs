@@ -80,7 +80,7 @@ namespace SME.SGP.Worker.RabbitMQ
         }
         private void RegistrarFilaComErro()
         {
-            foreach (var rota in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>().Where(a => a.Contains("sr.relatorios.erro")))
+            foreach (var rota in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>().Where(a => a.Contains("sgp.relatorios.erro")))
             {
 
                 comandos.Add(rota, new ComandoRabbit("Notificar relatório com erro", typeof(IReceberRelatorioComErroUseCase)));

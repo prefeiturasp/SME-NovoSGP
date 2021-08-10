@@ -140,7 +140,7 @@
         public const string RotaRelatorioCorrelacaoCopiar = "sgp.relatorios.correlacao.copiar";
         public const string RotaRelatorioCorrelacaoInserir = "sgp.relatorios.correlacao.inserir";
         
-        public const string RotaRelatorioComErro = "sgp.relatorios.erro.notificar";
+        public const string RotaRelatorioComErro = "sgp.relatorios.erro";
         public const string RotaRelatoriosComErroBoletim = "sgp.relatorios.erro.notificar.boletim";
         public const string RotaRelatoriosComErroBoletimDetalhado = "sgp.relatorios.erro.notificar.boletimdetalhado";
         public const string RotaRelatoriosComErroPlanoDeAula = "sgp.relatorios.erro.notificar.planodeaula";
