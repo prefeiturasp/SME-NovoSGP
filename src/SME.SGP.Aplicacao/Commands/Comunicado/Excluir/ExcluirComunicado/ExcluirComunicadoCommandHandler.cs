@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
                     unitOfWork.PersistirTransacao();                    
                 }
-                catch
+                catch(Exception ex)
                 {
                     unitOfWork.Rollback();
                     throw;
