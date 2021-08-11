@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
             {
                 using (IModel _channel = conexaoRabbit.CreateModel())
                 {
-                    _channel.BasicPublish(ExchangeRabbit.ServidorRelatorios, request.Fila, null, body);
+                    _channel.BasicPublish(ExchangeSgpRabbit.ServidorRelatorios, request.Fila, null, body);
                 }
             }
 

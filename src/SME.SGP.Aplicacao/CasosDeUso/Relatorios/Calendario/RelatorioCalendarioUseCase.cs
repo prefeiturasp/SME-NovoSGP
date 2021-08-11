@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             filtroRelatorioCalendarioDto.SetarDadosUsuario(usuario);
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Calendario, filtroRelatorioCalendarioDto, usuario));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Calendario, filtroRelatorioCalendarioDto, usuario, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosCalendarioEscolar));
         }
     }
 }

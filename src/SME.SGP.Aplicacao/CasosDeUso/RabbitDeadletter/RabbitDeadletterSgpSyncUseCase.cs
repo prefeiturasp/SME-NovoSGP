@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class RabbitDeadletterSyncUseCase : IRabbitDeadletterSyncUseCase
+    public class RabbitDeadletterSgpSyncUseCase : IRabbitDeadletterSgpSyncUseCase
     {
         private readonly IMediator mediator;
 
-        public RabbitDeadletterSyncUseCase(IMediator mediator)
+        public RabbitDeadletterSgpSyncUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
