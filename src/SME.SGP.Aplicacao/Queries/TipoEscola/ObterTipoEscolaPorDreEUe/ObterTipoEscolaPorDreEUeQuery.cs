@@ -7,14 +7,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTipoEscolaPorDreEUeQuery : IRequest<IEnumerable<TipoEscolaDto>>
     {
-        public ObterTipoEscolaPorDreEUeQuery(string dreCodigo, string ueCodigo)
+        public ObterTipoEscolaPorDreEUeQuery(string dreCodigo, string ueCodigo, int[] modalidades)
         {
             DreCodigo = dreCodigo;
             UeCodigo = ueCodigo;
+            Modalidades = modalidades;
         }
 
         public string DreCodigo { get; set; }
         public string UeCodigo { get; set; }
+        public int[] Modalidades { get; set; }
     }
     public class ObterTipoEscolaPorDreEUeQueryValidator : AbstractValidator<ObterTipoEscolaPorDreEUeQuery>
     {

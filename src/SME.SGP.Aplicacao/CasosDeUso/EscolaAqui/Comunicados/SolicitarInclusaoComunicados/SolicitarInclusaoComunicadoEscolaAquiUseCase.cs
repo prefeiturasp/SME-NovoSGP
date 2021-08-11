@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SolicitarInclusaoComunicadoEscolaAquiUseCase : AbstractUseCase, ISolicitarInclusaoComunicadoEscolaAquiUseCase
     {
-        private const string TODAS = "todas";
+        private const string TODAS = "-99";
 
         public SolicitarInclusaoComunicadoEscolaAquiUseCase(IMediator mediator) : base(mediator)
         {
@@ -34,11 +34,12 @@ namespace SME.SGP.Aplicacao
                                                                            comunicado.CodigoDre,
                                                                            comunicado.CodigoUe,
                                                                            comunicado.Turmas,
-                                                                           comunicado.AlunosEspecificados,
+                                                                           comunicado.AlunoEspecificado,
                                                                            comunicado.Modalidades,
                                                                            comunicado.Semestre,
                                                                            comunicado.Alunos,
                                                                            comunicado.SeriesResumidas,
+                                                                           comunicado.TiposEscolas,
                                                                            comunicado.TipoCalendarioId,
                                                                            comunicado.EventoId));
 
@@ -60,7 +61,7 @@ namespace SME.SGP.Aplicacao
             if (comunicado.CodigoUe == TODAS && comunicado.Turmas.Any())
                 throw new NegocioException("Não é possivel especificar uma turma quando o comunicado é para todas as UEs");
 
-            if ((comunicado.Turmas == null || !comunicado.Turmas.Any()) && (comunicado.AlunosEspecificados || (comunicado.Alunos?.Any() ?? false)))
+            if ((comunicado.Turmas == null || !comunicado.Turmas.Any()) && (comunicado.AlunoEspecificado || (comunicado.Alunos?.Any() ?? false)))
                 throw new NegocioException("Não é possivel especificar alunos quando o comunicado é para todas as Turmas");
         }
 

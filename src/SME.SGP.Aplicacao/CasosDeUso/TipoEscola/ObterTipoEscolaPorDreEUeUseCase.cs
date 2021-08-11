@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<TipoEscolaDto>> Executar(string dreCodigo, string ueCodigo)
-            => await mediator.Send(new ObterTipoEscolaPorDreEUeQuery(dreCodigo, ueCodigo));
+        public async Task<IEnumerable<TipoEscolaDto>> Executar(string dreCodigo, string ueCodigo, int[] modalidades)
+            => await mediator.Send(new ObterTipoEscolaPorDreEUeQuery(dreCodigo, ueCodigo, modalidades));
     }
 }

@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirComunicadoCommand : IRequest<bool>
     {
-        public InserirComunicadoCommand(string titulo, string descricao, DateTime dataEnvio, DateTime? dataExpiracao, int anoLetivo, string codigoDre, string codigoUe, IEnumerable<string> turmas, bool alunosEspecificados, int[] modalidades, int semestre, IEnumerable<string> alunos, string seriesResumidas, long? tipoCalendarioId, long? eventoId)
+        public InserirComunicadoCommand(string titulo, string descricao, DateTime dataEnvio, DateTime? dataExpiracao, int anoLetivo, string codigoDre, string codigoUe, IEnumerable<string> turmas, bool alunoEspecificado, int[] modalidades, int semestre, IEnumerable<string> alunos, string seriesResumidas, int[] tipoEscolaIds , long? tipoCalendarioId, long? eventoId)
         {
             Titulo = titulo;
             Descricao = descricao;
@@ -16,13 +16,14 @@ namespace SME.SGP.Aplicacao
             CodigoDre = codigoDre;
             CodigoUe = codigoUe;
             Turmas = turmas;
-            AlunosEspecificados = alunosEspecificados;
+            AlunoEspecificado = alunoEspecificado;
             Modalidades = modalidades;
             Semestre = semestre;
             Alunos = alunos;
             SeriesResumidas = seriesResumidas;
             TipoCalendarioId = tipoCalendarioId;
             EventoId = eventoId;
+            TiposEscolas = tipoEscolaIds;
         }
 
         public string Titulo { get; set; }
@@ -33,8 +34,9 @@ namespace SME.SGP.Aplicacao
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         public IEnumerable<string> Turmas { get; set; }
-        public bool AlunosEspecificados { get; set; }
+        public bool AlunoEspecificado { get; set; }
         public int[] Modalidades { get; set; }
+        public int[] TiposEscolas { get; set; }
         public int Semestre { get; set; }
         public IEnumerable<string> Alunos { get; set; }
         public string SeriesResumidas { get; set; }
