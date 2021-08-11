@@ -186,6 +186,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new EventoBimestreMap());
                config.AddMap(new ConsolidacaoRegistroIndividualMediaMap());
                config.AddMap(new ComunicadoModalidadeMap());
+               config.AddMap(new ComunicadoTipoEscolaMap());
                config.AddMap(new ConsolidacaoAcompanhamentoAprendizagemAlunoMap());
                config.AddMap(new AvisoMap());
 

@@ -499,7 +499,8 @@ namespace SME.SGP.Dados.Repositorios
 	                                  temp.titulo,
 	                                  temp.data_envio as DataEnvio,
 	                                  temp.data_expiracao as DataExpiracao,
-	                                  temp.modalidade as modalidadeCodigo                                 
+	                                  temp.modalidade as modalidadeCodigo,                                 
+                                      temp.tipoEscola as tipoEscolaCodigo
                                  from comunicadoTempPaginado temp
                                 order by temp.data_envio desc ");
 
@@ -555,7 +556,10 @@ namespace SME.SGP.Dados.Repositorios
 	                                               c.data_expiracao,
 	                                               (select array_agg(modalidade) 
                                                       from comunicado_modalidade cm2 
-                                                     where cm2.comunicado_id = c.id) as Modalidade
+                                                     where cm2.comunicado_id = c.id) as Modalidade,
+                                                   (select array_agg(tipo_escola) 
+                                                      from comunicado_tipo_escola cte2 
+                                                     where cte2.comunicado_id = c.id) as TipoEscola
                                               from comunicado c 
                                              inner join comunicado_modalidade cm on cm.comunicado_id = c.id 
                                               left join comunicado_turma ct on ct.comunicado_id = c.id
@@ -607,7 +611,10 @@ namespace SME.SGP.Dados.Repositorios
 	                                               c.data_expiracao,
 	                                               (select array_agg(modalidade) 
                                                       from comunicado_modalidade cm2 
-                                                     where cm2.comunicado_id = c.id) as Modalidade
+                                                     where cm2.comunicado_id = c.id) as Modalidade,
+                                                   (select array_agg(tipo_escola) 
+                                                      from comunicado_tipo_escola cte2 
+                                                     where cte2.comunicado_id = c.id) as TipoEscola
                                               from comunicado c 
                                              inner join comunicado_modalidade cm on cm.comunicado_id = c.id 
                                               left join comunicado_turma ct on ct.comunicado_id = c.id

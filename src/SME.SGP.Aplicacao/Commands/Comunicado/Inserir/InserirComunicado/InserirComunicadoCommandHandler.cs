@@ -39,6 +39,8 @@ namespace SME.SGP.Aplicacao
 
                 await mediator.Send(new InserirComunicadoModalidadeCommand(comunicado));
 
+                await mediator.Send(new InserirComunicadoTipoEscolaCommand(comunicado));
+
                 if (comunicado.Turmas != null && comunicado.Turmas.Any())
                     await InserirComunicadoTurma(comunicado);
 
