@@ -58,10 +58,10 @@ namespace SME.SGP.Aplicacao
             if (comunicado.CodigoDre == TODAS && !comunicado.CodigoUe.Equals(TODAS))
                 throw new NegocioException("Não é possivel especificar uma escola quando o comunicado é para todas as DREs");
 
-            if (comunicado.CodigoUe == TODAS && comunicado.Turmas.Any())
+            if (comunicado.CodigoUe == TODAS && !comunicado.Turmas.Any(a => a == TODAS))
                 throw new NegocioException("Não é possivel especificar uma turma quando o comunicado é para todas as UEs");
 
-            if ((comunicado.Turmas == null || !comunicado.Turmas.Any()) && (comunicado.AlunoEspecificado || (comunicado.Alunos?.Any() ?? false)))
+            if ((comunicado.Turmas == null || comunicado.Turmas.Any(a => a == TODAS)) && (comunicado.AlunoEspecificado || (comunicado.Alunos?.Any() ?? false)))
                 throw new NegocioException("Não é possivel especificar alunos quando o comunicado é para todas as Turmas");
         }
 
