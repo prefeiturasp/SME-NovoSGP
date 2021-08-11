@@ -479,6 +479,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<ComunicadoListaPaginadaDto>> ListarComunicados(int anoLetivo, string dreCodigo, string ueCodigo, int[] modalidades, int semestre, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas, Paginacao paginacao)
         {
+            var tituloFormatado = "";
             var query = new StringBuilder(@"DROP TABLE IF EXISTS comunicadoTempPaginado;
                                             select distinct id,
                                                 titulo,
@@ -508,6 +509,10 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select count(distinct temp.id) from comunicadoTempPaginado temp");
 
+            if (!string.IsNullOrEmpty(titulo))            
+                tituloFormatado = $"%{titulo.ToUpperInvariant()}%";                
+           
+
             var retorno = new PaginacaoResultadoDto<ComunicadoListaPaginadaDto>();
 
             var parametros = new
@@ -523,7 +528,7 @@ namespace SME.SGP.Dados.Repositorios
                 dataEnvioFim,
                 dataExpiracaoInicio,
                 dataExpiracaoFim,
-                titulo,
+                tituloFormatado,
                 turmasCodigo,
                 anosEscolares,
                 tiposEscolas
@@ -582,10 +587,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and ue.tipo_escola = any(@tiposEscolas) ");
 
             if (!string.IsNullOrEmpty(titulo))
-            {
-                titulo = $"%{titulo.ToUpperInvariant()}%";
-                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @titulo) ");
-            }
+                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloFormatado) ");            
 
             if (dataEnvioInicio.HasValue && dataEnvioFim.HasValue)
                 query.AppendLine("and c.data_envio::date between @dataEnvioInicio::date and @dataEnvioFim::date ");
@@ -594,7 +596,6 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and c.data_expiracao::date between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
 
             return query.ToString();
-
         }
 
         private string MontaQueryListarComunicadosEja(string dreCodigo, string ueCodigo, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
@@ -635,11 +636,8 @@ namespace SME.SGP.Dados.Repositorios
             if (tiposEscolas != null && !tiposEscolas.Any(c => c == -99))
                 query.AppendLine("and ue.tipo_escola = any(@tiposEscolas) ");            
 
-            if (!string.IsNullOrEmpty(titulo))
-            {
-                titulo = $"%{titulo.ToUpperInvariant()}%";
-                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @titulo) ");
-            }
+            if (!string.IsNullOrEmpty(titulo))                            
+                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloFormatado) ");            
 
             if (dataEnvioInicio.HasValue && dataEnvioFim.HasValue)
                 query.AppendLine("and c.data_envio::date between @dataEnvioInicio::date and @dataEnvioFim::date ");
