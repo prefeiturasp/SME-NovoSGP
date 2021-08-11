@@ -479,15 +479,83 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<ComunicadoListaPaginadaDto>> ListarComunicados(int anoLetivo, string dreCodigo, string ueCodigo, int[] modalidades, int semestre, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas, Paginacao paginacao)
         {
+            var tituloFormatado = "";
+
             var query = new StringBuilder(@"DROP TABLE IF EXISTS comunicadoTempPaginado;
-                                            select distinct c.id,
+                                            select distinct id,
+                                                titulo,
+                                                data_envio,
+                                                data_expiracao,
+                                                modalidade
+                                              into temporary table comunicadoTempPaginado
+                                              from (");
+
+            query.AppendLine(MontaQueryListarComunicados(dreCodigo, ueCodigo, modalidades, dataEnvioInicio, dataEnvioFim, dataExpiracaoInicio, dataExpiracaoFim, titulo, turmasCodigo, anosEscolares, tiposEscolas));
+            query.AppendLine(" union ");
+            query.AppendLine(MontaQueryListarComunicadosEja(dreCodigo, ueCodigo, dataEnvioInicio, dataEnvioFim, dataExpiracaoInicio, dataExpiracaoFim, titulo, turmasCodigo, anosEscolares, tiposEscolas));
+            query.AppendLine(") tb1;");
+
+            query.AppendLine(@"select temp.id,
+	                                  temp.titulo,
+	                                  temp.data_envio as DataEnvio,
+	                                  temp.data_expiracao as DataExpiracao,
+	                                  temp.modalidade as modalidadeCodigo                                 
+                                 from comunicadoTempPaginado temp
+                                order by temp.data_envio desc ");
+
+            if (paginacao.QuantidadeRegistros > 0)
+                query.AppendLine($" OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY ");
+
+            query.AppendLine("; ");
+
+            query.AppendLine("select count(distinct temp.id) from comunicadoTempPaginado temp");
+
+            if (!string.IsNullOrEmpty(titulo))
+                tituloFormatado = $"%{titulo.ToUpperInvariant()}%";
+
+            var retorno = new PaginacaoResultadoDto<ComunicadoListaPaginadaDto>();
+
+            var parametros = new
+            {
+                paginacao.QuantidadeRegistrosIgnorados,
+                paginacao.QuantidadeRegistros,
+                anoLetivo,
+                dreCodigo,
+                ueCodigo,
+                modalidades,
+                semestre,
+                dataEnvioInicio,
+                dataEnvioFim,
+                dataExpiracaoInicio,
+                dataExpiracaoFim,
+                tituloFormatado,
+                turmasCodigo,
+                anosEscolares,
+                tiposEscolas
+            };
+
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), parametros))
+            {
+                retorno.Items = multi.Read<ComunicadoListaPaginadaDto>();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
+            }
+
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retorno;
+        }
+
+
+        private string MontaQueryListarComunicados(string dreCodigo, string ueCodigo, int[] modalidades, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
+        {
+            var query = new StringBuilder(@"select distinct c.id,
 	                                               c.titulo,
 	                                               c.data_envio,
 	                                               c.data_expiracao,
 	                                               (select array_agg(modalidade) 
                                                       from comunicado_modalidade cm2 
                                                      where cm2.comunicado_id = c.id) as Modalidade
-                                              into temporary table comunicadoTempPaginado
                                               from comunicado c 
                                              inner join comunicado_modalidade cm on cm.comunicado_id = c.id 
                                               left join comunicado_turma ct on ct.comunicado_id = c.id
@@ -507,10 +575,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and c.codigo_ue is null ");
 
             if (modalidades != null && !modalidades.Any(c => c == -99))
-                query.AppendLine("and cm.modalidade = any(@modalidades) ");
-
-            if (semestre > 0)
-                query.AppendLine("and t.semestre = @semestre ");
+                query.AppendLine("and cm.modalidade = any(@modalidades) ");           
 
             if (anosEscolares != null && !anosEscolares.Any(c => c == "-99"))
                 query.AppendLine("and t.ano = any(@anosEscolares) ");
@@ -522,10 +587,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and ue.tipo_escola = any(@tiposEscolas) ");
 
             if (!string.IsNullOrEmpty(titulo))
-            {
-                titulo = $"%{titulo.ToUpperInvariant()}%";
-                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @titulo) ");
-            }
+                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloFormatado) ");            
 
             if (dataEnvioInicio.HasValue && dataEnvioFim.HasValue)
                 query.AppendLine("and c.data_envio::date between @dataEnvioInicio::date and @dataEnvioFim::date ");
@@ -533,54 +595,58 @@ namespace SME.SGP.Dados.Repositorios
             if (dataExpiracaoInicio.HasValue && dataExpiracaoFim.HasValue)
                 query.AppendLine("and c.data_expiracao::date between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
 
-            query.AppendLine("order by c.data_envio desc; ");
+            return query.ToString();
 
-            query.AppendLine(@"select temp.id,
-	                                  temp.titulo,
-	                                  temp.data_envio as DataEnvio,
-	                                  temp.data_expiracao as DataExpiracao,
-	                                  temp.modalidade as modalidadeCodigo                                 
-                                 from comunicadoTempPaginado temp
-                                order by temp.data_envio desc ");
+        }
 
-            if (paginacao.QuantidadeRegistros > 0)
-                query.AppendLine($" OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY ");
+        private string MontaQueryListarComunicadosEja(string dreCodigo, string ueCodigo, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
+        {
+            var query = new StringBuilder(@"select distinct c.id,
+	                                               c.titulo,
+	                                               c.data_envio,
+	                                               c.data_expiracao,
+	                                               (select array_agg(modalidade) 
+                                                      from comunicado_modalidade cm2 
+                                                     where cm2.comunicado_id = c.id) as Modalidade
+                                              from comunicado c 
+                                             inner join comunicado_modalidade cm on cm.comunicado_id = c.id 
+                                              left join comunicado_turma ct on ct.comunicado_id = c.id
+                                              left join turma t on t.turma_id = ct.turma_codigo
+                                              left join ue on ue.ue_id = c.codigo_ue
+                                             where c.ano_letivo = @anoLetivo
+                                               and not c.excluido
+                                               and cm.modalidade = any(@modalidades)
+                                               and t.semestre = @semestre ");
 
-            query.AppendLine("; ");
+            if (!string.IsNullOrEmpty(dreCodigo) && dreCodigo != "-99")
+                query.AppendLine("and c.codigo_dre = @dreCodigo ");
+            else
+                query.AppendLine("and c.codigo_dre is null ");
 
-            query.AppendLine("select count(distinct temp.id) from comunicadoTempPaginado temp");
+            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
+                query.AppendLine("and c.codigo_ue = @ueCodigo ");
+            else
+                query.AppendLine("and c.codigo_ue is null ");            
 
-            var retorno = new PaginacaoResultadoDto<ComunicadoListaPaginadaDto>();
+            if (anosEscolares != null && !anosEscolares.Any(c => c == "-99"))
+                query.AppendLine("and t.ano = any(@anosEscolares) ");
 
-            var parametros = new
-            {
-                paginacao.QuantidadeRegistrosIgnorados,
-                paginacao.QuantidadeRegistros,
-                anoLetivo,
-                dreCodigo,
-                ueCodigo,
-                modalidades,
-                semestre,
-                dataEnvioInicio,
-                dataEnvioFim,
-                dataExpiracaoInicio,
-                dataExpiracaoFim,
-                titulo,
-                turmasCodigo,
-                anosEscolares,
-                tiposEscolas
-            };
+            if (turmasCodigo != null && !turmasCodigo.Any(c => c == "-99"))
+                query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
 
+            if (tiposEscolas != null && !tiposEscolas.Any(c => c == -99))
+                query.AppendLine("and ue.tipo_escola = any(@tiposEscolas) ");            
 
-            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), parametros))
-            {
-                retorno.Items = multi.Read<ComunicadoListaPaginadaDto>();
-                retorno.TotalRegistros = multi.ReadFirst<int>();
-            }
+            if (!string.IsNullOrEmpty(titulo))
+                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloFormatado) ");            
 
-            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+            if (dataEnvioInicio.HasValue && dataEnvioFim.HasValue)
+                query.AppendLine("and c.data_envio::date between @dataEnvioInicio::date and @dataEnvioFim::date ");
 
-            return retorno;
+            if (dataExpiracaoInicio.HasValue && dataExpiracaoFim.HasValue)
+                query.AppendLine("and c.data_expiracao::date between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
+
+            return query.ToString();
         }
 
         public async Task<IEnumerable<int>> ObterSemestresPorAnoLetivoModalidadeEUeCodigo(string login, Guid perfil, int modalidade, bool consideraHistorico, int anoLetivo, string ueCodigo)
