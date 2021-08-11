@@ -74,18 +74,19 @@ namespace SME.SGP.Aplicacao
         {
             comunicado.DataEnvio = request.DataEnvio;
             comunicado.DataExpiracao = request.DataExpiracao;
-            comunicado.AlunoEspecificado = request.AlunosEspecificados;
+            comunicado.AlunoEspecificado = request.AlunoEspecificado;
             comunicado.Descricao = request.Descricao;
             comunicado.Titulo = request.Titulo;
             comunicado.AnoLetivo = request.AnoLetivo;
             comunicado.SeriesResumidas = request.SeriesResumidas;
             comunicado.TipoCalendarioId = request.TipoCalendarioId;
             comunicado.EventoId = request.EventoId;
+            
 
-            if (!request.CodigoDre.Equals("todas"))
+            if (!request.CodigoDre.Equals("-99"))
                 comunicado.CodigoDre = request.CodigoDre;
 
-            if (!request.CodigoUe.Equals("todas"))
+            if (!request.CodigoUe.Equals("-99"))
                 comunicado.CodigoUe = request.CodigoUe;
 
             if (request.Turmas != null && request.Turmas.Any())
@@ -94,7 +95,10 @@ namespace SME.SGP.Aplicacao
             if (request.Modalidades.Any())
                 comunicado.Modalidades = request.Modalidades;
 
-            if (request.AlunosEspecificados)
+            if(request.TiposEscolas.Any())
+                comunicado.TiposEscolas = request.TiposEscolas;
+
+            if (request.AlunoEspecificado)
                 request.Alunos.ToList().ForEach(x => comunicado.AdicionarAluno(x));
 
             if (request.Semestre > 0)
