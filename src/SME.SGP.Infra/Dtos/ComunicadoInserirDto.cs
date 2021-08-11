@@ -9,6 +9,7 @@ namespace SME.SGP.Dto
         {
             Alunos = new List<string>();
             Turmas = new List<string>();
+            TipoEscolaIds = new List<int>();
         }
         public DateTime DataEnvio { get; set; }
         public DateTime? DataExpiracao { get; set; }
@@ -25,6 +26,7 @@ namespace SME.SGP.Dto
         public int Semestre { get; set; }
         public IEnumerable<string> Alunos { get; set; }
         public long? TipoCalendarioId { get; set; }
+        public IEnumerable<int> TipoEscolaIds { get; set; }
         public long? EventoId { get; set; }
     }
 
