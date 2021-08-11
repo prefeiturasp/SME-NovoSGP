@@ -5,7 +5,7 @@
         public string Ano { get; set; }
         public string Descricao
         {
-            get => $"{Ano}º ano";
+            get => Ano != "-99" ? $"{Ano}º ano" : "Todos";
         }
     }
 }

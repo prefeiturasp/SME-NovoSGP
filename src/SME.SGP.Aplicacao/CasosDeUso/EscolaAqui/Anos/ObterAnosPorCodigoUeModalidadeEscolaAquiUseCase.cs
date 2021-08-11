@@ -19,18 +19,24 @@ namespace SME.SGP.Aplicacao
             if (modalidades.Any(m => (Modalidade)m != Modalidade.Fundamental &&
                                      (Modalidade)m != Modalidade.Medio &&
                                      (Modalidade)m != Modalidade.EJA))
-            {                
-                 return new List<AnosPorCodigoUeModalidadeEscolaAquiResult>()
+            {
+                return new List<AnosPorCodigoUeModalidadeEscolaAquiResult>()
                 {
                     new AnosPorCodigoUeModalidadeEscolaAquiResult()
                     {
                         Ano = "-99",
                     }
-                };                
-            }               
+                };
+            }
 
-            return await mediator.Send(new ObterAnosPorCodigoUeModalidadeQuery(codigoUe, modalidades));
+            var anos = await mediator.Send(new ObterAnosPorCodigoUeModalidadeQuery(codigoUe, modalidades));
+            return anos.Any() ? anos :
+                new List<AnosPorCodigoUeModalidadeEscolaAquiResult>()
+                {
+                    new AnosPorCodigoUeModalidadeEscolaAquiResult() {
+                        Ano = "-99"
+                    }
+                };
         }
-            
     }
 }
