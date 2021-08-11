@@ -82,10 +82,10 @@ namespace SME.SGP.Aplicacao
             comunicado.TipoCalendarioId = request.TipoCalendarioId;
             comunicado.EventoId = request.EventoId;
 
-            if (!request.CodigoDre.Equals("todas"))
+            if (!request.CodigoDre.Equals("-99"))
                 comunicado.CodigoDre = request.CodigoDre;
 
-            if (!request.CodigoUe.Equals("todas"))
+            if (!request.CodigoUe.Equals("-99"))
                 comunicado.CodigoUe = request.CodigoUe;
 
             if (request.Turmas != null && request.Turmas.Any())
