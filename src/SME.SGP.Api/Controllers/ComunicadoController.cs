@@ -127,9 +127,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<DropdownTurmaRetornoDto>), 200)]
         [Permissao(Permissao.CO_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolares(int anoLetivo, string codigoUe, [FromQuery] int semestre, [FromQuery] int[] modalidades, [FromQuery] string[] anos, [FromServices] IObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresUseCase useCase)
+        public async Task<IActionResult> ObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolares(int anoLetivo, string codigoUe, [FromQuery] int semestre, [FromQuery] int[] modalidades, [FromQuery] string[] anos, [FromQuery] bool consideraHistorico, [FromServices] IObterTurmasPorAnoLetivoUeModalidadeSemestreEAnosEscolaresUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo, codigoUe, modalidades, semestre, anos));
+            return Ok(await useCase.Executar(anoLetivo, codigoUe, modalidades, semestre, anos, consideraHistorico));
         }
 
         [HttpGet("semestres/consideraHistorico/{consideraHistorico}")]
