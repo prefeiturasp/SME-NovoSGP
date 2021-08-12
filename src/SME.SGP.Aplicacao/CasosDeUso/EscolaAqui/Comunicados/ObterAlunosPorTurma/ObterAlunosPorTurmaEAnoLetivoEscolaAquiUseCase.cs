@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Executar(string codigoTurma, int anoLetivo)
         {
-            return await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(codigoTurma));
+            return await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(codigoTurma));
         }
     }
 }
