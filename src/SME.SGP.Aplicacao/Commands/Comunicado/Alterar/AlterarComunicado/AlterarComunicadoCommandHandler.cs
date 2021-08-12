@@ -53,6 +53,7 @@ namespace SME.SGP.Aplicacao
             comunicado.Descricao = request.Descricao;
             comunicado.Titulo = request.Titulo;
             comunicado.DataExpiracao = request.DataExpiracao;
+            comunicado.DataEnvio = request.DataEnvio;
             comunicado.TipoCalendarioId = request.TipoCalendarioId;
             comunicado.EventoId = request.EventoId;
         }
