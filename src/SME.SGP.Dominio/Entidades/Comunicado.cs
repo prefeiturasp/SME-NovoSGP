@@ -84,16 +84,16 @@ namespace SME.SGP.Dominio
             if (Turmas != null && Turmas.Any())
                 return TipoComunicado.TURMA;            
 
-            if (Modalidades != null && Modalidades.Length == 1 && CodigoUe != null && CodigoUe != "-99" && SeriesResumidas.Any())
+            if (Modalidades != null && Modalidades.Length == 1 && CodigoUe != null && CodigoUe != "-99" && !string.IsNullOrEmpty(SeriesResumidas))
                 return TipoComunicado.UEMOD;            
             
             if (Modalidades != null && Modalidades.Length == 1 && CodigoUe != null && CodigoUe != "-99")
                 return TipoComunicado.UEMOD;
 
-            if (CodigoDre == null && CodigoUe == null && SeriesResumidas.Any())
+            if (CodigoDre == null && CodigoUe == null && !string.IsNullOrEmpty(SeriesResumidas))
                 return TipoComunicado.SME_ANO;
 
-            if (!string.IsNullOrWhiteSpace(CodigoDre) && CodigoUe == null && SeriesResumidas.Any())
+            if (!string.IsNullOrWhiteSpace(CodigoDre) && CodigoUe == null && !string.IsNullOrEmpty(SeriesResumidas))
                 return TipoComunicado.DRE_ANO;
 
             if (!string.IsNullOrWhiteSpace(CodigoUe))

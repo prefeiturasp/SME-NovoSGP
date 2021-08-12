@@ -37,9 +37,11 @@ namespace SME.SGP.Aplicacao
 
                 var id = await repositorioComunicado.SalvarAsync(comunicado);
 
-                await mediator.Send(new InserirComunicadoModalidadeCommand(comunicado));
+                if(comunicado.Modalidades != null)
+                    await mediator.Send(new InserirComunicadoModalidadeCommand(comunicado));
 
-                await mediator.Send(new InserirComunicadoTipoEscolaCommand(comunicado));                
+                if (comunicado.TiposEscolas != null)
+                    await mediator.Send(new InserirComunicadoTipoEscolaCommand(comunicado));                
 
                 if (comunicado.Turmas != null && comunicado.Turmas.Any())
                 {
@@ -57,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
                 unitOfWork.Rollback();
                 throw;
@@ -95,16 +97,16 @@ namespace SME.SGP.Aplicacao
             if (!request.CodigoUe.Equals("-99"))
                 comunicado.CodigoUe = request.CodigoUe;
 
-            if (request.Turmas != null && request.Turmas.Any())
+            if (request.Turmas != null && request.Turmas.Any() && !request.Turmas.Any(a => a == "-99"))
                 request.Turmas.ToList().ForEach(x => comunicado.AdicionarTurma(x));
 
-            if (request.Modalidades.Any())
+            if (request.Modalidades.Any() && !request.Modalidades.Any(a => a == -99))
                 comunicado.Modalidades = request.Modalidades;
 
-            if(request.TiposEscolas.Any())
+            if(request.TiposEscolas.Any() && !request.TiposEscolas.Any(a => a == -99))
                 comunicado.TiposEscolas = request.TiposEscolas;
 
-            if (request.AnosEscolares.Any())
+            if (request.AnosEscolares.Any() && !request.AnosEscolares.Any(a => a == "-99"))
                 comunicado.AnosEscolares = request.AnosEscolares;
 
             if (request.AlunoEspecificado)

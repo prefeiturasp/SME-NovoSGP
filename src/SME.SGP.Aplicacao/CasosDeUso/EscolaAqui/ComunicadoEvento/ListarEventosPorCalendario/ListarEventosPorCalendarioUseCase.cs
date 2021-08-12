@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> Executar(ListarEventoPorCalendarioDto param)
+        public async Task<IEnumerable<EventoCalendarioRetornoDto>> Executar(ListarEventoPorCalendarioDto param)
             => await mediator.Send(new ListarEventosPorCalendarioQuery(param.TipoCalendario,
                                                                            param.AnoLetivo,
                                                                            param.CodigoDre,
