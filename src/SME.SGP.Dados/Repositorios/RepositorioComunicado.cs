@@ -486,7 +486,8 @@ namespace SME.SGP.Dados.Repositorios
                                                 titulo,
                                                 data_envio,
                                                 data_expiracao,
-                                                modalidade
+                                                modalidade,
+                                                tipoescola
                                               into temporary table comunicadoTempPaginado
                                               from (");
 
@@ -517,7 +518,7 @@ namespace SME.SGP.Dados.Repositorios
             var retorno = new PaginacaoResultadoDto<ComunicadoListaPaginadaDto>();
 
             var parametros = new
-            {
+            {   
                 paginacao.QuantidadeRegistrosIgnorados,
                 paginacao.QuantidadeRegistros,
                 anoLetivo,
