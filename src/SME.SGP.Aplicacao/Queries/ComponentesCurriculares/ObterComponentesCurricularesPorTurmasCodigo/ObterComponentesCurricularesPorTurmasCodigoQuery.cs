@@ -8,13 +8,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesPorTurmasCodigoQuery : IRequest<IEnumerable<DisciplinaDto>>
     {
-        public ObterComponentesCurricularesPorTurmasCodigoQuery(string[] turmasCodigo, Guid perfilAtual, string loginAtual, bool temEnsinoEspecial, int turnoParaComponentesCurriculares)
+        public ObterComponentesCurricularesPorTurmasCodigoQuery(string[] turmasCodigo, Guid perfilAtual, string loginAtual, bool temEnsinoEspecial, int turnoParaComponentesCurriculares, bool adicionarComponentesPlanejamento = true)
         {
             TurmasCodigo = turmasCodigo;
             PerfilAtual = perfilAtual;
             LoginAtual = loginAtual;
             TemEnsinoEspecial = temEnsinoEspecial;
             TurnoParaComponentesCurriculares = turnoParaComponentesCurriculares;
+            AdicionarComponentesPlanejamento = adicionarComponentesPlanejamento;
         }
 
         public string[] TurmasCodigo { get; set; }
@@ -24,5 +25,6 @@ namespace SME.SGP.Aplicacao
         public Modalidade? TurmaModalidade { get; set; }
         public int TurmaAno { get; set; }
         public int TurnoParaComponentesCurriculares { get; set; }
+        public bool AdicionarComponentesPlanejamento { get; set; }
     }
 }

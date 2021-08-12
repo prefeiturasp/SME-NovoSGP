@@ -49,9 +49,9 @@ namespace SME.SGP.Aplicacao
                     disciplinasCJ = await ObterDisciplinasCJRegencia(disciplinasCJ);
                 }
             }
-            disciplinas = await ObterDisciplinasTurmasEol(request);
+            disciplinas = await ObterDisciplinasTurmasEol(request, request.AdicionarComponentesPlanejamento);
 
-            if (disciplinas != null && disciplinas.Any(a => a.Regencia))
+            if (disciplinas != null && disciplinas.Any(a => a.Regencia) && request.AdicionarComponentesPlanejamento)
             {
                 var regencias = await repositorioComponenteCurricular.ObterComponentesCurricularesRegenciaPorAnoETurno(request.TurmaAno, request.TurnoParaComponentesCurriculares);
                 var novasDisciplinasSemRegencia = disciplinas.Where(a => !a.Regencia).ToList();
@@ -134,11 +134,11 @@ namespace SME.SGP.Aplicacao
         {
             return turmaEspecial && (regencia || new long[] { 218, 138, 1116 }.Contains(componenteCurricularCodigo));
         }
-        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasTurmasEol(ObterComponentesCurricularesPorTurmasCodigoQuery request)
+        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasTurmasEol(ObterComponentesCurricularesPorTurmasCodigoQuery request, bool adicionarComponentesPlanejamento)
         {
             var turmasCodigo = String.Join("&codigoTurmas=", request.TurmasCodigo);
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"v1/componentes-curriculares/turmas?codigoTurmas={turmasCodigo}");
+            var resposta = await httpClient.GetAsync($"v1/componentes-curriculares/turmas?codigoTurmas={turmasCodigo}&adicionarComponentesPlanejamento={adicionarComponentesPlanejamento}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
