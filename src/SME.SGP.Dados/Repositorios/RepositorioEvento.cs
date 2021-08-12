@@ -1106,7 +1106,7 @@ namespace SME.SGP.Dados.Repositorios
                 });
         }
 
-        public async Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario,
+        public async Task<IEnumerable<EventoCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario,
                                                                                                    int anoLetivo,
                                                                                                    string codigoDre,
                                                                                                    string codigoUe,
@@ -1135,7 +1135,7 @@ namespace SME.SGP.Dados.Repositorios
                 and tc.situacao
                 and tc.ano_letivo = @anoLetivo
             ";
-            return await database.Conexao.QueryAsync<ListarEventosPorCalendarioRetornoDto>(
+            return await database.Conexao.QueryAsync<EventoCalendarioRetornoDto>(
                 query,
                 new
                 {
@@ -1276,7 +1276,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<Evento>(query, new { eventoId });
         }
 
-        public async Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeEModalidades(long tipoCalendario,
+        public async Task<IEnumerable<EventoCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeEModalidades(long tipoCalendario,
                                                                                                                               int anoLetivo,
                                                                                                                               string dreCodigo,
                                                                                                                               string ueCodigo,
@@ -1284,7 +1284,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select e.Id As Id,
                                                    e.Nome as Nome,
-                                                   te.descricao as TipoEvento
+                                                   te.descricao as TipoEvento,
+                                                   e.data_inicio as DataInicio
                                               from evento e
 				                             inner join tipo_calendario tc on tc.id = e.tipo_calendario_id 	    
 					                         inner join evento_tipo te on te.id = e.tipo_evento_id 
@@ -1296,16 +1297,29 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(dreCodigo) && dreCodigo != "-99")
                 query.AppendLine("and e.dre_id = @dreCodigo ");
-            else
-                query.AppendLine("and e.dre_id is null ");
-
+            
             if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
                 query.AppendLine("and e.ue_id = @ueCodigo ");
-            else
-                query.AppendLine("and e.ue_id is null ");
-
+            
             if (modalidades != null && !modalidades.Any(c => c == -99))
                 query.AppendLine("and tc.modalidade = any(@modalidades) ");
+
+            query.AppendLine(@"union select e.Id As Id,
+                                                   e.Nome as Nome,
+                                                   te.descricao as TipoEvento,
+                                                   e.data_inicio as DataInicio
+                                              from evento e
+
+                                             inner
+                                              join tipo_calendario tc on tc.id = e.tipo_calendario_id
+
+                                        inner
+                                              join evento_tipo te on te.id = e.tipo_evento_id
+                                             where e.tipo_calendario_id = @tipoCalendario
+                                               and not e.excluido
+                                               and e.status = 1
+                                               and tc.situacao
+                                               and tc.ano_letivo = @anoLetivo and e.dre_id is null and e.ue_id is null");
 
 
             var parametros = new
@@ -1317,7 +1331,7 @@ namespace SME.SGP.Dados.Repositorios
                 modalidades
             };
 
-            return await database.Conexao.QueryAsync<ListarEventosPorCalendarioRetornoDto>(query.ToString(), parametros);
+            return await database.Conexao.QueryAsync<EventoCalendarioRetornoDto>(query.ToString(), parametros);
 
         }
     }
