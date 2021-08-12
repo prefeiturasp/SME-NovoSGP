@@ -59,6 +59,8 @@ namespace SME.SGP.Aplicacao
                         AlunoNome = alunos.FirstOrDefault(a => a.CodigoAluno.ToString() == aluno.AlunoCodigo)?.NomeAluno
                     });
                 }
+
+                comunicado.Alunos = comunicadosAlunos;
             }
                 
 
