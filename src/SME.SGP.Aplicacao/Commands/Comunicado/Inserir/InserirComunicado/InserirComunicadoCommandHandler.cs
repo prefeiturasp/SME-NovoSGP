@@ -37,9 +37,11 @@ namespace SME.SGP.Aplicacao
 
                 var id = await repositorioComunicado.SalvarAsync(comunicado);
 
-                await mediator.Send(new InserirComunicadoModalidadeCommand(comunicado));
+                if(comunicado.Modalidades != null)
+                    await mediator.Send(new InserirComunicadoModalidadeCommand(comunicado));
 
-                await mediator.Send(new InserirComunicadoTipoEscolaCommand(comunicado));                
+                if (comunicado.TiposEscolas != null)
+                    await mediator.Send(new InserirComunicadoTipoEscolaCommand(comunicado));                
 
                 if (comunicado.Turmas != null && comunicado.Turmas.Any())
                 {
@@ -57,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
                 unitOfWork.Rollback();
                 throw;
