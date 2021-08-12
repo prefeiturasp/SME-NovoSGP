@@ -200,6 +200,26 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString(), new { anoLetivo, modalidades });
         }
 
+        public async Task<IEnumerable<TipoCalendarioRetornoDto>> ListarPorAnoLetivoDescricaoEModalidades(int anoLetivo, string descricao, IEnumerable<int> modalidades)
+        {
+            var query = new StringBuilder(@"select tc.id,
+   		                                           tc.ano_letivo as AnoLetivo,   		  
+   		                                           tc.nome,
+   		                                           tc.ano_letivo ||' - '|| tc.nome as descricao,
+   		                                           tc.modalidade
+                                              from tipo_calendario tc
+                                             where not tc.excluido
+                                               and tc.ano_letivo = @anoLetivo ");
+
+            if (!string.IsNullOrEmpty(descricao))
+                query.AppendLine("and UPPER(ano_letivo ||' - '|| nome) like UPPER('%{descricao}%') ");
+
+            if (modalidades.Any() && !modalidades.Any(c => c == -99))
+                query.AppendLine("and modalidade = any(@modalidades)");
+
+            return await database.Conexao.QueryAsync<TipoCalendarioRetornoDto>(query.ToString(), new { anoLetivo, descricao, modalidades });
+        }
+
         public async Task<IEnumerable<TipoCalendarioBuscaDto>> ObterTiposCalendarioPorDescricaoAsync(string descricao)
         {
             string query = $@"select id, 

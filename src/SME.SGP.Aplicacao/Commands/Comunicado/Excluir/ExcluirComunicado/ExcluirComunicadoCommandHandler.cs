@@ -55,6 +55,10 @@ namespace SME.SGP.Aplicacao
 
                         await mediator.Send(new ExcluirComunicadoModalidadesCommand(comunicado.Id));
 
+                        await mediator.Send(new ExcluirComunicadoTipoEscolaCommand(comunicado.Id));
+
+                        await mediator.Send(new ExcluirComunicadoAnoEscolarCommand(comunicado.Id));
+
                         comunicado.MarcarExcluido();
 
                         await repositorioComunicado.SalvarAsync(comunicado);
@@ -64,7 +68,7 @@ namespace SME.SGP.Aplicacao
 
                     unitOfWork.PersistirTransacao();                    
                 }
-                catch
+                catch(Exception ex)
                 {
                     unitOfWork.Rollback();
                     throw;

@@ -25,6 +25,10 @@ namespace SME.SGP.Aplicacao
         {
             var comunicado = new Comunicado();
 
+            if (request.DataExpiracao.HasValue && request.DataExpiracao.Value < request.DataEnvio)
+                throw new NegocioException("A data de expiração deve ser maior ou igual a data de envio.");
+
+
             MapearParaEntidade(request, comunicado);
 
             try
@@ -35,8 +39,14 @@ namespace SME.SGP.Aplicacao
 
                 await mediator.Send(new InserirComunicadoModalidadeCommand(comunicado));
 
+                await mediator.Send(new InserirComunicadoTipoEscolaCommand(comunicado));                
+
                 if (comunicado.Turmas != null && comunicado.Turmas.Any())
+                {
+                    await mediator.Send(new InserirComunicadoAnoEscolarCommand(comunicado));
+
                     await InserirComunicadoTurma(comunicado);
+                }                   
 
                 if (comunicado.Alunos != null && comunicado.Alunos.Any())
                     await InserirComunicadoAluno(comunicado);
@@ -70,18 +80,19 @@ namespace SME.SGP.Aplicacao
         {
             comunicado.DataEnvio = request.DataEnvio;
             comunicado.DataExpiracao = request.DataExpiracao;
-            comunicado.AlunoEspecificado = request.AlunosEspecificados;
+            comunicado.AlunoEspecificado = request.AlunoEspecificado;
             comunicado.Descricao = request.Descricao;
             comunicado.Titulo = request.Titulo;
             comunicado.AnoLetivo = request.AnoLetivo;
             comunicado.SeriesResumidas = request.SeriesResumidas;
             comunicado.TipoCalendarioId = request.TipoCalendarioId;
             comunicado.EventoId = request.EventoId;
+            
 
-            if (!request.CodigoDre.Equals("todas"))
+            if (!request.CodigoDre.Equals("-99"))
                 comunicado.CodigoDre = request.CodigoDre;
 
-            if (!request.CodigoUe.Equals("todas"))
+            if (!request.CodigoUe.Equals("-99"))
                 comunicado.CodigoUe = request.CodigoUe;
 
             if (request.Turmas != null && request.Turmas.Any())
@@ -90,7 +101,13 @@ namespace SME.SGP.Aplicacao
             if (request.Modalidades.Any())
                 comunicado.Modalidades = request.Modalidades;
 
-            if (request.AlunosEspecificados)
+            if(request.TiposEscolas.Any())
+                comunicado.TiposEscolas = request.TiposEscolas;
+
+            if (request.AnosEscolares.Any())
+                comunicado.AnosEscolares = request.AnosEscolares;
+
+            if (request.AlunoEspecificado)
                 request.Alunos.ToList().ForEach(x => comunicado.AdicionarAluno(x));
 
             if (request.Semestre > 0)

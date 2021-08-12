@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioComunicadoTurma repositorioComunicadoTurma;
         private readonly IRepositorioEvento repositorioEvento;
-        private const string Todas = "todas";
+        private const string Todas = "-99";
 
         public ComandoComunicado(IRepositorioComunicado repositorio,
             IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar,            
@@ -197,7 +197,7 @@ namespace SME.SGP.Aplicacao
             if (comunicadoDto.CodigoUe.Equals(Todas) && comunicadoDto.Turmas.Any())
                 throw new NegocioException("Não é possivel especificar uma turma quando o comunicado é para todas as UEs");
 
-            if ((comunicadoDto.Turmas == null || !comunicadoDto.Turmas.Any()) && (comunicadoDto.AlunosEspecificados || (comunicadoDto.Alunos?.Any() ?? false)))
+            if ((comunicadoDto.Turmas == null || !comunicadoDto.Turmas.Any()) && (comunicadoDto.AlunoEspecificado || (comunicadoDto.Alunos?.Any() ?? false)))
                 throw new NegocioException("Não é possivel especificar alunos quando o comunicado é para todas as Turmas");
         }
 
@@ -254,17 +254,17 @@ namespace SME.SGP.Aplicacao
         {
             comunicado.DataEnvio = comunicadoDto.DataEnvio;
             comunicado.DataExpiracao = comunicadoDto.DataExpiracao;
-            comunicado.AlunoEspecificado = comunicadoDto.AlunosEspecificados;
+            comunicado.AlunoEspecificado = comunicadoDto.AlunoEspecificado;
             comunicado.Descricao = comunicadoDto.Descricao;
             comunicado.Titulo = comunicadoDto.Titulo;
             comunicado.AnoLetivo = comunicadoDto.AnoLetivo;
             comunicado.TipoCalendarioId = comunicadoDto.TipoCalendarioId;
             comunicado.EventoId = comunicadoDto.EventoId;
 
-            if (!comunicadoDto.CodigoDre.Equals("todas"))
+            if (!comunicadoDto.CodigoDre.Equals("-99"))
                 comunicado.CodigoDre = comunicadoDto.CodigoDre;
 
-            if (!comunicadoDto.CodigoUe.Equals("todas"))
+            if (!comunicadoDto.CodigoUe.Equals("-99"))
                 comunicado.CodigoUe = comunicadoDto.CodigoUe;
 
             if (comunicadoDto.Turmas != null && comunicadoDto.Turmas.Any())
@@ -273,7 +273,7 @@ namespace SME.SGP.Aplicacao
             if (comunicadoDto.Modalidades.Any())
                 comunicado.Modalidades = comunicadoDto.Modalidades;           
 
-            if (comunicadoDto.AlunosEspecificados)
+            if (comunicadoDto.AlunoEspecificado)
                 comunicadoDto.Alunos.ToList().ForEach(x => comunicado.AdicionarAluno(x));
 
             if (comunicadoDto.Semestre > 0)

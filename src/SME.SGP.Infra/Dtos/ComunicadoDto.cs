@@ -27,6 +27,7 @@ namespace SME.SGP.Dto
         public IEnumerable<ComunicadoAlunoDto> Alunos { get; set; }
         public long? TipoCalendarioId { get; set; }
         public long? EventoId { get; set; }
+        public string[] AnosEscolares { get; set; }
 
         public bool EmEdicao = true;
 
@@ -48,7 +49,8 @@ namespace SME.SGP.Dto
             Titulo = comunicado.Titulo,
             AlunoEspecificado = comunicado.AlunoEspecificado,
             TipoCalendarioId = comunicado.TipoCalendarioId,
-            EventoId = comunicado.EventoId
+            EventoId = comunicado.EventoId,
+            AnosEscolares = comunicado.AnosEscolares
         };
     }
 }

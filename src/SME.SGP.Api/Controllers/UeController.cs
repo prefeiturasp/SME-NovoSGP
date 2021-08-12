@@ -45,9 +45,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("dres/{dreCodigo}/ues/{ueCodigo}/tipos-escolas")]
         [ProducesResponseType(typeof(IEnumerable<TipoEscolaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
-        public async Task<IActionResult> ObterTipoEscolaPorDreEUe(string dreCodigo, string ueCodigo, [FromServices] IObterTipoEscolaPorDreEUeUseCase useCase)
+        public async Task<IActionResult> ObterTipoEscolaPorDreEUe(string dreCodigo, string ueCodigo, [FromQuery] int[] modalidades, [FromServices] IObterTipoEscolaPorDreEUeUseCase useCase)
         {
-            return Ok(await useCase.Executar(dreCodigo, ueCodigo));
+            return Ok(await useCase.Executar(dreCodigo, ueCodigo, modalidades));
         }
     }
 }

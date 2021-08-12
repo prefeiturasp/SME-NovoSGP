@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TipoEscolaDto>> Handle(ObterTipoEscolaPorDreEUeQuery request, CancellationToken cancellationToken)
         {
-            var tiposEscola = await repositorioTipoEscola.ObterTipoEscolaPorDreEUe(request.DreCodigo, request.UeCodigo);
+            var tiposEscola = await repositorioTipoEscola.ObterTipoEscolaPorDreEUe(request.DreCodigo, request.UeCodigo, request.Modalidades);
 
             return tiposEscola.OrderBy(c => c.CodTipoEscola);
         }            

@@ -8,14 +8,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SolicitarInclusaoComunicadoEscolaAquiUseCase : ISolicitarInclusaoComunicadoEscolaAquiUseCase
+    public class SolicitarInclusaoComunicadoEscolaAquiUseCase : AbstractUseCase, ISolicitarInclusaoComunicadoEscolaAquiUseCase
     {
-        private const string TODAS = "todas";
-        private readonly IMediator mediator;       
+        private const string TODAS = "-99";
 
-        public SolicitarInclusaoComunicadoEscolaAquiUseCase(IMediator mediator)
+        public SolicitarInclusaoComunicadoEscolaAquiUseCase(IMediator mediator) : base(mediator)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));            
         }
 
         public async Task<string> Executar(ComunicadoInserirDto comunicado)
@@ -36,20 +34,20 @@ namespace SME.SGP.Aplicacao
                                                                            comunicado.CodigoDre,
                                                                            comunicado.CodigoUe,
                                                                            comunicado.Turmas,
-                                                                           comunicado.AlunosEspecificados,
+                                                                           comunicado.AlunoEspecificado,
                                                                            comunicado.Modalidades,
                                                                            comunicado.Semestre,
                                                                            comunicado.Alunos,
                                                                            comunicado.SeriesResumidas,
+                                                                           comunicado.TiposEscolas,
+                                                                           comunicado.AnosEscolares,
                                                                            comunicado.TipoCalendarioId,
                                                                            comunicado.EventoId));
 
-            //TODO : Ajustar retorno quando refatorar a tela
+            if (!retorno)
+                throw new NegocioException("Erro ao criar o comunicado");
 
-            if(retorno)
-                return "Comunicado criado com sucesso!";
-            else
-                return "Erro ao criar o comunicado";
+            return "Comunicado criado com sucesso!";
         }
 
         private async Task ValidarInsercao(ComunicadoInserirDto comunicado)
@@ -61,10 +59,10 @@ namespace SME.SGP.Aplicacao
             if (comunicado.CodigoDre == TODAS && !comunicado.CodigoUe.Equals(TODAS))
                 throw new NegocioException("Não é possivel especificar uma escola quando o comunicado é para todas as DREs");
 
-            if (comunicado.CodigoUe == TODAS && comunicado.Turmas.Any())
+            if (comunicado.CodigoUe == TODAS && !comunicado.Turmas.Any(a => a == TODAS))
                 throw new NegocioException("Não é possivel especificar uma turma quando o comunicado é para todas as UEs");
 
-            if ((comunicado.Turmas == null || !comunicado.Turmas.Any()) && (comunicado.AlunosEspecificados || (comunicado.Alunos?.Any() ?? false)))
+            if ((comunicado.Turmas == null || comunicado.Turmas.Any(a => a == TODAS)) && (comunicado.AlunoEspecificado || (comunicado.Alunos?.Any() ?? false)))
                 throw new NegocioException("Não é possivel especificar alunos quando o comunicado é para todas as Turmas");
         }
 
@@ -88,7 +86,7 @@ namespace SME.SGP.Aplicacao
             var abrangenciaUes = await mediator.Send(new ObterAbrangenciaUesPorLoginEPerfilQuery(comunicado.CodigoDre, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
             var ue = abrangenciaUes.FirstOrDefault(x => x.Codigo.Equals(comunicado.CodigoUe));
-            
+
             if (ue == null)
                 throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a UE com codigo {comunicado.CodigoUe}");
 
@@ -97,7 +95,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task ValidarAbrangenciaDre(ComunicadoInserirDto comunicado, Usuario usuarioLogado)
-        {            
+        {
             var abrangenciaDres = await mediator.Send(new ObterAbrangenciaDresPorLoginEPerfilQuery(usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
             var dre = abrangenciaDres.FirstOrDefault(x => x.Codigo.Equals(comunicado.CodigoDre));
@@ -113,14 +111,14 @@ namespace SME.SGP.Aplicacao
                                         || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.Dre
                                         || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.SME;
 
-            
+
             foreach (var turma in comunicado.Turmas)
             {
-                var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaTurmaQuery(turma, usuarioLogado.Login, usuarioLogado.PerfilAtual, false, abrangenciaPermitida)); 
+                var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaTurmaQuery(turma, usuarioLogado.Login, usuarioLogado.PerfilAtual, false, abrangenciaPermitida));
 
                 if (abrangenciaTurmas == null)
                     throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a Turma com codigo {turma}");
             }
-        }        
+        }
     }
 }
