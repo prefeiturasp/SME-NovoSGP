@@ -40,6 +40,7 @@ namespace SME.SGP.Aplicacao
                                                                            comunicado.Alunos,
                                                                            comunicado.SeriesResumidas,
                                                                            comunicado.TiposEscolas,
+                                                                           comunicado.AnosEscolares,
                                                                            comunicado.TipoCalendarioId,
                                                                            comunicado.EventoId));
 

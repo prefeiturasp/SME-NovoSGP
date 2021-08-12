@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirComunicadoCommand : IRequest<bool>
     {
-        public InserirComunicadoCommand(string titulo, string descricao, DateTime dataEnvio, DateTime? dataExpiracao, int anoLetivo, string codigoDre, string codigoUe, IEnumerable<string> turmas, bool alunoEspecificado, int[] modalidades, int semestre, IEnumerable<string> alunos, string seriesResumidas, int[] tipoEscolaIds , long? tipoCalendarioId, long? eventoId)
+        public InserirComunicadoCommand(string titulo, string descricao, DateTime dataEnvio, DateTime? dataExpiracao, int anoLetivo, string codigoDre, string codigoUe, IEnumerable<string> turmas, bool alunoEspecificado, int[] modalidades, int semestre, IEnumerable<string> alunos, string seriesResumidas, int[] tipoEscolaIds , string[] anosEscolares, long? tipoCalendarioId, long? eventoId)
         {
             Titulo = titulo;
             Descricao = descricao;
@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
             TipoCalendarioId = tipoCalendarioId;
             EventoId = eventoId;
             TiposEscolas = tipoEscolaIds;
+            AnosEscolares = anosEscolares;
         }
 
         public string Titulo { get; set; }
@@ -37,6 +38,7 @@ namespace SME.SGP.Aplicacao
         public bool AlunoEspecificado { get; set; }
         public int[] Modalidades { get; set; }
         public int[] TiposEscolas { get; set; }
+        public string[] AnosEscolares { get; set; }
         public int Semestre { get; set; }
         public IEnumerable<string> Alunos { get; set; }
         public string SeriesResumidas { get; set; }

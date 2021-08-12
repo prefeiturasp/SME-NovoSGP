@@ -26,6 +26,7 @@ namespace SME.SGP.Dto
         public IEnumerable<string> Alunos { get; set; }
         public long? TipoCalendarioId { get; set; }
         public int[] TiposEscolas { get; set; }
+        public string[] AnosEscolares { get; set; }
         public long? EventoId { get; set; }
     }
 

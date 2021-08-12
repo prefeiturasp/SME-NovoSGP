@@ -27,6 +27,7 @@ namespace SME.SGP.Dominio
         public bool Excluido { get; set; }        
         public int[] Modalidades { get; set; }
         public int[] TiposEscolas { get; set; }
+        public string[] AnosEscolares { get; set; }
         public int? Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
         public IList<GrupoComunicacao> GruposComunicacao { get; set; }
