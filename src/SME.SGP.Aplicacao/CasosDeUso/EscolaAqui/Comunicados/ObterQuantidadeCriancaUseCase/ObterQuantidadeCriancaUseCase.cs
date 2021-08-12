@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
     {
         public ObterQuantidadeCriancaUseCase(IMediator mediator) : base(mediator) { }
 
-        public async Task<QuantidadeCriancaDto> Executar(int anoLetivo, string[] turma, string dreId, string ueId, int[] modalidade,string anoTurma)
+        public async Task<QuantidadeCriancaDto> Executar(int anoLetivo, string[] turma, string dreId, string ueId, int[] modalidade, string[] anoTurma)
         {
             var quantidade = await mediator.Send(new ObterQuantidadeCriancaQuery(anoLetivo,turma,dreId,ueId,modalidade,anoTurma));
 

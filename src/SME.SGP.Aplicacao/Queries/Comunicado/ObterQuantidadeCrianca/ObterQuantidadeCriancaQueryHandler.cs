@@ -42,10 +42,14 @@ namespace SME.SGP.Aplicacao
                     parametros += $"&modalidade={item}";
                 }
             }
-                
 
-            if (!string.IsNullOrEmpty(request.AnoTurma))
-                parametros += $"&ano={request.AnoTurma}";
+            if (request.AnoTurma != null && request.AnoTurma.Count() > 0)
+            {
+                foreach (var item in request.AnoTurma)
+                {
+                    parametros += $"&ano={item}";
+                }
+            }
 
             if (request.Turma !=null  && !request.Turma.Contains("-99"))
             {
