@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         [Route("tipo-pendencias")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        //[Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public IActionResult ObterTipoPendencias()
         {
             var situacoes = Enum.GetValues(typeof(TipoPendencia))
