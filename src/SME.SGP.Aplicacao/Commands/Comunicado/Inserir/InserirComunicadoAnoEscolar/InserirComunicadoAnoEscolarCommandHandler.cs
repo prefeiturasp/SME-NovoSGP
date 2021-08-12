@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioComunicadoAnoEscolar repositorioComunicadoAnoEscolar;
 
-        public InserirComunicadoAnoEscolarCommandHandler(IRepositorioComunicadoAnoEscolar repositorioComunicadoTipoEscola)
+        public InserirComunicadoAnoEscolarCommandHandler(IRepositorioComunicadoAnoEscolar repositorioComunicadoAnoEscolar)
         {
             this.repositorioComunicadoAnoEscolar = repositorioComunicadoAnoEscolar ?? throw new ArgumentNullException(nameof(repositorioComunicadoAnoEscolar));
         }
