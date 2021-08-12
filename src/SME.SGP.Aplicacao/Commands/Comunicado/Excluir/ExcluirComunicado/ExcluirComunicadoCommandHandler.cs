@@ -55,7 +55,9 @@ namespace SME.SGP.Aplicacao
 
                         await mediator.Send(new ExcluirComunicadoModalidadesCommand(comunicado.Id));
 
-                        await mediator.Send(new ExcluirComunicadoModalidadesCommand(comunicado.Id));
+                        await mediator.Send(new ExcluirComunicadoTipoEscolaCommand(comunicado.Id));
+
+                        await mediator.Send(new ExcluirComunicadoAnoEscolarCommand(comunicado.Id));
 
                         comunicado.MarcarExcluido();
 

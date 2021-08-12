@@ -41,6 +41,8 @@ namespace SME.SGP.Aplicacao
 
                 await mediator.Send(new InserirComunicadoTipoEscolaCommand(comunicado));
 
+                await mediator.Send(new InserirComunicadoAnoEscolarCommand(comunicado));
+
                 if (comunicado.Turmas != null && comunicado.Turmas.Any())
                     await InserirComunicadoTurma(comunicado);
 
@@ -99,6 +101,9 @@ namespace SME.SGP.Aplicacao
 
             if(request.TiposEscolas.Any())
                 comunicado.TiposEscolas = request.TiposEscolas;
+
+            if (request.AnosEscolares.Any())
+                comunicado.AnosEscolares = request.AnosEscolares;
 
             if (request.AlunoEspecificado)
                 request.Alunos.ToList().ForEach(x => comunicado.AdicionarAluno(x));
