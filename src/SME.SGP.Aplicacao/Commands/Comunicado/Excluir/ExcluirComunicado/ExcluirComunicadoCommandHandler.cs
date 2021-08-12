@@ -55,6 +55,8 @@ namespace SME.SGP.Aplicacao
 
                         await mediator.Send(new ExcluirComunicadoModalidadesCommand(comunicado.Id));
 
+                        await mediator.Send(new ExcluirComunicadoModalidadesCommand(comunicado.Id));
+
                         comunicado.MarcarExcluido();
 
                         await repositorioComunicado.SalvarAsync(comunicado);
