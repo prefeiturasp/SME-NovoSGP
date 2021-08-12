@@ -30,14 +30,14 @@ namespace SME.SGP.Dados.Repositorios
             var query = "update comunicado_ano_escolar set excluido=true WHERE comunicado_id = @id";
             return await database.Conexao.ExecuteAsync(query, new { id }) != 0;
         }
-        public async Task<IEnumerable<int>> ObterAnosEscolaresPorComunicadoId(long id)
+        public async Task<IEnumerable<string>> ObterAnosEscolaresPorComunicadoId(long id)
         {
             var sql = @"select ano_escolar 
                           from comunicado_ano_escolar cm
                          where cm.comunicado_id = @id
                            and not excluido";
             var parametros = new { id };
-            return await database.QueryAsync<int>(sql, parametros);
+            return await database.QueryAsync<string>(sql, parametros);
         }
     }
 }

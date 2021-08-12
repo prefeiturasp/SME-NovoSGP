@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioComunicadoModalidade repositorioComunicadoModalidade;
+        private readonly IRepositorioComunicadoAnoEscolar repositorioComunicadoAnoEscolar;
         private readonly IMediator mediator;
 
         public ObterComunicadoPorIdQueryHandler(
@@ -27,6 +28,7 @@ namespace SME.SGP.Aplicacao
             , IRepositorioComunicadoAluno repositorioComunicadoAluno
             , IConsultasAbrangencia consultasAbrangencia
             , IRepositorioComunicadoModalidade repositorioComunicadoModalidade
+            , IRepositorioComunicadoAnoEscolar repositorioComunicadoAnoEscolar
             , IMediator mediator)
         {
             this.repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
@@ -34,6 +36,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioComunicadoModalidade = repositorioComunicadoModalidade ?? throw new ArgumentNullException(nameof(repositorioComunicadoModalidade));
+            this.repositorioComunicadoAnoEscolar = repositorioComunicadoAnoEscolar ?? throw new ArgumentNullException(nameof(repositorioComunicadoAnoEscolar));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -65,6 +68,10 @@ namespace SME.SGP.Aplicacao
                 
 
             comunicado.Turmas = (await repositorioComunicadoTurma.ObterPorComunicado(comunicado.Id)).ToList();
+
+            var anosEscolares = (await repositorioComunicadoAnoEscolar.ObterAnosEscolaresPorComunicadoId(comunicado.Id)).ToArray();
+
+            comunicado.AnosEscolares = anosEscolares == null || !anosEscolares.Any() ? new string[] { "-99" } : anosEscolares;
 
             comunicado.Modalidades = (await repositorioComunicadoModalidade.ObterModalidadesPorComunicadoId(comunicado.Id)).ToArray();
 

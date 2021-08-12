@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<long> SalvarAsync(ComunicadoAnoEscolar comunicadoAnoEscolar);
         Task<bool> ExcluirPorIdComunicado(long id);
-        Task<IEnumerable<int>> ObterAnosEscolaresPorComunicadoId(long id);
+        Task<IEnumerable<string>> ObterAnosEscolaresPorComunicadoId(long id);
     }
 }
