@@ -25,7 +25,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("tipo-pendencias")]
+        [Route("tipos")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
