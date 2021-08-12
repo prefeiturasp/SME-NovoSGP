@@ -137,7 +137,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<PeriodoEscolarDto> BuscaPeriodo(Turma turma, int bimestre)
         {
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio, turma.Semestre);
 
             PeriodoEscolarDto periodo = null;
             // Eja possui 2 calendarios por ano
@@ -349,7 +349,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
 
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     idsComErroAoExcluir.Add(compensacaoExcluir.Id);
                     unitOfWork.Rollback();
