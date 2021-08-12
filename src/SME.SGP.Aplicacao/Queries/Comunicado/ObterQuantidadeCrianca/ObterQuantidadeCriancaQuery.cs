@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuantidadeCriancaQuery : IRequest<QuantidadeCriancaDto>
     {
-        public ObterQuantidadeCriancaQuery(int anoLetivo, string[] turma, string dreId, string ueId, int[] modalidade,string anoTurma)
+        public ObterQuantidadeCriancaQuery(int anoLetivo, string[] turma, string dreId, string ueId, int[] modalidade, string[] anoTurma)
         {
             AnoTurma = anoTurma;
             Turma = turma;
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public int AnoLetivo { get; set; }
-        public string AnoTurma { get; set; }
+        public string[] AnoTurma { get; set; }
         public string[] Turma { get; set; }
         public string DreId { get; set; }
         public string UeId { get; set; }

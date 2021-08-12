@@ -146,7 +146,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(QuantidadeCriancaDto), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuantidadeCrianca(int anoLetivo, string dreCodigo, string ueCodigo, [FromQuery] string[] turmas, [FromQuery] int[] modalidades, [FromQuery] string anoTurma, [FromServices] IObterQuantidadeCriancaUseCase useCase)
+        public async Task<IActionResult> ObterQuantidadeCrianca(int anoLetivo, string dreCodigo, string ueCodigo, [FromQuery] string[] turmas, [FromQuery] int[] modalidades, [FromQuery] string[] anoTurma, [FromServices] IObterQuantidadeCriancaUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo, turmas, dreCodigo, ueCodigo, modalidades, anoTurma));
         }
