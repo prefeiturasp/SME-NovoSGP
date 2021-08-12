@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ListarEventosPorCalendarioQuery : IRequest<IEnumerable<ListarEventosPorCalendarioRetornoDto>>
+    public class ListarEventosPorCalendarioQuery : IRequest<IEnumerable<EventoCalendarioRetornoDto>>
     {
         public ListarEventosPorCalendarioQuery(long tipoCalendario,
                                                int anoLetivo,

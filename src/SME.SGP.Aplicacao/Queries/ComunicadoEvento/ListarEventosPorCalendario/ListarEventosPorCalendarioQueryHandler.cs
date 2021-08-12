@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ListarEventosPorCalendarioQueryHandler : IRequestHandler<ListarEventosPorCalendarioQuery, IEnumerable<ListarEventosPorCalendarioRetornoDto>>
+    public class ListarEventosPorCalendarioQueryHandler : IRequestHandler<ListarEventosPorCalendarioQuery, IEnumerable<EventoCalendarioRetornoDto>>
     {
         private readonly IRepositorioEvento repositorioEvento;
 
@@ -18,11 +18,11 @@ namespace SME.SGP.Aplicacao
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
         }
 
-        public async Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> Handle(ListarEventosPorCalendarioQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventoCalendarioRetornoDto>> Handle(ListarEventosPorCalendarioQuery request, CancellationToken cancellationToken)
         {
             IEnumerable<int> modalidadesTipoCalendario;
 
-            if (request.Modalidades.Any(c => c == -99))
+            if (!request.Modalidades.Any(c => c == -99))
             {
                 modalidadesTipoCalendario = request.Modalidades;
             }

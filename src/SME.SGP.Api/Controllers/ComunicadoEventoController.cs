@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/comunicadoevento")]
+    [Route("api/v1/comunicados/eventos")]
     [Authorize("Bearer")]
     public class ComunicadoEventoController : ControllerBase
     {
-        [HttpPost("ListarPorCalendario")]
-        [ProducesResponseType(typeof(IEnumerable<ListarEventosPorCalendarioRetornoDto>), 200)]
-        [ProducesResponseType(typeof(IEnumerable<ListarEventosPorCalendarioRetornoDto>), 204)]
+        [HttpPost("")]
+        [ProducesResponseType(typeof(IEnumerable<EventoCalendarioRetornoDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<EventoCalendarioRetornoDto>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ListarEventosPorCalendario([FromBody] ListarEventoPorCalendarioDto filtro, [FromServices] IListarEventosPorCalendarioUseCase useCase)
         {
