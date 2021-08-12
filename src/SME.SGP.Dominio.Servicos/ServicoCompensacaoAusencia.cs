@@ -349,7 +349,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     idsComErroAoExcluir.Add(compensacaoExcluir.Id);
                     unitOfWork.Rollback();
