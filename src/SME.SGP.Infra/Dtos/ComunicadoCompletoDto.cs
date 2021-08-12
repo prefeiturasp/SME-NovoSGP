@@ -39,7 +39,8 @@ namespace SME.SGP.Dto
                  Titulo = comunicado.Titulo,
                  Turmas = comunicado.Turmas.Select(x => (ComunicadoTurmaDto)x),
                  TipoCalendarioId = comunicado.TipoCalendarioId,
-                 EventoId = comunicado.EventoId
+                 EventoId = comunicado.EventoId,
+                 AnosEscolares = comunicado.AnosEscolares
              };
         
     }
