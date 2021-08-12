@@ -70,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and ue.ue_id = @ueCodigo ");
 
             if (modalidades.Length > 0)
-                query.AppendLine(" and t.modalidade = any(@modalidades) ");
+                query.AppendLine(" and t.modalidade_codigo = any(@modalidades) ");
 
             return await database.Conexao.QueryAsync<TipoEscolaDto>(query.ToString(), new { dreCodigo, ueCodigo, modalidades });
         }
