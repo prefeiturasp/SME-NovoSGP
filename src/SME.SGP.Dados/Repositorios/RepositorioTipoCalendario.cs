@@ -62,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine($"and exists(select 0 from periodo_escolar p where tipo_calendario_id = t.id and {periodoReferencia})");
 
                 // 1/6/ano ou 1/7/ano dependendo do semestre
-                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
+                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
             }
 
             return await database.Conexao.QueryFirstOrDefaultAsync<TipoCalendario>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
@@ -186,7 +186,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine($"and exists(select 0 from periodo_escolar p where tipo_calendario_id = t.id and {periodoReferencia})");
 
                 // 1/6/ano ou 1/7/ano dependendo do semestre
-                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
+                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
             }
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
