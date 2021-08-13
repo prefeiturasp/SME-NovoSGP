@@ -33,6 +33,7 @@ namespace SME.SGP.Dto
                  Descricao = comunicado.Descricao,
                  AlunoEspecificado = comunicado.AlunoEspecificado,
                  Modalidades = comunicado.Modalidades,
+                 TiposEscolas = comunicado.TiposEscolas,
                  Id = comunicado.Id,
                  TipoComunicado = comunicado.TipoComunicado,
                  Semestre = comunicado.Semestre ?? default,

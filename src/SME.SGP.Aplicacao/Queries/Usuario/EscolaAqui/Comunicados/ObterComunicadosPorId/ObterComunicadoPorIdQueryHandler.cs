@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioComunicadoModalidade repositorioComunicadoModalidade;
         private readonly IRepositorioComunicadoAnoEscolar repositorioComunicadoAnoEscolar;
+        private readonly IRepositorioComunicadoTipoEscola repositorioComunicadoTipoEscola;
         private readonly IMediator mediator;
 
         public ObterComunicadoPorIdQueryHandler(
@@ -29,6 +30,7 @@ namespace SME.SGP.Aplicacao
             , IConsultasAbrangencia consultasAbrangencia
             , IRepositorioComunicadoModalidade repositorioComunicadoModalidade
             , IRepositorioComunicadoAnoEscolar repositorioComunicadoAnoEscolar
+            , IRepositorioComunicadoTipoEscola repositorioComunicadoTipoEscola
             , IMediator mediator)
         {
             this.repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
@@ -37,6 +39,7 @@ namespace SME.SGP.Aplicacao
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioComunicadoModalidade = repositorioComunicadoModalidade ?? throw new ArgumentNullException(nameof(repositorioComunicadoModalidade));
             this.repositorioComunicadoAnoEscolar = repositorioComunicadoAnoEscolar ?? throw new ArgumentNullException(nameof(repositorioComunicadoAnoEscolar));
+            this.repositorioComunicadoTipoEscola = repositorioComunicadoTipoEscola ?? throw new ArgumentNullException(nameof(repositorioComunicadoTipoEscola));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -76,6 +79,10 @@ namespace SME.SGP.Aplicacao
             comunicado.Modalidades = (await repositorioComunicadoModalidade.ObterModalidadesPorComunicadoId(comunicado.Id)).ToArray();
 
             comunicado.Modalidades = comunicado.Modalidades.Length == Enum.GetValues(typeof(Modalidade)).Length ? new int[] { -99 } : comunicado.Modalidades;
+
+            comunicado.TiposEscolas = (await repositorioComunicadoTipoEscola.ObterTiposEscolasPorComunicadoId(comunicado.Id)).ToArray();
+
+            comunicado.TiposEscolas = comunicado.TiposEscolas.Length == Enum.GetValues(typeof(TipoEscola)).Length ? new int[] { -99 } : comunicado.TiposEscolas;
 
             var dto = (ComunicadoCompletoDto)comunicado;
 

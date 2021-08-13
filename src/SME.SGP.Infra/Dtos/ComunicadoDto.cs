@@ -18,6 +18,7 @@ namespace SME.SGP.Dto
         public string Titulo { get; set; }
         public int AnoLetivo { get; set; }
         public int[] Modalidades { get; set; }
+        public int[] TiposEscolas { get; set; }
         public int Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
         public string CodigoDre { get; set; }
