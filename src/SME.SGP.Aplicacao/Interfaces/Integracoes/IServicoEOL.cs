@@ -131,5 +131,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<string>> DefinirTurmasRegulares(string[] codigosTurmas);
         Task<DadosTurmaEolDto> ObterDadosTurmaPorCodigo(string codigoTurma);
+        Task<AtribuicaoProfessorTurmaEOLDto> VerificaAtribuicaoProfessorTurma(string professorRf, string codigoTurma);
     }
 }
