@@ -18,9 +18,9 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<TipoCalendarioDto>> Executar(int anoLetivo, string modalidades)
+        public async Task<IEnumerable<TipoCalendarioDto>> Executar(int anoLetivo, string modalidades, int semestre)
         {
-            return (await mediator.Send(new ObterTiposCalendarioPorAnoLetivoModalidadeQuery(anoLetivo, modalidades)))
+            return (await mediator.Send(new ObterTiposCalendarioPorAnoLetivoModalidadeQuery(anoLetivo, modalidades, semestre)))
                 .Where(tc => tc.Situacao && !tc.Excluido)
                 .Select(t => new TipoCalendarioDto
                 {
