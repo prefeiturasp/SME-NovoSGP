@@ -3,23 +3,28 @@ using MediatR;
 using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery : IRequest<string[]>
     {
-        public ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(int anoLetivo, string codigoAluno, IEnumerable<TipoTurma> tiposTurmas, bool consideraHistorico = false)
+        public ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(int anoLetivo, string codigoAluno, IEnumerable<TipoTurma> tiposTurmas, bool? consideraHistorico = null)
         {
             AnoLetivo = anoLetivo;
             CodigoAluno = codigoAluno;
             TiposTurmas = tiposTurmas;
-            ConsideraHistorico = consideraHistorico;
+            ConsideraHistorico = VerificaConsideraHistorico(consideraHistorico);
         }
         public int AnoLetivo { get; set; }
         public string CodigoAluno { get; set; }
         public IEnumerable<TipoTurma> TiposTurmas { get; set; }
         public bool ConsideraHistorico { get; set; }
+
+        private bool VerificaConsideraHistorico(bool? consideraHistorico)
+        {
+            if (consideraHistorico == null || !consideraHistorico.HasValue) return AnoLetivo == DateTime.Today.Year;
+            else return consideraHistorico.Value;
+        }
     }
 
     public class ObterCodigoTurmaRegularPorAnoLetivoAlunoQueryValidator : AbstractValidator<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery>
