@@ -26,5 +26,6 @@ namespace SME.SGP.Dto
         public int? Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
         public string Modalidades { get; set; }
+        public string TiposEscolas { get; set; }
     }
 }

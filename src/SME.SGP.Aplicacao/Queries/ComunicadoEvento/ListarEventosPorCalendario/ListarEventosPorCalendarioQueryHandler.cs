@@ -31,9 +31,10 @@ namespace SME.SGP.Aplicacao
                 var modalidades = request.Modalidades.Select(m => (Modalidade)m);
 
                 modalidadesTipoCalendario = modalidades.Select(m => (int)m.ObterModalidadeTipoCalendario()).Distinct().ToArray();
-            }           
+            }
 
-            return await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeEModalidades(request.TipoCalendario, request.AnoLetivo, request.CodigoDre, request.CodigoUe, modalidadesTipoCalendario);
+            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeEModalidades(request.TipoCalendario, request.AnoLetivo, request.CodigoDre, request.CodigoUe, modalidadesTipoCalendario);
+            return eventos.OrderBy(e => e.DataInicio).ToList();
         }
     }
 }

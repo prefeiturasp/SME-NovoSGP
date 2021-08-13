@@ -26,6 +26,12 @@ namespace SME.SGP.Aplicacao
                         .Select(d => (int)d)
                         .ToArray();
 
+            if (comunicado.TiposEscolas.Any() && comunicado.TiposEscolas.Any(c => c == -99))
+                comunicado.TiposEscolas = Enum.GetValues(typeof(TipoEscola))
+                        .Cast<TipoEscola>()
+                        .Select(d => (int)d)
+                        .ToArray();
+
             var retorno = await mediator.Send(new InserirComunicadoCommand(comunicado.Titulo,
                                                                            comunicado.Descricao,
                                                                            comunicado.DataEnvio,
