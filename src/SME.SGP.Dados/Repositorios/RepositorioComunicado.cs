@@ -563,6 +563,7 @@ namespace SME.SGP.Dados.Repositorios
                                                      where cte2.comunicado_id = c.id) as TipoEscola
                                               from comunicado c 
                                              inner join comunicado_modalidade cm on cm.comunicado_id = c.id 
+                                             inner join comunicado_tipo_escola cte on cte.comunicado_id = c.id 
                                               left join comunicado_turma ct on ct.comunicado_id = c.id
                                               left join turma t on t.turma_id = ct.turma_codigo
                                               left join ue on ue.ue_id = c.codigo_ue
@@ -589,7 +590,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
 
             if (tiposEscolas != null && !tiposEscolas.Any(c => c == -99))
-                query.AppendLine("and ue.tipo_escola = any(@tiposEscolas) ");
+                query.AppendLine("and cte.tipo_escola = any(@tiposEscolas) ");
 
             if (!string.IsNullOrEmpty(titulo))
                 query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloFormatado) ");            
@@ -618,6 +619,7 @@ namespace SME.SGP.Dados.Repositorios
                                                      where cte2.comunicado_id = c.id) as TipoEscola
                                               from comunicado c 
                                              inner join comunicado_modalidade cm on cm.comunicado_id = c.id 
+                                             inner join comunicado_tipo_escola cte on cte.comunicado_id = c.id 
                                               left join comunicado_turma ct on ct.comunicado_id = c.id
                                               left join turma t on t.turma_id = ct.turma_codigo
                                               left join ue on ue.ue_id = c.codigo_ue
@@ -643,7 +645,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
 
             if (tiposEscolas != null && !tiposEscolas.Any(c => c == -99))
-                query.AppendLine("and ue.tipo_escola = any(@tiposEscolas) ");            
+                query.AppendLine("and cte.tipo_escola = any(@tiposEscolas) ");            
 
             if (!string.IsNullOrEmpty(titulo))
                 query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloFormatado) ");            

@@ -192,12 +192,21 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
         }
 
-        public async Task<IEnumerable<TipoCalendario>> ListarPorAnoLetivoEModalidades(int anoLetivo, int[] modalidades)
+        public async Task<IEnumerable<TipoCalendario>> ListarPorAnoLetivoEModalidades(int anoLetivo, int[] modalidades, int semestre = 0)
         {
             StringBuilder query = ObterQueryListarPorAnoLetivo();
-            query.AppendLine("and modalidade = any(@modalidades)");
+            query.AppendLine(" and modalidade = any(@modalidades) ");
 
-            return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString(), new { anoLetivo, modalidades });
+            DateTime dataReferencia = DateTime.MinValue;
+            if (semestre > 0)
+            {
+                var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
+                query.AppendLine($" and exists(select 0 from periodo_escolar p where tipo_calendario_id = tipo_calendario.id and {periodoReferencia}) ");
+
+                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
+            }
+
+            return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString(), new { anoLetivo, modalidades, dataReferencia  });
         }
 
         public async Task<IEnumerable<TipoCalendarioRetornoDto>> ListarPorAnoLetivoDescricaoEModalidades(int anoLetivo, string descricao, IEnumerable<int> modalidades)
