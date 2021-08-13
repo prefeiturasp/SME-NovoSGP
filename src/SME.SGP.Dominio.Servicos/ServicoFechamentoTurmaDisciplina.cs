@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using SME.Background.Core;
 using SME.SGP.Aplicacao;
@@ -220,7 +219,8 @@ namespace SME.SGP.Dominio.Servicos
 
             var ue = turmaFechamento.Ue;
 
-            PeriodoEscolar periodoEscolar = await ObterPeriodoEscolarFechamentoReabertura(tipoCalendario.Id, ue, entidadeDto.Bimestre);
+            var periodos = await ObterPeriodoEscolarFechamentoReabertura(tipoCalendario.Id, ue, entidadeDto.Bimestre);
+            PeriodoEscolar periodoEscolar = periodos.periodoEscolar;
             if (periodoEscolar == null)
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
 
@@ -230,9 +230,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // Valida Permissão do Professor na Turma/Disciplina            
             if (!turmaFechamento.EhTurmaEdFisicaOuItinerario() && !usuarioLogado.EhGestorEscolar())
-            {
-                await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim);
-            }
+                await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim, periodos.periodoFechamento);
 
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
 
@@ -242,9 +240,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (componenteSemNota && id > 0)
-            {
                 fechamentoAlunos = await AtualizaSinteseAlunos(id, periodoEscolar.PeriodoFim, disciplinaEOL);
-            }
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado);
 
@@ -526,7 +522,7 @@ namespace SME.SGP.Dominio.Servicos
             return mensagem.ToString();
         }
 
-        private async Task<PeriodoEscolar> ObterPeriodoEscolarFechamentoReabertura(long tipoCalendarioId, Ue ue, int bimestre)
+        private async Task<(PeriodoEscolar periodoEscolar, PeriodoDto periodoFechamento)> ObterPeriodoEscolarFechamentoReabertura(long tipoCalendarioId, Ue ue, int bimestre)
         {
             var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioDreEUe(tipoCalendarioId, ue.Dre, ue);
             var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestres.FirstOrDefault(x => x.Bimestre == bimestre);
@@ -542,11 +538,15 @@ namespace SME.SGP.Dominio.Servicos
                     if (fechamentoReabertura == null)
                         throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {bimestre}º Bimestre");
 
-                    return (await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId)).FirstOrDefault(a => a.Bimestre == bimestre);
+                    return ((await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId)).FirstOrDefault(a => a.Bimestre == bimestre)
+                        ,   new PeriodoDto(fechamentoReabertura.Inicio, fechamentoReabertura.Fim));
                 }
             }
 
-            return periodoFechamentoBimestre?.PeriodoEscolar;
+            return (periodoFechamentoBimestre?.PeriodoEscolar
+                , periodoFechamentoBimestre is null ? 
+                    null : 
+                    new PeriodoDto(periodoFechamentoBimestre.InicioDoFechamento.Value, periodoFechamentoBimestre.FinalDoFechamento.Value));
         }
 
         private EventoTipo ObterTipoEventoFechamentoBimestre()
@@ -557,12 +557,28 @@ namespace SME.SGP.Dominio.Servicos
             return tipoEvento;
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data)
+        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data, PeriodoDto periodoFechamento)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurma(codigoRf, turmaId, data))
+            if (!usuario.EhProfessorCj() && !await VerificarAtribuicao(codigoRf, turmaId, data, periodoFechamento))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
-        }        
+        }
+
+        private async Task<bool> VerificarAtribuicao(string codigoRf, string turmaId, DateTime data, PeriodoDto periodoFechamento)
+        {
+            var atribuicao = await servicoEOL.VerificaAtribuicaoProfessorTurma(codigoRf, turmaId);
+            if (atribuicao is null)
+                return false;
+
+            if (atribuicao.SemAtribuicaoNaData(data))
+            {
+                // Se o motivo for 34 então tem acesso até o final do fechamento
+                if (atribuicao.CodigoMotivoDisponibilizacao.Equals(34))
+                    return atribuicao.SemAtribuicaoNaData(periodoFechamento.Fim);
+            }
+
+            return true;
+        }
     }
 }

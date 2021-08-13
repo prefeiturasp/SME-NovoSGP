@@ -72,25 +72,15 @@ pipeline {
                         timeout(time: 24, unit: "HOURS") {
                             input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marlon_goncalves, bruno_alevato, robson_silva, luiz_araujo, rafael_losi'
                         }
-                        withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
-                            sh('cp $config '+"$home"+'/.kube/config')
-                            sh "kubectl rollout restart deployment/${deployment1} -n sme-novosgp"
-                            sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"
-                            sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"
-			    sh "kubectl rollout restart deployment/${deployment4} -n sme-novosgp"
-                            sh('rm -f '+"$home"+'/.kube/config')
-                        }
                     }
-                    else{
-                        withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
-                            sh('cp $config '+"$home"+'/.kube/config')
-                            sh 'kubectl rollout restart deployment/sme-api -n sme-novosgp'
-                            sh 'kubectl rollout restart deployment/sme-pedagogico-worker -n sme-novosgp'
-                            sh 'kubectl rollout restart deployment/sme-workerservice -n sme-novosgp'
-			    sh 'kubectl rollout restart deployment/sme-worker-rabbit -n sme-novosgp'
-                            sh('rm -f '+"$home"+'/.kube/config')
-                        }
-                    }
+					withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
+						sh('cp $config '+"$home"+'/.kube/config')
+						sh "kubectl rollout restart deployment/${deployment1} -n sme-novosgp"
+						sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"
+						sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"
+						sh "kubectl rollout restart deployment/${deployment4} -n sme-novosgp"
+						sh('rm -f '+"$home"+'/.kube/config')
+					}
                 }
             }           
         }
