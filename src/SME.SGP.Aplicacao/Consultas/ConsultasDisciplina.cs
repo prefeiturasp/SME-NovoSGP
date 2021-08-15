@@ -224,7 +224,7 @@ namespace SME.SGP.Aplicacao
             {
                 var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
                 
-                return MapearComponentes(componentesCurriculares.Where(x => x.Regencia && regencias.Any(c => c.CodigoComponenteCurricular == x.Codigo))).OrderBy(c => c.Nome);
+                return MapearComponentesComComponentesSgp(componentesCurriculares.Where(x => x.Regencia && regencias.Any(c => c.CodigoComponenteCurricular == x.Codigo)), regencias).OrderBy(c => c.Nome);
             }
         }
 
@@ -405,6 +405,24 @@ namespace SME.SGP.Aplicacao
                     Compartilhada = componenteCurricular.Compartilhada,
                     LancaNota = componenteCurricular.LancaNota,
                 };
+        }
+
+        private IEnumerable<DisciplinaResposta> MapearComponentesComComponentesSgp(IEnumerable<ComponenteCurricularEol> componentesCurriculares, IEnumerable<DisciplinaDto> componentesSgp)
+        {
+            foreach (var componenteCurricular in componentesCurriculares)
+            {
+                var componenteSgp = componentesSgp.FirstOrDefault(c => c.CodigoComponenteCurricular == componenteCurricular.Codigo);
+                yield return new DisciplinaResposta()
+                {
+                    CodigoComponenteCurricularPai = componenteCurricular.CodigoComponenteCurricularPai,
+                    CodigoComponenteCurricular = componenteCurricular.Codigo,
+                    Nome = componenteSgp != null ? componenteSgp.Nome : componenteCurricular.Descricao,
+                    Regencia = componenteCurricular.Regencia,
+                    TerritorioSaber = componenteCurricular.TerritorioSaber,
+                    Compartilhada = componenteCurricular.Compartilhada,
+                    LancaNota = componenteCurricular.LancaNota,
+                };
+            }
         }
 
         private DisciplinaResposta MapearDisciplinaResposta(DisciplinaDto disciplinaEol) => new DisciplinaResposta()
