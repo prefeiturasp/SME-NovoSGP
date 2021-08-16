@@ -82,8 +82,7 @@ namespace SME.SGP.Aplicacao
 
             comunicado.TiposEscolas = (await repositorioComunicadoTipoEscola.ObterTiposEscolasPorComunicadoId(comunicado.Id)).ToArray();
 
-            //Adicionado -1 para ignorar o tipo 0 na contagem
-            comunicado.TiposEscolas = comunicado.TiposEscolas.Length == Enum.GetValues(typeof(TipoEscola)).Length - 1 ? new int[] { -99 } : comunicado.TiposEscolas;
+            comunicado.TiposEscolas = comunicado.TiposEscolas.Length == Enum.GetValues(typeof(TipoEscola)).Length ? new int[] { -99 } : comunicado.TiposEscolas;
 
             var dto = (ComunicadoCompletoDto)comunicado;
 
