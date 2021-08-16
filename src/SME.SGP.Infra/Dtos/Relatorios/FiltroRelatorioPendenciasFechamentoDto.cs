@@ -16,7 +16,7 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public string UsuarioNome { get; set; }
         public string UsuarioRf { get; set; }
         public bool PendenciaResolvida { get; set; }
-        public string TipoPendencia { get; set; }
+        public int[] TipoPendenciaGrupo { get; set; }
 
     }
 }
