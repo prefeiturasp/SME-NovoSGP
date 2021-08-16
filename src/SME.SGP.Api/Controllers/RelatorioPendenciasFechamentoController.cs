@@ -30,46 +30,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public IActionResult ObterTipoPendencias([FromQuery] bool opcaoTodos)
+        public IActionResult ObterTipoPendencias([FromQuery] bool opcaoTodos, [FromServices] IRelatorioPendenciasFechamentoUseCase relatorioPendenciasFechamentoUseCase)
         {
-            var listaTipo = new List<FiltroBimestreDto>();
 
-            if (opcaoTodos)
-            {
-                var tipos = new FiltroBimestreDto();
-                tipos.Valor = (int)TipoPendenciaGrupo.Todos;
-                tipos.Descricao = TipoPendenciaGrupo.Todos.ObterNome();
-                listaTipo.Add(tipos);
-            }
-            var calendario = new FiltroBimestreDto()
-            {
-                Valor = (int)TipoPendenciaGrupo.Calendario,
-                Descricao = TipoPendenciaGrupo.Calendario.ObterNome()
-            };
-            listaTipo.Add(calendario);
-
-            var diarioClasse = new FiltroBimestreDto()
-            {
-                Valor = (int)TipoPendenciaGrupo.DiarioClasse,
-                Descricao = TipoPendenciaGrupo.DiarioClasse.ObterNome()
-            };
-            listaTipo.Add(diarioClasse);
-
-            var fechamento = new FiltroBimestreDto()
-            {
-                Valor = (int)TipoPendenciaGrupo.Fechamento,
-                Descricao = TipoPendenciaGrupo.Fechamento.ObterNome()
-            };
-            listaTipo.Add(fechamento);
-
-            var aee = new FiltroBimestreDto()
-            {
-                Valor = (int)TipoPendenciaGrupo.AEE,
-                Descricao = TipoPendenciaGrupo.AEE.ObterNome()
-            };
-            listaTipo.Add(aee);
-
-            return Ok(listaTipo);
+            return Ok(relatorioPendenciasFechamentoUseCase.ListarTodosTipos(opcaoTodos));
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
@@ -6,5 +8,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
     public interface IRelatorioPendenciasFechamentoUseCase
     {
         Task<bool> Executar(FiltroRelatorioPendenciasFechamentoDto filtroRelatorioPendenciasFechamentoDto);
+        List<FiltroBimestreDto> ListarTodosTipos(bool opcaoTodos);
     }
 }
