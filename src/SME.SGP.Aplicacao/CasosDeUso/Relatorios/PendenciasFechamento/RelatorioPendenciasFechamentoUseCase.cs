@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
@@ -29,6 +30,48 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             filtroRelatorioPendenciasFechamentoDto.UsuarioRf = usuarioLogado.CodigoRf;
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FechamentoPendencias, filtroRelatorioPendenciasFechamentoDto, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPendencias));
+        }
+
+        public List<FiltroBimestreDto> ListarTodosTipos(bool opcaoTodos)
+        {
+            var listaTipo = new List<FiltroBimestreDto>();
+
+            if (opcaoTodos)
+            {
+                var tipos = new FiltroBimestreDto();
+                tipos.Valor = (int)TipoPendenciaGrupo.Todos;
+                tipos.Descricao = TipoPendenciaGrupo.Todos.ObterNome();
+                listaTipo.Add(tipos);
+            }
+            var calendario = new FiltroBimestreDto()
+            {
+                Valor = (int)TipoPendenciaGrupo.Calendario,
+                Descricao = TipoPendenciaGrupo.Calendario.ObterNome()
+            };
+            listaTipo.Add(calendario);
+
+            var diarioClasse = new FiltroBimestreDto()
+            {
+                Valor = (int)TipoPendenciaGrupo.DiarioClasse,
+                Descricao = TipoPendenciaGrupo.DiarioClasse.ObterNome()
+            };
+            listaTipo.Add(diarioClasse);
+
+            var fechamento = new FiltroBimestreDto()
+            {
+                Valor = (int)TipoPendenciaGrupo.Fechamento,
+                Descricao = TipoPendenciaGrupo.Fechamento.ObterNome()
+            };
+            listaTipo.Add(fechamento);
+
+            var aee = new FiltroBimestreDto()
+            {
+                Valor = (int)TipoPendenciaGrupo.AEE,
+                Descricao = TipoPendenciaGrupo.AEE.ObterNome()
+            };
+            listaTipo.Add(aee);
+
+            return listaTipo;
         }
     }
 }

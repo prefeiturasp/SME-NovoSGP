@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,14 +30,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public IActionResult ObterTipoPendencias()
+        public IActionResult ObterTipoPendencias([FromQuery] bool opcaoTodos, [FromServices] IRelatorioPendenciasFechamentoUseCase relatorioPendenciasFechamentoUseCase)
         {
-            var tipos = Enum.GetValues(typeof(TipoPendenciaGrupo))
-                        .Cast<TipoPendenciaGrupo>()
-                        .Select(d => new { codigo = (int)d, descricao = d.Name() })
-                        .ToList();
 
-            return Ok(tipos);
+            return Ok(relatorioPendenciasFechamentoUseCase.ListarTodosTipos(opcaoTodos));
         }
     }
 }
