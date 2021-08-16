@@ -15,5 +15,7 @@ namespace SME.SGP.Dominio
         
         [Display(Name = "AEE")]
         AEE = 4,
+        [Display(Name = "Todos")]
+        Todos = -99,
     }
 }
