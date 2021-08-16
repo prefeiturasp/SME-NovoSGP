@@ -15,5 +15,8 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public int? Semestre { get; set; }
         public string UsuarioNome { get; set; }
         public string UsuarioRf { get; set; }
+        public bool PendenciaResolvida { get; set; }
+        public int[] TipoPendenciaGrupo { get; set; }
+
     }
 }

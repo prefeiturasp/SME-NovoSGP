@@ -31,10 +31,11 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public IActionResult ObterTipoPendencias()
         {
-            var tipos = Enum.GetValues(typeof(TipoPendencia))
-                        .Cast<TipoPendencia>()
-                        .Select(d => new { codigo = (int)d, descricao = d.Name(), grupo = d.GroupName() })
+            var tipos = Enum.GetValues(typeof(TipoPendenciaGrupo))
+                        .Cast<TipoPendenciaGrupo>()
+                        .Select(d => new { codigo = (int)d, descricao = d.Name() })
                         .ToList();
+
             return Ok(tipos);
         }
     }
