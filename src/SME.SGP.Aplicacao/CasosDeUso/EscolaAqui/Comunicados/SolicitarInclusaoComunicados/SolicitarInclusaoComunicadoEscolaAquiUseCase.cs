@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
             if (ue == null)
                 throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a UE com codigo {comunicado.CodigoUe}");
 
-            if (comunicado.Turmas != null && comunicado.Turmas.Any())
+            if (comunicado.Turmas != null && comunicado.Turmas.Any() && !comunicado.Turmas.Any(a => a == TODAS))
                 await ValidarAbrangenciaTurma(comunicado, usuarioLogado);
         }
 
