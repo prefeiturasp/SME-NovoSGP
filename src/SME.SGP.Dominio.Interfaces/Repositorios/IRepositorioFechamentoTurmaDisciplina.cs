@@ -1,6 +1,7 @@
-﻿using SME.SGP.Infra;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.DashboardFechamento;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -18,5 +19,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosComSituacaoEmProcessamentoPorAnoLetivo(int anoLetivo);
         Task<bool> AtualizarSituacaoFechamento(long fechamentoTurmaDisciplinaId, int situacaoFechamento);
         Task<IEnumerable<int>> ObterDisciplinaIdsPorTurmaIdBimestre(long turmaId, int bimestre);
+        Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamento(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);
     }
 }
