@@ -104,9 +104,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{anoLetivo}/autocomplete/{dreId}")]
         [ProducesResponseType(typeof(IEnumerable<ProfessorResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor)
+        public async Task<IActionResult> ResumoAutoComplete(int anoLetivo, string dreId, string ueId,string nomeProfessor)
         {
-            var retorno = await consultasProfessor.ObterResumoAutoComplete(anoLetivo, dreId, nomeProfessor);
+            var retorno = await consultasProfessor.ObterResumoAutoComplete(anoLetivo, dreId, ueId,nomeProfessor);
 
             return Ok(retorno);
         }
