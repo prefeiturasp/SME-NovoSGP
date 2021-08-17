@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
-using Sentry;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System.Text;
@@ -10,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class PublicarFilaGoogleClassroomCommandHandler : IRequestHandler<PublicarFilaGoogleClassroomCommand, bool>
+    public class PublicarFilaSerapEstudantesCommandHandler : IRequestHandler<PublicarFilaSerapEstudantesCommand, bool>
     {
         private readonly ConfiguracaoRabbitOptions configuracaoRabbitOptions;
 
-        public PublicarFilaGoogleClassroomCommandHandler(ConfiguracaoRabbitOptions configuracaoRabbitOptions)
+        public PublicarFilaSerapEstudantesCommandHandler(ConfiguracaoRabbitOptions configuracaoRabbitOptions)
         {
             this.configuracaoRabbitOptions = configuracaoRabbitOptions ?? throw new System.ArgumentNullException(nameof(configuracaoRabbitOptions));
         }
 
-        public Task<bool> Handle(PublicarFilaGoogleClassroomCommand request, CancellationToken cancellationToken)
+        public Task<bool> Handle(PublicarFilaSerapEstudantesCommand request, CancellationToken cancellationToken)
         {
             var factory = new ConnectionFactory
             {
@@ -40,14 +39,14 @@ namespace SME.SGP.Aplicacao
 
                     byte[] body = FormataBodyWorker(request);
 
-                    _channel.BasicPublish(RotasRabbitSgpGoogleClassroomApi.ExchangeGoogleSync, request.Fila, null, body);
+                    _channel.BasicPublish(RotasRabbitSerapEstudantes.ExchangeSerapEstudantes, request.Fila, null, body);
                 }
             }
 
             return Task.FromResult(true);
         }
 
-        private static byte[] FormataBodyWorker(PublicarFilaGoogleClassroomCommand request)
+        private static byte[] FormataBodyWorker(PublicarFilaSerapEstudantesCommand request)
         {
             var mensagem = new MensagemRabbit(request.Mensagem);
             var mensagemJson = JsonConvert.SerializeObject(mensagem);
