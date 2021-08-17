@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IObterTipoEscolaPorDreEUeUseCase
     {
-        Task<IEnumerable<TipoEscolaDto>> Executar(string dreCodigo, string ueCodigo);
+        Task<IEnumerable<TipoEscolaDto>> Executar(string dreCodigo, string ueCodigo, int[] modalidades);
     }
 }

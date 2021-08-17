@@ -33,13 +33,15 @@ namespace SME.SGP.Dto
                  Descricao = comunicado.Descricao,
                  AlunoEspecificado = comunicado.AlunoEspecificado,
                  Modalidades = comunicado.Modalidades,
+                 TiposEscolas = comunicado.TiposEscolas,
                  Id = comunicado.Id,
                  TipoComunicado = comunicado.TipoComunicado,
                  Semestre = comunicado.Semestre ?? default,
                  Titulo = comunicado.Titulo,
                  Turmas = comunicado.Turmas.Select(x => (ComunicadoTurmaDto)x),
                  TipoCalendarioId = comunicado.TipoCalendarioId,
-                 EventoId = comunicado.EventoId
+                 EventoId = comunicado.EventoId,
+                 AnosEscolares = comunicado.AnosEscolares
              };
         
     }

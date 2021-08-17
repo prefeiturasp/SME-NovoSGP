@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
 using SME.SGP.Dto;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/comunicado")]
+    [Route("api/v1/comunicados")]
     [Authorize("Bearer")]
     public class ComunicadoController : ControllerBase
     {
@@ -134,10 +135,20 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("semestres/consideraHistorico/{consideraHistorico}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(IEnumerable<int>), 200)]        
+        [ProducesResponseType(typeof(IEnumerable<int>), 200)]
         public async Task<IActionResult> ObterSemestres(bool consideraHistorico, [FromQuery] int modalidade, [FromQuery] int anoLetivo, [FromQuery] string ueCodigo, [FromServices] IObterSemestresPorAnoLetivoModalidadeEUeCodigoUseCase useCase)
         {
-            return Ok(await useCase.Executar(consideraHistorico, modalidade, anoLetivo, ueCodigo));            
+            return Ok(await useCase.Executar(consideraHistorico, modalidade, anoLetivo, ueCodigo));
+        }
+
+        [HttpGet("filtro/anos-letivos/{anoLetivo}/dres/{dreCodigo}/ues/{ueCodigo}/quantidade-alunos")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(QuantidadeCriancaDto), 200)]
+        [Permissao(Permissao.DF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuantidadeCrianca(int anoLetivo, string dreCodigo, string ueCodigo, [FromQuery] string[] turmas, [FromQuery] int[] modalidades, [FromQuery] string[] anoTurma, [FromServices] IObterQuantidadeCriancaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo, turmas, dreCodigo, ueCodigo, modalidades, anoTurma));
         }
     }
 }

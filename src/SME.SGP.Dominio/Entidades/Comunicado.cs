@@ -26,6 +26,8 @@ namespace SME.SGP.Dominio
         public string Descricao { get; set; }
         public bool Excluido { get; set; }        
         public int[] Modalidades { get; set; }
+        public int[] TiposEscolas { get; set; }
+        public string[] AnosEscolares { get; set; }
         public int? Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
         public IList<GrupoComunicacao> GruposComunicacao { get; set; }
@@ -34,8 +36,7 @@ namespace SME.SGP.Dominio
         public string Titulo { get; set; }
         public string SeriesResumidas { get; set; }
         public long? TipoCalendarioId { get; set; }
-        public long? EventoId { get; set; }        
-
+        public long? EventoId { get; set; }
         public void AdicionarAluno(ComunicadoAluno aluno)
         {
             if (Id > 0)
@@ -83,16 +84,16 @@ namespace SME.SGP.Dominio
             if (Turmas != null && Turmas.Any())
                 return TipoComunicado.TURMA;            
 
-            if (Modalidades != null && Modalidades.Length == 1 && CodigoUe != null && CodigoUe != "todas" && SeriesResumidas.Any())
+            if (Modalidades != null && Modalidades.Length == 1 && CodigoUe != null && CodigoUe != "-99" && !string.IsNullOrEmpty(SeriesResumidas))
                 return TipoComunicado.UEMOD;            
             
-            if (Modalidades != null && Modalidades.Length == 1 && CodigoUe != null && CodigoUe != "todas")
+            if (Modalidades != null && Modalidades.Length == 1 && CodigoUe != null && CodigoUe != "-99")
                 return TipoComunicado.UEMOD;
 
-            if (CodigoDre == null && CodigoUe == null && SeriesResumidas.Any())
+            if (CodigoDre == null && CodigoUe == null && !string.IsNullOrEmpty(SeriesResumidas))
                 return TipoComunicado.SME_ANO;
 
-            if (!string.IsNullOrWhiteSpace(CodigoDre) && CodigoUe == null && SeriesResumidas.Any())
+            if (!string.IsNullOrWhiteSpace(CodigoDre) && CodigoUe == null && !string.IsNullOrEmpty(SeriesResumidas))
                 return TipoComunicado.DRE_ANO;
 
             if (!string.IsNullOrWhiteSpace(CodigoUe))

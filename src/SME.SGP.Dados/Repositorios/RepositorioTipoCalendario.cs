@@ -192,12 +192,41 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
         }
 
-        public async Task<IEnumerable<TipoCalendario>> ListarPorAnoLetivoEModalidades(int anoLetivo, int[] modalidades)
+        public async Task<IEnumerable<TipoCalendario>> ListarPorAnoLetivoEModalidades(int anoLetivo, int[] modalidades, int semestre = 0)
         {
             StringBuilder query = ObterQueryListarPorAnoLetivo();
-            query.AppendLine("and modalidade = any(@modalidades)");
+            query.AppendLine(" and modalidade = any(@modalidades) ");
 
-            return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString(), new { anoLetivo, modalidades });
+            DateTime dataReferencia = DateTime.MinValue;
+            if (semestre > 0)
+            {
+                var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
+                query.AppendLine($" and exists(select 0 from periodo_escolar p where tipo_calendario_id = tipo_calendario.id and {periodoReferencia}) ");
+
+                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
+            }
+
+            return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString(), new { anoLetivo, modalidades, dataReferencia  });
+        }
+
+        public async Task<IEnumerable<TipoCalendarioRetornoDto>> ListarPorAnoLetivoDescricaoEModalidades(int anoLetivo, string descricao, IEnumerable<int> modalidades)
+        {
+            var query = new StringBuilder(@"select tc.id,
+   		                                           tc.ano_letivo as AnoLetivo,   		  
+   		                                           tc.nome,
+   		                                           tc.ano_letivo ||' - '|| tc.nome as descricao,
+   		                                           tc.modalidade
+                                              from tipo_calendario tc
+                                             where not tc.excluido
+                                               and tc.ano_letivo = @anoLetivo ");
+
+            if (!string.IsNullOrEmpty(descricao))
+                query.AppendLine("and UPPER(ano_letivo ||' - '|| nome) like UPPER('%{descricao}%') ");
+
+            if (modalidades.Any() && !modalidades.Any(c => c == -99))
+                query.AppendLine("and modalidade = any(@modalidades)");
+
+            return await database.Conexao.QueryAsync<TipoCalendarioRetornoDto>(query.ToString(), new { anoLetivo, descricao, modalidades });
         }
 
         public async Task<IEnumerable<TipoCalendarioBuscaDto>> ObterTiposCalendarioPorDescricaoAsync(string descricao)

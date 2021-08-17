@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
         public DateTime DataEnvio { get; set; }
         public DateTime DataExpiracao { get; set; }
         public int[] ModalidadeCodigo { get; set; }
+        public int[] TipoEscolaCodigo { get; set; }
         public List<Modalidade> Modalidades
         {
             get => ModalidadeCodigo.Length > 0 
@@ -20,10 +21,10 @@ namespace SME.SGP.Infra
                 :
                 default;
         }       
-        
+
         public string Modalidade
         {
             get => string.Join(", ", Modalidades.Select(c => c.ShortName()));
-        }
+        }        
     }
 }

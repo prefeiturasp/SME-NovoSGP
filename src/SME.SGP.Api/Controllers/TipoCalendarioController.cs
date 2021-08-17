@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,7 +96,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TCE_C, Permissao.PFA_C, Permissao.PFR_C, Permissao.CO_C, Policy = "Bearer")]
-        public async Task<IActionResult> BuscarPorDescricao([FromQuery]string descricao, [FromServices] IBuscarTiposCalendarioPorDescricaoUseCase buscarTiposCalendarioPorDescricaoUseCase)
+        public async Task<IActionResult> BuscarPorDescricao([FromQuery] string descricao, [FromServices] IBuscarTiposCalendarioPorDescricaoUseCase buscarTiposCalendarioPorDescricaoUseCase)
         {
             return Ok(await buscarTiposCalendarioPorDescricaoUseCase.Executar(descricao));
         }
@@ -105,9 +105,17 @@ namespace SME.SGP.Api.Controllers
         [Route("ano-letivo/{anoLetivo}/modalidade/{modalidades}")]
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> BuscarPorAnoLetivoModalidade(int anoLetivo, string modalidades, [FromServices] IObterTiposCalendarioPorAnoLetivoModalidadeUseCase obterTiposCalendarioPorAnoLetivoModalidadeoUseCase)
+        public async Task<IActionResult> BuscarPorAnoLetivoModalidade(int anoLetivo, string modalidades, [FromQuery] int semestre,[FromServices] IObterTiposCalendarioPorAnoLetivoModalidadeUseCase obterTiposCalendarioPorAnoLetivoModalidadeoUseCase)
         {
-            return Ok(await obterTiposCalendarioPorAnoLetivoModalidadeoUseCase.Executar(anoLetivo, modalidades));
+            return Ok(await obterTiposCalendarioPorAnoLetivoModalidadeoUseCase.Executar(anoLetivo, modalidades, semestre));
+        }
+
+        [HttpGet("ano-letivo/{anoLetivo}/modalidades")]
+        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> BuscarPorAnoLetivoEDescricaoEModalidades(int anoLetivo, [FromQuery] IEnumerable<int> modalidades, [FromQuery] string descricao, [FromServices] IObterTiposCalendarioPorAnoLetivoDescricaoEModalidadesUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo, modalidades, descricao));
         }
 
         [HttpGet("{tipoCalendarioId}/bimestres")]
@@ -117,7 +125,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.E_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterBimestresPorTipoCalendarioId(int tipoCalendarioId)
         {
-            var listaRetorno = await  consultas.ObterBimestresPorTipoCalendarioId(tipoCalendarioId);
+            var listaRetorno = await consultas.ObterBimestresPorTipoCalendarioId(tipoCalendarioId);
 
             if (listaRetorno.Any())
                 return Ok(listaRetorno);

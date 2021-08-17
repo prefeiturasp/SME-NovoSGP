@@ -60,6 +60,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.Semestre = comunicado.Semestre;
             comunicadoServico.SeriesResumidas = comunicado.SeriesResumidas;
             comunicadoServico.Modalidades = string.Join(",", comunicado.Modalidades.Select(x => x).ToArray());
+            comunicadoServico.TiposEscolas = string.Join(",", comunicado.TiposEscolas.Select(x => x).ToArray());
         }
     }
 }
