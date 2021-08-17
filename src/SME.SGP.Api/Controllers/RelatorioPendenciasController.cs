@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/relatorios/fechamentos/pendencias")]
+    [Route("api/v1/relatorios/pendencias")]
     public class RelatorioPendenciasController : ControllerBase
     {
         [HttpPost]
