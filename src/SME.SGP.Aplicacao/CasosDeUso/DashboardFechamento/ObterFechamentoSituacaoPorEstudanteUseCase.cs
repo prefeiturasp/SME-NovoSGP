@@ -23,36 +23,36 @@ namespace SME.SGP.Aplicacao
                 param.Semestre,
                 param.Bimestre));
 
-            List<FechamentoSituacaoDto> fechamentos = new List<FechamentoSituacaoDto>();
+            var fechamentos = new List<FechamentoSituacaoPorEstudanteDto>();
             if (fechamentosRetorno == null || !fechamentosRetorno.Any())
                 return fechamentos;
 
-            foreach (var fechamentoRetorno in fechamentosRetorno.GroupBy(a => a.Ano))
-            {
-                var novoFechamento = new FechamentoSituacaoDto();
-                novoFechamento.Ordem = fechamentoRetorno.FirstOrDefault().Ano;
-                novoFechamento.MontarDescricao(fechamentoRetorno.FirstOrDefault().Modalidade.ShortName(),
-                    fechamentoRetorno.FirstOrDefault().Ano);
-                foreach (var fechamentoGroup in fechamentoRetorno)
-                {
-                    switch (fechamentoGroup.Situacao)
-                    {
-                        case 1:
-                            novoFechamento.AdicionarValorProcessadoNaoIniciado(fechamentoGroup.Quantidade);
-                            break;
-                        case 2:
-                            novoFechamento.AdicionarValorProcessadoPendente(
-                                fechamentoGroup.Quantidade);
-                            break;
-                        case 3:
-                            novoFechamento.AdicionarValorProcessadoSucesso(
-                                fechamentoGroup.Quantidade);
-                            break;
-                    }
-                }
-
-                fechamentos.Add(novoFechamento);
-            }
+            // foreach (var fechamentoRetorno in fechamentosRetorno.GroupBy(a => a.Ano))
+            // {
+            //     var novoFechamento = new FechamentoSituacaoDto();
+            //     novoFechamento.Ordem = fechamentoRetorno.FirstOrDefault().Ano;
+            //     novoFechamento.MontarDescricao(fechamentoRetorno.FirstOrDefault().Modalidade.ShortName(),
+            //         fechamentoRetorno.FirstOrDefault().Ano);
+            //     foreach (var fechamentoGroup in fechamentoRetorno)
+            //     {
+            //         switch (fechamentoGroup.Situacao)
+            //         {
+            //             case 1:
+            //                 novoFechamento.AdicionarValorProcessadoNaoIniciado(fechamentoGroup.Quantidade);
+            //                 break;
+            //             case 2:
+            //                 novoFechamento.AdicionarValorProcessadoPendente(
+            //                     fechamentoGroup.Quantidade);
+            //                 break;
+            //             case 3:
+            //                 novoFechamento.AdicionarValorProcessadoSucesso(
+            //                     fechamentoGroup.Quantidade);
+            //                 break;
+            //         }
+            //     }
+            //
+            //     fechamentos.Add(novoFechamento);
+            // }
 
             return fechamentos;
         }
