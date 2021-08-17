@@ -32,39 +32,39 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FechamentoPendencias, filtroRelatorioPendenciasFechamentoDto, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPendencias));
         }
 
-        public List<FiltroBimestreDto> ListarTodosTipos(bool opcaoTodos)
+        public List<FiltroTipoPendenciaDto> ListarTodosTipos(bool opcaoTodos)
         {
-            var listaTipo = new List<FiltroBimestreDto>();
+            var listaTipo = new List<FiltroTipoPendenciaDto>();
 
             if (opcaoTodos)
             {
-                var tipos = new FiltroBimestreDto();
+                var tipos = new FiltroTipoPendenciaDto();
                 tipos.Valor = (int)TipoPendenciaGrupo.Todos;
                 tipos.Descricao = TipoPendenciaGrupo.Todos.ObterNome();
                 listaTipo.Add(tipos);
             }
-            var calendario = new FiltroBimestreDto()
+            var calendario = new FiltroTipoPendenciaDto()
             {
                 Valor = (int)TipoPendenciaGrupo.Calendario,
                 Descricao = TipoPendenciaGrupo.Calendario.ObterNome()
             };
             listaTipo.Add(calendario);
 
-            var diarioClasse = new FiltroBimestreDto()
+            var diarioClasse = new FiltroTipoPendenciaDto()
             {
                 Valor = (int)TipoPendenciaGrupo.DiarioClasse,
                 Descricao = TipoPendenciaGrupo.DiarioClasse.ObterNome()
             };
             listaTipo.Add(diarioClasse);
 
-            var fechamento = new FiltroBimestreDto()
+            var fechamento = new FiltroTipoPendenciaDto()
             {
                 Valor = (int)TipoPendenciaGrupo.Fechamento,
                 Descricao = TipoPendenciaGrupo.Fechamento.ObterNome()
             };
             listaTipo.Add(fechamento);
 
-            var aee = new FiltroBimestreDto()
+            var aee = new FiltroTipoPendenciaDto()
             {
                 Valor = (int)TipoPendenciaGrupo.AEE,
                 Descricao = TipoPendenciaGrupo.AEE.ObterNome()
