@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.DashboardFechamento;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Dominio.Interfaces
 {

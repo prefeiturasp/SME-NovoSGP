@@ -1,6 +1,6 @@
 ﻿using SME.SGP.Dominio;
 
-namespace SME.SGP.Infra.Dtos.DashboardFechamento
+namespace SME.SGP.Infra.Dtos
 {
     public class FechamentoSituacaoQuantidadeDto
     {

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra.Dtos.DashboardFechamento;
 
 namespace SME.SGP.Aplicacao
 {

@@ -1,12 +1,13 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos.DashboardFechamento;
+using Dapper;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -16,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public RepositorioFechamentoTurmaDisciplina(ISgpContext database, IRepositorioTurma repositorioTurma) : base(database)
         {
-            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }       
 
         public async Task<IEnumerable<int>> ObterDisciplinaIdsPorTurmaIdBimestre(long turmaId, int bimestre)
@@ -215,7 +216,7 @@ namespace SME.SGP.Dados.Repositorios
                 
             }
             
-            if (modalidade != 1 && semestre > 0)
+            if (semestre > 0)
             {
                 queryBuilder.Append(" and t.semestre = @semestre ");   
                 
