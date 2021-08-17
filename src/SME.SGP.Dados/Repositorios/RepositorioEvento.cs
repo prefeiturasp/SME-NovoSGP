@@ -79,46 +79,30 @@ namespace SME.SGP.Dados.Repositorios
                 splitOn: "EventoId,TipoEventoId,TipoCalendarioId").ToList();
         }
 
-        public bool EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
+        private async Task<bool> VerificaEventoLetivoPorTipoCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId, bool letivo = true)
         {
-            string cabecalho = "select count(id) from evento e where e.excluido = false";
+            string cabecalho = @"select count(e.id) 
+                                   from evento e 
+                                  inner join evento_tipo et on et.id = e.tipo_evento_id
+                                  where e.excluido = false ";
             string whereTipoCalendario = "and e.tipo_calendario_id = @tipoCalendarioId";
 
             StringBuilder query = new StringBuilder();
 
-            ObterContadorEventosNaoLetivosSME(cabecalho, whereTipoCalendario, query, true);
+            ObterContadorEventosLetivos(cabecalho, whereTipoCalendario, query, ueId, letivo);
 
-            if (!string.IsNullOrEmpty(ueId))
-            {
-                query.AppendLine("UNION");
-                ObterContadorEventosNaoLetivosUE(cabecalho, whereTipoCalendario, query, true);
-            }
-
-            var retorno = database.Conexao.Query<int?>(query.ToString(),
+            var retorno = await database.Conexao.QueryAsync<int?>(query.ToString(),
                 new { tipoCalendarioId, dreId, ueId, data = data.Date });
 
             return retorno != null && retorno.Sum() > 0;
         }
-        public bool EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
-        {
-            string cabecalho = "select count(id) from evento e where e.excluido = false";
-            string whereTipoCalendario = "and e.tipo_calendario_id = @tipoCalendarioId";
 
-            StringBuilder query = new StringBuilder();
+        public async Task<bool> EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
+            => await VerificaEventoLetivoPorTipoCalendarioDataDreUe(tipoCalendarioId, data, dreId, ueId);
 
-            ObterContadorEventosNaoLetivosSME(cabecalho, whereTipoCalendario, query, false);
+        public async Task<bool> EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
+            => await VerificaEventoLetivoPorTipoCalendarioDataDreUe(tipoCalendarioId, data, dreId, ueId, false);
 
-            if (!string.IsNullOrEmpty(ueId))
-            {
-                query.AppendLine("UNION");
-                ObterContadorEventosNaoLetivosUE(cabecalho, whereTipoCalendario, query, false);
-            }
-
-            var retorno = database.Conexao.Query<int?>(query.ToString(),
-                new { tipoCalendarioId, dreId, ueId, data = data.Date });
-
-            return retorno != null && retorno.Sum() > 0;
-        }
         public async Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId, bool utilizarRangeDatas = true)
         {
             var query = new StringBuilder();
@@ -611,22 +595,13 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(")");
         }
 
-        private static void ObterContadorEventosNaoLetivosSME(string cabecalho, string whereTipoCalendario, StringBuilder query, bool letivo)
+        private static void ObterContadorEventosLetivos(string cabecalho, string whereTipoCalendario, StringBuilder query, string ueId, bool letivo = true)
         {
-            var queryLetivo = letivo ? "and e.letivo in (1,3)" : "and e.letivo = 2";
+            var queryLetivo = letivo ? "and (e.letivo in (1,3) or et.codigo = 13)" : "and (e.letivo = 2 and et.codigo <> 13)";
             query.AppendLine(cabecalho);
             query.AppendLine(whereTipoCalendario);
-            query.AppendLine("and e.dre_id is null and e.ue_id is null");
-            query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
-            query.AppendLine(queryLetivo);
-        }
-
-        private static void ObterContadorEventosNaoLetivosUE(string cabecalho, string whereTipoCalendario, StringBuilder query, bool letivo)
-        {
-            var queryLetivo = letivo ? "and e.letivo in (1,3)" : "and e.letivo = 2";
-            query.AppendLine(cabecalho);
-            query.AppendLine(whereTipoCalendario);
-            query.AppendLine("and e.ue_id = @ueId");
+            query.AppendLine("and ((e.dre_id is null and e.ue_id is null)");
+            query.AppendLine($"{(!string.IsNullOrEmpty(ueId) ? " or (e.ue_id = @ueId)" : "")})");
             query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
             query.AppendLine(queryLetivo);
         }

@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
         }
-        public Task<bool> Handle(ObterTemEventoNaoLetivoPorCalendarioEDiaQuery request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ObterTemEventoNaoLetivoPorCalendarioEDiaQuery request, CancellationToken cancellationToken)
         {
-            return Task.FromResult(repositorioEvento.EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataParaVerificar.Date, request.DreCodigo, request.UeCodigo));
+            return await repositorioEvento.EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataParaVerificar.Date, request.DreCodigo, request.UeCodigo);
         }
     }
 }

@@ -8,11 +8,12 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioEvento : IRepositorioBase<Evento>
     {
-        bool EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId);
         Task<IEnumerable<Evento>> ObterEventosCalendarioProfessorPorMes(long tipoCalendarioId, string dreCodigo, string ueCodigo, int mes, bool VisualizarEventosSME = false, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false);
         List<Evento> EhEventoLetivoPorLiberacaoExcepcional(long tipoCalendarioId, DateTime dataAula, string ueId);
 
-        bool EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId);
+        Task<bool> EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId);
+        Task<bool> EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId);
+
         Task<long> ObterTipoCalendarioIdPorEvento(long eventoId);
         Task<IEnumerable<Evento>> ObterEventosPorTipoEData(TipoEvento tipoEvento, DateTime data);
         Task<IEnumerable<EventoDataDto>> ListarEventosItinerancia(long tipoCalendarioId, long ItineranciaId, string codigoUE, string login, Guid perfil, bool historico = false);
