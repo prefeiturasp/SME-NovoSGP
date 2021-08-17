@@ -241,5 +241,64 @@ namespace SME.SGP.Dados.Repositorios
                 bimestre
             });
         }
+        public async Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamentoPorEstudante(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var sqlQuery = @"select
+                                    distinct ftd.situacao as Situacao, count(ftd.id) as Quantidade, t.ano as Ano, t.modalidade_codigo  as Modalidade
+                                    from fechamento_turma_disciplina ftd
+                                    inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
+                                    inner join turma t on ft.turma_id = t.id
+                                    inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
+                                    inner join ue on ue.id = t.ue_id 
+                                    where 1=1 ";
+
+            var queryBuilder = new StringBuilder(sqlQuery);
+
+            if (ano > 0)
+            {
+                queryBuilder.Append(" and t.ano_letivo = @ano ");
+            }
+
+            if (ueId > 0)
+            {
+                queryBuilder.Append(" and t.ue_id = @ueId ");    
+            }
+            
+            if (dreId > 0)
+            {
+                queryBuilder.Append(" and ue.dre_id = @dreId ");    
+            }
+
+            if (modalidade > 0)
+            {
+                queryBuilder.Append(" and t.modalidade_codigo = @modalidade ");   
+                
+            }
+            
+            if (semestre > 0)
+            {
+                queryBuilder.Append(" and t.semestre = @semestre ");   
+                
+            }
+            
+            if (bimestre > 0)
+            {
+                queryBuilder.Append(" and pe.bimestre = @bimestre ");   
+                
+            }
+            
+            queryBuilder.Append(@"group by ftd.situacao, t.ano , t.modalidade_codigo order by t.ano;");
+            
+            
+            return await database.Conexao.QueryAsync<FechamentoSituacaoQuantidadeDto>(queryBuilder.ToString(), new
+            {
+                ueId,
+                ano,
+                dreId,
+                modalidade, 
+                semestre,
+                bimestre
+            });
+        }
     }
 }

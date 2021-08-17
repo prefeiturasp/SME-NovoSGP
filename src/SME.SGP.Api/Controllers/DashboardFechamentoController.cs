@@ -20,5 +20,16 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtroDashboardFechamentoDto));
         }
+        
+        [HttpGet("estudantes")]
+        [ProducesResponseType(typeof(FechamentoSituacaoPorEstudanteDto), 200)]
+        [ProducesResponseType(typeof(FechamentoSituacaoPorEstudanteDto), 204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterSituacoesFechamentoPorEstudante(
+            [FromQuery] FiltroDashboardFechamentoDto filtroDashboardFechamentoDto,
+            [FromServices] IObterFechamentoSituacaoPorEstudanteUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtroDashboardFechamentoDto));
+        }
     }
 }
