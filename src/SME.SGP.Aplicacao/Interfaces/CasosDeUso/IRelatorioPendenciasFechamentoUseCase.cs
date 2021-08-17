@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
     public interface IRelatorioPendenciasFechamentoUseCase
     {
         Task<bool> Executar(FiltroRelatorioPendenciasFechamentoDto filtroRelatorioPendenciasFechamentoDto);
-        List<FiltroBimestreDto> ListarTodosTipos(bool opcaoTodos);
+        List<FiltroTipoPendenciaDto> ListarTodosTipos(bool opcaoTodos);
     }
 }
