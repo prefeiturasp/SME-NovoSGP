@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             filtroRelatorioPendenciasFechamentoDto.UsuarioNome = usuarioLogado.Nome;
             filtroRelatorioPendenciasFechamentoDto.UsuarioRf = usuarioLogado.CodigoRf;
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FechamentoPendencias, filtroRelatorioPendenciasFechamentoDto, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPendencias));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Pendencias, filtroRelatorioPendenciasFechamentoDto, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPendencias));
         }
 
         public List<FiltroTipoPendenciaDto> ListarTodosTipos(bool opcaoTodos)

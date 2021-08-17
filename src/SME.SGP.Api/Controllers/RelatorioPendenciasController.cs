@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/relatorios/fechamentos/pendencias")]
-    public class RelatorioPendenciasFechamentoController : ControllerBase
+    public class RelatorioPendenciasController : ControllerBase
     {
         [HttpPost]
         [ProducesResponseType(typeof(Boolean), 200)]
