@@ -17,7 +17,7 @@ namespace SME.SGP.Api.Controllers
     {
         private readonly IComandosDiasLetivos comandosDiasLetivos;
 
-        public DiasLetivosCalendarioController(IComandosDiasLetivos comandosDiasLetivos, IServicoDiaLetivo servicoDiaLetivo)
+        public DiasLetivosCalendarioController(IComandosDiasLetivos comandosDiasLetivos)
         {
             this.comandosDiasLetivos = comandosDiasLetivos ??
               throw new System.ArgumentNullException(nameof(comandosDiasLetivos));
