@@ -130,7 +130,7 @@ namespace SME.SGP.Api
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
             services.AddPolicies();
-
+             
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddApplicationInsightsTelemetry(Configuration);
@@ -185,7 +185,6 @@ namespace SME.SGP.Api
             var googleClassroomSyncOptions = new GoogleClassroomSyncOptions();
             Configuration.GetSection(nameof(GoogleClassroomSyncOptions)).Bind(googleClassroomSyncOptions, c => c.BindNonPublicProperties = true);
 
-            services.AddMemoryCache();
             services.AddSingleton(googleClassroomSyncOptions);
         }
     }
