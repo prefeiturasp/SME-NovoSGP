@@ -20,5 +20,18 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtroDashboardFechamentoDto));
         }
+        
+        [HttpGet("pendencias")]
+        [ProducesResponseType(typeof(FechamentoPendeciaDto), 200)]
+        [ProducesResponseType(typeof(FechamentoPendeciaDto), 204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterPendenciaFechamento(
+            [FromQuery] FiltroDashboardFechamentoDto filtroDashboardFechamentoDto,
+            [FromServices] IObterFechamentoPendenciasUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtroDashboardFechamentoDto));
+        }
     }
+    
+    
 }

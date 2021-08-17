@@ -11,18 +11,21 @@ using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioFechamentoTurmaDisciplina : RepositorioBase<FechamentoTurmaDisciplina>, IRepositorioFechamentoTurmaDisciplina
+    public class RepositorioFechamentoTurmaDisciplina : RepositorioBase<FechamentoTurmaDisciplina>,
+        IRepositorioFechamentoTurmaDisciplina
     {
         private readonly IRepositorioTurma repositorioTurma;
 
-        public RepositorioFechamentoTurmaDisciplina(ISgpContext database, IRepositorioTurma repositorioTurma) : base(database)
+        public RepositorioFechamentoTurmaDisciplina(ISgpContext database, IRepositorioTurma repositorioTurma) :
+            base(database)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-        }       
+        }
 
         public async Task<IEnumerable<int>> ObterDisciplinaIdsPorTurmaIdBimestre(long turmaId, int bimestre)
         {
-            var query = new StringBuilder(@"select disciplina_id as ComponenteCurricularId from fechamento_turma_disciplina ftd 
+            var query = new StringBuilder(
+                @"select disciplina_id as ComponenteCurricularId from fechamento_turma_disciplina ftd 
                             inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
                             left join periodo_escolar pe on ft.periodo_escolar_id = pe.id 
                             where ft.turma_id = @turmaId");
@@ -45,7 +48,8 @@ namespace SME.SGP.Dados.Repositorios
             return true;
         }
 
-        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(long turmaId, long[] disciplinasId, int bimestre = 0)
+        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(long turmaId,
+            long[] disciplinasId, int bimestre = 0)
         {
             var query = new StringBuilder(@"select f.*, fa.*, ft.*, p.*
                          from fechamento_turma_disciplina f
@@ -66,10 +70,13 @@ namespace SME.SGP.Dados.Repositorios
 
             IList<FechamentoTurmaDisciplina> fechammentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();
 
-            await database.Conexao.QueryAsync<FechamentoTurmaDisciplina, FechamentoAluno, FechamentoTurma, PeriodoEscolar, FechamentoTurmaDisciplina>
+            await database.Conexao
+                .QueryAsync<FechamentoTurmaDisciplina, FechamentoAluno, FechamentoTurma, PeriodoEscolar,
+                    FechamentoTurmaDisciplina>
                 (query.ToString(), (fechamentoTurmaDiscplina, fechamentoAluno, fechamentoTurma, periodoEscolar) =>
                 {
-                    var fechamentoTurmaDisciplinaLista = fechammentosTurmaDisciplina.FirstOrDefault(ftd => ftd.Id == fechamentoTurmaDiscplina.Id);
+                    var fechamentoTurmaDisciplinaLista =
+                        fechammentosTurmaDisciplina.FirstOrDefault(ftd => ftd.Id == fechamentoTurmaDiscplina.Id);
                     if (fechamentoTurmaDisciplinaLista == null)
                     {
                         if (periodoEscolar != null)
@@ -80,6 +87,7 @@ namespace SME.SGP.Dados.Repositorios
                         fechamentoTurmaDisciplinaLista = fechamentoTurmaDiscplina;
                         fechammentosTurmaDisciplina.Add(fechamentoTurmaDiscplina);
                     }
+
                     fechamentoTurmaDisciplinaLista.FechamentoAlunos.Add(fechamentoAluno);
                     return fechamentoTurmaDiscplina;
                 }, new { turmaId, disciplinasId, bimestre });
@@ -87,7 +95,8 @@ namespace SME.SGP.Dados.Repositorios
             return fechammentosTurmaDisciplina;
         }
 
-        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(string turmaCodigo, long[] disciplinasId, int bimestre = 0)
+        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(string turmaCodigo,
+            long[] disciplinasId, int bimestre = 0)
         {
             var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
 
@@ -97,7 +106,8 @@ namespace SME.SGP.Dados.Repositorios
             return await ObterFechamentosTurmaDisciplinas(turma.Id, disciplinasId, bimestre);
         }
 
-        public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaCodigo, long disciplinaId, int bimestre = 0)
+        public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaCodigo,
+            long disciplinaId, int bimestre = 0)
         {
             var query = new StringBuilder(@"select f.*
                          from fechamento_turma_disciplina f
@@ -112,10 +122,12 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine(" and ft.periodo_escolar_id is null ");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaDisciplina>(query.ToString(), new { turmaCodigo, disciplinaId, bimestre });
+            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaDisciplina>(query.ToString(),
+                new { turmaCodigo, disciplinaId, bimestre });
         }
 
-        public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaDisciplinaId)
+        public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno,
+            long fechamentoTurmaDisciplinaId)
         {
             var query = @"select n.disciplina_id as DisciplinaId, 
                                  n.nota as Nota, 
@@ -134,7 +146,8 @@ namespace SME.SGP.Dados.Repositorios
                             and fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
                             and fa.aluno_codigo = @codigoAluno ";
 
-            return await database.Conexao.QueryAsync<FechamentoNotaDto>(query, new { codigoAluno, fechamentoTurmaDisciplinaId });
+            return await database.Conexao.QueryAsync<FechamentoNotaDto>(query,
+                new { codigoAluno, fechamentoTurmaDisciplinaId });
         }
 
         public override FechamentoTurmaDisciplina ObterPorId(long id)
@@ -151,10 +164,10 @@ namespace SME.SGP.Dados.Repositorios
                     return fechamentoTurmaDisciplina;
                 }
                 , new { id }).FirstOrDefault();
-
         }
 
-        public async Task<SituacaoFechamento> ObterSituacaoFechamento(long turmaId, long componenteCurricularId, long periodoEscolarId)
+        public async Task<SituacaoFechamento> ObterSituacaoFechamento(long turmaId, long componenteCurricularId,
+            long periodoEscolarId)
         {
             var query = @"select ftd.situacao
                          from fechamento_turma_disciplina ftd
@@ -163,10 +176,12 @@ namespace SME.SGP.Dados.Repositorios
                           and ft.turma_id = @turmaId
                           and ft.periodo_escolar_id = @periodoEscolarId ";
 
-            return (SituacaoFechamento)await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, componenteCurricularId, periodoEscolarId });
+            return (SituacaoFechamento)await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
+                new { turmaId, componenteCurricularId, periodoEscolarId });
         }
 
-        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosComSituacaoEmProcessamentoPorAnoLetivo(int anoLetivo)
+        public async Task<IEnumerable<FechamentoTurmaDisciplina>>
+            ObterFechamentosComSituacaoEmProcessamentoPorAnoLetivo(int anoLetivo)
         {
             var sqlQuery = @"select distinct ftd.*
 	                         from fechamento_turma_disciplina ftd 
@@ -179,10 +194,12 @@ namespace SME.SGP.Dados.Repositorios
 	                              not ftd.excluido and
 	                              not ft.excluido;";
 
-            return await database.Conexao.QueryAsync<FechamentoTurmaDisciplina>(sqlQuery, new { anoLetivo, situacao = SituacaoFechamento.EmProcessamento });
+            return await database.Conexao.QueryAsync<FechamentoTurmaDisciplina>(sqlQuery,
+                new { anoLetivo, situacao = SituacaoFechamento.EmProcessamento });
         }
 
-        public async Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamento(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
+        public async Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamento(long ueId,
+            int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
             var sqlQuery = @"select
                                     distinct ftd.situacao as Situacao, count(ftd.id) as Quantidade, t.ano as Ano, t.modalidade_codigo  as Modalidade
@@ -202,41 +219,95 @@ namespace SME.SGP.Dados.Repositorios
 
             if (ueId > 0)
             {
-                queryBuilder.Append(" and t.ue_id = @ueId ");    
+                queryBuilder.Append(" and t.ue_id = @ueId ");
             }
-            
+
             if (dreId > 0)
             {
-                queryBuilder.Append(" and ue.dre_id = @dreId ");    
+                queryBuilder.Append(" and ue.dre_id = @dreId ");
             }
 
             if (modalidade > 0)
             {
-                queryBuilder.Append(" and t.modalidade_codigo = @modalidade ");   
-                
+                queryBuilder.Append(" and t.modalidade_codigo = @modalidade ");
             }
-            
+
             if (semestre > 0)
             {
-                queryBuilder.Append(" and t.semestre = @semestre ");   
-                
+                queryBuilder.Append(" and t.semestre = @semestre ");
             }
-            
+
             if (bimestre > 0)
             {
-                queryBuilder.Append(" and pe.bimestre = @bimestre ");   
-                
+                queryBuilder.Append(" and pe.bimestre = @bimestre ");
             }
-            
+
             queryBuilder.Append(@"group by ftd.situacao, t.ano , t.modalidade_codigo order by t.ano;");
-            
-            
+
+
             return await database.Conexao.QueryAsync<FechamentoSituacaoQuantidadeDto>(queryBuilder.ToString(), new
             {
                 ueId,
                 ano,
                 dreId,
-                modalidade, 
+                modalidade,
+                semestre,
+                bimestre
+            });
+        }
+
+        public async Task<IEnumerable<FechamentoPendenciaQuantidadeDto>> ObterSituacaoPendenteFechamento(long ueId,
+            int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var sqlQuery = @"select t.ano as Ano,t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
+                                from pendencia_fechamento pf
+                                inner join fechamento_turma_disciplina ftd  on ftd.id = pf.fechamento_turma_disciplina_id 
+                                inner join fechamento_turma ft  on ft.id = ftd.fechamento_turma_id 
+                                inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
+                                inner join turma t on ft.turma_id = t.id 
+                                inner join ue on ue.id = t.ue_id where 1=1 ";
+
+            var queryBuilder = new StringBuilder(sqlQuery);
+
+            if (ano > 0)
+            {
+                queryBuilder.Append(" and t.ano_letivo = @ano ");
+            }
+
+            if (ueId > 0)
+            {
+                queryBuilder.Append(" and t.ue_id = @ueId ");
+            }
+
+            if (dreId > 0)
+            {
+                queryBuilder.Append(" and ue.dre_id = @dreId ");
+            }
+
+            if (modalidade > 0)
+            {
+                queryBuilder.Append(" and t.modalidade_codigo = @modalidade ");
+            }
+
+            if (semestre > 0)
+            {
+                queryBuilder.Append(" and t.semestre = @semestre ");
+            }
+
+            if (bimestre > 0)
+            {
+                queryBuilder.Append(" and pe.bimestre = @bimestre ");
+            }
+
+            queryBuilder.Append(@"group by t.ano , t.modalidade_codigo order by t.ano;");
+
+
+            return await database.Conexao.QueryAsync<FechamentoPendenciaQuantidadeDto>(queryBuilder.ToString(), new
+            {
+                ueId,
+                ano,
+                dreId,
+                modalidade,
                 semestre,
                 bimestre
             });
