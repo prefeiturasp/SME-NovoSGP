@@ -259,7 +259,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FechamentoPendenciaQuantidadeDto>> ObterSituacaoPendenteFechamento(long ueId,
             int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var sqlQuery = @"select t.ano as Ano,t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
+            
+            var campoAnoOuTurma = ueId > 0 ? "t.ano " : "t.turma_id ";
+            var sqlQuery = $@"select cast({campoAnoOuTurma} as varchar(20)) as Ano , t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
                                 from pendencia_fechamento pf
                                 inner join fechamento_turma_disciplina ftd  on ftd.id = pf.fechamento_turma_disciplina_id 
                                 inner join fechamento_turma ft  on ft.id = ftd.fechamento_turma_id 
@@ -299,7 +301,10 @@ namespace SME.SGP.Dados.Repositorios
                 queryBuilder.Append(" and pe.bimestre = @bimestre ");
             }
 
-            queryBuilder.Append(@"group by t.ano , t.modalidade_codigo order by t.ano;");
+            var orderBy = ueId > 0 ? "order by t.ano" : "order by t.turma_id";
+            var gruopBy = ueId > 0 ? "group by t.ano" : "group by t.turma_id";
+
+            queryBuilder.Append($"{gruopBy} , t.modalidade_codigo {orderBy};");
 
 
             return await database.Conexao.QueryAsync<FechamentoPendenciaQuantidadeDto>(queryBuilder.ToString(), new
