@@ -1,4 +1,4 @@
-﻿namespace SME.SGP.Infra.Dtos
+﻿namespace SME.SGP.Infra
 {
     public class FiltroDashboardFechamentoDto
     {

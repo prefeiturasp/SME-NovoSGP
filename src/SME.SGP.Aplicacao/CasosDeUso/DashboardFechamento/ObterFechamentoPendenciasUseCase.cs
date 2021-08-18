@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -15,7 +14,7 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        public async Task<IEnumerable<FechamentoPendeciaDto>> Executar(FiltroDashboardFechamentoDto param)
+        public async Task<IEnumerable<GraficoBaseDto>> Executar(FiltroDashboardFechamentoDto param)
         {
             var fechamentosPendenteRetorno = await mediator.Send(new ObterFechamentoPendenciasQuery(
                 param.UeId,
@@ -27,10 +26,9 @@ namespace SME.SGP.Aplicacao
             );
 
 
-            return fechamentosPendenteRetorno.Select(pendente => new FechamentoPendeciaDto()
+            return fechamentosPendenteRetorno.Select(pendente => new GraficoBaseDto()
             {
-                Descricao = $"{pendente.Modalidade.ShortName()} - {pendente.Ano}",
-                Ordem = pendente.Ano,
+                Grupo = $"{pendente.Modalidade.ShortName()} - {pendente.Ano}",
                 Quantidade = pendente.Quantidade
             }).ToList();
         }
