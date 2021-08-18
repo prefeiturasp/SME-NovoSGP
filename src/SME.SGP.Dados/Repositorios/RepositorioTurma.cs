@@ -1301,5 +1301,44 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<TurmaDTO>(query, new { anoLetivo, ueCodigo });
         }
+
+        public async Task<IEnumerable<TurmaAlunoBimestreFechamentoDto>> AlunosTurmaPorDreIdUeIdBimestreSemestre(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var query = new StringBuilder(@"select 
+                            distinct t.id as TurmaId, 
+                            t.ano, 
+                            t.modalidade_codigo as Modalidade, bimestre as Bimestre, aluno_codigo as AlunoCodigo 
+                        from consolidado_conselho_classe_aluno_turma cccat
+                        inner join turma t on cccat.turma_id = t.id 
+                        inner join ue on ue.id = t.ue_id 
+                        where t.ano_letivo = @ano ");
+
+            if (ueId > 0)
+            {
+                query.Append(" and t.ue_id = @ueId ");
+            }
+
+            if (dreId > 0)
+            {
+                query.Append(" and ue.dre_id = @dreId ");
+            }
+
+            if (modalidade > 0)
+            {
+                query.Append(" and t.modalidade_codigo = @modalidade ");
+            }
+
+            if (semestre > 0)
+            {
+                query.Append(" and t.semestre = @semestre ");
+            }
+
+            if (bimestre > 0)
+            {
+                query.Append(" and cccat.bimestre = @bimestre ");
+            }
+
+            return await contexto.QueryAsync<TurmaAlunoBimestreFechamentoDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre, bimestre });
+        }
     }
 }

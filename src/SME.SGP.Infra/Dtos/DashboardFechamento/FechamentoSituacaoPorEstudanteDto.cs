@@ -33,7 +33,7 @@
             QuantidadeParcial = quantidade;
         }
 
-        public void AdicionarQUantidadeCompleto(int quantidade)
+        public void AdicionarQuantidadeCompleto(int quantidade)
         {
             QuantidadeCompleto = quantidade;
         }
