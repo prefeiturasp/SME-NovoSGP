@@ -21,5 +21,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<int>> ObterDisciplinaIdsPorTurmaIdBimestre(long turmaId, int bimestre);
         Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamento(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);
         Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamentoPorEstudante(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);
+        
+        Task<IEnumerable<FechamentoPendenciaQuantidadeDto>> ObterSituacaoPendenteFechamento(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);
     }
 }

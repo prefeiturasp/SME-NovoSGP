@@ -1097,8 +1097,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterTipoEscolaPorDreEUeUseCase, ObterTipoEscolaPorDreEUeUseCase>();
             services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoDescricaoEModalidadesUseCase, ObterTiposCalendarioPorAnoLetivoDescricaoEModalidadesUseCase>();
             
-            //Fechamento Situacao
+            //Dashbord Fechamento
             services.TryAddScoped<IObterFechamentoSituacaoUseCase, ObterFechamentoSituacaoUseCase>();
+            services.TryAddScoped<IObterFechamentoPendenciasUseCase, ObterFechamentoPendenciasUseCase>();
             
         }
     }
