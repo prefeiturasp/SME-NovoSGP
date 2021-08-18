@@ -260,8 +260,9 @@ namespace SME.SGP.Dados.Repositorios
             int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
             
-            var campoAnoOuTurma = ueId > 0 ? "t.ano " : "t.turma_id ";
-            var sqlQuery = $@"select cast({campoAnoOuTurma} as varchar(20)) as Ano , t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
+            var campoAnoOuTurma = ueId > 0 ? "t.nome " : "t.ano ";
+            
+            var sqlQuery = $@"select cast({campoAnoOuTurma} as varchar(255)) as Ano , t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
                                 from pendencia_fechamento pf
                                 inner join fechamento_turma_disciplina ftd  on ftd.id = pf.fechamento_turma_disciplina_id 
                                 inner join fechamento_turma ft  on ft.id = ftd.fechamento_turma_id 
@@ -301,9 +302,9 @@ namespace SME.SGP.Dados.Repositorios
                 queryBuilder.Append(" and pe.bimestre = @bimestre ");
             }
 
-            var orderBy = ueId > 0 ? "order by t.ano" : "order by t.turma_id";
-            var gruopBy = ueId > 0 ? "group by t.ano" : "group by t.turma_id";
-
+            var orderBy = ueId > 0 ? "order by t.nome " : "order by t.ano ";
+            var gruopBy = ueId > 0 ? "group by t.nome" : "group by t.ano";
+            
             queryBuilder.Append($"{gruopBy} , t.modalidade_codigo {orderBy};");
 
 
