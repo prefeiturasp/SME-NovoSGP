@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -12,6 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ConsultasAtribuicoes : IConsultasAtribuicoes
     {
         private readonly IConsultasAbrangencia consultasAbrangencia;
+        private readonly IMediator mediator;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IRepositorioDre repositorioDre;
@@ -20,7 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasAtribuicoes(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioDre repositorioDre, IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica,
-            IServicoEol servicoEol, IRepositorioUe repositorioUe, IServicoUsuario servicoUsuario, IConsultasAbrangencia consultasAbrangencia)
+            IServicoEol servicoEol, IRepositorioUe repositorioUe, IServicoUsuario servicoUsuario, IConsultasAbrangencia consultasAbrangencia, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
@@ -29,6 +31,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres()
@@ -77,7 +80,11 @@ namespace SME.SGP.Aplicacao
 
                 ObterAtribuicoesEsporadicasUe(loginAtual, codigosUes, codigoDre, somenteInfantil);
 
-                IEnumerable<Ue> ues = repositorioUe.ListarPorCodigos(codigosUes.Distinct().ToArray());
+                // A atribuição CJ ainda não irá contemplar os novos tipos de UEs na listagem
+                var novosTiposUe = await mediator.Send(new ObterNovosTiposUEPorAnoQuery(DateTime.Today.Year)); // para atribuição CJ considera o ano letivo atual
+                var ues = from ue in repositorioUe.ListarPorCodigos(codigosUes.Distinct().ToArray())
+                          where !novosTiposUe.Split(',').Contains(((int)ue.TipoEscola).ToString())
+                          select ue;
 
                 if (ues != null && ues.Any())
                     return TransformarUesEmUesDto(ues);
@@ -122,7 +129,7 @@ namespace SME.SGP.Aplicacao
 
             if (abrangencia != null && abrangencia.Dres != null && abrangencia.Dres.Any(a => a.Codigo == codigoDre))
             {
-                codigosUes.AddRange(abrangencia.Dres.FirstOrDefault(a => a.Codigo == codigoDre).Ues.Select(a => a.Codigo));
+                codigosUes.AddRange(abrangencia.Dres.FirstOrDefault(a => a.Codigo == codigoDre).Ues.Select(ue => ue.Codigo));
             }
         }
 
