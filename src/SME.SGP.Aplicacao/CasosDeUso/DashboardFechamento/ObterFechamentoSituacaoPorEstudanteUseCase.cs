@@ -27,6 +27,9 @@ namespace SME.SGP.Aplicacao
             if (fechamentosRetorno == null || !fechamentosRetorno.Any())
                 return fechamentos;
 
+             
+            //var alunos = await mediator.Send(new ObterEstudantesAtivosPorTurmaEDataReferenciaQuery());
+
             // foreach (var fechamentoRetorno in fechamentosRetorno.GroupBy(a => a.Ano))
             // {
             //     var novoFechamento = new FechamentoSituacaoDto();
