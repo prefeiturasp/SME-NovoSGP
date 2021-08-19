@@ -201,14 +201,21 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamento(long ueId,
             int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var sqlQuery = @"select
-                                    ftd.situacao as Situacao, count(ftd.id) as Quantidade, t.ano as Ano, t.modalidade_codigo  as Modalidade
-                                    from fechamento_turma_disciplina ftd
-                                    inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
-                                    inner join turma t on ft.turma_id = t.id
-                                    inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
-                                    inner join ue on ue.id = t.ue_id 
-                                    where 1=1 ";
+            var campoAnoTurma = ueId > 0 ? "t.nome" : "t.ano";
+            var agrupamentoTurma = ueId > 0 ? "t.nome," : "";
+
+            var sqlQuery = $@"select
+                                    ftd.situacao as Situacao, 
+                                    count(ftd.id) as Quantidade, 
+                                    t.ano as Ano, 
+                                    {campoAnoTurma} as AnoTurma,
+                                    t.modalidade_codigo  as Modalidade
+                               from fechamento_turma_disciplina ftd
+                              inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
+                              inner join turma t on ft.turma_id = t.id
+                              inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
+                              inner join ue on ue.id = t.ue_id 
+                              where 1=1 ";
 
             var queryBuilder = new StringBuilder(sqlQuery);
 
@@ -242,7 +249,7 @@ namespace SME.SGP.Dados.Repositorios
                 queryBuilder.Append(" and pe.bimestre = @bimestre ");
             }
 
-            queryBuilder.Append(@"group by ftd.situacao, t.ano , t.modalidade_codigo order by t.ano;");
+            queryBuilder.Append($@"group by ftd.situacao,{agrupamentoTurma} t.ano , t.modalidade_codigo order by t.ano;");
 
 
             return await database.Conexao.QueryAsync<FechamentoSituacaoQuantidadeDto>(queryBuilder.ToString(), new

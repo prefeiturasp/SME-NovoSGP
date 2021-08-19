@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {

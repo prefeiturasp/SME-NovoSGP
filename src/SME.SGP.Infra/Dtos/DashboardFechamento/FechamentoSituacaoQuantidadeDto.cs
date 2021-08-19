@@ -8,5 +8,6 @@ namespace SME.SGP.Infra.Dtos
         public int Quantidade { get; set; }
         public Modalidade Modalidade { get; set; }
         public int Ano { get; set; }
+        public string AnoTurma { get; set; }
     }
 }

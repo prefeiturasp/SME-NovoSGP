@@ -42,7 +42,7 @@
             QuantidadeProcessadoSucesso = quantidade;
         }
 
-        public void MontarDescricao(string modalidade, int ano)
+        public void MontarDescricao(string modalidade, string ano)
         {
             Descricao = $"{modalidade} - {ano}";
         }

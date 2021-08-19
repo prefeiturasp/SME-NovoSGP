@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 var novoFechamento = new FechamentoSituacaoDto();
                 novoFechamento.Ordem = fechamentoRetorno.FirstOrDefault().Ano;
                 novoFechamento.MontarDescricao(fechamentoRetorno.FirstOrDefault().Modalidade.ShortName(),
-                    fechamentoRetorno.FirstOrDefault().Ano);
+                    fechamentoRetorno.FirstOrDefault().AnoTurma);
                 foreach (var fechamentoGroup in fechamentoRetorno)
                 {
                     switch (fechamentoGroup.Situacao)
