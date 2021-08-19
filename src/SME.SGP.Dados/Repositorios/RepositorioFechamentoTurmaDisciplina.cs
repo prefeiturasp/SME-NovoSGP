@@ -237,7 +237,7 @@ namespace SME.SGP.Dados.Repositorios
                 queryBuilder.Append(" and t.semestre = @semestre ");
             }
 
-            if (bimestre >= 0)
+            if (bimestre >= 0) 
             {
                 queryBuilder.Append(" and pe.bimestre = @bimestre ");
             }
