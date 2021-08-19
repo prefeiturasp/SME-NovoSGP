@@ -44,9 +44,9 @@ namespace SME.SGP.Aplicacao
             return await servicoEOL.ObterProfessoresAutoComplete(anoLetivo, dreId, nomeProfessor, incluirEmei);
         }
 
-        public async Task<ProfessorResumoDto> ObterResumoPorRFAnoLetivo(string codigoRF, int anoLetivo, bool buscarOutrosCargos = false)
+        public async Task<ProfessorResumoDto> ObterResumoPorRFAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false)
         {
-            var professorResumo = await ObterProfessorEOL(codigoRF, anoLetivo, buscarOutrosCargos);
+            var professorResumo = await ObterProfessorEOL(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos);
             var professorSgp = await ObterProfessorSGP(codigoRF);
                 
             if (professorResumo != null)
@@ -64,9 +64,9 @@ namespace SME.SGP.Aplicacao
             return usuarioSgp;
         }
 
-        private async Task<ProfessorResumoDto> ObterProfessorEOL(string codigoRF, int anoLetivo, bool buscarOutrosCargos)
+        private async Task<ProfessorResumoDto> ObterProfessorEOL(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos)
         {
-            var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(codigoRF, anoLetivo, buscarOutrosCargos);
+            var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos);
             if (professorResumo == null)
                 throw new NegocioException("RF não localizado do EOL");
 
