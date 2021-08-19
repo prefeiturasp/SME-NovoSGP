@@ -18,6 +18,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TurmaAlunoBimestreFechamentoDto>> ObterAlunosComFechamento(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
+        
             var sqlQuery = new StringBuilder(@"select
                                 t.id as TurmaId,
                                 fa.aluno_codigo as AlunoCodigo,
@@ -51,7 +52,7 @@ namespace SME.SGP.Dados.Repositorios
                 sqlQuery.Append(" and t.semestre = @semestre ");
             }
 
-            if (bimestre > 0)
+            if (bimestre >= 0)
             {
                 sqlQuery.Append(" and pe.bimestre = @bimestre ");
             }
