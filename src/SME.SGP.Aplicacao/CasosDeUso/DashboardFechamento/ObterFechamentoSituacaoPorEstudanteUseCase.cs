@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using MediatR;
+using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -51,34 +51,18 @@ namespace SME.SGP.Aplicacao
 
                     var alunoComFechamento = alunosComFechamento.FirstOrDefault(a => a.AlunoCodigo == aluno.AlunoCodigo && a.TurmaId == turmaId);
 
-                    if(alunoComFechamento != null)
+                    if (alunoComFechamento != null)
                         alunoFechamento.Situacao = Dominio.SituacaoFechamentoAluno.Parcial;
 
-                    if(alunoComFechamento != null && totalDisciplinasNaTurma != null)
-                        if(alunoComFechamento.QuantidadeDisciplinaFechadas == totalDisciplinasNaTurma.QuantidadeDisciplinas)
+                    if (alunoComFechamento != null && totalDisciplinasNaTurma != null)
+                        if (alunoComFechamento.QuantidadeDisciplinaFechadas == totalDisciplinasNaTurma.QuantidadeDisciplinas)
                             alunoFechamento.Situacao = Dominio.SituacaoFechamentoAluno.Completo;
 
                     alunosFechamentosStatus.Add(alunoFechamento);
                 }
             }
 
-            if(param.UeId != -99)
-            {
-                foreach (var alunoFechamentoStatus in alunosFechamentosStatus.GroupBy(t => t.Ano))
-                {
-                    var turmaAno = alunoFechamentoStatus.FirstOrDefault().Ano;
-                    var turmaModalidade = alunoFechamentoStatus.FirstOrDefault().Modalidade;
-
-                    var fechamento = new FechamentoSituacaoPorEstudanteDto();
-                    fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Completo).Count());
-                    fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Parcial).Count());
-                    fechamento.AdicionarQuantidadeSemRegistro(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.SemRegistros).Count());
-                    fechamento.MontarDescricao(turmaModalidade.ShortName(), turmaAno.ToString());
-
-                    fechamentos.Add(fechamento);
-                }
-            }
-            else
+            if (param.UeId > 0)
             {
                 foreach (var alunoFechamentoStatus in alunosFechamentosStatus.GroupBy(t => t.TurmaNome))
                 {
@@ -94,7 +78,23 @@ namespace SME.SGP.Aplicacao
                     fechamentos.Add(fechamento);
                 }
             }
-            
+            else
+            {
+                foreach (var alunoFechamentoStatus in alunosFechamentosStatus.GroupBy(t => t.Ano))
+                {
+                    var turmaAno = alunoFechamentoStatus.FirstOrDefault().Ano;
+                    var turmaModalidade = alunoFechamentoStatus.FirstOrDefault().Modalidade;
+
+                    var fechamento = new FechamentoSituacaoPorEstudanteDto();
+                    fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Completo).Count());
+                    fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Parcial).Count());
+                    fechamento.AdicionarQuantidadeSemRegistro(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.SemRegistros).Count());
+                    fechamento.MontarDescricao(turmaModalidade.ShortName(), turmaAno.ToString());
+
+                    fechamentos.Add(fechamento);
+                }
+            }
+
 
             return fechamentos;
         }

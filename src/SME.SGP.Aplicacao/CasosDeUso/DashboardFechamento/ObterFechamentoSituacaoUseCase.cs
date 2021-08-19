@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<FechamentoSituacaoDto>> Executar(FiltroDashboardFechamentoDto param)
+        public async Task<IEnumerable<GraficoBaseDto>> Executar(FiltroDashboardFechamentoDto param)
         {
             var fechamentosRetorno = await mediator.Send(new ObterFechamentoSituacaoQuery(param.UeId, param.AnoLetivo,
                 param.DreId,
@@ -20,35 +20,12 @@ namespace SME.SGP.Aplicacao
                 param.Semestre,
                 param.Bimestre));
 
-            List<FechamentoSituacaoDto> fechamentos = new List<FechamentoSituacaoDto>();
-            if (fechamentosRetorno == null || !fechamentosRetorno.Any())
-                return fechamentos;
+            List<GraficoBaseDto> fechamentos = new List<GraficoBaseDto>();
 
-            foreach (var fechamentoRetorno in fechamentosRetorno.GroupBy(a => a.Ano))
+            foreach (var fechamento in fechamentosRetorno)
             {
-                var novoFechamento = new FechamentoSituacaoDto();
-                novoFechamento.Ordem = fechamentoRetorno.FirstOrDefault().Ano;
-                novoFechamento.MontarDescricao(fechamentoRetorno.FirstOrDefault().Modalidade.ShortName(),
-                    fechamentoRetorno.FirstOrDefault().AnoTurma);
-                foreach (var fechamentoGroup in fechamentoRetorno)
-                {
-                    switch (fechamentoGroup.Situacao)
-                    {
-                        case 1:
-                            novoFechamento.AdicionarValorProcessadoNaoIniciado(fechamentoGroup.Quantidade);
-                            break;
-                        case 2:
-                            novoFechamento.AdicionarValorProcessadoPendente(
-                                fechamentoGroup.Quantidade);
-                            break;
-                        case 3:
-                            novoFechamento.AdicionarValorProcessadoSucesso(
-                                fechamentoGroup.Quantidade);
-                            break;
-                    }
-                }
-
-                fechamentos.Add(novoFechamento);
+                var grupo = $"{fechamento.Modalidade.ShortName()} - {fechamento.AnoTurma}";
+                fechamentos.Add(new GraficoBaseDto(grupo, fechamento.Quantidade, fechamento.Situacao.Name()));
             }
 
             return fechamentos;

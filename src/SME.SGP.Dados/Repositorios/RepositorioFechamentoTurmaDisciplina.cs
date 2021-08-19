@@ -215,7 +215,7 @@ namespace SME.SGP.Dados.Repositorios
                               inner join turma t on ft.turma_id = t.id
                               inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
                               inner join ue on ue.id = t.ue_id 
-                              where 1=1 ";
+                              where ftd.situacao in (0,2,3) ";
 
             var queryBuilder = new StringBuilder(sqlQuery);
 
@@ -249,7 +249,7 @@ namespace SME.SGP.Dados.Repositorios
                 queryBuilder.Append(" and pe.bimestre = @bimestre ");
             }
 
-            queryBuilder.Append($@"group by ftd.situacao,{agrupamentoTurma} t.ano , t.modalidade_codigo order by t.ano;");
+            queryBuilder.Append($@"group by ftd.situacao,{agrupamentoTurma} t.ano , t.modalidade_codigo order by ftd.situacao, t.ano;");
 
 
             return await database.Conexao.QueryAsync<FechamentoSituacaoQuantidadeDto>(queryBuilder.ToString(), new
