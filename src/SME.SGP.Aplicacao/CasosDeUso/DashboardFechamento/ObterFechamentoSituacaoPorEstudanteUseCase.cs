@@ -44,6 +44,7 @@ namespace SME.SGP.Aplicacao
                         TurmaId = turmaId,
                         Ano = aluno.Ano,
                         Modalidade = aluno.Modalidade,
+                        TurmaNome = aluno.TurmaNome,
                         AlunoCodigo = aluno.AlunoCodigo,
                         Situacao = Dominio.SituacaoFechamentoAluno.SemRegistros
                     };
@@ -61,19 +62,39 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            foreach(var alunoFechamentoStatus in alunosFechamentosStatus.GroupBy(t => t.Ano))
+            if(param.UeId != -99)
             {
-                var turmaAno = alunoFechamentoStatus.FirstOrDefault().Ano;
-                var turmaModalidade = alunoFechamentoStatus.FirstOrDefault().Modalidade;
+                foreach (var alunoFechamentoStatus in alunosFechamentosStatus.GroupBy(t => t.Ano))
+                {
+                    var turmaAno = alunoFechamentoStatus.FirstOrDefault().Ano;
+                    var turmaModalidade = alunoFechamentoStatus.FirstOrDefault().Modalidade;
 
-                var fechamento = new FechamentoSituacaoPorEstudanteDto();
-                fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Completo).Count());
-                fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Parcial).Count());
-                fechamento.AdicionarQuantidadeSemRegistro(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.SemRegistros).Count());
-                fechamento.MontarDescricao(turmaModalidade.ShortName(), turmaAno);
+                    var fechamento = new FechamentoSituacaoPorEstudanteDto();
+                    fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Completo).Count());
+                    fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Parcial).Count());
+                    fechamento.AdicionarQuantidadeSemRegistro(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.SemRegistros).Count());
+                    fechamento.MontarDescricao(turmaModalidade.ShortName(), turmaAno.ToString());
 
-                fechamentos.Add(fechamento);
+                    fechamentos.Add(fechamento);
+                }
             }
+            else
+            {
+                foreach (var alunoFechamentoStatus in alunosFechamentosStatus.GroupBy(t => t.TurmaNome))
+                {
+                    var turmaNome = alunoFechamentoStatus.FirstOrDefault().TurmaNome;
+                    var turmaModalidade = alunoFechamentoStatus.FirstOrDefault().Modalidade;
+
+                    var fechamento = new FechamentoSituacaoPorEstudanteDto();
+                    fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Completo).Count());
+                    fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Parcial).Count());
+                    fechamento.AdicionarQuantidadeSemRegistro(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.SemRegistros).Count());
+                    fechamento.MontarDescricao(turmaModalidade.ShortName(), turmaNome);
+
+                    fechamentos.Add(fechamento);
+                }
+            }
+            
 
             return fechamentos;
         }

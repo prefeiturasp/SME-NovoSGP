@@ -38,9 +38,9 @@
             QuantidadeCompleto = quantidade;
         }
 
-        public void MontarDescricao(string modalidade, int ano)
+        public void MontarDescricao(string modalidade, string nome)
         {
-            Descricao = $"{modalidade} - {ano}";
+            Descricao = $"{modalidade} - {nome}";
         }
     }
 }
