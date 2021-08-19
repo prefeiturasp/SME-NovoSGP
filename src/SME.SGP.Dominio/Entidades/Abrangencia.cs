@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio
         public long? TurmaId { get; set; }
         public long? UeId { get; set; }
         public long UsuarioId { get; set; }
+        public bool Historico { get; set; }
     }
 }
