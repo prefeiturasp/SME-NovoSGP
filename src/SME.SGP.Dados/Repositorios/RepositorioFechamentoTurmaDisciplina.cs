@@ -202,7 +202,7 @@ namespace SME.SGP.Dados.Repositorios
             int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
             var sqlQuery = @"select
-                                    distinct ftd.situacao as Situacao, count(ftd.id) as Quantidade, t.ano as Ano, t.modalidade_codigo  as Modalidade
+                                    ftd.situacao as Situacao, count(ftd.id) as Quantidade, t.ano as Ano, t.modalidade_codigo  as Modalidade
                                     from fechamento_turma_disciplina ftd
                                     inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
                                     inner join turma t on ft.turma_id = t.id
@@ -317,6 +317,81 @@ namespace SME.SGP.Dados.Repositorios
                 semestre,
                 bimestre
             });
+        }
+        public async Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamentoPorEstudante(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var sqlQuery = @"select
+                                    distinct ftd.situacao as Situacao, count(ftd.id) as Quantidade, t.ano as Ano, t.modalidade_codigo  as Modalidade
+                                    from fechamento_turma_disciplina ftd
+                                    inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
+                                    inner join turma t on ft.turma_id = t.id
+                                    inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
+                                    inner join ue on ue.id = t.ue_id 
+                                    where 1=1 ";
+
+            var queryBuilder = new StringBuilder(sqlQuery);
+
+            if (ano > 0)
+            {
+                queryBuilder.Append(" and t.ano_letivo = @ano ");
+            }
+
+            if (ueId > 0)
+            {
+                queryBuilder.Append(" and t.ue_id = @ueId ");    
+            }
+            
+            if (dreId > 0)
+            {
+                queryBuilder.Append(" and ue.dre_id = @dreId ");    
+            }
+
+            if (modalidade > 0)
+            {
+                queryBuilder.Append(" and t.modalidade_codigo = @modalidade ");   
+                
+            }
+            
+            if (semestre > 0)
+            {
+                queryBuilder.Append(" and t.semestre = @semestre ");   
+                
+            }
+            
+            if (bimestre > 0)
+            {
+                queryBuilder.Append(" and pe.bimestre = @bimestre ");   
+                
+            }
+            
+            queryBuilder.Append(@"group by ftd.situacao, t.ano , t.modalidade_codigo order by t.ano;");
+            
+            
+            return await database.Conexao.QueryAsync<FechamentoSituacaoQuantidadeDto>(queryBuilder.ToString(), new
+            {
+                ueId,
+                ano,
+                dreId,
+                modalidade, 
+                semestre,
+                bimestre
+            });
+        }
+
+        public async Task<IEnumerable<TurmaFechamentoDisciplinaDto>> ObterTotalDisciplinasPorTurma(int anoLetivo, int bimestre)
+        {
+            var query = new StringBuilder(@"select cfct.turma_id as TurmaId, count(componente_curricular_id) as QuantidadeDisciplinas 
+                from consolidado_fechamento_componente_turma cfct 
+                inner join turma t on cfct.turma_id = t.id
+                where t.ano_letivo = @anoLetivo ");
+
+            if(bimestre >= 0)
+                query.AppendLine(" and cfct.bimestre = @bimestre ");
+
+            query.AppendLine("group by cfct.turma_id order by 1");
+                
+
+            return await database.Conexao.QueryAsync<TurmaFechamentoDisciplinaDto>(query.ToString(), new { anoLetivo, bimestre });
         }
     }
 }
