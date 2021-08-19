@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             return fechamentosPendenteRetorno.Select(pendente => new GraficoBaseDto()
             {
-                Grupo = $"{pendente.Modalidade.ShortName()} - {pendente.Ano}",
+                Descricao = $"{pendente.Modalidade.ShortName()} - {pendente.Ano}",
                 Quantidade = pendente.Quantidade
             }).ToList();
         }

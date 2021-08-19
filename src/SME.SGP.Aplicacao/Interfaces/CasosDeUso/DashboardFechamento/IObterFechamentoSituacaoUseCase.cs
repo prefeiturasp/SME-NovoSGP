@@ -3,7 +3,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterFechamentoSituacaoUseCase : IUseCase<FiltroDashboardFechamentoDto, IEnumerable<FechamentoSituacaoDto>>
+    public interface IObterFechamentoSituacaoUseCase : IUseCase<FiltroDashboardFechamentoDto, IEnumerable<GraficoBaseDto>>
     {
     }
 }
