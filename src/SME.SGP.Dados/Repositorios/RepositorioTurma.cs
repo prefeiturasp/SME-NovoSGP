@@ -1306,7 +1306,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select 
                             distinct t.id as TurmaId, 
-                            t.ano, 
+                            t.ano,
+                            t.nome as TurmaNome,
                             t.modalidade_codigo as Modalidade, bimestre as Bimestre, aluno_codigo as AlunoCodigo 
                         from consolidado_conselho_classe_aluno_turma cccat
                         inner join turma t on cccat.turma_id = t.id 
