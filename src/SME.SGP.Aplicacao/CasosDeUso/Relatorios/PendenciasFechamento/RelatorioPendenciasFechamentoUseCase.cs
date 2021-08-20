@@ -26,9 +26,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             //await mediator.Send(new ValidaSeExisteTurmaPorCodigoQuery(filtroRelatorioPendenciasFechamentoDto.TurmaCodigo));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            filtroRelatorioPendenciasFechamentoDto.UsuarioNome = usuarioLogado.Nome;
-            filtroRelatorioPendenciasFechamentoDto.UsuarioRf = usuarioLogado.CodigoRf;
-
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Pendencias, filtroRelatorioPendenciasFechamentoDto, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPendencias));
         }
 
