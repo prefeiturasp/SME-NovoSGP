@@ -162,6 +162,9 @@ namespace SME.SGP.Aplicacao
 
             if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
             {
+                if (frequenciasParaPersistir.Any(a => a.FrequenciaNegativa()))
+                    throw new Exception($"Erro ao calcular frequencia da turma {frequenciasParaPersistir.First().TurmaId} : Número de ausências maior do que o número de aulas");
+
                 var alunos = frequenciasParaPersistir.Select(a => a.CodigoAluno).Distinct().ToArray();
                 var frequencia = frequenciasParaPersistir.FirstOrDefault();
                 var periodoEscolarId = frequencia.PeriodoEscolarId.Value;
