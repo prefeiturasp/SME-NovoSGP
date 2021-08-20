@@ -101,7 +101,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
-        [HttpGet("rfs/{codigoRF}/buscar/{anoLetivo}")]
+        [HttpGet("rfs/{​​​​​​codigoRF}​​​​​​/anos-letivos/{​​​​​​anoLetivo}​​​​​​/buscar")]
         [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ConsultarProfessorRf(string codigoRF, int anoLetivo,string dreId,string ueId)
