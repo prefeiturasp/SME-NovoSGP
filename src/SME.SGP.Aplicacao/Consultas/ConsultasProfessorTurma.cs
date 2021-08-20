@@ -44,9 +44,9 @@ namespace SME.SGP.Aplicacao
             return await servicoEOL.ObterProfessoresAutoComplete(anoLetivo, dreId, nomeProfessor, incluirEmei);
         }
 
-        public async Task<ProfessorResumoDto> ObterResumoPorRFAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false)
+        public async Task<ProfessorResumoDto> ObterResumoPorRFAnoLetivo(string codigoRF, int anoLetivo, bool buscarOutrosCargos = false)
         {
-            var professorResumo = await ObterProfessorEOL(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos);
+            var professorResumo = await ObterProfessorEOL(codigoRF, anoLetivo, buscarOutrosCargos);
             var professorSgp = await ObterProfessorSGP(codigoRF);
                 
             if (professorResumo != null)
@@ -54,7 +54,12 @@ namespace SME.SGP.Aplicacao
 
             return professorResumo;
         }
+        public async Task<ProfessorResumoDto> ObterResumoPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId)
+        {
+            var professorResumo = await ObterProfessorUeRFEOL(codigoRF, anoLetivo, dreId, ueId);
 
+            return professorResumo;
+        }
         private async Task<Usuario> ObterProfessorSGP(string codigoRF)
         {
             var usuarioSgp = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRF));
@@ -64,15 +69,22 @@ namespace SME.SGP.Aplicacao
             return usuarioSgp;
         }
 
-        private async Task<ProfessorResumoDto> ObterProfessorEOL(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos)
+        private async Task<ProfessorResumoDto> ObterProfessorEOL(string codigoRF, int anoLetivo, bool buscarOutrosCargos)
         {
-            var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos);
+            var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(codigoRF, anoLetivo, buscarOutrosCargos);
             if (professorResumo == null)
                 throw new NegocioException("RF não localizado do EOL");
 
             return professorResumo;
         }
+        private async Task<ProfessorResumoDto> ObterProfessorUeRFEOL(string codigoRF, int anoLetivo, string dreId, string ueId)
+        {
+            var professorResumo = await servicoEOL.ObterProfessorPorRFUeDreAnoLetivo(codigoRF, anoLetivo, dreId, ueId);
+            if (professorResumo == null)
+                throw new NegocioException("RF não localizado do EOL");
 
+            return professorResumo;
+        }
         public async Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo)
         {
             IEnumerable<TurmaDto> turmasDto = null;

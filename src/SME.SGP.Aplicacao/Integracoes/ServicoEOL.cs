@@ -650,9 +650,24 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<UsuarioResumoCoreDto>(json);
         }
 
-        public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false)
+        public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, bool buscarOutrosCargos = false)
         {
-            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}?buscarOutrosCargos={buscarOutrosCargos}&ueId={ueId}&dreId={dreId}");
+            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}?buscarOutrosCargos={buscarOutrosCargos}");
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Ocorreu uma falha ao consultar o professor");
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
+        }
+
+        public async Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId)
+        {
+            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRfDreUe/{anoLetivo}&ueId={ueId}&dreId={dreId}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");
