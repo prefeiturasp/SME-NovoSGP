@@ -667,7 +667,10 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId)
         {
-            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRfDreUe/{anoLetivo}&ueId={ueId}&dreId={dreId}");
+            if (string.IsNullOrWhiteSpace(codigoRF) || anoLetivo == 0 || string.IsNullOrWhiteSpace(dreId) || string.IsNullOrWhiteSpace(ueId))
+                throw new NegocioException("É necessario informar o codigoRF Dre, UE e o ano letivo");
+
+            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRfDreUe/{anoLetivo}?ueId={ueId}&dreId={dreId}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");
