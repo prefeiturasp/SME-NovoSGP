@@ -204,52 +204,60 @@ namespace SME.SGP.Dados.Repositorios
             var campoAnoTurma = ueId > 0 ? "t.nome" : "t.ano";
             var agrupamentoTurma = ueId > 0 ? "t.nome," : "";
 
-            var sqlQuery = $@"select
-                                    ftd.situacao as Situacao, 
-                                    count(ftd.id) as Quantidade, 
-                                    t.ano as Ano, 
-                                    {campoAnoTurma} as AnoTurma,
-                                    t.modalidade_codigo  as Modalidade
-                               from fechamento_turma_disciplina ftd
-                              inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
-                              inner join turma t on ft.turma_id = t.id
-                              inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
-                              inner join ue on ue.id = t.ue_id 
-                              where ftd.situacao in (0,2,3) ";
+            var sqlQuery = $@"select case when x.Situacao in (0, 1) then 0 else x.Situacao end as Situacao,
+	                                case when x.Situacao in (0, 1) then sum(x.Quantidade) else x.Quantidade end as Quantidade,
+                                    x.AnoTurma,
+	                                x.Ano,
+	                                x.Modalidade
+                               from (
+                                     select
+                                            ftd.situacao as Situacao, 
+                                            count(ftd.id) as Quantidade, 
+                                            t.ano as Ano, 
+                                            {campoAnoTurma} as AnoTurma,
+                                            t.modalidade_codigo  as Modalidade
+                                       from fechamento_turma_disciplina ftd
+                                      inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
+                                      inner join turma t on ft.turma_id = t.id
+                                      inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
+                                      inner join ue on ue.id = t.ue_id 
+                                      where t.tipo_turma in (1,2,7) ";
 
             var queryBuilder = new StringBuilder(sqlQuery);
 
             if (ano > 0)
             {
-                queryBuilder.Append(" and t.ano_letivo = @ano ");
+                queryBuilder.AppendLine(" and t.ano_letivo = @ano ");
             }
 
             if (ueId > 0)
             {
-                queryBuilder.Append(" and t.ue_id = @ueId ");
+                queryBuilder.AppendLine(" and t.ue_id = @ueId ");
             }
 
             if (dreId > 0)
             {
-                queryBuilder.Append(" and ue.dre_id = @dreId ");
+                queryBuilder.AppendLine(" and ue.dre_id = @dreId ");
             }
 
             if (modalidade > 0)
             {
-                queryBuilder.Append(" and t.modalidade_codigo = @modalidade ");
+                queryBuilder.AppendLine(" and t.modalidade_codigo = @modalidade ");
             }
 
             if (semestre > 0)
             {
-                queryBuilder.Append(" and t.semestre = @semestre ");
+                queryBuilder.AppendLine(" and t.semestre = @semestre ");
             }
 
             if (bimestre >= 0) 
             {
-                queryBuilder.Append(" and pe.bimestre = @bimestre ");
+                queryBuilder.AppendLine(" and pe.bimestre = @bimestre ");
             }
 
-            queryBuilder.Append($@"group by ftd.situacao,{agrupamentoTurma} t.ano , t.modalidade_codigo order by ftd.situacao, t.ano;");
+            queryBuilder.AppendLine($@"group by ftd.situacao,{agrupamentoTurma} t.ano , t.modalidade_codigo order by ftd.situacao, t.ano ) x
+                                   group by x.Situacao, x.Quantidade, x.Ano, x.AnoTurma, x.Modalidade
+                                   order by x.Ano;");
 
 
             return await database.Conexao.QueryAsync<FechamentoSituacaoQuantidadeDto>(queryBuilder.ToString(), new
@@ -275,7 +283,8 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join fechamento_turma ft  on ft.id = ftd.fechamento_turma_id 
                                 inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
                                 inner join turma t on ft.turma_id = t.id 
-                                inner join ue on ue.id = t.ue_id where 1=1 ";
+                                inner join ue on ue.id = t.ue_id 
+                                where t.tipo_turma in (1,2,7)";
 
             var queryBuilder = new StringBuilder(sqlQuery);
 
