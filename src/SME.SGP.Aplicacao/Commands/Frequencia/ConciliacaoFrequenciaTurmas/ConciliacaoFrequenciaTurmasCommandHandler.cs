@@ -28,11 +28,11 @@ namespace SME.SGP.Aplicacao
                 foreach (var modalidade in periodosPorModalidade)
                 {
                     var turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year, request.TurmaCodigo)).ToList();
-                    
+
                     if (turmasDaModalidade != null && turmasDaModalidade.Any())
                         foreach (var periodoEscolar in modalidade)
                             await PublicarFilaConciliacaoTurmas(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim, request.ComponenteCurricularId);
-                }
+                };
 
                 return true;
             }
@@ -43,12 +43,12 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<string> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
+        private Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<string> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
-            foreach (var turma in turmasDaModalidade)
-                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma, bimestre, componenteCurricularId, dataInicio, dataFim));
+            Parallel.ForEach(turmasDaModalidade, async turma =>
+                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma, bimestre, componenteCurricularId, dataInicio, dataFim)));
 
-            return true;
+            return Task.FromResult(true);
         }
 
         private async Task<IEnumerable<string>> ObterTurmasPorModalidade(ModalidadeTipoCalendario modalidadeTipoCalendario, int ano, string turmaCodigo)
