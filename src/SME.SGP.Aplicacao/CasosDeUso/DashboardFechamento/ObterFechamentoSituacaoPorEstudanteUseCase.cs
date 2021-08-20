@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        public async Task<IEnumerable<FechamentoSituacaoPorEstudanteDto>> Executar(FiltroDashboardFechamentoDto param)
+        public async Task<IEnumerable<GraficoBaseDto>> Executar(FiltroDashboardFechamentoDto param)
         {
-            var fechamentos = new List<FechamentoSituacaoPorEstudanteDto>();
+            List<GraficoBaseDto> fechamentos = new List<GraficoBaseDto>();
 
             var alunosTabelaConsolidado = await mediator.Send(new ObterAlunosTurmaPorDreIdUeIdBimestreSemestreQuery(param.UeId, param.AnoLetivo,
                 param.DreId,
@@ -75,7 +75,9 @@ namespace SME.SGP.Aplicacao
                     fechamento.AdicionarQuantidadeSemRegistro(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.SemRegistros).Count());
                     fechamento.MontarDescricao(turmaModalidade.ShortName(), turmaNome);
 
-                    fechamentos.Add(fechamento);
+                    fechamentos.Add(new GraficoBaseDto(fechamento.Descricao, fechamento.QuantidadeSemRegistro, fechamento.LegendaSemRegistro));
+                    fechamentos.Add(new GraficoBaseDto(fechamento.Descricao, fechamento.QuantidadeParcial, fechamento.LegendaParcial));
+                    fechamentos.Add(new GraficoBaseDto(fechamento.Descricao, fechamento.QuantidadeCompleto, fechamento.LegendaCompleto));
                 }
             }
             else
@@ -91,11 +93,11 @@ namespace SME.SGP.Aplicacao
                     fechamento.AdicionarQuantidadeSemRegistro(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.SemRegistros).Count());
                     fechamento.MontarDescricao(turmaModalidade.ShortName(), turmaAno.ToString());
 
-                    fechamentos.Add(fechamento);
+                    fechamentos.Add(new GraficoBaseDto(fechamento.Descricao, fechamento.QuantidadeSemRegistro, fechamento.LegendaSemRegistro));
+                    fechamentos.Add(new GraficoBaseDto(fechamento.Descricao, fechamento.QuantidadeParcial, fechamento.LegendaParcial));
+                    fechamentos.Add(new GraficoBaseDto(fechamento.Descricao, fechamento.QuantidadeCompleto, fechamento.LegendaCompleto));
                 }
             }
-
-
             return fechamentos;
         }
     }
