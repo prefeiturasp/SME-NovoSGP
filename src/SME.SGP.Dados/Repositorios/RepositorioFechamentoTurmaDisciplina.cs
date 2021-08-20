@@ -399,7 +399,8 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select cfct.turma_id as TurmaId, count(componente_curricular_id) as QuantidadeDisciplinas 
                 from consolidado_fechamento_componente_turma cfct 
                 inner join turma t on cfct.turma_id = t.id
-                where t.ano_letivo = @anoLetivo ");
+                inner join componente_curricular cc on componente_curricular_id = cc.id
+                where t.ano_letivo = @anoLetivo and cc.permite_lancamento_nota ");
 
             if(bimestre >= 0)
                 query.AppendLine(" and cfct.bimestre = @bimestre ");

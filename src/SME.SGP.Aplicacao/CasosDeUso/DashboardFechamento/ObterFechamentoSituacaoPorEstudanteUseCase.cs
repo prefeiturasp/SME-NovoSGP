@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
                     fechamentos.Add(new GraficoBaseDto(fechamento.Descricao, fechamento.QuantidadeCompleto, fechamento.LegendaCompleto));
                 }
             }
-            return fechamentos;
+            return fechamentos.OrderBy(a => a.Grupo).ToList();
         }
     }
 }
