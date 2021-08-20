@@ -588,7 +588,6 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string ueId,string nomeProfessor)
         {
             var resposta = await httpClient.GetAsync($"professores/{anoLetivo}/AutoComplete/{dreId}?nome={nomeProfessor}&ueId={ueId}");
-
             if (!resposta.IsSuccessStatusCode)
                 return null;
 
