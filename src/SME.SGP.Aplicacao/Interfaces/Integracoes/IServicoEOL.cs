@@ -99,7 +99,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<UsuarioResumoCoreDto> ObterResumoCore(string login);
 
-        Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, string dreId = "", string ueId="", bool buscarOutrosCargos = false);
+        Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, bool buscarOutrosCargos = false);
+        Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId,string ueId);
 
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores);
 
