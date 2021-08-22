@@ -48,11 +48,11 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<AlunoComponenteCurricularDto>> ObterAlunosAusentesPorTurmaEPeriodo(string turmaCodigo, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
             var query = new StringBuilder(@"select distinct a.disciplina_id as ComponenteCurricularId, raa.codigo_aluno as AlunoCodigo
-                        from registro_ausencia_aluno raa 
+                        from registro_frequencia_aluno raa 
                        inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
                        inner join aula a on a.id = rf.aula_id 
-                       where 
-                         a.turma_id = @turmaCodigo
+                       where raa.valor = 2
+                         and a.turma_id = @turmaCodigo
                          and a.data_aula between @dataInicio and @dataFim ");
 
             if (!string.IsNullOrEmpty(componenteCurricularId))

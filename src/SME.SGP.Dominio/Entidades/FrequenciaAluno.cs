@@ -96,5 +96,8 @@ namespace SME.SGP.Dominio
         {
             PercentuaisFrequenciaPorBimestre.Add((bimestre, percentual));
         }
+
+        public bool FrequenciaNegativa()
+            => (TotalAusencias - TotalCompensacoes) > TotalAulas;
     }
 }
