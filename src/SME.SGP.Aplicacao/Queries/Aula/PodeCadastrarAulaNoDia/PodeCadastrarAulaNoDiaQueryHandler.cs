@@ -19,10 +19,10 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(PodeCadastrarAulaNoDiaQuery request, CancellationToken cancellationToken)
         {
             return !await ExisteAula(request) 
-                && await PertimeTipoAula(request);
+                && await PermiteTipoAula(request);
         }
 
-        private async Task<bool> PertimeTipoAula(PodeCadastrarAulaNoDiaQuery request)
+        private async Task<bool> PermiteTipoAula(PodeCadastrarAulaNoDiaQuery request)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
