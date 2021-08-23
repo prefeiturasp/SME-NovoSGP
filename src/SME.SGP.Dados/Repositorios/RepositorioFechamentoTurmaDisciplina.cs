@@ -204,23 +204,19 @@ namespace SME.SGP.Dados.Repositorios
             var campoAnoTurma = ueId > 0 ? "t.nome" : "t.ano";
             var agrupamentoTurma = ueId > 0 ? "t.nome," : "";
 
-            var sqlQuery = $@"select case when x.Situacao in (0, 1) then 0 else x.Situacao end as Situacao,
-	                                case when x.Situacao in (0, 1) then sum(x.Quantidade) else x.Quantidade end as Quantidade,
+            var sqlQuery = $@"select Situacao, sum(x.Quantidade) as Quantidade,
                                     x.AnoTurma,
 	                                x.Ano,
 	                                x.Modalidade
                                from (
-                                     select
-                                            ftd.situacao as Situacao, 
-                                            count(ftd.id) as Quantidade, 
-                                            t.ano as Ano, 
-                                            {campoAnoTurma} as AnoTurma,
-                                            t.modalidade_codigo  as Modalidade
-                                       from fechamento_turma_disciplina ftd
-                                      inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
-                                      inner join turma t on ft.turma_id = t.id
-                                      inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
-                                      inner join ue on ue.id = t.ue_id 
+                                     select  case  when cfct.status in (0, 1) then 0 else cfct.status end as Situacao,
+                                               count(cfct.id) as Quantidade, 
+                                               t.ano as Ano, 
+                                               {campoAnoTurma} as AnoTurma,
+                                               t.modalidade_codigo  as Modalidade
+                                          from consolidado_fechamento_componente_turma cfct 
+                                         inner join turma t on t.id = cfct.turma_id
+                                         inner join ue on ue.id = t.ue_id
                                       where t.tipo_turma in (1,2,7) ";
 
             var queryBuilder = new StringBuilder(sqlQuery);
@@ -252,11 +248,11 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre >= 0) 
             {
-                queryBuilder.AppendLine(" and pe.bimestre = @bimestre ");
+                queryBuilder.AppendLine(" and cfct.bimestre = @bimestre ");
             }
 
-            queryBuilder.AppendLine($@"group by ftd.situacao,{agrupamentoTurma} t.ano , t.modalidade_codigo order by ftd.situacao, t.ano ) x
-                                   group by x.Situacao, x.Quantidade, x.Ano, x.AnoTurma, x.Modalidade
+            queryBuilder.AppendLine($@"group by cfct.status, t.ano, {agrupamentoTurma} t.modalidade_codigo  order by cfct.status, t.ano ) x
+                                   group by x.Situacao, x.Ano, x.AnoTurma, x.Modalidade
                                    order by x.Ano;");
 
 
