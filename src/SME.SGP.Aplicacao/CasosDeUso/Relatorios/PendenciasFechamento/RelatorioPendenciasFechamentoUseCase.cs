@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class RelatorioPendenciasFechamentoUseCase : IRelatorioPendenciasFechamentoUseCase
+    public class RelatorioPendenciasFechamentoUseCase : IRelatorioPendenciasUseCase
     {
         private readonly IMediator mediator;
 
@@ -19,14 +19,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Executar(FiltroRelatorioPendenciasFechamentoDto filtroRelatorioPendenciasFechamentoDto)
+        public async Task<bool> Executar(FiltroRelatorioPendenciasDto filtroRelatorioPendenciasDto)
         {
-            await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtroRelatorioPendenciasFechamentoDto.DreCodigo));
-            await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioPendenciasFechamentoDto.UeCodigo));
+            await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtroRelatorioPendenciasDto.DreCodigo));
+            await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioPendenciasDto.UeCodigo));
             //await mediator.Send(new ValidaSeExisteTurmaPorCodigoQuery(filtroRelatorioPendenciasFechamentoDto.TurmaCodigo));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Pendencias, filtroRelatorioPendenciasFechamentoDto, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPendencias));
+            filtroRelatorioPendenciasDto.UsuarioLogadoNome = usuarioLogado.Nome;
+            filtroRelatorioPendenciasDto.UsuarioLogadoRf = usuarioLogado.CodigoRf;
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Pendencias, filtroRelatorioPendenciasDto, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPendencias));
         }
 
         public List<FiltroTipoPendenciaDto> ListarTodosTipos(bool opcaoTodos)

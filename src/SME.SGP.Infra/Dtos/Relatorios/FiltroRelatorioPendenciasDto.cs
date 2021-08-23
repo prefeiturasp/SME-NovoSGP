@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra.Dtos.Relatorios
 {
-    public class FiltroRelatorioPendenciasFechamentoDto
+    public class FiltroRelatorioPendenciasDto
     {
         public int AnoLetivo { get; set; }
         public string DreCodigo { get; set; }
@@ -17,6 +17,8 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public bool ExibirPendenciasResolvidas { get; set; }
         public int[] TipoPendenciaGrupo { get; set; }
         public bool ExibirHistorico { get; set; }
+        public string UsuarioLogadoNome { get; set; }
+        public string UsuarioLogadoRf { get; set; }
 
     }
 }

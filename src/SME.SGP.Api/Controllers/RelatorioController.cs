@@ -191,7 +191,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> Gerar(FiltroRelatorioPendenciasFechamentoDto filtroRelatorioPendenciasFechamentoDto, [FromServices] IRelatorioPendenciasFechamentoUseCase relatorioPendenciasFechamentoUseCase)
+        public async Task<IActionResult> Gerar(FiltroRelatorioPendenciasDto filtroRelatorioPendenciasFechamentoDto, [FromServices] IRelatorioPendenciasUseCase relatorioPendenciasFechamentoUseCase)
         {
             return Ok(await relatorioPendenciasFechamentoUseCase.Executar(filtroRelatorioPendenciasFechamentoDto));
         }
@@ -200,7 +200,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public IActionResult ObterTipoPendencias([FromQuery] bool opcaoTodos, [FromServices] IRelatorioPendenciasFechamentoUseCase relatorioPendenciasFechamentoUseCase)
+        public IActionResult ObterTipoPendencias([FromQuery] bool opcaoTodos, [FromServices] IRelatorioPendenciasUseCase relatorioPendenciasFechamentoUseCase)
         {
             return Ok(relatorioPendenciasFechamentoUseCase.ListarTodosTipos(opcaoTodos));
         }
