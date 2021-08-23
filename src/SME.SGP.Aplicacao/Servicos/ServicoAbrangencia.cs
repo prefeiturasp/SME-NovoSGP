@@ -258,7 +258,7 @@ namespace SME.SGP.Aplicacao.Servicos
                         // sincronizamos a abrangencia do login + perfil
                         unitOfWork.IniciarTransacao();
 
-                        SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
+                        SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia?.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
 
                         unitOfWork.PersistirTransacao();
                     }
@@ -327,7 +327,7 @@ namespace SME.SGP.Aplicacao.Servicos
             repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar);
         }
 
-        private void SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia abrangencia, bool ehSupervisor, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas, string login, Guid perfil)
+        private void SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia? abrangencia, bool ehSupervisor, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas, string login, Guid perfil)
         {
             if (ehSupervisor)
                 SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
