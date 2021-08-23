@@ -10,8 +10,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<AtribuicaoEsporadica>> ListarPaginada(Paginacao paginacao, int anoLetivo, string dreId, string ueId, string codigoRF);
 
         AtribuicaoEsporadica ObterUltimaPorRF(string codigoRF);
-
-        IEnumerable<AtribuicaoEsporadica> ObterAtribuicoesDatasConflitantes(DateTime dataInicio, DateTime dataFim, string professorRF, long id = 0);
+          
+        bool ExisteAtribuicaoConflitante(DateTime dataInicio, DateTime dataFim, string professorRF, string ue_id,  long id = 0);
         AtribuicaoEsporadica ObterUltimaPorRF(string codigoRF, bool somenteInfantil);
     }
 }
