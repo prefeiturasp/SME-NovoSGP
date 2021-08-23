@@ -74,9 +74,12 @@ namespace SME.SGP.Aplicacao
                     fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Parcial).Count());
                     fechamento.AdicionarQuantidadeSemRegistro(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.SemRegistros).Count());
 
-                    fechamentos.Add(new GraficoBaseDto(turmaNome, fechamento.QuantidadeSemRegistro, fechamento.LegendaSemRegistro));
-                    fechamentos.Add(new GraficoBaseDto(turmaNome, fechamento.QuantidadeParcial, fechamento.LegendaParcial));
-                    fechamentos.Add(new GraficoBaseDto(turmaNome, fechamento.QuantidadeCompleto, fechamento.LegendaCompleto));
+                    if(fechamento.QuantidadeSemRegistro > 0)
+                        fechamentos.Add(new GraficoBaseDto(turmaNome, fechamento.QuantidadeSemRegistro, fechamento.LegendaSemRegistro));
+                    if (fechamento.QuantidadeParcial > 0)
+                        fechamentos.Add(new GraficoBaseDto(turmaNome, fechamento.QuantidadeParcial, fechamento.LegendaParcial));
+                    if (fechamento.QuantidadeCompleto > 0)
+                        fechamentos.Add(new GraficoBaseDto(turmaNome, fechamento.QuantidadeCompleto, fechamento.LegendaCompleto));
                 }
             }
             else
@@ -91,9 +94,12 @@ namespace SME.SGP.Aplicacao
                     fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Parcial).Count());
                     fechamento.AdicionarQuantidadeSemRegistro(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.SemRegistros).Count());
 
-                    fechamentos.Add(new GraficoBaseDto(turmaAno == -88 ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeSemRegistro, fechamento.LegendaSemRegistro));
-                    fechamentos.Add(new GraficoBaseDto(turmaAno == -88 ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeParcial, fechamento.LegendaParcial));
-                    fechamentos.Add(new GraficoBaseDto(turmaAno == -88 ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeCompleto, fechamento.LegendaCompleto));
+                    if (fechamento.QuantidadeSemRegistro > 0)
+                        fechamentos.Add(new GraficoBaseDto(turmaAno == -88 ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeSemRegistro, fechamento.LegendaSemRegistro));
+                    if (fechamento.QuantidadeParcial > 0)
+                        fechamentos.Add(new GraficoBaseDto(turmaAno == -88 ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeParcial, fechamento.LegendaParcial));
+                    if (fechamento.QuantidadeCompleto > 0)
+                        fechamentos.Add(new GraficoBaseDto(turmaAno == -88 ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeCompleto, fechamento.LegendaCompleto));
                 }
             }
             return fechamentos.OrderBy(a => a.Grupo).ToList();

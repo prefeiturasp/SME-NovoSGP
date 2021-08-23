@@ -26,11 +26,21 @@ namespace SME.SGP.Aplicacao
             );
 
 
-            return fechamentosPendenteRetorno.Select(pendente => new GraficoBaseDto()
+            List<GraficoBaseDto> fechamentos = new List<GraficoBaseDto>();
+
+            foreach (var fechamento in fechamentosPendenteRetorno)
             {
-                Descricao = $"{pendente.Ano}",
-                Quantidade = pendente.Quantidade
-            }).OrderBy(a => a.Descricao).ToList();
+                if (fechamento.Quantidade > 0)
+                {
+                    fechamentos.Add(new GraficoBaseDto()
+                    {
+                        Descricao = $"{fechamento.Ano}",
+                        Quantidade = fechamento.Quantidade
+                    });
+                }
+                
+            }
+            return fechamentos.OrderBy(a => a.Descricao).ToList();
         }
     }
 }

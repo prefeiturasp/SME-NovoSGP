@@ -25,7 +25,8 @@ namespace SME.SGP.Aplicacao
             foreach (var fechamento in fechamentosRetorno)
             {
                 var grupo = $"{fechamento.AnoTurma}";
-                fechamentos.Add(new GraficoBaseDto(grupo, fechamento.Quantidade, fechamento.Situacao.Name()));
+                if(fechamento.Quantidade > 0)
+                    fechamentos.Add(new GraficoBaseDto(grupo, fechamento.Quantidade, fechamento.Situacao.Name()));
             }
 
             return fechamentos.OrderBy(a => a.Grupo).ToList();
