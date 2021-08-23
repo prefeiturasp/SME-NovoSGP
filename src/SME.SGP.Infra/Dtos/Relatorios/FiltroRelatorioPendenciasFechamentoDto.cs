@@ -11,9 +11,12 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public string[] TurmasCodigo { get; set; }
         public long[] ComponentesCurriculares { get; set; }
         public int? Bimestre { get; set; }
-        public bool ExibirDetalhamento { get; set; }
         public int? Semestre { get; set; }
         public string UsuarioNome { get; set; }
         public string UsuarioRf { get; set; }
+        public bool ExibirPendenciasResolvidas { get; set; }
+        public int[] TipoPendenciaGrupo { get; set; }
+        public bool ExibirHistorico { get; set; }
+
     }
 }
