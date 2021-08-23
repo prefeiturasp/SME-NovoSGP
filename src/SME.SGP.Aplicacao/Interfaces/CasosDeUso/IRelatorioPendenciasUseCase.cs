@@ -5,9 +5,9 @@ using SME.SGP.Infra.Dtos.Relatorios;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
-    public interface IRelatorioPendenciasFechamentoUseCase
+    public interface IRelatorioPendenciasUseCase
     {
-        Task<bool> Executar(FiltroRelatorioPendenciasFechamentoDto filtroRelatorioPendenciasFechamentoDto);
+        Task<bool> Executar(FiltroRelatorioPendenciasDto filtroRelatorioPendenciasFechamentoDto);
         List<FiltroTipoPendenciaDto> ListarTodosTipos(bool opcaoTodos);
     }
 }
