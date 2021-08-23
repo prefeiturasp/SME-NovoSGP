@@ -648,21 +648,16 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public bool VerificarAulaPorWorkflowId(long workflowId)
+        public async Task<bool> VerificarAulaPorWorkflowId(long workflowId)
         {
             var query = @"select count(a.id)
                              from aula a
-                            where a.excluido = false
-                              and a.migrado = false
+                            where not excluido
+                              and not migrado
                               and tipo_aula = 2
                               and a.wf_aprovacao_id = @workflowId";
 
-            int qtde = database.Conexao.QueryFirst<int>(query.ToString(), new
-            {
-                workflowId
-            });
-
-            return qtde > 0;
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new { workflowId });
         }
 
         public async Task<int> ObterQuantidadeDeAulasPorTurmaDisciplinaPeriodoAsync(string turmaId, string disciplinaId, DateTime inicio, DateTime fim)
