@@ -23,7 +23,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtroRelatorioPendenciasDto.DreCodigo));
             await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioPendenciasDto.UeCodigo));
-            //await mediator.Send(new ValidaSeExisteTurmaPorCodigoQuery(filtroRelatorioPendenciasFechamentoDto.TurmaCodigo));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             filtroRelatorioPendenciasDto.UsuarioLogadoNome = usuarioLogado.Nome;
             filtroRelatorioPendenciasDto.UsuarioLogadoRf = usuarioLogado.CodigoRf;
