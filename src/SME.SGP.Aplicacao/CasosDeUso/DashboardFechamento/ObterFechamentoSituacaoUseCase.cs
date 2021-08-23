@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var fechamento in fechamentosRetorno)
             {
-                var grupo = $"{fechamento.Modalidade.ShortName()} - {fechamento.AnoTurma}";
+                var grupo = $"{fechamento.AnoTurma}";
                 fechamentos.Add(new GraficoBaseDto(grupo, fechamento.Quantidade, fechamento.Situacao.Name()));
             }
 
