@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             {
                 Descricao = $"{pendente.Modalidade.ShortName()} - {pendente.Ano}",
                 Quantidade = pendente.Quantidade
-            }).ToList();
+            }).OrderBy(a => a.Descricao).ToList();
         }
     }
 }

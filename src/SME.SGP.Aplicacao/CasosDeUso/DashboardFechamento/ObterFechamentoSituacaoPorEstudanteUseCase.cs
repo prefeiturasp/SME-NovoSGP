@@ -42,8 +42,8 @@ namespace SME.SGP.Aplicacao
                     var alunoFechamento = new FechamentoAlunoStatusDto()
                     {
                         TurmaId = turmaId,
-                        Ano = aluno.Ano,
-                        Modalidade = aluno.Modalidade,
+                        Ano = param.UeId == 0 && aluno.TurmaTipo == 2 ? -88 : aluno.Ano,
+                        Modalidade = aluno.TurmaModalidade,
                         TurmaNome = aluno.TurmaNome,
                         AlunoCodigo = aluno.AlunoCodigo,
                         Situacao = Dominio.SituacaoFechamentoAluno.SemRegistros
@@ -90,6 +90,7 @@ namespace SME.SGP.Aplicacao
                     fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Completo).Count());
                     fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Parcial).Count());
                     fechamento.AdicionarQuantidadeSemRegistro(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.SemRegistros).Count());
+                    fechamento.MontarDescricao(turmaModalidade.ShortName(), turmaAno == -88 ? "Ed. Física" : turmaAno.ToString());
 
                     fechamentos.Add(new GraficoBaseDto(turmaAno, fechamento.QuantidadeSemRegistro, fechamento.LegendaSemRegistro));
                     fechamentos.Add(new GraficoBaseDto(turmaAno, fechamento.QuantidadeParcial, fechamento.LegendaParcial));

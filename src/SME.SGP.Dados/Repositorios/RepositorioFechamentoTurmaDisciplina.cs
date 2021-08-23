@@ -201,62 +201,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamento(long ueId,
             int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var campoAnoTurma = ueId > 0 ? "t.nome" : "t.ano";
-            var agrupamentoTurma = ueId > 0 ? "t.nome," : "";
+            var query = ueId > 0 ? MontarQuerySituacaoProcessoFechamento(ueId, ano, dreId, modalidade, semestre, bimestre) : MontarQuerySituacaoProcessoFechamentoSME(ano, dreId, modalidade, semestre, bimestre);
 
-            var sqlQuery = $@"select Situacao, sum(x.Quantidade) as Quantidade,
-                                    x.AnoTurma,
-	                                x.Ano,
-	                                x.Modalidade
-                               from (
-                                     select  case  when cfct.status in (0, 1) then 0 else cfct.status end as Situacao,
-                                               count(cfct.id) as Quantidade, 
-                                               t.ano as Ano, 
-                                               {campoAnoTurma} as AnoTurma,
-                                               t.modalidade_codigo  as Modalidade
-                                          from consolidado_fechamento_componente_turma cfct 
-                                         inner join turma t on t.id = cfct.turma_id
-                                         inner join ue on ue.id = t.ue_id
-                                      where t.tipo_turma in (1,2,7) ";
-
-            var queryBuilder = new StringBuilder(sqlQuery);
-
-            if (ano > 0)
-            {
-                queryBuilder.AppendLine(" and t.ano_letivo = @ano ");
-            }
-
-            if (ueId > 0)
-            {
-                queryBuilder.AppendLine(" and t.ue_id = @ueId ");
-            }
-
-            if (dreId > 0)
-            {
-                queryBuilder.AppendLine(" and ue.dre_id = @dreId ");
-            }
-
-            if (modalidade > 0)
-            {
-                queryBuilder.AppendLine(" and t.modalidade_codigo = @modalidade ");
-            }
-
-            if (semestre > 0)
-            {
-                queryBuilder.AppendLine(" and t.semestre = @semestre ");
-            }
-
-            if (bimestre >= 0) 
-            {
-                queryBuilder.AppendLine(" and cfct.bimestre = @bimestre ");
-            }
-
-            queryBuilder.AppendLine($@"group by cfct.status, t.ano, {agrupamentoTurma} t.modalidade_codigo  order by cfct.status, t.ano ) x
-                                   group by x.Situacao, x.Ano, x.AnoTurma, x.Modalidade
-                                   order by x.Ano;");
-
-
-            return await database.Conexao.QueryAsync<FechamentoSituacaoQuantidadeDto>(queryBuilder.ToString(), new
+            return await database.Conexao.QueryAsync<FechamentoSituacaoQuantidadeDto>(query.ToString(), new
             {
                 ueId,
                 ano,
@@ -267,13 +214,211 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        private string MontarQuerySituacaoProcessoFechamento(long ueId,
+            int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+
+            var sqlQuery = $@"select Situacao, sum(x.Quantidade) as Quantidade,
+                                    x.AnoTurma,
+	                                x.Ano,
+	                                x.Modalidade
+                               from (
+                                     select  case  when cfct.status in (0, 1) then 0 else cfct.status end as Situacao,
+                                               count(cfct.id) as Quantidade, 
+                                               t.ano as Ano, 
+                                               t.nome as AnoTurma,
+                                               t.modalidade_codigo  as Modalidade
+                                          from consolidado_fechamento_componente_turma cfct 
+                                         inner join turma t on t.id = cfct.turma_id
+                                         inner join ue on ue.id = t.ue_id where t.tipo_turma in (1,2,7) ";
+
+            var queryBuilder = new StringBuilder(sqlQuery);
+
+            var queryWhere = new StringBuilder("");
+
+            if (ano > 0)
+            {
+                queryWhere.AppendLine(" and t.ano_letivo = @ano ");
+            }
+
+            if (ueId > 0)
+            {
+                queryWhere.AppendLine(" and t.ue_id = @ueId ");
+            }
+
+            if (dreId > 0)
+            {
+                queryWhere.AppendLine(" and ue.dre_id = @dreId ");
+            }
+
+            if (modalidade > 0)
+            {
+                queryWhere.AppendLine(" and t.modalidade_codigo = @modalidade ");
+            }
+
+            if (semestre > 0)
+            {
+                queryWhere.AppendLine(" and t.semestre = @semestre ");
+            }
+
+            if (bimestre >= 0)
+            {
+                queryWhere.AppendLine(" and cfct.bimestre = @bimestre ");
+            }
+
+            queryBuilder.AppendLine(queryWhere.ToString());
+            queryBuilder.AppendLine($@" group by cfct.status, t.ano, t.nome, t.modalidade_codigo) x
+                                   group by x.Situacao, x.Ano, x.AnoTurma, x.Modalidade
+                                   order by x.Ano;");
+
+
+            return queryBuilder.ToString();
+        }
+
+        private string MontarQuerySituacaoProcessoFechamentoSME(int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var sqlQuery = $@"select Situacao, sum(x.Quantidade) as Quantidade,
+                                    x.AnoTurma,
+	                                x.Ano,
+	                                x.Modalidade
+                               from (
+                                     select  case  when cfct.status in (0, 1) then 0 else cfct.status end as Situacao,
+                                               count(cfct.id) as Quantidade, 
+                                               t.ano as Ano, 
+                                               t.ano as AnoTurma,
+                                               t.modalidade_codigo  as Modalidade
+                                          from consolidado_fechamento_componente_turma cfct 
+                                         inner join turma t on t.id = cfct.turma_id
+                                         inner join ue on ue.id = t.ue_id where t.tipo_turma in (1,7) ";
+
+            var queryBuilder = new StringBuilder(sqlQuery);
+
+            var queryWhere = new StringBuilder("");
+
+            if (ano > 0)
+            {
+                queryWhere.AppendLine(" and t.ano_letivo = @ano ");
+            }
+
+            if (dreId > 0)
+            {
+                queryWhere.AppendLine(" and ue.dre_id = @dreId ");
+            }
+
+            if (modalidade > 0)
+            {
+                queryWhere.AppendLine(" and t.modalidade_codigo = @modalidade ");
+            }
+
+            if (semestre > 0)
+            {
+                queryWhere.AppendLine(" and t.semestre = @semestre ");
+            }
+
+            if (bimestre >= 0)
+            {
+                queryWhere.AppendLine(" and cfct.bimestre = @bimestre ");
+            }
+
+            queryBuilder.AppendLine(queryWhere.ToString());
+            queryBuilder.AppendLine($@" group by cfct.status, t.ano, t.nome, t.modalidade_codigo  
+            UNION 
+            select  case  when cfct.status in (0, 1) then 0 else cfct.status end as Situacao,
+                                               count(cfct.id) as Quantidade, 
+                                               '1' as ano,
+                                               'Ed. Física' as AnoTurma,
+                                               t.modalidade_codigo  as Modalidade
+                                          from consolidado_fechamento_componente_turma cfct 
+                                         inner join turma t on t.id = cfct.turma_id
+                                         inner join ue on ue.id = t.ue_id where t.tipo_turma in (2) ");
+
+            queryBuilder.AppendLine(queryWhere.ToString());
+            queryBuilder.AppendLine($@" group by cfct.status, t.modalidade_codigo) x
+                                   group by x.Situacao, x.Ano, x.AnoTurma, x.Modalidade
+                                   order by x.Ano;");
+
+
+            return queryBuilder.ToString();
+        }
+
         public async Task<IEnumerable<FechamentoPendenciaQuantidadeDto>> ObterSituacaoPendenteFechamento(long ueId,
             int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
-            
-            var campoAnoOuTurma = ueId > 0 ? "t.nome " : "t.ano ";
-            
-            var sqlQuery = $@"select cast({campoAnoOuTurma} as varchar(255)) as Ano , t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
+
+            var query = ueId > 0 ? ObterSituacaoPendenteFechamentoQuery(ueId, ano, dreId, modalidade, semestre, bimestre) :
+                ObterSituacaoPendenteFechamentoSMEQuery(ano, dreId, modalidade, semestre, bimestre);
+
+            return await database.Conexao.QueryAsync<FechamentoPendenciaQuantidadeDto>(query, new
+            {
+                ueId,
+                ano,
+                dreId,
+                modalidade,
+                semestre,
+                bimestre
+            });
+        }
+
+        private string ObterSituacaoPendenteFechamentoSMEQuery(int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var sqlQuery = new StringBuilder($@"select t.ano as Ano , t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
+                                from pendencia_fechamento pf
+                                inner join fechamento_turma_disciplina ftd  on ftd.id = pf.fechamento_turma_disciplina_id 
+                                inner join fechamento_turma ft  on ft.id = ftd.fechamento_turma_id 
+                                inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
+                                inner join turma t on ft.turma_id = t.id 
+                                inner join ue on ue.id = t.ue_id 
+                                where t.tipo_turma in (1,7)");
+
+            var queryWhere = new StringBuilder("");
+
+            if (ano > 0)
+            {
+                queryWhere.AppendLine(" and t.ano_letivo = @ano ");
+            }
+
+
+            if (dreId > 0)
+            {
+                queryWhere.AppendLine(" and ue.dre_id = @dreId ");
+            }
+
+            if (modalidade > 0)
+            {
+                queryWhere.AppendLine(" and t.modalidade_codigo = @modalidade ");
+            }
+
+            if (semestre > 0)
+            {
+                queryWhere.AppendLine(" and t.semestre = @semestre ");
+            }
+
+            if (bimestre >= 0)
+            {
+                queryWhere.AppendLine(" and pe.bimestre = @bimestre ");
+            }
+
+            sqlQuery.AppendLine(queryWhere.ToString());
+
+            sqlQuery.AppendLine($"group by t.ano , t.modalidade_codigo ");
+
+            sqlQuery.AppendLine(@"UNION select 'Ed. Física' as Ano , t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
+                                from pendencia_fechamento pf
+                                inner join fechamento_turma_disciplina ftd  on ftd.id = pf.fechamento_turma_disciplina_id 
+                                inner join fechamento_turma ft  on ft.id = ftd.fechamento_turma_id 
+                                inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
+                                inner join turma t on ft.turma_id = t.id 
+                                inner join ue on ue.id = t.ue_id 
+                                where t.tipo_turma in (2) ");
+
+            sqlQuery.AppendLine(queryWhere.ToString());
+            sqlQuery.AppendLine($"group by t.modalidade_codigo ");
+            return sqlQuery.ToString();
+        }
+
+        private string ObterSituacaoPendenteFechamentoQuery(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var sqlQuery = $@"select t.nome as Ano , t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
                                 from pendencia_fechamento pf
                                 inner join fechamento_turma_disciplina ftd  on ftd.id = pf.fechamento_turma_disciplina_id 
                                 inner join fechamento_turma ft  on ft.id = ftd.fechamento_turma_id 
@@ -314,22 +459,11 @@ namespace SME.SGP.Dados.Repositorios
                 queryBuilder.Append(" and pe.bimestre = @bimestre ");
             }
 
-            var orderBy = ueId > 0 ? "order by t.nome " : "order by t.ano ";
-            var gruopBy = ueId > 0 ? "group by t.nome" : "group by t.ano";
-            
-            queryBuilder.Append($"{gruopBy} , t.modalidade_codigo {orderBy};");
+            queryBuilder.Append($"group by t.nome , t.modalidade_codigo order by t.nome;");
 
-
-            return await database.Conexao.QueryAsync<FechamentoPendenciaQuantidadeDto>(queryBuilder.ToString(), new
-            {
-                ueId,
-                ano,
-                dreId,
-                modalidade,
-                semestre,
-                bimestre
-            });
+            return queryBuilder.ToString();
         }
+
         public async Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamentoPorEstudante(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
             var sqlQuery = @"select
@@ -350,41 +484,41 @@ namespace SME.SGP.Dados.Repositorios
 
             if (ueId > 0)
             {
-                queryBuilder.Append(" and t.ue_id = @ueId ");    
+                queryBuilder.Append(" and t.ue_id = @ueId ");
             }
-            
+
             if (dreId > 0)
             {
-                queryBuilder.Append(" and ue.dre_id = @dreId ");    
+                queryBuilder.Append(" and ue.dre_id = @dreId ");
             }
 
             if (modalidade > 0)
             {
-                queryBuilder.Append(" and t.modalidade_codigo = @modalidade ");   
-                
+                queryBuilder.Append(" and t.modalidade_codigo = @modalidade ");
+
             }
-            
+
             if (semestre > 0)
             {
-                queryBuilder.Append(" and t.semestre = @semestre ");   
-                
+                queryBuilder.Append(" and t.semestre = @semestre ");
+
             }
-            
+
             if (bimestre > 0)
             {
-                queryBuilder.Append(" and pe.bimestre = @bimestre ");   
-                
+                queryBuilder.Append(" and pe.bimestre = @bimestre ");
+
             }
-            
+
             queryBuilder.Append(@"group by ftd.situacao, t.ano , t.modalidade_codigo order by t.ano;");
-            
-            
+
+
             return await database.Conexao.QueryAsync<FechamentoSituacaoQuantidadeDto>(queryBuilder.ToString(), new
             {
                 ueId,
                 ano,
                 dreId,
-                modalidade, 
+                modalidade,
                 semestre,
                 bimestre
             });
@@ -398,11 +532,11 @@ namespace SME.SGP.Dados.Repositorios
                 inner join componente_curricular cc on componente_curricular_id = cc.id
                 where t.ano_letivo = @anoLetivo and cc.permite_lancamento_nota ");
 
-            if(bimestre >= 0)
+            if (bimestre >= 0)
                 query.AppendLine(" and cfct.bimestre = @bimestre ");
 
             query.AppendLine("group by cfct.turma_id order by 1");
-                
+
 
             return await database.Conexao.QueryAsync<TurmaFechamentoDisciplinaDto>(query.ToString(), new { anoLetivo, bimestre });
         }

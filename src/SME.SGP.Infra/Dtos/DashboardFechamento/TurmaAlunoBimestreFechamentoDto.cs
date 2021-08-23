@@ -5,7 +5,8 @@ namespace SME.SGP.Infra.Dtos
     public class TurmaAlunoBimestreFechamentoDto
     {
         public long TurmaId { get; set; }
-        public Modalidade Modalidade { get; set; }
+        public Modalidade TurmaModalidade { get; set; }
+        public int TurmaTipo { get; set; }
         public int Ano { get; set; }
         public string TurmaNome { get; set; }
         public string AlunoCodigo { get; set; }

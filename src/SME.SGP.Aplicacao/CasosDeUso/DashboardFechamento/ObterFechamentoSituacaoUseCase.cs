@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 fechamentos.Add(new GraficoBaseDto(grupo, fechamento.Quantidade, fechamento.Situacao.Name()));
             }
 
-            return fechamentos;
+            return fechamentos.OrderBy(a => a.Grupo).ToList();
         }
     }
 }
