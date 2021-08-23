@@ -37,10 +37,5 @@
         {
             QuantidadeCompleto = quantidade;
         }
-
-        public void MontarDescricao(string modalidade, string nome)
-        {
-            Descricao = $"{modalidade} - {nome}";
-        }
     }
 }
