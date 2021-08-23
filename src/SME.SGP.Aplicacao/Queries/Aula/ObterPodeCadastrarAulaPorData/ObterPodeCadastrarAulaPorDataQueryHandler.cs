@@ -37,13 +37,13 @@ namespace SME.SGP.Aplicacao
             if (request.DataAula.FimDeSemana())
             {
                 // Evento Letivo
-                var temEventoLetivoNoDia = repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
-                if (!temEventoLetivoNoDia && request.DataAula.Domingo())
+                var temEventoLetivoNoDia = await repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
+                if (!temEventoLetivoNoDia)
                     return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula no domingo");
             }
 
             // Evento não letivo
-            var temEventoNaoLetivoNoDia = repositorioEvento.EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
+            var temEventoNaoLetivoNoDia = await repositorioEvento.EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
             if (temEventoNaoLetivoNoDia)
                 return new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois existe um evento de dia não letivo");
 

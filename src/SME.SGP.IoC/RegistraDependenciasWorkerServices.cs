@@ -361,7 +361,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoFeriadoCalendario, ServicoFeriadoCalendario>();
             services.TryAddScopedWorkerService<IServicoAbrangencia, ServicoAbrangencia>();
             services.TryAddScopedWorkerService<IServicoEvento, ServicoEvento>();
-            services.TryAddScopedWorkerService<IServicoDiaLetivo, ServicoDiaLetivo>();
             services.TryAddScopedWorkerService<IServicoLog, ServicoLog>();
             services.TryAddScopedWorkerService<IServicoFrequencia, ServicoFrequencia>();
             services.TryAddScopedWorkerService<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
