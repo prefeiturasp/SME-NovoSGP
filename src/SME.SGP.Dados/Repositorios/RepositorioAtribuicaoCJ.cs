@@ -98,5 +98,16 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo
             }, splitOn: "id,id"));
         }
+
+        public async Task<bool> RemoverRegistros(string dreCodigo, string ueCodigo, string turmaCodigo, string professorRf, long disciplinaId)
+        {
+            StringBuilder sql = new StringBuilder();
+
+            sql.AppendLine(@"delete from atribuicao_cj where dre_id = @dreCodigo and ue_id = @ueCodigo and professor_rf = @professorRf and turma_id = @turmaCodigo ");
+            if (disciplinaId > 0)
+                sql.AppendLine(" and disciplina_id = @disciplinaId");
+
+            return await database.Conexao.ExecuteScalarAsync<bool>(sql.ToString(), new { turmaCodigo, dreCodigo, ueCodigo, professorRf, disciplinaId });
+        }
     }
 }

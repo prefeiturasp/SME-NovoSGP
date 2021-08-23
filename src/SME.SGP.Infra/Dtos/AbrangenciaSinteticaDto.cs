@@ -15,6 +15,7 @@ namespace SME.SGP.Dto
         public string CodigoUe { get; set; }
         public long TurmaId { get; set; }
         public string CodigoTurma { get; set; }
+        public bool Historico { get; set; }
         public Guid Perfil { get; set; }
 
         public bool EhPerfilProfessor()
