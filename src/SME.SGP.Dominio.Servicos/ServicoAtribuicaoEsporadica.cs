@@ -28,10 +28,10 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo, bool ehInfantil)
         {
-            var atribuicoesConflitantes = repositorioAtribuicaoEsporadica.ObterAtribuicoesDatasConflitantes(atribuicaoEsporadica.DataInicio, atribuicaoEsporadica.DataFim, atribuicaoEsporadica.ProfessorRf, atribuicaoEsporadica.Id);
+            var existeAtribuicaoConflitante = repositorioAtribuicaoEsporadica.ExisteAtribuicaoConflitante(atribuicaoEsporadica.DataInicio, atribuicaoEsporadica.DataFim, atribuicaoEsporadica.ProfessorRf, atribuicaoEsporadica.UeId, atribuicaoEsporadica.Id);
 
-            if (atribuicoesConflitantes != null && atribuicoesConflitantes.Any())
-                throw new NegocioException("Já existem outras atribuições, para este professor, no periodo especificado");
+            if (existeAtribuicaoConflitante)
+                throw new NegocioException("Já existe outra atribuição para este professor no período especificado.");
 
             var modalidade = ehInfantil ? ModalidadeTipoCalendario.Infantil : ModalidadeTipoCalendario.FundamentalMedio;
 
