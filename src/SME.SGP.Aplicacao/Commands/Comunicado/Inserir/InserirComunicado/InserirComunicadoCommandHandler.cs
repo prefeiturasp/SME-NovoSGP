@@ -45,7 +45,8 @@ namespace SME.SGP.Aplicacao
 
                 if (comunicado.Turmas != null && comunicado.Turmas.Any())
                 {
-                    await mediator.Send(new InserirComunicadoAnoEscolarCommand(comunicado));
+                    if (comunicado.AnosEscolares != null)
+                        await mediator.Send(new InserirComunicadoAnoEscolarCommand(comunicado));
 
                     await InserirComunicadoTurma(comunicado);
                 }                   
@@ -59,7 +60,7 @@ namespace SME.SGP.Aplicacao
 
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
                 unitOfWork.Rollback();
                 throw;

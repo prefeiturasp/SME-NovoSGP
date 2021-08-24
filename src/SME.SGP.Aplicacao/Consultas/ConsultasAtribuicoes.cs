@@ -13,13 +13,13 @@ namespace SME.SGP.Aplicacao
     public class ConsultasAtribuicoes : IConsultasAtribuicoes
     {
         private readonly IConsultasAbrangencia consultasAbrangencia;
+        private readonly IMediator mediator;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IMediator mediator;
 
         public ConsultasAtribuicoes(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioDre repositorioDre, IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica,
             IServicoEol servicoEol, IRepositorioUe repositorioUe, IServicoUsuario servicoUsuario, IConsultasAbrangencia consultasAbrangencia, IMediator mediator)
@@ -95,7 +95,11 @@ namespace SME.SGP.Aplicacao
 
                 await ObterAtribuicoesEsporadicasUeAsync(loginAtual, codigosUes, codigoDre, somenteInfantil, anoLetivo);
 
-                IEnumerable<Ue> ues = repositorioUe.ListarPorCodigos(codigosUes.Distinct().ToArray());
+                // A atribuição CJ ainda não irá contemplar os novos tipos de UEs na listagem
+                var novosTiposUe = await mediator.Send(new ObterNovosTiposUEPorAnoQuery(DateTime.Today.Year)); // para atribuição CJ considera o ano letivo atual
+                var ues = from ue in repositorioUe.ListarPorCodigos(codigosUes.Distinct().ToArray())
+                          where !novosTiposUe.Split(',').Contains(((int)ue.TipoEscola).ToString())
+                          select ue;
 
                 if (ues != null && ues.Any())
                     return TransformarUesEmUesDto(ues);
@@ -140,7 +144,7 @@ namespace SME.SGP.Aplicacao
 
             if (abrangencia != null && abrangencia.Dres != null && abrangencia.Dres.Any(a => a.Codigo == codigoDre))
             {
-                codigosUes.AddRange(abrangencia.Dres.FirstOrDefault(a => a.Codigo == codigoDre).Ues.Select(a => a.Codigo));
+                codigosUes.AddRange(abrangencia.Dres.FirstOrDefault(a => a.Codigo == codigoDre).Ues.Select(ue => ue.Codigo));
             }
         }
 

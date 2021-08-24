@@ -2,6 +2,8 @@ do $$
 declare comunicadoObtido RECORD;
 begin
 	for comunicadoObtido in select distinct id, excluido from comunicado c where id not in (select comunicado_id from comunicado_tipo_escola cte) loop
+		--NA
+        insert into comunicado_tipo_escola (comunicado_id, tipo_escola, excluido) values(comunicadoObtido.id, 0, comunicadoObtido.excluido);
 		--EMEF
         insert into comunicado_tipo_escola (comunicado_id, tipo_escola, excluido) values(comunicadoObtido.id, 1, comunicadoObtido.excluido);
         --EMEI
