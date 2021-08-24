@@ -45,7 +45,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"from pendencia p
                           inner join pendencia_usuario pu on pu.pendencia_id = p.id
-                         where not p.excluido 
+                         where not p.excluido and p.situacao <> 2
                            and pu.usuario_id = @usuarioId";
             var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
