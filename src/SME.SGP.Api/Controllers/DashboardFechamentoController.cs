@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -14,6 +14,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(FechamentoSituacaoDto), 200)]
         [ProducesResponseType(typeof(FechamentoSituacaoDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DFE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSituacoesFechamento(
             [FromQuery] FiltroDashboardFechamentoDto filtroDashboardFechamentoDto,
             [FromServices] IObterFechamentoSituacaoUseCase useCase)
@@ -25,6 +26,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(FechamentoSituacaoPorEstudanteDto), 200)]
         [ProducesResponseType(typeof(FechamentoSituacaoPorEstudanteDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DFE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSituacoesFechamentoPorEstudante(
             [FromQuery] FiltroDashboardFechamentoDto filtroDashboardFechamentoDto,
             [FromServices] IObterFechamentoSituacaoPorEstudanteUseCase useCase)
@@ -36,6 +38,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(GraficoBaseDto), 200)]
         [ProducesResponseType(typeof(GraficoBaseDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DFE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPendenciaFechamento(
             [FromQuery] FiltroDashboardFechamentoDto filtroDashboardFechamentoDto,
             [FromServices] IObterFechamentoPendenciasUseCase useCase)
