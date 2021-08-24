@@ -472,7 +472,7 @@
         [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-print", IconeDashBoard = "far fa-check-square", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/frequencia", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Frequência")]
         FF_C = 156,
 
-        [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pendencias-fechamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Pendências do Fechamento")]
+        [PermissaoMenu(Menu = "Gestão", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/gestao/pendencias", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Pendências")]
         RPF_C = 157,
 
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/parecer-conclusivo", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Parecer Conclusivo")]
@@ -665,6 +665,10 @@
         DAA_C = 223,
 
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/fechamentos/acompanhamento-fechamento", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Acompanhamento do fechamento")]
-        RACF_C = 224
+        RACF_C = 224,
+        
+        [PermissaoMenu(Menu = "Fechamentos", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/fechamento")]
+        DFE_C = 225,
+
     }
 }

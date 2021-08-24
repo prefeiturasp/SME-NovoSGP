@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,61 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioFechamentoAluno(ISgpContext conexao) : base(conexao)
         {
+        }
+
+        public async Task<IEnumerable<TurmaAlunoBimestreFechamentoDto>> ObterAlunosComFechamento(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+        
+            var sqlQuery = new StringBuilder(@"select
+                                t.id as TurmaId,
+                                fa.aluno_codigo as AlunoCodigo,
+	                            count(fa.fechamento_turma_disciplina_id) as QuantidadeDisciplinaFechadas
+                                from fechamento_aluno fa
+                            inner join fechamento_turma_disciplina ftd on fa.fechamento_turma_disciplina_id = ftd.id 
+                            inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id 
+                            inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
+                            inner join turma t on ft.turma_id = t.id
+                            inner join ue on t.ue_id = ue.id 
+                            where t.ano_letivo = @ano ");
+
+
+            if (ueId > 0)
+            {
+                sqlQuery.Append(" and t.ue_id = @ueId ");
+            }
+
+            if (dreId > 0)
+            {
+                sqlQuery.Append(" and ue.dre_id = @dreId ");
+            }
+
+            if (modalidade > 0)
+            {
+                sqlQuery.Append(" and t.modalidade_codigo = @modalidade ");
+            }
+
+            if (semestre > 0)
+            {
+                sqlQuery.Append(" and t.semestre = @semestre ");
+            }
+
+            if (bimestre >= 0)
+            {
+                sqlQuery.Append(" and pe.bimestre = @bimestre ");
+            }
+
+            sqlQuery.Append(@" group by t.id, fa.aluno_codigo order by t.ano;");
+
+
+            return await database.Conexao.QueryAsync<TurmaAlunoBimestreFechamentoDto>(sqlQuery.ToString(), new
+            {
+                ueId,
+                ano,
+                dreId,
+                modalidade,
+                semestre,
+                bimestre
+            });
         }
 
         public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacoesTurmaAlunoBimestreAsync(string alunoCodigo, string[] turmasCodigos)

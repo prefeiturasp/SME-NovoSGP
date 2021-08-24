@@ -1,6 +1,7 @@
-﻿using SME.SGP.Infra;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -14,9 +15,13 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaId);
         Task<SituacaoFechamento> ObterSituacaoFechamento(long turmaId, long componenteCurricularId, long periodoEscolarId);
-
+        Task<IEnumerable<TurmaFechamentoDisciplinaDto>> ObterTotalDisciplinasPorTurma(int anoLetivo, int bimestre);
         Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosComSituacaoEmProcessamentoPorAnoLetivo(int anoLetivo);
         Task<bool> AtualizarSituacaoFechamento(long fechamentoTurmaDisciplinaId, int situacaoFechamento);
         Task<IEnumerable<int>> ObterDisciplinaIdsPorTurmaIdBimestre(long turmaId, int bimestre);
+        Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamento(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);
+        Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamentoPorEstudante(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);
+        
+        Task<IEnumerable<FechamentoPendenciaQuantidadeDto>> ObterSituacaoPendenteFechamento(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);
     }
 }
