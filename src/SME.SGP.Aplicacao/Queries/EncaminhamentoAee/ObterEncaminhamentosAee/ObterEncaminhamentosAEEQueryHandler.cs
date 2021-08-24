@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,7 +50,8 @@ namespace SME.SGP.Aplicacao
 
             foreach (var encaminhamento in encaminhamentos)
             {
-                var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(encaminhamento.AlunoCodigo, encaminhamento.TurmaAno));
+                var retorno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(encaminhamento.AlunoCodigo, encaminhamento.TurmaAno, false));
+                var aluno = retorno.OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();                
 
                 var ehAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, encaminhamento.TurmaAno));
                 listaEncaminhamentos.Add(new EncaminhamentoAEEResumoDto()
