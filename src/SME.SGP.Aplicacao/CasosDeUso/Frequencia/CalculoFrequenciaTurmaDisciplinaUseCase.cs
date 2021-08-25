@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,13 +18,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var comando = mensagemRabbit.ObterObjetoMensagem<CalcularFrequenciaPorTurmaOldCommand>();
-            if (comando != null)
-            {
-                await mediator.Send(comando);
-                return true;
-            }
-            return false;
+            var comando = mensagemRabbit.ObterObjetoMensagem<CalcularFrequenciaPorTurmaCommand>();
+            if (comando == null)
+                return false;
+
+            await mediator.Send(comando);
+            return true;
         }
 
         public async Task IncluirCalculoFila(CalcularFrequenciaDto calcularFrequenciaDto)

@@ -91,7 +91,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasParaPendenciasAulaDiasNaoLetivos(long tipoCalendarioId, TipoEscola[] tiposEscola);
 
-        bool VerificarAulaPorWorkflowId(long workflowId);
+        Task<bool> VerificarAulaPorWorkflowId(long workflowId);
 
         Task<IEnumerable<Aula>> ObterAulasExcluidasComDiarioDeBordoAtivos(string codigoTurma, long tipoCalendarioId);
     }

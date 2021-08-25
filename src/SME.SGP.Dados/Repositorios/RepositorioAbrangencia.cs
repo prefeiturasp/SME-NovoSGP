@@ -143,7 +143,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("codigo_ue,");
             query.AppendLine("turma_id,");
             query.AppendLine("codigo_turma,");
-            query.AppendLine("perfil");
+            query.AppendLine("perfil,");
+            query.AppendLine("historico");
             query.AppendLine("from");
             query.AppendLine("public.v_abrangencia_sintetica where login = @login and perfil = @perfil");
 
