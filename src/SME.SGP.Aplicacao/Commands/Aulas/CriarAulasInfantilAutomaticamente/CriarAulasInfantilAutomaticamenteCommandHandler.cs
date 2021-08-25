@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Sentry;
+using SME.SGP.Aplicacao.Commands.Aulas.ReaverAulaDiarioBordoExcluida;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -30,6 +31,7 @@ namespace SME.SGP.Aplicacao
             var diasParaCriarAula = request.DiasLetivos;
             var diasForaDoPeriodo = request.DiasForaDoPeriodoEscolar;
             var aulasACriar = new List<Aula>();
+            var diariosBordoComAulaExcluida = new List<DiarioBordo>();
             var aulasAExcluirComFrequenciaRegistrada = new List<DateTime>();
             var turmas = request.Turmas.ToList();
 
@@ -46,31 +48,49 @@ namespace SME.SGP.Aplicacao
                 var diasLetivos = DeterminaDiasLetivos(diasParaCriarAula, diasNaoLetivos.Select(dnl => dnl.Data).Distinct(), turma);
 
                 var aulas = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId)))?.ToList();
+                // TODO: Implementar com mediator essa funcionalidade.
                 aulas.AddRange(await repositorioAula.ObterAulasExcluidasComDiarioDeBordoAtivos(turma.CodigoTurma, tipoCalendarioId));
 
-                if (aulas == null)
-                    aulasACriar.AddRange(ObterAulasParaCriacao(tipoCalendarioId, diasParaCriarAula.Where(c => !turma.DataInicio.HasValue || c.Data.Date >= turma.DataInicio)?.ToList(), diasLetivos, diasNaoLetivos, turma));
+                if (aulas == null || !aulas.Any())
+                {
+                    var periodoTurmaConsiderado = diasParaCriarAula
+                        .Where(c => !turma.DataInicio.HasValue || c.Data.Date >= turma.DataInicio)?.ToList();
+
+                    diariosBordoComAulaExcluida.AddRange(await mediator
+                            .Send(new RecuperarDiarioBordoComAulasExcluidasQuery(turma.CodigoTurma, "512", tipoCalendarioId, periodoTurmaConsiderado.Select(p => p.Data).ToArray())));
+
+                    var aulasCriacao = from ac in ObterAulasParaCriacao(tipoCalendarioId, periodoTurmaConsiderado, diasLetivos, diasNaoLetivos, turma)
+                                       where !diariosBordoComAulaExcluida.Select(db => db.Aula.DataAula).Contains(ac.DataAula)
+                                       select ac;
+
+                    aulasACriar.AddRange(aulasCriacao);
+                }
                 else
                 {
-                    if (!aulas.Any())
-                        aulasACriar.AddRange(ObterAulasParaCriacao(tipoCalendarioId, diasParaCriarAula.Where(c => !turma.DataInicio.HasValue || c.Data.Date >= turma.DataInicio)?.ToList(), diasLetivos, diasNaoLetivos, turma));
-                    else
+                    var diasSemAula = diasLetivos
+                        .Where(c => !aulas.Any(a => a.DataAula == c.Data) && (!turma.DataInicio.HasValue || c.Data.Date >= turma.DataInicio))?
+                        .OrderBy(a => a.Data)?
+                        .Distinct()
+                        .ToList();
+
+                    if (diasSemAula != null && diasSemAula.Any())
                     {
-                        var diasSemAula = diasLetivos
-                            .Where(c => !aulas.Any(a => a.DataAula == c.Data) && (!turma.DataInicio.HasValue || c.Data.Date >= turma.DataInicio))?
-                            .OrderBy(a => a.Data)?
-                            .Distinct()
-                            .ToList();
-
-                        aulasACriar.AddRange(ObterListaDeAulas(diasSemAula, tipoCalendarioId, turma).ToList());
-
-                        IEnumerable<Aula> aulasDaTurmaParaExcluir = ObterAulasParaExcluir(diasNaoLetivos, turma, aulas.Where(a => !a.AulaCJ), diasLetivos);
-                        await ExcluirAulas(aulasAExcluirComFrequenciaRegistrada, idsAulasAExcluir, aulasDaTurmaParaExcluir.ToList());
-
-                        var aulasForaDoPeriodo = aulas.Where(c => diasForaDoPeriodo.Contains(c.DataAula) && !c.AulaCJ);
-                        if (aulasForaDoPeriodo != null && aulasForaDoPeriodo.Any())
-                            await ExcluirAulas(aulasAExcluirComFrequenciaRegistrada, idsAulasAExcluir, aulasForaDoPeriodo.ToList());
+                        diariosBordoComAulaExcluida.AddRange(await mediator
+                            .Send(new RecuperarDiarioBordoComAulasExcluidasQuery(turma.CodigoTurma, "512", tipoCalendarioId, diasSemAula.Select(d => d.Data).ToArray())));
                     }
+
+                    var diasCriacaoAula = (from d in diasSemAula
+                                           where !diariosBordoComAulaExcluida.Select(db => db.Aula.DataAula).Contains(d.Data)
+                                           select d).ToList();
+
+                    aulasACriar.AddRange(ObterListaDeAulas(diasCriacaoAula, tipoCalendarioId, turma).ToList());
+
+                    IEnumerable<Aula> aulasDaTurmaParaExcluir = ObterAulasParaExcluir(diasNaoLetivos, turma, aulas.Where(a => !a.AulaCJ), diasLetivos);
+                    await ExcluirAulas(aulasAExcluirComFrequenciaRegistrada, idsAulasAExcluir, aulasDaTurmaParaExcluir.ToList());
+
+                    var aulasForaDoPeriodo = aulas.Where(c => diasForaDoPeriodo.Contains(c.DataAula) && !c.AulaCJ);
+                    if (aulasForaDoPeriodo != null && aulasForaDoPeriodo.Any())
+                        await ExcluirAulas(aulasAExcluirComFrequenciaRegistrada, idsAulasAExcluir, aulasForaDoPeriodo.ToList());
                 }
 
                 if (idsAulasAExcluir.Count >= 1000)
@@ -82,6 +102,15 @@ namespace SME.SGP.Aplicacao
                         new NotificarExclusaoAulasComFrequenciaDto(turma, aulasAExcluirComFrequenciaRegistrada), Guid.NewGuid(), null));
 
                     aulasAExcluirComFrequenciaRegistrada.Clear();
+                }
+
+                if (diariosBordoComAulaExcluida.Any())
+                {
+                    diariosBordoComAulaExcluida
+                        .ForEach(db =>
+                        {
+                            mediator.Send(new ReaverAulaDiarioBordoExcluidaCommand(db.AulaId, db.Id)).Wait();
+                        });
                 }
 
                 if (aulasACriar.Count >= 1000)
@@ -144,7 +173,7 @@ namespace SME.SGP.Aplicacao
             foreach (var aula in aulasNaoExcluidasOrdenadas)
             {
                 var excluirAula = ((diasNaoLetivos != null && diasNaoLetivos.Any(a => a.Data == aula.DataAula)) ||
-                                  !turma.DataInicio.HasValue || 
+                                  !turma.DataInicio.HasValue ||
                                   aula.DataAula.Date < turma.DataInicio.Value.Date ||
                                   aulas.Any(a => a.DataAula.Date.Equals(aula.DataAula.Date) && !a.Excluido && a.Id < aula.Id)) &&
                                   !diasLetivos.Any(d => d.Data == aula.DataAula);
