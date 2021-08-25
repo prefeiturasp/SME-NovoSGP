@@ -54,7 +54,6 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                     throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
             }
 
-
             await AplicarValidacoes(request, turma, request.Usuario, aulasExistentes);
 
             var aula = MapearEntidade(request);

@@ -35,31 +35,12 @@ namespace SME.SGP.Aplicacao
                 NotificacaoTipo = NotificacaoTipo.Calendario,
                 NotificacaoMensagem = $"Foram criadas {request.Quantidade} aula(s) de reposição de {request.ComponenteCurricularNome} na turma {request.TurmaNome} da {request.UeNome} ({request.DreNome}). Para que esta aula seja considerada válida você precisa aceitar esta notificação. Para visualizar a aula clique  <a href='{linkParaReposicaoAula}'>aqui</a>."
             };
-
-            if(ChecarSeAdicionaCP(request.PerfilAtual.GetValueOrDefault()))
-                wfAprovacaoAula.AdicionarNivel(Cargo.CP);
-
             
             wfAprovacaoAula.AdicionarNivel(Cargo.Diretor);
 
             var wfAprovacaoId =  await comandosWorkflowAprovacao.Salvar(wfAprovacaoAula);
 
             return wfAprovacaoId;
-        }
-
-        private bool ChecarSeAdicionaCP(Guid perfilAtual)
-        {
-            if (perfilAtual == Perfis.PERFIL_CP)
-                return false;
-            else if (perfilAtual == Perfis.PERFIL_AD)
-                return false;
-            else if (perfilAtual == Perfis.PERFIL_PROFESSOR)
-                return false;
-            else if (perfilAtual == Perfis.PERFIL_CJ)
-                return false;
-            else if (perfilAtual == Perfis.PERFIL_DIRETOR)
-                return false;
-            else return true;
         }
     }
 }

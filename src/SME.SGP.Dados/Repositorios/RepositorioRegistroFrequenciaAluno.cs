@@ -20,7 +20,7 @@ namespace SME.SGP.Dados
         {
             var query = @"           
                     select
-	                count(rfa.id) as TotalAusencias,
+	                count(distinct(rfa.registro_frequencia_id+rfa.numero_aula)) as TotalAusencias,
 	                p.id as PeriodoEscolarId,
 	                p.periodo_inicio as PeriodoInicio,
 	                p.periodo_fim as PeriodoFim,
@@ -44,8 +44,8 @@ namespace SME.SGP.Dados
 	                and p.periodo_fim >= @dataAula
 	                and a.data_aula >= p.periodo_inicio
 	                and a.data_aula <= p.periodo_fim
-	                and not a.excluido 
                     and rfa.valor = @tipoFrequencia
+                    and rfa.numero_aula <= a.quantidade 
                 group by
 	                p.id,
 	                p.periodo_inicio,

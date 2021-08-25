@@ -2,7 +2,6 @@
 using Polly;
 using Polly.Registry;
 using SME.GoogleClassroom.Infra;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -11,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static SME.SGP.Dominio.DateTimeExtension;
 
 namespace SME.SGP.Aplicacao
 {
@@ -61,7 +59,6 @@ namespace SME.SGP.Aplicacao
                 //Transformar em uma query única?
                 var totalAulasNaDisciplina = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, request.DisciplinaId, request.TurmaId);
                 var totalAulasDaTurmaGeral = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, string.Empty, request.TurmaId);
-                //
 
                 var alunosComAusencias = ausenciasDosAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
                 var bimestresParaFiltro = ausenciasDosAlunos.Select(a => a.Bimestre).Distinct().ToList();
@@ -165,6 +162,9 @@ namespace SME.SGP.Aplicacao
 
             if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
             {
+                if (frequenciasParaPersistir.Any(a => a.FrequenciaNegativa()))
+                    throw new Exception($"Erro ao calcular frequencia da turma {frequenciasParaPersistir.First().TurmaId} : Número de ausências maior do que o número de aulas");
+
                 var alunos = frequenciasParaPersistir.Select(a => a.CodigoAluno).Distinct().ToArray();
                 var frequencia = frequenciasParaPersistir.FirstOrDefault();
                 var periodoEscolarId = frequencia.PeriodoEscolarId.Value;

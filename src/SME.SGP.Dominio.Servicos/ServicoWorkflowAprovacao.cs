@@ -856,7 +856,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<string> VerificaAulaReposicao(long workflowId, long codigoDaNotificacao)
         {
-            if (!repositorioAula.VerificarAulaPorWorkflowId(workflowId))
+            if (!await repositorioAula.VerificarAulaPorWorkflowId(workflowId))
             {
                 Notificacao notificacao = servicoNotificacao.ObterPorCodigo(codigoDaNotificacao);
                 await servicoNotificacao.ExcluirPeloSistemaAsync(new long[notificacao.Id]);

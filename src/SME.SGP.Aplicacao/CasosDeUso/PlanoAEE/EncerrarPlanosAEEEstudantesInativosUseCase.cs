@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -21,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var planosAtivos = await mediator.Send(new ObterPlanosAEEAtivosQuery());
 
-            foreach(var planoAEE in planosAtivos)
+            foreach (var planoAEE in planosAtivos)
             {
                 var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(planoAEE.AlunoCodigo, planoAEE.CriadoEm.Year));
 

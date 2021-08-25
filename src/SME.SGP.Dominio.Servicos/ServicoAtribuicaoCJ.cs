@@ -74,22 +74,43 @@ namespace SME.SGP.Dominio.Servicos
 
             if (atribuicaoCJ.Substituir)
             {
+                var turma = await repositorioTurma.ObterPorCodigo(atribuicaoCJ.TurmaId);
+              
                 if (abrangenciasAtuais != null && !abrangenciasAtuais.Any())
                 {
-                    var turma = await repositorioTurma.ObterPorCodigo(atribuicaoCJ.TurmaId);
+                 
                     if (turma == null)
                         throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
-
-                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id } };
+                 
+                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id , Historico  = turma.Historica } };
 
                     servicoAbrangencia.SalvarAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
                 }
+
+                if (abrangenciasAtuais != null)
+                {
+                    var abrangenciaDaTurma = abrangenciasAtuais.Where(x => x.TurmaId == turma.Id).FirstOrDefault();
+                    if (abrangenciaDaTurma != null && abrangenciaDaTurma.Historico != turma.Historica)
+                    {
+                        var abangencia = new long[] { abrangenciaDaTurma.Id };
+                        repositorioAbrangencia.AtualizaAbrangenciaHistorica(abangencia);
+                    }
+
+                }
+
+
             }
             else if ((abrangenciasAtuais != null && abrangenciasAtuais.Any()) &&
                      (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir)))
             {
                 servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
+
+                await repositorioAtribuicaoCJ.RemoverRegistros(atribuicaoCJ.DreId, atribuicaoCJ.UeId, atribuicaoCJ.TurmaId, atribuicaoCJ.ProfessorRf, atribuicaoCJ.DisciplinaId);
             }
+
+           
+
+
         }
 
         private async Task ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(AtribuicaoCJ atribuicaoCJ)

@@ -232,10 +232,7 @@ namespace SME.SGP.Aplicacao
                     {
                         alunoDto.QuantidadeFaltas = 0;
                         alunoDto.QuantidadeCompensacoes = 0;
-                        if (turmaPossuiFrequenciaRegistrada)
-                            alunoDto.PercentualFrequencia = "100";
-                        else
-                            alunoDto.PercentualFrequencia = string.Empty;
+                        alunoDto.PercentualFrequencia = turmaPossuiFrequenciaRegistrada ? "100" : string.Empty;                       
                     }
 
                     // Carrega Frequencia do aluno

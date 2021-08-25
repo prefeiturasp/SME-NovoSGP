@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             {
                 var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
                 if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(filtro.DataAula, filtro.TurmaCodigo, filtro.ComponenteCurricular, usuarioLogado.CodigoRf, filtro.TipoAula)))
-                    throw new NegocioException("Não é possível cadastrar aula pois já existe aula cadastrada no dia para esse componente curricular!");
+                    throw new NegocioException($"Não é possível cadastrar aula do tipo '{filtro.TipoAula.Name()}' para o dia selecionado!");
             }
 
             return new CadastroAulaDto()
