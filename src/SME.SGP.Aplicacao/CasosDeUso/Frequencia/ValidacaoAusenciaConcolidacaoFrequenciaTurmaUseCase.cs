@@ -15,7 +15,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            SentrySdk.AddBreadcrumb($"Mensagem {nameof(ValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase)}", $"Rabbit - {nameof(ValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase)}");
             var command = mensagemRabbit.ObterObjetoMensagem<ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand>();
             
             return await mediator.Send(command);
