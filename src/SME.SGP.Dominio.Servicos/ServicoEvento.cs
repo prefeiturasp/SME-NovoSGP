@@ -40,7 +40,7 @@ namespace SME.SGP.Dominio.Servicos
                              IRepositorioTipoCalendario repositorioTipoCalendario,
                              IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                              IRepositorioAbrangencia repositorioAbrangencia, IConfiguration configuration,
-                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog, IServicoDiaLetivo servicoDiaLetivo, IMediator mediator,
+                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog, IMediator mediator,
                              IRepositorioEventoBimestre repositorioEventoBimestre)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
