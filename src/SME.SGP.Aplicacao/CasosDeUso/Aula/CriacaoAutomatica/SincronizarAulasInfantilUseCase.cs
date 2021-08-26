@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
 using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,6 +16,12 @@ namespace SME.SGP.Aplicacao
         public void Executar()
         {
             mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, null, Guid.NewGuid(), null));
+        }
+
+        public async Task<bool> Executar(long codigoTurma)
+        {
+            return await mediator
+                .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, codigoTurma, Guid.NewGuid(), null));
         }
     }
 }
