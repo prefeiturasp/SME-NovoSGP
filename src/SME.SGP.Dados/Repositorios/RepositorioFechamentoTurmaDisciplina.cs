@@ -370,7 +370,8 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join pendencia p on p.id = pf.pendencia_id
                                 inner join ue on ue.id = t.ue_id 
                                 where t.tipo_turma in (1,7)
-                                  and not p.excluido ");
+                                  and not p.excluido
+                                  and p.situacao = 1 ");
 
             var queryWhere = new StringBuilder("");
 
@@ -402,7 +403,8 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join pendencia p on p.id = pf.pendencia_id
                                 inner join ue on ue.id = t.ue_id 
                                 where t.tipo_turma in (2)
-                                  and not p.excluido ");
+                                  and not p.excluido
+                                  and p.situacao = 1 ");
 
             sqlQuery.AppendLine(queryWhere.ToString());
             sqlQuery.AppendLine($"group by t.modalidade_codigo ");
@@ -420,7 +422,8 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join pendencia p on p.id = pf.pendencia_id
                                 inner join ue on ue.id = t.ue_id 
                                 where t.tipo_turma in (1,2,7)
-                                  and not p.excluido ";
+                                  and not p.excluido
+                                  and p.situacao = 1 ";
 
             var queryBuilder = new StringBuilder(sqlQuery);
 
