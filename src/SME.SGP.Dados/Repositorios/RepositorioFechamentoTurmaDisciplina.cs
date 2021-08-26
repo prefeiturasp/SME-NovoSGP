@@ -404,7 +404,7 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join ue on ue.id = t.ue_id 
                                 where t.tipo_turma in (2)
                                   and not p.excluido
-                                  and p.situacao = 1");
+                                  and p.situacao = 1 ");
 
             sqlQuery.AppendLine(queryWhere.ToString());
             sqlQuery.AppendLine($"group by t.modalidade_codigo ");
@@ -423,7 +423,7 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join ue on ue.id = t.ue_id 
                                 where t.tipo_turma in (1,2,7)
                                   and not p.excluido
-                                  and p.situacao = 1";
+                                  and p.situacao = 1 ";
 
             var queryBuilder = new StringBuilder(sqlQuery);
 
