@@ -40,6 +40,8 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoAEE == null)
                 throw new NegocioException("Não foi possível localizar o EncaminhamentoAEE");
 
+            
+
             if (encaminhamentoAEE.Situacao == SituacaoAEE.Encaminhado)
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId));
@@ -65,14 +67,19 @@ namespace SME.SGP.Aplicacao
                     {
                         foreach (var usuario in usuarios)
                         {
-                            var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao);
-                            pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
+                            var pendenciaExiste = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(encaminhamentoAEE.Id, usuario));
 
-                            var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, UsuarioId = usuario };
-                            await repositorioPendenciaUsuario.SalvarAsync(pendenciaUsuario);
+                            if (pendenciaExiste == null)
+                            {
+                                var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao);
+                                pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
-                            var pendenciaEncaminhamento = new PendenciaEncaminhamentoAEE { PendenciaId = pendencia.Id, EncaminhamentoAEEId = encaminhamentoAEE.Id };
-                            await repositorioPendenciaEncaminhamentoAEE.SalvarAsync(pendenciaEncaminhamento);
+                                var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, UsuarioId = usuario };
+                                await repositorioPendenciaUsuario.SalvarAsync(pendenciaUsuario);
+
+                                var pendenciaEncaminhamento = new PendenciaEncaminhamentoAEE { PendenciaId = pendencia.Id, EncaminhamentoAEEId = encaminhamentoAEE.Id };
+                                await repositorioPendenciaEncaminhamentoAEE.SalvarAsync(pendenciaEncaminhamento);
+                            }
                         }
 
                         unitOfWork.PersistirTransacao();

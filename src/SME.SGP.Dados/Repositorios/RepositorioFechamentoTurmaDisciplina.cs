@@ -367,36 +367,28 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join fechamento_turma ft  on ft.id = ftd.fechamento_turma_id 
                                 inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
                                 inner join turma t on ft.turma_id = t.id 
+                                inner join pendencia p on p.id = pf.pendencia_id
                                 inner join ue on ue.id = t.ue_id 
-                                where t.tipo_turma in (1,7)");
+                                where t.tipo_turma in (1,7)
+                                  and not p.excluido
+                                  and p.situacao = 1 ");
 
             var queryWhere = new StringBuilder("");
 
-            if (ano > 0)
-            {
-                queryWhere.AppendLine(" and t.ano_letivo = @ano ");
-            }
+            if (ano > 0)            
+                queryWhere.AppendLine(" and t.ano_letivo = @ano ");          
 
+            if (dreId > 0)            
+                queryWhere.AppendLine(" and ue.dre_id = @dreId ");            
 
-            if (dreId > 0)
-            {
-                queryWhere.AppendLine(" and ue.dre_id = @dreId ");
-            }
+            if (modalidade > 0)            
+                queryWhere.AppendLine(" and t.modalidade_codigo = @modalidade ");            
 
-            if (modalidade > 0)
-            {
-                queryWhere.AppendLine(" and t.modalidade_codigo = @modalidade ");
-            }
+            if (semestre > 0)            
+                queryWhere.AppendLine(" and t.semestre = @semestre ");            
 
-            if (semestre > 0)
-            {
-                queryWhere.AppendLine(" and t.semestre = @semestre ");
-            }
-
-            if (bimestre >= 0)
-            {
-                queryWhere.AppendLine(" and pe.bimestre = @bimestre ");
-            }
+            if (bimestre >= 0)            
+                queryWhere.AppendLine(" and pe.bimestre = @bimestre ");            
 
             sqlQuery.AppendLine(queryWhere.ToString());
 
@@ -408,8 +400,11 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join fechamento_turma ft  on ft.id = ftd.fechamento_turma_id 
                                 inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
                                 inner join turma t on ft.turma_id = t.id 
+                                inner join pendencia p on p.id = pf.pendencia_id
                                 inner join ue on ue.id = t.ue_id 
-                                where t.tipo_turma in (2) ");
+                                where t.tipo_turma in (2)
+                                  and not p.excluido
+                                  and p.situacao = 1 ");
 
             sqlQuery.AppendLine(queryWhere.ToString());
             sqlQuery.AppendLine($"group by t.modalidade_codigo ");
@@ -423,41 +418,32 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join fechamento_turma_disciplina ftd  on ftd.id = pf.fechamento_turma_disciplina_id 
                                 inner join fechamento_turma ft  on ft.id = ftd.fechamento_turma_id 
                                 inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
-                                inner join turma t on ft.turma_id = t.id 
+                                inner join turma t on ft.turma_id = t.id
+                                inner join pendencia p on p.id = pf.pendencia_id
                                 inner join ue on ue.id = t.ue_id 
-                                where t.tipo_turma in (1,2,7)";
+                                where t.tipo_turma in (1,2,7)
+                                  and not p.excluido
+                                  and p.situacao = 1 ";
 
             var queryBuilder = new StringBuilder(sqlQuery);
 
-            if (ano > 0)
-            {
-                queryBuilder.Append(" and t.ano_letivo = @ano ");
-            }
+            if (ano > 0)            
+                queryBuilder.Append(" and t.ano_letivo = @ano ");            
 
-            if (ueId > 0)
-            {
-                queryBuilder.Append(" and t.ue_id = @ueId ");
-            }
+            if (ueId > 0)            
+                queryBuilder.Append(" and t.ue_id = @ueId ");            
 
-            if (dreId > 0)
-            {
-                queryBuilder.Append(" and ue.dre_id = @dreId ");
-            }
+            if (dreId > 0)            
+                queryBuilder.Append(" and ue.dre_id = @dreId ");            
 
-            if (modalidade > 0)
-            {
-                queryBuilder.Append(" and t.modalidade_codigo = @modalidade ");
-            }
+            if (modalidade > 0)            
+                queryBuilder.Append(" and t.modalidade_codigo = @modalidade ");            
 
-            if (semestre > 0)
-            {
-                queryBuilder.Append(" and t.semestre = @semestre ");
-            }
+            if (semestre > 0)            
+                queryBuilder.Append(" and t.semestre = @semestre ");            
 
-            if (bimestre >= 0)
-            {
-                queryBuilder.Append(" and pe.bimestre = @bimestre ");
-            }
+            if (bimestre >= 0)            
+                queryBuilder.Append(" and pe.bimestre = @bimestre ");            
 
             queryBuilder.Append($"group by t.nome , t.modalidade_codigo order by t.nome;");
 
