@@ -144,7 +144,7 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpPost("frequencias/conciliar")]
+        [HttpPost("frequencias/consolidar")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(bool), 200)]
