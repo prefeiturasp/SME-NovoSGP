@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasFechamentoAcompanhamentoQuery : IRequest<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>>
     {
-        public ObterTurmasFechamentoAcompanhamentoQuery(long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, SituacaoFechamento? situacaoFechamento, SituacaoConselhoClasse? situacaoConselhoClasse, bool listarTodasTurmas)
+        public ObterTurmasFechamentoAcompanhamentoQuery(long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
         {
             DreId = dreId;
             UeId = ueId;
@@ -28,8 +28,8 @@ namespace SME.SGP.Aplicacao
         public int Semestre { get; set; }
         public int Bimestre { get; set; }
         public int AnoLetivo { get; set; }
-        public SituacaoFechamento? SituacaoFechamento { get; set; }
-        public SituacaoConselhoClasse? SituacaoConselhoClasse { get; set; }
+        public int? SituacaoFechamento { get; set; }
+        public int? SituacaoConselhoClasse { get; set; }
         public bool ListarTodasTurmas { get; set; }
     }
     public class ObterTurmasFechamentoAcompanhamentoQueryValidator : AbstractValidator<ObterTurmasFechamentoAcompanhamentoQuery>

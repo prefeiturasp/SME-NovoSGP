@@ -15,11 +15,11 @@ namespace SME.SGP.Aplicacao
         {
             var listarTodasTurmas = param.TurmasId.Any(c => c == -99);
 
-            SituacaoFechamento? situacaoFechamento = param.SituacaoFechamento.HasValue && param.SituacaoFechamento.Value > -99 ? 
-                                                    (SituacaoFechamento)param.SituacaoFechamento : null;
+            int? situacaoFechamento = param.SituacaoFechamento.HasValue && param.SituacaoFechamento.Value > -99 ? 
+                                                    param.SituacaoFechamento : null;
 
-            SituacaoConselhoClasse? situacaoConselhoClasse = param.SituacaoConselhoClasse.HasValue && param.SituacaoConselhoClasse.Value > -99 ? 
-                                                             (SituacaoConselhoClasse)param.SituacaoConselhoClasse : null;
+            int? situacaoConselhoClasse = param.SituacaoConselhoClasse.HasValue && param.SituacaoConselhoClasse.Value > -99 ? 
+                                                             param.SituacaoConselhoClasse : null;
 
             var turmas = await mediator.Send(new ObterTurmasFechamentoAcompanhamentoQuery(param.DreId,
                                                                                           param.UeId,
