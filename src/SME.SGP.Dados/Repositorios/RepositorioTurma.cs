@@ -970,7 +970,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno != 0;
         }
 
-        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, SituacaoFechamento? situacaoFechamento, SituacaoConselhoClasse? situacaoConselhoClasse, bool listarTodasTurmas)
+        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
         {
             var query = new StringBuilder(@"select distinct t.id as TurmaId,
                                                      t.nome       
@@ -1075,8 +1075,8 @@ namespace SME.SGP.Dados.Repositorios
                 semestre,
                 bimestre,
                 anoLetivo,
-                situacaoFechamento = (int?)situacaoFechamento,
-                situacaoConselhoClasse = (int?)situacaoFechamento,
+                situacaoFechamento,
+                situacaoConselhoClasse,
                 dataReferencia
             };
 
