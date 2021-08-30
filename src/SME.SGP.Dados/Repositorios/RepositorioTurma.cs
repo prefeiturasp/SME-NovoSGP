@@ -970,7 +970,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno != 0;
         }
 
-        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, bool listarTodasTurmas)
+        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, SituacaoFechamento? situacaoFechamento, SituacaoConselhoClasse? situacaoConselhoClasse, bool listarTodasTurmas)
         {
             var query = new StringBuilder(@"select distinct t.id as TurmaId,
                                                      t.nome       
@@ -982,15 +982,38 @@ namespace SME.SGP.Dados.Repositorios
                                                left join periodo_escolar pe
 	                                              on tc.id = pe.tipo_calendario_id
                                                where dre.id = @dreId
-                                                 and ue.id = @ueId ");
+                                                 and ue.id = @ueId and t.tipo_turma in (1,2,7) ");
 
             if (!listarTodasTurmas)
                 query.AppendLine("and t.id = ANY(@turmasId) ");
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
-            //else
-            //    query.AppendLine("and pe.bimestre is null ");
+
+            var querySituacao = new StringBuilder();
+            if (situacaoFechamento.HasValue)
+            {
+                querySituacao.AppendLine(@"and t.id in (select turma_id from consolidado_fechamento_componente_turma 
+                                   where not excluido and turma_id = t.id and status = @situacaoFechamento  ");
+
+                if (bimestre > 0)
+                    querySituacao.AppendLine("and bimestre = @bimestre ");
+
+                querySituacao.AppendLine(")");
+            }
+
+            if (situacaoConselhoClasse.HasValue)
+            {
+                querySituacao.AppendLine(@"and t.id in (select turma_id from consolidado_conselho_classe_aluno_turma 
+                                   where not excluido and turma_id = t.id and status = @situacaoConselhoClasse  ");
+
+                if (bimestre > 0)
+                    querySituacao.AppendLine("and bimestre = @bimestre ");
+
+                querySituacao.AppendLine(")");
+            }
+
+            query.AppendLine(querySituacao.ToString());
 
             DateTime dataReferencia = DateTime.MinValue;
             string queryPeriodoEJA = string.Empty;
@@ -1006,6 +1029,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(@" and t.modalidade_codigo = @modalidade
                                 and t.ano_letivo = @anoLetivo
                                 and not t.historica 
+                                and t.tipo_turma in (1,2,7)
                             order by t.nome
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
 
@@ -1025,15 +1049,16 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
-            //else
-            //    query.AppendLine("and pe.bimestre is null ");
 
             if (modalidade == Modalidade.EJA)
                 query.AppendLine(queryPeriodoEJA);
 
+            query.AppendLine(querySituacao.ToString());
+
             query.AppendLine(@"and t.modalidade_codigo = @modalidade 
                                and t.ano_letivo = @anoLetivo
-                               and not t.historica");
+                               and not t.historica
+                               and t.tipo_turma in (1,2,7)");
 
 
             var retorno = new PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>();
@@ -1050,6 +1075,8 @@ namespace SME.SGP.Dados.Repositorios
                 semestre,
                 bimestre,
                 anoLetivo,
+                situacaoFechamento = (int?)situacaoFechamento,
+                situacaoConselhoClasse = (int?)situacaoFechamento,
                 dataReferencia
             };
 
