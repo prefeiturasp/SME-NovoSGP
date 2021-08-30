@@ -241,10 +241,7 @@ namespace SME.SGP.Dominio.Servicos
                 repositorioPendencia.ExcluirPendenciasFechamento(fechamentoId, tipoPendencia);
 
                 var tituloPendencia = $"{tipoPendencia.Name()} - {bimestre}º bimestre";
-                var pendencia = new Pendencia(tipoPendencia, tituloPendencia, mensagem);
-                repositorioPendencia.Salvar(pendencia);
-                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(tipoPendencia, mensagem, "", tipoPendencia.Name(), descricaoHtml));
-                // AKI
+                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(tipoPendencia, mensagem, "", tituloPendencia, descricaoHtml));
                 await mediator.Send(new SalvarPendenciaFechamentoCommand(fechamentoId, pendenciaId));                
 
                 await RelacionaPendenciaUsuario(pendenciaId, professorRf);                
