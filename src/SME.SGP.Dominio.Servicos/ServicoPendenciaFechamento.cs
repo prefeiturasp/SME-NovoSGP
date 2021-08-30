@@ -214,7 +214,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 repositorioPendencia.ExcluirPendenciasFechamento(fechamentoId, tipoPendencia);
                 
-                var tituloPendencia = $"{tipoPendencia.Name()}-{bimestre}º bimestre";
+                var tituloPendencia = $"{tipoPendencia.Name()} - {bimestre}º bimestre";
                 var pendencia = new Pendencia(tipoPendencia, tituloPendencia, mensagem);
                 repositorioPendencia.Salvar(pendencia);
 
