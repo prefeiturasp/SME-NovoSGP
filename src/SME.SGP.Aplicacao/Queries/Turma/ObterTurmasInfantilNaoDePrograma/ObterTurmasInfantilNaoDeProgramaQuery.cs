@@ -6,12 +6,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasInfantilNaoDeProgramaQuery : IRequest<IEnumerable<Dominio.Turma>>
     {
-        public ObterTurmasInfantilNaoDeProgramaQuery(int anoLetivo)
+        public ObterTurmasInfantilNaoDeProgramaQuery(int anoLetivo, string codigoTurma = null)
         {
             AnoLetivo = anoLetivo;
+            CodigoTurma = codigoTurma;
         }
 
         public int AnoLetivo { get; set; }
+        public string CodigoTurma { get; set; }
     }
 
 
