@@ -23,13 +23,11 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEol servicoEOL;
-        private readonly IServicoFrequencia servicoFrequencia;
         private readonly IMediator mediator;
 
         private double _mediaFrequencia;
 
         public ConsultasFrequencia(IMediator mediator,
-                                   IServicoFrequencia servicoFrequencia,
                                    IServicoEol servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                     IRepositorioComponenteCurricular repositorioComponenteCurricular,
@@ -43,7 +41,6 @@ namespace SME.SGP.Aplicacao
                                    IServicoAluno servicoAluno)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
