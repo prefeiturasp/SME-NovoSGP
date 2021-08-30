@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<Dominio.Turma>> Handle(ObterTurmasInfantilNaoDeProgramaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTurma.ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(request.AnoLetivo);
+            return await repositorioTurma.ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(request.AnoLetivo, request.CodigoTurma);
         }
     }
 }
