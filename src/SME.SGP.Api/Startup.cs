@@ -26,6 +26,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using SME.SGP.Infra;
+using SME.SGP.Api.Filtros;
 
 namespace SME.SGP.Api
 {
@@ -61,7 +62,7 @@ namespace SME.SGP.Api
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGP Api");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGP Api");                
             });
 
             //TODO: Ajustar para as os origins que irão consumir
@@ -162,6 +163,11 @@ namespace SME.SGP.Api
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
+            });
+
+            services.AddSwaggerGen(o =>
+            {
+                o.OperationFilter<AdicionaCabecalhoHttp>();
             });
 
 
