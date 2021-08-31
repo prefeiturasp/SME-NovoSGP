@@ -63,5 +63,31 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Query<bool>(query.ToString(), new { atividadeAvaliativaId, disciplinaId }).SingleOrDefault();
         }
+
+        public async Task<IEnumerable<AtividadeAvaliativaDisciplina>> ObterDisciplinasAtividadeAvaliativa(long atividadeAvaliativaId)
+        {
+            var query = @"select
+                            aar.id,
+                            aar.atividade_avaliativa_id,
+                            aar.disciplina_contida_regencia_id disciplina_id,
+                            aar.criado_em,
+                            aar.criado_por,
+                            aar.alterado_em,
+                            aar.alterado_por,
+                            aar.criado_rf,
+                            aar.alterado_rf,
+                            aar.excluido
+                        from atividade_avaliativa a 
+                        inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id 
+                        and a.id = @atividadeAvaliativaId 
+                        and a.excluido = false
+                        and aar.excluido = false;";
+
+            return await database.Conexao.QueryAsync<AtividadeAvaliativaDisciplina>(query.ToString(), new
+            {
+                atividadeAvaliativaId
+            });
+        }
+
     }
 }
