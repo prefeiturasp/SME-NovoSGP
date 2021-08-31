@@ -31,7 +31,8 @@ namespace SME.SGP.Aplicacao
             }
 
             await mediator.Send(
-                new SalvarNotaAtividadeAvaliativaGsaCommand(notaConceito.Id, request.NotaAtividadeGsaDto.Nota));
+                new SalvarNotaAtividadeAvaliativaGsaCommand(notaConceito.Id, request.NotaAtividadeGsaDto.Nota,
+                    request.NotaAtividadeGsaDto.StatusGsa));
         }
     }
 }

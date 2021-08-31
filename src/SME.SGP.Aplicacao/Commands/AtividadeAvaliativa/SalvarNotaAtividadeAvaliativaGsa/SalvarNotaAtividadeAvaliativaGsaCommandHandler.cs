@@ -35,6 +35,7 @@ namespace SME.SGP.Aplicacao
             SalvarNotaAtividadeAvaliativaGsaCommand request)
         {
             conceito.Nota = request.Nota;
+            conceito.StatusGsa = request.StatusGsa;
 
             await repositorioConceitos.SalvarAsync(conceito);
         }

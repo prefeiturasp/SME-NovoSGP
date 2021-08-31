@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -8,11 +8,13 @@ namespace SME.SGP.Aplicacao
     {
         public double Nota { get; }
         public long NotaConceitoId { get; set; }
+        public StatusGSA StatusGsa { get; set; }
 
-        public SalvarNotaAtividadeAvaliativaGsaCommand(long notaConceitoId, double nota)
+        public SalvarNotaAtividadeAvaliativaGsaCommand(long notaConceitoId, double nota, StatusGSA statusGsa)
         {
             Nota = nota;
             NotaConceitoId = notaConceitoId;
+            StatusGsa = statusGsa;
         }
     }
 
