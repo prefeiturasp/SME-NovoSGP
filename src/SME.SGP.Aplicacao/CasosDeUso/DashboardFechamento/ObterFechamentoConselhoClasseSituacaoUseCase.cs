@@ -14,22 +14,22 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<GraficoBaseDto>> Executar(FiltroDashboardFechamentoDto param)
         {
-            var fechamentosRetorno = await mediator.Send(new ObterFechamentoSituacaoQuery(param.UeId, param.AnoLetivo,
+            var conselhoClasse = await mediator.Send(new ObterConselhoClasseSituacaoQuery(param.UeId, param.AnoLetivo,
                 param.DreId,
                 param.Modalidade,
                 param.Semestre,
                 param.Bimestre));
 
-            List<GraficoBaseDto> fechamentos = new List<GraficoBaseDto>();
+            List<GraficoBaseDto> conselhos = new List<GraficoBaseDto>();
 
-            foreach (var fechamento in fechamentosRetorno)
+            foreach (var conseho in conselhoClasse)
             {
-                var grupo = $"{fechamento.AnoTurma}";
-                if(fechamento.Quantidade > 0)
-                    fechamentos.Add(new GraficoBaseDto(grupo, fechamento.Quantidade, fechamento.Situacao.Name()));
+                var grupo = $"{conseho.AnoTurma}";
+                if(conseho.Quantidade > 0)
+                    conselhos.Add(new GraficoBaseDto(grupo, conseho.Quantidade, conseho.Situacao.Name()));
             }
 
-            return fechamentos.OrderBy(a => a.Grupo).ToList();
+            return conselhos.OrderBy(a => a.Grupo).ToList();
         }
     }
 }
