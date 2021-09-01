@@ -214,7 +214,7 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<IEnumerable<ConselhoClasseSituacaoQuantidadeDto>> ObterConselhoClasseSituacao(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = ueId > 0 ? MontarQueryConselhoClasseSituacaoQuantidade(ueId, ano, dreId, modalidade, semestre, bimestre) : MontarQueryConselhoClasseSituacaoQuantidadeSME(ano, dreId, modalidade, semestre, bimestre);
+            var query =  MontarQueryConselhoClasseSituacaoQuantidade(ueId, ano, dreId, modalidade, semestre, bimestre);
             return await database.Conexao.QueryAsync<ConselhoClasseSituacaoQuantidadeDto>(query.ToString(), new
             {
                 ueId,
@@ -224,73 +224,6 @@ namespace SME.SGP.Dados.Repositorios
                 semestre,
                 bimestre
             });
-        }
-
-        private string MontarQueryConselhoClasseSituacaoQuantidadeSME(int ano, long dreId, int modalidade, int semestre, int bimestre)
-        {
-            StringBuilder queryBuilder = new StringBuilder();
-
-            queryBuilder.AppendLine(@"select Situacao, sum(x.Quantidade) as Quantidade,
-                                                x.AnoTurma,
-            	                                x.Ano,
-            	                                x.Modalidade
-                                           from (
-                                                 select  case  when cccat.status in (0, 1) then 0 else cccat.status end as Situacao,
-                                                           count(cccat.id) as Quantidade, 
-                                                           t.ano as Ano, 
-                                                           t.ano as AnoTurma,
-                                                           t.modalidade_codigo  as Modalidade
-                                                      from consolidado_conselho_classe_aluno_turma cccat  
-                                                     inner join turma t on t.id = cccat.turma_id
-                                                     inner join ue on ue.id = t.ue_id where t.tipo_turma in (1,7) ");
-
-            if (ano > 0)
-                queryBuilder.AppendLine(" and t.ano_letivo = @ano ");
-
-            if (dreId > 0)
-                queryBuilder.AppendLine(" and ue.dre_id = @dreId ");
-
-            if (modalidade > 0)
-                queryBuilder.AppendLine(" and t.modalidade_codigo = @modalidade ");
-
-            if (semestre > 0)
-                queryBuilder.AppendLine(" and t.semestre = @semestre ");
-
-            if (bimestre >= 0)
-                queryBuilder.AppendLine(" and cccat.bimestre = @bimestre ");
-
-            queryBuilder.AppendLine(@" group by cccat.status, t.ano, t.nome, t.modalidade_codigo  
-                                        UNION 
-                                        select  case  when cccat.status in (0, 1) then 0 else cccat.status end as Situacao,
-                                                                           count(cccat.id) as Quantidade, 
-                                                                           '1' as ano,
-                                                                           'Ed. Física' as AnoTurma,
-                                                                           t.modalidade_codigo  as Modalidade
-                                                                      from consolidado_conselho_classe_aluno_turma cccat  
-                                                                     inner join turma t on t.id = cccat.turma_id
-                                                                     inner join ue on ue.id = t.ue_id where t.tipo_turma in (2) ");
-            if (ano > 0)
-                queryBuilder.AppendLine(" and t.ano_letivo = @ano ");
-
-            if (dreId > 0)
-                queryBuilder.AppendLine(" and ue.dre_id = @dreId ");
-            
-            if (modalidade > 0)
-                queryBuilder.AppendLine(" and t.modalidade_codigo = @modalidade ");
-            
-            if (semestre > 0)
-                queryBuilder.AppendLine(" and t.semestre = @semestre ");
-            
-            if (semestre > 0)
-                queryBuilder.AppendLine(" and cccat.bimestre =  @bimestre ");
-
-            queryBuilder.AppendLine(@" group by cccat.status, t.modalidade_codigo) x
-                                               group by x.Situacao, x.Ano, x.AnoTurma, x.Modalidade
-                                               order by x.Ano;");
-
-
-            return queryBuilder.ToString();
-
         }
 
         private string MontarQueryConselhoClasseSituacaoQuantidade(long ueId,
