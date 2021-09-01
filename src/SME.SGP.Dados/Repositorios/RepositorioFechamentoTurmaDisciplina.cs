@@ -202,7 +202,6 @@ namespace SME.SGP.Dados.Repositorios
             int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
             var query = ueId > 0 ? MontarQuerySituacaoProcessoFechamento(ueId, ano, dreId, modalidade, semestre, bimestre) : MontarQuerySituacaoProcessoFechamentoSME(ano, dreId, modalidade, semestre, bimestre);
-
             return await database.Conexao.QueryAsync<FechamentoSituacaoQuantidadeDto>(query.ToString(), new
             {
                 ueId,
@@ -213,7 +212,7 @@ namespace SME.SGP.Dados.Repositorios
                 bimestre
             });
         }
-
+ 
         private string MontarQuerySituacaoProcessoFechamento(long ueId,
             int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
@@ -526,5 +525,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<TurmaFechamentoDisciplinaDto>(query.ToString(), new { anoLetivo, bimestre });
         }
+
     }
 }
