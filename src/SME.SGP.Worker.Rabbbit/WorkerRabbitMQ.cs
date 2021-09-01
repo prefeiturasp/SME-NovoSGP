@@ -223,7 +223,7 @@ namespace SME.SGP.Worker.RabbitMQ
             // Mural de Avisos Gsa
             comandos.Add(RotasRabbitSgp.RotaMuralAvisosSync, new ComandoRabbit("Importar avisos do mural do GSA", typeof(IImportarAvisoDoMuralGsaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaAtividadesSync, new ComandoRabbit("Importar atividades avaliativas do GSA", typeof(IImportarAtividadesGsaUseCase)));
-            comandos.Add(RotasRabbitSgp.RotaAtividadesNotasSync, new ComandoRabbit("Importar notas de atividades avaliativas do GSA", typeof(IImportarAtividadesGsaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaAtividadesNotasSync, new ComandoRabbit("Importar notas de atividades avaliativas do GSA", typeof(IImportarNotaAtividadeAvaliativaGsaUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaAgendamentoTratar, new ComandoRabbit("Tratar mensagens de processamento periodico", typeof(IRotasAgendamentoTratarUseCase)));
 

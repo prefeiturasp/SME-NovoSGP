@@ -26,7 +26,6 @@ namespace SME.SGP.Aplicacao
             var notaConceito =
                 await repositorioConceitos.ObterNotasPorId(request.NotaConceitoId);
 
-
             await AlterarAtividade(notaConceito, request);
         }
 
@@ -34,7 +33,14 @@ namespace SME.SGP.Aplicacao
         private async Task AlterarAtividade(NotaConceito conceito,
             SalvarNotaAtividadeAvaliativaGsaCommand request)
         {
-            conceito.Nota = request.Nota;
+            if (conceito.TipoNota == TipoNota.Conceito)
+            {
+                conceito.ConceitoId = (long?) request.Nota;
+            }
+            else
+            {
+                conceito.Nota = request.Nota;
+            }
             conceito.StatusGsa = request.StatusGsa;
 
             await repositorioConceitos.SalvarAsync(conceito);
