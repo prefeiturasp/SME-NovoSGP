@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
     public class ObterConselhoClasseSituacaoHandler : IRequestHandler<ObterConselhoClasseSituacaoQuery,
             IEnumerable<ConselhoClasseSituacaoQuantidadeDto>>
     {
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorio;
+        private readonly IRepositorioConselhoClasse repositorio;
 
-        public ObterConselhoClasseSituacaoHandler(IRepositorioFechamentoTurmaDisciplina repositorio)
+        public ObterConselhoClasseSituacaoHandler(IRepositorioConselhoClasse repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
