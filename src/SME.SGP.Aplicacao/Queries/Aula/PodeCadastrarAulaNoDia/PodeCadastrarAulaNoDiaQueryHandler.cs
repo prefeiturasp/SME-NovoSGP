@@ -53,12 +53,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> PodeCadastrarAulaNoDia(PodeCadastrarAulaNoDiaQuery request, Turma turma, long tipoCalendarioId)
         {
+            var ue = await mediator.Send(new ObterUEPorTurmaIdQuery(turma.Id));
+
             return await mediator.Send(new ValidarSeEhDiaLetivoQuery(
                 request.DataAula,
-                request.DataAula,
-                tipoCalendarioId,
-                true,
-                (int)TipoEvento.ReposicaoDeAula));
+                tipoCalendarioId, ue.CodigoUe));
         }
 
         private async Task<bool> ExisteAula(PodeCadastrarAulaNoDiaQuery request)
