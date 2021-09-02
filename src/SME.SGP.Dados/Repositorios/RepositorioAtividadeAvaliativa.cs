@@ -119,7 +119,7 @@ namespace SME.SGP.Dados.Repositorios
             }));
         }
 
-        public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasSemNotaParaNenhumAluno(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasSemNotaParaNenhumAluno(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int tipoAtividadeAvaliativa)
         {
             var sql = @"select av.*
                         from atividade_avaliativa av
@@ -131,7 +131,7 @@ namespace SME.SGP.Dados.Repositorios
 	                     and aad.disciplina_id = @disciplinaId
                          and av.data_avaliacao::date between @inicioPeriodo::date and @fimPeriodo::date
                          and n.id is null
-                         and ta.codigo <> @tipoAvaliacao";
+                         and ta.codigo <> @tipoAtividadeAvaliativa";
 
             var parametros = new
             {
@@ -139,7 +139,7 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId,
                 inicioPeriodo,
                 fimPeriodo,
-                tipoAvaliacao = (int)TipoAvaliacaoCodigo.AtividadeClassroom
+                tipoAtividadeAvaliativa
             };
 
             return database.Query<AtividadeAvaliativa>(sql.ToString(), parametros);
