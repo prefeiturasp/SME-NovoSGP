@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
 
         public SalvarNotaAtividadeAvaliativaGsaCommandHandler(
-            IRepositorioNotasConceitos repositorioConceitos, IMediator mediator)
+            IRepositorioNotasConceitos repositorioConceitos)
         {
             this.repositorioConceitos =
                 repositorioConceitos ?? throw new ArgumentNullException(nameof(repositorioConceitos));
@@ -35,12 +35,13 @@ namespace SME.SGP.Aplicacao
         {
             if (conceito.TipoNota == TipoNota.Conceito)
             {
-                conceito.ConceitoId = (long?) request.Nota;
+                conceito.ConceitoId = (long?)request.Nota;
             }
             else
             {
                 conceito.Nota = request.Nota;
             }
+
             conceito.StatusGsa = request.StatusGsa;
 
             await repositorioConceitos.SalvarAsync(conceito);
