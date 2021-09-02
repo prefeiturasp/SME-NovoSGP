@@ -289,12 +289,18 @@ namespace SME.SGP.Aplicacao
                     Nome = avaliacao.NomeAvaliacao,
                     EhCJ = avaliacao.EhCj
                 };
-                if (avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar))
+
+                avaliacaoDoBimestre.EhInterdisciplinar = avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar);
+
+                if (componenteReferencia.Regencia)
                 {
-                    avaliacaoDoBimestre.EhInterdisciplinar = true;
-                    var nomesDisciplinas = componentesCurricularesCompletos.Select(d => d.Nome).ToArray();
+                    var atividadeDisciplinas = await ObterDisciplinasAtividadeAvaliativa(avaliacao.Id, avaliacao.EhRegencia);
+                    var idsDisciplinas = atividadeDisciplinas?.Select(a => long.Parse(a.DisciplinaId)).ToArray();
+                    var disciplinas = await ObterDisciplinasPorIds(idsDisciplinas);
+                    var nomesDisciplinas = disciplinas?.Select(d => d.Nome).ToArray();
                     avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
                 }
+
                 bimestreParaAdicionar.Avaliacoes.Add(avaliacaoDoBimestre);
 
                 if (atividadeAvaliativaParaObterTipoNota == null)
@@ -421,6 +427,14 @@ namespace SME.SGP.Aplicacao
             }
 
             return componentesCurriculares;
+        }
+        public async Task<IEnumerable<AtividadeAvaliativaDisciplina>> ObterDisciplinasAtividadeAvaliativa(long avaliacao_id, bool ehRegencia)
+        {
+            return await mediator.Send(new ObterDisciplinasAtividadeAvaliativaQuery(avaliacao_id, ehRegencia));
+        }
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIds(long[] ids)
+        {
+            return await mediator.Send(new ObterDisciplinasPorIdsQuery(ids));
         }
     }
 }
