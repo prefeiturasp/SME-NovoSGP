@@ -131,9 +131,18 @@ namespace SME.SGP.Dados.Repositorios
 	                     and aad.disciplina_id = @disciplinaId
                          and av.data_avaliacao::date between @inicioPeriodo::date and @fimPeriodo::date
                          and n.id is null
-                         and ta.codigo <> 17";
+                         and ta.codigo <> @tipoAvaliacao";
 
-            return database.Query<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, disciplinaId, inicioPeriodo, fimPeriodo });
+            var parametros = new
+            {
+                turmaCodigo,
+                disciplinaId,
+                inicioPeriodo,
+                fimPeriodo,
+                tipoAvaliacao = (int)TipoAvaliacaoCodigo.AtividadeClassroom
+            };
+
+            return database.Query<AtividadeAvaliativa>(sql.ToString(), parametros);
         }
 
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesPorDia(string dreId, string ueId, DateTime dataAvaliacao, string professorRf, string turmaId)
