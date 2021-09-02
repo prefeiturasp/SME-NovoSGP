@@ -24,7 +24,7 @@
     "formik": "^1.5.8",
     "gerador-validador-cpf": "^5.0.1",
     "history": "^4.9.0",
-    "immer": "^8.0.1",
+    "immer": "^9.0.6",
     "jodit-react": "1.0.70",
     "jquery": "^3.4.1",
     "lodash": "^4.17.19",
