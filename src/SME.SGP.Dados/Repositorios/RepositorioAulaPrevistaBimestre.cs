@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
                          from periodo_escolar p
                          inner join tipo_calendario tp on p.tipo_calendario_id = tp.id
                          left join aula_prevista ap on ap.tipo_calendario_id = p.tipo_calendario_id
-                         left join aula_prevista_bimestre apb on ap.id = apb.aula_prevista_id and p.bimestre = apb.bimestre
+                         left join aula_prevista_bimestre apb on ap.id = apb.aula_prevista_id and p.bimestre = apb.bimestre and not apb.excluido
                          left join aula a on a.turma_id = ap.turma_id and
                          				a.disciplina_id = ap.disciplina_id and
 			                            a.tipo_calendario_id = p.tipo_calendario_id and
@@ -57,7 +57,7 @@ namespace SME.SGP.Dados.Repositorios
                             aula_prevista ap
                         inner join
                             aula_prevista_bimestre apb
-                            on ap.id = apb.aula_prevista_id
+                            on ap.id = apb.aula_prevista_id and not apb.excluido
                         where
                             ap.tipo_calendario_id = @tipoCalendarioId and
                             ap.turma_id = @turmaId and
@@ -80,7 +80,7 @@ namespace SME.SGP.Dados.Repositorios
                             aula_prevista ap
                         inner join
                             aula_prevista_bimestre apb
-                            on ap.id = apb.aula_prevista_id
+                            on ap.id = apb.aula_prevista_id and not apb.excluido
                         where
                             ap.tipo_calendario_id = @tipoCalendarioId and
                             ap.turma_id = @turmaId and 
@@ -121,6 +121,7 @@ namespace SME.SGP.Dados.Repositorios
                         left join aula_prevista_bimestre apb on
 	                        ap.id = apb.aula_prevista_id
 	                        and p.bimestre = apb.bimestre
+                            and not apb.excluido
                         left join aula a on
 	                        a.turma_id = ap.turma_id
 	                        and a.disciplina_id = ap.disciplina_id
