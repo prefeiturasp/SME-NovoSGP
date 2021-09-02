@@ -63,7 +63,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(GraficoBaseDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DFE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSituacoesConselhoClasse([FromQuery] FiltroDashboardFechamentoDto filtroDashboardFechamentoDto, [FromServices] IObterFechamentoConselhoClasseSituacaoUseCase useCase)
+        public async Task<IActionResult> ObterSituacoesConselhoClasse([FromQuery] 
+            FiltroDashboardFechamentoDto filtroDashboardFechamentoDto, 
+            [FromServices] IObterFechamentoConselhoClasseSituacaoUseCase useCase)
         {
             return Ok(await useCase.Executar(filtroDashboardFechamentoDto));
         }

@@ -3,6 +3,7 @@ using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -57,6 +58,72 @@ namespace SME.SGP.Dados.Repositorios
                         where {0} and ccpa.inicio_vigencia <= @dataConsulta and (ccpa.fim_vigencia >= @dataConsulta or ccpa.fim_vigencia is null)";
         }
 
-      
+        public async Task<IEnumerable<ParecerConclusivoSituacaoQuantidadeDto>> ObterParecerConclusivoSituacao(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var query = new StringBuilder();
+            query.AppendLine(@"SELECT Situacao,
+                                       sum(x.Quantidade) AS Quantidade,
+                                       x.AnoTurma,
+                                       x.Ano,
+                                       x.Modalidade
+                                FROM
+                                  (SELECT 
+  		                                CASE
+                                              WHEN cc.situacao in(0,1) THEN 0
+                                              ELSE cc.situacao
+                                          END AS Situacao,
+                                          count(cca.id) AS Quantidade,
+                                          t.ano AS Ano,
+                                          t.nome AS AnoTurma,
+                                          t.modalidade_codigo AS Modalidade
+                                   FROM conselho_classe_aluno cca
+                                   INNER JOIN conselho_classe_parecer ccp ON cca.conselho_classe_parecer_id = ccp.id
+                                   INNER JOIN conselho_classe cc ON cca.conselho_classe_id = cc.id
+                                   INNER JOIN fechamento_turma ft ON cc.fechamento_turma_id = ft.id
+                                   INNER JOIN turma t ON ft.turma_id = t.id
+                                   INNER JOIN ue u ON t.ue_id = u.id
+                                   INNER JOIN periodo_escolar pe ON ft.periodo_escolar_id = pe.id 
+                                   WHERE t.tipo_turma in (1,2,7) ");
+
+            if (ano > 0)
+                query.AppendLine(" AND t.ano_letivo = @ano  ");
+
+            if (ueId > 0)
+                query.AppendLine(" AND t.ue_id = @ueId ");
+
+            if (dreId > 0)
+                query.AppendLine(" AND u.dre_id = @dreId ");
+
+            if (modalidade > 0)
+                query.AppendLine(" AND t.modalidade_codigo = @modalidade ");
+            
+            if (semestre > 0)
+                query.AppendLine(" AND t.semestre = @semestre ");
+
+            if (bimestre > 0)
+                query.AppendLine(" AND pe.bimestre = @bimestre ");
+
+
+            query.AppendLine(@"   GROUP BY cc.situacao,
+                                            t.ano,
+                                            t.nome,
+                                            t.modalidade_codigo) x
+                                GROUP BY x.Situacao,
+                                         x.Ano,
+                                         x.AnoTurma,
+                                         x.Modalidade
+                                ORDER BY x.Ano ");
+
+            return await database.Conexao.QueryAsync<ParecerConclusivoSituacaoQuantidadeDto>(query.ToString(), new
+            {
+                ueId,
+                ano,
+                dreId,
+                modalidade,
+                semestre,
+                bimestre
+            });
+        }
     }
 }
+
