@@ -46,12 +46,26 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtroDashboardFechamentoDto));
         }
 
+        [HttpGet("parecer-conclusivo")]
+        [ProducesResponseType(typeof(GraficoBaseDto), 200)]
+        [ProducesResponseType(typeof(GraficoBaseDto), 204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DFE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPendenciaParecerConclusivo(
+        [FromQuery] FiltroDashboardFechamentoDto filtroDashboardFechamentoDto,
+        [FromServices] IObterPendenciaParecerConclusivoUseCases useCase)
+        {
+            return Ok(await useCase.Executar(filtroDashboardFechamentoDto));
+        }
+
         [HttpGet("conselho-classes/situacoes")]
         [ProducesResponseType(typeof(GraficoBaseDto),200)]
         [ProducesResponseType(typeof(GraficoBaseDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DFE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSituacoesConselhoClasse([FromQuery] FiltroDashboardFechamentoDto filtroDashboardFechamentoDto, [FromServices] IObterFechamentoConselhoClasseSituacaoUseCase useCase)
+        public async Task<IActionResult> ObterSituacoesConselhoClasse([FromQuery] 
+            FiltroDashboardFechamentoDto filtroDashboardFechamentoDto, 
+            [FromServices] IObterFechamentoConselhoClasseSituacaoUseCase useCase)
         {
             return Ok(await useCase.Executar(filtroDashboardFechamentoDto));
         }
