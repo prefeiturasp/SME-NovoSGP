@@ -185,7 +185,8 @@ namespace SME.SGP.Dominio.Servicos
             var registrosAvaliacoesSemNotaParaNenhumAluno = repositorioAtividadeAvaliativa.ObterAtividadesAvaliativasSemNotaParaNenhumAluno(codigoTurma,
                                                                             disciplinaId.ToString(),
                                                                             inicioPeriodo,
-                                                                            fimPeriodo);
+                                                                            fimPeriodo,
+                                                                            (int)TipoAvaliacaoCodigo.AtividadeClassroom);
 
             if (registrosAvaliacoesSemNotaParaNenhumAluno != null && registrosAvaliacoesSemNotaParaNenhumAluno.Any())
             {
