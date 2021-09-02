@@ -9,17 +9,17 @@ using SME.SGP.Dominio.Interfaces;
 namespace SME.SGP.Aplicacao
 {
     public class
-        ObterAtividadeNotaConseitoPorAtividadeGoogleClassIdHandler : IRequestHandler<
-            ObterAtividadeNotaConseitoPorAtividadeGoogleClassIdQuery, NotaConceito>
+        ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularIdHandler : IRequestHandler<
+            ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularId, NotaConceito>
     {
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
 
-        public ObterAtividadeNotaConseitoPorAtividadeGoogleClassIdHandler(RepositorioNotasConceitos notasConceitos)
+        public ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularIdHandler(RepositorioNotasConceitos notasConceitos)
         {
             repositorioNotasConceitos = notasConceitos ?? throw new ArgumentNullException(nameof(notasConceitos));
         }
 
-        public async Task<NotaConceito> Handle(ObterAtividadeNotaConseitoPorAtividadeGoogleClassIdQuery request,
+        public async Task<NotaConceito> Handle(ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularId request,
             CancellationToken cancellationToken)
             => await repositorioNotasConceitos.ObterNotasPorGoogleClassroomIdTruemaIdComponentCurricularId(request.AtividadeGoogleClassroomId,
                 request.TurmaId, request.componenteCurricularId);

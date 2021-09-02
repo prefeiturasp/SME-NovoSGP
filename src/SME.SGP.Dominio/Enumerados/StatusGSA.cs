@@ -4,17 +4,17 @@ namespace SME.SGP.Dominio
 {
     public enum StatusGSA
     {
-        [Display(Name = "Não Especificado")]
+        [Display(Name = "SUBMISSION_STATE_UNSPECIFIED")]
         NaoEspecificado = 0,
-        [Display(Name = "Novo")]
+        [Display(Name = "NEW")]
         Novo = 1,
-        [Display(Name = "Criado")]
+        [Display(Name = "CREATED")]
         Criado = 2,
-        [Display(Name = "Entregue", Description = "Atividade entregue no Google Sala de Aula")]
+        [Display(Name = "TURNED_IN", Description = "Atividade entregue no Google Sala de Aula")]
         Entregue = 3  ,  
-        [Display(Name = "Devolvido")]
+        [Display(Name = "RETURNED")]
         Devolvido = 4,
-        [Display(Name = "Reclamada pelo Aluno")]
-        ReclamadaPeloAluno = 4,
+        [Display(Name = "RECLAIMED_BY_STUDENT")]
+        ReclamadaPeloAluno = 5
     }
 }

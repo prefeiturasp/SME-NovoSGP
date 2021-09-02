@@ -2,18 +2,19 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ImportarnotaAtividadeGsaCommandHandler : AsyncRequestHandler<ImportarNotaAtividadeGsaCommand>
+    public class ImportarNotaAtividadeGsaCommandHandler : AsyncRequestHandler<ImportarNotaAtividadeGsaCommand>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioTurma repositorioTurma;
         private Turma turmaFechamento;
 
-        public ImportarnotaAtividadeGsaCommandHandler(IMediator mediator, IRepositorioTurma repositorioTurma)
+        public ImportarNotaAtividadeGsaCommandHandler(IMediator mediator, IRepositorioTurma repositorioTurma)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -22,18 +23,19 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(ImportarNotaAtividadeGsaCommand request,
             CancellationToken cancellationToken)
         {
-            await ValidarLancamentoNotaComponente(request.NotaAtividadeGsaDto.ComponenteCurricularId);
             await CarregarTurma(request.NotaAtividadeGsaDto.TurmaId);
 
             var notaConceito = await mediator.Send(
-                new ObterAtividadeNotaConseitoPorAtividadeGoogleClassIdQuery(
+                new ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularId(
                     request.NotaAtividadeGsaDto.AtividadeGoogleClassroomId,
                     request.NotaAtividadeGsaDto.TurmaId.ToString(),
                     request.NotaAtividadeGsaDto.ComponenteCurricularId.ToString()));
 
             if (notaConceito is null)
             {
-                throw new NegocioException($"Não foi encontrado nota para lançar");
+                SentrySdk.CaptureException(new NegocioException("Não foi encontrado nota para lançar"));
+                throw new NegocioException("Não foi encontrado nota para lançar");
+
             }
 
             if (turmaFechamento.EhTurmaInfantil)
@@ -68,13 +70,6 @@ namespace SME.SGP.Aplicacao
                     new SalvarNotaAtividadeAvaliativaGsaCommand(notaConceito.Id, request.NotaAtividadeGsaDto.Nota,
                         request.NotaAtividadeGsaDto.StatusGsa));
             }
-        }
-
-        private async Task ValidarLancamentoNotaComponente(long componenteCurricularId)
-        {
-            if (!await mediator.Send(new ObterComponenteLancaNotaQuery(componenteCurricularId)))
-                throw new NegocioException(
-                    $"Componentes que não lançam nota não terão atividades avaliativas importada do classroom. Componente Curricular: {componenteCurricularId}");
         }
 
         private async Task CarregarTurma(long turmaCodigo)
