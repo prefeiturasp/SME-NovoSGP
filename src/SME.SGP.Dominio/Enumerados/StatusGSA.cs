@@ -6,11 +6,15 @@ namespace SME.SGP.Dominio
     {
         [Display(Name = "Não Especificado")]
         NaoEspecificado = 0,
-        [Display(Name = "Publicado")]
-        Publicado = 1,
-        [Display(Name = "Rascunho")]
-        Rascunho = 2,
-        [Display(Name = "Deletado")]
-        Deletado = 3
+        [Display(Name = "Novo")]
+        Novo = 1,
+        [Display(Name = "Criado")]
+        Criado = 2,
+        [Display(Name = "Entregue", Description = "Atividade entregue no Google Sala de Aula")]
+        Entregue = 3  ,  
+        [Display(Name = "Devolvido")]
+        Devolvido = 4,
+        [Display(Name = "Reclamada pelo Aluno")]
+        ReclamadaPeloAluno = 4,
     }
 }
