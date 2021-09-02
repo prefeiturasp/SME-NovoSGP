@@ -15,6 +15,7 @@ namespace SME.SGP.Dados.Repositorios
                          SUM(a.quantidade) filter (where a.tipo_aula = 1 and a.aula_cj = false) as CriadasTitular,
                          SUM(a.quantidade) filter (where a.tipo_aula = 1 and a.aula_cj = true) as CriadasCJ,
                          SUM(a.quantidade) filter (where a.tipo_aula = 1 and rf.id is not null) as Cumpridas,
+                         SUM(a.quantidade) filter (where a.tipo_aula = 1 and rf.id is null and a.data_aula <= now()) as CumpridasSemFrequencia,
                          SUM(a.quantidade) filter (where a.tipo_aula = 2 and rf.id is not null) as Reposicoes
                          from periodo_escolar p
                          inner join tipo_calendario tp on p.tipo_calendario_id = tp.id

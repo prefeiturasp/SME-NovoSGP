@@ -9,6 +9,7 @@ namespace SME.SGP.Dominio
         public int CriadasCJ { get; set; }
 
         public int Cumpridas { get; set; }
+        public int CumpridasSemFrequencia { get; set; }
 
         public DateTime Inicio { get; set; }
 
