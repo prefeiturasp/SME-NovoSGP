@@ -1,7 +1,5 @@
 ﻿using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -11,6 +9,8 @@ namespace SME.SGP.Infra
         public long? FechamentoTurmaId { get; set; }
         public long? ConselhoClasseAlunoId { get; set; }
         public int Bimestre { get; set; }
+        public DateTime? BimestrePeriodoInicio { get; set; }
+        public DateTime? BimestrePeriodoFim { get; set; }
         public DateTime? PeriodoFechamentoInicio { get; set; }
         public DateTime? PeriodoFechamentoFim { get; set; }
         public TipoNota TipoNota { get; set; }
