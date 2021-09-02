@@ -1103,6 +1103,7 @@ namespace SME.SGP.IoC
 
 
             services.TryAddScoped<IExecutarSyncSerapEstudantesProvasUseCase, ExecutarSyncSerapEstudantesProvasUseCase>();
+            services.TryAddScoped<IImportarNotaAtividadeAvaliativaGsaUseCase, ImportarNotaAtividadeAvaliativaGsaUseCase>();
             
         }
     }
