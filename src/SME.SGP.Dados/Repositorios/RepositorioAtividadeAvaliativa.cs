@@ -124,12 +124,14 @@ namespace SME.SGP.Dados.Repositorios
             var sql = @"select av.*
                         from atividade_avaliativa av
                        inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = av.id
+                       inner join tipo_avaliacao ta on ta.id = av.tipo_avaliacao_id
                         left join notas_conceito n on n.atividade_avaliativa = av.id
                        where not av.excluido
                          and av.turma_id = @turmaCodigo
 	                     and aad.disciplina_id = @disciplinaId
                          and av.data_avaliacao::date between @inicioPeriodo::date and @fimPeriodo::date
-                         and n.id is null";
+                         and n.id is null
+                         and ta.codigo <> 17";
 
             return database.Query<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, disciplinaId, inicioPeriodo, fimPeriodo });
         }
