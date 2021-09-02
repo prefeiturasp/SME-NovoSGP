@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -58,6 +59,34 @@ namespace SME.SGP.Dados.Repositorios
                             and disciplina_id = @componenteCurricularId";
 
             return await database.QueryAsync<NotaConceito>(sql, new { atividadesAvaliativasId, alunosIds, componenteCurricularId });
+        }
+
+        public async Task<NotaConceito> ObterNotasPorGoogleClassroomIdTruemaIdComponentCurricularId(long atividadeClassroomId, string turmaId, string componenteCurricularId)
+        {
+            var sql = $@"select nc.id, 
+                                nc.atividade_avaliativa, 
+                                nc.aluno_id, 
+                                nc.nota, 
+                                nc.conceito, 
+                                nc.tipo_nota, 
+                                nc.criado_em,
+                                nc.criado_por, 
+                                nc.criado_rf, 
+                                nc.alterado_em, 
+                                nc.alterado_por, 
+                                nc.alterado_rf
+                         from notas_conceito nc
+                         inner join atividade_avaliativa aa on nc.atividade_avaliativa = aa.id 
+                         where aa.atividade_classroom_id = @atividadeClassroomId and aa.turma_id = @turmaId and nc.disciplina_id = @componenteCurricularId";
+
+            return await database.QuerySingleOrDefaultAsync<NotaConceito>(sql, new { atividadeClassroomId, turmaId, componenteCurricularId });
+        }
+
+        public async Task<NotaConceito> ObterNotasPorId(long id)
+        {
+            var sql = $@"select * from notas_conceito nc where nc.id = @id";
+
+            return await database.QuerySingleOrDefaultAsync<NotaConceito>(sql, new { id });
         }
     }
 }
