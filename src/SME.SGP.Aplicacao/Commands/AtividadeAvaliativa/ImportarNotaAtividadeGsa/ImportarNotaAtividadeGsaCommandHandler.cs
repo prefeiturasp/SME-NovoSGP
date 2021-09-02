@@ -23,6 +23,7 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(ImportarNotaAtividadeGsaCommand request,
             CancellationToken cancellationToken)
         {
+            await ValidarLancamentoNotaComponente(request.NotaAtividadeGsaDto.ComponenteCurricularId);
             await CarregarTurma(request.NotaAtividadeGsaDto.TurmaId);
 
             var notaConceito = await mediator.Send(
@@ -70,6 +71,13 @@ namespace SME.SGP.Aplicacao
                     new SalvarNotaAtividadeAvaliativaGsaCommand(notaConceito.Id, request.NotaAtividadeGsaDto.Nota,
                         request.NotaAtividadeGsaDto.StatusGsa));
             }
+        }
+
+        private async Task ValidarLancamentoNotaComponente(long componenteCurricularId)
+        {
+            if (!await mediator.Send(new ObterComponenteLancaNotaQuery(componenteCurricularId)))
+                throw new NegocioException(
+                    $"Componentes que não lançam nota não terão atividades avaliativas importada do classroom. Componente Curricular: {componenteCurricularId}");
         }
 
         private async Task CarregarTurma(long turmaCodigo)
