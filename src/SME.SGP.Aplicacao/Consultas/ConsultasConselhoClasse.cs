@@ -80,14 +80,21 @@ namespace SME.SGP.Aplicacao
             var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id) : null;
 
             var periodoEscolarId = fechamentoTurma?.PeriodoEscolarId;
+
+            PeriodoEscolar periodoEscolar;
+
             if (periodoEscolarId == null)
             {
                 var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
                 if (tipoCalendario == null) throw new NegocioException("Tipo de calendário não encontrado");
 
-                var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioEBimestreAsync(tipoCalendario.Id, bimestre);
+                periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioEBimestreAsync(tipoCalendario.Id, bimestre);
 
                 periodoEscolarId = periodoEscolar?.Id;
+            }
+            else
+            {
+                periodoEscolar = await repositorioPeriodoEscolar.ObterPorIdAsync(periodoEscolarId.Value);
             }
 
             var bimestreFechamento = !ehFinal ? bimestre : (await ObterPeriodoUltimoBimestre(turma)).Bimestre;
@@ -108,6 +115,8 @@ namespace SME.SGP.Aplicacao
                 ConselhoClasseId = conselhoClasse?.Id,
                 ConselhoClasseAlunoId = conselhoClasseAluno?.Id,
                 Bimestre = bimestre,
+                BimestrePeriodoInicio = periodoEscolar.PeriodoInicio,
+                BimestrePeriodoFim = periodoEscolar.PeriodoFim,
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
                 PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
                 TipoNota = tipoNota,
