@@ -1,7 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,34 +12,40 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioEvento repositorioEvento;
-        private readonly IServicoUsuario servicoUsuario;
 
-        public ValidarSeEhDiaLetivoQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioEvento repositorioEvento, IServicoUsuario servicoUsuario)
+        public ValidarSeEhDiaLetivoQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioEvento repositorioEvento)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            
         }
 
         public async Task<bool> Handle(ValidarSeEhDiaLetivoQuery request, CancellationToken cancellationToken)
         {
             DateTime dataInicial = request.DataInicio.Date;
             DateTime dataFinal = request.DataInicio.Date;
+            
             var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(request.TipoCalendarioId, dataInicial, dataFinal);
             if (periodoEscolar == null)
                 return false;
 
-            var eventoLetivo = repositorioEvento.EhEventoLetivoPorLiberacaoExcepcional(request.TipoCalendarioId, request.DataInicio, request.UeId);
+            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(request.TipoCalendarioId, request.DreId, request.UeId, request.DataInicio, true, true);
 
-            // Se eh dia da semana e não existe evento não letivo (true)
-            if (!ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivo == null)
+            bool eventoLetivoDia = false;
+            eventoLetivoDia = ExisteEventoLetivoNoDia(eventos, eventoLetivoDia);
+
+            // Se eh dia da semana e não existe evento não letivo no dia (true)
+            if (!ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivoDia == false)
                 return true;
             // eh final de semana com evento letivo (true)
-            else if (ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivo != null)
+            else if (ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivoDia == true)
                 return true;
 
             return false;
+        }
+
+        private static bool ExisteEventoLetivoNoDia(IEnumerable<Dominio.Evento> eventos, bool eventoLetivoDia)
+        {
+            return eventos.Any(e => e.Letivo == Dominio.EventoLetivo.Sim);
         }
 
         private bool ValidaSeEhFinalSemana(DateTime inicio, DateTime fim)
