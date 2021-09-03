@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao.Queries.Relatorios.ObterFiltroRelatoriosDresPorAbran
             {
                 dres?.Insert(0, new AbrangenciaDreRetornoDto { Abreviacao = "Todas", Codigo = "-99", Nome = "Todas" });
             }
-            return dres;
+            return dres.OrderBy(d => d.Nome);
         }
     }
 }
