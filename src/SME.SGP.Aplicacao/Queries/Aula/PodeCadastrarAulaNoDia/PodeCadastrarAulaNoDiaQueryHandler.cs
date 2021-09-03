@@ -55,9 +55,13 @@ namespace SME.SGP.Aplicacao
         {
             var ue = await mediator.Send(new ObterUEPorTurmaIdQuery(turma.Id));
 
+            var dre = await mediator.Send(new ObterDREPorIdQuery(ue.DreId));
+
             return await mediator.Send(new ValidarSeEhDiaLetivoQuery(
                 request.DataAula,
-                tipoCalendarioId, ue.CodigoUe));
+                tipoCalendarioId, 
+                ue.CodigoUe, 
+                dre.CodigoDre));
         }
 
         private async Task<bool> ExisteAula(PodeCadastrarAulaNoDiaQuery request)

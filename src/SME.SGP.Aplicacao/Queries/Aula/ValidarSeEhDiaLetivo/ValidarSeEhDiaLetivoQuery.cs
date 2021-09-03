@@ -6,15 +6,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ValidarSeEhDiaLetivoQuery : IRequest<bool>
     {
-        public ValidarSeEhDiaLetivoQuery(DateTime dataInicio, long tipoCalendarioId, string ueId)
+        public ValidarSeEhDiaLetivoQuery(DateTime dataInicio, long tipoCalendarioId, string dreId, string ueId)
         {
             DataInicio = dataInicio;
             TipoCalendarioId = tipoCalendarioId;
+            DreId = dreId;
             UeId = ueId;
         }
 
         public DateTime DataInicio { get; }
         public long TipoCalendarioId { get; }
+        public string DreId { get; }
         public string UeId { get; }
     }
 

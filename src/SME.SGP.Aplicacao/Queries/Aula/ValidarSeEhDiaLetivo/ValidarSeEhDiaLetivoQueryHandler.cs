@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,16 +30,30 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar == null)
                 return false;
 
-            var eventoLetivo = repositorioEvento.EhEventoLetivoPorLiberacaoExcepcional(request.TipoCalendarioId, request.DataInicio, request.UeId);
+            var eventos = await repositorioEvento.ObterEventosCalendarioPorDia(request.TipoCalendarioId, request.DreId, request.UeId, request.DataInicio, true, true);
 
-            // Se eh dia da semana e não existe evento não letivo (true)
-            if (!ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivo == null)
+            bool eventoLetivoDia = false;
+            eventoLetivoDia = ExisteEventoLetivoNoDia(eventos, eventoLetivoDia);
+
+            // Se eh dia da semana e não existe evento não letivo no dia (true)
+            if (!ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivoDia == false)
                 return true;
             // eh final de semana com evento letivo (true)
-            else if (ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivo != null)
+            else if (ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivoDia == true)
                 return true;
 
             return false;
+        }
+
+        private static bool ExisteEventoLetivoNoDia(IEnumerable<Dominio.Evento> eventos, bool eventoLetivoDia)
+        {
+            foreach (var evento in eventos)
+            {
+                if (evento.Letivo == Dominio.EventoLetivo.Sim)
+                    eventoLetivoDia = true;
+            }
+
+            return eventoLetivoDia;
         }
 
         private bool ValidaSeEhFinalSemana(DateTime inicio, DateTime fim)
