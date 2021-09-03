@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar == null)
                 return false;
 
-            var eventos = await repositorioEvento.ObterEventosCalendarioPorDia(request.TipoCalendarioId, request.DreId, request.UeId, request.DataInicio, true, true);
+            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(request.TipoCalendarioId, request.DreId, request.UeId, request.DataInicio, true, true);
 
             bool eventoLetivoDia = false;
             eventoLetivoDia = ExisteEventoLetivoNoDia(eventos, eventoLetivoDia);
