@@ -52,7 +52,8 @@ namespace SME.SGP.Dados.Repositorios
                                 criado_rf, 
                                 alterado_em, 
                                 alterado_por, 
-                                alterado_rf
+                                alterado_rf,
+                                status_gsa
                          from notas_conceito 
                          where atividade_avaliativa = any(@atividadesAvaliativasId) 
                             and aluno_id = any(@alunosIds)
