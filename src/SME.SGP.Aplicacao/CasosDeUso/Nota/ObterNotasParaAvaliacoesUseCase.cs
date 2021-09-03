@@ -15,12 +15,14 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEol servicoEOL;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
-        public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL)
+        public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL, IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.consultasDisciplina = consultasDisciplina;
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
         }
 
         public async Task<NotasConceitosRetornoDto> Executar(ListaNotasConceitosConsultaRefatoradaDto filtro)
@@ -36,6 +38,9 @@ namespace SME.SGP.Aplicacao
 
             if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
                 throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
+
+            var periodoFechamentoBimestre = await consultasPeriodoFechamento
+                .ObterPeriodoFechamentoTurmaAsync(turmaCompleta, filtro.Bimestre, filtro.PeriodoEscolarId);
 
             var periodoInicio = new DateTime(filtro.PeriodoInicioTicks);
             var periodoFim = new DateTime(filtro.PeriodoFimTicks);
@@ -185,8 +190,9 @@ namespace SME.SGP.Aplicacao
                     notasAvaliacoes.Add(notaAvaliacao);
                 }
 
-                notaConceitoAluno.PodeEditar = notasAvaliacoes
-                    .Any(na => na.PodeEditar) || (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any());
+                notaConceitoAluno.PodeEditar = 
+                        (notasAvaliacoes.Any(na => na.PodeEditar) || (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any())) &&
+                        (aluno.Inativo == false || (aluno.Inativo && aluno.DataSituacao >= periodoFechamentoBimestre.InicioDoFechamento.Date));
 
                 notaConceitoAluno.Marcador = await mediator
                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
