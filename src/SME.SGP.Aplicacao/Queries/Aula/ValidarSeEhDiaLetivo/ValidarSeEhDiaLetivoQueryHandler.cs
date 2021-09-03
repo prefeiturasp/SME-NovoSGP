@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,20 +12,18 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioEvento repositorioEvento;
-        private readonly IServicoUsuario servicoUsuario;
 
-        public ValidarSeEhDiaLetivoQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioEvento repositorioEvento, IServicoUsuario servicoUsuario)
+        public ValidarSeEhDiaLetivoQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioEvento repositorioEvento)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            
         }
 
         public async Task<bool> Handle(ValidarSeEhDiaLetivoQuery request, CancellationToken cancellationToken)
         {
             DateTime dataInicial = request.DataInicio.Date;
             DateTime dataFinal = request.DataInicio.Date;
+            
             var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(request.TipoCalendarioId, dataInicial, dataFinal);
             if (periodoEscolar == null)
                 return false;
@@ -47,13 +45,7 @@ namespace SME.SGP.Aplicacao
 
         private static bool ExisteEventoLetivoNoDia(IEnumerable<Dominio.Evento> eventos, bool eventoLetivoDia)
         {
-            foreach (var evento in eventos)
-            {
-                if (evento.Letivo == Dominio.EventoLetivo.Sim)
-                    eventoLetivoDia = true;
-            }
-
-            return eventoLetivoDia;
+            return eventos.Any(e => e.Letivo == Dominio.EventoLetivo.Sim);
         }
 
         private bool ValidaSeEhFinalSemana(DateTime inicio, DateTime fim)
