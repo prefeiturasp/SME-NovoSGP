@@ -23,6 +23,8 @@ namespace SME.SGP.Aplicacao.Queries.Relatorios.ObterFiltroRelatoriosDresPorAbran
         public async Task<IEnumerable<AbrangenciaDreRetornoDto>> Handle(ObterFiltroRelatoriosDresPorAbrangenciaQuery request, CancellationToken cancellationToken)
         {
             var dres = (await repositorioAbrangencia.ObterDres(request.UsuarioLogado.Login, request.UsuarioLogado.PerfilAtual))?.ToList();
+            dres = dres.OrderBy(d => d.Nome).ToList();
+
             var possuiAbrangenciaEmTodasAsDres = await mediator.Send(new ObterUsuarioPossuiAbrangenciaEmTodasAsDresQuery(request.UsuarioLogado.PerfilAtual));
             if (possuiAbrangenciaEmTodasAsDres)
             {
