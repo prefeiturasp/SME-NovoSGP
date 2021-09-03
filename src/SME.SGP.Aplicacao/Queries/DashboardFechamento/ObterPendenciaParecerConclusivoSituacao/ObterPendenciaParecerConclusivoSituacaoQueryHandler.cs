@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,9 +12,9 @@ namespace SME.SGP.Aplicacao
     public class ObterPendenciaParecerConclusivoSituacaoHendler : IRequestHandler<ObterPendenciaParecerConclusivoSituacaoQuery, IEnumerable<ParecerConclusivoSituacaoQuantidadeDto>>
     {
         private readonly IRepositorioConselhoClasseParecerConclusivo repositorioParecer;
-        public ObterPendenciaParecerConclusivoSituacaoHendler()
+        public ObterPendenciaParecerConclusivoSituacaoHendler(IRepositorioConselhoClasseParecerConclusivo repositorioParecer)
         {
-
+            this.repositorioParecer = repositorioParecer ?? throw new ArgumentNullException(nameof(repositorioParecer));
         }
         public async Task<IEnumerable<ParecerConclusivoSituacaoQuantidadeDto>> Handle(ObterPendenciaParecerConclusivoSituacaoQuery request, 
             CancellationToken cancellationToken)
