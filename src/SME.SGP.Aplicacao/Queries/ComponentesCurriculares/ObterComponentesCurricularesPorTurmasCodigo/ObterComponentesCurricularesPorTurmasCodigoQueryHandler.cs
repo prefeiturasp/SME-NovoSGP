@@ -95,13 +95,11 @@ namespace SME.SGP.Aplicacao
                 var disciplinasComObjetivos = await ObterComponentesPossuiObjetivos(disciplinasCodigos);
 
                 foreach (var disciplinaCj in disciplinasCJ)
-                {
                     retorno.Add(MapearParaDto(disciplinaCj, disciplinasComObjetivos, turmaEspecial));
-                }
 
                 foreach (var disciplina in disciplinas)
                 {
-                    var jaAdicionadaPorTurma = retorno.Any(d => d.TurmaCodigo.Equals(disciplina.TurmaCodigo) &&
+                    var jaAdicionadaPorTurma = retorno.Any(d => !string.IsNullOrEmpty(d.TurmaCodigo) && d.TurmaCodigo.Equals(disciplina.TurmaCodigo) &&
                                                                 d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular);
                     if (!jaAdicionadaPorTurma)
                         retorno.Add(MapearParaDto(disciplina, disciplinasComObjetivos, turmaEspecial));
