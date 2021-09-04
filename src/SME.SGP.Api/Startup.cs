@@ -13,11 +13,10 @@ using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
-using SME.SGP.Aplicacao;
 using SME.SGP.Background;
 using SME.SGP.Dados;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.IoC;
 using SME.SGP.IoC.Extensions;
 using System;
@@ -25,8 +24,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
-using SME.SGP.Infra;
-using SME.SGP.Api.Filtros;
 
 namespace SME.SGP.Api
 {
@@ -62,7 +59,7 @@ namespace SME.SGP.Api
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGP Api");                
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGP Api");
             });
 
             //TODO: Ajustar para as os origins que irão consumir
@@ -131,7 +128,7 @@ namespace SME.SGP.Api
             RegistrarMvc.Registrar(services, Configuration);
             RegistraDocumentacaoSwagger.Registrar(services);
             services.AddPolicies();
-             
+
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddApplicationInsightsTelemetry(Configuration);
@@ -142,7 +139,6 @@ namespace SME.SGP.Api
             var serviceProvider = services.BuildServiceProvider();
 
             Orquestrador.Inicializar(serviceProvider);
-
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
             {
@@ -165,16 +161,9 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
 
-            services.AddSwaggerGen(o =>
-            {
-                o.OperationFilter<AdicionaCabecalhoHttp>();
-            });
-
-
-
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
             DapperExtensionMethods.Init(clientTelemetry);
-         
+
             services.AddMemoryCache();
         }
 
