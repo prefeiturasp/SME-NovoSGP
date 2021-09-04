@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Api.Controllers
@@ -78,6 +79,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ProcessarPendentes(int anoLetivo, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
         {
             await comandos.ProcessarPendentes(anoLetivo);
+            return Ok();
+        }
+
+        [HttpPost("{turmaCodigo}/consolidar/bimestres/{bimestre}")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> ProcessarPendentes(string turmaCodigo, int? bimestre, [FromServices] IExecutarConsolidacaoTurmaGeralUseCase useCase)
+        {
+            await useCase.Executar(turmaCodigo, bimestre);
             return Ok();
         }
     }
