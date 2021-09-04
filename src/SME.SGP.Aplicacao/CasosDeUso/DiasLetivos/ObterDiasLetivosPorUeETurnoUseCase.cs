@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             if (param.DataInicio > param.DataFim)
                 throw new Exception("A data de início não pode ser maior que a data final.");
 
-            var modalidadeCalendario = param.TipoTurno == (int)TipoTurno.manha || param.TipoTurno == (int)TipoTurno.Tarde
+            var modalidadeCalendario = param.TipoTurno == (int)TipoTurno.Manha || param.TipoTurno == (int)TipoTurno.Tarde
                 ?
                 ModalidadeTipoCalendario.FundamentalMedio
                 :
