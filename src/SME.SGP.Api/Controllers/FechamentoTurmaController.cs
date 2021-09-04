@@ -82,9 +82,9 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpPost("{turmaCodigo}/consolidar/bimestres/{bimestre}")]
+        [HttpPost("consolidar")]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> ProcessarPendentes(string turmaCodigo, int? bimestre, [FromServices] IExecutarConsolidacaoTurmaGeralUseCase useCase)
+        public async Task<IActionResult> ProcessarPendentes([FromQuery] string turmaCodigo, [FromQuery] int? bimestre, [FromServices] IExecutarConsolidacaoTurmaGeralUseCase useCase)
         {
             await useCase.Executar(turmaCodigo, bimestre);
             return Ok();
