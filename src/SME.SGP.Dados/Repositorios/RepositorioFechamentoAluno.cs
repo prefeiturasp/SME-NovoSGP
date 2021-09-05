@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacoesTurmaAlunoBimestreAsync(string alunoCodigo, string[] turmasCodigos)
+        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacoesTurmaAlunoBimestreAsync(string alunoCodigo, string[] turmasCodigos, long periodoId)
         {
             var query = @"select fa.anotacao, ftd.disciplina_id,
                           case
@@ -35,10 +35,12 @@ namespace SME.SGP.Dados.Repositorios
                         inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id 
                         inner join turma t on ft.turma_id = t.id 
                         where not ftd.excluido and not fa.excluido 
-                         and fa.aluno_codigo = @alunoCodigo 
-                         and t.turma_id =  ANY(@turmasCodigos);";
+                         and fa.aluno_codigo = @alunoCodigo
+                         and ft.periodo_escolar_id   = @periodoId    
+                         and t.turma_id =  ANY(@turmasCodigos)
+                         and fa.anotacao is not null;";
 
-            return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, turmasCodigos });
+            return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, turmasCodigos, periodoId   });
         }
 
         public async Task<FechamentoAluno> ObterFechamentoAluno(long fechamentoTurmaDisciplinaId, string alunoCodigo)

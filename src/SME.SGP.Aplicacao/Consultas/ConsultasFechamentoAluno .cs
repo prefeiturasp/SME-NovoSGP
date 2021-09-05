@@ -44,9 +44,9 @@ namespace SME.SGP.Aplicacao
             return anotacaoDto;
         }
 
-        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacaoAlunoParaConselhoAsync(string alunoCodigo, string[] turmasCodigos)
+        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacaoAlunoParaConselhoAsync(string alunoCodigo, string[] turmasCodigos, long periodoId)
         {
-            var anotacoesDto = await repositorio.ObterAnotacoesTurmaAlunoBimestreAsync(alunoCodigo, turmasCodigos);
+            var anotacoesDto = await repositorio.ObterAnotacoesTurmaAlunoBimestreAsync(alunoCodigo, turmasCodigos, periodoId);
             if (anotacoesDto == null || !anotacoesDto.Any())
                 return default;
 
@@ -68,19 +68,30 @@ namespace SME.SGP.Aplicacao
             => await repositorio.ObterFechamentoAluno(fechamentoId, codigoAluno);
 
         private FechamentoAlunoCompletoDto MapearParaDto(FechamentoAluno anotacaoAluno, AlunoDadosBasicosDto dadosAluno)
-            => anotacaoAluno == null ? null :
-            new FechamentoAlunoCompletoDto()
+        {
+            if (anotacaoAluno == null)
+                return null;
+            else
             {
-                Id = anotacaoAluno.Id,
-                Anotacao = anotacaoAluno.Anotacao,
-                Aluno = dadosAluno,
+                var fechamentoAluno = new FechamentoAlunoCompletoDto()
+                {
+                    Id = anotacaoAluno.Id,
+                    Anotacao = anotacaoAluno.Anotacao,
+                    Aluno = dadosAluno,
+                };
 
-                CriadoEm = anotacaoAluno.CriadoEm,
-                CriadoPor = anotacaoAluno.CriadoPor,
-                CriadoRF = anotacaoAluno.CriadoRF,
-                AlteradoEm = anotacaoAluno.AlteradoEm,
-                AlteradoPor = anotacaoAluno.AlteradoPor,
-                AlteradoRF = anotacaoAluno.AlteradoRF
-            };
+                if (!string.IsNullOrEmpty(anotacaoAluno.Anotacao))
+                {
+                    fechamentoAluno.CriadoEm = anotacaoAluno.CriadoEm;
+                    fechamentoAluno.CriadoPor = anotacaoAluno.CriadoPor;
+                    fechamentoAluno.CriadoRF = anotacaoAluno.CriadoRF;
+                    fechamentoAluno.AlteradoEm = anotacaoAluno.AlteradoEm;
+                    fechamentoAluno.AlteradoPor = anotacaoAluno.AlteradoPor;
+                    fechamentoAluno.AlteradoRF = anotacaoAluno.AlteradoRF;
+                }
+
+                return fechamentoAluno;
+            }
+        }
     }
 }

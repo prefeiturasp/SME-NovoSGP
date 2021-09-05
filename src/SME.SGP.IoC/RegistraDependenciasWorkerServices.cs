@@ -362,7 +362,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoAbrangencia, ServicoAbrangencia>();
             services.TryAddScopedWorkerService<IServicoEvento, ServicoEvento>();
             services.TryAddScopedWorkerService<IServicoLog, ServicoLog>();
-            services.TryAddScopedWorkerService<IServicoFrequencia, ServicoFrequencia>();
             services.TryAddScopedWorkerService<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
             services.TryAddScopedWorkerService<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();

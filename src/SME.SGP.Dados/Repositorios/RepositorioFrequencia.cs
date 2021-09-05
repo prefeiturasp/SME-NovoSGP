@@ -83,7 +83,7 @@ namespace SME.SGP.Dados.Repositorios
 	                    from aula a
 	                      inner join registro_frequencia rf on a.id = rf.aula_id
 	                      inner join turma t on t.turma_id = a.turma_id
-	                       left join registro_ausencia_aluno raa on raa.registro_frequencia_id = rf.id and not raa.excluido
+	                       left join registro_frequencia_aluno raa on raa.registro_frequencia_id = rf.id and not raa.excluido and raa.valor = 2
 	                    where not a.excluido
 	                      and not rf.excluido
 	                      and a.data_aula >= @dataReferencia
@@ -167,8 +167,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select a.codigo_aluno as AlunoCodigo, a.data_aula as AulaData from (select raa.codigo_aluno, a.quantidade, a.data_aula, count(raa.id) as faltas  from registro_frequencia rf
                             inner join aula a
                             on rf.aula_id = a.id
-                            inner join registro_ausencia_aluno raa
-                            on raa.registro_frequencia_id = rf.id
+                            inner join registro_frequencia_aluno raa on raa.registro_frequencia_id = rf.id and raa.valor = 2
                             where  a.turma_id = @turmaCodigo
                             and a.disciplina_id = @disciplinaCodigo
                             and a.data_aula::date = ANY(@datas)
@@ -202,8 +201,9 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select ra.*
                         from
 	                        registro_frequencia rf
-                        inner join registro_ausencia_aluno ra on
-	                        rf.id = ra.registro_frequencia_id
+                        inner join registro_frequencia_aluno ra on
+	                        rf.id = ra.registro_frequencia_id 
+                            and ra.valor = 2
                         inner join aula a on
 	                        a.id = rf.aula_id
                         where ra.excluido = false and
@@ -258,7 +258,7 @@ namespace SME.SGP.Dados.Repositorios
                      left join motivo_ausencia ma on ma.id = afa.motivo_ausencia_id 
                      inner join aula a on a.id = afa.aula_id 
                      inner join registro_frequencia rf on rf.aula_id = a.id 
-                     inner join registro_ausencia_aluno raa on raa.registro_frequencia_id = rf.id and raa.codigo_aluno = afa.codigo_aluno 
+                     inner join registro_frequencia_aluno raa on raa.registro_frequencia_id = rf.id and raa.codigo_aluno = afa.codigo_aluno and raa.valor = 2
                      inner join turma t on t.turma_id = a.turma_id 
                      inner join ue on ue.id = t.ue_id 
                      inner join dre on dre.id = ue.dre_id 
