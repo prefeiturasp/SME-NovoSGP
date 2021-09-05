@@ -15,9 +15,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(FechamentoSituacaoDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DFE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSituacoesFechamento(
-            [FromQuery] FiltroDashboardFechamentoDto filtroDashboardFechamentoDto,
-            [FromServices] IObterFechamentoSituacaoUseCase useCase)
+        public async Task<IActionResult> ObterSituacoesFechamento([FromQuery] FiltroDashboardFechamentoDto filtroDashboardFechamentoDto, [FromServices] IObterFechamentoSituacaoUseCase useCase)
         {
             return Ok(await useCase.Executar(filtroDashboardFechamentoDto));
         }
