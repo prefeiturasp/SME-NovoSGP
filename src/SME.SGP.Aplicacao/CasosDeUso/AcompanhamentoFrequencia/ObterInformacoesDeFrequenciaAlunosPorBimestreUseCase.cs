@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao
                     Compensacoes = compensacoes,
                     Frequencia = percentualFrequencia,
                     MarcadorFrequencia = marcador,
-                    Nome = aluno.NomeAluno,
+                    Nome = aluno.NomeValido(),
                     NumeroChamada = aluno.NumeroAlunoChamada,
                     PossuiJustificativas = ausencias > 0,
                     EhAtendidoAEE = alunoPossuiPlanoAEE
@@ -131,6 +131,8 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaAlunosRegistrada = await ObterFrequenciaAlunosRegistradaFinalAsync(turma, componenteCurricularId, tipoCalendarioId, periodosEscolaresIds);
             var frequenciaAlunos = await DefinirFrequenciaAlunoListagemAsync(alunos, turma, frequenciaAlunosRegistrada, null);
+
+
 
             return new FrequenciaAlunosPorBimestreDto
             {
