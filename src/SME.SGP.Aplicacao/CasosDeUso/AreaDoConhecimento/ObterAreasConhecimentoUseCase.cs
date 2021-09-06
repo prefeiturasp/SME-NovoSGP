@@ -5,7 +5,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.AreaDoConhecimento
+namespace SME.SGP.Aplicacao;
 {
     public class ObterAreasConhecimentoUseCase : AbstractUseCase, IObterAreasConhecimentoUseCase
     {
