@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.AreaDoConhecimento
+namespace SME.SGP.Aplicacao
 {
     public class MapearAreasDoConhecimentoUseCase : AbstractUseCase, IMapearAreasDoConhecimentoUseCase
     {
