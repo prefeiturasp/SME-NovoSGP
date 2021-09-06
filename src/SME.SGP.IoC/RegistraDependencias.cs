@@ -1100,7 +1100,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterFechamentoSituacaoUseCase, ObterFechamentoSituacaoUseCase>();
             services.TryAddScoped<IObterFechamentoPendenciasUseCase, ObterFechamentoPendenciasUseCase>();
             services.TryAddScoped<IObterFechamentoSituacaoPorEstudanteUseCase, ObterFechamentoSituacaoPorEstudanteUseCase>();
-
+            services.TryAddScoped<IObterFechamentoConselhoClasseSituacaoUseCase, ObterFechamentoConselhoClasseSituacaoUseCase>();
+            services.TryAddScoped<IObterPendenciaParecerConclusivoUseCases, ObterPendenciaParecerConclusivoUseCases>();
+            services.TryAddScoped<IObterNotasFinaisUseCases, ObterNotasFinaisUseCases>();
 
             services.TryAddScoped<IExecutarSyncSerapEstudantesProvasUseCase, ExecutarSyncSerapEstudantesProvasUseCase>();
 
