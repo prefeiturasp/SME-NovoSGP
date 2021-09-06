@@ -236,11 +236,6 @@ namespace SME.SGP.Dados.Repositorios
                 query.Append(" and t.semestre = @semestre ");
             }
 
-            if (bimestre > 0)
-            {
-                query.Append(" and pe.bimestre = @bimestre ");
-            }
-
 
             return await database.Conexao.QueryAsync<FechamentoConselhoClasseNotaFinalDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre, bimestre });
         }
