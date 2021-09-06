@@ -3,8 +3,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.AreaDoConhecimento
 {
-    public interface IObterComponentesDasAreasDeConhecimentoUseCase
+    public interface IObterComponentesDasAreasDeConhecimentoUseCase : IUseCase<(IEnumerable<DisciplinaDto>, IEnumerable<AreaDoConhecimentoDto>), IEnumerable<DisciplinaDto>>
     {
-        IEnumerable<DisciplinaDto> ObterComponentesDasAreasDeConhecimento(IEnumerable<DisciplinaDto> componentesCurricularesDaTurma, IEnumerable<AreaDoConhecimentoDto> areaDoConhecimento);
     }
 }

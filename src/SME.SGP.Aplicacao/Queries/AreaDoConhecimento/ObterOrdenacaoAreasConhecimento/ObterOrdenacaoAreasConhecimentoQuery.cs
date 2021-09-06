@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterOrdenacaoAreasConhecimento
 {
@@ -9,12 +10,11 @@ namespace SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterOrdenacaoAreasConhec
         public ObterOrdenacaoAreasConhecimentoQuery(IEnumerable<DisciplinaDto> componentesCurricularesTurma,
                                                     IEnumerable<AreaDoConhecimentoDto> areasConhecimento)
         {
-            ComponentesCurricularesTurma = componentesCurricularesTurma;
-            AreasConhecimento = areasConhecimento;
+            ComponentesCurricularesTurma = componentesCurricularesTurma ?? Enumerable.Empty<DisciplinaDto>();
+            AreasConhecimento = areasConhecimento ?? Enumerable.Empty<AreaDoConhecimentoDto>();
         }
 
-        public IEnumerable<DisciplinaDto> ComponentesCurricularesTurma { get; set; }
-        public IEnumerable<AreaDoConhecimentoDto> AreasConhecimento { get; set; }
-
+        public IEnumerable<DisciplinaDto> ComponentesCurricularesTurma { get; private set; }
+        public IEnumerable<AreaDoConhecimentoDto> AreasConhecimento { get; private set; }
     }
 }

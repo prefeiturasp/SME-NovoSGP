@@ -1,17 +1,23 @@
-﻿using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AreaDoConhecimento;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AreaDoConhecimento;
+using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterComponentesAreasConhecimento;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.AreaDoConhecimento
 {
-    public class ObterComponentesDasAreasDeConhecimentoUseCase : IObterComponentesDasAreasDeConhecimentoUseCase
+    public class ObterComponentesDasAreasDeConhecimentoUseCase : AbstractUseCase, IObterComponentesDasAreasDeConhecimentoUseCase
     {
-        public IEnumerable<DisciplinaDto> ObterComponentesDasAreasDeConhecimento(IEnumerable<DisciplinaDto> componentesCurricularesDaTurma, IEnumerable<AreaDoConhecimentoDto> areaDoConhecimento)
+        public ObterComponentesDasAreasDeConhecimentoUseCase(IMediator mediator)
+            : base(mediator)
         {
-            return componentesCurricularesDaTurma.Where(c => (!c.Regencia && areaDoConhecimento.Select(a => a.CodigoComponenteCurricular).Contains(c.CodigoComponenteCurricular)) ||
-                                                             (c.Regencia && areaDoConhecimento.Select(a => a.CodigoComponenteCurricular).Any(cr =>
-                                                              c.CodigoComponenteCurricular == cr))).OrderBy(cc => cc.Nome);
+        }
+
+        public async Task<IEnumerable<DisciplinaDto>> Executar((IEnumerable<DisciplinaDto>, IEnumerable<AreaDoConhecimentoDto>) param)
+        {
+            return await mediator
+                .Send(new ObterComponentesAreasConhecimentoQuery(param.Item1, param.Item2));
         }
     }
 }

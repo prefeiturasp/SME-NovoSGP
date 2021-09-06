@@ -12,15 +12,15 @@ namespace SME.SGP.Aplicacao.Queries.AreaDoConhecimento.MapearAreasConhecimento
                                             IEnumerable<ComponenteCurricularGrupoAreaOrdenacaoDto> gruposAreaOrdenacao,
                                             long grupoMatrizId)
         {
-            ComponentesCurricularesTurma = componentesCurricularesTurma;
-            AreasConhecimentos = areasConhecimentos;
-            GruposAreaOrdenacao = gruposAreaOrdenacao;
+            ComponentesCurricularesTurma = componentesCurricularesTurma ?? Enumerable.Empty<DisciplinaDto>();
+            AreasConhecimentos = areasConhecimentos ?? Enumerable.Empty<AreaDoConhecimentoDto>();
+            GruposAreaOrdenacao = gruposAreaOrdenacao ?? Enumerable.Empty<ComponenteCurricularGrupoAreaOrdenacaoDto>();
             GrupoMatrizId = grupoMatrizId;
         }
 
-        public IEnumerable<DisciplinaDto> ComponentesCurricularesTurma { get; set; }
-        public IEnumerable<AreaDoConhecimentoDto> AreasConhecimentos { get; set; }
-        public IEnumerable<ComponenteCurricularGrupoAreaOrdenacaoDto> GruposAreaOrdenacao { get; set; }
-        public long GrupoMatrizId { get; set; }
+        public IEnumerable<DisciplinaDto> ComponentesCurricularesTurma { get; private set; }
+        public IEnumerable<AreaDoConhecimentoDto> AreasConhecimentos { get; private set; }
+        public IEnumerable<ComponenteCurricularGrupoAreaOrdenacaoDto> GruposAreaOrdenacao { get; private set; }
+        public long GrupoMatrizId { get; private set; }
     }
 }
