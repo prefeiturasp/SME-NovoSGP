@@ -1,10 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AreaDoConhecimento;
-using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.MapearAreasConhecimento;
-using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterAreasConhecimento;
-using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterComponentesAreasConhecimento;
-using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterOrdenacaoAreasConhecimento;
+using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
