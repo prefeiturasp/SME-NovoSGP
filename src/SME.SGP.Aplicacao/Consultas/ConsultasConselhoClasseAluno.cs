@@ -2,6 +2,10 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AreaDoConhecimento;
+using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.MapearAreasConhecimento;
+using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterAreasConhecimento;
+using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterComponentesAreasConhecimento;
+using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterOrdenacaoAreasConhecimento;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -23,10 +27,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IServicoConselhoClasse servicoConselhoClasse;
-        private readonly IObterAreasConhecimentoUseCase obterAreasConhecimentoUseCase;
-        private readonly IObterOrdenacaoAreasConhecimentoUseCase obterOrdenacaoAreasConhecimentoUseCase;
-        private readonly IMapearAreasDoConhecimentoUseCase mapearAreasDoConhecimentoUseCase;
-        private readonly IObterComponentesDasAreasDeConhecimentoUseCase obterComponentesDasAreasDeConhecimentoUseCase;
         private readonly IMediator mediator;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
@@ -42,10 +42,6 @@ namespace SME.SGP.Aplicacao
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
                                             IConsultasFrequencia consultasFrequencia,
                                             IServicoConselhoClasse servicoConselhoClasse,
-                                            IObterAreasConhecimentoUseCase obterAreasConhecimentoUseCase,
-                                            IObterOrdenacaoAreasConhecimentoUseCase obterOrdenacaoAreasConhecimentoUseCase,
-                                            IMapearAreasDoConhecimentoUseCase mapearAreasDoConhecimentoUseCase,
-                                            IObterComponentesDasAreasDeConhecimentoUseCase obterComponentesDasAreasDeConhecimentoUseCase,
                                             IMediator mediator)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
@@ -58,10 +54,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.servicoConselhoClasse = servicoConselhoClasse ?? throw new ArgumentNullException(nameof(servicoConselhoClasse));
-            this.obterAreasConhecimentoUseCase = obterAreasConhecimentoUseCase ?? throw new ArgumentNullException(nameof(obterAreasConhecimentoUseCase));
-            this.obterOrdenacaoAreasConhecimentoUseCase = obterOrdenacaoAreasConhecimentoUseCase ?? throw new ArgumentNullException(nameof(obterOrdenacaoAreasConhecimentoUseCase));
-            this.mapearAreasDoConhecimentoUseCase = mapearAreasDoConhecimentoUseCase;
-            this.obterComponentesDasAreasDeConhecimentoUseCase = obterComponentesDasAreasDeConhecimentoUseCase ?? throw new ArgumentNullException(nameof(obterComponentesDasAreasDeConhecimentoUseCase));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -192,9 +184,9 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasCodigo));
 
-            var areasDoConhecimento = await obterAreasConhecimentoUseCase.Executar(disciplinasDaTurma);
+            var areasDoConhecimento = await mediator.Send(new ObterAreasConhecimentoQuery(disciplinasDaTurma));
 
-            var ordenacaoGrupoArea = await obterOrdenacaoAreasConhecimentoUseCase.Executar((disciplinasDaTurma, areasDoConhecimento));
+            var ordenacaoGrupoArea = await mediator.Send(new ObterOrdenacaoAreasConhecimentoQuery(disciplinasDaTurma, areasDoConhecimento));
 
             var retorno = new ConselhoClasseAlunoNotasConceitosRetornoDto();
 
@@ -211,11 +203,11 @@ namespace SME.SGP.Aplicacao
                 var conselhoClasseAlunoNotas = new ConselhoClasseAlunoNotasConceitosDto();
                 conselhoClasseAlunoNotas.GrupoMatriz = disciplinasDaTurma.FirstOrDefault(dt => dt.GrupoMatrizId == grupoDisiplinasMatriz.Key)?.GrupoMatrizNome;
 
-                var areasConhecimento = mapearAreasDoConhecimentoUseCase.MapearAreasDoConhecimento(grupoDisiplinasMatriz, areasDoConhecimento, ordenacaoGrupoArea, Convert.ToInt64(grupoDisiplinasMatriz.Key));
+                var areasConhecimento = await mediator.Send(new MapearAreasConhecimentoQuery(grupoDisiplinasMatriz, areasDoConhecimento, ordenacaoGrupoArea, Convert.ToInt64(grupoDisiplinasMatriz.Key)));
 
                 foreach (var areaConhecimento in areasConhecimento)
                 {
-                    var componentes = obterComponentesDasAreasDeConhecimentoUseCase.ObterComponentesDasAreasDeConhecimento(grupoDisiplinasMatriz, areaConhecimento);
+                    var componentes = await mediator.Send(new ObterComponentesAreasConhecimentoQuery(grupoDisiplinasMatriz, areaConhecimento));
 
                     foreach (var disciplina in componentes.Where(d => d.LancaNota).OrderBy(g => g.Nome))
                     {

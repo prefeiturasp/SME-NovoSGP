@@ -1,6 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AreaDoConhecimento;
+using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.MapearAreasConhecimento;
+using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterAreasConhecimento;
+using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterComponentesAreasConhecimento;
+using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterOrdenacaoAreasConhecimento;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -14,23 +18,11 @@ namespace SME.SGP.Aplicacao
     public class ObterDetalhamentoFechamentoConselhoClasseAlunoUseCase : AbstractUseCase, IObterDetalhamentoFechamentoConselhoClasseAlunoUseCase
     {
         private readonly IConsultasFrequencia consultasFrequencia;
-        private readonly IObterAreasConhecimentoUseCase obterAreasConhecimentoUseCase;
-        private readonly IObterOrdenacaoAreasConhecimentoUseCase obterOrdenacaoAreasConhecimentoUseCase;
-        private readonly IMapearAreasDoConhecimentoUseCase mapearAreasDoConhecimentoUseCase;
-        private readonly IObterComponentesDasAreasDeConhecimentoUseCase obterComponentesDasAreasDeConhecimentoUseCase;
 
-        public ObterDetalhamentoFechamentoConselhoClasseAlunoUseCase(IMediator mediator, 
-                                                                     IConsultasFrequencia consultasFrequencia,
-                                                                     IObterAreasConhecimentoUseCase obterAreasConhecimentoUseCase,
-                                                                     IObterOrdenacaoAreasConhecimentoUseCase obterOrdenacaoAreasConhecimentoUseCase,
-                                                                     IMapearAreasDoConhecimentoUseCase mapearAreasDoConhecimentoUseCase,
-                                                                     IObterComponentesDasAreasDeConhecimentoUseCase obterComponentesDasAreasDeConhecimentoUseCase) : base(mediator)
+        public ObterDetalhamentoFechamentoConselhoClasseAlunoUseCase(IMediator mediator, IConsultasFrequencia consultasFrequencia)
+            : base(mediator)
         {
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
-            this.obterAreasConhecimentoUseCase = obterAreasConhecimentoUseCase ?? throw new ArgumentNullException(nameof(obterAreasConhecimentoUseCase));
-            this.obterOrdenacaoAreasConhecimentoUseCase = obterOrdenacaoAreasConhecimentoUseCase ?? throw new ArgumentNullException(nameof(obterOrdenacaoAreasConhecimentoUseCase));
-            this.mapearAreasDoConhecimentoUseCase = mapearAreasDoConhecimentoUseCase ?? throw new ArgumentNullException(nameof(mapearAreasDoConhecimentoUseCase));
-            this.obterComponentesDasAreasDeConhecimentoUseCase = obterComponentesDasAreasDeConhecimentoUseCase ?? throw new ArgumentNullException(nameof(obterComponentesDasAreasDeConhecimentoUseCase));
         }
 
         public async Task<IEnumerable<DetalhamentoComponentesCurricularesAlunoDto>> Executar(FiltroConselhoClasseConsolidadoDto filtro)
@@ -92,9 +84,9 @@ namespace SME.SGP.Aplicacao
 
             var retorno = new List<DetalhamentoComponentesCurricularesAlunoDto>();
 
-            var areasDoConhecimento = await obterAreasConhecimentoUseCase.Executar(componentesCurricularesDaTurma);
+            var areasDoConhecimento = await mediator.Send(new ObterAreasConhecimentoQuery(componentesCurricularesDaTurma));
 
-            var ordenacaoGrupoArea = await obterOrdenacaoAreasConhecimentoUseCase.Executar((componentesCurricularesDaTurma, areasDoConhecimento));
+            var ordenacaoGrupoArea = await mediator.Send(new ObterOrdenacaoAreasConhecimentoQuery(componentesCurricularesDaTurma, areasDoConhecimento));
 
             var frequenciasAluno = await ObterFrequenciaAlunoRefatorada(componentesCurricularesDaTurmaEol, periodoEscolar, filtro.AlunoCodigo, tipoCalendarioId, bimestre);
 
@@ -102,12 +94,14 @@ namespace SME.SGP.Aplicacao
 
             foreach (var grupoComponentesCurricularesMatriz in gruposMatrizes)
             {
-                var areasConhecimento = mapearAreasDoConhecimentoUseCase.MapearAreasDoConhecimento(grupoComponentesCurricularesMatriz, areasDoConhecimento, ordenacaoGrupoArea, grupoComponentesCurricularesMatriz.Key);
+                var areasConhecimento = await mediator.Send(new MapearAreasConhecimentoQuery(grupoComponentesCurricularesMatriz,
+                                                                                             areasDoConhecimento,
+                                                                                             ordenacaoGrupoArea,
+                                                                                             grupoComponentesCurricularesMatriz.Key));
 
                 foreach (var areaConhecimento in areasConhecimento)
                 {
-                    var componentes = obterComponentesDasAreasDeConhecimentoUseCase.ObterComponentesDasAreasDeConhecimento(grupoComponentesCurricularesMatriz, areaConhecimento);
-
+                    var componentes = await mediator.Send(new ObterComponentesAreasConhecimentoQuery(grupoComponentesCurricularesMatriz, areaConhecimento));
                     foreach (var componenteCurricular in componentes.OrderBy(g => g.Nome))
                     {
                         var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == componenteCurricular.Id.ToString());
@@ -157,7 +151,7 @@ namespace SME.SGP.Aplicacao
             }
 
             return retorno;
-        }       
+        }
 
         private async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunoRefatorada(IEnumerable<DisciplinaDto> componenteCurricularesDaTurma, PeriodoEscolar periodoEscolar, string alunoCodigo,
             long tipoCalendarioId, int bimestre)
@@ -228,9 +222,9 @@ namespace SME.SGP.Aplicacao
             return lstDetalhesNotas;
         }
 
-        private async Task<DetalhamentoComponentesCurricularesAlunoDto> ObterNotasFrequenciaComponente(DisciplinaDto componenteCurricular, 
-            FrequenciaAluno frequenciaAluno, 
-            PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, 
+        private async Task<DetalhamentoComponentesCurricularesAlunoDto> ObterNotasFrequenciaComponente(DisciplinaDto componenteCurricular,
+            FrequenciaAluno frequenciaAluno,
+            PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno,
             IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, int bimestre)
         {
             var percentualFrequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 100 : 100);
@@ -340,6 +334,6 @@ namespace SME.SGP.Aplicacao
             }
 
             return notasPeriodos;
-        }        
+        }
     }
 }
