@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             {
                 var grupo = $"{parecer.AnoTurma}";
                 if (parecer.Quantidade > 0)
-                    parecerConclusivos.Add(new GraficoBaseDto(grupo, parecer.Quantidade, parecer.Situacao.Name()));
+                    parecerConclusivos.Add(new GraficoBaseDto(grupo, parecer.Quantidade, parecer.Situacao));
             }
 
             return parecerConclusivos.OrderBy(a => a.Grupo).ToList();

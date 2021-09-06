@@ -35,9 +35,11 @@ namespace SME.SGP.Aplicacao
             foreach(var notaFinalTurma in notasFinaisRetorno.GroupBy(nf => nf.TurmaAnoNome))
             {
                 var grupo = $"{notaFinalTurma.Key}";
+                if(notaFinalTurma.Count(a => !a.NotaAcimaMedia) > 0)
+                    notasFinais.Add(new GraficoBaseDto(grupo, notaFinalTurma.Count(a => !a.NotaAcimaMedia), "Abaixo"));
 
-                notasFinais.Add(new GraficoBaseDto(grupo, notaFinalTurma.Count(a => !a.NotaAcimaMedia), "Abaixo"));
-                notasFinais.Add(new GraficoBaseDto(grupo, notaFinalTurma.Count(a => a.NotaAcimaMedia), "Acima"));
+                if(notaFinalTurma.Count(a => a.NotaAcimaMedia) > 0)
+                    notasFinais.Add(new GraficoBaseDto(grupo, notaFinalTurma.Count(a => a.NotaAcimaMedia), "Acima"));
             }
 
             return notasFinais.OrderBy(a => a.Grupo).ToList();

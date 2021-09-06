@@ -61,23 +61,23 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ParecerConclusivoSituacaoQuantidadeDto>> ObterParecerConclusivoSituacao(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
             var query = new StringBuilder();
-            query.AppendLine(@"SELECT Situacao,
+            query.AppendLine(@"SELECT  Situacao,
                                        sum(x.Quantidade) AS Quantidade,
-                                       x.AnoTurma,
-                                       x.Ano,
-                                       x.Modalidade
+                                       x.AnoTurma
                                 FROM
                                   (SELECT 
-  		                                CASE
-                                              WHEN cc.situacao in(0,1) THEN 0
-                                              ELSE cc.situacao
+  		                                  CASE
+                                              WHEN cca.conselho_classe_parecer_id is null THEN 'Sem parecer'
+                                              ELSE ccp.nome
                                           END AS Situacao,
-                                          count(cca.id) AS Quantidade,
-                                          t.ano AS Ano,
-                                          t.nome AS AnoTurma,
-                                          t.modalidade_codigo AS Modalidade
-                                   FROM conselho_classe_aluno cca
-                                   INNER JOIN conselho_classe_parecer ccp ON cca.conselho_classe_parecer_id = ccp.id
+                                          count(cca.id) AS Quantidade,");
+            if (ueId > 0)
+                query.AppendLine(" t.Nome AS AnoTurma ");
+            else
+                query.AppendLine(" t.ano AS AnoTurma ");
+
+            query.AppendLine(@" FROM conselho_classe_aluno cca
+                                   LEFT JOIN conselho_classe_parecer ccp ON cca.conselho_classe_parecer_id = ccp.id
                                    INNER JOIN conselho_classe cc ON cca.conselho_classe_id = cc.id
                                    INNER JOIN fechamento_turma ft ON cc.fechamento_turma_id = ft.id
                                    INNER JOIN turma t ON ft.turma_id = t.id
@@ -96,7 +96,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (modalidade > 0)
                 query.AppendLine(" AND t.modalidade_codigo = @modalidade ");
-            
+
             if (semestre > 0)
                 query.AppendLine(" AND t.semestre = @semestre ");
 
@@ -104,15 +104,17 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(" AND pe.bimestre = @bimestre ");
 
 
-            query.AppendLine(@"   GROUP BY cc.situacao,
-                                            t.ano,
-                                            t.nome,
-                                            t.modalidade_codigo) x
+            query.AppendLine(@"   GROUP BY cca.conselho_classe_parecer_id, ccp.nome, ");
+
+            if (ueId > 0)
+                query.AppendLine(" t.Nome");
+            else
+                query.AppendLine(" t.ano");
+
+            query.AppendLine(@") x
                                 GROUP BY x.Situacao,
-                                         x.Ano,
-                                         x.AnoTurma,
-                                         x.Modalidade
-                                ORDER BY x.Ano ");
+                                         x.AnoTurma
+                                ORDER BY x.AnoTurma ");
 
             return await database.Conexao.QueryAsync<ParecerConclusivoSituacaoQuantidadeDto>(query.ToString(), new
             {
