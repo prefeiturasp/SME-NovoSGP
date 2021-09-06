@@ -188,7 +188,7 @@ namespace SME.SGP.Dados.Repositorios
             return queryBuilder.ToString();
         }
 
-        public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
+        public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int ano, long dreId, int modalidade, int semestre)
         {
             var query = new StringBuilder($@"select ft.turma_id TurmaId, ");
 
@@ -237,7 +237,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
 
-            return await database.Conexao.QueryAsync<FechamentoConselhoClasseNotaFinalDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre, bimestre });
+            return await database.Conexao.QueryAsync<FechamentoConselhoClasseNotaFinalDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre });
         }
     }
 }

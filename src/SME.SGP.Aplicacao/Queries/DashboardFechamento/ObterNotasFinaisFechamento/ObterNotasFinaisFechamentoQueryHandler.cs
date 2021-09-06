@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             return await repositorio.ObterNotasFechamentoOuConselhoAlunos(request.UeId,
                 request.Ano, request.DreId, request.Modalidade,
-                request.Semestre, request.Bimestre);
+                request.Semestre);
         }
     }
 }
