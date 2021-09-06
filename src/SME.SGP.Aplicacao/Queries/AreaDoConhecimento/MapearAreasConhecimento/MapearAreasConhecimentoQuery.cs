@@ -3,7 +3,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SME.SGP.Aplicacao.Queries.AreaDoConhecimento.MapearAreasConhecimento
+namespace SME.SGP.Aplicacao
 {
     public class MapearAreasConhecimentoQuery : IRequest<IEnumerable<IGrouping<(string Nome, int? Ordem, long Id), AreaDoConhecimentoDto>>>
     {
