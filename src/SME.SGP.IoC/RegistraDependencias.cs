@@ -1103,7 +1103,9 @@ namespace SME.SGP.IoC
 
 
             services.TryAddScoped<IExecutarSyncSerapEstudantesProvasUseCase, ExecutarSyncSerapEstudantesProvasUseCase>();
-            
+
+            // Dias Letivos
+            services.TryAddScoped<IObterDiasLetivosPorUeETurnoUseCase, ObterDiasLetivosPorUeETurnoUseCase>();
         }
     }
 }
