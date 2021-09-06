@@ -31,5 +31,6 @@
         public const string RotaRelatoriosSolicitadosEscolaAquiAdesao = "sr.relatorios.solicitados.escolaaquiadesao";
         public const string RotaRelatoriosSolicitadosAtaFinalResultados = "sr.relatorios.solicitados.atafinalresultados";
         public const string RotaRelatoriosSolicitadosHistoricoEscolar = "sr.relatorios.solicitados.historicoescolar";
+        public const string RotaRelatoriosSolicitadosAtaBimestral = "sr.relatorios.solicitados.atabimestral";
     }
 }
