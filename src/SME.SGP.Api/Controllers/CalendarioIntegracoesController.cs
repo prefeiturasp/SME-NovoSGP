@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/integracoes/")]
+    [Route("api/v1/calendario/integracoes/")]
     [ChaveIntegracaoSgpApi]
     [ValidaDto]
-    public class IntegracoesController : ControllerBase
+    public class CalendarioIntegracoesController : ControllerBase
     {
-        [HttpGet("calendarios/ues/dias-letivos")]
+        [HttpGet("ues/dias-letivos")]
         [ChaveIntegracaoSgpApi]
         [ProducesResponseType(typeof(IEnumerable<DiaLetivoSimplesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
