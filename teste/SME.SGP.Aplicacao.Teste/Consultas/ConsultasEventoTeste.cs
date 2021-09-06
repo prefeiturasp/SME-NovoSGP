@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact]
         public async Task DeveObterEvento()
         {
-            repositorioEvento.Setup(c => c.ObterPorIdAsync(It.IsAny<long>()))
+            repositorioEvento.Setup(c => c.ObterEventoAtivoPorId(It.IsAny<long>()))
                 .ReturnsAsync(new Evento
                 {
                     Id = 1
@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
             Assert.NotNull(eventoDto);
             Assert.Equal(1, eventoDto.Id);
-            repositorioEvento.Verify(c => c.ObterPorIdAsync(It.IsAny<long>()), Times.Once);
+            repositorioEvento.Verify(c => c.ObterEventoAtivoPorId(It.IsAny<long>()), Times.Once);
         }
     }
 }
