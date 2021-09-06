@@ -402,11 +402,11 @@ namespace SME.SGP.Dados.Repositorios
             return resultado;
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo)
+        public async Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo, string codigoTurma = null)
         {
             var modalidade = Modalidade.EducacaoInfantil;
             var turmas = new List<Turma>();
-            var query = @"select
+            var query = $@"select
 	                            t.*,
 	                            u.*,
                                 d.*
@@ -420,19 +420,20 @@ namespace SME.SGP.Dados.Repositorios
 	                            t.modalidade_codigo = :modalidade
 	                            and t.historica = false
 	                            and t.ano_letivo = :anoLetivo
-	                            and ano ~ E'^[0-9\.]+$'";
+	                            and ano ~ E'^[0-9\.]+$'
+                                {(!string.IsNullOrEmpty(codigoTurma) ? " and t.turma_id = :codigoTurma" : string.Empty)}";
 
             await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
-             {
-                 ue.AdicionarDre(dre);
-                 turma.AdicionarUe(ue);
+            {
+                ue.AdicionarDre(dre);
+                turma.AdicionarUe(ue);
 
-                 var turmaExistente = turmas.FirstOrDefault(c => c.Id == turma.Id);
-                 if (turmaExistente == null)
-                     turmas.Add(turma);
+                var turmaExistente = turmas.FirstOrDefault(c => c.Id == turma.Id);
+                if (turmaExistente == null)
+                    turmas.Add(turma);
 
-                 return turma;
-             }, new { anoLetivo, modalidade });
+                return turma;
+            }, new { anoLetivo, modalidade, codigoTurma });
 
             return turmas;
         }
