@@ -131,11 +131,11 @@ namespace SME.SGP.Aplicacao
                         QuantidadeCJ = x.CriadasCJ,
                         QuantidadeTitular = x.CriadasTitular
                     },
-                    Cumpridas = x.Cumpridas,
+                    Cumpridas = x.LancaFrequencia ? x.Cumpridas : x.CumpridasSemFrequencia,
                     Inicio = x.Inicio,
                     Fim = x.Fim,
                     Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas },
-                    Reposicoes = x.Reposicoes,
+                    Reposicoes = x.LancaFrequencia ? x.Reposicoes : x.ReposicoesSemFrequencia,
                     PodeEditar = periodosAbertos != null ? periodosAbertos.FirstOrDefault(p => p.Bimestre == x.Bimestre).Aberto : false
                 }).ToList()
             };
