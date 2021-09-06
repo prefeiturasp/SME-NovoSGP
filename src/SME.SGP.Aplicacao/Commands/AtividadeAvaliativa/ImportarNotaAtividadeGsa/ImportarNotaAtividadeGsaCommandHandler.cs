@@ -5,6 +5,7 @@ using MediatR;
 using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -26,17 +27,24 @@ namespace SME.SGP.Aplicacao
             await ValidarLancamentoNotaComponente(request.NotaAtividadeGsaDto.ComponenteCurricularId);
             await CarregarTurma(request.NotaAtividadeGsaDto.TurmaId);
 
+
+            var atividadeAvaliativa =
+                await mediator.Send(
+                    new ObterAtividadeAvaliativaPorGoogleClassroomIdQuery(request.NotaAtividadeGsaDto
+                        .AtividadeGoogleClassroomId));
+
             var notaConceito = await mediator.Send(
                 new ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularId(
                     request.NotaAtividadeGsaDto.AtividadeGoogleClassroomId,
                     request.NotaAtividadeGsaDto.TurmaId.ToString(),
                     request.NotaAtividadeGsaDto.ComponenteCurricularId.ToString()));
 
-            if (notaConceito is null)
+            if (atividadeAvaliativa is null || notaConceito is null)
             {
-                SentrySdk.CaptureException(new NegocioException("Não foi encontrado nota para lançar"));
-                throw new NegocioException("Não foi encontrado nota para lançar");
-
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAgendamento.RotaNotaAtividadesSync,
+                    new MensagemAgendamentoSyncDto(RotasRabbitSgp.RotaAtividadesNotasSync, request.NotaAtividadeGsaDto),
+                    Guid.NewGuid(),
+                    null));
             }
 
             if (turmaFechamento.EhTurmaInfantil)

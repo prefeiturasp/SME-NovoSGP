@@ -7,5 +7,6 @@
     {
         public const string RotaMuralAvisosSync = "sgp.mural.avisos.sync.agendado";
         public const string RotaAtividadesSync = "sgp.atividade.avaliativa.sync.agendado";
+        public const string RotaNotaAtividadesSync = "sgp.nota.atividade.avaliativa.sync.agendado";
     }
 }
