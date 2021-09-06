@@ -1,6 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AreaDoConhecimento;
-using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.MapearAreasConhecimento;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;

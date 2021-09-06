@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
