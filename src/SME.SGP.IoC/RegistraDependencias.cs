@@ -1106,6 +1106,7 @@ namespace SME.SGP.IoC
 
             // Dias Letivos
             services.TryAddScoped<IObterDiasLetivosPorUeETurnoUseCase, ObterDiasLetivosPorUeETurnoUseCase>();
+            services.TryAddScoped<IRelatorioAtaBimestralUseCase, RelatorioAtaBimestralUseCase>();
         }
     }
 }

@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 TipoRelatorio.AtaBimestral,
                 filtro,
                 usuarioLogado,
-                RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPendencias)
+                RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosAtaBimestral)
             );
         }
     }
