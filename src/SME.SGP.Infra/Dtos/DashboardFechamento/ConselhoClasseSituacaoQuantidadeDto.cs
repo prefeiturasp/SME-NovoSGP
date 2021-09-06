@@ -4,7 +4,7 @@ namespace SME.SGP.Infra
 {
     public class ConselhoClasseSituacaoQuantidadeDto
     {
-        public SituacaoFechamento Situacao { get; set; }
+        public SituacaoConselhoClasse Situacao { get; set; }
         public int Quantidade { get; set; }
         public Modalidade Modalidade { get; set; }
         public string Ano { get; set; }

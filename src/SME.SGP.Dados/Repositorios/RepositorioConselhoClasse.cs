@@ -136,7 +136,7 @@ namespace SME.SGP.Dados.Repositorios
 	                         x.Ano,
 	                         x.Modalidade
                        from (
-                             select  case  when cccat.status in (0, 1) then 0 else cccat.status end as Situacao,
+                             select  cccat.status as Situacao,
                                        count(cccat.id) as Quantidade, 
                                        t.ano as Ano, 
                                        t.nome as AnoTurma,
