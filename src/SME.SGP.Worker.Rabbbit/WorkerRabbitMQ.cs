@@ -158,8 +158,6 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaAlterarAulaFrequenciaTratar, new ComandoRabbit("Normaliza as frequências quando há uma alteração de aula única", typeof(IAlterarAulaFrequenciaTratarUseCase)));
             
             // Consolidação fechamento turmas
-            comandos.Add(RotasRabbitSgp.ConsolidarGeralSync, new ComandoRabbit("Consolidação turmas geral", typeof(IExecutarConsolidacaoTurmaGeralUseCase)));
-
             comandos.Add(RotasRabbitSgp.ConsolidarTurmaSync, new ComandoRabbit("Consolidação Fechamento/conselho - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaUseCase)));
 
             comandos.Add(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, new ComandoRabbit("Consolidação conselho classe - Sincronizar alunos da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseUseCase)));
