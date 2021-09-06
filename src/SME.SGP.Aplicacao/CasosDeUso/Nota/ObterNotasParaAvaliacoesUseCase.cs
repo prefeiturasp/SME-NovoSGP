@@ -15,14 +15,12 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEol servicoEOL;
-        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
-        public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL, IConsultasPeriodoFechamento consultasPeriodoFechamento)
+        public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.consultasDisciplina = consultasDisciplina;
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
         }
 
         public async Task<NotasConceitosRetornoDto> Executar(ListaNotasConceitosConsultaRefatoradaDto filtro)
@@ -39,8 +37,7 @@ namespace SME.SGP.Aplicacao
             if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
                 throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
 
-            var periodoFechamentoBimestre = await consultasPeriodoFechamento
-                .ObterPeriodoFechamentoTurmaAsync(turmaCompleta, filtro.Bimestre, filtro.PeriodoEscolarId);
+            var periodoFechamentoBimestre = await mediator.Send(new ObterPeriodoFechamentoPorTurmaBimestrePeriodoEscolarQuery(turmaCompleta, filtro.Bimestre, filtro.PeriodoEscolarId));
 
             var periodoInicio = new DateTime(filtro.PeriodoInicioTicks);
             var periodoFim = new DateTime(filtro.PeriodoFimTicks);
