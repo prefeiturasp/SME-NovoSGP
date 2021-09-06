@@ -131,21 +131,19 @@ namespace SME.SGP.Dados.Repositorios
            int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
 
-            var sqlQuery = $@"select Situacao, sum(x.Quantidade) as Quantidade,
-                            x.AnoTurma,
-	                         x.Ano,
-	                         x.Modalidade
+            var sqlQuery = new StringBuilder($@"select Situacao, sum(x.Quantidade) as Quantidade,
+                            x.AnoTurma
                        from (
                              select  cccat.status as Situacao,
-                                       count(cccat.id) as Quantidade, 
-                                       t.ano as Ano, 
-                                       t.nome as AnoTurma,
-                                       t.modalidade_codigo  as Modalidade
+                                       count(cccat.id) as Quantidade, ");
+            if (ueId > 0)
+                sqlQuery.AppendLine(" t.nome as AnoTurma ");
+            else
+                sqlQuery.AppendLine(" t.ano as AnoTurma ");
+            sqlQuery.AppendLine(@" 
                                   from consolidado_conselho_classe_aluno_turma cccat 
                                  inner join turma t on t.id = cccat.turma_id 
-                                 inner join ue on ue.id = t.ue_id where t.tipo_turma in (1,2,7)";
-
-            var queryBuilder = new StringBuilder(sqlQuery);
+                                 inner join ue on ue.id = t.ue_id where t.tipo_turma = 1 ");
 
             var queryWhere = new StringBuilder("");
 
@@ -179,13 +177,18 @@ namespace SME.SGP.Dados.Repositorios
                 queryWhere.AppendLine(" and cccat.bimestre = @bimestre ");
             }
 
-            queryBuilder.AppendLine(queryWhere.ToString());
-            queryBuilder.AppendLine($@" group by cccat.status, t.ano, t.nome, t.modalidade_codigo) x
-                                   group by x.Situacao, x.Ano, x.AnoTurma, x.Modalidade
-                                   order by x.Ano;");
+            sqlQuery.AppendLine(queryWhere.ToString());
+            sqlQuery.AppendLine($@" group by cccat.status, ");
+            if (ueId > 0)
+                sqlQuery.AppendLine(" t.nome  ");
+            else
+                sqlQuery.AppendLine(" t.ano ");
+
+            sqlQuery.AppendLine(@") x group by x.Situacao, x.AnoTurma
+                                   order by x.AnoTurma;");
 
 
-            return queryBuilder.ToString();
+            return sqlQuery.ToString();
         }
 
         public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int ano, long dreId, int modalidade, int semestre)
