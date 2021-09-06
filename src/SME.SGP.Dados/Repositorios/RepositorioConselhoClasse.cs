@@ -206,14 +206,14 @@ namespace SME.SGP.Dados.Repositorios
                         inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id 
                         inner join turma t on ft.turma_id = t.id 
                         inner join ue on t.ue_id = ue.id
-                        inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id
+                        left join periodo_escolar pe on ft.periodo_escolar_id = pe.id
                         inner join componente_curricular cc on ftd.disciplina_id = cc.id and cc.permite_lancamento_nota 
                         left join conceito_valores cv on fn.conceito_id = cv.id
                         left join (select cc.fechamento_turma_id, cca.aluno_codigo, ccn.nota, cv.valor from conselho_classe_aluno cca 
                         inner join conselho_classe_nota ccn on cca.id = ccn.conselho_classe_aluno_id 
                         inner join conselho_classe cc on cca.conselho_classe_id = cc.id 
                         left join conceito_valores cv on ccn.conceito_id = cv.id) as conselhos on ft.id = conselhos.fechamento_turma_id and fa.aluno_codigo = conselhos.aluno_codigo
-                        WHERE t.ano_letivo = @ano ");
+                        WHERE t.ano_letivo = @ano and ft.periodo_escolar_id is null ");
 
             if (ueId > 0)
             {
