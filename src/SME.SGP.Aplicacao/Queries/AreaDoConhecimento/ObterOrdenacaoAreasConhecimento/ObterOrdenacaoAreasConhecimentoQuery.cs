@@ -3,7 +3,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterOrdenacaoAreasConhecimento
+namespace SME.SGP.Aplicacao
 {
     public class ObterOrdenacaoAreasConhecimentoQuery : IRequest<IEnumerable<ComponenteCurricularGrupoAreaOrdenacaoDto>>
     {
