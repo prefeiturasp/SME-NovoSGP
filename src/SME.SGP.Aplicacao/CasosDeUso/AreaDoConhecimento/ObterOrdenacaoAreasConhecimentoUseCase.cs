@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AreaDoConhecimento;
+using SME.SGP.Aplicacao.Queries.AreaDoConhecimento.ObterOrdenacaoAreasConhecimento;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.AreaDoConhecimento
@@ -16,14 +16,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.AreaDoConhecimento
 
         public async Task<IEnumerable<ComponenteCurricularGrupoAreaOrdenacaoDto>> Executar((IEnumerable<DisciplinaDto>, IEnumerable<AreaDoConhecimentoDto>) param)
         {
-            var listaGrupoMatrizId = param.Item1?
-                .Select(a => a.GrupoMatrizId)?.Distinct().ToArray();
-
-            var listaAreaConhecimentoId = param.Item2?
-                .Select(a => a.Id).ToArray();
-
             return await mediator
-                .Send(new ObterComponenteCurricularGrupoAreaOrdenacaoQuery(listaGrupoMatrizId, listaAreaConhecimentoId));
+                .Send(new ObterOrdenacaoAreasConhecimentoQuery(param.Item1, param.Item2));
         }
     }
 }

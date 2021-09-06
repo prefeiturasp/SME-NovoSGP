@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AreaDoConhecimento;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -11,20 +10,15 @@ namespace SME.SGP.Aplicacao.Queries.AreaDoConhecimento.MapearAreasConhecimento
 {
     public class MapearAreasConhecimentoQueryHandler : IRequestHandler<MapearAreasConhecimentoQuery, IEnumerable<IGrouping<(string Nome, int? Ordem, long Id), AreaDoConhecimentoDto>>>
     {
-        private readonly IMapearAreasDoConhecimentoUseCase mapearAreasDoConhecimentoUseCase;
-
-        public MapearAreasConhecimentoQueryHandler(IMapearAreasDoConhecimentoUseCase mapearAreasDoConhecimentoUseCase)
-        {
-            this.mapearAreasDoConhecimentoUseCase = mapearAreasDoConhecimentoUseCase ?? throw new ArgumentNullException(nameof(mapearAreasDoConhecimentoUseCase));
-        }
-
         public async Task<IEnumerable<IGrouping<(string Nome, int? Ordem, long Id), AreaDoConhecimentoDto>>> Handle(MapearAreasConhecimentoQuery request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(mapearAreasDoConhecimentoUseCase
-                .MapearAreasDoConhecimento(request.ComponentesCurricularesTurma,
-                                           request.AreasConhecimentos,
-                                           request.GruposAreaOrdenacao,
-                                           request.GrupoMatrizId));
+            return await Task.FromResult(request.AreasConhecimentos.Where(a => request.ComponentesCurricularesTurma.Where(cc => !cc.Regencia).Select(cc => cc.CodigoComponenteCurricular).Contains(a.CodigoComponenteCurricular) ||
+                                                                              (request.ComponentesCurricularesTurma.Any(cc => cc.Regencia) && request.ComponentesCurricularesTurma.Where(cc => cc.Regencia)
+                                                                   .Select(r => r.CodigoComponenteCurricular).Contains(a.CodigoComponenteCurricular)))
+                                                                   .Select(a => { a.DefinirOrdem(request.GruposAreaOrdenacao, request.GrupoMatrizId); return a; }).GroupBy(g => (g.Nome, g.Ordem, g.Id))
+                                                                   .OrderByDescending(c => c.Key.Id > 0 && !string.IsNullOrEmpty(c.Key.Nome))
+                                                                   .ThenByDescending(c => c.Key.Ordem.HasValue).ThenBy(c => c.Key.Ordem)
+                                                                   .ThenBy(c => c.Key.Nome, StringComparer.OrdinalIgnoreCase));
         }
     }
 }
