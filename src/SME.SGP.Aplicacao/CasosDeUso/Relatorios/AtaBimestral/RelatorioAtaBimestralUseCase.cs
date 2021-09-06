@@ -25,8 +25,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             filtro.UsuarioLogadoNome = usuarioLogado.Nome;
             filtro.UsuarioLogadoRf = usuarioLogado.CodigoRf;
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AtaBimestral, filtro, usuarioLogado,
-                RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPendencias));
+            return await mediator.Send(new GerarRelatorioCommand(
+                TipoRelatorio.AtaBimestral,
+                filtro,
+                usuarioLogado,
+                RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPendencias)
+            );
         }
     }
 }
