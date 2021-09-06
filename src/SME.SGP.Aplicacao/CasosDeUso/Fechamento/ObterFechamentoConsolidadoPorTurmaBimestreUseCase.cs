@@ -16,7 +16,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<StatusTotalFechamentoDto>> Executar(FiltroFechamentoConsolidadoTurmaBimestreDto filtro)
         {
-            var listaFechamentosConsolidado = await mediator.Send(new ObterFechamentoConsolidadoPorTurmaBimestreQuery(filtro.TurmaId, filtro.Bimestre));
+            int[] situacoesFechamento = new int[] { filtro.SituacaoFechamento };
+
+            if (filtro.SituacaoFechamento == (int)SituacaoFechamento.NaoIniciado)            
+                situacoesFechamento = new int[] { (int)SituacaoFechamento.NaoIniciado, (int)SituacaoFechamento.EmProcessamento };                     
+
+            var listaFechamentosConsolidado = await mediator.Send(new ObterFechamentoConsolidadoPorTurmaBimestreQuery(filtro.TurmaId, filtro.Bimestre, situacoesFechamento));
 
             if (listaFechamentosConsolidado == null || !listaFechamentosConsolidado.Any())
                 return Enumerable.Empty<StatusTotalFechamentoDto>();

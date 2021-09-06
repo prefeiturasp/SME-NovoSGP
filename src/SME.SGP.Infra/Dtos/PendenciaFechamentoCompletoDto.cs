@@ -15,6 +15,11 @@ namespace SME.SGP.Infra
         public string Detalhamento { get; set; }
         public int Situacao { get; set; }
         public string SituacaoNome { get; set; }
+        public string DescricaoHtml { get; set; }
+        public string DetalhamentoFormatado
+        {
+            get => string.IsNullOrEmpty(DescricaoHtml) ? Detalhamento : DescricaoHtml;
+        }
 
     }
 }

@@ -48,7 +48,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId)
         {
-            var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento
+            var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento, p.descricao_html as descricaohtml
                                 , p.situacao, ftd.disciplina_id as DisciplinaId, pe.bimestre, pf.fechamento_turma_disciplina_id as FechamentoId
                                 , p.criado_em as CriadoEm, p.criado_por as CriadoPor, p.criado_rf as CriadoRf, p.alterado_em as AlteradoEm, p.alterado_por as AlteradoPor, p.alterado_rf as AlteradoRf
                           from pendencia_fechamento pf
@@ -136,6 +136,64 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select 1 from pendencia_fechamento where pendencia_id = @pendenciaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { pendenciaId });
+        }
+
+        public async Task<IEnumerable<PendenciaParaFechamentoConsolidadoDto>> ObterPendenciasParaFechamentoConsolidado(long turmaId, int bimestre, long componenteCurricularId)
+        {
+            var query = @"select p.id as PendenciaId, 
+                                 p.titulo as descricao, 
+                                 P.tipo as tipoPendencia  
+                            from pendencia_fechamento pf
+                           inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id
+                           inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
+                           inner join turma t on t.id = ft.turma_id
+                           inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                           inner join pendencia p on p.id = pf.pendencia_id
+                           where not p.excluido
+                             and P.situacao = 1
+                             and t.id = @turmaId
+                             and pe.bimestre = @bimestre
+                             and ftd.disciplina_id = @componenteCurricularId
+                           order by p.criado_em";
+
+            return await database.Conexao.QueryAsync<PendenciaParaFechamentoConsolidadoDto>(query, new { turmaId, bimestre, componenteCurricularId });
+        }
+
+        public async Task<DetalhamentoPendenciaFechamentoConsolidadoDto> ObterDetalhamentoPendenciaFechamentoConsolidado(long pendenciaId)
+        {
+            var query = @"select p.id as PendenciaId, 
+                                 p.descricao as descricao, 
+                                 p.descricao_html as descricaohtml,
+                                 ftd.justificativa 
+                            from pendencia_fechamento pf
+                           inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id
+                           inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
+                           inner join turma t on t.id = ft.turma_id
+                           inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                           inner join pendencia p on p.id = pf.pendencia_id
+                           where p.id = @pendenciaId      
+                             and p.situacao = 1
+                             and not ftd.excluido ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<DetalhamentoPendenciaFechamentoConsolidadoDto>(query, new { pendenciaId });
+        }
+
+        public async Task<DetalhamentoPendenciaAulaDto> ObterDetalhamentoPendenciaAula(long pendenciaId)
+        {
+            var query = @"select P.id as pendenciaId,
+                                 p.tipo as tipoPendencia,
+                                 p.descricao_html as descricaohtml                               
+                            from pendencia_fechamento pf
+                           inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id
+                           inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
+                           inner join turma t on t.id = ft.turma_id
+                           inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                           inner join pendencia p on p.id = pf.pendencia_id
+                           where p.id = @pendenciaId                             
+                             and p.situacao = 1
+                             and not ftd.excluido ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<DetalhamentoPendenciaAulaDto>(query, new { pendenciaId });
         }
     }
 }
