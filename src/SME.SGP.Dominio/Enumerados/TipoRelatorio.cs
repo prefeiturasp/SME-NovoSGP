@@ -98,6 +98,9 @@ namespace SME.SGP.Dominio
         BoletimDetalhado = 32,
 
         [Display(Name = "relatorios/acompanhamento-fechamento", ShortName = "AcompanhamentoFechamento", Description = "Relatório do Acompanhamento de Fechamento")]
-        AcompanhamentoFechamento = 33
+        AcompanhamentoFechamento = 33,
+        
+        [Display(Name = "relatorios/atas-bimestrais", ShortName = "AtaBimestral", Description = "Relatório de Ata Bimestral")]
+        AtaBimestral = 34
     }
 }
