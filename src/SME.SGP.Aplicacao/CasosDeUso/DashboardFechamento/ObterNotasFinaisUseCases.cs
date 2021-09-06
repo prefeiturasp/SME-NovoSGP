@@ -36,10 +36,10 @@ namespace SME.SGP.Aplicacao
             {
                 var grupo = $"{notaFinalTurma.Key}";
                 if(notaFinalTurma.Count(a => !a.NotaAcimaMedia) > 0)
-                    notasFinais.Add(new GraficoBaseDto(grupo, notaFinalTurma.Count(a => !a.NotaAcimaMedia), "Abaixo"));
+                    notasFinais.Add(new GraficoBaseDto(grupo, notaFinalTurma.Count(a => !a.NotaAcimaMedia), "Abaixo do mínimo"));
 
                 if(notaFinalTurma.Count(a => a.NotaAcimaMedia) > 0)
-                    notasFinais.Add(new GraficoBaseDto(grupo, notaFinalTurma.Count(a => a.NotaAcimaMedia), "Acima"));
+                    notasFinais.Add(new GraficoBaseDto(grupo, notaFinalTurma.Count(a => a.NotaAcimaMedia), "Acima do mínimo"));
             }
 
             return notasFinais.OrderBy(a => a.Grupo).ToList();
