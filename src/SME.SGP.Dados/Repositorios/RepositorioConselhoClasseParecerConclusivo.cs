@@ -81,8 +81,7 @@ namespace SME.SGP.Dados.Repositorios
                                    INNER JOIN conselho_classe cc ON cca.conselho_classe_id = cc.id
                                    INNER JOIN fechamento_turma ft ON cc.fechamento_turma_id = ft.id
                                    INNER JOIN turma t ON ft.turma_id = t.id
-                                   INNER JOIN ue u ON t.ue_id = u.id
-                                   INNER JOIN periodo_escolar pe ON ft.periodo_escolar_id = pe.id 
+                                   INNER JOIN ue u ON t.ue_id = u.id                                  
                                    WHERE t.tipo_turma in (1,2,7) ");
 
             if (ano > 0)
