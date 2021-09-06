@@ -28,25 +28,6 @@ namespace SME.SGP.Aplicacao
             await CarregarTurma(request.NotaAtividadeGsaDto.TurmaId);
 
 
-            var atividadeAvaliativa =
-                await mediator.Send(
-                    new ObterAtividadeAvaliativaPorGoogleClassroomIdQuery(request.NotaAtividadeGsaDto
-                        .AtividadeGoogleClassroomId));
-
-            var notaConceito = await mediator.Send(
-                new ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularId(
-                    request.NotaAtividadeGsaDto.AtividadeGoogleClassroomId,
-                    request.NotaAtividadeGsaDto.TurmaId.ToString(),
-                    request.NotaAtividadeGsaDto.ComponenteCurricularId.ToString()));
-
-            if (atividadeAvaliativa is null || notaConceito is null)
-            {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAgendamento.RotaNotaAtividadesSync,
-                    new MensagemAgendamentoSyncDto(RotasRabbitSgp.RotaAtividadesNotasSync, request.NotaAtividadeGsaDto),
-                    Guid.NewGuid(),
-                    null));
-            }
-
             if (turmaFechamento.EhTurmaInfantil)
             {
                 var registroIndividual = await mediator.Send(new ObterRegistroIndividualPorAlunoDataQuery(
@@ -75,9 +56,31 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                await mediator.Send(
-                    new SalvarNotaAtividadeAvaliativaGsaCommand(notaConceito.Id, request.NotaAtividadeGsaDto.Nota,
-                        request.NotaAtividadeGsaDto.StatusGsa));
+                var atividadeAvaliativa =
+                    await mediator.Send(
+                        new ObterAtividadeAvaliativaPorGoogleClassroomIdQuery(request.NotaAtividadeGsaDto
+                            .AtividadeGoogleClassroomId));
+
+                var notaConceito = await mediator.Send(
+                    new ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularId(
+                        request.NotaAtividadeGsaDto.AtividadeGoogleClassroomId,
+                        request.NotaAtividadeGsaDto.TurmaId.ToString(),
+                        request.NotaAtividadeGsaDto.ComponenteCurricularId.ToString()));
+
+                if (atividadeAvaliativa is null || notaConceito is null)
+                {
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAgendamento.RotaNotaAtividadesSync,
+                        new MensagemAgendamentoSyncDto(RotasRabbitSgp.RotaAtividadesNotasSync,
+                            request.NotaAtividadeGsaDto),
+                        Guid.NewGuid(),
+                        null));
+                }
+                else
+                {
+                    await mediator.Send(
+                        new SalvarNotaAtividadeAvaliativaGsaCommand(notaConceito.Id, request.NotaAtividadeGsaDto.Nota,
+                            request.NotaAtividadeGsaDto.StatusGsa));
+                }
             }
         }
 
