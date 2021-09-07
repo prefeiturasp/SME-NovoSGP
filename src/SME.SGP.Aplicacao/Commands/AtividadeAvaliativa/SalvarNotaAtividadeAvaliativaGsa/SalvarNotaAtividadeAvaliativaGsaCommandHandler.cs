@@ -33,14 +33,14 @@ namespace SME.SGP.Aplicacao
         private async Task InserirAtividade(NotaConceito notaConceito, SalvarNotaAtividadeAvaliativaGsaCommand request)
         {
             if (!request.TipoNota.EhNota())
-                notaConceito.ConceitoId = ObterConteceitoPorNota((long?)request.Nota);
+                notaConceito.ConceitoId = ObterConceitoPorNota((long?)request.Nota);
             else
                 notaConceito.Nota = request.Nota;
             notaConceito.StatusGsa = request.StatusGsa;
 
             await repositorioConceitos.SalvarAsync(notaConceito);
         }
-        private long? ObterConteceitoPorNota(long? notaValor)
+        private long? ObterConceitoPorNota(long? notaValor)
         {
             if (notaValor < 5)
                 return (long)ConceitoValores.NS;
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
         {
             if (notaConceito.TipoNota == TipoNota.Conceito)
             {
-                notaConceito.ConceitoId = ObterConteceitoPorNota((long?)request.Nota);
+                notaConceito.ConceitoId = ObterConceitoPorNota((long?)request.Nota);
             }
             else
             {
