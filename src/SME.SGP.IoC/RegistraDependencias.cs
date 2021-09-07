@@ -1108,6 +1108,10 @@ namespace SME.SGP.IoC
 
             // Dias Letivos
             services.TryAddScoped<IObterDiasLetivosPorUeETurnoUseCase, ObterDiasLetivosPorUeETurnoUseCase>();
+
+            //Componentes curriculares integração
+            services.TryAddScoped<IObterComponenteCurricularLancaNotaUseCase, ObterComponenteCurricularLancaNotaUseCase>();
+
         }
     }
 }
