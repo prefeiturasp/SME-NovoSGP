@@ -5,14 +5,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotaPorAtividadeGoogleClassIdQuery : IRequest<NotaConceito>
     {
-        public long AtividadeGoogleClassroomId { get; set; }
-        public string TurmaId { get; set; }
-        public string ComponenteCurricularId { get; set; }
+        public long AtividadeId { get; set; }
         public long CodigoAluno { get; set; }
 
-        public ObterNotaPorAtividadeGoogleClassIdQuery(long atividadeGoogleClassroomId,long codigoAluno)
+        public ObterNotaPorAtividadeGoogleClassIdQuery(long atividadeId,long codigoAluno)
         {
-            AtividadeGoogleClassroomId = atividadeGoogleClassroomId;
+            AtividadeId = atividadeId;
             CodigoAluno = codigoAluno;
         }
     }

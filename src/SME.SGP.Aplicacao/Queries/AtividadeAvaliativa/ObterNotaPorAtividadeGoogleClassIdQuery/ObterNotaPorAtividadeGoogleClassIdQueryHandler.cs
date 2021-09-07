@@ -21,7 +21,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<NotaConceito> Handle(ObterNotaPorAtividadeGoogleClassIdQuery request,
             CancellationToken cancellationToken)
-            => await repositorioNotasConceitos.ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularId(request.AtividadeGoogleClassroomId,
-                request.TurmaId, request.ComponenteCurricularId);
+            => await repositorioNotasConceitos.ObterNotasPorAtividadeIdCodigoAluno(request.AtividadeId,request.CodigoAluno);
     }
 }
