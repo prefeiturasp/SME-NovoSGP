@@ -80,20 +80,13 @@ namespace SME.SGP.Aplicacao
                             atividadeAvaliativa.Id,
                             request.NotaAtividadeGsaDto.CodigoAluno));
 
-                    var periodoEscolarUltimoBimestre = await ObterUltimoPeriodoEscolar(turmaFechamento.AnoLetivo, turmaFechamento.ModalidadeTipoCalendario, turmaFechamento.Semestre);
-
-                    var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turmaFechamento.Ano, turmaFechamento.ModalidadeCodigo, periodoEscolarUltimoBimestre.PeriodoFim));
+                    var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turmaFechamento.Ano, turmaFechamento.ModalidadeCodigo, DateTime.Now));
 
                     await mediator.Send(
                         new SalvarNotaAtividadeAvaliativaGsaCommand(notaConceito, request.NotaAtividadeGsaDto.Nota,
                             request.NotaAtividadeGsaDto.StatusGsa, atividadeAvaliativa.Id, tipoNota));
                 }
             }
-        }
-
-        private  async Task<PeriodoEscolar> ObterUltimoPeriodoEscolar(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, int semestre)
-        {
-            return  await consultasPeriodoEscolar.ObterUltimoPeriodoAsync(anoLetivo, modalidadeTipoCalendario, semestre);
         }
 
         private async Task ValidarLancamentoNotaComponente(long componenteCurricularId)
