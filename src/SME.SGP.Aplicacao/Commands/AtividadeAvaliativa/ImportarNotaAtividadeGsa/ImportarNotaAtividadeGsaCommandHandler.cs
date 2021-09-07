@@ -13,12 +13,14 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private Turma turmaFechamento;
 
         public ImportarNotaAtividadeGsaCommandHandler(IMediator mediator, IRepositorioTurma repositorioTurma)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
         }
 
         protected override async Task Handle(ImportarNotaAtividadeGsaCommand request,
@@ -61,13 +63,9 @@ namespace SME.SGP.Aplicacao
                         new ObterAtividadeAvaliativaPorGoogleClassroomIdQuery(request.NotaAtividadeGsaDto
                             .AtividadeGoogleClassroomId));
 
-                var notaConceito = await mediator.Send(
-                    new ObterAtividadePorAtividadeGoogleClassIdQuery(
-                        request.NotaAtividadeGsaDto.AtividadeGoogleClassroomId,
-                        request.NotaAtividadeGsaDto.TurmaId.ToString(),
-                        request.NotaAtividadeGsaDto.ComponenteCurricularId.ToString()));
 
-                if (atividadeAvaliativa is null || notaConceito is null)
+
+                if (atividadeAvaliativa is null)
                 {
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAgendamento.RotaNotaAtividadesSync,
                         new MensagemAgendamentoSyncDto(RotasRabbitSgp.RotaAtividadesNotasSync,
@@ -77,9 +75,18 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
+                    var notaConceito = await mediator.Send(
+                        new ObterNotaPorAtividadeGoogleClassIdQuery(
+                            atividadeAvaliativa.Id,
+                            request.NotaAtividadeGsaDto.CodigoAluno));
+
+                    var periodoEscolarUltimoBimestre = await consultasPeriodoEscolar.ObterUltimoPeriodoAsync(turmaFechamento.AnoLetivo, turmaFechamento.ModalidadeTipoCalendario, turmaFechamento.Semestre);
+
+                    var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turmaFechamento.Ano,turmaFechamento.ModalidadeCodigo, periodoEscolarUltimoBimestre.PeriodoFim));
+                    
                     await mediator.Send(
-                        new SalvarNotaAtividadeAvaliativaGsaCommand(notaConceito.Id, request.NotaAtividadeGsaDto.Nota,
-                            request.NotaAtividadeGsaDto.StatusGsa));
+                        new SalvarNotaAtividadeAvaliativaGsaCommand(notaConceito, request.NotaAtividadeGsaDto.Nota,
+                            request.NotaAtividadeGsaDto.StatusGsa, atividadeAvaliativa.Id, tipoNota));
                 }
             }
         }

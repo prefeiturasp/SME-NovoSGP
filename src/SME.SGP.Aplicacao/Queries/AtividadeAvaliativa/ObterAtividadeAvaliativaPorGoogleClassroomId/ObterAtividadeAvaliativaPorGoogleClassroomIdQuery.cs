@@ -15,10 +15,10 @@ namespace SME.SGP.Aplicacao
     }
 
     public class
-        ObterAtividadeAvaliativaPorGoogleClassroomIdQueryValidator : AbstractValidator<
+        ObterNotaPorGoogleClassroomIdQueryValidator : AbstractValidator<
             ObterAtividadeAvaliativaPorGoogleClassroomIdQuery>
     {
-        public ObterAtividadeAvaliativaPorGoogleClassroomIdQueryValidator()
+        public ObterNotaPorGoogleClassroomIdQueryValidator()
         {
             RuleFor(c => c.GoogleClassroomId)
                 .NotEmpty()

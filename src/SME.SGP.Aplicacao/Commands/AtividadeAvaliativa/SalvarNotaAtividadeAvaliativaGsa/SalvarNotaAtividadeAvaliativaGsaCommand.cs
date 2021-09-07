@@ -7,14 +7,16 @@ namespace SME.SGP.Aplicacao
     public class SalvarNotaAtividadeAvaliativaGsaCommand : IRequest
     {
         public double Nota { get; }
-        public long NotaConceitoId { get; set; }
+        public NotaConceito NotaConceito { get; set; }
+        public long AtividadeId { get; set; }
         public StatusGSA StatusGsa { get; set; }
-
-        public SalvarNotaAtividadeAvaliativaGsaCommand(long notaConceitoId, double nota, StatusGSA statusGsa)
+        public NotaTipoValor TipoNota { get; set; }
+        public SalvarNotaAtividadeAvaliativaGsaCommand(NotaConceito notaConceito, double nota, StatusGSA statusGsa, long atividadeId, NotaTipoValor tipoNota)
         {
             Nota = nota;
-            NotaConceitoId = notaConceitoId;
+            NotaConceito = notaConceito;
             StatusGsa = statusGsa;
+            AtividadeId = atividadeId;
         }
     }
 
