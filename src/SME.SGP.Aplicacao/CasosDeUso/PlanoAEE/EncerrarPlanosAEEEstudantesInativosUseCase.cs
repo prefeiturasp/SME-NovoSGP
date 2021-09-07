@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var planoAEE in planosAtivos)
             {
-                var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, planoAEE.CriadoEm.Year));
+                var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, DateTime.Now.Year));
 
                 if (!matriculas.Any(a => a.EstaAtivo(DateTime.Today)))
                 {
