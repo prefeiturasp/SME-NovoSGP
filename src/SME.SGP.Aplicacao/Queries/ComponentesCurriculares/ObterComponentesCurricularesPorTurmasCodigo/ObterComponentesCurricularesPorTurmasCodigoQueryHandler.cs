@@ -101,11 +101,12 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var disciplina in disciplinas)
                 {
-                    var jaAdicionadaPorTurma = retorno.Any(d => d.TurmaCodigo.Equals(disciplina.TurmaCodigo) &&
-                                                                d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular);
+                    var jaAdicionadaPorTurma = retorno.Any(d => d != null && (d.TurmaCodigo == disciplina.TurmaCodigo &&
+                                                                d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular));
                     if (!jaAdicionadaPorTurma)
                         retorno.Add(MapearParaDto(disciplina, disciplinasComObjetivos, turmaEspecial));
                 }
+
             }
             return retorno;
         }
