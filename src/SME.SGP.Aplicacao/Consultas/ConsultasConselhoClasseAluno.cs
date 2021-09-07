@@ -500,7 +500,7 @@ namespace SME.SGP.Aplicacao
                 QuantidadeAulas = frequenciaAluno?.TotalAulas ?? 0,
                 Faltas = frequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = percentualFrequencia < 0 ? null : percentualFrequencia.ToString(),
+                Frequencia = percentualFrequencia < 0 || ((frequenciaAluno?.TotalAulas ?? 0) == 0 && (frequenciaAluno?.TotalAusencias ?? 0) == 0) ? null : percentualFrequencia.ToString(),
                 NotasFechamentos = ObterNotasComponente(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno),
                 NotaPosConselho = ObterNotaPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota)
             };
