@@ -62,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QueryAsync<NotaConceito>(sql, new { atividadesAvaliativasId, alunosIds, componenteCurricularId });
         }
 
-        public async Task<NotaConceito> ObterNotasPorAtividadeIdCodigoAluno(long atividadeId,long codigoAluno)
+        public async Task<NotaConceito> ObterNotasPorAtividadeIdCodigoAluno(long atividadeId,string codigoAluno)
         {
             var sql = $@"select nc.id, 
                                 nc.atividade_avaliativa, 

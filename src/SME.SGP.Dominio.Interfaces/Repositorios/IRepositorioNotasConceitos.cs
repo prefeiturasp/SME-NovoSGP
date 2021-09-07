@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<NotaConceito>> ObterNotasPorAlunosAtividadesAvaliativasAsync(long[] atividadesAvaliativasId,
             string[] alunosIds, string componenteCurricularId);
 
-        Task<NotaConceito> ObterNotasPorAtividadeIdCodigoAluno(long atividadeId,long codigoAluno);
+        Task<NotaConceito> ObterNotasPorAtividadeIdCodigoAluno(long atividadeId,string codigoAluno);
         Task<NotaConceito> ObterNotasPorId(long id);
     }
 }
