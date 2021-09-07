@@ -62,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QueryAsync<NotaConceito>(sql, new { atividadesAvaliativasId, alunosIds, componenteCurricularId });
         }
 
-        public async Task<NotaConceito> ObterNotasPorGoogleClassroomIdTruemaIdComponentCurricularId(long atividadeClassroomId, string turmaId, string componenteCurricularId)
+        public async Task<NotaConceito> ObterNotasPorAtividadeIdCodigoAluno(long atividadeId,string codigoAluno)
         {
             var sql = $@"select nc.id, 
                                 nc.atividade_avaliativa, 
@@ -78,9 +78,9 @@ namespace SME.SGP.Dados.Repositorios
                                 nc.alterado_rf
                          from notas_conceito nc
                          inner join atividade_avaliativa aa on nc.atividade_avaliativa = aa.id 
-                         where aa.atividade_classroom_id = @atividadeClassroomId and aa.turma_id = @turmaId and nc.disciplina_id = @componenteCurricularId";
+                         where nc.atividade_avaliativa = @atividadeId and nc.aluno_id = @codigoAluno ";
 
-            return await database.QuerySingleOrDefaultAsync<NotaConceito>(sql, new { atividadeClassroomId, turmaId, componenteCurricularId });
+            return await database.QuerySingleOrDefaultAsync<NotaConceito>(sql, new { atividadeId, codigoAluno });
         }
 
         public async Task<NotaConceito> ObterNotasPorId(long id)

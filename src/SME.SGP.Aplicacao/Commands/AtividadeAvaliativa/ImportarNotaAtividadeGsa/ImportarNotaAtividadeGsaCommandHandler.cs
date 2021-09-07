@@ -5,6 +5,7 @@ using MediatR;
 using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -12,12 +13,14 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private Turma turmaFechamento;
 
         public ImportarNotaAtividadeGsaCommandHandler(IMediator mediator, IRepositorioTurma repositorioTurma)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
         }
 
         protected override async Task Handle(ImportarNotaAtividadeGsaCommand request,
@@ -26,18 +29,6 @@ namespace SME.SGP.Aplicacao
             await ValidarLancamentoNotaComponente(request.NotaAtividadeGsaDto.ComponenteCurricularId);
             await CarregarTurma(request.NotaAtividadeGsaDto.TurmaId);
 
-            var notaConceito = await mediator.Send(
-                new ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularId(
-                    request.NotaAtividadeGsaDto.AtividadeGoogleClassroomId,
-                    request.NotaAtividadeGsaDto.TurmaId.ToString(),
-                    request.NotaAtividadeGsaDto.ComponenteCurricularId.ToString()));
-
-            if (notaConceito is null)
-            {
-                SentrySdk.CaptureException(new NegocioException("Não foi encontrado nota para lançar"));
-                throw new NegocioException("Não foi encontrado nota para lançar");
-
-            }
 
             if (turmaFechamento.EhTurmaInfantil)
             {
@@ -67,9 +58,34 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                await mediator.Send(
-                    new SalvarNotaAtividadeAvaliativaGsaCommand(notaConceito.Id, request.NotaAtividadeGsaDto.Nota,
-                        request.NotaAtividadeGsaDto.StatusGsa));
+                var atividadeAvaliativa =
+                    await mediator.Send(
+                        new ObterAtividadeAvaliativaPorGoogleClassroomIdQuery(request.NotaAtividadeGsaDto
+                            .AtividadeGoogleClassroomId));
+
+
+
+                if (atividadeAvaliativa is null)
+                {
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAgendamento.RotaNotaAtividadesSync,
+                        new MensagemAgendamentoSyncDto(RotasRabbitSgp.RotaAtividadesNotasSync,
+                            request.NotaAtividadeGsaDto),
+                        Guid.NewGuid(),
+                        null));
+                }
+                else
+                {
+                    var notaConceito = await mediator.Send(
+                        new ObterNotaPorAtividadeGoogleClassIdQuery(
+                            atividadeAvaliativa.Id,
+                            request.NotaAtividadeGsaDto.CodigoAluno));
+
+                    var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turmaFechamento.Ano, turmaFechamento.ModalidadeCodigo, DateTime.Now));
+
+                    await mediator.Send(
+                        new SalvarNotaAtividadeAvaliativaGsaCommand(notaConceito, request.NotaAtividadeGsaDto.Nota,
+                            request.NotaAtividadeGsaDto.StatusGsa, atividadeAvaliativa.Id, tipoNota));
+                }
             }
         }
 

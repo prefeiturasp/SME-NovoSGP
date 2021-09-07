@@ -11,40 +11,60 @@ namespace SME.SGP.Aplicacao
         SalvarNotaAtividadeAvaliativaGsaCommandHandler : AsyncRequestHandler<SalvarNotaAtividadeAvaliativaGsaCommand>
     {
         private readonly IRepositorioNotasConceitos repositorioConceitos;
-
+        private readonly IMediator mediator;
 
         public SalvarNotaAtividadeAvaliativaGsaCommandHandler(
-            IRepositorioNotasConceitos repositorioConceitos)
+            IRepositorioNotasConceitos repositorioConceitos, IMediator mediator)
         {
             this.repositorioConceitos =
                 repositorioConceitos ?? throw new ArgumentNullException(nameof(repositorioConceitos));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         protected override async Task Handle(SalvarNotaAtividadeAvaliativaGsaCommand request,
             CancellationToken cancellationToken)
         {
-            var notaConceito =
-                await repositorioConceitos.ObterNotasPorId(request.NotaConceitoId);
-
-            await AlterarAtividade(notaConceito, request);
+            if (request.NotaConceito != null)
+                await AlterarAtividade(request.NotaConceito, request);
+            else
+                await InserirAtividade(request.NotaConceito, request);
         }
 
+        private async Task InserirAtividade(NotaConceito notaConceito, SalvarNotaAtividadeAvaliativaGsaCommand request)
+        {
+            if (!request.TipoNota.EhNota())
+                notaConceito.ConceitoId = ObterConceitoPorNota((long?)request.Nota);
+            else
+                notaConceito.Nota = request.Nota;
+            notaConceito.StatusGsa = request.StatusGsa;
 
-        private async Task AlterarAtividade(NotaConceito conceito,
+            await repositorioConceitos.SalvarAsync(notaConceito);
+        }
+        private long? ObterConceitoPorNota(long? notaValor)
+        {
+            if (notaValor < 5)
+                return (long)ConceitoValores.NS;
+            else if (notaValor >= 5 && notaValor < 7)
+                return (long)ConceitoValores.S;
+            else if (notaValor > 7)
+                return (long)ConceitoValores.P;
+            return null;
+        }
+        private async Task AlterarAtividade(NotaConceito notaConceito,
             SalvarNotaAtividadeAvaliativaGsaCommand request)
         {
-            if (conceito.TipoNota == TipoNota.Conceito)
+            if (notaConceito.TipoNota == TipoNota.Conceito)
             {
-                conceito.ConceitoId = (long?)request.Nota;
+                notaConceito.ConceitoId = ObterConceitoPorNota((long?)request.Nota);
             }
             else
             {
-                conceito.Nota = request.Nota;
+                notaConceito.Nota = request.Nota;
             }
 
-            conceito.StatusGsa = request.StatusGsa;
+            notaConceito.StatusGsa = request.StatusGsa;
 
-            await repositorioConceitos.SalvarAsync(conceito);
+            await repositorioConceitos.SalvarAsync(notaConceito);
         }
     }
 }
