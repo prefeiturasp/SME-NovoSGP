@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
                             .AtividadeGoogleClassroomId));
 
                 var notaConceito = await mediator.Send(
-                    new ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularId(
+                    new ObterAtividadePorAtividadeGoogleClassIdQuery(
                         request.NotaAtividadeGsaDto.AtividadeGoogleClassroomId,
                         request.NotaAtividadeGsaDto.TurmaId.ToString(),
                         request.NotaAtividadeGsaDto.ComponenteCurricularId.ToString()));

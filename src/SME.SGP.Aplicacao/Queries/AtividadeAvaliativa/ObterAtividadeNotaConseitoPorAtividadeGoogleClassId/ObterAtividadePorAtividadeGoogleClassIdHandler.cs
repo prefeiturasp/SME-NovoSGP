@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
 {
     public class
         ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularIdHandler : IRequestHandler<
-            ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularId, NotaConceito>
+            ObterAtividadePorAtividadeGoogleClassIdQuery, NotaConceito>
     {
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
 
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             repositorioNotasConceitos = notasConceitos ?? throw new ArgumentNullException(nameof(notasConceitos));
         }
 
-        public async Task<NotaConceito> Handle(ObterNotasPorGoogleClassroomIdTurmaIdComponentCurricularId request,
+        public async Task<NotaConceito> Handle(ObterAtividadePorAtividadeGoogleClassIdQuery request,
             CancellationToken cancellationToken)
             => await repositorioNotasConceitos.ObterNotasPorGoogleClassroomIdTruemaIdComponentCurricularId(request.AtividadeGoogleClassroomId,
                 request.TurmaId, request.componenteCurricularId);
