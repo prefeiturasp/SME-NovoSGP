@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AlunoReduzidoDto> Handle(ObterAlunoPorCodigoEAnoQuery request, CancellationToken cancellationToken)
         {
-            var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(request.CodigoAluno, request.AnoLetivo));
+            var alunoPorTurmaResposta = (await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(request.CodigoAluno, request.AnoLetivo, false))).OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
 
             if (alunoPorTurmaResposta == null)
                 throw new NegocioException("Aluno não localizado");
