@@ -1112,6 +1112,9 @@ namespace SME.SGP.IoC
             //Componentes curriculares integração
             services.TryAddScoped<IObterComponenteCurricularLancaNotaUseCase, ObterComponenteCurricularLancaNotaUseCase>();
 
+            //Período escolar integração
+            services.TryAddScoped<IObterPeriodoEscolarAtualPorTurmaUseCase, ObterPeriodoEscolarAtualPorTurmaUseCase>();
+
         }
     }
 }
