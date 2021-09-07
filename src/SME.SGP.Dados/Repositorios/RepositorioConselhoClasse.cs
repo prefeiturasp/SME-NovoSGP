@@ -191,7 +191,7 @@ namespace SME.SGP.Dados.Repositorios
             return sqlQuery.ToString();
         }
 
-        public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int ano, long dreId, int modalidade, int semestre)
+        public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
             var query = new StringBuilder($@"select ft.turma_id TurmaId, ");
 
@@ -216,31 +216,24 @@ namespace SME.SGP.Dados.Repositorios
                         inner join conselho_classe_nota ccn on cca.id = ccn.conselho_classe_aluno_id 
                         inner join conselho_classe cc on cca.conselho_classe_id = cc.id 
                         left join conceito_valores cv on ccn.conceito_id = cv.id) as conselhos on ft.id = conselhos.fechamento_turma_id and fa.aluno_codigo = conselhos.aluno_codigo
-                        WHERE t.ano_letivo = @ano and ft.periodo_escolar_id is null ");
+                        WHERE t.ano_letivo = @ano ");
 
-            if (ueId > 0)
-            {
-                query.Append(" and t.ue_id = @ueId ");
-            }
+            if (ueId > 0)            
+                query.Append(" and t.ue_id = @ueId ");            
 
-            if (dreId > 0)
-            {
+            if (dreId > 0)            
                 query.Append(" and ue.dre_id = @dreId ");
-            }
 
-            if (modalidade > 0)
-            {
+            if (modalidade > 0)            
                 query.Append(" and t.modalidade_codigo = @modalidade ");
+            
+            if(bimestre > 0)
+                query.Append(" and pe.bimestre = @bimestre ");
 
-            }
-
-            if (semestre > 0)
-            {
+            if (semestre > 0)            
                 query.Append(" and t.semestre = @semestre ");
-            }
 
-
-            return await database.Conexao.QueryAsync<FechamentoConselhoClasseNotaFinalDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre });
+            return await database.Conexao.QueryAsync<FechamentoConselhoClasseNotaFinalDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre, bimestre });
         }
     }
 }
