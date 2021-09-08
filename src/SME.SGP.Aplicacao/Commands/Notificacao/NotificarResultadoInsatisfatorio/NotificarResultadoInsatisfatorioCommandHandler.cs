@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId.Key));
 
                             var turmaNotificacao = new NotificarResultadoInsatisfatorioDto();
-                            turmaNotificacao.TurmaNome = turma.Nome;
+                            turmaNotificacao.TurmaNome = $"{turma.ModalidadeCodigo.ShortName()}-{turma.Nome}";
                             turmaNotificacao.TurmaModalidade = turma.ModalidadeCodigo.Name();
 
                             foreach (var componenteCurricularId in alunosComNotaLancada.Where(a => a.TurmaId == turmaId.Key).GroupBy(a => a.ComponenteCurricularId))
@@ -70,13 +70,17 @@ namespace SME.SGP.Aplicacao
                             }
 
                             if (turmaNotificacao.ComponentesCurriculares.Any())
+                            {
+                                turmaNotificacao.ComponentesCurriculares = turmaNotificacao.ComponentesCurriculares.OrderBy(c => c.ComponenteCurricularNome).ToList();
                                 listaNotificacoes.Add(turmaNotificacao);
+                            }
+                                
                         }
                     }
                 }
 
                 if (listaNotificacoes.Any())
-                    await EnviarNotificacoes(listaNotificacoes, periodoFechamentoBimestre);
+                    await EnviarNotificacoes(listaNotificacoes.OrderBy(n => n.TurmaNome).ToList(), periodoFechamentoBimestre);
             }
 
 
