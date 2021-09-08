@@ -193,15 +193,16 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder($@"select ft.turma_id TurmaId, ");
+            var query = new StringBuilder($@"select distinct ft.turma_id TurmaId, ");
 
             if (ueId > 0)
                 query.AppendLine("t.nome as TurmaAnoNome, ");
             else
                 query.AppendLine("t.ano as TurmaAnoNome, ");
 
-            query.AppendLine(@"fa.aluno_codigo AlunoCodigo, 
-	                        pe.bimestre Bimestre, 
+            query.AppendLine(@"coalesce(conselhos.aluno_codigo,fa.aluno_codigo) AlunoCodigo, 
+	                        pe.bimestre Bimestre,
+                            coalesce(conselhos.componente_curricular_id, ftd.disciplina_id) as disciplinas,
 	                        coalesce(conselhos.nota,fn.nota) as Nota, 
 	                        coalesce(conselhos.valor,cv.valor) as Conceito  from fechamento_aluno fa 
                         inner join fechamento_nota fn on fa.id = fn.fechamento_aluno_id 
@@ -210,12 +211,15 @@ namespace SME.SGP.Dados.Repositorios
                         inner join turma t on ft.turma_id = t.id 
                         inner join ue on t.ue_id = ue.id
                         left join periodo_escolar pe on ft.periodo_escolar_id = pe.id
-                        inner join componente_curricular cc on ftd.disciplina_id = cc.id and cc.permite_lancamento_nota 
                         left join conceito_valores cv on fn.conceito_id = cv.id
-                        left join (select cc.fechamento_turma_id, cca.aluno_codigo, ccn.nota, cv.valor from conselho_classe_aluno cca 
+                        left join (select cc.fechamento_turma_id, 
+                            ccn.componente_curricular_codigo as componente_curricular_id, 
+                            cca.aluno_codigo, 
+                            ccn.nota, 
+                            cv.valor from conselho_classe_aluno cca 
                         inner join conselho_classe_nota ccn on cca.id = ccn.conselho_classe_aluno_id 
                         inner join conselho_classe cc on cca.conselho_classe_id = cc.id 
-                        left join conceito_valores cv on ccn.conceito_id = cv.id) as conselhos on ft.id = conselhos.fechamento_turma_id and fa.aluno_codigo = conselhos.aluno_codigo
+                        left join conceito_valores cv on ccn.conceito_id = cv.id) as conselhos on ft.id = conselhos.fechamento_turma_id
                         WHERE t.ano_letivo = @ano ");
 
             if (ueId > 0)            
