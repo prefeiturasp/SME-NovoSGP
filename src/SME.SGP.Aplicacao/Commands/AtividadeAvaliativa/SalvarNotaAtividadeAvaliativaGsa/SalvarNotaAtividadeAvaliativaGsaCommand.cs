@@ -6,12 +6,13 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarNotaAtividadeAvaliativaGsaCommand : IRequest
     {
-        public double Nota { get; }
+        public double? Nota { get; }
         public NotaConceito NotaConceito { get; set; }
         public long AtividadeId { get; set; }
         public StatusGSA StatusGsa { get; set; }
         public NotaTipoValor TipoNota { get; set; }
-        public SalvarNotaAtividadeAvaliativaGsaCommand(NotaConceito notaConceito, double nota, StatusGSA statusGsa, long atividadeId, NotaTipoValor tipoNota)
+
+        public SalvarNotaAtividadeAvaliativaGsaCommand(NotaConceito notaConceito, double? nota, StatusGSA statusGsa, long atividadeId, NotaTipoValor tipoNota)
         {
             Nota = nota;
             NotaConceito = notaConceito;
@@ -20,8 +21,7 @@ namespace SME.SGP.Aplicacao
         }
     }
 
-    public class
-        SalvarNotaAtividadeAvaliativaGsaCommandValidator : AbstractValidator<SalvarNotaAtividadeAvaliativaGsaCommand>
+    public class SalvarNotaAtividadeAvaliativaGsaCommandValidator : AbstractValidator<SalvarNotaAtividadeAvaliativaGsaCommand>
     {
     }
 }
