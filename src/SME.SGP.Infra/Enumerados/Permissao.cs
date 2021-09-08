@@ -650,7 +650,18 @@
         ACF_C = 218,
 
         [PermissaoMenu(Menu = "Informações Escolares", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/informacoes-escolares")]
-        DIE_C = 219
+        DIE_C = 219,
 
+        [PermissaoMenu(Menu = "Devolutivas", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/devolutivas")]
+        DD_C = 220,
+        
+        [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/diario-bordo")]
+        DB_C = 222,
+
+        [PermissaoMenu(Menu = "Registro Individual", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/registro-individual")]
+        DRIN_C = 221,
+
+        [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/fechamentos/acompanhamento-fechamento", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Acompanhamento do fechamento")]
+        RACF_C = 224
     }
 }
