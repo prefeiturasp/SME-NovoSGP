@@ -1105,9 +1105,18 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterNotasFinaisUseCases, ObterNotasFinaisUseCases>();
 
             services.TryAddScoped<IExecutarSyncSerapEstudantesProvasUseCase, ExecutarSyncSerapEstudantesProvasUseCase>();
+            services.TryAddScoped<IImportarNotaAtividadeAvaliativaGsaUseCase, ImportarNotaAtividadeAvaliativaGsaUseCase>();
+            
 
             // Dias Letivos
             services.TryAddScoped<IObterDiasLetivosPorUeETurnoUseCase, ObterDiasLetivosPorUeETurnoUseCase>();
+
+            //Componentes curriculares integração
+            services.TryAddScoped<IObterComponenteCurricularLancaNotaUseCase, ObterComponenteCurricularLancaNotaUseCase>();
+
+            //Período escolar integração
+            services.TryAddScoped<IObterPeriodoEscolarAtualPorTurmaUseCase, ObterPeriodoEscolarAtualPorTurmaUseCase>();
+
         }
     }
 }
