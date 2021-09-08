@@ -203,7 +203,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(@"coalesce(conselhos.aluno_codigo,fa.aluno_codigo) AlunoCodigo, 
 	                        pe.bimestre Bimestre,
                             coalesce(conselhos.componente_curricular_id, ftd.disciplina_id) as disciplinas,
-	                        coalesce(conselhos.nota,fn.nota) as Nota, 
+	                        coalesce(conselhos.nota,fn.nota) as Nota,                           
 	                        coalesce(conselhos.valor,cv.valor) as Conceito  from fechamento_aluno fa 
                         inner join fechamento_nota fn on fa.id = fn.fechamento_aluno_id 
                         inner join fechamento_turma_disciplina ftd on fa.fechamento_turma_disciplina_id = ftd.id 
@@ -220,6 +220,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join conselho_classe_nota ccn on cca.id = ccn.conselho_classe_aluno_id 
                         inner join conselho_classe cc on cca.conselho_classe_id = cc.id 
                         left join conceito_valores cv on ccn.conceito_id = cv.id) as conselhos on ft.id = conselhos.fechamento_turma_id
+                        and conselhos.aluno_codigo = fa.aluno_codigo
                         WHERE t.ano_letivo = @ano ");
 
             if (ueId > 0)            
