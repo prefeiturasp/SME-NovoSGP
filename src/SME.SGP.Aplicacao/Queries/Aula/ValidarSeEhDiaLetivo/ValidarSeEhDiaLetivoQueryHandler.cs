@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             eventoLetivoDia = ExisteEventoLetivoNoDia(eventos, eventoLetivoDia);
 
             // Se eh dia da semana e não existe evento não letivo no dia (true)
-            if (!ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivoDia == false)
+            if (!ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivoDia == true)
                 return true;
             // eh final de semana com evento letivo (true)
             else if (ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivoDia == true)
