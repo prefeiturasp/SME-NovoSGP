@@ -1,4 +1,7 @@
-﻿namespace SME.SGP.Dto
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
+
+namespace SME.SGP.Dto
 {
     public class AbrangenciaTurmaRetorno
     {
@@ -13,5 +16,22 @@
         public long Id { get; set; }
 
         public int TipoTurma { get; set; }
+
+        private string nomeFiltro { get; set; }
+        public string NomeFiltro
+        {
+            get => NomeFiltroFormatado();
+            set => nomeFiltro = value;
+        }
+
+        public string NomeFiltroFormatado()
+        {
+            var modalidadeEnum = ((Modalidade)CodigoModalidade);
+            if (nomeFiltro != null)
+                return $"{modalidadeEnum.ShortName()} - {nomeFiltro}";
+            else
+                return $"{modalidadeEnum.ShortName()} - {Nome}";
+        }
+
     }
 }
