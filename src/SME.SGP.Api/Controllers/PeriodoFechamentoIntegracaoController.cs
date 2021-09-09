@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/periodos/fechamentos/aberturas")]
+    [Route("api/v1/periodos/fechamentos/aberturas/integracoes")]
     [ChaveIntegracaoSgpApi]
     [ValidaDto]
     public class PeriodoFechamentoIntegracaoController : ControllerBase
