@@ -61,32 +61,19 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ParecerConclusivoSituacaoQuantidadeDto>> ObterParecerConclusivoSituacao(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
             var query = new StringBuilder();
-            query.AppendLine(@"SELECT  Situacao,
-                                       sum(x.Quantidade) AS Quantidade,
-                                       x.AnoTurma
-                                FROM
-                                  (SELECT 
-  		                                  CASE
-                                              WHEN cca.conselho_classe_parecer_id is null THEN 'Sem parecer'
-                                              ELSE ccp.nome
-                                          END AS Situacao,
-                                          count(cca.id) AS Quantidade,");
-            if (ueId > 0)
-                query.AppendLine(" t.Nome AS AnoTurma ");
-            else
-                query.AppendLine(" t.ano AS AnoTurma ");
-
-            query.AppendLine(@" FROM conselho_classe_aluno cca
-                                   LEFT JOIN conselho_classe_parecer ccp ON cca.conselho_classe_parecer_id = ccp.id
-                                   INNER JOIN conselho_classe cc ON cca.conselho_classe_id = cc.id
-                                   INNER JOIN fechamento_turma ft ON cc.fechamento_turma_id = ft.id
-                                   INNER JOIN turma t ON ft.turma_id = t.id
-                                   INNER JOIN ue u ON t.ue_id = u.id  
-                                   LEFT JOIN periodo_escolar pe ON ft.periodo_escolar_id = pe.id
-                                   WHERE t.tipo_turma in (1) ");
-
-            if (ano > 0)
-                query.AppendLine(" AND t.ano_letivo = @ano  ");
+            query.AppendLine(@"SELECT t.turma_id as TurmaCodigo,              
+                                      ccp.nome as Situacao,
+                                      count(cca.id) AS Quantidade,
+ 			                          t.Nome AS AnoTurma 
+ 		                         FROM conselho_classe_aluno cca
+                                INNER JOIN conselho_classe_parecer ccp ON cca.conselho_classe_parecer_id = ccp.id
+                                INNER JOIN conselho_classe cc ON cca.conselho_classe_id = cc.id
+                                INNER JOIN fechamento_turma ft ON cc.fechamento_turma_id = ft.id
+                                INNER JOIN turma t ON ft.turma_id = t.id
+                                INNER JOIN ue u ON t.ue_id = u.id  
+                                 LEFT JOIN periodo_escolar pe ON ft.periodo_escolar_id = pe.id
+                                WHERE t.tipo_turma in (1) 
+		                          AND t.ano_letivo = @ano ");            
 
             if (ueId > 0)
                 query.AppendLine(" AND t.ue_id = @ueId ");
@@ -104,27 +91,25 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(" AND pe.bimestre = @bimestre ");
 
 
-            query.AppendLine(@"   GROUP BY cca.conselho_classe_parecer_id, ccp.nome, ");
+            query.AppendLine(@" GROUP BY t.turma_id, ccp.nome , t.Nome ");
 
-            if (ueId > 0)
-                query.AppendLine(" t.Nome");
-            else
-                query.AppendLine(" t.ano");
-
-            query.AppendLine(@") x
-                                GROUP BY x.Situacao,
-                                         x.AnoTurma
-                                ORDER BY x.AnoTurma ");
-
-            return await database.Conexao.QueryAsync<ParecerConclusivoSituacaoQuantidadeDto>(query.ToString(), new
+            try
             {
-                ueId,
-                ano,
-                dreId,
-                modalidade,
-                semestre,
-                bimestre
-            });
+                return await database.Conexao.QueryAsync<ParecerConclusivoSituacaoQuantidadeDto>(query.ToString(), new
+                {
+                    ueId,
+                    ano,
+                    dreId,
+                    modalidade,
+                    semestre,
+                    bimestre
+                });
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }            
         }
     }
 }

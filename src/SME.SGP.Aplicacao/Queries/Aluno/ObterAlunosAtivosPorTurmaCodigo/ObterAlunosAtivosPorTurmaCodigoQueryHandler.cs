@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
 
-            var resposta = await httpClient.GetAsync($"{request.TurmaCodigo}/alunos-ativos");
+            var resposta = await httpClient.GetAsync($"turmas/{request.TurmaCodigo}/alunos-ativos");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");

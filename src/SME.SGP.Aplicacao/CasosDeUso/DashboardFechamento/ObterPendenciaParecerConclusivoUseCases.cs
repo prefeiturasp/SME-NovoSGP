@@ -20,13 +20,22 @@ namespace SME.SGP.Aplicacao
                         param.Semestre,
                         param.Bimestre));
 
+            if (parecerConclusivo == null || !parecerConclusivo.Any())
+                return default;
+
             List<GraficoBaseDto> parecerConclusivos = new List<GraficoBaseDto>();
 
-            foreach (var parecer in parecerConclusivo)
+            foreach (var parecerAgrupado in parecerConclusivo.GroupBy(p => p.TurmaCodigo))
             {
-                var grupo = $"{parecer.AnoTurma}";
-                if (parecer.Quantidade > 0)
-                    parecerConclusivos.Add(new GraficoBaseDto(grupo, parecer.Quantidade, parecer.Situacao));
+                foreach(var parecer in parecerAgrupado)
+                {
+                    var grupo = $"{parecer.AnoTurma}";
+                    if (parecer.Quantidade > 0)
+                        parecerConclusivos.Add(new GraficoBaseDto(grupo, parecer.Quantidade, parecer.Situacao));
+                }
+                var alunos = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(parecerAgrupado.Key));
+                var quantidade = alunos.Count() - parecerAgrupado.Where(p => p.TurmaCodigo == parecerAgrupado.Key).Count();
+                parecerConclusivos.Add(new GraficoBaseDto(parecerAgrupado.FirstOrDefault().AnoTurma , quantidade, "Sem parecer"));
             }
 
             return parecerConclusivos.OrderBy(a => a.Grupo).ToList();
