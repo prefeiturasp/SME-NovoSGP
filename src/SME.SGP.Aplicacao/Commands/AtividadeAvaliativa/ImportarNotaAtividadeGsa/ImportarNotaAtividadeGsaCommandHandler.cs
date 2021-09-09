@@ -60,7 +60,9 @@ namespace SME.SGP.Aplicacao
                         notaAtividadeGsaDto.Nota,
                         notaAtividadeGsaDto.StatusGsa,
                         atividadeAvaliativa.Id,
-                        tipoNota));
+                        tipoNota,
+                        notaAtividadeGsaDto.CodigoAluno.ToString(),
+                        notaAtividadeGsaDto.ComponenteCurricularId.ToString()));
             }
         }
 
