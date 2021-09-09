@@ -3,6 +3,7 @@ using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -26,6 +27,11 @@ namespace SME.SGP.Dados.Repositorios
         public void Salvar(WorkflowAprovacaoNivelNotificacao workflowAprovaNivelNotificacao)
         {
             dataBase.Conexao.Insert(workflowAprovaNivelNotificacao);
+        }
+
+        public async Task SalvarAsync(WorkflowAprovacaoNivelNotificacao workflowAprovaNivelNotificacao)
+        {
+            await dataBase.Conexao.InsertAsync(workflowAprovaNivelNotificacao);
         }
     }
 }
