@@ -260,16 +260,6 @@ namespace SME.SGP.Dominio
             return repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, data);
         }
 
-        public Task<NotaTipoValor> ObterNotaTipoPorTurmaDataReferencia(Turma turma, DateTime data, bool consideraHistorico = false)
-        {
-            var ciclo = repositorioCiclo.ObterCicloPorAnoModalidade(turma.Ano, turma.ModalidadeCodigo);
-
-            if (ciclo == null)
-                throw new NegocioException("Não foi encontrado o ciclo da turma informada");
-
-            return Task.FromResult(repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, data));
-        }
-
         private void SalvarNoBanco(List<NotaConceito> EntidadesSalvar)
         {
             unitOfWork.IniciarTransacao();

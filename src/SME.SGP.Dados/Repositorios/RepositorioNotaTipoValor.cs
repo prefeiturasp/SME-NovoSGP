@@ -12,7 +12,6 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioNotaTipoValor(ISgpContext database) : base(database)
         {
         }
-
         public NotaTipoValor ObterPorCicloIdDataAvalicacao(long cicloId, DateTime dataAvalicao)
         {
             var sql = @"select ntv.* from notas_tipo_valor ntv
