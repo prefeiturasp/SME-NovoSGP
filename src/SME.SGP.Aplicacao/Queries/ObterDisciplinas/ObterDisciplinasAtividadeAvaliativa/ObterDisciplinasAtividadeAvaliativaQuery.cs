@@ -23,10 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.Avaliacao_id)
                 .NotEmpty()
-                .WithMessage("Avaliacao_id deve ser informado");
-            RuleFor(a => a.EhRegencia)
-                .NotEmpty()
-                .WithMessage("EhRegencia deve ser informado");
+                .WithMessage("A avaliação deve ser informada");
         }
     }
 }

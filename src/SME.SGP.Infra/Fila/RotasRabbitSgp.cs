@@ -133,6 +133,7 @@
 
         public const string RotaMuralAvisosSync = "sgp.mural.avisos.sync";
         public const string RotaAtividadesSync = "sgp.atividade.avaliativa.sync";
+        public const string RotaAtividadesNotasSync = "sgp.atividade.avaliativa.notas.sync";
 
         public const string RotaAgendamentoTratar = "sgp.agendamento.tratar";
 
@@ -169,6 +170,7 @@
         public const string RotaRelatoriosComErroEscolaAquiAdesao = "sgp.relatorios.erro.notificar.escolaaquiadesao";
         public const string RotaRelatoriosComErroAtaFinalResultados = "sgp.relatorios.erro.notificar.atafinalresultados";
         public const string RotaRelatoriosComErroHistoricoEscolar = "sgp.relatorios.erro.notificar.historicoescolar";
+        public const string RotaRelatoriosComErroAtaBimestral = "sgp.relatorios.erro.notificar.atabimestralresultados";
 
         public const string RotaRabbitSRDeadletterTratar = "sgp.sr.rabbit.deadletter.tratar";
         public const string RotaRabbitSRDeadletterSync = "sgp.sr.rabbit.deadletter.sync";

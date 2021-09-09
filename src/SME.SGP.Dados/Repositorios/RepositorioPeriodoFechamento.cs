@@ -261,5 +261,27 @@ namespace SME.SGP.Dados.Repositorios
                     return periodoFechamentoBimestre;
                 }, new { modalidade, dataAbertura });
         }
+
+        public async Task<PeriodoFechamentoVigenteDto> ObterPeriodoVigentePorAnoModalidade(int anoLetivo, int modalidadeTipoCalendario)
+        {
+            var query = @"select tc.nome as Calendario
+                             , tc.ano_letivo as AnoLetivo
+                             , pe.bimestre as Bimestre
+                             , pfb.inicio_fechamento as PeriodoFechamentoInicio
+                             , pfb.final_fechamento as PeriodoFechamentoFim
+                             , pe.periodo_inicio as PeriodoEscolarInicio
+                             , pe.periodo_fim as PeriodoEscolarFim
+                          from periodo_fechamento pf 
+                         inner join periodo_fechamento_bimestre pfb on pfb.periodo_fechamento_id = pf.id
+                         inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id 
+                         inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id 
+                         where pf.dre_id is null
+                           and pf.ue_id is null
+                           and tc.ano_letivo = @anoLetivo
+                           and tc.modalidade = @modalidadeTipoCalendario
+                           and NOW() between pfb.inicio_fechamento and pfb.final_fechamento";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoVigenteDto>(query, new { anoLetivo, modalidadeTipoCalendario });
+        }
     }
 }

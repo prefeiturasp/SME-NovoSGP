@@ -670,5 +670,8 @@
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/fechamento")]
         DFE_C = 225,
 
+        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 4, EhConsulta = true, Url = "/relatorios/atas/ata-bimestral", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Ata bimestral")]
+        ABR_C = 226,
+
     }
 }

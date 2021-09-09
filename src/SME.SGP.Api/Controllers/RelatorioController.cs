@@ -204,5 +204,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(relatorioPendenciasFechamentoUseCase.ListarTodosTipos(opcaoTodos));
         }
+        
+        [HttpPost("atas-bimestrais")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> Gerar(FiltroRelatorioAtaBimestralDto filtro, [FromServices] IRelatorioAtaBimestralUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }

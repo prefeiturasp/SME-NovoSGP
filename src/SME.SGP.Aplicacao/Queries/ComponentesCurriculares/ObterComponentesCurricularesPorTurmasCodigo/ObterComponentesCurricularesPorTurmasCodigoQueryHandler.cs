@@ -104,6 +104,7 @@ namespace SME.SGP.Aplicacao
                     if (!jaAdicionadaPorTurma)
                         retorno.Add(MapearParaDto(disciplina, disciplinasComObjetivos, turmaEspecial));
                 }
+
             }
             return retorno;
         }

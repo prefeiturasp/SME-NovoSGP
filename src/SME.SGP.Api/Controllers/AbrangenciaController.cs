@@ -114,7 +114,7 @@ namespace SME.SGP.Api.Controllers
             var dres = await useCase.Executar(modalidade, periodo, ConsideraHistorico, anoLetivo, filtro);
 
             if (dres.Any())
-                return Ok(dres);
+                return Ok(dres.OrderBy(d => d.Nome));
 
             return StatusCode(204);
         }
