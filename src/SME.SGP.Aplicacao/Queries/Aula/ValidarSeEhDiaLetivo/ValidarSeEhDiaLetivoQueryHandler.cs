@@ -30,12 +30,16 @@ namespace SME.SGP.Aplicacao
 
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(request.TipoCalendarioId, request.DreId, request.UeId, request.DataInicio, true, true);
 
-            bool eventoLetivoDia = false;
-            eventoLetivoDia = ExisteEventoLetivoNoDia(eventos, eventoLetivoDia);
+            var eventoLetivoDia = eventos.Count() > 0 ? ExisteEventoLetivoNoDia(eventos) : false;
+            var existeSomenteEventosNaoLetivos = eventos.Count() > 0 ? ExisteSomenteEventoNaoLetivoNoDia(eventos): false;
 
             // Se eh dia da semana e não existe evento não letivo no dia 
-            if (!ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivoDia == true)
+            if (ValidaSeEhFinalSemana(dataInicial, dataFinal) == false && eventoLetivoDia == true)
                 return true;
+
+            if (existeSomenteEventosNaoLetivos == false)
+                return true;
+
             // eh final de semana com evento letivo (true)
             else if (ValidaSeEhFinalSemana(dataInicial, dataFinal) && eventoLetivoDia == true)
                 return true;
@@ -43,9 +47,14 @@ namespace SME.SGP.Aplicacao
             return false;
         }
 
-        private static bool ExisteEventoLetivoNoDia(IEnumerable<Dominio.Evento> eventos, bool eventoLetivoDia)
+        private static bool ExisteEventoLetivoNoDia(IEnumerable<Dominio.Evento> eventos)
         {
             return eventos.Any(e => e.Letivo == Dominio.EventoLetivo.Sim);
+        }
+
+        private static bool ExisteSomenteEventoNaoLetivoNoDia(IEnumerable<Dominio.Evento> eventos)
+        {
+            return eventos.All(e => e.Letivo == Dominio.EventoLetivo.Nao);
         }
 
         private bool ValidaSeEhFinalSemana(DateTime inicio, DateTime fim)
