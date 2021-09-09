@@ -1060,7 +1060,7 @@ namespace SME.SGP.Dados.Repositorios
                     Tipo de aula: {entidade.TipoAula} -``
                     {DateTime.Now:MM/dd/yyyy hh:mm:ss.fff tt}", "Erro ao salvar aulas com quantidade negativa");
 
-                throw new Exception("Não é possível salvar aula com quantidade negativa. Entre em contato com suporte.");
+                throw new NegocioException("Não é possível salvar aula com quantidade negativa. Entre em contato com suporte.");
             }
         }
     }
