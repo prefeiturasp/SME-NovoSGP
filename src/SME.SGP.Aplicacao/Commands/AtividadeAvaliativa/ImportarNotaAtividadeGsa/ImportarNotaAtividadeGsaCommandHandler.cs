@@ -16,8 +16,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected override async Task Handle(ImportarNotaAtividadeGsaCommand request,
-            CancellationToken cancellationToken)
+        protected override async Task Handle(ImportarNotaAtividadeGsaCommand request, CancellationToken cancellationToken)
         {
             if (!await ValidarLancamentoNotaComponente(request.NotaAtividadeGsaDto.ComponenteCurricularId))
                 return;

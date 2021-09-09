@@ -182,7 +182,7 @@ namespace SME.SGP.Aplicacao
                         Ausente = ausente,
                         PodeEditar = aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) ||
                                      (aluno.EstaInativo(atividadeAvaliativa.DataAvaliacao) && atividadeAvaliativa.DataAvaliacao.Date <= aluno.DataSituacao.Date),
-                        StatusGsa = notaDoAluno.StatusGsa
+                        StatusGsa = notaDoAluno?.StatusGsa
                     };
 
                     notasAvaliacoes.Add(notaAvaliacao);
