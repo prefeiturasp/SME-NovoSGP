@@ -8,19 +8,16 @@ using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class
-        ObterNotaPorAtividadeGoogleClassIdQueryHandler : IRequestHandler<
-            ObterNotaPorAtividadeGoogleClassIdQuery, NotaConceito>
+    public class ObterNotaPorAtividadeGoogleClassIdQueryHandler : IRequestHandler<ObterNotaPorAtividadeGoogleClassIdQuery, NotaConceito>
     {
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
 
-        public ObterNotaPorAtividadeGoogleClassIdQueryHandler(RepositorioNotasConceitos notasConceitos)
+        public ObterNotaPorAtividadeGoogleClassIdQueryHandler(IRepositorioNotasConceitos repositorioNotasConceitos)
         {
-            repositorioNotasConceitos = notasConceitos ?? throw new ArgumentNullException(nameof(notasConceitos));
+            this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
         }
 
-        public async Task<NotaConceito> Handle(ObterNotaPorAtividadeGoogleClassIdQuery request,
-            CancellationToken cancellationToken)
+        public async Task<NotaConceito> Handle(ObterNotaPorAtividadeGoogleClassIdQuery request, CancellationToken cancellationToken)
             => await repositorioNotasConceitos.ObterNotasPorAtividadeIdCodigoAluno(request.AtividadeId,request.CodigoAluno);
     }
 }

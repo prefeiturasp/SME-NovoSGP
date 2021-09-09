@@ -13,6 +13,6 @@ namespace SME.SGP.Infra
         public bool Ausente { get; set; }
         public string NotaConceito { get; set; }
         public bool PodeEditar { get; set; }
-        public StatusGSA StatusGsa { get; set; }
+        public StatusGSA? StatusGsa { get; set; }
     }
 }

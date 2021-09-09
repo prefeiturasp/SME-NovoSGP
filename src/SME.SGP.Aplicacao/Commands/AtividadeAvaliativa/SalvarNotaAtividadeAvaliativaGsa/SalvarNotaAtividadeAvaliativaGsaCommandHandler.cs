@@ -21,22 +21,32 @@ namespace SME.SGP.Aplicacao
             if (request.NotaConceito != null)
                 await AlterarAtividade(request.NotaConceito, request);
             else
-                await InserirAtividade(request.NotaConceito, request);
+                await InserirAtividade(request);
         }
 
-        private async Task InserirAtividade(NotaConceito notaConceito, SalvarNotaAtividadeAvaliativaGsaCommand request)
+        private async Task InserirAtividade(SalvarNotaAtividadeAvaliativaGsaCommand request)
         {
-            if (!request.TipoNota.EhNota())
-                notaConceito.ConceitoId = ObterConceitoPorNota((long?)request.Nota);
-            else
-                notaConceito.Nota = request.Nota;
+            var notaConceito = new NotaConceito() 
+            { 
+                AtividadeAvaliativaID = request.AtividadeId,
+                AlunoId = request.CodigoAluno,
+                StatusGsa = request.StatusGsa,
+                DisciplinaId = request.ComponenteCurricular,
+                TipoNota = request.TipoNota.TipoNota
+            };
 
-            notaConceito.StatusGsa = request.StatusGsa;
+            if (request.Nota.HasValue)
+            {
+                if (!request.TipoNota.EhNota())
+                    notaConceito.ConceitoId = ObterConceitoPorNota(request.Nota);
+                else
+                    notaConceito.Nota = request.Nota;
+            }
 
             await repositorioConceitos.SalvarAsync(notaConceito);
         }
 
-        private long? ObterConceitoPorNota(long? notaValor)
+        private long? ObterConceitoPorNota(double? notaValor)
         {
             if (notaValor < 5)
                 return (long)ConceitoValores.NS;
