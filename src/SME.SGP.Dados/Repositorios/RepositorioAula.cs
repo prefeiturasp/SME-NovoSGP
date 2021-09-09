@@ -1046,7 +1046,7 @@ namespace SME.SGP.Dados.Repositorios
             return base.SalvarAsync(entidade);
         }
 
-        private static void ValideQuantidadeDeAulas(Aula entidade)
+        private void ValideQuantidadeDeAulas(Aula entidade)
         {
             if (entidade.Quantidade < 0)
             {
