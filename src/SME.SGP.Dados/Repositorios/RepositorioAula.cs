@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sentry;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -1030,6 +1031,37 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarInicioFimDto>(query, new { aulaId });
+        }
+
+        public override long Salvar(Aula entidade)
+        {
+            ValideQuantidadeDeAulas(entidade);
+
+            return base.Salvar(entidade);
+        }
+        public override Task<long> SalvarAsync(Aula entidade)
+        {
+            ValideQuantidadeDeAulas(entidade);
+
+            return base.SalvarAsync(entidade);
+        }
+
+        private void ValideQuantidadeDeAulas(Aula entidade)
+        {
+            if (entidade.Quantidade < 0)
+            {
+                SentrySdk.AddBreadcrumb($@"
+                    Turma id: {entidade.TurmaId}, 
+                    Quantidade: {entidade.Quantidade},
+                    Data aula: {entidade.DataAula}, 
+                    Professor: {entidade.ProfessorRf},
+                    Disciplina: {entidade.DisciplinaId},
+                    Recorrência aula: {entidade.RecorrenciaAula},
+                    Tipo de aula: {entidade.TipoAula} -``
+                    {DateTime.Now:MM/dd/yyyy hh:mm:ss.fff tt}", "Erro ao salvar aulas com quantidade negativa");
+
+                throw new Exception("Não é possível salvar aula com quantidade negativa. Entre em contato com suporte.");
+            }
         }
     }
 }
