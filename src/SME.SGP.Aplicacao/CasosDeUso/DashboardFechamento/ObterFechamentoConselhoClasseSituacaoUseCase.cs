@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<GraficoBaseDto>> Executar(FiltroDashboardFechamentoDto param)
         {
-            var conselhoClasse = await mediator.Send(new ObterConselhoClasseSituacaoQuery(param.UeId, 
+            var conselhoClasse = await mediator.Send(new ObterConselhoClasseSituacaoQuery(param.UeId,
                                                                                           param.AnoLetivo,
                                                                                           param.DreId,
                                                                                           param.Modalidade,
@@ -26,9 +26,8 @@ namespace SME.SGP.Aplicacao
 
             List<GraficoBaseDto> conselhos = new List<GraficoBaseDto>();
 
-            foreach (var conseho in conselhoClasse)
-                if (conseho.Quantidade > 0)
-                    conselhos.Add(new GraficoBaseDto(conseho.AnoTurma, conseho.Quantidade, conseho.Situacao.Name()));
+            foreach (var conselho in conselhoClasse.Where(c => c.Quantidade > 0).ToList())
+                conselhos.Add(new GraficoBaseDto(conselho.AnoTurma, conselho.Quantidade, conselho.Situacao.Name()));
 
 
             return conselhos.OrderBy(a => a.Grupo).ToList();
