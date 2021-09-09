@@ -129,6 +129,17 @@ namespace SME.SGP.Aplicacao
             return result.Where(r => turmasRegulares.Contains(r.Codigo));
         }
 
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPrograma(string codigoUe, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfil = servicoUsuario.ObterPerfilAtual();
+
+            var result = await repositorioAbrangencia.ObterTurmas(codigoUe, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo);
+            var turmasPrograma = await mediator.Send(new ObterTurmasProgramaQuery(result.Select(x => x.Codigo).ToArray()));
+
+            return result.Where(r => turmasPrograma.Contains(r.Codigo));
+        }
+
         public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, bool consideraNovasUEs = false)
         {
             var login = servicoUsuario.ObterLoginAtual();
