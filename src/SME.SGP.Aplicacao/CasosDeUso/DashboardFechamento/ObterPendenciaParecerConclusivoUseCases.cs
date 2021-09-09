@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,8 +34,10 @@ namespace SME.SGP.Aplicacao
                     if (parecer.Quantidade > 0)
                         parecerConclusivos.Add(new GraficoBaseDto(grupo, parecer.Quantidade, parecer.Situacao));
                 }
-                var alunos = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(parecerAgrupado.Key));
-                var quantidade = alunos.Count() - parecerAgrupado.Where(p => p.TurmaCodigo == parecerAgrupado.Key).Count();
+                var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(parecerAgrupado.Key));
+
+                var alunosAtivos = alunos.Where(a => a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
+                var quantidade = alunosAtivos.Count() - parecerAgrupado.Where(p => p.TurmaCodigo == parecerAgrupado.Key).Count();
                 parecerConclusivos.Add(new GraficoBaseDto(parecerAgrupado.FirstOrDefault().AnoTurma , quantidade, "Sem parecer"));
             }
 

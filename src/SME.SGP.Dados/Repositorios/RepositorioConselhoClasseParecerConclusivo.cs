@@ -73,7 +73,7 @@ namespace SME.SGP.Dados.Repositorios
                                 INNER JOIN ue u ON t.ue_id = u.id  
                                  LEFT JOIN periodo_escolar pe ON ft.periodo_escolar_id = pe.id
                                 WHERE t.tipo_turma in (1) 
-		                          AND t.ano_letivo = @ano ");            
+		                          AND t.ano_letivo = @ano ");
 
             if (ueId > 0)
                 query.AppendLine(" AND t.ue_id = @ueId ");
@@ -93,23 +93,15 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine(@" GROUP BY t.turma_id, ccp.nome , t.Nome ");
 
-            try
+            return await database.Conexao.QueryAsync<ParecerConclusivoSituacaoQuantidadeDto>(query.ToString(), new
             {
-                return await database.Conexao.QueryAsync<ParecerConclusivoSituacaoQuantidadeDto>(query.ToString(), new
-                {
-                    ueId,
-                    ano,
-                    dreId,
-                    modalidade,
-                    semestre,
-                    bimestre
-                });
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }            
+                ueId,
+                ano,
+                dreId,
+                modalidade,
+                semestre,
+                bimestre
+            });
         }
     }
 }
