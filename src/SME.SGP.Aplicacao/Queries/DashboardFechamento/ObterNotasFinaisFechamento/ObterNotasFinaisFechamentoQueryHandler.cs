@@ -21,12 +21,14 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> Handle(ObterNotasFinaisFechamentoQuery request,
             CancellationToken cancellationToken)
         {
-            return await repositorio.ObterNotasFechamentoOuConselhoAlunos(request.UeId,
+            var retorno = await repositorio.ObterNotasFechamentoOuConselhoAlunos(request.UeId,
                                                                           request.Ano,
                                                                           request.DreId,
                                                                           request.Modalidade,
                                                                           request.Semestre,
                                                                           request.Bimestre);
+
+            return retorno;
         }
     }
 }

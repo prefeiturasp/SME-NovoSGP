@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             foreach (var notaFinal in notasFinaisRetorno)
             {
                 if (notaFinal.Nota.HasValue)
-                    notaFinal.NotaAcimaMedia = notaFinal.Nota.Value > double.Parse(notaMinima.Valor);
+                    notaFinal.NotaAcimaMedia = notaFinal.Nota.Value >= double.Parse(notaMinima.Valor);
 
                 if (!string.IsNullOrEmpty(notaFinal.Conceito))
                     notaFinal.NotaAcimaMedia = notaFinal.Conceito != "NS";
