@@ -1057,7 +1057,7 @@ namespace SME.SGP.Dados.Repositorios
                     Professor: {entidade.ProfessorRf},
                     Disciplina: {entidade.DisciplinaId},
                     Recorrência aula: {entidade.RecorrenciaAula},
-                    Tipo de aula: {entidade.TipoAula} -
+                    Tipo de aula: {entidade.TipoAula} -``
                     {DateTime.Now:MM/dd/yyyy hh:mm:ss.fff tt}", "Erro ao salvar aulas com quantidade negativa");
 
                 throw new Exception("Não é possível salvar aula com quantidade negativa. Entre em contato com suporte.");
