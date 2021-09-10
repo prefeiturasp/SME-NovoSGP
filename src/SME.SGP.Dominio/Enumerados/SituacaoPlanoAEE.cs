@@ -4,8 +4,10 @@ namespace SME.SGP.Dominio.Enumerados
 {
     public enum SituacaoPlanoAEE
     {
-        [Display(Name = "validado")]
-        EmAndamento = 1,        
+        [Display(Name = "Em andamento")]
+        EmAndamento = 1,
+        [Display(Name = "Em andamento/Reestruturação")]
+        Reestruturado = 2,
         [Display(Name = "Encerrado")]
         Encerrado = 3,
         [Display(Name = "Aguardando parecer da coordenação")]
