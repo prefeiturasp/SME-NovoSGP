@@ -64,7 +64,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(@"SELECT t.turma_id as TurmaCodigo,              
                                       ccp.nome as Situacao,
                                       count(cca.id) AS Quantidade,
- 			                          t.Nome AS AnoTurma 
+ 			                          t.Nome AS AnoTurma,
+                                      cca.aluno_codigo as AlunoCodigo
  		                         FROM conselho_classe_aluno cca
                                 INNER JOIN conselho_classe_parecer ccp ON cca.conselho_classe_parecer_id = ccp.id
                                 INNER JOIN conselho_classe cc ON cca.conselho_classe_id = cc.id
@@ -91,7 +92,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(" AND pe.bimestre = @bimestre ");
 
 
-            query.AppendLine(@" GROUP BY t.turma_id, ccp.nome , t.Nome ");
+            query.AppendLine(@" GROUP BY t.turma_id, ccp.nome , t.Nome, cca.aluno_codigo ");
 
             return await database.Conexao.QueryAsync<ParecerConclusivoSituacaoQuantidadeDto>(query.ToString(), new
             {

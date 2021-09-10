@@ -11,7 +11,6 @@ namespace SME.SGP.Aplicacao
     {
         public ObterPendenciaParecerConclusivoUseCases(IMediator mediator) : base(mediator)
         {
-
         }
         public async Task<IEnumerable<GraficoBaseDto>> Executar(FiltroDashboardFechamentoDto param)
         {
@@ -28,15 +27,16 @@ namespace SME.SGP.Aplicacao
 
             foreach (var parecerAgrupado in parecerConclusivo.GroupBy(p => p.TurmaCodigo))
             {
-                foreach(var parecer in parecerAgrupado)
+                var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(parecerAgrupado.Key));
+                var alunosAtivos = alunos.Where(a => a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
+
+                foreach (var parecer in parecerAgrupado)
                 {
                     var grupo = $"{parecer.AnoTurma}";
-                    if (parecer.Quantidade > 0)
+                    if (parecer.Quantidade > 0 && alunosAtivos.Any(a => a.CodigoAluno == parecer.AlunoCodigo))
                         parecerConclusivos.Add(new GraficoBaseDto(grupo, parecer.Quantidade, parecer.Situacao));
                 }
-                var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(parecerAgrupado.Key));
-
-                var alunosAtivos = alunos.Where(a => a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
+                
                 var quantidade = alunosAtivos.Count() - parecerAgrupado.Where(p => p.TurmaCodigo == parecerAgrupado.Key).Count();
                 parecerConclusivos.Add(new GraficoBaseDto(parecerAgrupado.FirstOrDefault().AnoTurma , quantidade, "Sem parecer"));
             }
