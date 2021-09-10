@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
 
             if (!bimestre.HasValue)
             {
-                if (fechamentoTurma.Turma.AnoLetivo != 2020)
+                if (fechamentoTurma.Turma.AnoLetivo != 2020 && !fechamentoTurma.Turma.Historica)
                 {
                     var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(turma);
                     if (!validacaoConselhoFinal.Item2)
