@@ -108,6 +108,8 @@ namespace SME.SGP.Aplicacao
                 ConselhoClasseId = conselhoClasse?.Id,
                 ConselhoClasseAlunoId = conselhoClasseAluno?.Id,
                 Bimestre = bimestre,
+                BimestrePeriodoInicio = periodoEscolar?.PeriodoInicio,
+                BimestrePeriodoFim = periodoEscolar?.PeriodoFim,
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
                 PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
                 TipoNota = tipoNota,
