@@ -45,12 +45,11 @@ namespace SME.SGP.Aplicacao
                             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId.Key));
 
                             var turmaNotificacao = new NotificarResultadoInsatisfatorioDto();
-                            turmaNotificacao.TurmaNome = turma.Nome;
+                            turmaNotificacao.TurmaNome = $"{turma.ModalidadeCodigo.ShortName()}-{turma.Nome}";
                             turmaNotificacao.TurmaModalidade = turma.ModalidadeCodigo.Name();
 
                             foreach (var componenteCurricularId in alunosComNotaLancada.Where(a => a.TurmaId == turmaId.Key).GroupBy(a => a.ComponenteCurricularId))
                             {
-                                var alunosTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
                                 var alunosComNota = alunosComNotaLancada.Where(a => a.TurmaId == turmaId.Key && a.ComponenteCurricularId == componenteCurricularId.Key);
 
                                 var alunosRetorno = VerificaAlunosResultadoInsatisfatorio(alunosComNota, percentualReprovacao, turma, componenteCurricularId.Key, mediaBimestre);
@@ -70,13 +69,17 @@ namespace SME.SGP.Aplicacao
                             }
 
                             if (turmaNotificacao.ComponentesCurriculares.Any())
+                            {
+                                turmaNotificacao.ComponentesCurriculares = turmaNotificacao.ComponentesCurriculares.OrderBy(c => c.ComponenteCurricularNome).ToList();
                                 listaNotificacoes.Add(turmaNotificacao);
+                            }
+                                
                         }
                     }
                 }
 
                 if (listaNotificacoes.Any())
-                    await EnviarNotificacoes(listaNotificacoes, periodoFechamentoBimestre);
+                    await EnviarNotificacoes(listaNotificacoes.OrderBy(n => n.TurmaNome).ToList(), periodoFechamentoBimestre);
             }
 
 
