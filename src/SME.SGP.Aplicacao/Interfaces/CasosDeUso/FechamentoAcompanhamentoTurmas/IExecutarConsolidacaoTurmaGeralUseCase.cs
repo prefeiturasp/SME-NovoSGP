@@ -2,8 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IExecutarConsolidacaoTurmaGeralUseCase
+    public interface IExecutarConsolidacaoTurmaGeralUseCase : IRabbitUseCase
     {
-        Task Executar(string turmaCodigo, int? bimestre);
     }
 }
