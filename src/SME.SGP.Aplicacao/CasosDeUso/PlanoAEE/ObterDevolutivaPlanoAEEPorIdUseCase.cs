@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private bool PodeEditarParecerPAAI(PlanoAEE planoAEE, Usuario usuario)
-            => planoAEE.Situacao == SituacaoPlanoAEE.DevolutivaPAAI
+            => planoAEE.Situacao == SituacaoPlanoAEE.ParecerPAAI
             && (planoAEE.ResponsavelId.GetValueOrDefault() == usuario.Id);
 
         private async Task<bool> PodeEditarParecerCP(PlanoAEE planoAEE, Usuario usuario, Turma turma)
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
                 false);
 
         private bool SituacaoPermiteEdicaoCP(SituacaoPlanoAEE situacao)
-            => new SituacaoPlanoAEE[] { SituacaoPlanoAEE.DevolutivaCP, SituacaoPlanoAEE.AtribuicaoPAAI, SituacaoPlanoAEE.DevolutivaPAAI }.Contains(situacao);
+            => new SituacaoPlanoAEE[] { SituacaoPlanoAEE.ParecerCP, SituacaoPlanoAEE.AtribuicaoPAAI, SituacaoPlanoAEE.ParecerPAAI }.Contains(situacao);
 
         private async Task<bool> UsuarioGestorDoPlano(Usuario usuario, Turma turma)
             => await mediator.Send(new EhGestorDaEscolaQuery(usuario.CodigoRf, turma.Ue.CodigoUe, usuario.PerfilAtual));

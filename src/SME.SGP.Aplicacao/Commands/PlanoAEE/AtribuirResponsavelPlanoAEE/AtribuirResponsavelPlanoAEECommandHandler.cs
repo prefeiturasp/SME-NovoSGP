@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             if (planoAEE.Situacao == Dominio.Enumerados.SituacaoPlanoAEE.Encerrado)
                 throw new NegocioException("A situação do Plano AEE não permite a remoção do responsável");
 
-            planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.DevolutivaPAAI;
+            planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.ParecerPAAI;
             planoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ResponsavelRF));
 
             var idEntidadePlanoAEE = await repositorioPlanoAEE.SalvarAsync(planoAEE);

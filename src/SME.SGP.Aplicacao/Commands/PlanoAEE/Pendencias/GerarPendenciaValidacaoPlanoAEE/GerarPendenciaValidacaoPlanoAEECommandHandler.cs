@@ -2,30 +2,28 @@
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class GerarPendenciaCPEncerramentoPlanoAEECommandHandler : IRequestHandler<GerarPendenciaCPEncerramentoPlanoAEECommand, bool>
+    public class GerarPendenciaValidacaoPlanoAEECommandHandler : IRequestHandler<GerarPendenciaValidacaoPlanoAEECommand, bool>
     {
-        private readonly IMediator mediator;
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;        
         private readonly IConfiguration configuration;
 
-        public GerarPendenciaCPEncerramentoPlanoAEECommandHandler(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration)
+        public GerarPendenciaValidacaoPlanoAEECommandHandler(IMediator mediator, IConfiguration configuration)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));            
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public async Task<bool> Handle(GerarPendenciaCPEncerramentoPlanoAEECommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(GerarPendenciaValidacaoPlanoAEECommand request, CancellationToken cancellationToken)
         {
             var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEId));
 
@@ -47,15 +45,14 @@ namespace SME.SGP.Aplicacao
                 var hostAplicacao = configuration["UrlFrontEnd"];
                 var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? "da criança" : "do estudante";
 
-                var titulo = $"Plano AEE a encerrar - {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) - {ueDre}";
-                var descricao = $"Foi solicitado o encerramento do Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre}. <br/><a href='{hostAplicacao}aee/plano/editar/{planoAEE.Id}'>Clique aqui</a> para acessar o plano e registrar a devolutiva. " +
+                var titulo = $"Plano AEE para validação - {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) - {ueDre}";
+                var descricao = $"O Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre}. <br/><a href='{hostAplicacao}aee/plano/editar/{planoAEE.Id}'>Clique aqui</a> para acessar o plano e registrar o seu parecer. " +
                     $"<br/><br/>A pendência será resolvida automaticamente após este registro.";
 
                 await mediator.Send(new GerarPendenciaPlanoAEECommand(planoAEE.Id, usuarios, titulo, descricao));
             }
             return false;
         }
-
         private async Task<List<string>> ObterFuncionarios(string codigoUe)
         {
             var funcionariosCP = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.CP));
