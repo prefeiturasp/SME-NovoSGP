@@ -65,6 +65,9 @@ namespace SME.SGP.Aplicacao.Commands
                     if (request.PlanoAEEDto.Situacao == SituacaoPlanoAEE.Expirado)
                         await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
 
+                    if (await ParametroGeracaoPendenciaAtivo())
+                        await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoId));
+
                     unitOfWork.PersistirTransacao();
 
                     return new RetornoPlanoAEEDto(planoId, planoAEEVersaoId);
@@ -130,6 +133,13 @@ namespace SME.SGP.Aplicacao.Commands
                 AlunoNome = request.AlunoNome,
                 Questoes = new System.Collections.Generic.List<PlanoAEEQuestao>()
             };
+        }
+
+        private async Task<bool> ParametroGeracaoPendenciaAtivo()
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasPlanoAEE, DateTime.Today.Year));
+
+            return parametro != null && parametro.Ativo;
         }
     }
 }
