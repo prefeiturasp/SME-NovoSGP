@@ -72,10 +72,16 @@ namespace SME.SGP.Aplicacao
                     bimestre = 1;
             }
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);
-            if(fechamentoTurma == null && !turma.EhAnoAnterior())
+
+            if (bimestre == 0 && !consideraHistorico && turma.AnoLetivo != 2020)
             {
-                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
+                var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreTurmaQuery(turma));
+                if (!retornoConselhoBimestre.possuiConselho)
+                    throw new NegocioException($"Para acessar esta aba você precisa registrar o conselho de classe do {retornoConselhoBimestre.bimestre}º bimestre");
             }
+
+            if (fechamentoTurma == null && !turma.EhAnoAnterior())
+                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
 
             var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id) : null;
 
@@ -115,8 +121,8 @@ namespace SME.SGP.Aplicacao
                 ConselhoClasseId = conselhoClasse?.Id,
                 ConselhoClasseAlunoId = conselhoClasseAluno?.Id,
                 Bimestre = bimestre,
-                BimestrePeriodoInicio = periodoEscolar.PeriodoInicio,
-                BimestrePeriodoFim = periodoEscolar.PeriodoFim,
+                BimestrePeriodoInicio = periodoEscolar?.PeriodoInicio,
+                BimestrePeriodoFim = periodoEscolar?.PeriodoFim,
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
                 PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
                 TipoNota = tipoNota,
@@ -167,13 +173,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<(int, bool)> ValidaConselhoClasseUltimoBimestre(Turma turma)
         {
-            var periodoEscolar = await repositorioPeriodoEscolar.ObterUltimoBimestreAsync(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), DateTime.Today.Semestre());
-            if (periodoEscolar == null)
-                throw new NegocioException($"Não foi encontrado o ultimo periodo escolar para a turma {turma.Nome}");
-
-            var conselhoClasseUltimoBimestre = await repositorioConselhoClasse.ObterPorTurmaEPeriodoAsync(turma.Id, periodoEscolar.Id);
-            return (periodoEscolar.Bimestre, conselhoClasseUltimoBimestre != null);
+            return await mediator
+                .Send(new ObterUltimoBimestreTurmaQuery(turma));
         }
-
     }
 }

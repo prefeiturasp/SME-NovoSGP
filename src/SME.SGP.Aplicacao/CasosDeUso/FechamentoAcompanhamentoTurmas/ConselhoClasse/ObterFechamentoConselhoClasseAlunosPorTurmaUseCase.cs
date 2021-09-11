@@ -1,11 +1,7 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,19 +23,19 @@ namespace SME.SGP.Aplicacao
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, param.Bimestre));
             if (periodoEscolar == null && param.Bimestre != 0)
                 throw new NegocioException("Periodo escolar não encontrado");
-            
-            if(param.Bimestre == 0)
+
+            if (param.Bimestre == 0)
                 periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, 1));
+            
+            var consolidadoConselhosClasses = await mediator.Send(new ObterConselhoClasseConsolidadoPorTurmaBimestreQuery(turma.Id, param.Bimestre, param.SituacaoConselhoClasse));
 
-            var alunos = await mediator.Send(new ObterEstudantesAtivosPorTurmaEDataReferenciaQuery(turma.CodigoTurma, periodoEscolar.PeriodoInicio));
-            var consolidadoConselhosClasses = await mediator.Send(new ObterConselhoClasseConsolidadoPorTurmaBimestreQuery(turma.Id, param.Bimestre));
+            var codigosAlunos = consolidadoConselhosClasses.Select(c => c.AlunoCodigo).ToArray();
+            var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(codigosAlunos.Select(long.Parse).ToArray(), turma.AnoLetivo));
 
-            alunos = param.Bimestre == 0 ?  alunos.ToList() : alunos.Where(a => a.DataSituacao <= periodoEscolar.PeriodoFim).ToList();
-
-            return await MontarRetorno(alunos, consolidadoConselhosClasses, turma.CodigoTurma);
+            return await MontarRetorno(alunosEol.DistinctBy(a => a.CodigoAluno), consolidadoConselhosClasses, turma.CodigoTurma);
         }
 
-        private async Task<IEnumerable<ConselhoClasseAlunoDto>> MontarRetorno(IEnumerable<EstudanteDto> alunos, IEnumerable<ConselhoClasseConsolidadoTurmaAluno> consolidadoConselhosClasses, string codigoTurma)
+        private async Task<IEnumerable<ConselhoClasseAlunoDto>> MontarRetorno(IEnumerable<TurmasDoAlunoDto> alunos, IEnumerable<ConselhoClasseConsolidadoTurmaAluno> consolidadoConselhosClasses, string codigoTurma)
         {
             List<ConselhoClasseAlunoDto> lista = new List<ConselhoClasseAlunoDto>();
             var pareceresConclusivos = await mediator.Send(new ObterPareceresConclusivosQuery());
@@ -51,7 +47,7 @@ namespace SME.SGP.Aplicacao
                     continue;
 
                 var frequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(aluno.CodigoAluno.ToString(), codigoTurma));
-                string parecerConclusivo = consolidadoConselhoClasse.ParecerConclusivoId != null  ? pareceresConclusivos.FirstOrDefault(a => a.Id == consolidadoConselhoClasse.ParecerConclusivoId).Nome : "Sem parecer";
+                string parecerConclusivo = consolidadoConselhoClasse.ParecerConclusivoId != null ? pareceresConclusivos.FirstOrDefault(a => a.Id == consolidadoConselhoClasse.ParecerConclusivoId).Nome : "Sem parecer";
 
                 lista.Add(new ConselhoClasseAlunoDto()
                 {
@@ -61,7 +57,7 @@ namespace SME.SGP.Aplicacao
                     SituacaoFechamento = consolidadoConselhoClasse.Status.Name(),
                     SituacaoFechamentoCodigo = (int)consolidadoConselhoClasse.Status,
                     FrequenciaGlobal = frequenciaGlobal,
-                    PodeExpandir = consolidadoConselhoClasse.Status != SituacaoConselhoClasse.NaoIniciado,
+                    PodeExpandir = true,
                     ParecerConclusivo = parecerConclusivo
                 });
             }

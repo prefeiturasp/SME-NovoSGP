@@ -95,8 +95,9 @@
         public const string SincronizarDresMatriculasTurmas = "sgp.matricula.turma.consolidar.dre.sync";
         public const string ConsolidacaoMatriculasTurmasCarregar = "sgp.matricula.turma.carregar";
         public const string ConsolidacaoMatriculasTurmasSync = "sgp.matricula.turma.sync";
-        public const string ConsolidarGeralSync = "sgp.consolidacao.geral.sync";
+
         public const string ConsolidarTurmaSync = "sgp.consolidacao.turma.sync";
+        public const string ConsolidarTurmaTratar = "sgp.consolidacao.turma.tratar";
         public const string ConsolidarTurmaFechamentoSync = "sgp.consolidacao.turma.fechamento.sync";
         public const string ConsolidarTurmaFechamentoComponenteTratar = "sgp.consolidacao.turma.fechamento.componente.tratar";
         public const string ConsolidarTurmaConselhoClasseSync = "sgp.consolidacao.turma.conselhoclasse.sync";
