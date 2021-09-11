@@ -98,6 +98,13 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, [FromServices] IConsultasFrequencia consultasFrequencia)
              => Ok(await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo));
 
+        [HttpGet("frequencias/alunos/{alunoCodigo}/turmas/{turmaCodigo}/semestre/{semestre}/geral")]
+        [ProducesResponseType(typeof(double), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, int semestre, [FromServices] IConsultasFrequencia consultasFrequencia)
+             => Ok(await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, semestre: semestre));
+
         [AllowAnonymous]
         [HttpGet("frequencias/ausencias-motivos")]
         [ProducesResponseType(typeof(IEnumerable<AusenciaMotivoDto>), 200)]
