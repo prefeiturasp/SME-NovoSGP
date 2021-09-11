@@ -1048,7 +1048,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private void ValideQuantidadeDeAulas(Aula entidade)
         {
-            if (entidade.Quantidade < 0)
+            if (entidade.Quantidade < 0 && !entidade.Excluido)
             {
                 SentrySdk.AddBreadcrumb($@"
                     Turma id: {entidade.TurmaId}, 
