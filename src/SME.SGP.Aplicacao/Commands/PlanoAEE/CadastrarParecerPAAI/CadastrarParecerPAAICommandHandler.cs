@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands
 {
-    public class CadastrarDevolutivaPAAICommandHandler : IRequestHandler<CadastrarDevolutivaPAAICommand, bool>
+    public class CadastrarParecerPAAICommandHandler : IRequestHandler<CadastrarParecerPAAICommand, bool>
     {
 
         private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
         private readonly IMediator mediator;
 
-        public CadastrarDevolutivaPAAICommandHandler(
+        public CadastrarParecerPAAICommandHandler(
             IMediator mediator,
             IRepositorioPlanoAEE repositorioPlanoAEE)
         {
@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao.Commands
         }
 
        
-        public async Task<bool> Handle(CadastrarDevolutivaPAAICommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(CadastrarParecerPAAICommand request, CancellationToken cancellationToken)
         {
             var planoAEE = await repositorioPlanoAEE.ObterPorIdAsync(request.PlanoAEEId);
 
