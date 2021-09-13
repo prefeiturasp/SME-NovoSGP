@@ -107,11 +107,11 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(new FiltroVersoesPlanoAEEDto(planoAEEId, reestruturacaoId)));
         }      
 
-        [HttpGet("{planoAeeId}/devolutiva")]
+        [HttpGet("{planoAeeId}/parecer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterDevolutivaPlanoAEE(long planoAEEId, [FromServices] IObterDevolutivaPlanoAEEPorIdUseCase useCase)
+        public async Task<IActionResult> ObterParecerPlanoAEE(long planoAEEId, [FromServices] IObterParecerPlanoAEEPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(planoAEEId));
         }
