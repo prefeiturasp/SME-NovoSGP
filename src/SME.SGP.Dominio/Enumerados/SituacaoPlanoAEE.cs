@@ -17,6 +17,8 @@ namespace SME.SGP.Dominio.Enumerados
         [Display(Name = "Encerrado Automaticamente")]
         EncerradoAutomaticamento = 7,
         [Display(Name = "Expirado")]
-        Expirado = 8,        
+        Expirado = 8,
+        [Display(Name = "Devolvido")]
+        Devolvido = 9,
     }
 }

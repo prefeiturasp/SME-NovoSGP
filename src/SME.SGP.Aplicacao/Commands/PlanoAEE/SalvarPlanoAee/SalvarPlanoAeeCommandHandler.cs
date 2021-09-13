@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao.Commands
             if (request.PlanoAEEDto.Id.HasValue && request.PlanoAEEDto.Id > 0)
             {
                 var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
-                planoAEE.Situacao = SituacaoPlanoAEE.Validado;
+                planoAEE.Situacao = SituacaoPlanoAEE.ParecerCP;
 
                 return planoAEE;
             }
@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao.Commands
             return new PlanoAEE()
             {
                 TurmaId = request.TurmaId,
-                Situacao = SituacaoPlanoAEE.Validado,
+                Situacao = SituacaoPlanoAEE.ParecerCP,
                 AlunoCodigo = request.AlunoCodigo,
                 AlunoNumero = request.AlunoNumero,
                 AlunoNome = request.AlunoNome,

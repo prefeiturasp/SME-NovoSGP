@@ -77,9 +77,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> Salvar([FromBody] PlanoAEEPersistenciaDto planoAeeDto, [FromServices] ISalvarPlanoAEEUseCase usecase)
+        public async Task<IActionResult> Salvar([FromBody] PlanoAEEPersistenciaDto planoAeeDto, [FromServices] ISalvarPlanoAEEUseCase useCase)
         {
-            return Ok(await usecase.Executar(planoAeeDto));
+            return Ok(await useCase.Executar(planoAeeDto));
         }
 
         [HttpGet("estudante/{codigoEstudante}/existe")]
@@ -121,9 +121,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> EncerrarPlanoAEE([FromQuery] long planoAEEId, [FromServices] IEncerrarPlanoAEEUseCase usecase)
+        public async Task<IActionResult> EncerrarPlanoAEE([FromQuery] long planoAEEId, [FromServices] IEncerrarPlanoAEEUseCase useCase)
         {
-            return Ok(await usecase.Executar(planoAEEId));
+            return Ok(await useCase.Executar(planoAEEId));
         }
 
         [HttpPost("{planoAeeId}/parecer/cp")]
@@ -151,6 +151,18 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> AtribuirResponsavelPlanoAEE([FromBody] AtribuirResponsavelPlanoAEEDto parametros, [FromServices] IAtribuirResponsavelPlanoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(parametros.PlanoAEEId, parametros.ResponsavelRF));
+        }
+
+        [HttpPost("devolver")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> DevolverPlanoAEE([FromBody] DevolucaoPlanoAEEDto devolucao, [FromServices] IDevolverPlanoAEEUseCase useCase)
+        {
+            await useCase.Executar(devolucao);
+
+            return Ok(new RetornoBaseDto("Plano devolvido com sucesso"));
         }
     }
 }
