@@ -42,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var parametros = new { professorRF, dataInicio, dataFim, dreCodigo, ueCodigo, id };
 
-            return database.Conexao.QueryFirstOrDefault<bool>(sql, parametros);
+            return database.Conexao.Query<AtribuicaoEsporadica>(sql, parametros);
         }
 
         private string ObterSqlConflitante(bool temId)

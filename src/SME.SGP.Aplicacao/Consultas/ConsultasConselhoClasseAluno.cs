@@ -229,32 +229,32 @@ namespace SME.SGP.Aplicacao
                     {
                         var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
 
-                    var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
-                    FrequenciaAluno frequenciaAluno;
-                    var percentualFrequenciaPadrao = false;
-                    if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
-                    {
-                        frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
-                    
-                    }
-                    else if (frequenciasAlunoParaTratar.Count() == 1)
-                    {
-                        frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
-                    }
-                    else
-                    {
-                        frequenciaAluno = new FrequenciaAluno()
+                        var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
+                        FrequenciaAluno frequenciaAluno;
+                        var percentualFrequenciaPadrao = false;
+                        if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
                         {
-                            DisciplinaId = disciplina.CodigoComponenteCurricular.ToString(),
-                            CodigoAluno = alunoCodigo
-                        };
+                            frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
+                    
+                        }
+                        else if (frequenciasAlunoParaTratar.Count() == 1)
+                        {
+                            frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
+                        }
+                        else
+                        {
+                            frequenciaAluno = new FrequenciaAluno()
+                            {
+                                DisciplinaId = disciplina.CodigoComponenteCurricular.ToString(),
+                                CodigoAluno = alunoCodigo
+                            };
 
-                        frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
-                        frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
-                        frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
-                        percentualFrequenciaPadrao = true;
-                        frequenciasAlunoParaTratar.ToList().ForEach(f => frequenciaAluno.AdicionarFrequenciaBimestre(f.Bimestre, tipoCalendario.AnoLetivo.Equals(2020) && f.TotalAulas.Equals(0) ? 100 : f.PercentualFrequencia));
-                    }
+                            frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
+                            frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
+                            frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
+                            percentualFrequenciaPadrao = true;
+                            frequenciasAlunoParaTratar.ToList().ForEach(f => frequenciaAluno.AdicionarFrequenciaBimestre(f.Bimestre, tipoCalendario.AnoLetivo.Equals(2020) && f.TotalAulas.Equals(0) ? 100 : f.PercentualFrequencia));
+                        }
 
                         if (disciplinaEol.Regencia)
                         {
@@ -272,16 +272,17 @@ namespace SME.SGP.Aplicacao
                                                                                                     periodoEscolar, frequenciasAlunoParaTratar, registrosFrequencia);
 
 
-                        conselhoClasseAlunoNotas.ComponentesCurriculares.Add(ObterNotasFrequenciaComponente(disciplina.Nome,
-                                                                                                            disciplina.CodigoComponenteCurricular,
-                                                                                                            frequenciaAluno,
-                                                                                                            periodoEscolar,
-                                                                                                            turma,
-                                                                                                            notasConselhoClasseAluno,
-                                                                                                            notasFechamentoAluno,
-                                                                                                            turmaPossuiRegistroFrequencia,
-                                                                                                            disciplina.LancaNota,
-                                                                                                            percentualFrequenciaPadrao));
+                            conselhoClasseAlunoNotas.ComponentesCurriculares.Add(ObterNotasFrequenciaComponente(disciplina.Nome,
+                                                                                                                disciplina.CodigoComponenteCurricular,
+                                                                                                                frequenciaAluno,
+                                                                                                                periodoEscolar,
+                                                                                                                turma,
+                                                                                                                notasConselhoClasseAluno,
+                                                                                                                notasFechamentoAluno,
+                                                                                                                turmaPossuiRegistroFrequencia,
+                                                                                                                disciplina.LancaNota,
+                                                                                                                percentualFrequenciaPadrao));
+                        }
                     }
                 }
 

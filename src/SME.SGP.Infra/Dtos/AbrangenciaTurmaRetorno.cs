@@ -20,19 +20,12 @@ namespace SME.SGP.Dto
         }
         public string Nome { get; set; }
 
-        public string NomeFiltro
-        {
-            get => NomeFiltroFormatado();
-            set { nomeFiltro = value; }
-        }
-
         public int Semestre { get; set; }
         public bool EnsinoEspecial { get; set; }
         public long Id { get; set; }
 
         public int TipoTurma { get; set; }
 
-        private string nomeFiltro { get; set; }
         public string NomeFiltro
         {
             get => NomeFiltroFormatado();
