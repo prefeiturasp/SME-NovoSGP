@@ -64,6 +64,7 @@ namespace SME.SGP.Aplicacao
                 ultimaVersao = plano.Versoes.OrderByDescending(a => a.Numero).First();
                 plano.Versoes = plano.Versoes.Where(a => a.Id != ultimaVersao.Id).ToList();
                 plano.UltimaVersao = ultimaVersao;
+                plano.PodeDevolverPlanoAEE = entidadePlano.PodeDevolverPlanoAEE();
             }
 
             var questionarioId = await mediator.Send(new ObterQuestionarioPlanoAEEIdQuery());
