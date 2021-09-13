@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,7 +21,7 @@ namespace SME.SGP.Aplicacao.Commands
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-       
+
         public async Task<bool> Handle(CadastrarParecerPAAICommand request, CancellationToken cancellationToken)
         {
             var planoAEE = await repositorioPlanoAEE.ObterPorIdAsync(request.PlanoAEEId);
@@ -36,7 +34,7 @@ namespace SME.SGP.Aplicacao.Commands
             if (planoAEE.ResponsavelId != usuarioLogado)
                 throw new NegocioException("O usuário atual não é o PAAI responsável por este Plano AEE");
 
-            planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.Encerrado;
+            planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.Validado;
             planoAEE.ParecerPAAI = request.ParecerPAAI;
 
             var idEntidadeEncaminhamento = await repositorioPlanoAEE.SalvarAsync(planoAEE);
