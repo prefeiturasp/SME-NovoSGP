@@ -13,7 +13,13 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> Executar(FiltroAcompanhamentoFechamentoTurmasDto param)
         {
-            var listarTodasTurmas = param.TurmasId.Any(c => c == "-99");
+            var listarTodasTurmas = param.TurmasId.Any(c => c == -99);
+
+            int? situacaoFechamento = param.SituacaoFechamento.HasValue && param.SituacaoFechamento.Value > -99 ? 
+                                                    param.SituacaoFechamento : null;
+
+            int? situacaoConselhoClasse = param.SituacaoConselhoClasse.HasValue && param.SituacaoConselhoClasse.Value > -99 ? 
+                                                             param.SituacaoConselhoClasse : null;
 
             var turmas = await mediator.Send(new ObterTurmasFechamentoAcompanhamentoQuery(param.DreId,
                                                                                           param.UeId,
@@ -22,8 +28,8 @@ namespace SME.SGP.Aplicacao
                                                                                           param.Semestre,
                                                                                           param.Bimestre,
                                                                                           param.AnoLetivo,
-                                                                                          param.SituacaoFechamento,
-                                                                                          param.SituacaoConselhoClasse,
+                                                                                          situacaoFechamento,
+                                                                                          situacaoConselhoClasse,
                                                                                           listarTodasTurmas));
             return turmas;
         }

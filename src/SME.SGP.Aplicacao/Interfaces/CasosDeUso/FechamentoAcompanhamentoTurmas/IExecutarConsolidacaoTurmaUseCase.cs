@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IExecutarConsolidacaoTurmaUseCase : IUseCase<MensagemRabbit, bool>
+    public interface IExecutarConsolidacaoTurmaUseCase : IRabbitUseCase
     {
     }
 }

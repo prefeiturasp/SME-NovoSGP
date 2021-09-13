@@ -125,11 +125,11 @@ namespace SME.SGP.Dominio.Servicos
                 else
                 {
                     // Fechamento Final
-                    if (fechamentoTurma.Turma.AnoLetivo != 2020)
+                    if (fechamentoTurma.Turma.AnoLetivo != 2020 && !fechamentoTurma.Turma.Historica)
                     {
                         var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
                         if (!validacaoConselhoFinal.Item2 && fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year)
-                            throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                            throw new NegocioException($"Para salvar a nota final você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
                     }
                 }
                 unitOfWork.PersistirTransacao();

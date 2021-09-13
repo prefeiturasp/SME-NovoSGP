@@ -32,6 +32,13 @@ namespace SME.SGP.Dto
 
         public int TipoTurma { get; set; }
 
+        private string nomeFiltro { get; set; }
+        public string NomeFiltro
+        {
+            get => NomeFiltroFormatado();
+            set => nomeFiltro = value;
+        }
+
         public string NomeFiltroFormatado()
         {
             var modalidadeEnum = ((Modalidade)CodigoModalidade);
@@ -40,5 +47,6 @@ namespace SME.SGP.Dto
             else
                 return $"{modalidadeEnum.ShortName()} - {Nome}";
         }
+
     }
 }
