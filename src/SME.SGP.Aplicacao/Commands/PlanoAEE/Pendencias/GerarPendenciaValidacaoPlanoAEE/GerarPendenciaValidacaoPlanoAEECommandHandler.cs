@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? "da criança" : "do estudante";
 
                 var titulo = $"Plano AEE para validação - {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) - {ueDre}";
-                var descricao = $"O Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre}. <br/><a href='{hostAplicacao}aee/plano/editar/{planoAEE.Id}'>Clique aqui</a> para acessar o plano e registrar o seu parecer. " +
+                var descricao = $"O Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} foi cadastrado. <br/><a href='{hostAplicacao}aee/plano/editar/{planoAEE.Id}'>Clique aqui</a> para acessar o plano e registrar o seu parecer. " +
                     $"<br/><br/>A pendência será resolvida automaticamente após este registro.";
 
                 await mediator.Send(new GerarPendenciaPlanoAEECommand(planoAEE.Id, usuarios, titulo, descricao));
