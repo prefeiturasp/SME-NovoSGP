@@ -174,6 +174,7 @@ namespace SME.SGP.Aplicacao
             aula.DataAula = dataAula;
             aula.Quantidade = request.Quantidade;
             aula.RecorrenciaAula = request.RecorrenciaAula;
+            aula.DisciplinaId = request.ComponenteCurricularId.ToString();
 
             if (request.AulaId == aula.Id)
                 aula.AulaPaiId = null;

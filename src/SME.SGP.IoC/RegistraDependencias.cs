@@ -450,6 +450,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IReiniciarSenhaUseCase, ReiniciarSenhaUseCase>();
             services.TryAddScoped<IInserirAulaUseCase, InserirAulaUseCase>();
             services.TryAddScoped<IAlterarAulaUseCase, AlterarAulaUseCase>();
+            services.TryAddScoped<IObterAulaPorIdUseCase, ObterAulaPorIdUseCase>();
             services.TryAddScoped<IExcluirAulaUseCase, ExcluirAulaUseCase>();
             services.TryAddScoped<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
             services.TryAddScoped<IObterFuncionariosUseCase, ObterFuncionariosUseCase>();
