@@ -209,12 +209,10 @@ namespace SME.SGP.Dominio.Servicos
             {
                 try
                 {
-                    if (!await mediator.Send(new ValidarSeEhDiaLetivoQuery(
-                            novoEvento.DataInicio,
-                            novoEvento.DataInicio,
+                    if (!await ValidaCadastroEvento(novoEvento.DataInicio,
                             novoEvento.TipoCalendarioId,
                             novoEvento.Letivo == EventoLetivo.Sim,
-                            novoEvento.TipoEventoId)))
+                            novoEvento.TipoEventoId))
                     {
                         notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - Não é possível cadastrar esse evento pois a data informada está fora do período letivo.");
                     }
@@ -236,6 +234,18 @@ namespace SME.SGP.Dominio.Servicos
             }
             var usuarioLogado = servicoUsuario.ObterUsuarioLogado().Result;
             EnviarNotificacaoRegistroDeRecorrencia(evento, notificacoesSucesso, notificacoesFalha, usuarioLogado.Id);
+        }
+
+        private async Task<bool> ValidaCadastroEvento(DateTime dataInicio, long tipoCalendarioId, bool ehLetivo, long tipoEventoId)
+        {
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataInicio, dataInicio);
+            if (periodoEscolar == null)
+                return false;
+
+            if (ehLetivo && tipoEventoId != (int)TipoEvento.LiberacaoExcepcional)
+              return ValidaSeEhFinalSemana(dataInicio, dataInicio);
+
+            return true;
         }
 
         private static void AtribuirNullSeVazio(Evento evento)
@@ -528,6 +538,14 @@ namespace SME.SGP.Dominio.Servicos
 
                 await mediator.Send(new IncluirFilaExcluirPendenciasDiasLetivosInsuficientesCommand(evento.TipoCalendarioId, evento.DreId, evento.UeId, usuario));
             }
+        }
+
+        private bool ValidaSeEhFinalSemana(DateTime inicio, DateTime fim)
+        {
+            for (DateTime data = inicio; data <= fim; data = data.AddDays(1))
+                if (data.DayOfWeek == DayOfWeek.Saturday || data.DayOfWeek == DayOfWeek.Sunday)
+                    return false;
+            return true;
         }
     }
 }
