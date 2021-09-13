@@ -3,6 +3,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,15 +14,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioAula repositorioAula;
-        private readonly IUnitOfWork unitOfWork;
 
         public ExcluirAulaUnicaCommandHandler(IMediator mediator,
-                                              IRepositorioAula repositorioAula,
-                                              IUnitOfWork unitOfWork)
+                                              IRepositorioAula repositorioAula)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<RetornoBaseDto> Handle(ExcluirAulaUnicaCommand request, CancellationToken cancellationToken)
@@ -36,12 +35,17 @@ namespace SME.SGP.Aplicacao
             if (aula.WorkflowAprovacaoId.HasValue)
                 await PulicaFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, aula.WorkflowAprovacaoId.Value, request.Usuario);
 
-            await PulicaFilaSgp(RotasRabbitSgp.NotificacoesDaAulaExcluir, aula.Id, request.Usuario);
-            await PulicaFilaSgp(RotasRabbitSgp.FrequenciaDaAulaExcluir, aula.Id, request.Usuario);
-            await PulicaFilaSgp(RotasRabbitSgp.PlanoAulaDaAulaExcluir, aula.Id, request.Usuario);
-            await PulicaFilaSgp(RotasRabbitSgp.AnotacoesFrequenciaDaAulaExcluir, aula.Id, request.Usuario);
-            await PulicaFilaSgp(RotasRabbitSgp.DiarioBordoDaAulaExcluir, aula.Id, request.Usuario);
-            await PulicaFilaSgp(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula, aula.Id, request.Usuario);
+            var filas = new string[]
+            {
+                RotasRabbitSgp.NotificacoesDaAulaExcluir,
+                RotasRabbitSgp.FrequenciaDaAulaExcluir,
+                RotasRabbitSgp.PlanoAulaDaAulaExcluir,
+                RotasRabbitSgp.AnotacoesFrequenciaDaAulaExcluir,
+                RotasRabbitSgp.DiarioBordoDaAulaExcluir,
+                RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula
+            };
+
+            await PulicaFilaSgp(filas, aula.Id, request.Usuario);
 
             aula.Excluido = true;
             await repositorioAula.SalvarAsync(aula);
@@ -58,12 +62,23 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new PublicarFilaSgpCommand(fila, new FiltroIdDto(id), Guid.NewGuid(), usuario));
         }
 
+        private async Task PulicaFilaSgp(string[] filas, long id, Usuario usuario)
+        {
+            var commands = new List<PublicarFilaSgpCommand>();
+
+            filas.ToList()
+                .ForEach(f => commands.Add(new PublicarFilaSgpCommand(f, new FiltroIdDto(id), Guid.NewGuid(), usuario)));
+
+            await mediator.Send(new PublicarFilaEmLoteSgpCommand(commands));
+        }
+
         private async Task ValidarComponentesDoProfessor(string codigoTurma, long componenteCurricularCodigo, DateTime dataAula, Usuario usuario)
         {
-            var resultadoValidacao = await mediator.Send(new ValidarComponentesDoProfessorCommand(usuario, codigoTurma, componenteCurricularCodigo, dataAula));
+            var resultadoValidacao = await mediator
+                .Send(new ValidarComponentesDoProfessorCommand(usuario, codigoTurma, componenteCurricularCodigo, dataAula));
+
             if (!resultadoValidacao.resultado)
                 throw new NegocioException(resultadoValidacao.mensagem);
         }
-
     }
 }
