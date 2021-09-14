@@ -22,10 +22,13 @@ namespace SME.SGP.Aplicacao
 
             foreach (var planoAEE in planosAtivos)
             {
-                var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(planoAEE.AlunoCodigo, planoAEE.CriadoEm.Year));
+                var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, DateTime.Now.Year));
 
-                if (aluno.EstaInativo(DateTime.Today))
-                    await EncerrarPlanoAEE(planoAEE, aluno.SituacaoMatricula, aluno.DataSituacao);
+                if (!matriculas.Any(a => a.EstaAtivo(DateTime.Today)))
+                {
+                    var ultimaMatricula = matriculas.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
+                    await EncerrarPlanoAEE(planoAEE, ultimaMatricula?.SituacaoMatricula ?? "Inativo", ultimaMatricula?.DataSituacao ?? DateTime.Now);
+                }
             }
 
             return true;

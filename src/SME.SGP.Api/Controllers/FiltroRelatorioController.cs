@@ -131,6 +131,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterSituacoesConselhoClasse([FromServices] IObterSituacoesConselhoClasseUseCase obterSituacoesConselhoClasseUseCase)
         {
             return Ok(await (obterSituacoesConselhoClasseUseCase.Executar()));
-        }        
+        }
     }
 }

@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await ObterTurma(dto.TurmaId);
 
-            var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo);
+            var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, turma.Semestre);
 
             long id;
 
@@ -93,9 +93,9 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private async Task<TipoCalendario> ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade)
+        private async Task<TipoCalendario> ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade, int semestre)
         {
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade));
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade), semestre);
 
             if (tipoCalendario == null)
                 throw new NegocioException("Tipo calendário não encontrado!");

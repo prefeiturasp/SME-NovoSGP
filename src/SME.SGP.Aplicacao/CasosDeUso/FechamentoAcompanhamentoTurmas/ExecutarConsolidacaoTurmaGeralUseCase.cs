@@ -13,38 +13,36 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
+        public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var turmasEModalidadesParaConsolidar = await mediator.Send(new ObterTurmasConsolidacaoFechamentoGeralQuery());
+            var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoTurmaDto>();
+
+            var turmasEModalidadesParaConsolidar = await mediator.Send(new ObterTurmasConsolidacaoFechamentoGeralQuery(filtro.TurmaCodigo));
 
             var guidParaCorrelacao = Guid.NewGuid();
-
             foreach (var turmaEModalidadesParaConsolidar in turmasEModalidadesParaConsolidar)
             {
-                var mensagem = new ConsolidacaoTurmaDto() { TurmaId = turmaEModalidadesParaConsolidar.TurmaId };
+                var dto = new ConsolidacaoTurmaDto() { TurmaId = turmaEModalidadesParaConsolidar.TurmaId };
 
-                if (turmaEModalidadesParaConsolidar.Modalidade == Modalidade.EJA)
-                {
-                    await PublicaNaFila(mensagem, 1, guidParaCorrelacao);
-                    await PublicaNaFila(mensagem, 2, guidParaCorrelacao);
-                    await PublicaNaFila(mensagem, 0, guidParaCorrelacao);
-                }
+                if (filtro.Bimestre.HasValue)
+                    await PublicaNaFila(dto, filtro.Bimestre.Value, guidParaCorrelacao);
                 else
-                {
-                    await PublicaNaFila(mensagem, 1, guidParaCorrelacao);
-                    await PublicaNaFila(mensagem, 2, guidParaCorrelacao);
-                    await PublicaNaFila(mensagem, 3, guidParaCorrelacao);
-                    await PublicaNaFila(mensagem, 4, guidParaCorrelacao);
-                    await PublicaNaFila(mensagem, 0, guidParaCorrelacao);
-                }
+                    await PublicaBimestres(dto, guidParaCorrelacao, turmaEModalidadesParaConsolidar.Modalidade == Modalidade.EJA ? 2 : 4);
             }
 
             return true;
         }
+
+        private async Task PublicaBimestres(ConsolidacaoTurmaDto mensagem, Guid guidParaCorrelacao, int bimestres)
+        {
+            for(var i=1; i<=bimestres; i++)
+                await PublicaNaFila(mensagem, i, guidParaCorrelacao);
+        }
+
         private async Task PublicaNaFila(ConsolidacaoTurmaDto mensagem, int bimestre, Guid codigoCorrelacao)
         {
             mensagem.Bimestre = bimestre;
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaSync, mensagem, codigoCorrelacao, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaTratar, mensagem, codigoCorrelacao, null));
         }
     }
 }
