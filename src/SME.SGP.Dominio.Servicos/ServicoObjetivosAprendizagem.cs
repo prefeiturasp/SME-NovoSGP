@@ -26,6 +26,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
+        //ToDo: Eduardo - IServicoObjetivosAprendizagem ->  ISincronizarObjetivosComJuremaUseCase
         public async Task SincronizarObjetivosComJurema()
         {
             var parametrosDataUltimaAtualizacao = await repositorioParametrosSistema.ObterUnicoChaveEValorPorTipo(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema);

@@ -23,6 +23,7 @@ namespace SME.SGP.Worker.Service
             .ConfigureAppConfiguration((hostContext, config) =>
             {
                 config.SetBasePath(Directory.GetCurrentDirectory());
+                config.AddUserSecrets<Program>();
                 config.AddEnvironmentVariables();
             })
             .ConfigureLogging((context, logging) =>

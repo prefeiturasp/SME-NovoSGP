@@ -5,12 +5,14 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+    <UserSecretsId>5143fb51-bd2b-457c-b79b-64df8aa8ec16</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.13.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.2.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
@@ -23,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bibliotecas\SME.Background.Core\SME.Background.Core.csproj" />
-    <ProjectReference Include="..\Bibliotecas\SME.Background.Hangfire\SME.Background.Hangfire.csproj" />
     <ProjectReference Include="..\SME.SGP.Api\SME.SGP.Api.csproj" />
     <ProjectReference Include="..\SME.SGP.IoC\SME.SGP.IoC.csproj" />
   </ItemGroup>

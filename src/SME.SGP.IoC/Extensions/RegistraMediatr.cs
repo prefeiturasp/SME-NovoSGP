@@ -9,8 +9,9 @@ namespace SME.SGP.IoC
     {
         public static void AdicionarMediatr(this IServiceCollection services)
         {
-            var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
-            services.AddMediatR(assembly);
+            var assemblyApplication = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
+            var assemblyDomain = AppDomain.CurrentDomain.Load("SME.SGP.Agendador.Dominio");
+            services.AddMediatR(assemblyApplication, assemblyDomain);
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
         }
     }

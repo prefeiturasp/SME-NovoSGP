@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.Background.Core;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
@@ -19,10 +21,12 @@ namespace SME.SGP.Api.Controllers
     public class ObjetivoAprendizagemController : ControllerBase
     {
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
+        private IMediator mediator;
 
-        public ObjetivoAprendizagemController(IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem)
+        public ObjetivoAprendizagemController(IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem, IMediator mediator)
         {
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
+            this.mediator = mediator;
         }
 
         [HttpPost]
@@ -83,7 +87,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         public async Task<IActionResult> SincronizarObjetivos([FromServices] IServicoObjetivosAprendizagem servicoObjetivosAprendizagem)
         {
-            await servicoObjetivosAprendizagem.SincronizarObjetivosComJurema();
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarObjetivosComJurema, null, Guid.NewGuid(), null));
             return Ok();
         }
     }

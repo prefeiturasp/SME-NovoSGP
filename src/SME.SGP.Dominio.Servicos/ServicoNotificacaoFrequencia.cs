@@ -76,6 +76,7 @@ namespace SME.SGP.Dominio.Servicos
 
         #region Metodos Publicos
 
+        //ToDo: Eduardo - IServicoNotificacaoFrequencia ->  INotifificarRegistroFrequenciaUseCase
         public async Task ExecutaNotificacaoRegistroFrequencia()
         {
             var cargosNotificados = new List<(string, Cargo?)>();
@@ -227,6 +228,7 @@ namespace SME.SGP.Dominio.Servicos
 
         }
 
+        //ToDo: Eduardo - IServicoNotificacaoFrequencia ->  INotificarAlunosFaltososBimestreUseCase
         public async Task NotificarAlunosFaltososBimestre()
         {
             // Notifica apenas no dia seguinte ao fim do bimestre
