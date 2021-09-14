@@ -65,6 +65,9 @@ namespace SME.SGP.Aplicacao.Commands
                     if (request.PlanoAEEDto.Situacao == SituacaoPlanoAEE.Expirado)
                         await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
 
+                    if (await ParametroGeracaoPendenciaAtivo())
+                        await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoId));
+
                     unitOfWork.PersistirTransacao();
 
                     return new RetornoPlanoAEEDto(planoId, planoAEEVersaoId);
@@ -116,7 +119,7 @@ namespace SME.SGP.Aplicacao.Commands
             if (request.PlanoAEEDto.Id.HasValue && request.PlanoAEEDto.Id > 0)
             {
                 var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
-                planoAEE.Situacao = SituacaoPlanoAEE.EmAndamento;
+                planoAEE.Situacao = SituacaoPlanoAEE.ParecerCP;
 
                 return planoAEE;
             }
@@ -124,12 +127,19 @@ namespace SME.SGP.Aplicacao.Commands
             return new PlanoAEE()
             {
                 TurmaId = request.TurmaId,
-                Situacao = SituacaoPlanoAEE.EmAndamento,
+                Situacao = SituacaoPlanoAEE.ParecerCP,
                 AlunoCodigo = request.AlunoCodigo,
                 AlunoNumero = request.AlunoNumero,
                 AlunoNome = request.AlunoNome,
                 Questoes = new System.Collections.Generic.List<PlanoAEEQuestao>()
             };
+        }
+
+        private async Task<bool> ParametroGeracaoPendenciaAtivo()
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasPlanoAEE, DateTime.Today.Year));
+
+            return parametro != null && parametro.Ativo;
         }
     }
 }

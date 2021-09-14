@@ -6,25 +6,24 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDevolutivaPlanoAEEPorIdUseCase : AbstractUseCase, IObterDevolutivaPlanoAEEPorIdUseCase
+    public class ObterParecerPlanoAEEPorIdUseCase : AbstractUseCase, IObterParecerPlanoAEEPorIdUseCase
     {
-        public ObterDevolutivaPlanoAEEPorIdUseCase(IMediator mediator) : base(mediator)
+        public ObterParecerPlanoAEEPorIdUseCase(IMediator mediator) : base(mediator)
         {
         }
 
-        public async Task<PlanoAEEDevolutivaDto> Executar(long planoAEEId)
+        public async Task<PlanoAEEParecerDto> Executar(long planoAEEId)
         {
             var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(planoAEEId));
 
             return await MapearParaDto(planoAEE);
         }
 
-        private async Task<PlanoAEEDevolutivaDto> MapearParaDto(PlanoAEE planoAEE)
+        private async Task<PlanoAEEParecerDto> MapearParaDto(PlanoAEE planoAEE)
         {
             var responsavel = planoAEE.ResponsavelId.HasValue ?
                 await ObterResponsavel(planoAEE.ResponsavelId.Value) :
@@ -33,7 +32,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
 
-            return new PlanoAEEDevolutivaDto()
+            return new PlanoAEEParecerDto()
             {
                 ParecerCoordenacao = planoAEE.ParecerCoordenacao,
                 ParecerPAAI = planoAEE.ParecerPAAI,
@@ -42,6 +41,7 @@ namespace SME.SGP.Aplicacao
                 PodeEditarParecerCoordenacao = await PodeEditarParecerCP(planoAEE, usuario, turma),
                 PodeEditarParecerPAAI = PodeEditarParecerPAAI(planoAEE, usuario),
                 PodeAtribuirResponsavel = await PodeAtribuirResponsavel(planoAEE, usuario, turma),
+                PodeDevolverPlanoAEE = await PodeDevolverPlanoAEE(usuario, planoAEE.SituacaoPodeDevolverPlanoAEE()),
             };
         }
 
@@ -68,22 +68,36 @@ namespace SME.SGP.Aplicacao
         }
 
         private bool PodeEditarParecerPAAI(PlanoAEE planoAEE, Usuario usuario)
-            => planoAEE.Situacao == SituacaoPlanoAEE.DevolutivaPAAI
+            => planoAEE.Situacao == SituacaoPlanoAEE.ParecerPAAI
             && (planoAEE.ResponsavelId.GetValueOrDefault() == usuario.Id);
 
         private async Task<bool> PodeEditarParecerCP(PlanoAEE planoAEE, Usuario usuario, Turma turma)
-            => SituacaoPermiteEdicaoCP(planoAEE.Situacao) && 
+            => SituacaoPermiteEdicaoCP(planoAEE.Situacao) &&
                 (usuario.EhGestorEscolar() ?
                 await UsuarioGestorDoPlano(usuario, turma) :
                 false);
 
         private bool SituacaoPermiteEdicaoCP(SituacaoPlanoAEE situacao)
-            => new SituacaoPlanoAEE[] { SituacaoPlanoAEE.DevolutivaCP, SituacaoPlanoAEE.AtribuicaoPAAI, SituacaoPlanoAEE.DevolutivaPAAI }.Contains(situacao);
+            => new SituacaoPlanoAEE[] { SituacaoPlanoAEE.ParecerCP, SituacaoPlanoAEE.AtribuicaoPAAI, SituacaoPlanoAEE.ParecerPAAI }.Contains(situacao);
 
         private async Task<bool> UsuarioGestorDoPlano(Usuario usuario, Turma turma)
             => await mediator.Send(new EhGestorDaEscolaQuery(usuario.CodigoRf, turma.Ue.CodigoUe, usuario.PerfilAtual));
 
         private async Task<Usuario> ObterResponsavel(long responsavelId)
             => await mediator.Send(new ObterUsuarioPorIdQuery(responsavelId));
+
+        private async Task<bool> PodeDevolverPlanoAEE(Usuario usuario, bool situacaoPodeDevolverPlanoAEE)
+        {            
+            if (usuario == null)
+                throw new NegocioException("Usuário não localizado");
+
+            if (usuario.EhPerfilProfessor())
+                return false;
+
+            if (!situacaoPodeDevolverPlanoAEE)
+                return false;
+
+            return true;
+        }
     }
 }

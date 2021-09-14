@@ -4,34 +4,29 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands
 {
-    public class CadastrarDevolutivaCPCommandHandler : IRequestHandler<CadastrarDevolutivaCPCommand, bool>
+    public class CadastrarParecerCPCommandHandler : IRequestHandler<CadastrarParecerCPCommand, bool>
     {
 
         private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
         private readonly IMediator mediator;
-        private readonly IUnitOfWork unitOfWork;
         private readonly IConfiguration configuration;
 
-        public CadastrarDevolutivaCPCommandHandler(
+        public CadastrarParecerCPCommandHandler(
             IRepositorioPlanoAEE repositorioPlanoAEE,
             IMediator mediator,
-            IUnitOfWork unitOfWork,
             IConfiguration configuration)
         {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public async Task<bool> Handle(CadastrarDevolutivaCPCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(CadastrarParecerCPCommand request, CancellationToken cancellationToken)
         {
             var planoAEE = await repositorioPlanoAEE.ObterPorIdAsync(request.PlanoAEEId);
 
@@ -72,8 +67,9 @@ namespace SME.SGP.Aplicacao.Commands
             var hostAplicacao = configuration["UrlFrontEnd"];
             var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? "da criança" : "do estudante";
 
-            var titulo = $"Plano AEE a encerrar - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
-            var descricao = $@"Foi solicitado o encerramento do Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre}. <br/><a href='{hostAplicacao}aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano e atribuir um PAAI para analisar e realizar a devolutiva.
+            var titulo = $"Plano AEE para validação - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
+            var descricao = $@"O Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} foi cadastrado. <br/><a href='{hostAplicacao}aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano e atribuir um PAAI para que ele registre o parecer.
+
                 <br/><br/>A pendência será resolvida automaticamente após este registro.";
 
             await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, usuarioId, titulo, descricao));
