@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
 
             var retorno = new List<DetalhamentoComponentesCurricularesAlunoDto>();
 
-            var areasDoConhecimento = await mediator.Send(new ObterAreasConhecimentoQuery(componentesCurricularesDaTurma));
+            var areasDoConhecimento = await mediator.Send(new ObterAreasConhecimentoQuery(componentesCurricularesDaTurma, false));
 
             var ordenacaoGrupoArea = await mediator.Send(new ObterOrdenacaoAreasConhecimentoQuery(componentesCurricularesDaTurma, areasDoConhecimento));
 
