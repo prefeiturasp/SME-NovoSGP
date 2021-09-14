@@ -11,9 +11,11 @@ namespace SME.SGP.Aplicacao
     public class ObterInformacoesDeFrequenciaAlunosPorBimestreUseCase : AbstractUseCase, IObterInformacoesDeFrequenciaAlunosPorBimestreUseCase
     {
         private const int BimestreFinal = 0;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
 
-        public ObterInformacoesDeFrequenciaAlunosPorBimestreUseCase(IMediator mediator) : base(mediator)
+        public ObterInformacoesDeFrequenciaAlunosPorBimestreUseCase(IMediator mediator, IConsultasPeriodoEscolar consultasPeriodoEscolar) : base(mediator)
         {
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
         }
 
         public async Task<FrequenciaAlunosPorBimestreDto> Executar(ObterFrequenciaAlunosPorBimestreDto dto)
@@ -37,9 +39,29 @@ namespace SME.SGP.Aplicacao
             if (!alunos?.Any() ?? true)
                 throw new NegocioException("Os alunos da turma não foram encontrados.");
 
+            var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendarioId));
+            if (periodosEscolares == null || !periodosEscolares.Any())
+                throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
+
+            var bimestreAtual = dto.Bimestre;
+            if (!bimestreAtual.HasValue || dto.Bimestre == 0)
+                bimestreAtual = ObterBimestreAtual(periodosEscolares);
+
+            var periodoAtual = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestreAtual);
+            if (periodoAtual == null)
+                throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
+
+            var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendarioId, periodoAtual.PeriodoFim);
+            var alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
+                                                         a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
+                                                         a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido)) &&
+                                                         a.DataMatricula.Date <= bimestreDoPeriodo.PeriodoFim.Date)
+                                                   .OrderBy(a => a.NumeroAlunoChamada)
+                                                   .ThenBy(a => a.NomeValido());
+
             return BimestreFinal == dto.Bimestre
-                ? await ObterFrequenciaAlunosBimestreFinalAsync(turma, alunos, dto.ComponenteCurricularId, tipoCalendarioId)
-                : await ObterFrequenciaAlunosBimestresRegularesAsync(turma, alunos, dto.ComponenteCurricularId, tipoCalendarioId, dto.Bimestre);
+                ? await ObterFrequenciaAlunosBimestreFinalAsync(turma, alunosValidosComOrdenacao, dto.ComponenteCurricularId, tipoCalendarioId)
+                : await ObterFrequenciaAlunosBimestresRegularesAsync(turma, alunosValidosComOrdenacao, dto.ComponenteCurricularId, tipoCalendarioId, dto.Bimestre);
         }
 
         private async Task<FrequenciaAlunosPorBimestreDto> ObterFrequenciaAlunosBimestresRegularesAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunos, long componenteCurricularId, long tipoCalendarioId, int? bimestre)
@@ -158,6 +180,17 @@ namespace SME.SGP.Aplicacao
                     TotalCompensacoes = x.Sum(y => y.TotalCompensacoes),
                 })
                 .ToList();
+        }
+
+        private int ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
+        {
+            var dataPesquisa = DateTime.Now;
+
+            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
+
+            if (periodoEscolar == null)
+                return 1;
+            else return periodoEscolar.Bimestre;
         }
     }
 }

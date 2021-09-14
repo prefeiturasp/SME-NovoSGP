@@ -3,6 +3,7 @@ using Polly;
 using Polly.Registry;
 using SME.GoogleClassroom.Infra;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -18,12 +19,12 @@ namespace SME.SGP.Aplicacao
     public class InserirAulaRecorrenteCommandHandler : IRequestHandler<InserirAulaRecorrenteCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoLog servicoLog;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
         private readonly IServicoNotificacao servicoNotificacao;
-        private readonly IUnitOfWork unitOfWork;        
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IPodeCadastrarAulaUseCase podeCadastrarAulaUseCase;
 
         private const String MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA = "Você não pode criar aulas para essa Turma.";
 
@@ -31,25 +32,25 @@ namespace SME.SGP.Aplicacao
             "Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.";
 
         public InserirAulaRecorrenteCommandHandler(IMediator mediator,
-                                                   IServicoEol servicoEOL,
                                                    IServicoLog servicoLog,
                                                    IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
                                                    IServicoNotificacao servicoNotificacao,
-                                                   IUnitOfWork unitOfWork)
+                                                   IUnitOfWork unitOfWork,
+                                                   IPodeCadastrarAulaUseCase podeCadastrarAulaUseCase)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));            
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.podeCadastrarAulaUseCase = podeCadastrarAulaUseCase ?? throw new ArgumentNullException(nameof(podeCadastrarAulaUseCase));
         }
 
         public async Task<bool> Handle(InserirAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
-            if(!request.Usuario.EhGestorEscolar())
+            if (!request.Usuario.EhGestorEscolar())
                 await ValidarComponentesProfessor(request, request.Usuario);
             await GerarRecorrencia(request, request.Usuario);
             return true;
@@ -117,7 +118,7 @@ namespace SME.SGP.Aplicacao
             var datasPersistencia = validacaoDatas.datasPersistencia;
             var mensagensValidacao = validacaoDatas.mensagensValidacao;
 
-            var geracaoRecorrencia = await GerarAulaDeRecorrenciaParaDias(aulaRecorrente, usuario, datasPersistencia);
+            var geracaoRecorrencia = await GerarAulaDeRecorrenciaParaDias(aulaRecorrente, usuario, datasPersistencia, aulaRecorrente.EhRegencia);
 
             // Notificar usuário da conclusão da geração de aulas
             await NotificarUsuario(geracaoRecorrencia.aula, geracaoRecorrencia.aulasQueDeramErro, mensagensValidacao, usuario, datasPersistencia.Count(), aulaRecorrente.NomeComponenteCurricular, turma);
@@ -317,7 +318,7 @@ namespace SME.SGP.Aplicacao
             return (datasAtribuicao, mensagensValidacao);
         }
 
-        private async Task<(Aula aula, IEnumerable<(DateTime dataAula, string mensagemDeErro)> aulasQueDeramErro)> GerarAulaDeRecorrenciaParaDias(InserirAulaRecorrenteCommand aulaRecorrente, Usuario usuario, IEnumerable<DateTime> datasParaPersistencia)
+        private async Task<(Aula aula, IEnumerable<(DateTime dataAula, string mensagemDeErro)> aulasQueDeramErro)> GerarAulaDeRecorrenciaParaDias(InserirAulaRecorrenteCommand aulaRecorrente, Usuario usuario, IEnumerable<DateTime> datasParaPersistencia, bool ehRegencia)
         {
             var aulasQueDeramErro = new List<(DateTime dataAula, string errorMessage)>();
 
@@ -327,7 +328,17 @@ namespace SME.SGP.Aplicacao
             {
                 if (aula.Id == 0)
                 {
-                    await repositorioAula.SalvarAsync(aula);
+                    var retornoPodeCadastrarAula = await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(0,
+                                                                                                aula.TurmaId,
+                                                                                                long.Parse(aula.DisciplinaId),
+                                                                                                dia,
+                                                                                                ehRegencia,
+                                                                                                aulaRecorrente.TipoAula));
+                    if (retornoPodeCadastrarAula.PodeCadastrarAula)
+                        await repositorioAula.SalvarAsync(aula);
+                    else
+                        aulasQueDeramErro.Add((dia, "Já existe aula cadastrada nesta data"));
+
                     continue;
                 }
 
