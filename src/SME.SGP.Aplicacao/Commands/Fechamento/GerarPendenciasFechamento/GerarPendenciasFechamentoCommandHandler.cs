@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +49,12 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
             }
 
             await mediator.Send(new AtualizarSituacaoFechamentoTurmaDisciplinaCommand(request.FechamentoTurmaDisciplinaId, situacaoFechamento));
+
+
+
+            var consolidacaoTurma = new ConsolidacaoTurmaDto(request.TurmaId, request.Bimestre);
+            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null));
 
             return true;
         }

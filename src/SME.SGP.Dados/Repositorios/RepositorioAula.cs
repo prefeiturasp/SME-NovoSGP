@@ -899,8 +899,8 @@ namespace SME.SGP.Dados.Repositorios
                     writer.Write(aula.UeId);
                     writer.Write(aula.ProfessorRf);
                     writer.Write(aula.CriadoEm);
-                    writer.Write("Sistema");
-                    writer.Write("Sistema");
+                    writer.Write(aula.CriadoPor != null? aula.CriadoPor: "Sistema");
+                    writer.Write(aula.CriadoRF != null? aula.CriadoRF: "Sistema");
                 }
                 writer.Complete();
             }
@@ -1062,6 +1062,21 @@ namespace SME.SGP.Dados.Repositorios
 
                 throw new NegocioException("Não é possível salvar aula com quantidade negativa. Entre em contato com suporte.");
             }
+        }
+
+        public async Task<DataAulaDto> ObterAulaPorCodigoTurmaComponenteEData(string turmaId, string componenteCurricularId, DateTime dataCriacao)
+        {
+            var query = @"select id as AulaId
+                            , data_aula as DataAula
+                        from aula 
+                       where not excluido 
+                         and turma_id = @turmaId
+                         and disciplina_id = @componenteCurricularId
+                         and data_aula >= @dataCriacao
+                       order by data_aula
+                       limit 1";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<DataAulaDto>(query, new { turmaId, componenteCurricularId, dataCriacao = dataCriacao.Date });
         }
     }
 }

@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             await mediator.Send(new ValidaSeExisteTurmaPorCodigoQuery(filtro.TurmaCodigo));
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RecuperacaoParalela, filtro, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RecuperacaoParalela, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPapRelatorioSemestral));
         }
     }
 }

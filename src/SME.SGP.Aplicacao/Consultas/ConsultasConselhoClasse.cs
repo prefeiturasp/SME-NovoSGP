@@ -137,7 +137,7 @@ namespace SME.SGP.Aplicacao
                 periodoFechamentoBimestre.FinalDoFechamento :
                 (await ObterPeriodoUltimoBimestre(turma)).PeriodoFim;
 
-            var tipoNota = await servicoDeNotasConceitos.ObterNotaTipoPorTurmaDataReferencia(turma, dataReferencia, consideraHistorico);
+            var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turma.Ano, turma.ModalidadeCodigo, dataReferencia));
             if (tipoNota == null)
                 throw new NegocioException("Não foi possível identificar o tipo de nota da turma");
 

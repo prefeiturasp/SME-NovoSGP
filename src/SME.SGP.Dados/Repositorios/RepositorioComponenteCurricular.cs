@@ -229,6 +229,11 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { bimestre , anoLetivo, turmaId, codigoAluno, }));
         }
+
+        public async Task<bool> LancaNota(long id)
+        {
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>("select permite_lancamento_nota from componente_curricular where id = @id", new { id });
+        }
     }
 
 }

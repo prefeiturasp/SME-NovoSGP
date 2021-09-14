@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class IncluirFilaGeracaoPendenciasFechamentoCommand : IRequest<bool>
     {
-        public IncluirFilaGeracaoPendenciasFechamentoCommand(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, Usuario usuario, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, bool componenteSemNota = false, bool registraFrequencia = true)
+        public IncluirFilaGeracaoPendenciasFechamentoCommand(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, Usuario usuario, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, long turmaId, bool componenteSemNota = false, bool registraFrequencia = true)
         {
             ComponenteCurricularId = componenteCurricularId;
             TurmaCodigo = turmaCodigo;
@@ -21,6 +21,7 @@ namespace SME.SGP.Aplicacao
             CriadoRF = criadoRF;
             ComponenteSemNota = componenteSemNota;
             RegistraFrequencia = registraFrequencia;
+            TurmaId = turmaId;
         }
 
         public long ComponenteCurricularId { get; }
@@ -35,6 +36,7 @@ namespace SME.SGP.Aplicacao
         public string CriadoRF { get; }
         public bool ComponenteSemNota { get; }
         public bool RegistraFrequencia { get; }
+        public long TurmaId { get; set; }
     }
 
     public class IncluirFilaGeracaoPendenciasFechamentoCommandValidator : AbstractValidator<IncluirFilaGeracaoPendenciasFechamentoCommand>
@@ -76,6 +78,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.CriadoRF)
                 .NotEmpty()
                 .WithMessage("O RF do criador do Fechamento Turma x Disciplina é necessário para verificação de pendências no fechamento.");
+
+            RuleFor(a => a.TurmaId)
+                .NotEmpty()
+                .WithMessage("A turma Id é necessário para verificação de pendências no fechamento.");
         }
     }
 }

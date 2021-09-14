@@ -13,6 +13,7 @@ namespace SME.SGP.Dominio
         public bool Migrado { get; set; }
         public string ProfessorRf { get; set; }
         public string UeId { get; set; }
+        public int AnoLetivo { get; set; }
 
         public void Excluir()
         {
@@ -21,8 +22,11 @@ namespace SME.SGP.Dominio
             Excluido = true;
         }
 
-        public void Validar(bool ehSme, int anoLetivo, IEnumerable<PeriodoEscolar> periodosEscolares)
+        public void Validar(bool ehSme, int anoLetivo, IEnumerable<PeriodoEscolar> periodosEscolares, ModalidadeTipoCalendario modalidade = ModalidadeTipoCalendario.FundamentalMedio)
         {
+            if (modalidade == ModalidadeTipoCalendario.Infantil)
+                if (anoLetivo < 2021)
+                    throw new NegocioException("Apenas é possível inserir atribuição esporádica para Educação Infantil a partir de 2021.");
             ValidarDataInicio(ehSme, anoLetivo, periodosEscolares);
             ValidarDataFim(ehSme, anoLetivo, periodosEscolares);
         }
@@ -34,7 +38,7 @@ namespace SME.SGP.Dominio
             if (!dentroPeriodo)
                 throw new NegocioException("O Fim da atribuição deve estar dentro de um periodo escolar cadastrado");
 
-            if (DataFim.Year != DateTime.Today.Year)
+            if (DataFim.Year != anoLetivo)
                 throw new NegocioException("O ano informado da data fim não esta dentro do ano vigente");
 
             if (DataFim < DataInicio)
@@ -42,9 +46,6 @@ namespace SME.SGP.Dominio
 
             if (ehSme && anoLetivo == DateTime.Today.Year)
                 return;
-
-            if (DataFim < DateTime.Today)
-                throw new NegocioException("Não pode ser informada uma data passada para o fim do periodo");
         }
 
         private void ValidarDataInicio(bool ehSme, int anoLetivo, IEnumerable<PeriodoEscolar> periodosEscolares)
@@ -54,14 +55,12 @@ namespace SME.SGP.Dominio
             if (!dentroPeriodo)
                 throw new NegocioException("O Inicio da atribuição deve estar dentro de um periodo escolar cadastrado");
 
-            if (DataInicio.Year != DateTime.Today.Year)
+            if (DataInicio.Year != anoLetivo)
                 throw new NegocioException("O ano informado da data inicio não esta dentro do ano vigente");
 
             if (ehSme && anoLetivo == DateTime.Today.Year)
                 return;
 
-            if (DataInicio < DateTime.Today)
-                throw new NegocioException("Não pode ser informada uma data passada para o inicio do periodo");
         }
     }
 }

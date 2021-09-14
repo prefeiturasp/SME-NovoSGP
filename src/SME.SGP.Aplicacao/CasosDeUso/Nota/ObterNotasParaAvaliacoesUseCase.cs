@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível obter a turma.");
 
             var disciplinasDoProfessorLogado = await consultasDisciplina
-                .ObterComponentesCurricularesPorProfessorETurma(filtro.TurmaCodigo, true);
+              .ObterComponentesCurricularesPorProfessorETurma(filtro.TurmaCodigo, true);
 
             if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
                 throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
@@ -138,6 +138,8 @@ namespace SME.SGP.Aplicacao
             var frequenciasDosAlunos = await mediator
                 .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(alunosAtivosCodigos, periodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString()));
 
+            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString(), filtro.PeriodoEscolarId));
+
             foreach (var aluno in alunosAtivos)
             {
                 var notaConceitoAluno = new NotasConceitosAlunoRetornoDto()
@@ -181,7 +183,8 @@ namespace SME.SGP.Aplicacao
                         NotaConceito = notaParaVisualizar,
                         Ausente = ausente,
                         PodeEditar = aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) ||
-                                     (aluno.EstaInativo(atividadeAvaliativa.DataAvaliacao) && atividadeAvaliativa.DataAvaliacao.Date <= aluno.DataSituacao.Date)
+                                     (aluno.EstaInativo(atividadeAvaliativa.DataAvaliacao) && atividadeAvaliativa.DataAvaliacao.Date <= aluno.DataSituacao.Date),
+                        StatusGsa = notaDoAluno?.StatusGsa
                     };
 
                     notasAvaliacoes.Add(notaAvaliacao);
@@ -273,12 +276,14 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                // Carrega Frequencia Aluno                        
                 var frequenciaAluno = frequenciasDosAlunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
-                notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ?
-                                ((int)Math.Round(frequenciaAluno.PercentualFrequencia, 0)).ToString() :
-                                "100";
+                if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada)
+                    notaConceitoAluno.PercentualFrequencia = "100";
 
+                else
+                    notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ?
+                                                   (Math.Round(frequenciaAluno.PercentualFrequencia, 2)).ToString() :
+                                                   "";
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }
 

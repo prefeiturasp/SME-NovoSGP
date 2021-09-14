@@ -129,9 +129,15 @@ namespace SME.SGP.Dominio
 
         ExecucaoConsolidacaoDevolutivasTurma = 70,
 
+        ExecucaoConsolidacaoMediaRegistrosIndividuaisTurma = 71,
         QuantidadeImagensPercursoTurma = 72,
         PeriodoDeDiasSemRegistroIndividual = 73,
         AgrupamentoTurmasFiltro = 74,
+        ExecucaoConsolidacaoAcompanhamentoAprendizagemAlunoTurma = 75,
+
+        AtualizacaoDeAtividadesAvaliativas = 76,
+        TipoAtividadeAvaliativaClassroom = 77,
+       
         
         //Sistema
         HabilitarServicosEmBackground = 100

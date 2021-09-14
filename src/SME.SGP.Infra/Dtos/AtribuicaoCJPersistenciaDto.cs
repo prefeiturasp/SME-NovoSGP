@@ -27,5 +27,7 @@ namespace SME.SGP.Infra
 
         [Required(ErrorMessage = "É necessário informar o professor substituto.")]
         public string UsuarioRf { get; set; }
+        public string AnoLetivo { get; set; }
+        public bool Historico { get; set; }
     }
 }

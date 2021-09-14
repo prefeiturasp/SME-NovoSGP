@@ -2,9 +2,6 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -21,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
             filtro.NomeUsuario = usuarioLogado.Nome;
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Usuarios, filtro, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Usuarios, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosUsuarios));
         }
     }
 }

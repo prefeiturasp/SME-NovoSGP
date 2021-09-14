@@ -9,8 +9,9 @@ namespace SME.SGP.Dominio.Interfaces
         
         Task<IEnumerable<AtribuicaoCJ>> ObterAtribuicaoAtivaAsync(string professorRf);
 
-        Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long componenteCurricularId, string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaIds = null, int? anoLetivo = null);
-
-        Task<bool> RemoverRegistros(string dreCodigo, string ueCodigo, string turmaCodigo, string professorRf, long disciplinaId);
+        Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long componenteCurricularId, string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaIds = null, int? anoLetivo = null, bool? historico = null);
+        Task<bool> PossuiAtribuicaoPorDreUeETurma(string turmaId, string dreCodigo, string ueCodigo, string professorRf);
+        Task<IEnumerable<int>> ObterAnosDisponiveis(string professorRF, bool consideraHistorico);
+        Task<bool> RemoverRegistros(string dreCodigo, string ueCodigo, string turmaCodigo, string professorRf, long disciplinaId = 0);
     }
 }

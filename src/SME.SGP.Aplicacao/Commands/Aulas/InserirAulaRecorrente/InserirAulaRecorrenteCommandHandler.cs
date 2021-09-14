@@ -50,19 +50,36 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(InserirAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
+            AtribuicaoEsporadica atribuicao = new AtribuicaoEsporadica();
             if (!request.Usuario.EhGestorEscolar())
-                await ValidarComponentesProfessor(request, request.Usuario);
-            await GerarRecorrencia(request, request.Usuario);
+                atribuicao = await ValidarComponentesProfessor(request, request.Usuario, atribuicao);
+            await GerarRecorrencia(request, request.Usuario, atribuicao);
             return true;
         }
 
-        private async Task ValidarComponentesProfessor(InserirAulaRecorrenteCommand aulaRecorrente,
-            Usuario usuarioLogado)
+        private async Task<AtribuicaoEsporadica> ValidarComponentesProfessor(InserirAulaRecorrenteCommand aulaRecorrente,
+            Usuario usuarioLogado,
+            AtribuicaoEsporadica atribuicao)
         {
+
             if (usuarioLogado.EhProfessorCj())
             {
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aulaRecorrente.CodigoTurma));
+                var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, usuarioLogado.CodigoRf));
+
+                var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuarioLogado.CodigoRf, false, aulaRecorrente.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
+
+                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
+                {
+                    var verificaAtribuicao = atribuicoesEsporadica.FirstOrDefault(a => a.DataInicio <= aulaRecorrente.DataAula.Date && a.DataFim >= aulaRecorrente.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe);
+                    if (verificaAtribuicao == null)
+                        throw new NegocioException(MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA);
+
+                    atribuicao = verificaAtribuicao;
+                }
+
                 await ValidaComponentesQuandoCj(aulaRecorrente, usuarioLogado);
-                return;
+                return atribuicao;
             }
 
             var obterComponentesQuery = new ObterComponentesCurricularesDoProfessorNaTurmaQuery(
@@ -81,6 +98,8 @@ namespace SME.SGP.Aplicacao
             var usuarioPodePersistirTurmaNaData = await mediator.Send(obterUsuarioQuery);
             if (!usuarioPodePersistirTurmaNaData)
                 throw new NegocioException(MSG_NAO_PODE_ALTERAR_NESTA_TURMA);
+
+            return atribuicao;
         }
 
         private async Task ValidaComponentesQuandoCj(InserirAulaRecorrenteCommand aulaRecorrente,
@@ -97,7 +116,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task GerarRecorrencia(InserirAulaRecorrenteCommand aulaRecorrente, Usuario usuario)
+        private async Task GerarRecorrencia(InserirAulaRecorrenteCommand aulaRecorrente, Usuario usuario, AtribuicaoEsporadica atribuicao)
         {
             var inicioRecorrencia = aulaRecorrente.DataAula;
             var obterFimPeriodoQuery = new ObterFimPeriodoRecorrenciaQuery(
@@ -105,16 +124,18 @@ namespace SME.SGP.Aplicacao
                 aulaRecorrente.DataAula,
                 aulaRecorrente.RecorrenciaAula);
             var fimRecorrencia = await mediator.Send(obterFimPeriodoQuery);
-            await GerarRecorrenciaParaPeriodos(aulaRecorrente, inicioRecorrencia, fimRecorrencia, usuario);
+            await GerarRecorrenciaParaPeriodos(aulaRecorrente, inicioRecorrencia, fimRecorrencia, usuario, atribuicao);
         }
 
-        private async Task GerarRecorrenciaParaPeriodos(InserirAulaRecorrenteCommand aulaRecorrente, DateTime inicioRecorrencia, DateTime fimRecorrencia, Usuario usuario)
+        private async Task GerarRecorrenciaParaPeriodos(InserirAulaRecorrenteCommand aulaRecorrente, DateTime inicioRecorrencia, DateTime fimRecorrencia, Usuario usuario, AtribuicaoEsporadica atribuicao)
         {
             var diasParaIncluirRecorrencia = ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia);
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aulaRecorrente.CodigoTurma));
 
-            var validacaoDatas = await ValidarDatasAula(diasParaIncluirRecorrencia, aulaRecorrente.CodigoTurma, aulaRecorrente.ComponenteCurricularId, aulaRecorrente.TipoCalendarioId, aulaRecorrente.EhRegencia, aulaRecorrente.Quantidade, usuario, turma);
+            var validacaoDatas = await ValidarDatasAula(diasParaIncluirRecorrencia, aulaRecorrente.CodigoTurma, 
+                aulaRecorrente.ComponenteCurricularId, aulaRecorrente.TipoCalendarioId, aulaRecorrente.EhRegencia, 
+                aulaRecorrente.Quantidade, usuario, turma, atribuicao);
             var datasPersistencia = validacaoDatas.datasPersistencia;
             var mensagensValidacao = validacaoDatas.mensagensValidacao;
 
@@ -185,7 +206,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<(IEnumerable<DateTime> datasPersistencia, IEnumerable<string> mensagensValidacao)> ValidarDatasAula(IEnumerable<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, long componenteCurricularCodigo, long tipoCalendarioId, bool ehRegencia, int quantidade, Usuario usuario, Turma turma)
+        private async Task<(IEnumerable<DateTime> datasPersistencia, IEnumerable<string> mensagensValidacao)> ValidarDatasAula(IEnumerable<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, long componenteCurricularCodigo, long tipoCalendarioId, bool ehRegencia, int quantidade, Usuario usuario, Turma turma, AtribuicaoEsporadica atribuicao)
         {
             // Aulas Existentes
             var validacaoAulasExistentes = await ValidarAulaExistenteNaData(diasParaIncluirRecorrencia, turmaCodigo, componenteCurricularCodigo, usuario.EhProfessorCj());
@@ -198,7 +219,7 @@ namespace SME.SGP.Aplicacao
             var validacaoDiasLetivos = await ValidarDiasLetivos(validacaoGradeCurricular.datasValidas, turma, tipoCalendarioId);
 
             // Atribuição Professor
-            var validacaoAtribuicaoProfessor = await ValidarAtribuicaoProfessor(validacaoDiasLetivos.diasLetivos, turmaCodigo, componenteCurricularCodigo, usuario);
+            var validacaoAtribuicaoProfessor = await ValidarAtribuicaoProfessor(validacaoDiasLetivos.diasLetivos, turmaCodigo, componenteCurricularCodigo, usuario, atribuicao);
 
             return (validacaoAtribuicaoProfessor.datasAtribuicao,
                     validacaoAtribuicaoProfessor.mensagensValidacao
@@ -284,11 +305,28 @@ namespace SME.SGP.Aplicacao
             return (datasValidas: diasParaIncluirRecorrencia, mensagensValidacao: Enumerable.Empty<string>());
         }
 
-        private async Task<(IEnumerable<DateTime> datasAtribuicao, IEnumerable<string> mensagensValidacao)> ValidarAtribuicaoProfessor(IEnumerable<DateTime> datasValidas, string turmaCodigo, long componenteCurricularCodigo, Usuario usuario)
+        private async Task<(IEnumerable<DateTime> datasAtribuicao, IEnumerable<string> mensagensValidacao)> ValidarAtribuicaoProfessor(IEnumerable<DateTime> datasValidas, string turmaCodigo, long componenteCurricularCodigo, Usuario usuario, AtribuicaoEsporadica atribuicao)
         {
+            var mensagensValidacao = new List<string>();
+
             if (usuario.EhProfessorCj() || usuario.EhGestorEscolar())
             {
-                return (datasValidas, Enumerable.Empty<string>());
+                if(String.IsNullOrEmpty(atribuicao.DreId))
+                    return (datasValidas, Enumerable.Empty<string>());
+
+                datasValidas
+                    .Where(d => d.Date > atribuicao.DataFim)
+                    .OrderBy(a => a.Date)
+                    .ToList()
+                    .ForEach(dataInvalida => IncluirMensagemValidacao(
+                        dataInvalida,
+                        "Este professor não pode persistir nesta turma neste dia pois não possui abrangência",
+                        ref mensagensValidacao)
+                    );
+
+                var datasAtribuicaoCJ = datasValidas.Where(d => d.Date <= atribuicao.DataFim);
+
+                return (datasAtribuicaoCJ, mensagensValidacao);
             }
             var datasAtribuicaoEOL = await mediator.Send(new ObterValidacaoPodePersistirTurmaNasDatasQuery(
                 usuario.CodigoRf,
@@ -303,8 +341,6 @@ namespace SME.SGP.Aplicacao
             var datasAtribuicao = datasAtribuicaoEOL
                 .Where(a => a.PodePersistir)
                 .Select(a => a.Data);
-
-            var mensagensValidacao = new List<string>();
 
             datasValidas
                 .Where(d => !datasAtribuicao.Any(a => a.Date == d))

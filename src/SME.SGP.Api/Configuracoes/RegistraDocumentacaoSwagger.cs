@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Integracoes;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
@@ -30,6 +31,12 @@ namespace SME.SGP.Api
                     { "Bearer", Enumerable.Empty<string>() },
                             });
             });
+
+            services.AddSwaggerGen(o =>
+            {
+                o.OperationFilter<FiltroIntegracaoExterna>();
+            });
+
         }
     }
 }

@@ -98,6 +98,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunoFrequenciaDto>> DefinirFrequenciaAlunoListagemAsync(IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, IEnumerable<FrequenciaAluno> frequenciaAlunosRegistrada, PeriodoEscolar periodoEscolar, bool turmaPossuiFrequenciaRegistrada = false)
         {
+
+
+            var turmaPossuiFrequenciasRegistradas = frequenciaAlunosRegistrada.ToList().Count > 0;
+
             List<AlunoFrequenciaDto> novaListaAlunos = new List<AlunoFrequenciaDto>();
             foreach (var aluno in alunos)
             {
@@ -133,6 +137,7 @@ namespace SME.SGP.Aplicacao
 
             return novaListaAlunos;
         }        
+
 
         private async Task<DisciplinaDto> ObterComponenteCurricularAsync(long componenteCurricularId)
         {

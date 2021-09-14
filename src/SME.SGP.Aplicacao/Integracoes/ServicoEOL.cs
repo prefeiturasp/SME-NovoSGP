@@ -597,10 +597,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor)
+        public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string ueId,string nomeProfessor)
         {
-            var resposta = await httpClient.GetAsync($"professores/{anoLetivo}/AutoComplete/{dreId}?nome={nomeProfessor}");
-
+            var resposta = await httpClient.GetAsync($"professores/{anoLetivo}/AutoComplete/{dreId}?nome={nomeProfessor}&ueId={ueId}");
             if (!resposta.IsSuccessStatusCode)
                 return null;
 
@@ -666,6 +665,24 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, bool buscarOutrosCargos = false)
         {
             var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}?buscarOutrosCargos={buscarOutrosCargos}");
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Ocorreu uma falha ao consultar o professor");
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
+        }
+
+        public async Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId)
+        {
+            if (string.IsNullOrWhiteSpace(codigoRF) || anoLetivo == 0 || string.IsNullOrWhiteSpace(dreId) || string.IsNullOrWhiteSpace(ueId))
+                throw new NegocioException("É necessario informar o codigoRF Dre, UE e o ano letivo");
+
+            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRfDreUe/{anoLetivo}?ueId={ueId}&dreId={dreId}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");

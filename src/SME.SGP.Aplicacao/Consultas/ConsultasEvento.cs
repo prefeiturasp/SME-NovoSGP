@@ -16,11 +16,13 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasAbrangencia consultasAbrangencia;
+        private readonly IRepositorioEventoBimestre repositorioEventoBimestre;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
                                IContextoAplicacao contextoAplicacao,
                                IServicoUsuario servicoUsuario,
                                IRepositorioEventoTipo repositorioEventoTipo,
+                               IRepositorioEventoBimestre repositorioEventoBimestre,
                                IConsultasAbrangencia consultasAbrangencia) : base(contextoAplicacao)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
@@ -28,6 +30,7 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new System.ArgumentNullException(nameof(consultasAbrangencia));
+            this.repositorioEventoBimestre = repositorioEventoBimestre ?? throw new System.ArgumentNullException(nameof(repositorioEventoBimestre));
         }
 
         public async Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto)
@@ -55,7 +58,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
         {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();            
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario);
         }
@@ -68,6 +71,9 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             evento.TipoEvento = await repositorioEventoTipo.ObterPorIdAsync(evento.TipoEventoId);
+           
+            var bimestres = await repositorioEventoBimestre.ObterEventoBimestres(evento.Id);
+              
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             //verificar se o evento e o perfil do usuário é SME para possibilitar alteração
@@ -84,7 +90,7 @@ namespace SME.SGP.Aplicacao
                 podeAlterarExcluirPorPerfilAbrangencia = abrangencia.Any(x => x.Codigo == evento.UeId);
             }
 
-            return MapearParaDto(evento, podeAlterar, podeAlterarExcluirPorPerfilAbrangencia);
+            return MapearParaDto(evento, podeAlterar, podeAlterarExcluirPorPerfilAbrangencia, bimestres);
         }
 
         public async Task<IEnumerable<CalendarioTipoEventoPorDiaDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)
@@ -134,7 +140,7 @@ namespace SME.SGP.Aplicacao
             return items?.Select(c => MapearParaDto(c));
         }
 
-        private EventoCompletoDto MapearParaDto(Evento evento, bool? podeAlterar = null, bool? podeAlterarExcluirPorPerfilAbrangencia = null)
+        private EventoCompletoDto MapearParaDto(Evento evento, bool? podeAlterar = null, bool? podeAlterarExcluirPorPerfilAbrangencia = null, int[] bimestres = null)
         {
             return evento == null ? null : new EventoCompletoDto
             {
@@ -159,7 +165,8 @@ namespace SME.SGP.Aplicacao
                 Migrado = evento.Migrado,
                 PodeAlterar = podeAlterar != null ? podeAlterar.Value && evento.PodeAlterar() : evento.PodeAlterar(),
                 PodeAlterarExcluirPorPerfilAbrangencia = podeAlterarExcluirPorPerfilAbrangencia != null ? podeAlterarExcluirPorPerfilAbrangencia : false,
-                Status = evento.Status
+                Status = evento.Status,
+                Bimestre = bimestres
             };
         }
 

@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,8 +25,29 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Handle(AlterarDiarioBordoCommand request, CancellationToken cancellationToken)
         {
-            if (!await mediator.Send(new AulaExisteQuery(request.AulaId)))
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
+
+            if (aula == null)
                 throw new NegocioException("Aula informada não existe");
+
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
+            if (turma == null)
+                throw new NegocioException("Turma informada não encontrada");
+
+            if (usuario.EhProfessorCj())
+            {
+                var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, usuario.CodigoRf));
+
+                var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuario.CodigoRf, false, aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
+
+                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
+                {
+                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
+                        throw new NegocioException($"Você não possui permissão para alterar o registro de diário de bordo neste período");
+                }
+            }
+
 
             var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId);
             if (diarioBordo == null)

@@ -54,8 +54,8 @@ namespace SME.SGP.Aplicacao
                 case TipoRelatorio.ConselhoClasseAluno:
                 case TipoRelatorio.ConselhoClasseTurma:
                 case TipoRelatorio.ConselhoClasseAtaFinal:
-                case TipoRelatorio.FaltasFrequencia:
-                case TipoRelatorio.FechamentoPendencias:
+                case TipoRelatorio.Frequencia:
+                case TipoRelatorio.Pendencias:
                     SentrySdk.AddBreadcrumb($"Enviando notificação..", $"{relatorioCorrelacao.Codigo.ToString().Substring(0, 3)}{relatorioCorrelacao.TipoRelatorio.ShortName()}");
                     await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo);
                     break;

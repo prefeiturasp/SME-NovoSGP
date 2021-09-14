@@ -112,5 +112,225 @@ namespace SME.SGP.Dados.Repositorios
 
             return (SituacaoConselhoClasse)await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, periodoEscolarId });
         }
+
+        public async Task<IEnumerable<ConselhoClasseSituacaoQuantidadeDto>> ObterConselhoClasseSituacao(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var query = MontarQueryConselhoClasseSituacaoQuantidade(ueId, ano, dreId, modalidade, semestre, bimestre);
+            return await database.Conexao.QueryAsync<ConselhoClasseSituacaoQuantidadeDto>(query.ToString(), new
+            {
+                ueId,
+                ano,
+                dreId,
+                modalidade,
+                semestre,
+                bimestre
+            });
+        }
+
+        private string MontarQueryConselhoClasseSituacaoQuantidade(long ueId,
+           int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+
+            var sqlQuery = new StringBuilder($@"select Situacao, sum(x.Quantidade) as Quantidade,
+                            x.AnoTurma
+                       from (
+                             select  cccat.status as Situacao,
+                                       count(cccat.id) as Quantidade, ");
+            if (ueId > 0)
+                sqlQuery.AppendLine(" t.nome as AnoTurma ");
+            else
+                sqlQuery.AppendLine(" t.ano as AnoTurma ");
+            sqlQuery.AppendLine(@" 
+                                  from consolidado_conselho_classe_aluno_turma cccat 
+                                 inner join turma t on t.id = cccat.turma_id 
+                                 inner join ue on ue.id = t.ue_id where t.tipo_turma = 1 ");
+
+            var queryWhere = new StringBuilder("");
+
+            if (ano > 0)
+            {
+                queryWhere.AppendLine(" and t.ano_letivo = @ano ");
+            }
+
+            if (ueId > 0)
+            {
+                queryWhere.AppendLine(" and t.ue_id = @ueId ");
+            }
+
+            if (dreId > 0)
+            {
+                queryWhere.AppendLine(" and ue.dre_id = @dreId ");
+            }
+
+            if (modalidade > 0)
+            {
+                queryWhere.AppendLine(" and t.modalidade_codigo = @modalidade ");
+            }
+
+            if (semestre > 0)
+            {
+                queryWhere.AppendLine(" and t.semestre = @semestre ");
+            }
+
+            if (bimestre >= 0)
+            {
+                queryWhere.AppendLine(" and cccat.bimestre = @bimestre ");
+            }
+
+            sqlQuery.AppendLine(queryWhere.ToString());
+            sqlQuery.AppendLine($@" group by cccat.status, ");
+            if (ueId > 0)
+                sqlQuery.AppendLine(" t.nome  ");
+            else
+                sqlQuery.AppendLine(" t.ano ");
+
+            sqlQuery.AppendLine(@") x group by x.Situacao, x.AnoTurma
+                                   order by x.AnoTurma;");
+
+
+            return sqlQuery.ToString();
+        }
+
+        public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var query = new StringBuilder("select distinct * from ( ");
+
+            query.AppendLine(MontarQueryNotasFinasFechamentoQuantidade(ueId, anoLetivo, dreId, modalidade, semestre, bimestre));
+
+            query.AppendLine(" union all ");
+
+            query.AppendLine(MontarQueryNotasFinasConselhoClasseQuantidade(ueId, anoLetivo, dreId, modalidade, semestre, bimestre));
+
+            query.AppendLine(" ) x ");
+
+            var parametros = new
+            {
+                ueId,
+                anoLetivo,
+                dreId,
+                modalidade,
+                semestre,
+                bimestre
+            };
+            return await database.Conexao.QueryAsync<FechamentoConselhoClasseNotaFinalDto>(query.ToString(), parametros);
+        }
+
+        private string MontarQueryNotasFinasFechamentoQuantidade(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var query = new StringBuilder(" select ");
+
+            if (ueId > 0)
+                query.AppendLine("t.nome as TurmaAnoNome, ");
+            else
+                query.AppendLine("t.ano as TurmaAnoNome, ");
+
+            query.AppendLine(@"pe.bimestre, 
+		                        fn.disciplina_id as ComponenteCurricularCodigo, 
+		                        ccn.id as ConselhoClasseNotaId, 
+		                        coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, 
+		                        coalesce(ccn.nota, fn.nota) as Nota, 
+		                        fa.aluno_codigo as AlunoCodigo,
+		                        cv.valor as Conceito
+	                        from
+		                        fechamento_turma ft
+	                        left join periodo_escolar pe on
+		                        pe.id = ft.periodo_escolar_id
+	                        inner join turma t on
+		                        t.id = ft.turma_id
+	                        inner join ue on
+		                        ue.id = t.ue_id
+	                        inner join fechamento_turma_disciplina ftd on
+		                        ftd.fechamento_turma_id = ft.id
+	                        inner join fechamento_aluno fa on
+		                        fa.fechamento_turma_disciplina_id = ftd.id
+	                        inner join fechamento_nota fn on
+		                        fn.fechamento_aluno_id = fa.id
+	                        left join conselho_classe cc on
+		                        cc.fechamento_turma_id = ft.id
+	                        left join conselho_classe_aluno cca on
+		                        cca.conselho_classe_id = cc.id
+		                        and cca.aluno_codigo = fa.aluno_codigo
+	                        left join conselho_classe_nota ccn on
+		                        ccn.conselho_classe_aluno_id = cca.id
+		                        and ccn.componente_curricular_codigo = fn.disciplina_id
+	                        left join conceito_valores cv on fn.conceito_id = cv.id
+	                        where t.ano_letivo = @anoLetivo ");
+
+            if (ueId > 0)
+                query.Append(" and ue.id = @ueId ");
+
+            if (dreId > 0)
+                query.Append(" and ue.dre_id = @dreId ");
+
+            if (modalidade > 0)
+                query.Append(" and t.modalidade_codigo = @modalidade ");
+
+            if (bimestre > 0)
+                query.Append(" and pe.bimestre = @bimestre ");
+
+            if (semestre > 0)
+                query.Append(" and t.semestre = @semestre ");
+
+            return query.ToString();
+        }
+
+        private string MontarQueryNotasFinasConselhoClasseQuantidade(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var query = new StringBuilder(" select ");
+
+            if (ueId > 0)
+                query.AppendLine("t.nome as TurmaAnoNome, ");
+            else
+                query.AppendLine("t.ano as TurmaAnoNome, ");
+
+            query.AppendLine(@"pe.bimestre, 
+		                        fn.disciplina_id as ComponenteCurricularCodigo, 
+		                        ccn.id as ConselhoClasseNotaId, 
+		                        coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, 
+		                        coalesce(ccn.nota, fn.nota) as Nota, 
+		                        fa.aluno_codigo as AlunoCodigo,
+		                        cv.valor as Conceito
+	                        from
+		                        fechamento_turma ft
+	                        left join periodo_escolar pe on
+		                        pe.id = ft.periodo_escolar_id
+	                        inner join turma t on
+		                        t.id = ft.turma_id
+	                        inner join ue on
+		                        ue.id = t.ue_id
+	                        inner join conselho_classe cc on
+		                        cc.fechamento_turma_id = ft.id
+	                        inner join conselho_classe_aluno cca on
+		                        cca.conselho_classe_id = cc.id
+	                        inner join conselho_classe_nota ccn on
+		                        ccn.conselho_classe_aluno_id = cca.id
+	                        left join fechamento_turma_disciplina ftd on
+		                        ftd.fechamento_turma_id = ft.id
+	                        left join fechamento_aluno fa on
+		                        fa.fechamento_turma_disciplina_id = ftd.id
+		                        and cca.aluno_codigo = fa.aluno_codigo
+	                        left join fechamento_nota fn on
+		                        fn.fechamento_aluno_id = fa.id
+		                        and ccn.componente_curricular_codigo = fn.disciplina_id
+	                        left join conceito_valores cv on fn.conceito_id = cv.id
+	                        where t.ano_letivo = @anoLetivo ");
+
+            if (ueId > 0)
+                query.Append(" and ue.id = @ueId ");
+
+            if (dreId > 0)
+                query.Append(" and ue.dre_id = @dreId ");
+
+            if (modalidade > 0)
+                query.Append(" and t.modalidade_codigo = @modalidade ");
+
+            if (bimestre > 0)
+                query.Append(" and pe.bimestre = @bimestre ");
+
+            if (semestre > 0)
+                query.Append(" and t.semestre = @semestre ");
+
+            return query.ToString();
+        }
     }
 }

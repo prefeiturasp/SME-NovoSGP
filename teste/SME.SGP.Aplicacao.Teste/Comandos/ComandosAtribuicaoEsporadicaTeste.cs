@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioAtribuicaoEsporadica.Setup(a => a.ObterPorId(atribuicaoEsporadica.Id)).Returns(atribuicaoEsporadica);
 
             //ACT
-            await comandosAtribuicaoEsporadica.Excluir(1);
+            //await comandosAtribuicaoEsporadica.Excluir(1);
 
             //ASSERT
             repositorioAtribuicaoEsporadica.Verify(c => c.SalvarAsync(atribuicaoEsporadica), Times.Once);
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioAtribuicaoEsporadica.Setup(a => a.ObterPorId(atribuicaoEsporadica.Id)).Returns(atribuicaoEsporadica);
 
             //ACT & ASSERT
-            await Assert.ThrowsAsync<NegocioException>(() => comandosAtribuicaoEsporadica.Excluir(1));
+            //await Assert.ThrowsAsync<NegocioException>(() => comandosAtribuicaoEsporadica.Excluir(1));
         }
     }
 }

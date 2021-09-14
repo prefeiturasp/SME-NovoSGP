@@ -14,5 +14,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long[]> ListarCodigosJuremaPorComponenteCurricularId(long id);
         Task<bool> VerificaPossuiObjetivosAprendizagemPorComponenteCurricularId(long id);
         Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, long turmaId, int bimestre, string codigoAluno);
+        Task<bool> LancaNota(long id);
     }
 }

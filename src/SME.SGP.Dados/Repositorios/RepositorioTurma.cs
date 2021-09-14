@@ -675,9 +675,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId)
         {
             var query = @"INSERT INTO public.turma
-				                (turma_id, ue_id, nome, ano, ano_letivo, modalidade_codigo, semestre, qt_duracao_aula, tipo_turno, data_atualizacao, historica, dt_fim_eol, ensino_especial, etapa_eja, data_inicio, serie_ensino, tipo_turma)
+				                (turma_id, ue_id, nome, ano, ano_letivo, modalidade_codigo, semestre, qt_duracao_aula, tipo_turno, data_atualizacao, historica, dt_fim_eol, ensino_especial, etapa_eja, data_inicio, serie_ensino, tipo_turma, nome_filtro)
 	                        values
-	                            (@Codigo, @ueId, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, @historica, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma);";
+	                            (@Codigo, @ueId, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, @historica, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma, @NomeFiltro);";
 
             var parametros = new
             {
@@ -698,7 +698,8 @@ namespace SME.SGP.Dados.Repositorios
                 turma.SerieEnsino,
                 turma.TipoTurma,
                 ueId,
-                historica = turma.Extinta
+                historica = turma.Extinta,
+                turma.NomeFiltro
             };
             var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
 
@@ -942,7 +943,8 @@ namespace SME.SGP.Dados.Repositorios
                                 serie_ensino = @serieEnsino,
                                 dt_fim_eol = @dataFim,
                                 tipo_turma = @tipoTurma,
-                                historica = @historica
+                                historica = @historica,
+                                nome_filtro = @nomeFiltro
                             where
 	                            turma_id = @turmaId";
 
@@ -963,14 +965,15 @@ namespace SME.SGP.Dados.Repositorios
                 turma.SerieEnsino,
                 turma.TipoTurma,
                 turmaId = turma.Codigo.ToString(),
-                historica = deveMarcarHistorica ? true : false
+                historica = deveMarcarHistorica ? true : false,
+                turma.NomeFiltro
             };
 
             var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
             return retorno != 0;
         }
 
-        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
+        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, string[] turmasCodigo, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
         {
             var query = new StringBuilder(@"select distinct t.id as TurmaId,
                                                      t.nome       
@@ -985,13 +988,13 @@ namespace SME.SGP.Dados.Repositorios
                                                  and ue.id = @ueId and t.tipo_turma in (1,2,7) ");
 
             if (!listarTodasTurmas)
-                query.AppendLine("and t.id = ANY(@turmasId) ");
+                query.AppendLine("and t.turma_id = ANY(@turmasCodigo) ");
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
 
             var querySituacao = new StringBuilder();
-            if (situacaoFechamento.HasValue)
+            if (situacaoFechamento.HasValue && situacaoFechamento.Value > -99)
             {
                 querySituacao.AppendLine(@"and t.id in (select turma_id from consolidado_fechamento_componente_turma 
                                    where not excluido and turma_id = t.id and status = @situacaoFechamento  ");
@@ -1002,7 +1005,7 @@ namespace SME.SGP.Dados.Repositorios
                 querySituacao.AppendLine(")");
             }
 
-            if (situacaoConselhoClasse.HasValue)
+            if (situacaoConselhoClasse.HasValue && situacaoConselhoClasse.Value > -99)
             {
                 querySituacao.AppendLine(@"and t.id in (select turma_id from consolidado_conselho_classe_aluno_turma 
                                    where not excluido and turma_id = t.id and status = @situacaoConselhoClasse  ");
@@ -1045,7 +1048,7 @@ namespace SME.SGP.Dados.Repositorios
                                     and ue.id = @ueId ");
 
             if (!listarTodasTurmas)
-                query.AppendLine("and t.id = ANY(@turmasId) ");
+                query.AppendLine("and t.turma_id = ANY(@turmasCodigo) ");
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
@@ -1067,7 +1070,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 quantidadeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
                 quantidadeRegistros = paginacao.QuantidadeRegistros,
-                turmasId,
+                turmasCodigo,
                 dreId,
                 ueId,
                 modalidadeTipoCalendario = (int)modalidade.ObterModalidadeTipoCalendario(),
@@ -1288,6 +1291,60 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select t.turma_id as TurmaCodigo, t.modalidade_codigo as ModalidadeCodigo from turma t where t.turma_id = Any(@turmasCodigo) ";
 
             return await contexto.Conexao.QueryAsync<TurmaModalidadeCodigoDto>(query, new { turmasCodigo });
+        }
+        
+        public async Task<IEnumerable<TurmaDTO>> ObterTurmasInfantilPorAno(int anoLetivo, string ueCodigo)
+        {
+            var query = @"select t.id as turmaId 
+                            , t.turma_id as TurmaCodigo
+                        from turma t
+                       inner join ue on ue.id = t.ue_id
+                       where t.modalidade_codigo = 1 
+                         and ue.ue_id = @ueCodigo
+                         and t.ano_letivo = @anoLetivo ";
+
+            return await contexto.QueryAsync<TurmaDTO>(query, new { anoLetivo, ueCodigo });
+        }
+
+        public async Task<IEnumerable<TurmaAlunoBimestreFechamentoDto>> AlunosTurmaPorDreIdUeIdBimestreSemestre(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var query = new StringBuilder(@"select 
+                            distinct t.id as TurmaId, 
+                            t.ano,
+                            t.tipo_turma as TurmaTipo,
+                            t.nome as TurmaNome,
+                            t.modalidade_codigo as TurmaModalidade, bimestre as Bimestre, aluno_codigo as AlunoCodigo 
+                        from consolidado_conselho_classe_aluno_turma cccat
+                        inner join turma t on cccat.turma_id = t.id 
+                        inner join ue on ue.id = t.ue_id 
+                        where t.ano_letivo = @ano ");
+
+            if (ueId > 0)
+            {
+                query.Append(" and t.ue_id = @ueId ");
+            }
+
+            if (dreId > 0)
+            {
+                query.Append(" and ue.dre_id = @dreId ");
+            }
+
+            if (modalidade > 0)
+            {
+                query.Append(" and t.modalidade_codigo = @modalidade ");
+            }
+
+            if (semestre > 0)
+            {
+                query.Append(" and t.semestre = @semestre ");
+            }
+
+            if (bimestre > 0)
+            {
+                query.Append(" and cccat.bimestre = @bimestre ");
+            }
+
+            return await contexto.QueryAsync<TurmaAlunoBimestreFechamentoDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre, bimestre });
         }
     }
 }

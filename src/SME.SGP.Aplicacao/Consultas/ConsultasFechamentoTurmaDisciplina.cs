@@ -194,8 +194,7 @@ namespace SME.SGP.Aplicacao
                                                        .OrderBy(a => a.NumeroAlunoChamada)
                                                        .ThenBy(a => a.NomeValido());
 
-                var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, disciplinaId.ToString(), periodoAtual.Id));
-
+                var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, disciplinaId.ToString(), bimestreDoPeriodo.Id));
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
                     var fechamentoTurma = (from ft in fechamentosTurma

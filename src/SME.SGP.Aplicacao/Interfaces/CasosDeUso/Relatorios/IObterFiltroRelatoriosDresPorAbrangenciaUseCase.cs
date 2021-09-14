@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterFiltroRelatoriosDresPorAbrangenciaUseCase
     {
-        Task<IEnumerable<AbrangenciaDreRetorno>> Executar();
+        Task<IEnumerable<AbrangenciaDreRetornoDto>> Executar();
     }
 }

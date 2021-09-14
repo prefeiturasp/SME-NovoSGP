@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -16,16 +17,6 @@ namespace SME.SGP.Aplicacao
             this.servicoAtribuicaoEsporadica = servicoAtribuicaoEsporadica ?? throw new System.ArgumentNullException(nameof(servicoAtribuicaoEsporadica));
         }
 
-        public async Task Excluir(long idAtribuicaoEsporadica)
-        {
-            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterPorId(idAtribuicaoEsporadica);
-            if (atribuicaoEsporadica is null)
-                throw new NegocioException("Não foi possível localizar esta atribuição esporádica.");
-
-            atribuicaoEsporadica.Excluir();
-
-            await repositorioAtribuicaoEsporadica.SalvarAsync(atribuicaoEsporadica);
-        }
 
         public async Task Salvar(AtribuicaoEsporadicaDto atruibuicaoEsporadicaDto)
         {
@@ -43,7 +34,8 @@ namespace SME.SGP.Aplicacao
                 DataInicio = Dto.DataInicio.Local().Date,
                 DreId = Dto.DreId,
                 Id = Dto.Id,
-                ProfessorRf = Dto.ProfessorRf
+                ProfessorRf = Dto.ProfessorRf,
+                AnoLetivo = Dto.AnoLetivo
             };
         }
 
@@ -59,6 +51,7 @@ namespace SME.SGP.Aplicacao
 
             entidade.DataFim = atribuicaoEsporadicaDto.DataFim.Local();
             entidade.DataInicio = atribuicaoEsporadicaDto.DataInicio.Local();
+            entidade.AnoLetivo = atribuicaoEsporadicaDto.AnoLetivo;
 
             return entidade;
         }

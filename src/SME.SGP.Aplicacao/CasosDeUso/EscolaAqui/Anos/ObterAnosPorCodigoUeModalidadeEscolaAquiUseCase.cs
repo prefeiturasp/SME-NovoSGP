@@ -1,24 +1,42 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Anos;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos.EscolaAqui.Anos;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Anos
+namespace SME.SGP.Aplicacao
 {
-    public class ObterAnosPorCodigoUeModalidadeEscolaAquiUseCase : IObterAnosPorCodigoUeModalidadeEscolaAquiUseCase
+    public class ObterAnosPorCodigoUeModalidadeEscolaAquiUseCase : AbstractUseCase, IObterAnosPorCodigoUeModalidadeEscolaAquiUseCase
     {
-        private readonly IMediator mediator;
-
-        public ObterAnosPorCodigoUeModalidadeEscolaAquiUseCase(IMediator mediator)
+        public ObterAnosPorCodigoUeModalidadeEscolaAquiUseCase(IMediator mediator) : base(mediator)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>> Executar(string codigoUe, Modalidade modalidade)
+        public async Task<IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>> Executar(string codigoUe, int[] modalidades)
         {
-            return await mediator.Send(new ObterAnosPorCodigoUeModalidadeQuery(codigoUe, modalidade));
+            if (modalidades.Any(m => (Modalidade)m != Modalidade.Fundamental &&
+                                     (Modalidade)m != Modalidade.Medio &&
+                                     (Modalidade)m != Modalidade.EJA))
+            {
+                return new List<AnosPorCodigoUeModalidadeEscolaAquiResult>()
+                {
+                    new AnosPorCodigoUeModalidadeEscolaAquiResult()
+                    {
+                        Ano = "-99",
+                    }
+                };
+            }
+
+            var anos = await mediator.Send(new ObterAnosPorCodigoUeModalidadeQuery(codigoUe, modalidades));
+            return anos.Any() ? anos :
+                new List<AnosPorCodigoUeModalidadeEscolaAquiResult>()
+                {
+                    new AnosPorCodigoUeModalidadeEscolaAquiResult() {
+                        Ano = "-99"
+                    }
+                };
         }
     }
 }
