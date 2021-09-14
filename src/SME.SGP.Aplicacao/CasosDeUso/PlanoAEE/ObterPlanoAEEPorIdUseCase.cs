@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
                 ultimaVersao = plano.Versoes.OrderByDescending(a => a.Numero).First();
                 plano.Versoes = plano.Versoes.Where(a => a.Id != ultimaVersao.Id).ToList();
                 plano.UltimaVersao = ultimaVersao;
-                plano.PodeDevolverPlanoAEE = entidadePlano.PodeDevolverPlanoAEE();
+                plano.PodeDevolverPlanoAEE = await PodeDevolverPlanoAEE(entidadePlano.SituacaoPodeDevolverPlanoAEE());
             }
 
             var questionarioId = await mediator.Send(new ObterQuestionarioPlanoAEEIdQuery());
@@ -86,6 +86,22 @@ namespace SME.SGP.Aplicacao
                 turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
 
             return turmaNome;
+        }
+
+        private async Task<bool> PodeDevolverPlanoAEE(bool situacaoPodeDevolverPlanoAEE)
+        {
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            if(usuario == null)
+                throw new NegocioException("Usuário não localizado");
+
+            if (usuario.EhPerfilProfessor())
+                return false;
+
+            if (!situacaoPodeDevolverPlanoAEE)
+                return false;
+
+            return true;
         }
     }
 }

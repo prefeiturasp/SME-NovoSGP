@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 PodeEditarParecerCoordenacao = await PodeEditarParecerCP(planoAEE, usuario, turma),
                 PodeEditarParecerPAAI = PodeEditarParecerPAAI(planoAEE, usuario),
                 PodeAtribuirResponsavel = await PodeAtribuirResponsavel(planoAEE, usuario, turma),
-                PodeDevolverPlanoAEE = planoAEE.PodeDevolverPlanoAEE(),
+                PodeDevolverPlanoAEE = await PodeDevolverPlanoAEE(usuario, planoAEE.SituacaoPodeDevolverPlanoAEE()),
             };
         }
 
@@ -84,6 +84,20 @@ namespace SME.SGP.Aplicacao
             => await mediator.Send(new EhGestorDaEscolaQuery(usuario.CodigoRf, turma.Ue.CodigoUe, usuario.PerfilAtual));
 
         private async Task<Usuario> ObterResponsavel(long responsavelId)
-            => await mediator.Send(new ObterUsuarioPorIdQuery(responsavelId));        
+            => await mediator.Send(new ObterUsuarioPorIdQuery(responsavelId));
+
+        private async Task<bool> PodeDevolverPlanoAEE(Usuario usuario, bool situacaoPodeDevolverPlanoAEE)
+        {            
+            if (usuario == null)
+                throw new NegocioException("Usuário não localizado");
+
+            if (usuario.EhPerfilProfessor())
+                return false;
+
+            if (!situacaoPodeDevolverPlanoAEE)
+                return false;
+
+            return true;
+        }
     }
 }

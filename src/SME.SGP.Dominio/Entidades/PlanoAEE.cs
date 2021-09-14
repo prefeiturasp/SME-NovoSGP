@@ -25,7 +25,7 @@ namespace SME.SGP.Dominio
         public void EncerrarPlanoAEE() {
             Situacao = SituacaoPlanoAEE.ParecerCP;
         }
-        public bool PodeDevolverPlanoAEE()
+        public bool SituacaoPodeDevolverPlanoAEE()
             => Situacao == SituacaoPlanoAEE.ParecerCP
             || Situacao == SituacaoPlanoAEE.ParecerPAAI
             || Situacao == SituacaoPlanoAEE.AtribuicaoPAAI;
