@@ -79,23 +79,25 @@ namespace SME.SGP.Aplicacao
                 return frequenciaAcompanhamento.Sum(fa => fa.Frequencia) / frequenciaAcompanhamento.Count();
             }
 
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+
             var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));           
 
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(new string[] { turma.CodigoTurma }, tipoCalendarioId, new string[] { }, new int[] { }));
 
             if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada == null || turmaPossuiFrequenciaRegistrada.Count() == 0 )
-                return "0";
+                return 0;
             
             else if(frequenciaAluno?.PercentualFrequencia > 0)
-                return frequenciaAluno.PercentualFrequencia.ToString();
+                return frequenciaAluno.PercentualFrequencia;
 
             else if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)
-                return "0";
+                return 0;
             
             else if (turmaPossuiFrequenciaRegistrada.Any())
-                return "100";
+                return 100;
 
-            return "0";
+            return 0;
         }
 
         public async Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
@@ -226,7 +228,7 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private async Task<string> CalculoFrequenciaGlobal2020(string alunoCodigo, Turma turma)
+        private async Task<double?> CalculoFrequenciaGlobal2020(string alunoCodigo, Turma turma)
         {
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
@@ -256,7 +258,7 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaGlobal2020 = Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
 
-            return frequenciaGlobal2020 == 0 ? "" : frequenciaGlobal2020.ToString();
+            return frequenciaGlobal2020 == 0 ? null : frequenciaGlobal2020;
 
         }
 
