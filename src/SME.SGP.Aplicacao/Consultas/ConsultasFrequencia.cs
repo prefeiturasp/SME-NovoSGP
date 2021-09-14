@@ -258,7 +258,10 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaGlobal2020 = Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
 
-            return frequenciaGlobal2020 == 0 ? null : frequenciaGlobal2020;
+            if (frequenciaGlobal2020 == 0)
+                return null;
+            else
+                return frequenciaGlobal2020;
 
         }
 
