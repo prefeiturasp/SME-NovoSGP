@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                     props.Persistent = true;
 
                     foreach (var mensagem in mensagens)
-                        _channel.BasicPublish(ExchangeRabbit.Sgp, mensagem.rota, props, mensagem.body);                    
+                        _channel.BasicPublish(ExchangeSgpRabbit.Sgp, mensagem.rota, props, mensagem.body);                    
                 }
             }
         }
