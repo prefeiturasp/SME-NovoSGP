@@ -256,11 +256,10 @@ namespace SME.SGP.Dados.Repositorios
                         from aula
                         inner join turma on aula.turma_id = turma.turma_id
 	                    left join registro_frequencia rf on aula.id = rf.aula_id
-                        left join diario_bordo tr on aula.id = tr.aula_id
                         where not aula.excluido
 	                        and aula.id = ANY(@aulas)
                             and aula.data_aula::date < @hoje
-                            and (rf.id is null or tr.id is null)
+                            and (rf.id is null)
 	                        " :
                             $@"select 1
                         from aula
