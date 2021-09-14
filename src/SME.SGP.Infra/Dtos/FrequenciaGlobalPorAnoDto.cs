@@ -9,7 +9,7 @@ namespace SME.SGP.Infra
     {
         public string NomeTurma { get; set; }
         public Modalidade Modalidade { get; set; }
-        public int Ano { get; set; }
+        public string Ano { get; set; }
         public int QuantidadeAcimaMinimoFrequencia { get; set; }
         public int QuantidadeAbaixoMinimoFrequencia { get; set; }
     }

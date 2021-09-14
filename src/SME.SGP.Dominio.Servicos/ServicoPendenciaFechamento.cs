@@ -53,7 +53,7 @@ namespace SME.SGP.Dominio.Servicos
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<int> ValidarAulasReposicaoPendente(long fechamentoId, string turmaCodigo, string turmaNome, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public async Task<int> ValidarAulasReposicaoPendente(long fechamentoId, string turmaCodigo, string turmaNome, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int bimestre)
         {
             var aulasPendentes = repositorioAula.ObterAulasReposicaoPendentes(turmaCodigo, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
             if (aulasPendentes != null && aulasPendentes.Any())
@@ -81,7 +81,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 mensagemHtml.Append("</table>");
                 var professorRf = aulasPendentes.First().ProfessorRf;
-                await GerarPendencia(fechamentoId, TipoPendencia.AulasReposicaoPendenteAprovacao, mensagem.ToString(), professorRf, mensagemHtml.ToString());
+                await GerarPendencia(fechamentoId, TipoPendencia.AulasReposicaoPendenteAprovacao, mensagem.ToString(), professorRf, mensagemHtml.ToString(), bimestre);
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasReposicaoPendenteAprovacao);
@@ -90,7 +90,7 @@ namespace SME.SGP.Dominio.Servicos
             return aulasReposicaoPendentes;
         }
 
-        public async Task<int> ValidarAulasSemFrequenciaRegistrada(long fechamentoId, string turmaCodigo, string turmaNome, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public async Task<int> ValidarAulasSemFrequenciaRegistrada(long fechamentoId, string turmaCodigo, string turmaNome, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int bimestre)
         {
             var registrosAulasSemFrequencia = repositorioAula.ObterAulasSemFrequenciaRegistrada(turmaCodigo, disciplinaId.ToString(), inicioPeriodo, fimPeriodo)
                 .Where(a => a.PermiteRegistroFrequencia());
@@ -120,7 +120,7 @@ namespace SME.SGP.Dominio.Servicos
                 mensagemHtml.Append("</table>");
 
                 var professorRf = registrosAulasSemFrequencia.First().ProfessorRf;
-                await GerarPendencia(fechamentoId, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento, mensagem.ToString(), professorRf, mensagemHtml.ToString());
+                await GerarPendencia(fechamentoId, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento, mensagem.ToString(), professorRf, mensagemHtml.ToString(), bimestre);
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento);
@@ -141,7 +141,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task<int> ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public async Task<int> ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int bimestre)
         {
             var registrosAulasSemPlanoAula = repositorioAula.ObterAulasSemPlanoAulaNaDataAtual(turma.CodigoTurma,
                                                                             disciplinaId.ToString(),
@@ -171,7 +171,7 @@ namespace SME.SGP.Dominio.Servicos
                 mensagemHtml.Append("</table>");
 
                 var professorRf = registrosAulasSemPlanoAula.First().ProfessorRf;
-                await GerarPendencia(fechamentoId, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento, mensagem.ToString(), professorRf, mensagemHtml.ToString());
+                await GerarPendencia(fechamentoId, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento, mensagem.ToString(), professorRf, mensagemHtml.ToString(), bimestre);
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
@@ -180,7 +180,7 @@ namespace SME.SGP.Dominio.Servicos
             return aulasSemPlanoAula;
         }
 
-        public async Task<int> ValidarAvaliacoesSemNotasParaNenhumAluno(long fechamentoId, string codigoTurma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public async Task<int> ValidarAvaliacoesSemNotasParaNenhumAluno(long fechamentoId, string codigoTurma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int bimestre)
         {
             var registrosAvaliacoesSemNotaParaNenhumAluno = repositorioAtividadeAvaliativa.ObterAtividadesAvaliativasSemNotaParaNenhumAluno(codigoTurma,
                                                                             disciplinaId.ToString(),
@@ -205,7 +205,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 mensagemHtml.Append("</table>");
                 var professorRf = registrosAvaliacoesSemNotaParaNenhumAluno.First().ProfessorRf;
-                await GerarPendencia(fechamentoId, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno, mensagem.ToString(), professorRf, mensagemHtml.ToString());
+                await GerarPendencia(fechamentoId, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno, mensagem.ToString(), professorRf, mensagemHtml.ToString(), bimestre);
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno);
@@ -214,7 +214,7 @@ namespace SME.SGP.Dominio.Servicos
             return avaliacoesSemnota;
         }
 
-        public async Task<int> ValidarPercentualAlunosAbaixoDaMedia(long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF)
+        public async Task<int> ValidarPercentualAlunosAbaixoDaMedia(long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, int bimestre)
         {
             if (!string.IsNullOrEmpty(justificativa))
             {
@@ -224,7 +224,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 var mensagemHtml = $"<table><tr><td class=\"sem-borda\">O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes. Justificativa : {justificativa} </td></tr></table>";
 
-                await GerarPendencia(fechamentoTurmaDisciplinaId, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem, criadoRF, mensagemHtml);
+                await GerarPendencia(fechamentoTurmaDisciplinaId, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem, criadoRF, mensagemHtml, bimestre);
                 alunosAbaixoMedia = 1;
             }
             else
@@ -236,14 +236,14 @@ namespace SME.SGP.Dominio.Servicos
             return alunosAbaixoMedia;
         }
 
-        private async Task GerarPendencia(long fechamentoId, TipoPendencia tipoPendencia, string mensagem, string professorRf, string descricaoHtml)
+        private async Task GerarPendencia(long fechamentoId, TipoPendencia tipoPendencia, string mensagem, string professorRf, string descricaoHtml, int bimestre)
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                repositorioPendencia.ExcluirPendenciasFechamento(fechamentoId, tipoPendencia);               
+                repositorioPendencia.ExcluirPendenciasFechamento(fechamentoId, tipoPendencia);
 
-                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(tipoPendencia, mensagem, "", tipoPendencia.Name(), descricaoHtml));              
-
+                var tituloPendencia = $"{tipoPendencia.Name()} - {bimestre}º bimestre";
+                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(tipoPendencia, mensagem, "", tituloPendencia, descricaoHtml));
                 await mediator.Send(new SalvarPendenciaFechamentoCommand(fechamentoId, pendenciaId));                
 
                 await RelacionaPendenciaUsuario(pendenciaId, professorRf);                
@@ -310,7 +310,7 @@ namespace SME.SGP.Dominio.Servicos
         public bool NotasExtemporaneasAlteradas()
             => notasExtemporaneasAlteradas > 0;
 
-        public async Task<int> ValidarAlteracaoExtemporanea(long fechamentoId, string turmaCodigo, string professorRf)
+        public async Task<int> ValidarAlteracaoExtemporanea(long fechamentoId, string turmaCodigo, string professorRf, int bimestre)
         {
             var registrosNotasAlteradas = await repositorioFechamentoNota.ObterNotasEmAprovacaoPorFechamento(fechamentoId);
 
@@ -319,7 +319,7 @@ namespace SME.SGP.Dominio.Servicos
                 var mensagem = $"Notas de fechamento alteradas fora do ano de vigência da turma {turmaCodigo}. Necessário aprovação do workflow";
 
                 var mensagemHtml = $"<table><tr><td class=\"sem-borda\">Notas de fechamento alteradas fora do ano de vigência da turma {turmaCodigo}. Necessário aprovação do workflow</td></tr></table>";
-                await GerarPendencia(fechamentoId, TipoPendencia.AlteracaoNotaFechamento, mensagem, professorRf, mensagemHtml);
+                await GerarPendencia(fechamentoId, TipoPendencia.AlteracaoNotaFechamento, mensagem, professorRf, mensagemHtml, bimestre);
             }
             else
                 repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);

@@ -8,6 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioUsuario : IRepositorioBase<Usuario>
     {
         Usuario ObterPorCodigoRfLogin(string codigoRf, string login);
+        Task<Usuario> ObterPorCodigoRfLoginAsync(string codigoRf, string login);
         Usuario ObterPorTokenRecuperacaoSenha(Guid token);
         Task<Usuario> ObterUsuarioPorCodigoRfAsync(string codigoRf);
         Task<long> ObterUsuarioIdPorCodigoRfAsync(string codigoRf);

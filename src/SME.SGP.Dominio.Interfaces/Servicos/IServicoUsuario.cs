@@ -28,6 +28,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<Usuario> ObterUsuarioLogado();
 
         Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false);
+        Task<Usuario> ObterUsuarioPorCodigoRfLoginOuAdicionaAsync(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false);
 
         Task PodeModificarPerfil(Guid perfilParaModificar, string login);
 

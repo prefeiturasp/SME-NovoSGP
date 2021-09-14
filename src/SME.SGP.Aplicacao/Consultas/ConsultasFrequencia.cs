@@ -22,14 +22,13 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IServicoAluno servicoAluno;
+        private readonly IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase obterInformacoesDeFrequenciaAlunoPorSemestreUseCase;
         private readonly IServicoEol servicoEOL;
-        private readonly IServicoFrequencia servicoFrequencia;
         private readonly IMediator mediator;
 
         private double _mediaFrequencia;
 
         public ConsultasFrequencia(IMediator mediator,
-                                   IServicoFrequencia servicoFrequencia,
                                    IServicoEol servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                     IRepositorioComponenteCurricular repositorioComponenteCurricular,
@@ -40,10 +39,10 @@ namespace SME.SGP.Aplicacao
                                    IRepositorioTurma repositorioTurma,
                                    IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
                                    IRepositorioParametrosSistema repositorioParametrosSistema,
-                                   IServicoAluno servicoAluno)
+                                   IServicoAluno servicoAluno,
+                                   IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase obterInformacoesDeFrequenciaAlunoPorSemestreUseCase)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
@@ -54,13 +53,14 @@ namespace SME.SGP.Aplicacao
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
+            this.obterInformacoesDeFrequenciaAlunoPorSemestreUseCase = obterInformacoesDeFrequenciaAlunoPorSemestreUseCase ?? throw new ArgumentNullException(nameof(obterInformacoesDeFrequenciaAlunoPorSemestreUseCase));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
             => await repositorioFrequencia.FrequenciaAulaRegistrada(aulaId);
 
-        public async Task<string> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
+        public async Task<double?> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "", int? semestre = null)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
 
@@ -71,9 +71,15 @@ namespace SME.SGP.Aplicacao
             if (turma.AnoLetivo.Equals(2020))
                 return await CalculoFrequenciaGlobal2020(alunoCodigo, turma);
 
-            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+            if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
+            {
+                var frequenciaAcompanhamento = await obterInformacoesDeFrequenciaAlunoPorSemestreUseCase
+                    .Executar(new FiltroTurmaAlunoSemestreDto(turma.Id, Convert.ToInt64(alunoCodigo), semestre ?? 1));
 
-            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
+                return frequenciaAcompanhamento.Sum(fa => fa.Frequencia) / frequenciaAcompanhamento.Count();
+            }
+
+            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));           
 
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(new string[] { turma.CodigoTurma }, tipoCalendarioId, new string[] { }, new int[] { }));
 
