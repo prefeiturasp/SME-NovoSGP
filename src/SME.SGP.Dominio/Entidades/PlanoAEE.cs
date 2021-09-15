@@ -23,7 +23,11 @@ namespace SME.SGP.Dominio
         public List<PlanoAEEQuestao> Questoes { get; set; }
 
         public void EncerrarPlanoAEE() {
-            Situacao = SituacaoPlanoAEE.DevolutivaCP;
+            Situacao = SituacaoPlanoAEE.ParecerCP;
         }
+        public bool SituacaoPodeDevolverPlanoAEE()
+            => Situacao == SituacaoPlanoAEE.ParecerCP
+            || Situacao == SituacaoPlanoAEE.ParecerPAAI
+            || Situacao == SituacaoPlanoAEE.AtribuicaoPAAI;
     }
 }

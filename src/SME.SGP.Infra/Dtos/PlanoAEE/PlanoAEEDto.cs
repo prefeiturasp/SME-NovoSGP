@@ -17,6 +17,7 @@ namespace SME.SGP.Infra
         public AuditoriaDto Auditoria { get; set; }
         public IEnumerable<QuestaoDto> Questoes { get; set; }
         public IEnumerable<PlanoAEEVersaoDto> Versoes { get; set; }
+        public bool PodeDevolverPlanoAEE { get; set; }
     }
 
 }

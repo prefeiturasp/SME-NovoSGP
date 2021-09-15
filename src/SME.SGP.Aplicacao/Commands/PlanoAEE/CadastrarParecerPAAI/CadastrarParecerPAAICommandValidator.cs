@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public class CadastrarDevolutivaPAAICommandValidator : AbstractValidator<CadastrarDevolutivaPAAICommand>
+    public class CadastrarParecerPAAICommandValidator : AbstractValidator<CadastrarParecerPAAICommand>
     {
-        public CadastrarDevolutivaPAAICommandValidator()
+        public CadastrarParecerPAAICommandValidator()
         {
             RuleFor(x => x.PlanoAEEId)
                    .GreaterThan(0)

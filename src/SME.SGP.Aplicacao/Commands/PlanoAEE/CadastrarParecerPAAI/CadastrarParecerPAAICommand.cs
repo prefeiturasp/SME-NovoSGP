@@ -2,13 +2,13 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public class CadastrarDevolutivaPAAICommand : IRequest<bool>
+    public class CadastrarParecerPAAICommand : IRequest<bool>
     {
         public long PlanoAEEId { get; set; }
         public string ParecerPAAI { get; set; }
 
 
-        public CadastrarDevolutivaPAAICommand(long planoAEEId, string parecerPAAI)
+        public CadastrarParecerPAAICommand(long planoAEEId, string parecerPAAI)
         {
             PlanoAEEId = planoAEEId;
             ParecerPAAI = parecerPAAI;

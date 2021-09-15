@@ -77,9 +77,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> Salvar([FromBody] PlanoAEEPersistenciaDto planoAeeDto, [FromServices] ISalvarPlanoAEEUseCase usecase)
+        public async Task<IActionResult> Salvar([FromBody] PlanoAEEPersistenciaDto planoAeeDto, [FromServices] ISalvarPlanoAEEUseCase useCase)
         {
-            return Ok(await usecase.Executar(planoAeeDto));
+            return Ok(await useCase.Executar(planoAeeDto));
         }
 
         [HttpGet("estudante/{codigoEstudante}/existe")]
@@ -105,22 +105,13 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterVersoes(long planoAEEId, long reestruturacaoId, [FromServices] IObterVersoesPlanoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroVersoesPlanoAEEDto(planoAEEId, reestruturacaoId)));
-        }
+        }      
 
-        [HttpPost("{planoAEEId}/reestruturacoes")]
-        [ProducesResponseType(typeof(long), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> SalvarReestruturacao([FromBody] PlanoAEEReestrutucacaoPersistenciaDto planoAeeReestruturacaoDto, [FromServices] ISalvarReestruturacaoPlanoAEEUseCase useCase)
-        {
-            return Ok(await useCase.Executar(planoAeeReestruturacaoDto));
-        }
-
-        [HttpGet("{planoAeeId}/devolutiva")]
+        [HttpGet("{planoAeeId}/parecer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterDevolutivaPlanoAEE(long planoAEEId, [FromServices] IObterDevolutivaPlanoAEEPorIdUseCase useCase)
+        public async Task<IActionResult> ObterParecerPlanoAEE(long planoAEEId, [FromServices] IObterParecerPlanoAEEPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(planoAEEId));
         }
@@ -130,27 +121,27 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> EncerrarPlanoAEE([FromQuery] long planoAEEId, [FromServices] IEncerrarPlanoAEEUseCase usecase)
+        public async Task<IActionResult> EncerrarPlanoAEE([FromQuery] long planoAEEId, [FromServices] IEncerrarPlanoAEEUseCase useCase)
         {
-            return Ok(await usecase.Executar(planoAEEId));
+            return Ok(await useCase.Executar(planoAEEId));
         }
 
-        [HttpPost("{planoAeeId}/devolutiva/cp")]
+        [HttpPost("{planoAeeId}/parecer/cp")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> CadastrarDevolutivaCPPlanoAEE(long planoAEEId, [FromBody] PlanoAEECadastroDevolutivaDto planoAEEDevolutivaDto, [FromServices] ICadastrarDevolutivaCPPlanoAEEUseCase useCase)
+        public async Task<IActionResult> CadastrarParecerCPPlanoAEE(long planoAEEId, [FromBody] PlanoAEECadastroParecerDto planoAEEParecer, [FromServices] ICadastrarParecerCPPlanoAEEUseCase useCase)
         {
-            return Ok(await useCase.Executar(planoAEEId, planoAEEDevolutivaDto));
+            return Ok(await useCase.Executar(planoAEEId, planoAEEParecer));
         }
 
-        [HttpPost("{planoAeeId}/devolutiva/paai")]
+        [HttpPost("{planoAeeId}/parecer/paai")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> CadastrarDevolutivaPAAIPlanoAEE(long planoAEEId, [FromBody] PlanoAEECadastroDevolutivaDto planoAEEDevolutivaDto, [FromServices] ICadastrarDevolutivaPAAIPlanoAEEUseCase useCase)
+        public async Task<IActionResult> CadastrarDevolutivaPAAIPlanoAEE(long planoAEEId, [FromBody] PlanoAEECadastroParecerDto planoAEEParecer, [FromServices] ICadastrarParecerPAAIPlanoAEEUseCase useCase)
         {
-            return Ok(await useCase.Executar(planoAEEId, planoAEEDevolutivaDto));
+            return Ok(await useCase.Executar(planoAEEId, planoAEEParecer));
         }
 
         [HttpPost("atribuir-responsavel")]
@@ -160,6 +151,18 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> AtribuirResponsavelPlanoAEE([FromBody] AtribuirResponsavelPlanoAEEDto parametros, [FromServices] IAtribuirResponsavelPlanoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(parametros.PlanoAEEId, parametros.ResponsavelRF));
+        }
+
+        [HttpPost("devolver")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> DevolverPlanoAEE([FromBody] DevolucaoPlanoAEEDto devolucao, [FromServices] IDevolverPlanoAEEUseCase useCase)
+        {
+            await useCase.Executar(devolucao);
+
+            return Ok(new RetornoBaseDto("Plano devolvido com sucesso"));
         }
     }
 }
