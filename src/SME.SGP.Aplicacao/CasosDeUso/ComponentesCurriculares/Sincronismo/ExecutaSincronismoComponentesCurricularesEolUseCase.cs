@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExecutaSincronismoComponentesCurricularesEolUseCase", "Rabbit - ExecutaSincronismoComponentesCurricularesEolUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizaComponetesCurricularesEol, new SincronizarComponentesCurricularesUseCase(mediator), Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizaComponetesCurricularesEol, new ExecutarSincronismoComponentesCurricularesUseCase(mediator), Guid.NewGuid(), null));
         }
     }
 }

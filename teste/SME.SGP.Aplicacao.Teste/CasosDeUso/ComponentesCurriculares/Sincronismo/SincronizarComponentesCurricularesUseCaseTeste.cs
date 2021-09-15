@@ -12,12 +12,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
     public class SincronizarComponentesCurricularesUseCaseTeste
     {
         private readonly Mock<IMediator> mediator;
-        private readonly SincronizarComponentesCurricularesUseCase sincronizarComponentesCurricularesUseCase;
+        private readonly ExecutarSincronismoComponentesCurricularesUseCase sincronizarComponentesCurricularesUseCase;
 
         public SincronizarComponentesCurricularesUseCaseTeste()
         {
             mediator = new Mock<IMediator>();
-            sincronizarComponentesCurricularesUseCase = new SincronizarComponentesCurricularesUseCase(mediator.Object);
+            sincronizarComponentesCurricularesUseCase = new ExecutarSincronismoComponentesCurricularesUseCase(mediator.Object);
         }
 
         [Fact]

@@ -129,7 +129,8 @@ namespace SME.SGP.Dominio.Servicos
 
             if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
             {
-                SME.Background.Core.Cliente.Executar(() => AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
+                //ToDo: Eduardo - adicionar fila
+                //SME.Background.Core.Cliente.Executar(() => AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
             }
 
             // Verifica existencia de pendencia de calendario com dias letivos insuficientes

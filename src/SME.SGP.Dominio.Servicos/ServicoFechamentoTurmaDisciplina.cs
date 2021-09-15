@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
@@ -280,7 +279,10 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.PersistirTransacao();
 
                 if (alunosComNotaAlterada.Length > 0)
-                    Cliente.Executar<IServicoFechamentoTurmaDisciplina>(s => s.GerarNotificacaoAlteracaoLimiteDias(turmaFechamento, usuarioLogado, ue, entidadeDto.Bimestre, alunosComNotaAlterada));
+                {
+                    //ToDo: Eduardo - adicionar fila
+                    //Cliente.Executar<IServicoFechamentoTurmaDisciplina>(s => s.GerarNotificacaoAlteracaoLimiteDias(turmaFechamento, usuarioLogado, ue, entidadeDto.Bimestre, alunosComNotaAlterada));
+                }
 
                 await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
                                                 turmaFechamento.CodigoTurma,

@@ -83,7 +83,10 @@ namespace SME.SGP.Dominio.Servicos
 
             // Quando for alteração de registro de frequencia chama o servico para verificar se atingiu o limite de dias para alteração e notificar
             if (alteracaoRegistro)
-                Background.Core.Cliente.Executar<IServicoNotificacaoFrequencia>(e => e.VerificaRegraAlteracaoFrequencia(registroFrequencia.Id, registroFrequencia.CriadoEm, DateTime.Now, usuario.Id));
+            {
+                //ToDo: Eduardo - adicionar fila
+                //Background.Core.Cliente.Executar<IServicoNotificacaoFrequencia>(e => e.VerificaRegraAlteracaoFrequencia(registroFrequencia.Id, registroFrequencia.CriadoEm, DateTime.Now, usuario.Id));
+            }
         }
 
         private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunos(Aula aula)

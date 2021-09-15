@@ -1,8 +1,5 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
-using SME.Background.Core;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -264,7 +261,8 @@ namespace SME.SGP.Dominio.Servicos
             if (pendenciaFechamento == null)
                 throw new NegocioException("Pendência de fechamento não localizada com o identificador consultado");
 
-            Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.VerificaPendenciasFechamento(pendenciaFechamento.FechamentoId));
+            //ToDo: Eduardo - adicionar fila
+            //Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.VerificaPendenciasFechamento(pendenciaFechamento.FechamentoId));
             return auditoriaDto;
         }
 

@@ -37,7 +37,8 @@ namespace SME.SGP.Aplicacao
 
             repositorio.Salvar(tipoCalendario);
 
-            SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarMetodosAsync(dto, false, tipoCalendario));
+            //ToDo: Eduardo - adicionar fila
+            //SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarMetodosAsync(dto, false, tipoCalendario));
         }
 
         public async Task ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
@@ -66,7 +67,8 @@ namespace SME.SGP.Aplicacao
 
             repositorio.Salvar(tipoCalendario);
 
-            SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarMetodosAsync(dto, true, tipoCalendario));
+            //ToDo: Eduardo adicionar fila
+            //SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarMetodosAsync(dto, true, tipoCalendario));
         }
 
         public TipoCalendario MapearParaDominio(TipoCalendarioDto dto, long id)

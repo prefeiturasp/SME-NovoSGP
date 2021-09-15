@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SME.Background.Core;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
@@ -18,6 +18,13 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/calendarios")]
     public class FrequenciaController : ControllerBase
     {
+        private readonly IMediator mediator;
+
+        public FrequenciaController(IMediator mediator)
+        {
+            this.mediator = mediator;
+        }
+
         [HttpGet("frequencias")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
@@ -34,9 +41,9 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("frequencias/notificar")]
-        public IActionResult Notificar()
+        public async Task<IActionResult> Notificar()
         {
-            Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.ExecutaNotificacaoRegistroFrequencia());
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFrequenciaUe, null, Guid.NewGuid(), null));
             return Ok();
         }
 
