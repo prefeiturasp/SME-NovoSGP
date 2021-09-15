@@ -32,6 +32,7 @@ namespace SME.SGP.Dados.Repositorios
                            left join aula_prevista_bimestre apb 
                                 on ap.id = apb.aula_prevista_id 
                                 and pe.bimestre = apb.bimestre
+                                and not apb.excluido
                          where not a.excluido
                            and now() between pe.periodo_inicio and pe.periodo_fim
                            and DATE_PART('day', age(pe.periodo_fim, date(now()))) <= @limiteDias

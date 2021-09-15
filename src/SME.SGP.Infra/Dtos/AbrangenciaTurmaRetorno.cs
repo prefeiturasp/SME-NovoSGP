@@ -20,17 +20,17 @@ namespace SME.SGP.Dto
         }
         public string Nome { get; set; }
 
-        public string NomeFiltro
-        {
-            get => NomeFiltroFormatado();
-            set { nomeFiltro = value; }
-        }
-
         public int Semestre { get; set; }
         public bool EnsinoEspecial { get; set; }
         public long Id { get; set; }
 
         public int TipoTurma { get; set; }
+
+        public string NomeFiltro
+        {
+            get => NomeFiltroFormatado();
+            set => nomeFiltro = value;
+        }
 
         public string NomeFiltroFormatado()
         {
@@ -40,5 +40,6 @@ namespace SME.SGP.Dto
             else
                 return $"{modalidadeEnum.ShortName()} - {Nome}";
         }
+
     }
 }
