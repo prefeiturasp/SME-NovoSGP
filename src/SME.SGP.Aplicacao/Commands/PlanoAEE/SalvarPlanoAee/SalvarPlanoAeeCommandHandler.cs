@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao.Commands
                     if (request.PlanoAEEDto.Situacao == SituacaoPlanoAEE.Expirado)
                         await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
 
-                    if (await ParametroGeracaoPendenciaAtivo())
+                    if (await ParametroGeracaoPendenciaAtivo() && ultimaVersaoPlanoAee == 1)
                         await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoId));
 
                     unitOfWork.PersistirTransacao();
