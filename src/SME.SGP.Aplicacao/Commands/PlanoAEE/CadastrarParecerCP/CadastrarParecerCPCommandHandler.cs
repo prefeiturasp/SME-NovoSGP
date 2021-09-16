@@ -60,8 +60,9 @@ namespace SME.SGP.Aplicacao.Commands
             if (turma == null)
                 throw new NegocioException($"Não foi possível localizar a turma [{turmaId}]");
 
-            var usuarioId = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(turma.Ue.Dre.CodigoDre));
-            if (usuarioId > 0)
+            var usuariosId = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(turma.Ue.Dre.CodigoDre));
+
+            foreach(var usuarioId in usuariosId)
                 await GerarPendenciaCEFAI(usuarioId, plano, turma);
         }
 

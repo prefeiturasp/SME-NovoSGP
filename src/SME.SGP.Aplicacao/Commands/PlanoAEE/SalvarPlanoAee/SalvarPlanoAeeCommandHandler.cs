@@ -120,12 +120,7 @@ namespace SME.SGP.Aplicacao.Commands
         private async Task<PlanoAEE> MapearParaEntidade(SalvarPlanoAeeCommand request)
         {
             if (request.PlanoAEEDto.Id.HasValue && request.PlanoAEEDto.Id > 0)
-            {
-                var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
-                planoAEE.Situacao = SituacaoPlanoAEE.ParecerCP;
-
-                return planoAEE;
-            }
+                return await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));            
 
             return new PlanoAEE()
             {
