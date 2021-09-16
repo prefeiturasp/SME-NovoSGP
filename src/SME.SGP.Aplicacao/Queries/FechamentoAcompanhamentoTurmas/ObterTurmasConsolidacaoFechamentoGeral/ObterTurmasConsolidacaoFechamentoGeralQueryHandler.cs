@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<TurmaConsolidacaoFechamentoGeralDto>> Handle(ObterTurmasConsolidacaoFechamentoGeralQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTurma.ObterTurmasConsolidacaoFechamentoGeralAsync();
+            return await repositorioTurma.ObterTurmasConsolidacaoFechamentoGeralAsync(request.TurmaCodigo);
         }
     }
 }

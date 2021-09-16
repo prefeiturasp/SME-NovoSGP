@@ -176,5 +176,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioUseCase.Executar(filtro));
         }
+
+        [HttpPost("acompanhamento-fechamento")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> AcompanhamentoFechamento([FromBody] FiltroRelatorioAcompanhamentoFechamentoDto filtro, [FromServices] IRelatorioAcompanhamentoFechamentoUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
     }
 }
