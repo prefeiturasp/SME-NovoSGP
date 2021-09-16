@@ -1,7 +1,11 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -9,56 +13,102 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IServicoEol servicoEol;
+        private readonly IMediator mediator;
 
         public ComandosSupervisor(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
-                                  IUnitOfWork unitOfWork)
+                                  IUnitOfWork unitOfWork,
+                                  IServicoEol servicoEol,
+                                  IMediator mediator)
         {
-            this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new System.ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
-            this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
+            this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public void AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto)
+        public async Task AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto)
         {
-            var escolasAtribuidas = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId, true);
+            await ValidarDados(atribuicaoSupervisorEscolaDto);
 
-            var codigosEscolasDominio = escolasAtribuidas?.Where(e => !e.Excluido).Select(c => c.EscolaId);
+            var escolasAtribuidas = repositorioSupervisorEscolaDre
+                .ObtemPorDreESupervisor(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId, true);
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                RemoverEscolas(atribuicaoSupervisorEscolaDto, escolasAtribuidas);
-                AtribuirEscolas(atribuicaoSupervisorEscolaDto, codigosEscolasDominio);
+                await AjustarRegistrosExistentes(atribuicaoSupervisorEscolaDto, escolasAtribuidas);
+                AtribuirEscolas(atribuicaoSupervisorEscolaDto);
 
                 unitOfWork.PersistirTransacao();
             }
         }
 
-        private void AtribuirEscolas(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto, System.Collections.Generic.IEnumerable<string> codigosEscolasDominio)
+        private async Task ValidarDados(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto)
         {
-            if (atribuicaoSupervisorEscolaDto.UESIds != null)
-                foreach (var codigoEscolaDto in atribuicaoSupervisorEscolaDto.UESIds)
+            var dre = await mediator
+                .Send(new ObterDREIdPorCodigoQuery(atribuicaoSupervisorEscolaDto.DreId));
+
+            if (dre < 1)
+                throw new NegocioException($"A DRE {atribuicaoSupervisorEscolaDto.DreId} não foi localizada.");
+
+            var supervisores = servicoEol
+                .ObterSupervisoresPorDre(atribuicaoSupervisorEscolaDto.DreId);
+
+            atribuicaoSupervisorEscolaDto.UESIds
+                .ForEach(ue =>
                 {
-                    if (codigosEscolasDominio != null && !codigosEscolasDominio.Contains(codigoEscolaDto))
-                    {
-                        repositorioSupervisorEscolaDre.Salvar(new SupervisorEscolaDre()
-                        {
-                            DreId = atribuicaoSupervisorEscolaDto.DreId,
-                            SupervisorId = atribuicaoSupervisorEscolaDto.SupervisorId,
-                            EscolaId = codigoEscolaDto
-                        });
-                    }
-                }
+                    var ueLocalizada = mediator.Send(new ObterUeComDrePorCodigoQuery(ue)).Result;
+
+                    if (ueLocalizada == null)
+                        throw new NegocioException($"A UE {ue} não foi localizada.");
+
+                    if (!ueLocalizada.Dre.CodigoDre.Equals(atribuicaoSupervisorEscolaDto.DreId))
+                        throw new NegocioException($"A UE {ue} não pertence a DRE {atribuicaoSupervisorEscolaDto.DreId}.");
+                });
+
+            if (!supervisores.Any(s => s.CodigoRF.Equals(atribuicaoSupervisorEscolaDto.SupervisorId)))
+                throw new NegocioException($"O supervisor {atribuicaoSupervisorEscolaDto.SupervisorId} não é valido para essa atribuição.");
         }
 
-        private void RemoverEscolas(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto, System.Collections.Generic.IEnumerable<SupervisorEscolasDreDto> escolasAtribuidas)
+        private void AtribuirEscolas(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto)
+        {
+            if (atribuicaoSupervisorEscolaDto.UESIds != null)
+            {
+                foreach (var codigoEscolaDto in atribuicaoSupervisorEscolaDto.UESIds)
+                {
+                    repositorioSupervisorEscolaDre.Salvar(new SupervisorEscolaDre()
+                    {
+                        DreId = atribuicaoSupervisorEscolaDto.DreId,
+                        SupervisorId = atribuicaoSupervisorEscolaDto.SupervisorId,
+                        EscolaId = codigoEscolaDto
+                    });
+                }
+            }
+        }
+
+        private async Task AjustarRegistrosExistentes(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto, System.Collections.Generic.IEnumerable<SupervisorEscolasDreDto> escolasAtribuidas)
         {
             if (escolasAtribuidas != null)
+            {
                 foreach (var atribuicao in escolasAtribuidas)
                 {
-                    if (atribuicaoSupervisorEscolaDto.UESIds == null || !atribuicaoSupervisorEscolaDto.UESIds.Contains(atribuicao.EscolaId) || atribuicao.Excluido)
+                    if (atribuicaoSupervisorEscolaDto.UESIds == null || (!atribuicaoSupervisorEscolaDto.UESIds.Contains(atribuicao.EscolaId) && !atribuicao.Excluido))
+                        await repositorioSupervisorEscolaDre.RemoverLogico(atribuicao.Id);
+                    else if (atribuicaoSupervisorEscolaDto.UESIds.Contains(atribuicao.EscolaId) && atribuicao.Excluido)
                     {
-                        repositorioSupervisorEscolaDre.Remover(atribuicao.Id);
+                        var supervisorEscolaDre = repositorioSupervisorEscolaDre
+                            .ObterPorId(atribuicao.Id);
+
+                        supervisorEscolaDre.Excluido = false;
+
+                        await repositorioSupervisorEscolaDre
+                            .SalvarAsync(supervisorEscolaDre);
                     }
+
+                    atribuicaoSupervisorEscolaDto
+                        .UESIds.Remove(atribuicao.EscolaId);
                 }
+            }
         }
     }
 }
