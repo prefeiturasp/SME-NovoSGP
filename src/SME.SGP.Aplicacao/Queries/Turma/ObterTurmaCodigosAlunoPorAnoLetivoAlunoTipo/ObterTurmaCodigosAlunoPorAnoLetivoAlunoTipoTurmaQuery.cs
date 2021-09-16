@@ -24,9 +24,8 @@ namespace SME.SGP.Aplicacao
 
         private bool VerificaConsideraHistorico(bool? consideraHistorico)
         {
-            return consideraHistorico.HasValue ? 
-                consideraHistorico.Value : 
-                !(AnoLetivo == DateTime.Today.Year);
+            if (consideraHistorico == null || !consideraHistorico.HasValue) return AnoLetivo < DateTime.Today.Year;
+            else return consideraHistorico.Value;
         }
     }
 
