@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTotalAtividadeAvaliativasRegenciaQuery : IRequest<TotalizadorAtividadesAvaliativasRegenciaDto>
+    public class ObterTotalAtividadeAvaliativasRegenciaQuery : IRequest<IEnumerable<ComponentesRegenciaComAtividadeAvaliativaDto>>
     {
         public ObterTotalAtividadeAvaliativasRegenciaQuery(long[] atividadesAvaliativasId)
         {

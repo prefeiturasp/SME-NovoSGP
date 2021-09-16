@@ -92,22 +92,21 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<TotalizadorAtividadesAvaliativasRegenciaDto> TotalAtividadesAvaliativasRegenciaPorAtividadesAvaliativas(long[] atividadesAvaliativasId)
+        public async Task<IEnumerable<ComponentesRegenciaComAtividadeAvaliativaDto>> TotalAtividadesAvaliativasRegenciaPorAtividadesAvaliativas(long[] atividadesAvaliativasId)
         {
-            var query = @"select min(x.totalComponenteComAtividade) as TotalAtividades, 
-	                             count(x.totalComponenteComAtividade) TotalRegistros
-                            from (select count(a.id) as totalComponenteComAtividade
+            var query = @"select count(a.id) as TotalAtividades,
+                            			 aar.disciplina_contida_regencia_id as DisciplinaId
                                     from atividade_avaliativa a 
                                    inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id 
-                                     and a.id = any(@atividadesAvaliativasId) 
+                                     and a.id = any('{12726705, 12726704}') 
                                      and a.excluido = false
                                      and aar.excluido = false
-                                   group by(aar.disciplina_contida_regencia_id)) x";
+                                   group by(aar.disciplina_contida_regencia_id)";
 
             using (var conexao = new NpgsqlConnection(connectionString))
             {
                 await conexao.OpenAsync();
-                var totalizador = await conexao.QueryFirstOrDefaultAsync<TotalizadorAtividadesAvaliativasRegenciaDto>(query.ToString(), new
+                var totalizador = await conexao.QueryAsync<ComponentesRegenciaComAtividadeAvaliativaDto>(query.ToString(), new
                 {
                     atividadesAvaliativasId
                 });
