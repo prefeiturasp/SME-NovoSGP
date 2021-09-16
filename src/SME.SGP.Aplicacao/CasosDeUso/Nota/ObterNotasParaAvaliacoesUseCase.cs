@@ -323,7 +323,8 @@ namespace SME.SGP.Aplicacao
             bimestreParaAdicionar.PodeLancarNotaFinal = await VerificaPeriodoFechamentoEmAberto(turmaCompleta, filtro.Bimestre);
 
             // Valida Avaliações Bimestrais
-            ValidaMinimoAvaliacoesBimestrais(componenteReferencia, componentesCurricularesCompletos, tipoAvaliacaoBimestral, bimestreParaAdicionar, atividadesAvaliativaEBimestres, filtro.Bimestre);
+            var totalDisciplinasRegencia = disciplinasRegencia != null ? disciplinasRegencia.Count() : 0;
+            ValidaMinimoAvaliacoesBimestrais(componenteReferencia, totalDisciplinasRegencia, tipoAvaliacaoBimestral, bimestreParaAdicionar, atividadesAvaliativaEBimestres, filtro.Bimestre);
 
             if (atividadeAvaliativaParaObterTipoNota != null)
             {
@@ -388,18 +389,18 @@ namespace SME.SGP.Aplicacao
             if (dataUltimaNotaConceitoAlterada.HasValue)
                 notasConceitosRetornoDto.AuditoriaAlterado = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoAlteracao} alterados por {usuarioAlterou} em {dataUltimaNotaConceitoAlterada.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoAlterada.Value.ToString("HH:mm")}.";
         }
-        private void ValidaMinimoAvaliacoesBimestrais(DisciplinaDto componenteCurricular, IEnumerable<DisciplinaDto> disciplinasRegencia, TipoAvaliacao tipoAvaliacaoBimestral, NotasConceitosBimestreRetornoDto bimestreDto, IEnumerable<AtividadeAvaliativa> atividadeAvaliativas, int bimestre)
+        private async void ValidaMinimoAvaliacoesBimestrais(DisciplinaDto componenteCurricular, int totalComponentesRegencia, TipoAvaliacao tipoAvaliacaoBimestral, NotasConceitosBimestreRetornoDto bimestreDto, IEnumerable<AtividadeAvaliativa> atividadeAvaliativas, int bimestre)
         {
             if (componenteCurricular.Regencia)
             {
+                long[] atividadesAvaliativasBimestraisId = atividadeAvaliativas.Where(a => a.TipoAvaliacaoId == (long)TipoAvaliacaoCodigo.AvaliacaoBimestral)
+                .Select(a => a.Id)?.Distinct().ToArray() ?? new long[0];
+
+                var totalizadorAtividades = atividadesAvaliativasBimestraisId.Count() > 0 ? await mediator.Send(new ObterTotalAtividadeAvaliativasRegenciaQuery(atividadesAvaliativasBimestraisId)) : 
+                    new TotalizadorAtividadesAvaliativasRegenciaDto();
                 var disciplinasObservacao = new List<string>();
-                foreach (var disciplinaRegencia in disciplinasRegencia)
-                {
-                    var avaliacoes = atividadeAvaliativas.SelectMany(a => a.Disciplinas.Where(b => b.DisciplinaId == disciplinaRegencia.CodigoComponenteCurricular.ToString()));  // await repositorioAtividadeAvaliativaRegencia.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaRegencia.CodigoComponenteCurricular.ToString(), bimestre);
-                    if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
-                        disciplinasObservacao.Add(disciplinaRegencia.Nome);
-                }
-                if (disciplinasObservacao.Count > 0)
+                if (totalizadorAtividades.TotalRegistros < totalComponentesRegencia || 
+                    totalizadorAtividades.TotalAtividades < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre)
                     bimestreDto.Observacoes.Add($"O(s) componente(s) curricular(es) [{string.Join(",", disciplinasObservacao)}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }
             else
