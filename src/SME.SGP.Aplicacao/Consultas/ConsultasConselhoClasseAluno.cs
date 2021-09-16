@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -140,7 +141,7 @@ namespace SME.SGP.Aplicacao
             {
                 List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico));
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico, periodoEscolar.PeriodoFim));
                 conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
             }
             else
@@ -177,7 +178,11 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasCodigo = disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
 
-            var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasCodigo));
+            var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasCodigo));            
+
+            var areasDoConhecimento = await mediator.Send(new ObterAreasConhecimentoQuery(disciplinasDaTurmaEol));
+
+            var ordenacaoGrupoArea = await mediator.Send(new ObterOrdenacaoAreasConhecimentoQuery(disciplinasDaTurma, areasDoConhecimento));
 
             var retorno = new ConselhoClasseAlunoNotasConceitosRetornoDto();
 
@@ -187,66 +192,73 @@ namespace SME.SGP.Aplicacao
 
             var registrosFrequencia = await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, turmasCodigos, disciplinasCodigo.Select(d => d.ToString()).ToArray(), periodoEscolar?.Id));
 
-            var gruposMatrizes = disciplinasDaTurma.Where(c => c.GrupoMatrizNome != null && c.LancaNota).OrderBy(d => d.GrupoMatrizId).GroupBy(c => c.GrupoMatrizNome).ToList();
+            var gruposMatrizes = disciplinasDaTurma.Where(c => c.GrupoMatrizNome != null && c.LancaNota).OrderBy(d => d.GrupoMatrizId).GroupBy(c => c.GrupoMatrizId).ToList();
 
             foreach (var grupoDisiplinasMatriz in gruposMatrizes)
             {
                 var conselhoClasseAlunoNotas = new ConselhoClasseAlunoNotasConceitosDto();
-                conselhoClasseAlunoNotas.GrupoMatriz = grupoDisiplinasMatriz.Key;
+                conselhoClasseAlunoNotas.GrupoMatriz = disciplinasDaTurma.FirstOrDefault(dt => dt.GrupoMatrizId == grupoDisiplinasMatriz.Key)?.GrupoMatrizNome;
 
-                foreach (var disciplina in grupoDisiplinasMatriz.Where(d => d.LancaNota).OrderBy(g => g.Nome))
+                var areasConhecimento = await mediator.Send(new MapearAreasConhecimentoQuery(grupoDisiplinasMatriz, areasDoConhecimento, ordenacaoGrupoArea, Convert.ToInt64(grupoDisiplinasMatriz.Key)));
+
+                foreach (var areaConhecimento in areasConhecimento)
                 {
-                    var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
+                    var componentes = await mediator.Send(new ObterComponentesAreasConhecimentoQuery(grupoDisiplinasMatriz, areaConhecimento));
 
-                    var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
-                    FrequenciaAluno frequenciaAluno;
+                    foreach (var disciplina in componentes.Where(d => d.LancaNota).OrderBy(g => g.Nome))
+                    {
+                        var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
 
-                    if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
-                    {
-                        frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
-                    }
-                    else if (frequenciasAlunoParaTratar.Count() == 1)
-                    {
-                        frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
-                    }
-                    else
-                    {
-                        frequenciaAluno = new FrequenciaAluno()
+                        var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
+                        FrequenciaAluno frequenciaAluno;
+
+                        if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
                         {
-                            DisciplinaId = disciplina.CodigoComponenteCurricular.ToString(),
-                            CodigoAluno = alunoCodigo
-                        };
+                            frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
+                        }
+                        else if (frequenciasAlunoParaTratar.Count() == 1)
+                        {
+                            frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
+                        }
+                        else
+                        {
+                            frequenciaAluno = new FrequenciaAluno()
+                            {
+                                DisciplinaId = disciplina.CodigoComponenteCurricular.ToString(),
+                                CodigoAluno = alunoCodigo
+                            };
 
-                        frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
-                        frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
-                        frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
-                        frequenciasAlunoParaTratar.ToList().ForEach(f => frequenciaAluno.AdicionarFrequenciaBimestre(f.Bimestre, tipoCalendario.AnoLetivo.Equals(2020) && f.TotalAulas.Equals(0) ? 100 : f.PercentualFrequencia));
-                    }
+                            frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
+                            frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
+                            frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
+                            frequenciasAlunoParaTratar.ToList().ForEach(f => frequenciaAluno.AdicionarFrequenciaBimestre(f.Bimestre, tipoCalendario.AnoLetivo.Equals(2020) && f.TotalAulas.Equals(0) ? 100 : f.PercentualFrequencia));
+                        }
 
-                    if (disciplinaEol.Regencia)
-                    {
-                        conselhoClasseAlunoNotas.ComponenteRegencia = await ObterNotasFrequenciaRegencia(disciplina.CodigoComponenteCurricular,
-                                                                                                         frequenciaAluno,
-                                                                                                         periodoEscolar,
-                                                                                                         turma,
-                                                                                                         notasConselhoClasseAluno,
-                                                                                                         notasFechamentoAluno,
-                                                                                                         disciplina.LancaNota);
-                    }
-                    else
-                    {
-                        var turmaPossuiRegistroFrequencia = VerificarSePossuiRegistroFrequencia(alunoCodigo, disciplinaEol.TurmaCodigo, disciplina.CodigoComponenteCurricular,
-                                                                                                periodoEscolar, frequenciasAlunoParaTratar, registrosFrequencia);
+                        if (disciplinaEol.Regencia)
+                        {
+                            conselhoClasseAlunoNotas.ComponenteRegencia = await ObterNotasFrequenciaRegencia(disciplina.CodigoComponenteCurricular,
+                                                                                                             frequenciaAluno,
+                                                                                                             periodoEscolar,
+                                                                                                             turma,
+                                                                                                             notasConselhoClasseAluno,
+                                                                                                             notasFechamentoAluno,
+                                                                                                             disciplina.LancaNota);
+                        }
+                        else
+                        {
+                            var turmaPossuiRegistroFrequencia = VerificarSePossuiRegistroFrequencia(alunoCodigo, disciplinaEol.TurmaCodigo, disciplina.CodigoComponenteCurricular,
+                                                                                                    periodoEscolar, frequenciasAlunoParaTratar, registrosFrequencia);
 
-                        conselhoClasseAlunoNotas.ComponentesCurriculares.Add(ObterNotasFrequenciaComponente(disciplina.Nome,
-                                                                                                            disciplina.CodigoComponenteCurricular,
-                                                                                                            frequenciaAluno,
-                                                                                                            periodoEscolar,
-                                                                                                            turma,
-                                                                                                            notasConselhoClasseAluno,
-                                                                                                            notasFechamentoAluno,
-                                                                                                            turmaPossuiRegistroFrequencia,
-                                                                                                            disciplina.LancaNota));
+                            conselhoClasseAlunoNotas.ComponentesCurriculares.Add(ObterNotasFrequenciaComponente(disciplina.Nome,
+                                                                                                                disciplina.CodigoComponenteCurricular,
+                                                                                                                frequenciaAluno,
+                                                                                                                periodoEscolar,
+                                                                                                                turma,
+                                                                                                                notasConselhoClasseAluno,
+                                                                                                                notasFechamentoAluno,
+                                                                                                                turmaPossuiRegistroFrequencia,
+                                                                                                                disciplina.LancaNota));
+                        }
                     }
                 }
 
@@ -500,7 +512,7 @@ namespace SME.SGP.Aplicacao
                 QuantidadeAulas = frequenciaAluno?.TotalAulas ?? 0,
                 Faltas = frequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = percentualFrequencia < 0 ? null : percentualFrequencia.ToString(),
+                Frequencia = percentualFrequencia < 0 || ((frequenciaAluno?.TotalAulas ?? 0) == 0 && (frequenciaAluno?.TotalAusencias ?? 0) == 0) ? null : percentualFrequencia.ToString(),
                 NotasFechamentos = ObterNotasComponente(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno),
                 NotaPosConselho = ObterNotaPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota)
             };

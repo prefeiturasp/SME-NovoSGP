@@ -26,9 +26,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ASP_I, Permissao.ASP_A, Policy = "Bearer")]
-        public IActionResult AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorUEDto, [FromServices] IComandosSupervisor comandosSupervisor)
+        public async Task<IActionResult> AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorUEDto, [FromServices] IComandosSupervisor comandosSupervisor)
         {
-            comandosSupervisor.AtribuirUE(atribuicaoSupervisorUEDto);
+            await comandosSupervisor.AtribuirUE(atribuicaoSupervisorUEDto);
             return Ok();
         }
 

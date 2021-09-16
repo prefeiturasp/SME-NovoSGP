@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,23 +16,23 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasFechamentoAluno consultasFechamentoAluno;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
+        private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
         private readonly IMediator mediator;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
 
         public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
             IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasPeriodoFechamento consultasPeriodoFechamento,
-            IConsultasConselhoClasse consultasConselhoClasse, IRepositorioTipoCalendario repositorioTipoCalendario, IMediator mediator, IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+            IConsultasConselhoClasse consultasConselhoClasse, IRepositorioTipoCalendario repositorioTipoCalendario, 
+            IMediator mediator, IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+            IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasFechamentoAluno = consultasFechamentoAluno ?? throw new ArgumentNullException(nameof(consultasFechamentoAluno));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
+            this.repositorioConselhoClasseConsolidado = repositorioConselhoClasseConsolidado ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
-            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }
 
         public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int? bimestre, bool consideraHistorico = false)
@@ -78,7 +79,7 @@ namespace SME.SGP.Aplicacao
 
             if (!bimestre.HasValue)
             {
-                if (fechamentoTurma.Turma.AnoLetivo != 2020)
+                if (fechamentoTurma.Turma.AnoLetivo != 2020 && !fechamentoTurma.Turma.Historica)
                 {
                     var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(turma);
                     if (!validacaoConselhoFinal.Item2)
@@ -92,10 +93,10 @@ namespace SME.SGP.Aplicacao
                 emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestre.Value);
             }
 
-            var anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, turmasCodigos);
-            if (anotacoesDoAluno == null)
-                anotacoesDoAluno = new List<FechamentoAlunoAnotacaoConselhoDto>();
-
+            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesDoAluno = null;
+            if (periodoEscolar != null && periodoEscolar.Id != 0)
+                anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, turmasCodigos, periodoEscolar.Id);
+   
             var consultasConselhoClasseRecomendacaoConsultaDto = new ConsultasConselhoClasseRecomendacaoConsultaDto();
             var recomendacaoAluno = new StringBuilder();
             var recomendacaoFamilia = new StringBuilder();
@@ -137,6 +138,9 @@ namespace SME.SGP.Aplicacao
                     recomendacaoFamilia.AppendLine(recomendacoes.recomendacoesFamilia);
             }
 
+            var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(alunoCodigo, bimestre, turma);
+
+            consultasConselhoClasseRecomendacaoConsultaDto.SituacaoConselho = situacaoConselhoAluno.GetAttribute<DisplayAttribute>().Name;
             consultasConselhoClasseRecomendacaoConsultaDto.AnotacoesAluno = anotacoesDoAluno;
             consultasConselhoClasseRecomendacaoConsultaDto.AnotacoesPedagogicas = anotacoesPedagogicas.ToString();
 
@@ -148,6 +152,17 @@ namespace SME.SGP.Aplicacao
             consultasConselhoClasseRecomendacaoConsultaDto.SomenteLeitura = !emFechamento;
 
             return consultasConselhoClasseRecomendacaoConsultaDto;
+        }
+
+        private async Task<SituacaoConselhoClasse> BuscaSituacaoConselhoAluno(string alunoCodigo, int? bimestre, Turma turma)
+        {
+            SituacaoConselhoClasse statusAluno = SituacaoConselhoClasse.NaoIniciado;
+
+            var statusConselhoAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turma.Id, bimestre.Value, alunoCodigo);
+
+            if (statusConselhoAluno != null)
+                statusAluno = statusConselhoAluno.Status;
+            return statusAluno;
         }
     }
 }
