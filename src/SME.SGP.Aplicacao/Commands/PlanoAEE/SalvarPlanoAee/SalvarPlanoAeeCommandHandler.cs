@@ -47,8 +47,8 @@ namespace SME.SGP.Aplicacao.Commands
                     // Salva Plano
                     planoId = await repositorioPlanoAEE.SalvarAsync(plano);
 
-                    if (planoId > 0)
-                        await mediator.Send(new ResolverPendenciaPlanoAEECommand(planoAeeDto.Id.GetValueOrDefault()));
+                    if (planoId > 0 && ultimaVersaoPlanoAee > 1)
+                        await mediator.Send(new ResolverPendenciaPlanoAEECommand(planoId));
 
                     // Salva Versao
                     var planoAEEVersaoId = await SalvarPlanoAEEVersao(planoId, ultimaVersaoPlanoAee);
