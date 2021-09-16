@@ -47,6 +47,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> UsuarioComAcessoAoComponente(Usuario usuarioLogado, Aula aula, bool ehCJ)
         {
+            if (usuarioLogado.EhGestorEscolar())
+                return true;
+
             var componentesUsuario = ehCJ ?
                 await mediator.Send(new ObterComponentesCJQuery(null, aula.TurmaId, string.Empty, long.Parse(aula.DisciplinaId), usuarioLogado.CodigoRf, false)) :
                 await mediator.Send(new ObterComponentesCurricularesPorTurmaLoginEPerfilQuery(aula.TurmaId, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual));
