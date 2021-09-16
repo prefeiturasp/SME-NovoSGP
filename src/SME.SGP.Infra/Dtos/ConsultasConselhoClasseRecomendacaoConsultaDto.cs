@@ -12,5 +12,6 @@ namespace SME.SGP.Infra
         public string RecomendacaoFamilia { get; set; }
         public bool SomenteLeitura { get; set; }
         public AuditoriaDto Auditoria { get; set; }
+        public string SituacaoConselho { get; set; }
     }
 }
