@@ -98,7 +98,7 @@ namespace SME.SGP.Dados.Repositorios
                             			 aar.disciplina_contida_regencia_id as DisciplinaId
                                     from atividade_avaliativa a 
                                    inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id 
-                                     and a.id = any('{12726705, 12726704}') 
+                                     and a.id = any(@atividadesAvaliativasId) 
                                      and a.excluido = false
                                      and aar.excluido = false
                                    group by(aar.disciplina_contida_regencia_id)";
