@@ -1,4 +1,4 @@
-CREATE INDEX if not exists registro_frequencia_aluno_rf_id_idx ON public.registro_frequencia_aluno USING btree (registro_frequencia_id);
+-- CREATE INDEX if not exists registro_frequencia_aluno_rf_id_idx ON public.registro_frequencia_aluno USING btree (registro_frequencia_id);
 
 
 drop function if exists f_abrangencia_turmas_tipos(character varying,uuid,boolean,integer,integer,character varying,integer,integer[]);
