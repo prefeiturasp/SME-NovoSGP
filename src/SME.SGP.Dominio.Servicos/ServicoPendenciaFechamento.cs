@@ -104,9 +104,9 @@ namespace SME.SGP.Dominio.Servicos
 
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turmaNome} a seguir estão sem frequência:<br>");
 
-                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td>A aulas de {componenteCurricular.Nome} da turma {turmaNome} a seguir estão sem frequência:</td></tr>");
+                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td colspan=\"2\">A aulas de {componenteCurricular.Nome} da turma {turmaNome} a seguir estão sem frequência:</td></tr>");
 
-                mensagemHtml.Append("<tr class=\"cabecalho\"><td colspan=\"2\">Data da aula</td><td>Professor</td></tr>");
+                mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
 
                 var usuariosProfessores = CarregaListaProfessores(registrosAulasSemFrequencia.Select(a => a.ProfessorRf).Distinct());
 
@@ -185,7 +185,8 @@ namespace SME.SGP.Dominio.Servicos
             var registrosAvaliacoesSemNotaParaNenhumAluno = repositorioAtividadeAvaliativa.ObterAtividadesAvaliativasSemNotaParaNenhumAluno(codigoTurma,
                                                                             disciplinaId.ToString(),
                                                                             inicioPeriodo,
-                                                                            fimPeriodo);
+                                                                            fimPeriodo,
+                                                                            (int)TipoAvaliacaoCodigo.AtividadeClassroom);
 
             if (registrosAvaliacoesSemNotaParaNenhumAluno != null && registrosAvaliacoesSemNotaParaNenhumAluno.Any())
             {
@@ -218,11 +219,12 @@ namespace SME.SGP.Dominio.Servicos
             if (!string.IsNullOrEmpty(justificativa))
             {
                 var percentualReprovacao = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
+
                 var mensagem = $"O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes<br>";                
 
-                var mensagemHtml = new StringBuilder($"<table><tr><td class=\"sem-borda\">O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes. Justificativa : {justificativa} </td></tr></table>");
+                var mensagemHtml = $"<table><tr><td class=\"sem-borda\">O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes. Justificativa : {justificativa} </td></tr></table>";
 
-                await GerarPendencia(fechamentoTurmaDisciplinaId, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem, criadoRF, mensagemHtml.ToString());
+                await GerarPendencia(fechamentoTurmaDisciplinaId, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem, criadoRF, mensagemHtml);
                 alunosAbaixoMedia = 1;
             }
             else

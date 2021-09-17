@@ -20,6 +20,7 @@ namespace SME.SGP.Dto
         }
         public bool EhInfantil => TipoEscola == TipoEscola.EMEI || TipoEscola == TipoEscola.CEUEMEI ||
                                   TipoEscola == TipoEscola.CECI || TipoEscola == TipoEscola.CEMEI ||
-                                  TipoEscola == TipoEscola.CEUCEMEI;
+                                  TipoEscola == TipoEscola.CEUCEMEI || TipoEscola == TipoEscola.CEIDIRET ||
+                                  TipoEscola == TipoEscola.CEIINDIR;
     }
 }

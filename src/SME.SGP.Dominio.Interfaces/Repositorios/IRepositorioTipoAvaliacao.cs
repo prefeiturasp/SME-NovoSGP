@@ -8,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<TipoAvaliacao>> ListarPaginado(string nome, string descricao, bool? situacao, Paginacao paginacao);
         Task<bool> VerificarSeJaExistePorNome(string nome, string descricao, bool situacao, long id);
         Task<TipoAvaliacao> ObterTipoAvaliacaoBimestral();
+        Task<long> ObterIdPorCodigo(int codigo);
     }
 }

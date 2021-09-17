@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             filtroRelatorioParecerConclusivoDto.UsuarioNome = usuarioLogado.Nome;            
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ParecerConclusivo, filtroRelatorioParecerConclusivoDto, usuarioLogado, filtroRelatorioParecerConclusivoDto.TipoFormatoRelatorio));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ParecerConclusivo, filtroRelatorioParecerConclusivoDto, usuarioLogado, formato: filtroRelatorioParecerConclusivoDto.TipoFormatoRelatorio, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosParecerConclusivo));
         }
     }
 }

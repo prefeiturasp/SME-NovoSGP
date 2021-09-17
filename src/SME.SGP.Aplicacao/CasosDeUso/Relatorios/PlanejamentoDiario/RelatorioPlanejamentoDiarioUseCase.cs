@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
             filtro.UsuarioNome = usuarioLogado.Nome;
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.PlanejamentoDiario, filtro, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.PlanejamentoDiario, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosControlePlanejamentoDiario));
         }
     }
 }

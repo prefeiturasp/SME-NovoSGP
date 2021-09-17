@@ -4,8 +4,10 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -38,9 +40,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("faltas-frequencia")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> FaltasFrequencia([FromBody] FiltroRelatorioFaltasFrequenciaDto filtroRelatorioFaltasFrequenciaDto, [FromServices] IGerarRelatorioFaltasFrequenciaUseCase gerarRelatorioFaltasFrequenciaUseCase)
+        public async Task<IActionResult> Frequencia([FromBody] FiltroRelatorioFrequenciaDto filtroRelatorioFaltasFrequenciaDto, [FromServices] IGerarRelatorioFrequenciaUseCase gerarRelatorioFrequenciaUseCase)
         {
-            return Ok(await gerarRelatorioFaltasFrequenciaUseCase.Executar(filtroRelatorioFaltasFrequenciaDto));
+            return Ok(await gerarRelatorioFrequenciaUseCase.Executar(filtroRelatorioFaltasFrequenciaDto));
         }
 
         [HttpPost("calendarios/impressao")]
@@ -183,6 +185,33 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> AcompanhamentoFechamento([FromBody] FiltroRelatorioAcompanhamentoFechamentoDto filtro, [FromServices] IRelatorioAcompanhamentoFechamentoUseCase relatorioUseCase)
         {
             return Ok(await relatorioUseCase.Executar(filtro));
+        }
+
+        [HttpPost("pendencias")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> Gerar(FiltroRelatorioPendenciasDto filtroRelatorioPendenciasFechamentoDto, [FromServices] IRelatorioPendenciasUseCase relatorioPendenciasFechamentoUseCase)
+        {
+            return Ok(await relatorioPendenciasFechamentoUseCase.Executar(filtroRelatorioPendenciasFechamentoDto));
+        }
+
+        [HttpGet("pendencias/tipos")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        public IActionResult ObterTipoPendencias([FromQuery] bool opcaoTodos, [FromServices] IRelatorioPendenciasUseCase relatorioPendenciasFechamentoUseCase)
+        {
+            return Ok(relatorioPendenciasFechamentoUseCase.ListarTodosTipos(opcaoTodos));
+        }
+        
+        [HttpPost("atas-bimestrais")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> Gerar(FiltroRelatorioAtaBimestralDto filtro, [FromServices] IRelatorioAtaBimestralUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina);
 
-        Task<double?> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "", int? semestre = null);
+        Task<string> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "", int? semestre = null);
         Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "");
         Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string codigoTurma, short bimestre, short ano);
     }

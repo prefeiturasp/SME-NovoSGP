@@ -39,9 +39,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 602)]
         [Permissao(Permissao.AFQ_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterInformacoesDeFrequenciaAlunoPorSemestre(long turmaId, int semestre, long alunoCodigo, [FromServices] IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase useCase)
+        public async Task<IActionResult> ObterInformacoesDeFrequenciaAlunoPorSemestre(long turmaId, int semestre, long alunoCodigo,[FromQuery] long componenteCurricularId,  [FromServices] IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroTurmaAlunoSemestreDto(turmaId, alunoCodigo, semestre )));
+            return Ok(await useCase.Executar(new FiltroTurmaAlunoSemestreDto(turmaId, alunoCodigo, semestre, componenteCurricularId)));
         }
     }
 }

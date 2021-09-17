@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
     public interface IRepositorioComunicadoTurma : IRepositorioBase<ComunicadoTurma>
     {
-        Task RemoverTodasTurmasComunicado(long comunicadoId);
+        Task<bool> RemoverTodasTurmasComunicado(long comunicadoId);
 
         Task<IEnumerable<ComunicadoTurma>> ObterPorComunicado(long comunicadoId);
     }

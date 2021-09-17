@@ -25,6 +25,7 @@ namespace SME.SGP.Dominio
         public long TipoAvaliacaoId { get; set; }
         public string TurmaId { get; set; }
         public string UeId { get; set; }
+        public long? AtividadeClassroomId { get; set; }
 
         public void AdicionarAtividadeRegencia(AtividadeAvaliativaRegencia atividadeAvaliativaRegencia)
         {

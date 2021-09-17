@@ -11,6 +11,11 @@ namespace SME.SGP.Aplicacao
             CodigosRf = codigosRf;
         }
 
+        public ObterUsuariosIdPorCodigosRfQuery(string codigoRf)
+        {
+            CodigosRf = new List<string> { codigoRf };
+        }
+
         public IList<string> CodigosRf { get; set; }
     }
 

@@ -73,9 +73,9 @@ namespace SME.SGP.Aplicacao
             var coordenadoresUe = await ObterCoordenadoresUe(ueCodigo);
 
             var usuariosIds = await ObterUsuariosId(coordenadoresUe);
-            var coordenadorCEFAI = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dreCodigo));
+            var coordenadoresCEFAI = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dreCodigo));
 
-            if (coordenadorCEFAI != 0)
+            foreach(var coordenadorCEFAI in coordenadoresCEFAI)            
                 usuariosIds.Add(coordenadorCEFAI);
 
             return usuariosIds;

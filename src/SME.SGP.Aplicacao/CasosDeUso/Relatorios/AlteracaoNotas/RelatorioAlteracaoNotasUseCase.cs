@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
             filtro.NomeUsuario = usuarioLogado.Nome;
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AlteracaoNotasBimestre, filtro, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AlteracaoNotasBimestre, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRelatorioAlteraçãoNotas));
         }
     }
 }

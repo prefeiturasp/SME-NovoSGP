@@ -1,8 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra.Dtos.Relatorios;
+using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
 
@@ -14,25 +13,19 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioCicloEnsino repositorioCicloEnsino;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTurma repositorioTurma;
 
         public BoletimUseCase(IMediator mediator,
                               IUnitOfWork unitOfWork,
                               IRepositorioUe repositorioUe,
-                               IRepositorioDre repositorioDre,
-                               IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                              IRepositorioCicloEnsino repositorioCicloEnsino,
+                              IRepositorioDre repositorioDre,
                               IRepositorioTurma repositorioTurma)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
-            this.repositorioCicloEnsino = repositorioCicloEnsino ?? throw new ArgumentNullException(nameof(repositorioCicloEnsino));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }
 
         public async Task<bool> Executar(FiltroRelatorioBoletimDto filtroRelatorioBoletimDto)
@@ -56,7 +49,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             unitOfWork.IniciarTransacao();
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             filtroRelatorioBoletimDto.Usuario = usuarioLogado;
-            var retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, filtroRelatorioBoletimDto, usuarioLogado));
+
+            bool retorno;
+
+            if (filtroRelatorioBoletimDto.Modelo == ModeloBoletim.Detalhado)
+                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhado, filtroRelatorioBoletimDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhado));
+            else
+                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, filtroRelatorioBoletimDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletim));
+
             unitOfWork.PersistirTransacao();
             return retorno;
         }

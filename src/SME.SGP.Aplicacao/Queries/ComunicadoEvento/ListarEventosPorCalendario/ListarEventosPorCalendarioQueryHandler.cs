@@ -1,14 +1,15 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepcional
+namespace SME.SGP.Aplicacao
 {
-    public class ListarEventosPorCalendarioQueryHandler : IRequestHandler<ListarEventosPorCalendarioQuery, IEnumerable<ListarEventosPorCalendarioRetornoDto>>
+    public class ListarEventosPorCalendarioQueryHandler : IRequestHandler<ListarEventosPorCalendarioQuery, IEnumerable<EventoCalendarioRetornoDto>>
     {
         private readonly IRepositorioEvento repositorioEvento;
 
@@ -17,14 +18,23 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
         }
 
-        public async Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> Handle(ListarEventosPorCalendarioQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventoCalendarioRetornoDto>> Handle(ListarEventosPorCalendarioQuery request, CancellationToken cancellationToken)
         {
-            int? modalidade = null;
-            if (request.Modalidade.HasValue)
+            IEnumerable<int> modalidadesTipoCalendario;
+
+            if (!request.Modalidades.Any(c => c == -99))
             {
-                modalidade = (int)((Modalidade)request.Modalidade).ObterModalidadeTipoCalendario();
+                modalidadesTipoCalendario = request.Modalidades;
             }
-            return await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(request.TipoCalendario, request.AnoLetivo, request.CodigoDre, request.CodigoUe, modalidade);
+            else
+            {
+                var modalidades = request.Modalidades.Select(m => (Modalidade)m);
+
+                modalidadesTipoCalendario = modalidades.Select(m => (int)m.ObterModalidadeTipoCalendario()).Distinct().ToArray();
+            }
+
+            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeEModalidades(request.TipoCalendario, request.AnoLetivo, request.CodigoDre, request.CodigoUe, modalidadesTipoCalendario);
+            return eventos.OrderBy(e => e.DataInicio).ToList();
         }
     }
 }

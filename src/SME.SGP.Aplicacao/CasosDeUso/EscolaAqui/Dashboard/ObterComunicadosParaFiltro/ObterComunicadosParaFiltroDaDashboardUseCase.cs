@@ -20,9 +20,8 @@ namespace SME.SGP.Aplicacao
             var query = new ObterComunicadosParaFiltroDaDashboardQuery(
                 obterComunicadosFiltroDto.AnoLetivo,
                 obterComunicadosFiltroDto.CodigoDre,
-                obterComunicadosFiltroDto.CodigoUe,
-                obterComunicadosFiltroDto.GruposIds,
-                obterComunicadosFiltroDto.Modalidade,
+                obterComunicadosFiltroDto.CodigoUe,                
+                obterComunicadosFiltroDto.Modalidades,
                 obterComunicadosFiltroDto.Semestre,
                 obterComunicadosFiltroDto.AnoEscolar,
                 obterComunicadosFiltroDto.CodigoTurma,

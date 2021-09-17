@@ -34,23 +34,31 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres()
+        public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres(int anoLetivo)
         {
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
+
+            if (anoLetivo == 0)
+                anoLetivo = DateTime.Now.Year;
 
             if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
                 var somenteInfantil = perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
                 var codigosDres = new List<string>();
 
-                if (somenteInfantil)
-                    ObterAtribuicoesCjDre(loginAtual, codigosDres, Modalidade.EducacaoInfantil);
-                else
-                    ObterAtribuicoesCjDre(loginAtual, codigosDres);
+                if (anoLetivo == DateTime.Now.Year)
+                {
+                    await ObterAtribuicoesEolDre(loginAtual, perfilAtual, codigosDres);
 
-                ObterAtribuicoesEsporadicasDre(loginAtual, codigosDres, somenteInfantil);
-                await ObterAtribuicoesEolDre(loginAtual, perfilAtual, codigosDres);
+                    if (somenteInfantil)
+                        ObterAtribuicoesCjDre(loginAtual, codigosDres, Modalidade.EducacaoInfantil);
+                    else
+                        ObterAtribuicoesCjDre(loginAtual, codigosDres);
+                }
+
+                await ObterAtribuicoesEsporadicasDreAsync(loginAtual, codigosDres, somenteInfantil, anoLetivo);
+                
 
                 var dres = repositorioDre.ListarPorCodigos(codigosDres.Distinct().ToArray());
 
@@ -59,26 +67,33 @@ namespace SME.SGP.Aplicacao
                 else return null;
             }
             else
-                return await consultasAbrangencia.ObterDres(null, 0);
+                return await consultasAbrangencia.ObterDres(null, 0, anoLetivo != DateTime.Now.Year, anoLetivo);
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre)
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, int anoLetivo)
         {
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
+            if (anoLetivo == 0)
+                anoLetivo = DateTime.Now.Year;
+
             if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
                 var codigosUes = new List<string>();
-                await ObterAtribuicoesEolUe(loginAtual, perfilAtual, codigosUes, codigoDre);
-
                 var somenteInfantil = perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
-                if (somenteInfantil)
-                    await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre, Modalidade.EducacaoInfantil);
-                else
-                    await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre);
 
-                ObterAtribuicoesEsporadicasUe(loginAtual, codigosUes, codigoDre, somenteInfantil);
+                if (anoLetivo == DateTime.Now.Year)
+                {
+                    await ObterAtribuicoesEolUe(loginAtual, perfilAtual, codigosUes, codigoDre);
+
+                    if (somenteInfantil)
+                        await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre, Modalidade.EducacaoInfantil);
+                    else
+                        await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre);
+                }    
+
+                await ObterAtribuicoesEsporadicasUeAsync(loginAtual, codigosUes, codigoDre, somenteInfantil, anoLetivo);
 
                 // A atribuição CJ ainda não irá contemplar os novos tipos de UEs na listagem
                 var novosTiposUe = await mediator.Send(new ObterNovosTiposUEPorAnoQuery(DateTime.Today.Year)); // para atribuição CJ considera o ano letivo atual
@@ -90,7 +105,7 @@ namespace SME.SGP.Aplicacao
                     return TransformarUesEmUesDto(ues);
                 else return null;
             }
-            else return await consultasAbrangencia.ObterUes(codigoDre, null, 0);
+            else return await consultasAbrangencia.ObterUes(codigoDre, null, 0, anoLetivo != DateTime.Now.Year, anoLetivo);
         }
 
         private void ObterAtribuicoesCjDre(string professorRf, List<string> codigosDres, Modalidade? modalidade = null)
@@ -133,30 +148,41 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void ObterAtribuicoesEsporadicasDre(string professorRf, List<string> codigosDres, bool somenteInfantil)
+        private async Task ObterAtribuicoesEsporadicasDreAsync(string professorRf, List<string> codigosDres, bool somenteInfantil, int anoLetivo)
         {
-            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(professorRf, somenteInfantil);
-            if (atribuicaoEsporadica != null && !codigosDres.Any(a => a == atribuicaoEsporadica.DreId))
+            var atribuicoesEsporadicas = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(professorRf, somenteInfantil, anoLetivo));
+            if (atribuicoesEsporadicas != null && atribuicoesEsporadicas.Any())
             {
-                codigosDres.Add(atribuicaoEsporadica.DreId);
-            }
-        }
-
-        private void ObterAtribuicoesEsporadicasUe(string professorRf, List<string> codigosUes, string codigoDre, bool somenteInfantil)
-        {
-            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(professorRf, somenteInfantil);
-            if (atribuicaoEsporadica != null)
-            {
-                if (atribuicaoEsporadica.DreId == codigoDre && (!codigosUes.Any(a => a == atribuicaoEsporadica.UeId)))
+                foreach (var atribuicaoEsporadica in atribuicoesEsporadicas)
                 {
-                    codigosUes.Add(atribuicaoEsporadica.UeId);
+                    if (!codigosDres.Any(a => a == atribuicaoEsporadica.DreId))
+                    {
+                        codigosDres.Add(atribuicaoEsporadica.DreId);
+                    }
                 }
             }
         }
 
-        private AbrangenciaDreRetorno TransformaDreEmDto(Dre dre)
+        private async Task ObterAtribuicoesEsporadicasUeAsync(string professorRf, List<string> codigosUes, string codigoDre, bool somenteInfantil, int anoLetivo)
         {
-            return new AbrangenciaDreRetorno()
+            
+            var atribuicoesEsporadicas = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(professorRf, somenteInfantil, anoLetivo));
+            if (atribuicoesEsporadicas != null && atribuicoesEsporadicas.Any())
+            {
+                foreach(var atribuicaoEsporadica in atribuicoesEsporadicas)
+                {
+                    if (atribuicaoEsporadica.DreId == codigoDre && (!codigosUes.Any(a => a == atribuicaoEsporadica.UeId)))
+                    {
+                        codigosUes.Add(atribuicaoEsporadica.UeId);
+                    }
+                }
+                
+            }
+        }
+
+        private AbrangenciaDreRetornoDto TransformaDreEmDto(Dre dre)
+        {
+            return new AbrangenciaDreRetornoDto()
             {
                 Abreviacao = dre.Abreviacao,
                 Codigo = dre.CodigoDre,
@@ -164,7 +190,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private IEnumerable<AbrangenciaDreRetorno> TransformarDresEmDresDto(IEnumerable<Dre> dres)
+        private IEnumerable<AbrangenciaDreRetornoDto> TransformarDresEmDresDto(IEnumerable<Dre> dres)
         {
             foreach (var dre in dres)
             {

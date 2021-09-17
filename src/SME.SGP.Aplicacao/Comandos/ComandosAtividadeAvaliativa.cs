@@ -212,6 +212,9 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar == null)
                 throw new NegocioException("Não foi encontrado nenhum período escolar para essa data.");
 
+            if (await AtividadeImportada(filtro.Id))
+                return;
+
             //verificar se já existe atividade com o mesmo nome no mesmo bimestre
             if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoComMesmoNome(filtro.Nome, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinasId, usuario.CodigoRf, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim, filtro.Id))
             {
@@ -232,6 +235,12 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Já existe atividade avaliativa cadastrada para essa data e componente curricular.");
                 }
             }
+        }
+
+        private async Task<bool> AtividadeImportada(long? id)
+        {
+            return id.HasValue &&
+                await repositorioAtividadeAvaliativa.AtividadeImportada(id.Value);
         }
 
         private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> CopiarAtividadeAvaliativa(AtividadeAvaliativaDto atividadeAvaliativaDto, string usuarioRf)

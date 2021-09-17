@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var turmasPaginada = await repositorioTurma.ObterTurmasFechamentoAcompanhamento(Paginacao,
                                                                                             request.DreId,
                                                                                             request.UeId,
-                                                                                            request.TurmasId,
+                                                                                            request.TurmasCodigo,
                                                                                             request.Modalidade,
                                                                                             request.Semestre,
                                                                                             request.Bimestre,

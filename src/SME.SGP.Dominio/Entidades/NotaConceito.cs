@@ -12,6 +12,7 @@ namespace SME.SGP.Dominio
         public string DisciplinaId { get; set; }
         public double? Nota { get; set; }
         public TipoNota TipoNota { get; set; }
+        public StatusGSA StatusGsa { get; set; }
 
         public string ObterNota()
         {

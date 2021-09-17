@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> Executar(FiltroAcompanhamentoFechamentoTurmasDto param)
         {
-            var listarTodasTurmas = param.TurmasId.Any(c => c == -99);
+            var listarTodasTurmas = param.TurmasId.Any(c => c == "-99");
 
             int? situacaoFechamento = param.SituacaoFechamento.HasValue && param.SituacaoFechamento.Value > -99 ? 
                                                     param.SituacaoFechamento : null;

@@ -10,6 +10,5 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa, bool consideraHistorico = false);
         Task<NotaTipoValor> ObterNotaTipo(string turmaCodigo, DateTime data, bool consideraHistorico = false);
-        Task<NotaTipoValor> ObterNotaTipoPorTurmaDataReferencia(Turma turma, DateTime data, bool consideraHistorico = false);
     }
 }

@@ -28,12 +28,12 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(servicoEOL.ObterListaTurmasPorProfessor(codigoRf));
         }
 
-        public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor)
+        public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string ueId,string nomeProfessor)
         {
-            if (nomeProfessor.Length < 2)
+            if (String.IsNullOrEmpty(nomeProfessor) && nomeProfessor.Length < 2)
                 return null;
 
-            return await servicoEOL.ObterProfessoresAutoComplete(anoLetivo, dreId, nomeProfessor);
+            return await servicoEOL.ObterProfessoresAutoComplete(anoLetivo, dreId, ueId,nomeProfessor);
         }
 
         public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor, bool incluirEmei)
@@ -54,7 +54,12 @@ namespace SME.SGP.Aplicacao
 
             return professorResumo;
         }
+        public async Task<ProfessorResumoDto> ObterResumoPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId)
+        {
+            var professorResumo = await ObterProfessorUeRFEOL(codigoRF, anoLetivo, dreId, ueId);
 
+            return professorResumo;
+        }
         private async Task<Usuario> ObterProfessorSGP(string codigoRF)
         {
             var usuarioSgp = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRF));
@@ -72,7 +77,14 @@ namespace SME.SGP.Aplicacao
 
             return professorResumo;
         }
+        private async Task<ProfessorResumoDto> ObterProfessorUeRFEOL(string codigoRF, int anoLetivo, string dreId, string ueId)
+        {
+            var professorResumo = await servicoEOL.ObterProfessorPorRFUeDreAnoLetivo(codigoRF, anoLetivo, dreId, ueId);
+            if (professorResumo == null)
+                throw new NegocioException("RF não localizado do EOL");
 
+            return professorResumo;
+        }
         public async Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo)
         {
             IEnumerable<TurmaDto> turmasDto = null;

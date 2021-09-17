@@ -57,16 +57,16 @@
         [PermissaoMenu(Menu = "Atribuição de CJ", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 2, EhAlteracao = true, Url = "/gestao/atribuicao-cjs/editar")]
         ACJ_A = 21,
 
-        [PermissaoMenu(Menu = "Comunicados", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 6, EhConsulta = true, Url = "/gestao/acompanhamento-escolar/comunicados")]
+        [PermissaoMenu(Menu = "Comunicados", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 6, EhConsulta = true, Url = "/gestao/comunicados")]
         CO_C = 140,
 
-        [PermissaoMenu(Menu = "Comunicados", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 6, EhExclusao = true, Url = "/gestao/acompanhamento-escolar/comunicados")]
+        [PermissaoMenu(Menu = "Comunicados", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 6, EhExclusao = true, Url = "/gestao/comunicados")]
         CO_E = 142,
 
-        [PermissaoMenu(Menu = "Comunicados", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 6, EhAlteracao = true, Url = "/gestao/acompanhamento-escolar/comunicados/novo")]
+        [PermissaoMenu(Menu = "Comunicados", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 6, EhAlteracao = true, Url = "/gestao/comunicados/novo")]
         CO_A = 143,
 
-        [PermissaoMenu(Menu = "Comunicados", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 6, EhInclusao = true, Url = "/gestao/acompanhamento-escolar/comunicados/novo")]
+        [PermissaoMenu(Menu = "Comunicados", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 6, EhInclusao = true, Url = "/gestao/comunicados/novo")]
         CO_I = 141,
 
         [PermissaoMenu(Menu = "Notas", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhConsulta = true, Url = "/diario-classe/notas")]
@@ -469,10 +469,10 @@
         [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 5, EhAlteracao = true, Url = "/relatorios/historico-escolar")]
         HE_A = 155,
 
-        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-print", IconeDashBoard = "far fa-check-square", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/faltas-frequencia", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Faltas e frequência")]
+        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-print", IconeDashBoard = "far fa-check-square", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/frequencia", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Frequência")]
         FF_C = 156,
 
-        [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/pendencias-fechamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Pendências do Fechamento")]
+        [PermissaoMenu(Menu = "Gestão", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/gestao/pendencias", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Pendências")]
         RPF_C = 157,
 
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/parecer-conclusivo", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Parecer Conclusivo")]
@@ -609,7 +609,7 @@
 
         [PermissaoMenu(Menu = "Plano", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/aee/plano")]
         PAEE_A = 205,
-        
+
         [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhConsulta = true, Url = "/aee/registro-itinerancia")]
         RI_C = 206,
 
@@ -654,14 +654,24 @@
 
         [PermissaoMenu(Menu = "Devolutivas", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/devolutivas")]
         DD_C = 220,
-        
+
         [PermissaoMenu(Menu = "Diário de Bordo", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/diario-bordo")]
         DB_C = 222,
 
         [PermissaoMenu(Menu = "Registro Individual", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/registro-individual")]
         DRIN_C = 221,
 
+        [PermissaoMenu(Menu = "Relatório de Acompanhamento de Aprendizagem", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/acompanhamento-aprendizagem")]
+        DAA_C = 223,
+
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/fechamentos/acompanhamento-fechamento", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Acompanhamento do fechamento")]
-        RACF_C = 224
+        RACF_C = 224,
+        
+        [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/fechamento")]
+        DFE_C = 225,
+
+        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 4, EhConsulta = true, Url = "/relatorios/atas/ata-bimestral", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Ata bimestral")]
+        ABR_C = 226,
+
     }
 }

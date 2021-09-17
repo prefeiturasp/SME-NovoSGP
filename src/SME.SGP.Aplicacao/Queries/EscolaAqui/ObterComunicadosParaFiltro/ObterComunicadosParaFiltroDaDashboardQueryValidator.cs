@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SME.SGP.Dominio;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
 {
@@ -13,13 +14,9 @@ namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
                 .Must(x => x.ToString().Length == 4)
                 .WithMessage("O ano letivo informado é inválido.");
 
-            When(x => !string.IsNullOrWhiteSpace(x.CodigoDre) || !string.IsNullOrWhiteSpace(x.CodigoUe), () =>
-            {
-                RuleFor(x => x.Semestre)
-                    .NotEmpty()
-                    .When(x => x.Modalidade == Modalidade.EJA)
-                    .WithMessage("O semestre é obrigatório.");
-            });
+            RuleFor(x => x.Modalidades)
+                .NotNull()                
+                .WithMessage("Pelo menos uma modalidade deve ser informada.");            
         }
     }
 }

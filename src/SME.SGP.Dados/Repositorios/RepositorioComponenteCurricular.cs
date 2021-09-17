@@ -150,6 +150,11 @@ namespace SME.SGP.Dados.Repositorios
 	                        componente_curricular WHERE id = @id;";
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id }));
         }
+
+        public async Task<bool> LancaNota(long id)
+        {
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>("select permite_lancamento_nota from componente_curricular where id = @id", new { id });
+        }
     }
 
 }
