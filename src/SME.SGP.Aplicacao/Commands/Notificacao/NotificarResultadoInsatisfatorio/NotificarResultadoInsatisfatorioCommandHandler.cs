@@ -82,13 +82,16 @@ namespace SME.SGP.Aplicacao
                                     turmaNotificacao.ComponentesCurriculares = turmaNotificacao.ComponentesCurriculares.OrderBy(c => c.ComponenteCurricularNome).ToList();
                                     listaNotificacoes.Add(turmaNotificacao);
                                 }
-                            }                            
+                            }
                         }
                     }
                 }
 
                 if (listaNotificacoes.Any())
+                {
                     await EnviarNotificacoes(listaNotificacoes.OrderBy(n => n.TurmaNome).ToList(), periodoFechamentoBimestre);
+                    listaNotificacoes.Clear();
+                }
             }
 
 
