@@ -33,8 +33,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="CasosDeUso\GoogleClassroom\" />
+    <Folder Include="CasosDeUso\SerapEstudantes\" />
     <Folder Include="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\" />
     <Folder Include="Interfaces\CasosDeUso\Aluno\" />
+    <Folder Include="Interfaces\CasosDeUso\GoogleClassroom\" />
     <Folder Include="obj\" />
     <Folder Include="Queries\AcompanhamentoFrequencia\" />
     <Folder Include="Queries\TipoCalendario\ObterTiposCalendariosAulaAutomaticaPorAnoLetivoEModalidades\" />
