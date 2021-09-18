@@ -10,8 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Prometheus;
-using SME.Background.Core;
-using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Dados;
 using SME.SGP.Infra;

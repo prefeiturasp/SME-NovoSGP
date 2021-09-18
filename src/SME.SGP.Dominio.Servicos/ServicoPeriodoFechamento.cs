@@ -1,15 +1,12 @@
 ﻿using MediatR;
 using Sentry;
-using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -268,14 +265,16 @@ namespace SME.SGP.Dominio.Servicos
             repositorioPeriodoFechamento.SalvarBimestres(fechamento.FechamentosBimestre, id);
             unitOfWork.PersistirTransacao();
 
-            ExecutaAlterarPeriodosComHierarquiaInferior(fechamentoDto, fechamento, ehSme);
+            await ExecutaAlterarPeriodosComHierarquiaInferior(fechamentoDto, fechamento, ehSme);
             CriarEventoFechamento(fechamento);
         }
 
-        private static void ExecutaAlterarPeriodosComHierarquiaInferior(FechamentoDto fechamentoDto, PeriodoFechamento fechamento, bool ehSme)
+        private async Task ExecutaAlterarPeriodosComHierarquiaInferior(FechamentoDto fechamentoDto, PeriodoFechamento fechamento, bool ehSme)
         {
             if ((ehSme && !fechamento.DreId.HasValue) || (fechamento.DreId.HasValue && !fechamento.UeId.HasValue) && fechamentoDto.ConfirmouAlteracaoHierarquica)
-                Cliente.Executar<IServicoPeriodoFechamento>(c => c.AlterarPeriodosComHierarquiaInferior(fechamento));
+            {
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AlterarPeriodosComHierarquiaInferiorFechamento, fechamento, Guid.NewGuid(), null));
+            }
         }
 
         private static Notificacao MontaNotificacao(string nomeEntidade, string tipoEntidade, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, string codigoUe, string codigoDre)
