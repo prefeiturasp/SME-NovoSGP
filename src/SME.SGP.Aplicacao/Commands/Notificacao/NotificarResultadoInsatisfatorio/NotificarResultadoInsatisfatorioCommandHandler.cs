@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(NotificarResultadoInsatisfatorioCommand request, CancellationToken cancellationToken)
         {
-
-            var periodoFechamentoBimestres = await mediator.Send(new ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery((int)request.ModalidadeTipoCalendario, DateTime.Now.AddDays(request.Dias).Date));
+            DateTime dataNotificacao = DateTime.Now.AddDays(request.Dias).Date;
+            var periodoFechamentoBimestres = await mediator.Send(new ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery((int)request.ModalidadeTipoCalendario, dataNotificacao));
 
             var percentualReprovacao = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
             var mediaBimestre = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
@@ -39,44 +39,59 @@ namespace SME.SGP.Aplicacao
 
                     if (alunosComNotaLancada != null)
                     {
-                        foreach (var turmaId in alunosComNotaLancada.GroupBy(a => a.TurmaId))
+                        var turmasAlunosComNotaLancada = alunosComNotaLancada.GroupBy(a => a.TurmaId);
+                        foreach (var turmaId in turmasAlunosComNotaLancada)
                         {
-
                             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId.Key));
-
-                            var turmaNotificacao = new NotificarResultadoInsatisfatorioDto();
-                            turmaNotificacao.TurmaNome = turma.Nome;
-                            turmaNotificacao.TurmaModalidade = turma.ModalidadeCodigo.Name();
-
-                            foreach (var componenteCurricularId in alunosComNotaLancada.Where(a => a.TurmaId == turmaId.Key).GroupBy(a => a.ComponenteCurricularId))
+                            if (turma.UeId == periodoFechamentoBimestre.PeriodoFechamento.UeId)
                             {
-                                var alunosTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
-                                var alunosComNota = alunosComNotaLancada.Where(a => a.TurmaId == turmaId.Key && a.ComponenteCurricularId == componenteCurricularId.Key);
+                                var turmaNotificacao = new NotificarResultadoInsatisfatorioDto();
+                                turmaNotificacao.TurmaNome = $"{turma.ModalidadeCodigo.ShortName()}-{turma.Nome}";
+                                turmaNotificacao.TurmaModalidade = turma.ModalidadeCodigo.Name();
 
-                                var alunosRetorno = VerificaAlunosResultadoInsatisfatorio(alunosComNota, percentualReprovacao, turma, componenteCurricularId.Key, mediaBimestre);
-
-                                if (alunosRetorno.Any())
+                                var componentesCurricularesAlunosComNotaLancada = alunosComNotaLancada.Where(a => a.TurmaId == turmaId.Key).GroupBy(a => a.ComponenteCurricularId);
+                                foreach (var componenteCurricularId in componentesCurricularesAlunosComNotaLancada)
                                 {
-                                    var componenteNotificacao = new NotificarResultadoInsatisfatorioCCDto();
-                                    var obterComponenteCurricular = componentes.FirstOrDefault(c => long.Parse(c.Codigo) == componenteCurricularId.Key);
+                                    var alunosComNota = alunosComNotaLancada.Where(a => a.TurmaId == turmaId.Key && a.ComponenteCurricularId == componenteCurricularId.Key);
 
-                                    componenteNotificacao.ComponenteCurricularNome = obterComponenteCurricular.Descricao;
-                                    componenteNotificacao.Professor = $"{alunosRetorno.FirstOrDefault().ProfessorNome} ({alunosRetorno.FirstOrDefault().ProfessorRf})";
-                                    componenteNotificacao.Justificativa = alunosRetorno.FirstOrDefault().Justificativa;
+                                    var alunosRetorno = VerificaAlunosResultadoInsatisfatorio(alunosComNota, percentualReprovacao, turma, componenteCurricularId.Key, mediaBimestre);
 
-                                    turmaNotificacao.ComponentesCurriculares.Add(componenteNotificacao);
+                                    if (alunosRetorno.Any())
+                                    {
+                                        var componenteNotificacao = new NotificarResultadoInsatisfatorioCCDto();
+                                        var obterComponenteCurricular = componentes.FirstOrDefault(c => long.Parse(c.Codigo) == componenteCurricularId.Key);
+
+                                        var aluno = alunosRetorno.FirstOrDefault();
+                                        var professoresTurmaDisciplina = await mediator.Send(new ProfessoresTurmaDisciplinaQuery(turma.CodigoTurma, obterComponenteCurricular.Codigo, dataNotificacao));
+
+                                        componenteNotificacao.ComponenteCurricularNome = obterComponenteCurricular.Descricao;
+                                        if (professoresTurmaDisciplina != null && professoresTurmaDisciplina.Any())
+                                        {
+                                            var professorTurma = professoresTurmaDisciplina.FirstOrDefault();
+                                            componenteNotificacao.Professor = $"{professorTurma.NomeProfessor} ({professorTurma.CodigoRf})";
+                                        }
+                                        componenteNotificacao.Justificativa = alunosRetorno.FirstOrDefault().Justificativa;
+
+                                        turmaNotificacao.ComponentesCurriculares.Add(componenteNotificacao);
+                                    }
+
                                 }
 
+                                if (turmaNotificacao.ComponentesCurriculares.Any())
+                                {
+                                    turmaNotificacao.ComponentesCurriculares = turmaNotificacao.ComponentesCurriculares.OrderBy(c => c.ComponenteCurricularNome).ToList();
+                                    listaNotificacoes.Add(turmaNotificacao);
+                                }
                             }
-
-                            if (turmaNotificacao.ComponentesCurriculares.Any())
-                                listaNotificacoes.Add(turmaNotificacao);
                         }
                     }
                 }
 
                 if (listaNotificacoes.Any())
-                    await EnviarNotificacoes(listaNotificacoes, periodoFechamentoBimestre);
+                {
+                    await EnviarNotificacoes(listaNotificacoes.OrderBy(n => n.TurmaNome).ToList(), periodoFechamentoBimestre);
+                    listaNotificacoes.Clear();
+                }
             }
 
 
@@ -100,8 +115,8 @@ namespace SME.SGP.Aplicacao
             }
             mensagem.Append("</table>");
 
-            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Fechamento, ObterCargosGestaoEscola(), 
-                periodoFechamentoBimestre.PeriodoFechamento.Ue.Dre.CodigoDre, 
+            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Fechamento, ObterCargosGestaoEscola(),
+                periodoFechamentoBimestre.PeriodoFechamento.Ue.Dre.CodigoDre,
                 periodoFechamentoBimestre.PeriodoFechamento.Ue.CodigoUe));
         }
 

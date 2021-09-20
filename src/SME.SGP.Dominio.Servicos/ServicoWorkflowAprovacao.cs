@@ -104,6 +104,19 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
+        public async Task ConfiguracaoInicialAsync(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)
+        {
+            if (workflowAprovacao.NotificacaoCategoria == NotificacaoCategoria.Workflow_Aprovacao)
+            {
+                var niveisIniciais = workflowAprovacao.ObtemNiveis(workflowAprovacao.ObtemPrimeiroNivel()).ToList();
+                await EnviaNotificacaoParaNiveisAsync(niveisIniciais);
+            }
+            else
+            {
+                await EnviaNotificacaoParaNiveisAsync(workflowAprovacao.Niveis.ToList());
+            }
+        }
+
         public async Task ExcluirWorkflowNotificacoes(long id)
         {
             var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(id);
@@ -343,6 +356,20 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
+        private async Task EnviaNotificacaoParaNiveisAsync(List<WorkflowAprovacaoNivel> niveis, long codigoNotificacao = 0)
+        {
+            if (codigoNotificacao == 0)
+                codigoNotificacao = await servicoNotificacao.ObtemNovoCodigoAsync();
+
+            List<Cargo?> cargosNotificados = new List<Cargo?>();
+
+            foreach (var aprovaNivel in niveis)
+            {
+                if (!cargosNotificados.Contains(aprovaNivel.Cargo))
+                    cargosNotificados.Add(await EnviaNotificacaoParaNivelAsync(aprovaNivel, codigoNotificacao));
+            }
+        }
+
         private Cargo? EnviaNotificacaoParaNivel(WorkflowAprovacaoNivel nivel, long codigoNotificacao)
         {
             Notificacao notificacao;
@@ -395,6 +422,64 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     nivel.Status = WorkflowAprovacaoNivelStatus.AguardandoAprovacao;
                     workflowAprovacaoNivel.Salvar(nivel);
+                }
+            }
+
+            return nivel.Cargo;
+        }
+
+        private async Task<Cargo?> EnviaNotificacaoParaNivelAsync(WorkflowAprovacaoNivel nivel, long codigoNotificacao)
+        {
+            Notificacao notificacao;
+            List<Usuario> usuarios = nivel.Usuarios.ToList();
+
+            if (nivel.Cargo.HasValue)
+            {
+                var funcionariosRetorno = await servicoNotificacao.ObterFuncionariosPorNivelAsync(nivel.Workflow.UeId, nivel.Cargo, true, true);
+
+                foreach (var funcionario in funcionariosRetorno)
+                {
+                    try
+                    {
+                        usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdicionaAsync(string.Empty, funcionario.Id, buscaLogin: true));
+                    }
+                    catch (Exception e)
+                    {
+                        SentrySdk.CaptureException(e);
+                    }
+                }
+            }
+
+            foreach (var usuario in usuarios)
+            {
+                notificacao = new Notificacao()
+                {
+                    Ano = nivel.Workflow.Ano,
+                    Categoria = nivel.Workflow.NotificacaoCategoria,
+                    DreId = nivel.Workflow.DreId,
+                    UeId = nivel.Workflow.UeId,
+                    Mensagem = nivel.Workflow.NotifacaoMensagem,
+                    Tipo = nivel.Workflow.NotificacaoTipo,
+                    Titulo = nivel.Workflow.NotifacaoTitulo,
+                    TurmaId = nivel.Workflow.TurmaId,
+                    UsuarioId = usuario.Id,
+                    Codigo = codigoNotificacao
+                };
+
+                nivel.Adicionar(notificacao);
+
+                await repositorioNotificacao.SalvarAsync(notificacao);
+
+                await repositorioWorkflowAprovacaoNivelNotificacao.SalvarAsync(new WorkflowAprovacaoNivelNotificacao()
+                {
+                    NotificacaoId = notificacao.Id,
+                    WorkflowAprovacaoNivelId = nivel.Id
+                });
+
+                if (notificacao.Categoria == NotificacaoCategoria.Workflow_Aprovacao)
+                {
+                    nivel.Status = WorkflowAprovacaoNivelStatus.AguardandoAprovacao;
+                    await workflowAprovacaoNivel.SalvarAsync(nivel);
                 }
             }
 
