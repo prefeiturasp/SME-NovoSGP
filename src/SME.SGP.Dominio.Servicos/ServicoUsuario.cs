@@ -190,6 +190,42 @@ namespace SME.SGP.Dominio
             return usuario;
         }
 
+        public async Task<Usuario> ObterUsuarioPorCodigoRfLoginOuAdicionaAsync(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
+        {
+            var eNumero = long.TryParse(codigoRf, out long n);
+
+            codigoRf = eNumero ? codigoRf : null;
+
+            var usuario = await repositorioUsuario.ObterPorCodigoRfLoginAsync(buscaLogin ? null : codigoRf, login);
+
+            if (usuario != null)
+            {
+                if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
+                {
+                    usuario.Nome = nome;
+                    await repositorioUsuario.SalvarAsync(usuario);
+                }
+
+                if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
+                {
+                    usuario.CodigoRf = codigoRf;
+                    await repositorioUsuario.SalvarAsync(usuario);
+                }
+
+                return usuario;
+            }
+
+            if (string.IsNullOrEmpty(login))
+                login = codigoRf;
+
+
+            usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
+
+            await repositorioUsuario.SalvarAsync(usuario);
+
+            return usuario;
+        }
+
         public async Task PodeModificarPerfil(Guid perfilParaModificar, string login)
         {
             var perfisDoUsuario = await servicoEOL.ObterPerfisPorLogin(login);
