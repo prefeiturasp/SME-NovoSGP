@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                                                        from disciplina in avaliacao.Disciplinas
                                                        where avaliacao.EhCj == aulaParaVisualizar.AulaCJ &&
                                                              disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId &&
-                                                             (avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf || 
+                                                             (avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf ||
                                                              (professorTitular != null && professorTitular.ProfessorRf == avaliacao.ProfessorRf && !avaliacao.EhCj))
                                                        select avaliacao);
 
@@ -84,6 +84,9 @@ namespace SME.SGP.Aplicacao
                         eventoParaAdicionar.DataInicio = evento.DataInicio;
                         eventoParaAdicionar.DataFim = evento.DataFim;
                     }
+
+                    eventoParaAdicionar.Dre = evento.EhEventoSME() ? "Todas" : evento.Dre.Abreviacao;
+                    eventoParaAdicionar.Ue = (evento.EhEventoSME() || evento.EhEventoDRE()) ? "Todas" : null;
 
                     retorno.Add(eventoParaAdicionar);
                 }
