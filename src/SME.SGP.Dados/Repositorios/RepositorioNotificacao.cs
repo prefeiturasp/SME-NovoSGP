@@ -248,6 +248,20 @@ namespace SME.SGP.Dados.Repositorios
                 .FirstOrDefault();
         }
 
+        public async Task<long> ObterUltimoCodigoPorAnoAsync(int ano)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("SELECT n.codigo");
+            query.AppendLine("FROM notificacao n");
+            query.AppendLine("where EXTRACT(year FROM n.criado_em) = @ano");
+            query.AppendLine("order by codigo desc");
+            query.AppendLine("limit 1");
+
+            var codigos = await database.Conexao.QueryAsync<int>(query.ToString(), new { ano });
+            return codigos.FirstOrDefault();
+        }
+
         public async Task<int> ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoEUsuarioAsync(int anoLetivo, string codigoRf)
         {
             var sql = @"select

@@ -532,13 +532,30 @@ namespace SME.SGP.Dados.Repositorios
             var sql = new StringBuilder();
 
             MontaQueryCabecalho(sql, false);
+            sql.AppendLine(", aad.id,  aad.disciplina_id ");
             sql.AppendLine(fromCompleto);
             sql.AppendLine("where a.excluido = false");
             sql.AppendLine("and a.turma_id = @turmaCodigo");
             sql.AppendLine("and a.data_avaliacao::date >= @inicioPeriodo::date and a.data_avaliacao::date <= @fimPeriodo::date");
             sql.AppendLine("and aad.disciplina_id = any(@disciplinasId)");
 
-            return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinasId });
+            var lookup = new Dictionary<long, AtividadeAvaliativa>();
+
+            await database.Conexao.QueryAsync<AtividadeAvaliativa, AtividadeAvaliativaDisciplina, AtividadeAvaliativa>(sql.ToString(), (atividadeAvaliativa, atividadeAvaliativaDisciplina) => {
+
+                var retorno = new AtividadeAvaliativa();
+                if (!lookup.TryGetValue(atividadeAvaliativa.Id, out retorno))
+                {
+                    retorno = atividadeAvaliativa;
+                    lookup.Add(atividadeAvaliativa.Id, retorno);
+                }
+
+                retorno.Adicionar(atividadeAvaliativaDisciplina);
+
+                return retorno;
+            }, param: new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinasId });
+
+            return lookup.Values;
         }
 
         public async Task<AtividadeAvaliativa> ObterPorAtividadeClassroomId(long atividadeClassroomId)

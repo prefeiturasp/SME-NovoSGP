@@ -43,12 +43,15 @@ namespace SME.SGP.Aplicacao
 
             if (request.EhCEFAI)
             {
-                var usuarioId = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(turma.Ue.Dre.CodigoDre));
+                var usuariosId = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(turma.Ue.Dre.CodigoDre));
 
-                if (usuarioId == 0)
+                if (!usuariosId.Any())
                     return false;
 
-                return await EnviarParaCEFAI(usuarioId, turma, encaminhamentoAEE);
+                foreach(var usuarioId in usuariosId)
+                    await EnviarParaCEFAI(usuarioId, turma, encaminhamentoAEE);
+
+                return true;
             }
             else
             {
