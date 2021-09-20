@@ -135,9 +135,13 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo)
         {
             var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo);
+            double valorFrequenciaAluno = 0;
+            if (frequenciaAluno != "")
+                valorFrequenciaAluno = Convert.ToDouble(frequenciaAluno);
+
 
             var parametroFrequenciaGeral = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, DateTime.Today.Year)));
-            return !(frequenciaAluno < parametroFrequenciaGeral);
+            return !(valorFrequenciaAluno < parametroFrequenciaGeral);
         }
         #endregion
 

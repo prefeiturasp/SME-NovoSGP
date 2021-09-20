@@ -10,9 +10,8 @@ namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
     {
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
-        public string CodigoUe { get; set; }
-        public int[] GruposIds { get; set; }
-        public Modalidade? Modalidade { get; set; }
+        public string CodigoUe { get; set; }        
+        public int[] Modalidades { get; set; }
         public short? Semestre { get; set; }
         public string AnoEscolar { get; set; }
         public string CodigoTurma { get; set; }
@@ -20,14 +19,13 @@ namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
         public DateTime? DataEnvioFinal { get; set; }
         public string Descricao { get; set; }
 
-        public ObterComunicadosParaFiltroDaDashboardQuery(int anoLetivo, string codigoDre, string codigoUe, int[] gruposIds, Modalidade? modalidade, short? semestre,
+        public ObterComunicadosParaFiltroDaDashboardQuery(int anoLetivo, string codigoDre, string codigoUe, int[] modalidades, short? semestre,
             string anoEscolar, string codigoTurma, DateTime? dataEnvioInicial, DateTime? dataEnvioFinal, string descricao)
         {
             AnoLetivo = anoLetivo;
             CodigoDre = codigoDre;
-            CodigoUe = codigoUe;
-            GruposIds = gruposIds;
-            Modalidade = modalidade;
+            CodigoUe = codigoUe;           
+            Modalidades = modalidades;
             Semestre = semestre;
             AnoEscolar = anoEscolar;
             CodigoTurma = codigoTurma;

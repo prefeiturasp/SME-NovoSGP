@@ -10,6 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<ModalidadeAnoDto>> ObterPorModalidadeCicloIdAbrangencia(Modalidade modalidade, long cicloId, long usuarioId, Guid perfil);
 
-        Task<IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>> ObterAnosPorCodigoUeModalidade(string codigoUe, Modalidade modalidade);
+        Task<IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>> ObterAnosPorCodigoUeModalidade(string codigoUe, int[] modalidades);
     }
 }

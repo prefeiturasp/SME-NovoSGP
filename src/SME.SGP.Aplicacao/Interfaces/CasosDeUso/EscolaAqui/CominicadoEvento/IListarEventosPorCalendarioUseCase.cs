@@ -1,14 +1,9 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Dto;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
+﻿using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui
+namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IListarEventosPorCalendarioUseCase
+    public interface IListarEventosPorCalendarioUseCase : IUseCase<ListarEventoPorCalendarioDto, IEnumerable<EventoCalendarioRetornoDto>>
     {
-        Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> Executar(int tipoCalendario, int anoLetivo, string codigoDre, string codigoUe, int? modalidade);
-    }    
+    }
 }

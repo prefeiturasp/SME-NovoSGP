@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             if (planoAEE.Situacao == Dominio.Enumerados.SituacaoPlanoAEE.Encerrado)
                 throw new NegocioException("A situação do Plano AEE não permite a remoção do responsável");
 
-            planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.DevolutivaPAAI;
+            planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.ParecerPAAI;
             planoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ResponsavelRF));
 
             var idEntidadePlanoAEE = await repositorioPlanoAEE.SalvarAsync(planoAEE);
@@ -47,6 +47,10 @@ namespace SME.SGP.Aplicacao
             await ExcluirPendenciaCEFAI(planoAEE);
 
             if (!await ParametroGeracaoPendenciaAtivo() || await AtribuidoAoMesmoUsuario(planoAEE))
+                return;
+
+            var ultimaVersaoPlano = await mediator.Send(new ObterUltimaVersaoPlanoAEEQuery(planoAEE.Id));
+            if (ultimaVersaoPlano != null && ultimaVersaoPlano.Numero > 1)
                 return;
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
@@ -68,8 +72,8 @@ namespace SME.SGP.Aplicacao
             var hostAplicacao = configuration["UrlFrontEnd"];
             var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? "da criança" : "do estudante";
 
-            var titulo = $"Plano AEE a encerrar - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
-            var descricao = $@"Foi solicitado o encerramento do Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre}. <br/><a href='{hostAplicacao}aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano e registrar a devolutiva.
+            var titulo = $"Plano AEE para validação - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
+            var descricao = $@"O Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} foi cadastrado. <br/><a href='{hostAplicacao}aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano e registrar o seu parecer.
                 <br/><br/>A pendência será resolvida automaticamente após este registro.";
 
             await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, plano.ResponsavelId.Value, titulo, descricao));

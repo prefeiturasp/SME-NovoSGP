@@ -23,11 +23,11 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ComunicadoAluno>($"{Cabecalho} {where}", new { comunicadoId });
         }
 
-        public async Task RemoverTodosAlunosComunicado(long comunicadoId)
+        public async Task<bool> RemoverTodosAlunosComunicado(long comunicadoId)
         {
             var update = "update comunicado_aluno set excluido=true where comunicado_id = @comunicadoId";
 
-            await database.Conexao.ExecuteAsync(update, new { comunicadoId });
+            return await database.Conexao.ExecuteAsync(update, new { comunicadoId }) != 0;
         }
 
         public override void Remover(ComunicadoAluno entidade)

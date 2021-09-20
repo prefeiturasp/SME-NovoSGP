@@ -119,19 +119,30 @@ namespace SME.SGP.Dados.Repositorios
             }));
         }
 
-        public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasSemNotaParaNenhumAluno(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasSemNotaParaNenhumAluno(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int tipoAtividadeAvaliativa)
         {
             var sql = @"select av.*
                         from atividade_avaliativa av
                        inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = av.id
+                       inner join tipo_avaliacao ta on ta.id = av.tipo_avaliacao_id
                         left join notas_conceito n on n.atividade_avaliativa = av.id
                        where not av.excluido
                          and av.turma_id = @turmaCodigo
 	                     and aad.disciplina_id = @disciplinaId
                          and av.data_avaliacao::date between @inicioPeriodo::date and @fimPeriodo::date
-                         and n.id is null";
+                         and n.id is null
+                         and ta.codigo <> @tipoAtividadeAvaliativa";
 
-            return database.Query<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, disciplinaId, inicioPeriodo, fimPeriodo });
+            var parametros = new
+            {
+                turmaCodigo,
+                disciplinaId,
+                inicioPeriodo,
+                fimPeriodo,
+                tipoAtividadeAvaliativa
+            };
+
+            return database.Query<AtividadeAvaliativa>(sql.ToString(), parametros);
         }
 
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesPorDia(string dreId, string ueId, DateTime dataAvaliacao, string professorRf, string turmaId)
@@ -521,13 +532,43 @@ namespace SME.SGP.Dados.Repositorios
             var sql = new StringBuilder();
 
             MontaQueryCabecalho(sql, false);
+            sql.AppendLine(", aad.id,  aad.disciplina_id ");
             sql.AppendLine(fromCompleto);
             sql.AppendLine("where a.excluido = false");
             sql.AppendLine("and a.turma_id = @turmaCodigo");
             sql.AppendLine("and a.data_avaliacao::date >= @inicioPeriodo::date and a.data_avaliacao::date <= @fimPeriodo::date");
             sql.AppendLine("and aad.disciplina_id = any(@disciplinasId)");
 
-            return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinasId });
+            var lookup = new Dictionary<long, AtividadeAvaliativa>();
+
+            await database.Conexao.QueryAsync<AtividadeAvaliativa, AtividadeAvaliativaDisciplina, AtividadeAvaliativa>(sql.ToString(), (atividadeAvaliativa, atividadeAvaliativaDisciplina) => {
+
+                var retorno = new AtividadeAvaliativa();
+                if (!lookup.TryGetValue(atividadeAvaliativa.Id, out retorno))
+                {
+                    retorno = atividadeAvaliativa;
+                    lookup.Add(atividadeAvaliativa.Id, retorno);
+                }
+
+                retorno.Adicionar(atividadeAvaliativaDisciplina);
+
+                return retorno;
+            }, param: new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinasId });
+
+            return lookup.Values;
+        }
+
+        public async Task<AtividadeAvaliativa> ObterPorAtividadeClassroomId(long atividadeClassroomId)
+        {
+            var query = @"select * from atividade_avaliativa where atividade_classroom_id = @atividadeClassroomId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AtividadeAvaliativa>(query, new { atividadeClassroomId });
+        }
+
+        public async Task<bool> AtividadeImportada(long atividadeId)
+        {
+            var query = @"select atividade_classroom_id from atividade_avaliativa where id = @atividadeId and atividade_classroom_id is not null";
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { atividadeId });
         }
     }
 }

@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             if (planoAEE == null)
                 throw new NegocioException("Não foi possível localizar o PlanoAEE");
 
-            if (planoAEE.Situacao == SituacaoPlanoAEE.DevolutivaCP)
+            if (planoAEE.Situacao == SituacaoPlanoAEE.ParecerCP)
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
 

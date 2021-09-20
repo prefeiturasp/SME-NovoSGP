@@ -21,8 +21,6 @@ namespace SME.SGP.Aplicacao
 
         public Task<bool> Handle(PublicarFilaGoogleClassroomCommand request, CancellationToken cancellationToken)
         {
-            SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerGoogleClassroom");
-
             var factory = new ConnectionFactory
             {
                 HostName = configuracaoRabbitOptions.HostName,

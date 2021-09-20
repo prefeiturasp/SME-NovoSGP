@@ -13,8 +13,7 @@ namespace SME.SGP.Dto
         public string CriadoPor { get; set; }
         public string CriadoRF { get; set; }
         public DateTime DataEnvio { get; set; }
-        public DateTime? DataExpiracao { get; set; }
-        public string Grupo { get; set; }
+        public DateTime? DataExpiracao { get; set; }        
         public IEnumerable<string> Alunos { get; set; }
         public long Id { get; set; }
         public string Mensagem { get; set; }
@@ -27,5 +26,6 @@ namespace SME.SGP.Dto
         public int? Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
         public string Modalidades { get; set; }
+        public string TiposEscolas { get; set; }
     }
 }

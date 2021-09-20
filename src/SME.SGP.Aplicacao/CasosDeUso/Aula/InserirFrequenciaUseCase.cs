@@ -29,14 +29,30 @@ namespace SME.SGP.Aplicacao
             if (aula == null)
                 throw new NegocioException("A aula informada não foi encontrada");
 
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
             if (turma == null)
                 throw new NegocioException("Turma informada não foi encontrada");
+
+
+            if (usuario.EhProfessorCj())
+            {
+                var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, usuario.CodigoRf));
+
+                var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuario.CodigoRf, false, aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
+
+                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
+                {
+                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
+                        throw new NegocioException($"Você não possui permissão para inserir registro de frequência neste período");
+                }
+            }
+
 
             if (!aula.PermiteRegistroFrequencia(turma))
             {
                 throw new NegocioException("Não é permitido registro de frequência para este componente curricular.");
             }
+
 
             if (!usuario.EhGestorEscolar())
             {

@@ -28,6 +28,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.DataFim).ToColumn("dt_fim_eol");
             Map(c => c.Extinta).Ignore();
             Map(c => c.Historica).ToColumn("historica");
+            Map(c => c.NomeFiltro).ToColumn("nome_filtro");
         }
     }
 }

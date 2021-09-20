@@ -19,13 +19,14 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/conselhoclasseatafinal", ShortName = "Ata de resultados finais", Description = "Ata de resultados finais")]
         ConselhoClasseAtaFinal = 5,
 
-        [Display(Name = "relatorios/faltas-frequencia", ShortName = "RelatorioFaltasFrequencia", Description = "Relatório de faltas e frequência")]
-        FaltasFrequencia = 6,
+        [Display(Name = "relatorios/frequencia", ShortName = "RelatorioFrequencia", Description = "Relatório de frequência")]
+        Frequencia = 6,
+
         [Display(Name = "relatorios/historicoescolarfundamental", ShortName = "HistoricoEscolar", Description = "Histórico Escolar")]
         HistoricoEscolarFundamental = 7,
 
-        [Display(Name = "relatorios/fechamentopendencias", ShortName = "FechamentoPendencias", Description = "Relatório de Pendências do Fechamento")]
-        FechamentoPendencias = 8,
+        [Display(Name = "relatorios/pendencias", ShortName = "Pendencias", Description = "Relatório de Pendências")]
+        Pendencias = 8,
 
         [Display(Name = "relatorios/parecerconclusivo", ShortName = "ParecerConclusivo", Description = "Relatório de Parecer Conclusivo")]
         ParecerConclusivo = 9,
@@ -97,6 +98,9 @@ namespace SME.SGP.Dominio
         BoletimDetalhado = 32,
 
         [Display(Name = "relatorios/acompanhamento-fechamento", ShortName = "AcompanhamentoFechamento", Description = "Relatório do Acompanhamento de Fechamento")]
-        AcompanhamentoFechamento = 33
+        AcompanhamentoFechamento = 33,
+        
+        [Display(Name = "relatorios/conselhoclasseatabimestral", ShortName = "AtaBimestral", Description = "Relatório de Ata Bimestral")]
+        AtaBimestral = 34
     }
 }

@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             filtroRelatorioCompensacaoAusenciaDto.UsuarioNome = usuarioLogado.Nome;
             filtroRelatorioCompensacaoAusenciaDto.UsuarioRf = usuarioLogado.CodigoRf;
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.CompensacaoAusencia, filtroRelatorioCompensacaoAusenciaDto, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.CompensacaoAusencia, filtroRelatorioCompensacaoAusenciaDto, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosCompensacaoAusencia));
         }
     }
 }

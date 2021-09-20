@@ -8,8 +8,5 @@ namespace SME.SGP.Aplicacao
     public interface IConsultasAtribuicaoCJ
     {
         Task<IEnumerable<AtribuicaoCJListaRetornoDto>> Listar(AtribuicaoCJListaFiltroDto filtroDto);
-
-        Task<AtribuicaoCJTitularesRetornoDto> ObterProfessoresTitularesECjs(string ueId, string turmaId,
-                    string professorRf, Modalidade modalidadeId);
     }
 }

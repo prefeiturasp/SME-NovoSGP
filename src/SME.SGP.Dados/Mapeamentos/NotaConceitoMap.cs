@@ -12,6 +12,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(n => n.TipoNota).ToColumn("tipo_nota");
             Map(n => n.DisciplinaId).ToColumn("disciplina_id");
             Map(n => n.ConceitoId).ToColumn("conceito");
+            Map(n => n.StatusGsa).ToColumn("status_gsa");
         }
     }
 }
