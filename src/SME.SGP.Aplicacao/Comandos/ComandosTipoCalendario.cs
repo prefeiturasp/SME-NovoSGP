@@ -11,15 +11,21 @@ namespace SME.SGP.Aplicacao
     public class ComandosTipoCalendario : IComandosTipoCalendario
     {
         private readonly IMediator mediator;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioTipoCalendario repositorio;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoFeriadoCalendario servicoFeriadoCalendario;
 
-        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorio, IServicoFeriadoCalendario servicoFeriadoCalendario, IServicoEvento servicoEvento,
-            IRepositorioEvento repositorioEvento, IMediator mediator)
+        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorio, 
+                                      IServicoFeriadoCalendario servicoFeriadoCalendario, 
+                                      IServicoEvento servicoEvento,
+                                      IRepositorioEvento repositorioEvento, 
+                                      IMediator mediator,
+                                      IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoFeriadoCalendario = servicoFeriadoCalendario ?? throw new ArgumentNullException(nameof(servicoFeriadoCalendario));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
@@ -37,10 +43,10 @@ namespace SME.SGP.Aplicacao
 
             repositorio.Salvar(tipoCalendario);
 
-            SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarMetodosAsync(dto, false, tipoCalendario));
+            SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarReplicacao(dto, false, tipoCalendario));
         }
 
-        public async Task ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
+        public async Task ExecutarReplicacao(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
         {
             servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo);
 
@@ -51,22 +57,34 @@ namespace SME.SGP.Aplicacao
                 var existeParametro = await mediator.Send(new VerificaSeExisteParametroSistemaPorAnoQuery(dto.AnoLetivo));
 
                 if (!existeParametro)
-                    await mediator.Send(new ReplicarParametrosAnoAnteriorCommand(dto.AnoLetivo));
+                    await mediator.Send(new ReplicarParametrosAnoAnteriorCommand(dto.AnoLetivo, dto.Modalidade));
             }
         }
 
         public async Task Incluir(TipoCalendarioDto dto)
         {
-            var tipoCalendario = MapearParaDominio(dto, 0);
+            unitOfWork.IniciarTransacao();
 
-            bool ehRegistroExistente = await repositorio.VerificarRegistroExistente(0, dto.Nome);
+            try
+            {
+                var tipoCalendario = MapearParaDominio(dto, 0);
 
-            if (ehRegistroExistente)
-                throw new NegocioException($"O Tipo de Calendário Escolar '{dto.Nome}' já existe");
+                bool ehRegistroExistente = await repositorio.VerificarRegistroExistente(0, dto.Nome);
 
-            repositorio.Salvar(tipoCalendario);
+                if (ehRegistroExistente)
+                    throw new NegocioException($"O Tipo de Calendário Escolar '{dto.Nome}' já existe");
 
-            SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarMetodosAsync(dto, true, tipoCalendario));
+                repositorio.Salvar(tipoCalendario);
+
+                await ExecutarReplicacao(dto, true, tipoCalendario);
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
+            }            
         }
 
         public TipoCalendario MapearParaDominio(TipoCalendarioDto dto, long id)
