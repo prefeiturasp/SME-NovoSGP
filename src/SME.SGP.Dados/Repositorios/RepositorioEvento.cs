@@ -706,7 +706,10 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select id,
                                  iniciofimdesc,
                                  nome,
-                                 tipoevento
+                                 tipoevento,
+                                 dreNome,
+                                 ueNome,
+                                 descricao
                             from f_eventos_calendario_eventos_do_dia(@login, 
                                                                      @perfil_id, 
                                                                      @historico,
