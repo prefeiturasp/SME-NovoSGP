@@ -10,41 +10,6 @@ SELECT evento.id,
        evento.descricao
 FROM evento;
 
-
-create or replace function f_eventos_calendario_eventos_do_dia(p_login character varying, p_perfil_id uuid, p_historico boolean, p_dia integer, p_mes integer, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_local_dre boolean DEFAULT false, p_desconsidera_evento_sme boolean DEFAULT false) returns SETOF v_estrutura_eventos_calendario
-    language sql
-as
-$$
-select id,
-       data_evento,
-       iniciofimdesc,
-       nome,
-       tipoevento,
-       dreNome,
-       ueNome,
-       descricao
-from f_eventos_calendario_por_data_inicio_fim(p_login, p_perfil_id, p_historico, p_mes, p_tipo_calendario_id, p_considera_pendente_aprovacao, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)
-where extract(day from data_evento) = p_dia
-
-union
-
-select id,
-       data_evento,
-       iniciofimdesc,
-       nome,
-       tipoevento,
-       dreNome,
-       ueNome,
-       descricao
-from f_eventos_calendario_por_rf_criador(p_login, p_mes, p_tipo_calendario_id, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)
-where extract(day from data_evento) = p_dia;
-$$;
-
-alter function f_eventos_calendario_eventos_do_dia(varchar, uuid, boolean, integer, integer, bigint, boolean, varchar, varchar, boolean, boolean) owner to postgres;
-
-
-
-
 create or replace function f_eventos_calendario_por_data_inicio_fim(p_login character varying, p_perfil_id uuid,
                                                                     p_historico boolean, p_mes integer,
                                                                     p_tipo_calendario_id bigint,
@@ -182,8 +147,6 @@ where e.data_inicio <> e.data_fim
        (p_desconsidera_evento_sme = true and not (e.dre_id is null and e.ue_id is null)));
 $$;
 
-alter function f_eventos_calendario_por_data_inicio_fim(varchar, uuid, boolean, integer, bigint, boolean, varchar, varchar, boolean, boolean) owner to postgres;
-
 create or replace function f_eventos_calendario_por_rf_criador(p_login character varying, p_mes integer,
                                                                p_tipo_calendario_id bigint,
                                                                p_dre_id character varying DEFAULT NULL::character varying,
@@ -276,5 +239,32 @@ where e.data_inicio <> e.data_fim
        (p_desconsidera_evento_sme = true and not (e.dre_id is null and e.ue_id is null)));;
 $$;
 
-alter function f_eventos_calendario_por_rf_criador(varchar, integer, bigint, varchar, varchar, boolean, boolean) owner to postgres;
 
+create or replace function f_eventos_calendario_eventos_do_dia(p_login character varying, p_perfil_id uuid, p_historico boolean, p_dia integer, p_mes integer, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_local_dre boolean DEFAULT false, p_desconsidera_evento_sme boolean DEFAULT false) returns SETOF v_estrutura_eventos_calendario
+    language sql
+as
+$$
+select id,
+       data_evento,
+       iniciofimdesc,
+       nome,
+       tipoevento,
+       dreNome,
+       ueNome,
+       descricao
+from f_eventos_calendario_por_data_inicio_fim(p_login, p_perfil_id, p_historico, p_mes, p_tipo_calendario_id, p_considera_pendente_aprovacao, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)
+where extract(day from data_evento) = p_dia
+
+union
+
+select id,
+       data_evento,
+       iniciofimdesc,
+       nome,
+       tipoevento,
+       dreNome,
+       ueNome,
+       descricao
+from f_eventos_calendario_por_rf_criador(p_login, p_mes, p_tipo_calendario_id, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)
+where extract(day from data_evento) = p_dia;
+$$;
