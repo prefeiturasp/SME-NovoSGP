@@ -77,7 +77,7 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet("meses/{mes}/dias/{dia}")]
         [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(IEnumerable<CalendarioTipoEventoPorDiaDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<CalendarioEventosNoDiaRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.E_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPorDia(int dia, int mes, [FromQuery]CalendarioEventosFiltroDto filtro, [FromServices] IConsultasEvento consultasEvento)
