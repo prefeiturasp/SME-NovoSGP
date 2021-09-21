@@ -402,11 +402,11 @@ namespace SME.SGP.Dados.Repositorios
             return resultado;
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo)
+        public async Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo, string codigoTurma = null)
         {
             var modalidade = Modalidade.EducacaoInfantil;
             var turmas = new List<Turma>();
-            var query = @"select
+            var query = $@"select
 	                            t.*,
 	                            u.*,
                                 d.*
@@ -420,19 +420,20 @@ namespace SME.SGP.Dados.Repositorios
 	                            t.modalidade_codigo = :modalidade
 	                            and t.historica = false
 	                            and t.ano_letivo = :anoLetivo
-	                            and ano ~ E'^[0-9\.]+$'";
+	                            and ano ~ E'^[0-9\.]+$'
+                                {(!string.IsNullOrEmpty(codigoTurma) ? " and t.turma_id = :codigoTurma" : string.Empty)}";
 
             await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
-             {
-                 ue.AdicionarDre(dre);
-                 turma.AdicionarUe(ue);
+            {
+                ue.AdicionarDre(dre);
+                turma.AdicionarUe(ue);
 
-                 var turmaExistente = turmas.FirstOrDefault(c => c.Id == turma.Id);
-                 if (turmaExistente == null)
-                     turmas.Add(turma);
+                var turmaExistente = turmas.FirstOrDefault(c => c.Id == turma.Id);
+                if (turmaExistente == null)
+                    turmas.Add(turma);
 
-                 return turma;
-             }, new { anoLetivo, modalidade });
+                return turma;
+            }, new { anoLetivo, modalidade, codigoTurma });
 
             return turmas;
         }
@@ -451,7 +452,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var codigosTurmasParaHistorico = await ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(anoLetivo, true, listaTurmas, transacao);
                 var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
-                                        .Replace("#codigosTurmasParaHistorico", MapearParaCodigosQuerySql(codigosTurmasParaHistorico));                
+                                        .Replace("#codigosTurmasParaHistorico", MapearParaCodigosQuerySql(codigosTurmasParaHistorico));
 
                 await contexto.Conexao.ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, transacao);
 
@@ -674,9 +675,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId)
         {
             var query = @"INSERT INTO public.turma
-				                (turma_id, ue_id, nome, ano, ano_letivo, modalidade_codigo, semestre, qt_duracao_aula, tipo_turno, data_atualizacao, historica, dt_fim_eol, ensino_especial, etapa_eja, data_inicio, serie_ensino, tipo_turma)
+				                (turma_id, ue_id, nome, ano, ano_letivo, modalidade_codigo, semestre, qt_duracao_aula, tipo_turno, data_atualizacao, historica, dt_fim_eol, ensino_especial, etapa_eja, data_inicio, serie_ensino, tipo_turma, nome_filtro)
 	                        values
-	                            (@Codigo, @ueId, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, @historica, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma);";
+	                            (@Codigo, @ueId, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, @historica, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma, @NomeFiltro);";
 
             var parametros = new
             {
@@ -697,7 +698,8 @@ namespace SME.SGP.Dados.Repositorios
                 turma.SerieEnsino,
                 turma.TipoTurma,
                 ueId,
-                historica = turma.Extinta
+                historica = turma.Extinta,
+                turma.NomeFiltro
             };
             var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
 
@@ -941,7 +943,8 @@ namespace SME.SGP.Dados.Repositorios
                                 serie_ensino = @serieEnsino,
                                 dt_fim_eol = @dataFim,
                                 tipo_turma = @tipoTurma,
-                                historica = @historica
+                                historica = @historica,
+                                nome_filtro = @nomeFiltro
                             where
 	                            turma_id = @turmaId";
 
@@ -962,14 +965,15 @@ namespace SME.SGP.Dados.Repositorios
                 turma.SerieEnsino,
                 turma.TipoTurma,
                 turmaId = turma.Codigo.ToString(),
-                historica = deveMarcarHistorica ? true : false
+                historica = deveMarcarHistorica ? true : false,
+                turma.NomeFiltro
             };
 
             var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
             return retorno != 0;
         }
 
-        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, bool listarTodasTurmas)
+        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, string[] turmasCodigo, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
         {
             var query = new StringBuilder(@"select distinct t.id as TurmaId,
                                                      t.nome       
@@ -981,15 +985,38 @@ namespace SME.SGP.Dados.Repositorios
                                                left join periodo_escolar pe
 	                                              on tc.id = pe.tipo_calendario_id
                                                where dre.id = @dreId
-                                                 and ue.id = @ueId ");
+                                                 and ue.id = @ueId and t.tipo_turma in (1,2,7) ");
 
             if (!listarTodasTurmas)
-                query.AppendLine("and t.id = ANY(@turmasId) ");
+                query.AppendLine("and t.turma_id = ANY(@turmasCodigo) ");
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
-            //else
-            //    query.AppendLine("and pe.bimestre is null ");
+
+            var querySituacao = new StringBuilder();
+            if (situacaoFechamento.HasValue && situacaoFechamento.Value > -99)
+            {
+                querySituacao.AppendLine(@"and t.id in (select turma_id from consolidado_fechamento_componente_turma 
+                                   where not excluido and turma_id = t.id and status = @situacaoFechamento  ");
+
+                if (bimestre > 0)
+                    querySituacao.AppendLine("and bimestre = @bimestre ");
+
+                querySituacao.AppendLine(")");
+            }
+
+            if (situacaoConselhoClasse.HasValue && situacaoConselhoClasse.Value > -99)
+            {
+                querySituacao.AppendLine(@"and t.id in (select turma_id from consolidado_conselho_classe_aluno_turma 
+                                   where not excluido and turma_id = t.id and status = @situacaoConselhoClasse  ");
+
+                if (bimestre > 0)
+                    querySituacao.AppendLine("and bimestre = @bimestre ");
+
+                querySituacao.AppendLine(")");
+            }
+
+            query.AppendLine(querySituacao.ToString());
 
             DateTime dataReferencia = DateTime.MinValue;
             string queryPeriodoEJA = string.Empty;
@@ -999,12 +1026,13 @@ namespace SME.SGP.Dados.Repositorios
                 queryPeriodoEJA = $"and exists(select 0 from periodo_escolar p where p.tipo_calendario_id = tc.id and {periodoReferencia})";
                 query.AppendLine(queryPeriodoEJA);
 
-               dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
+                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
             }
 
             query.AppendLine(@" and t.modalidade_codigo = @modalidade
                                 and t.ano_letivo = @anoLetivo
                                 and not t.historica 
+                                and t.tipo_turma in (1,2,7)
                             order by t.nome
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
 
@@ -1020,19 +1048,20 @@ namespace SME.SGP.Dados.Repositorios
                                     and ue.id = @ueId ");
 
             if (!listarTodasTurmas)
-                query.AppendLine("and t.id = ANY(@turmasId) ");
+                query.AppendLine("and t.turma_id = ANY(@turmasCodigo) ");
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
-            //else
-            //    query.AppendLine("and pe.bimestre is null ");
 
             if (modalidade == Modalidade.EJA)
                 query.AppendLine(queryPeriodoEJA);
 
+            query.AppendLine(querySituacao.ToString());
+
             query.AppendLine(@"and t.modalidade_codigo = @modalidade 
                                and t.ano_letivo = @anoLetivo
-                               and not t.historica");
+                               and not t.historica
+                               and t.tipo_turma in (1,2,7)");
 
 
             var retorno = new PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>();
@@ -1041,7 +1070,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 quantidadeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
                 quantidadeRegistros = paginacao.QuantidadeRegistros,
-                turmasId,
+                turmasCodigo,
                 dreId,
                 ueId,
                 modalidadeTipoCalendario = (int)modalidade.ObterModalidadeTipoCalendario(),
@@ -1049,6 +1078,8 @@ namespace SME.SGP.Dados.Repositorios
                 semestre,
                 bimestre,
                 anoLetivo,
+                situacaoFechamento,
+                situacaoConselhoClasse,
                 dataReferencia
             };
 
@@ -1105,7 +1136,7 @@ namespace SME.SGP.Dados.Repositorios
                     else anosCondicao.Add(ano.ShortName());
                 }
             }
-            var sql = dreId > 0 ? QueryInformacoesEscolaresTurmasPorAno(dreId, ueId, anosCondicao, tiposTurma, semestre) : 
+            var sql = dreId > 0 ? QueryInformacoesEscolaresTurmasPorAno(dreId, ueId, anosCondicao, tiposTurma, semestre) :
                 QueryInformacoesEscolaresTurmasPorDre(dreId, ueId, anosCondicao, tiposTurma, semestre);
             return await contexto
                 .Conexao
@@ -1120,7 +1151,7 @@ namespace SME.SGP.Dados.Repositorios
             if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId");
             if (anosCondicao != null && anosCondicao.Any()) query.AppendLine(@"  and t.ano = ANY(@anosCondicao)");
             if (tiposTurma != null && tiposTurma.Any()) query.AppendLine(@"  and t.tipo_turma = ANY(@tiposTurma)");
-            
+
             return query.ToString();
         }
 
@@ -1133,7 +1164,7 @@ namespace SME.SGP.Dados.Repositorios
                                            inner join dre on dre.id = ue.dre_id 
                                            where t.ano is not null 
                                              and t.ano_letivo = @anoLetivo  
-                                             and t.modalidade_codigo = @modalidade"); 
+                                             and t.modalidade_codigo = @modalidade");
             if (semestre > 0) query.AppendLine(@"  and t.semestre = @semestre");
             if (dreId > 0) query.AppendLine(@" and dre.id = @dreId");
             if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId");
@@ -1196,15 +1227,18 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryAsync<TurmaModalidadeDto>(query, new { ano });
         }
 
-        public async Task<IEnumerable<TurmaConsolidacaoFechamentoGeralDto>> ObterTurmasConsolidacaoFechamentoGeralAsync()
+        public async Task<IEnumerable<TurmaConsolidacaoFechamentoGeralDto>> ObterTurmasConsolidacaoFechamentoGeralAsync(string turmaCodigo)
         {
-            var query = @"
-                            select t.id as turmaId, t.modalidade_codigo as modalidade from turma t 
-                            where t.tipo_turma  in  (1,2,7) 
-                            and t.modalidade_codigo  in (3,5,6) 
-                            and t.ano_letivo > 2020 ";
+            var query = @"select t.id as turmaId, t.modalidade_codigo as modalidade 
+                            from turma t 
+                           where t.tipo_turma in  (1,2,7) 
+                             and t.modalidade_codigo  in (3,5,6) 
+                             and t.ano_letivo > 2020 ";
 
-            return await contexto.Conexao.QueryAsync<TurmaConsolidacaoFechamentoGeralDto>(query);
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += " and t.turma_id = @turmaCodigo";
+
+            return await contexto.Conexao.QueryAsync<TurmaConsolidacaoFechamentoGeralDto>(query, new { turmaCodigo });
         }
 
         public async Task<IEnumerable<string>> ObterCodigosTurmasPorAnoModalidade(int anoLetivo, int[] modalidades, string turmaCodigo = "")
@@ -1222,7 +1256,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TurmaComponenteDto>> ObterTurmasComponentesPorAnoLetivo(DateTime dataReferencia)
         {
-                var query = @"select a.turma_id as TurmaCodigo, a.disciplina_id as ComponenteCurricularId, pe.periodo_fim as DataReferencia from aula a 
+            var query = @"select a.turma_id as TurmaCodigo, a.disciplina_id as ComponenteCurricularId, pe.periodo_fim as DataReferencia from aula a 
                                 inner join turma t on a.turma_id = t.turma_id 
                                 inner join tipo_calendario tc on a.tipo_calendario_id = tc.id 
                                 inner join periodo_escolar pe on pe.tipo_calendario_id  = tc.id 
@@ -1230,7 +1264,7 @@ namespace SME.SGP.Dados.Repositorios
                                     and pe.periodo_inicio < @dataReferencia
                                 group by a.turma_id, a.disciplina_id, a.tipo_calendario_id, pe.periodo_fim ";
 
-         
+
 
             return await contexto.QueryAsync<TurmaComponenteDto>(query, new { anoLetivo = dataReferencia.Year, dataReferencia });
         }
@@ -1257,6 +1291,60 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select t.turma_id as TurmaCodigo, t.modalidade_codigo as ModalidadeCodigo from turma t where t.turma_id = Any(@turmasCodigo) ";
 
             return await contexto.Conexao.QueryAsync<TurmaModalidadeCodigoDto>(query, new { turmasCodigo });
+        }
+        
+        public async Task<IEnumerable<TurmaDTO>> ObterTurmasInfantilPorAno(int anoLetivo, string ueCodigo)
+        {
+            var query = @"select t.id as turmaId 
+                            , t.turma_id as TurmaCodigo
+                        from turma t
+                       inner join ue on ue.id = t.ue_id
+                       where t.modalidade_codigo = 1 
+                         and ue.ue_id = @ueCodigo
+                         and t.ano_letivo = @anoLetivo ";
+
+            return await contexto.QueryAsync<TurmaDTO>(query, new { anoLetivo, ueCodigo });
+        }
+
+        public async Task<IEnumerable<TurmaAlunoBimestreFechamentoDto>> AlunosTurmaPorDreIdUeIdBimestreSemestre(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
+        {
+            var query = new StringBuilder(@"select 
+                            distinct t.id as TurmaId, 
+                            t.ano,
+                            t.tipo_turma as TurmaTipo,
+                            t.nome as TurmaNome,
+                            t.modalidade_codigo as TurmaModalidade, bimestre as Bimestre, aluno_codigo as AlunoCodigo 
+                        from consolidado_conselho_classe_aluno_turma cccat
+                        inner join turma t on cccat.turma_id = t.id 
+                        inner join ue on ue.id = t.ue_id 
+                        where t.ano_letivo = @ano ");
+
+            if (ueId > 0)
+            {
+                query.Append(" and t.ue_id = @ueId ");
+            }
+
+            if (dreId > 0)
+            {
+                query.Append(" and ue.dre_id = @dreId ");
+            }
+
+            if (modalidade > 0)
+            {
+                query.Append(" and t.modalidade_codigo = @modalidade ");
+            }
+
+            if (semestre > 0)
+            {
+                query.Append(" and t.semestre = @semestre ");
+            }
+
+            if (bimestre > 0)
+            {
+                query.Append(" and cccat.bimestre = @bimestre ");
+            }
+
+            return await contexto.QueryAsync<TurmaAlunoBimestreFechamentoDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre, bimestre });
         }
     }
 }

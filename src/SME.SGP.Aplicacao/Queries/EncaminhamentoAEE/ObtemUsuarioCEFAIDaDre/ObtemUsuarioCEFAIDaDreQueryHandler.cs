@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObtemUsuarioCEFAIDaDreQueryHandler : IRequestHandler<ObtemUsuarioCEFAIDaDreQuery, long>
+    public class ObtemUsuarioCEFAIDaDreQueryHandler : IRequestHandler<ObtemUsuarioCEFAIDaDreQuery, IEnumerable<long>>
     {
         private readonly IMediator mediator;
 
@@ -21,17 +21,21 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Handle(ObtemUsuarioCEFAIDaDreQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<long>> Handle(ObtemUsuarioCEFAIDaDreQuery request, CancellationToken cancellationToken)
         {
             var funcionarios = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(request.CodigoDRE, new List<Guid>() { Perfis.PERFIL_CEFAI }));
 
-            if (!funcionarios.Any())
-                return 0;
+            return await ObterUsuarios(funcionarios);
+        }
 
-            var funcionario = funcionarios.FirstOrDefault();
-            var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(funcionario));
+        private async Task<IEnumerable<long>> ObterUsuarios(IEnumerable<string> funcionarios)
+        {
+            var usuarios = new List<long>();
 
-            return usuarioId;
+            foreach(var funcionario in funcionarios)
+                usuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(funcionario)));
+
+            return usuarios;
         }
     }
 }

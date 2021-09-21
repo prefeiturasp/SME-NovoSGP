@@ -9,6 +9,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterTiposCalendarioPorAnoLetivoModalidadeUseCase
     {
-        Task<IEnumerable<TipoCalendarioDto>> Executar(int anoLetivo, string modalidades);
+        Task<IEnumerable<TipoCalendarioDto>> Executar(int anoLetivo, string modalidades, int semestre);
     }
 }

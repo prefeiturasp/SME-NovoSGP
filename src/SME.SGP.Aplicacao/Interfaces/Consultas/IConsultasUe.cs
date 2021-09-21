@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasUe
     {
-        Task<IEnumerable<TurmaRetornoDto>> ObterTurmas(string ueCodigo, int modalidadeId, int ano);
+        Task<IEnumerable<TurmaRetornoDto>> ObterTurmas(string ueCodigo, int modalidadeId, int ano, bool ehHistorico);
 
         Ue ObterPorId(long id);
 

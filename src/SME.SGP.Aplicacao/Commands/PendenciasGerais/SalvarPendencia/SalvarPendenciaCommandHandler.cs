@@ -23,6 +23,7 @@ namespace SME.SGP.Aplicacao.Commands.PendenciasGerais.SalvarPendencia
             pendencia.Titulo = string.IsNullOrEmpty(request.Titulo) ? ObterTitulo(request.TipoPendencia) : request.Titulo;
             pendencia.Descricao = string.IsNullOrEmpty(request.Descricao) ? ObterDescricao(request.TipoPendencia) : request.Descricao;
             pendencia.Instrucao = request.Instrucao;
+            pendencia.DescricaoHtml = request.DescricaoHtml;
 
             return await repositorioPendencia.SalvarAsync(pendencia);
         }

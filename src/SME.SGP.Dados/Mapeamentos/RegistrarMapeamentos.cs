@@ -94,12 +94,10 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConselhoClasseMap());
                config.AddMap(new ConselhoClasseAlunoMap());
                config.AddMap(new ConselhoClasseNotaMap());
-               config.AddMap(new WfAprovacaoNotaFechamentoMap());
-               config.AddMap(new GrupoComunicacaoMap());
+               config.AddMap(new WfAprovacaoNotaFechamentoMap());               
                config.AddMap(new ComunicadoMap());
                config.AddMap(new ComunicadoAlunoMap());
-               config.AddMap(new ComunicadoTurmaMap());
-               config.AddMap(new ComunicadoGrupoMap());
+               config.AddMap(new ComunicadoTurmaMap());               
                config.AddMap(new ConselhoClasseRecomendacaoMap());
                config.AddMap(new TipoEscolaMap());
                config.AddMap(new CicloEnsinoMap());
@@ -178,12 +176,20 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PlanoAEEObservacaoMap());
                config.AddMap(new NotificacaoPlanoAEEObservacaoMap());
                config.AddMap(new ConsolidacaoFrequenciaTurmaMap());
+               config.AddMap(new ConsolidacaoDevolutivasMap());
                config.AddMap(new ParametrosSistemaMap());
                config.AddMap(new FechamentoConsolidadoComponenteTurmaMap());
                config.AddMap(new ConselhoClasseConsolidadoTurmaAlunoMap());              
                config.AddMap(new ConsolidacaoMatriculaTurmaMap());
                config.AddMap(new FrequenciaPreDefinidaMap());
                config.AddMap(new RegistroFrequenciaAlunoMap());
+               config.AddMap(new EventoBimestreMap());
+               config.AddMap(new ConsolidacaoRegistroIndividualMediaMap());
+               config.AddMap(new ComunicadoModalidadeMap());
+               config.AddMap(new ComunicadoTipoEscolaMap());
+               config.AddMap(new ComunicadoAnoEscolarMap());               
+               config.AddMap(new ConsolidacaoAcompanhamentoAprendizagemAlunoMap());
+               config.AddMap(new AvisoMap());
 
                config.ForDommel();
            });

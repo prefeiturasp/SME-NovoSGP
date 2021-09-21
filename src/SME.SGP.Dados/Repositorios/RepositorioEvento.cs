@@ -396,6 +396,7 @@ namespace SME.SGP.Dados.Repositorios
             });
 
         }
+
         public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeDia(long tipoCalendarioId, string dreId, string ueId, DateTime data, bool EhEventoSme, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = true)
         {
             var query = ObterEventos(dreId, ueId, null, data, EhEventoSme, !EhEventoSme, true, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme);
@@ -1073,15 +1074,15 @@ namespace SME.SGP.Dados.Repositorios
                         and extract(year from e.data_inicio) = tc.ano_letivo     
                         and e.letivo = any(@tiposLetivos)
                         and not e.excluido";
-            return await database.Conexao.QueryAsync<Evento>(query.ToString(), 
+            return await database.Conexao.QueryAsync<Evento>(query.ToString(),
                 new
-                { 
+                {
                     tipoCalendarioId,
                     tiposLetivos = tiposLetivosConsiderados.Select(tlc => (int)tlc).ToArray()
                 });
         }
 
-        public async Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario,
+        public async Task<IEnumerable<EventoCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario,
                                                                                                    int anoLetivo,
                                                                                                    string codigoDre,
                                                                                                    string codigoUe,
@@ -1110,7 +1111,7 @@ namespace SME.SGP.Dados.Repositorios
                 and tc.situacao
                 and tc.ano_letivo = @anoLetivo
             ";
-            return await database.Conexao.QueryAsync<ListarEventosPorCalendarioRetornoDto>(
+            return await database.Conexao.QueryAsync<EventoCalendarioRetornoDto>(
                 query,
                 new
                 {
@@ -1248,7 +1249,66 @@ namespace SME.SGP.Dados.Repositorios
                        where not excluido
                        and id = @eventoId";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<Evento>(query, new { eventoId});
+            return await database.Conexao.QueryFirstOrDefaultAsync<Evento>(query, new { eventoId });
+        }
+
+        public async Task<IEnumerable<EventoCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeEModalidades(long tipoCalendario,
+                                                                                                                              int anoLetivo,
+                                                                                                                              string dreCodigo,
+                                                                                                                              string ueCodigo,
+                                                                                                                              IEnumerable<int> modalidades)
+        {
+            var query = new StringBuilder(@"select e.Id As Id,
+                                                   e.Nome as Nome,
+                                                   te.descricao as TipoEvento,
+                                                   e.data_inicio as DataInicio
+                                              from evento e
+				                             inner join tipo_calendario tc on tc.id = e.tipo_calendario_id 	    
+					                         inner join evento_tipo te on te.id = e.tipo_evento_id 
+                                             where e.tipo_calendario_id = @tipoCalendario
+                                               and not e.excluido
+                                               and e.status = 1
+                                               and tc.situacao
+                                               and tc.ano_letivo = @anoLetivo ");
+
+            if (!string.IsNullOrEmpty(dreCodigo) && dreCodigo != "-99")
+                query.AppendLine("and e.dre_id = @dreCodigo ");
+            
+            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
+                query.AppendLine("and e.ue_id = @ueCodigo ");
+            
+            if (modalidades != null && !modalidades.Any(c => c == -99))
+                query.AppendLine("and tc.modalidade = any(@modalidades) ");
+
+            query.AppendLine(@"union select e.Id As Id,
+                                                   e.Nome as Nome,
+                                                   te.descricao as TipoEvento,
+                                                   e.data_inicio as DataInicio
+                                              from evento e
+
+                                             inner
+                                              join tipo_calendario tc on tc.id = e.tipo_calendario_id
+
+                                        inner
+                                              join evento_tipo te on te.id = e.tipo_evento_id
+                                             where e.tipo_calendario_id = @tipoCalendario
+                                               and not e.excluido
+                                               and e.status = 1
+                                               and tc.situacao
+                                               and tc.ano_letivo = @anoLetivo and e.dre_id is null and e.ue_id is null");
+
+
+            var parametros = new
+            {
+                tipoCalendario,
+                anoLetivo,
+                dreCodigo,
+                ueCodigo,
+                modalidades
+            };
+
+            return await database.Conexao.QueryAsync<EventoCalendarioRetornoDto>(query.ToString(), parametros);
+
         }
     }
 }

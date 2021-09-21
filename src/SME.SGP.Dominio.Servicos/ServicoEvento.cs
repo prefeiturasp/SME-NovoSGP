@@ -30,6 +30,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IRepositorioEventoBimestre repositorioEventoBimestre;
 
         public ServicoEvento(IRepositorioEvento repositorioEvento,
                              IRepositorioEventoTipo repositorioEventoTipo,
@@ -39,7 +40,8 @@ namespace SME.SGP.Dominio.Servicos
                              IRepositorioTipoCalendario repositorioTipoCalendario,
                              IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                              IRepositorioAbrangencia repositorioAbrangencia, IConfiguration configuration,
-                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog, IMediator mediator)
+                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog, IMediator mediator,
+                             IRepositorioEventoBimestre repositorioEventoBimestre)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
@@ -54,6 +56,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioEventoBimestre = repositorioEventoBimestre ?? throw new ArgumentNullException(nameof(repositorioEventoBimestre));
         }
 
         public static DateTime ObterProximoDiaDaSemana(DateTime data, DayOfWeek diaDaSemana)
@@ -78,8 +81,12 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false)
+        public async Task<string> Salvar(Evento evento, int[] bimestres = null, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false)
         {
+
+            if ((TipoEvento)evento.TipoEventoId == TipoEvento.LiberacaoBoletim && bimestres.Length == 0)
+                throw new NegocioException("Ao menos um bimestre deve ser selecionado para um evento do tipo Liberação do Boletim");
+
             ObterTipoEvento(evento);
 
             evento.ValidaPeriodoEvento();
@@ -111,10 +118,16 @@ namespace SME.SGP.Dominio.Servicos
 
             AtribuirNullSeVazio(evento);
 
+
+
             if (!unitOfWorkJaEmUso)
                 unitOfWork.IniciarTransacao();
 
             await repositorioEvento.SalvarAsync(evento);
+
+            if ((TipoEvento)evento.TipoEventoId == TipoEvento.LiberacaoBoletim)
+                await IncluiBimestresDoEventoLiberacaoDeBoletim(evento, bimestres, ehAlteracao);
+
 
             // Envia para workflow apenas na Inclusão ou alteração apos aprovado
             var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && devePassarPorWorkflowLiberacaoExcepcional;
@@ -153,6 +166,90 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
+        private async Task IncluiBimestresDoEventoLiberacaoDeBoletim(Evento evento, int[] bimestres, bool ehAlteracao)
+        {
+            if (ehAlteracao == false)
+                await ValidaSeExisteOutroEventoLiberacaoDeBoletimNaMesmaDataEMesmoTipoCalendario(evento);
+
+            var bimestresDoTipoCalendarioJaCadastrados = await repositorioEventoBimestre.ObterBimestresPorTipoCalendarioDeOutrosEventos(evento.TipoCalendarioId, evento.Id);
+
+            if (bimestresDoTipoCalendarioJaCadastrados.Length == 0 && !ehAlteracao)
+            {
+                await IncluiBimestresNoEventoDeLiberacaoDeBoletim(evento, bimestres);
+                return;
+            }
+
+            if (bimestresDoTipoCalendarioJaCadastrados.Length > 0 && bimestresDoTipoCalendarioJaCadastrados.Contains((int)Bimestre.Todos))
+                throw new NegocioException("Já existe outro evento do tipo liberação do boletim com todos os bimestres cadastrado para esse calendário.");
+
+            if (bimestresDoTipoCalendarioJaCadastrados.Length > 0)
+                VerificaSeOsBimestresJaExistemParaOCalendarioDoEvento(bimestres, bimestresDoTipoCalendarioJaCadastrados);
+
+            await AlteraBimestresDoEvento(evento, bimestres);
+
+        }
+
+        private async Task ValidaSeExisteOutroEventoLiberacaoDeBoletimNaMesmaDataEMesmoTipoCalendario(Evento evento)
+        {
+            var jaExisteOutroEvento = await repositorioEventoBimestre.VerificaSeExiteEventoPorTipoCalendarioDataReferencia(evento.TipoCalendarioId, evento.DataInicio.Date);
+            if (jaExisteOutroEvento)
+                throw new NegocioException($"Já existe outro evento do tipo liberação do boletim com a data {evento.DataInicio.Date} cadastrada para esse calendário.");
+        }
+
+        private async Task AlteraBimestresDoEvento(Evento evento, int[] bimestres)
+        {
+            await repositorioEventoBimestre.ExcluiEventoBimestre(evento.Id);
+            await IncluiBimestresNoEventoDeLiberacaoDeBoletim(evento, bimestres);
+        }
+
+        private static void VerificaSeOsBimestresJaExistemParaOCalendarioDoEvento(int[] bimestres, int[] bimestresDoTipoCalendarioJaCadastrados)
+        {
+            List<string> BimestreDoEventoqueJaEstaCadastrado = ComparaListaDeBimestresERetornaOsQueJaEstaoCadastrados(bimestres, bimestresDoTipoCalendarioJaCadastrados);
+
+            if (BimestreDoEventoqueJaEstaCadastrado.Count > 0)
+            {
+                string bimestresFormatados = string.Join(",", BimestreDoEventoqueJaEstaCadastrado);
+
+                if (BimestreDoEventoqueJaEstaCadastrado.Count > 1)
+                    throw new NegocioException($"Os bimestres {bimestresFormatados}  já estão cadastrados em outro evento para esse calendário");
+                throw new NegocioException($"O bimestre {bimestresFormatados}  já está cadastrado em outro evento para esse calendário");
+
+            }
+        }
+
+        private static List<string> ComparaListaDeBimestresERetornaOsQueJaEstaoCadastrados(int[] bimestres, int[] bimestresDoTipoCalendarioJaCadastrados)
+        {
+            List<string> BimestreDoEventoqueJaEstaCadastrado = new List<string>();
+
+            foreach (int bimestreCadastrado in bimestresDoTipoCalendarioJaCadastrados)
+            {
+                foreach (int bimestre in bimestres)
+                {
+                    if (bimestreCadastrado == bimestre)
+                    {
+                        var bimestreEnum = (Bimestre)bimestre;
+                        BimestreDoEventoqueJaEstaCadastrado.Add(bimestreEnum.Name());
+                    }
+
+                }
+            }
+
+            return BimestreDoEventoqueJaEstaCadastrado;
+        }
+
+        private async Task IncluiBimestresNoEventoDeLiberacaoDeBoletim(Evento evento, int[] bimestres)
+        {
+            foreach (var bimestre in bimestres)
+            {
+                var eventoBimestre = new EventoBimestre()
+                {
+                    EventoId = evento.Id,
+                    Bimestre = bimestre
+                };
+                await repositorioEventoBimestre.SalvarAsync(eventoBimestre);
+            }
+        }
+
         private async Task VerificaPendenciaParametroEvento(Evento evento, Usuario usuario)
         {
             if (evento.GeraPendenciaParametroEvento())
@@ -164,6 +261,7 @@ namespace SME.SGP.Dominio.Servicos
             if (!enviarParaWorkflow && !ehAlteracao && evento.EhEventoLetivo())
                 await mediator.Send(new IncluirFilaExcluirPendenciasDiasLetivosInsuficientesCommand(evento.TipoCalendarioId, evento.DreId, evento.UeId, usuario));
         }
+
 
         public void SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
         {
@@ -209,12 +307,10 @@ namespace SME.SGP.Dominio.Servicos
             {
                 try
                 {
-                    if (!await mediator.Send(new ValidarSeEhDiaLetivoQuery(
-                            novoEvento.DataInicio,
-                            novoEvento.DataInicio,
+                    if (!await ValidaCadastroEvento(novoEvento.DataInicio,
                             novoEvento.TipoCalendarioId,
                             novoEvento.Letivo == EventoLetivo.Sim,
-                            novoEvento.TipoEventoId)))
+                            novoEvento.TipoEventoId))
                     {
                         notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - Não é possível cadastrar esse evento pois a data informada está fora do período letivo.");
                     }
@@ -236,6 +332,18 @@ namespace SME.SGP.Dominio.Servicos
             }
             var usuarioLogado = servicoUsuario.ObterUsuarioLogado().Result;
             EnviarNotificacaoRegistroDeRecorrencia(evento, notificacoesSucesso, notificacoesFalha, usuarioLogado.Id);
+        }
+
+        private async Task<bool> ValidaCadastroEvento(DateTime dataInicio, long tipoCalendarioId, bool ehLetivo, long tipoEventoId)
+        {
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataInicio, dataInicio);
+            if (periodoEscolar == null)
+                return false;
+
+            if (ehLetivo && tipoEventoId != (int)TipoEvento.LiberacaoExcepcional)
+              return ValidaSeEhFinalSemana(dataInicio, dataInicio);
+
+            return true;
         }
 
         private static void AtribuirNullSeVazio(Evento evento)
@@ -528,6 +636,14 @@ namespace SME.SGP.Dominio.Servicos
 
                 await mediator.Send(new IncluirFilaExcluirPendenciasDiasLetivosInsuficientesCommand(evento.TipoCalendarioId, evento.DreId, evento.UeId, usuario));
             }
+        }
+
+        private bool ValidaSeEhFinalSemana(DateTime inicio, DateTime fim)
+        {
+            for (DateTime data = inicio; data <= fim; data = data.AddDays(1))
+                if (data.DayOfWeek == DayOfWeek.Saturday || data.DayOfWeek == DayOfWeek.Sunday)
+                    return false;
+            return true;
         }
     }
 }

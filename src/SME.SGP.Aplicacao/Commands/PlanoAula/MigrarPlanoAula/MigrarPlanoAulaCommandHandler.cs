@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -84,6 +85,14 @@ namespace SME.SGP.Aplicacao
             var turmasAbrangencia = await consultasAbrangencia.ObterTurmasRegulares(turmaAula.Ue.CodigoUe, turmaAula.ModalidadeCodigo);
 
             var idsTurmasSelecionadas = migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).ToList();
+
+            var turmasSelecionadas = await repositorioTurma.ObterPorCodigosAsync(idsTurmasSelecionadas.ToArray());
+            if (turmasSelecionadas.Any(t => t.TipoTurma == TipoTurma.Programa))
+            {
+                var turmasPrograma = await consultasAbrangencia.ObterTurmasPrograma(turmaAula.Ue.CodigoUe, turmaAula.ModalidadeCodigo);
+                if (turmasPrograma != null)
+                    turmasAbrangencia = turmasAbrangencia != null ? turmasAbrangencia.Concat(turmasPrograma) : turmasPrograma;
+            }
 
             var turmasAtribuidasAoProfessor = await mediator.Send(new ObterTurmasPorProfessorRfQuery(codigoRf));
 

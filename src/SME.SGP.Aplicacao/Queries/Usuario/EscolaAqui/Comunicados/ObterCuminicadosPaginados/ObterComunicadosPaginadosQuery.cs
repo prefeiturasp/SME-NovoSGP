@@ -1,36 +1,60 @@
-﻿using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dto;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Infra;
 using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComunicadosPaginadosQuery : IRequest<PaginacaoResultadoDto<ComunicadoDto>>
+    public class ObterComunicadosPaginadosQuery : IRequest<PaginacaoResultadoDto<ComunicadoListaPaginadaDto>>
     {
-        public DateTime? DataEnvio { get; set; }
-        public DateTime? DataExpiracao { get; set; }
-        public int[] GruposId { get; set; }
-        public string Titulo { get; set; }
-        public int AnoLetivo { get; set; }
-        public string CodigoDre { get; set; }
-        public string CodigoUe { get; set; }
-        public Modalidade Modalidade { get; set; }
-        public int Semestre { get; set; }
-        public string[] Turmas { get; set; }
-
-        public ObterComunicadosPaginadosQuery(DateTime? dataEnvio, DateTime? dataExpiracao, int[] gruposId, string titulo, int anoLetivo, string codigoDre, string codigoUe, Modalidade modalidade, int semestre, string[] turmas)
+        public ObterComunicadosPaginadosQuery(int anoLetivo, string dreCodigo, string ueCodigo, int[] modalidades, int semestre, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
         {
-            DataEnvio = dataEnvio;
-            DataExpiracao = dataExpiracao;
-            GruposId = gruposId;
-            Titulo = titulo;
             AnoLetivo = anoLetivo;
-            CodigoDre = codigoDre;
-            CodigoUe = codigoUe;
-            Modalidade = modalidade;
+            DreCodigo = dreCodigo;
+            UeCodigo = ueCodigo;
+            Modalidades = modalidades;
             Semestre = semestre;
-            Turmas = turmas;
+            DataEnvioInicio = dataEnvioInicio;
+            DataEnvioFim = dataEnvioFim;
+            DataExpiracaoInicio = dataExpiracaoInicio;
+            DataExpiracaoFim = dataExpiracaoFim;
+            Titulo = titulo;
+            TurmasCodigo = turmasCodigo;
+            AnosEscolares = anosEscolares;
+            TiposEscolas = tiposEscolas;
+        }
+
+        public int AnoLetivo { get; set; }
+        public string DreCodigo { get; set; }
+        public string UeCodigo { get; set; }
+        public int[] Modalidades { get; set; }
+        public int Semestre { get; set; }
+        public DateTime? DataEnvioInicio { get; set; }
+        public DateTime? DataEnvioFim { get; set; }
+        public DateTime? DataExpiracaoInicio { get; set; }
+        public DateTime? DataExpiracaoFim { get; set; }
+        public string Titulo { get; set; }
+        public string[] TurmasCodigo { get; set; }
+        public string[] AnosEscolares { get; set; }
+        public int[] TiposEscolas { get; set; }
+    }
+
+    public class ObterComunicadosPaginadosQueryValidator : AbstractValidator<ObterComunicadosPaginadosQuery>
+    {
+        public ObterComunicadosPaginadosQueryValidator()
+        {
+            RuleFor(a => a.AnoLetivo)
+                .NotEmpty()
+                .WithMessage("O ano letivo deve ser informado.");
+            RuleFor(a => a.DreCodigo)
+                .NotEmpty()
+                .WithMessage("O código da DRE deve ser informado.");
+            RuleFor(a => a.UeCodigo)
+                .NotEmpty()
+                .WithMessage("O código da Ue deve ser informado.");            
+            RuleFor(a => a.Modalidades)
+                .NotEmpty()
+                .WithMessage("Pelo menos uma modalidade deve ser informada.");
         }
     }
 }

@@ -22,10 +22,13 @@ namespace SME.SGP.Aplicacao
 
             foreach (var planoAEE in planosAtivos)
             {
-                var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(planoAEE.AlunoCodigo, planoAEE.CriadoEm.Year));
+                var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, DateTime.Now.Year));
 
-                if (aluno.EstaInativo(DateTime.Today))
-                    await EncerrarPlanoAEE(planoAEE, aluno.SituacaoMatricula, aluno.DataSituacao);
+                if (!matriculas.Any(a => a.EstaAtivo(DateTime.Today)))
+                {
+                    var ultimaMatricula = matriculas.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
+                    await EncerrarPlanoAEE(planoAEE, ultimaMatricula?.SituacaoMatricula ?? "Inativo", ultimaMatricula?.DataSituacao ?? DateTime.Now);
+                }
             }
 
             return true;
@@ -70,9 +73,9 @@ namespace SME.SGP.Aplicacao
             var coordenadoresUe = await ObterCoordenadoresUe(ueCodigo);
 
             var usuariosIds = await ObterUsuariosId(coordenadoresUe);
-            var coordenadorCEFAI = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dreCodigo));
+            var coordenadoresCEFAI = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dreCodigo));
 
-            if (coordenadorCEFAI != 0)
+            foreach(var coordenadorCEFAI in coordenadoresCEFAI)            
                 usuariosIds.Add(coordenadorCEFAI);
 
             return usuariosIds;

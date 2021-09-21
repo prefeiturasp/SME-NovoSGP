@@ -1,23 +1,21 @@
-﻿using SME.SGP.Dominio;
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System;
 
 namespace SME.SGP.Infra
 {
     public class FiltroComunicadoDto
     {
-        public DateTime? DataEnvio { get; set; }
-        public DateTime? DataExpiracao { get; set; }
-        public int[] GruposId { get; set; }
-        public string Titulo { get; set; }
-        //[Range(1,int.MaxValue, ErrorMessage = "O Ano letivo é Obrigatório")]
         public int AnoLetivo { get; set; }
-        //[Required(ErrorMessage = "O Codigo da Dre é Obrigatório")]
-        public string CodigoDre { get; set; }
-        //[Required(ErrorMessage = "O Codigo da Ue é Obrigatório")]
-        public string CodigoUe { get; set; }
-        public Modalidade Modalidade { get; set; }
+        public string DreCodigo { get; set; }
+        public string UeCodigo { get; set; }
+        public int[] Modalidades { get; set; }
         public int Semestre { get; set; }
-        public string[] Turmas { get; set; }
+        public DateTime? DataEnvioInicio { get; set; }
+        public DateTime? DataEnvioFim { get; set; }
+        public DateTime? DataExpiracaoInicio { get; set; }
+        public DateTime? DataExpiracaoFim { get; set; }
+        public string Titulo { get; set; }
+        public string[] TurmasCodigo { get; set; }
+        public string[] AnosEscolares { get; set; }
+        public int[] TiposEscolas { get; set; }
     }
 }

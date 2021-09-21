@@ -7,5 +7,6 @@
         public int AnoLetivo { get; set; }
         public string UsuarioNome { get; set; }
         public string UsuarioRf { get; set; }
+        public bool Historico { get; set; }
     }
 }

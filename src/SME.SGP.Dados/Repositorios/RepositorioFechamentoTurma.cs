@@ -94,7 +94,9 @@ namespace SME.SGP.Dados.Repositorios
                         where not f.excluido
                             and t.id = @turmaId 
                         and f.disciplina_id = @componenteCurricularId
-                        and ft.periodo_escolar_id = @periodoEscolarId";
+                        and ft.periodo_escolar_id = @periodoEscolarId
+                        and fn.excluido = false
+                        order by fn.id desc";
 
             IList<FechamentoTurmaDisciplina> fechammentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();
 

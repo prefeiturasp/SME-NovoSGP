@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
         private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IRepositorioEventoBimestre> repositorioEventoBimestre;
         private readonly Mock<IConsultasAbrangencia> consultasAbrangencia;
 
         public ConsultasEventoTeste()
@@ -27,9 +28,10 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             httpContextAcessorObj.HttpContext = context;
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
+            repositorioEventoBimestre = new Mock<IRepositorioEventoBimestre>();
             consultasAbrangencia = new Mock<IConsultasAbrangencia>();
 
-            consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), servicoUsuario.Object, repositorioEventoTipo.Object, consultasAbrangencia.Object);
+            consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), servicoUsuario.Object, repositorioEventoTipo.Object, repositorioEventoBimestre.Object ,consultasAbrangencia.Object);
         }
 
         //[Fact]
@@ -58,7 +60,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact]
         public async Task DeveObterEvento()
         {
-            repositorioEvento.Setup(c => c.ObterPorIdAsync(It.IsAny<long>()))
+            repositorioEvento.Setup(c => c.ObterEventoAtivoPorId(It.IsAny<long>()))
                 .ReturnsAsync(new Evento
                 {
                     Id = 1
@@ -84,7 +86,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
             Assert.NotNull(eventoDto);
             Assert.Equal(1, eventoDto.Id);
-            repositorioEvento.Verify(c => c.ObterPorIdAsync(It.IsAny<long>()), Times.Once);
+            repositorioEvento.Verify(c => c.ObterEventoAtivoPorId(It.IsAny<long>()), Times.Once);
         }
     }
 }

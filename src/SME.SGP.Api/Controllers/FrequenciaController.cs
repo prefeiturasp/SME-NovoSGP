@@ -4,6 +4,7 @@ using SME.Background.Core;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -26,7 +27,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Listar([FromQuery] FiltroFrequenciaDto filtro, [FromServices] IObterFrequenciaPorAulaUseCase useCase)
         {
             var retorno = await useCase.Executar(filtro);            
-            //var retorno = await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId, componenteCurricularId);
             if (retorno == null)
                 return NoContent();
 
@@ -98,6 +98,13 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, [FromServices] IConsultasFrequencia consultasFrequencia)
              => Ok(await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo));
 
+        [HttpGet("frequencias/alunos/{alunoCodigo}/turmas/{turmaCodigo}/semestre/{semestre}/geral")]
+        [ProducesResponseType(typeof(double), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, int semestre, [FromServices] IConsultasFrequencia consultasFrequencia)
+             => Ok(await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, semestre: semestre));
+
         [AllowAnonymous]
         [HttpGet("frequencias/ausencias-motivos")]
         [ProducesResponseType(typeof(IEnumerable<AusenciaMotivoDto>), 200)]
@@ -161,6 +168,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> MigracaoDadosFrequencia([FromQuery] int[] anosLetivos, [FromServices] ICarregarDadosAulasFrequenciaUseCase useCase)
         {
             return Ok(await useCase.Executar(anosLetivos));
+        }
+
+        [HttpGet("frequencias/turmas/{turmaCodigo}/alunos/{alunoCodigo}/componentes-curriculares/{componenteCurricularId}")]
+        [ProducesResponseType(typeof(IEnumerable<FrequenciaAluno>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterFrequenciasPorBimestresAlunoTurmaComponenteCurricular(string turmaCodigo, string alunoCodigo, string componenteCurricularId, [FromQuery] int[] bimestres, [FromServices] IObterFrequenciasPorBimestresAlunoTurmaComponenteCurricularUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FrequenciaPorBimestresAlunoTurmaComponenteCurricularDto(turmaCodigo, alunoCodigo, bimestres, componenteCurricularId)));
         }
     }
 }

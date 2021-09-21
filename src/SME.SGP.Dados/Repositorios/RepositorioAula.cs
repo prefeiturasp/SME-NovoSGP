@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sentry;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -898,8 +899,8 @@ namespace SME.SGP.Dados.Repositorios
                     writer.Write(aula.UeId);
                     writer.Write(aula.ProfessorRf);
                     writer.Write(aula.CriadoEm);
-                    writer.Write("Sistema");
-                    writer.Write("Sistema");
+                    writer.Write(aula.CriadoPor != null? aula.CriadoPor: "Sistema");
+                    writer.Write(aula.CriadoRF != null? aula.CriadoRF: "Sistema");
                 }
                 writer.Complete();
             }
@@ -1030,6 +1031,52 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarInicioFimDto>(query, new { aulaId });
+        }
+
+        public override long Salvar(Aula entidade)
+        {
+            ValideQuantidadeDeAulas(entidade);
+
+            return base.Salvar(entidade);
+        }
+        public override Task<long> SalvarAsync(Aula entidade)
+        {
+            ValideQuantidadeDeAulas(entidade);
+
+            return base.SalvarAsync(entidade);
+        }
+
+        private void ValideQuantidadeDeAulas(Aula entidade)
+        {
+            if (entidade.Quantidade < 0 && !entidade.Excluido)
+            {
+                SentrySdk.AddBreadcrumb($@"
+                    Turma id: {entidade.TurmaId}, 
+                    Quantidade: {entidade.Quantidade},
+                    Data aula: {entidade.DataAula}, 
+                    Professor: {entidade.ProfessorRf},
+                    Disciplina: {entidade.DisciplinaId},
+                    Recorrência aula: {entidade.RecorrenciaAula},
+                    Tipo de aula: {entidade.TipoAula} -``
+                    {DateTime.Now:MM/dd/yyyy hh:mm:ss.fff tt}", "Erro ao salvar aulas com quantidade negativa");
+
+                throw new NegocioException("Não é possível salvar aula com quantidade negativa. Entre em contato com suporte.");
+            }
+        }
+
+        public async Task<DataAulaDto> ObterAulaPorCodigoTurmaComponenteEData(string turmaId, string componenteCurricularId, DateTime dataCriacao)
+        {
+            var query = @"select id as AulaId
+                            , data_aula as DataAula
+                        from aula 
+                       where not excluido 
+                         and turma_id = @turmaId
+                         and disciplina_id = @componenteCurricularId
+                         and data_aula >= @dataCriacao
+                       order by data_aula
+                       limit 1";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<DataAulaDto>(query, new { turmaId, componenteCurricularId, dataCriacao = dataCriacao.Date });
         }
     }
 }
