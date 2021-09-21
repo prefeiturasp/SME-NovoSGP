@@ -333,6 +333,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.descricao,");
             query.AppendLine("e.data_inicio,");
             query.AppendLine("e.data_fim,");
+            query.AppendLine("e.dre_id,");
+            query.AppendLine("e.ue_id,");
             query.AppendLine("et.id,");
             query.AppendLine("et.descricao,");
             query.AppendLine("et.tipo_data,");
@@ -366,28 +368,27 @@ namespace SME.SGP.Dados.Repositorios
             if (VisualizarEventosSME)
             {
                 query.AppendLine("UNION");
+
                 query.AppendLine("select distinct");
                 query.AppendLine("e.id,");
                 query.AppendLine("e.nome,");
                 query.AppendLine("e.descricao,");
                 query.AppendLine("e.data_inicio,");
                 query.AppendLine("e.data_fim,");
+                query.AppendLine("e.dre_id,");
+                query.AppendLine("e.ue_id,");
                 query.AppendLine("et.id,");
                 query.AppendLine("et.descricao,");
                 query.AppendLine("et.tipo_data,");
-                query.AppendLine("dre.id,");
-                query.AppendLine("dre.abreviacao,");
-                query.AppendLine("dre.nome,");
-                query.AppendLine("ue.id,");
-                query.AppendLine("ue.nome");
+                query.AppendLine("0,");
+                query.AppendLine("'',");
+                query.AppendLine("'',");
+                query.AppendLine("0,");
+                query.AppendLine("''");
                 query.AppendLine("from");
                 query.AppendLine("evento e");
-                query.AppendLine("      inner join evento_tipo et on");
-                query.AppendLine("          e.tipo_evento_id = et.id");
-                query.AppendLine("      inner join dre dre on");
-                query.AppendLine("e.dre_id = dre.dre_id");
-                query.AppendLine("      inner join ue ue on");
-                query.AppendLine("          e.ue_id = ue.ue_id");
+                query.AppendLine("inner join evento_tipo et on");
+                query.AppendLine("    e.tipo_evento_id = et.id");
                 query.AppendLine("where");
                 query.AppendLine("e.excluido = false");
                 query.AppendLine("and e.status = 1");
@@ -728,7 +729,9 @@ namespace SME.SGP.Dados.Repositorios
                                  tipoevento,
                                  dreNome,
                                  ueNome,
-                                 descricao
+                                 descricao,
+                                 data_inicio,
+                                 data_fim
                             from f_eventos_calendario_eventos_do_dia(@login, 
                                                                      @perfil_id, 
                                                                      @historico,

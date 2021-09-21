@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     eventoParaAdicionar.Dre = evento.EhEventoSME() ? "Todas" : evento.Dre.Abreviacao;
-                    eventoParaAdicionar.Ue = (evento.EhEventoSME() || evento.EhEventoDRE()) ? "Todas" : null;
+                    eventoParaAdicionar.Ue = (evento.EhEventoSME() || evento.EhEventoDRE()) ? "Todas" : evento.Ue.Nome;
 
                     retorno.Add(eventoParaAdicionar);
                 }

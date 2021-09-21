@@ -1,8 +1,12 @@
-CREATE OR REPLACE VIEW public.v_estrutura_eventos_calendario
+drop view if exists v_estrutura_eventos_calendario CASCADE;
+
+CREATE OR REPLACE VIEW v_estrutura_eventos_calendario
 AS
 SELECT evento.id,
-       evento.data_inicio AS data_evento,
-       '(in�cio)'::text   AS iniciofimdesc,
+       evento.data_inicio as data_evento,
+       evento.data_inicio,
+       evento.data_fim,
+       '(inicio)'::text   AS iniciofimdesc,
        evento.nome,
        'aaaa'::text       AS tipoevento,
        'todas'::text      AS dreNome,
@@ -22,7 +26,9 @@ create or replace function f_eventos_calendario_por_data_inicio_fim(p_login char
 as
 $$
 select distinct e.id,
+                e.data_inicio as data_evento,
                 e.data_inicio,
+                e.data_fim,
                 case
                     when data_inicio = data_fim then ''
                     else '(inicio)'
@@ -100,6 +106,8 @@ where et.ativo
 union
 
 select distinct e.id,
+                e.data_fim as data_evento,
+                e.data_inicio,
                 e.data_fim,
                 '(fim)',
                 e.nome,
@@ -157,7 +165,9 @@ create or replace function f_eventos_calendario_por_rf_criador(p_login character
 as
 $$
 select e.id,
+       e.data_inicio as data_evento,
        e.data_inicio,
+       e.data_fim,
        case
            when e.data_inicio = e.data_fim then ''
            else '(inicio)'
@@ -200,7 +210,9 @@ where et.ativo
 union
 
 select e.id,
+       e.data_fim as data_evento,
        e.data_inicio,
+       e.data_fim,
        '(fim)' descricao_incio_fim,
        e.nome,
        case
@@ -239,13 +251,14 @@ where e.data_inicio <> e.data_fim
        (p_desconsidera_evento_sme = true and not (e.dre_id is null and e.ue_id is null)));;
 $$;
 
-
 create or replace function f_eventos_calendario_eventos_do_dia(p_login character varying, p_perfil_id uuid, p_historico boolean, p_dia integer, p_mes integer, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_local_dre boolean DEFAULT false, p_desconsidera_evento_sme boolean DEFAULT false) returns SETOF v_estrutura_eventos_calendario
     language sql
 as
 $$
 select id,
        data_evento,
+       data_inicio,
+       data_fim,
        iniciofimdesc,
        nome,
        tipoevento,
@@ -259,6 +272,8 @@ union
 
 select id,
        data_evento,
+       data_inicio,
+       data_fim,
        iniciofimdesc,
        nome,
        tipoevento,
@@ -268,3 +283,25 @@ select id,
 from f_eventos_calendario_por_rf_criador(p_login, p_mes, p_tipo_calendario_id, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)
 where extract(day from data_evento) = p_dia;
 $$;
+
+CREATE OR REPLACE FUNCTION public.f_eventos_calendario_dias_com_eventos_no_mes(p_login character varying, p_perfil_id uuid, p_historico boolean, p_mes integer, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_local_dre boolean DEFAULT false, p_desconsidera_evento_sme boolean DEFAULT false)
+ RETURNS SETOF v_estrutura_eventos_calendario_dias_com_eventos_no_mes
+ LANGUAGE sql
+AS $function$ 	
+select lista.dia,
+	   lista.tipoEvento
+from (
+
+select distinct extract(day from data_evento) as dia,
+				tipoEvento
+	from f_eventos_calendario_por_data_inicio_fim(p_login, p_perfil_id, p_historico, p_mes, p_tipo_calendario_id, p_considera_pendente_aprovacao, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)
+
+union 
+
+select distinct extract(day from data_evento) as dia,
+				tipoEvento
+	from f_eventos_calendario_por_rf_criador(p_login, p_mes, p_tipo_calendario_id, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)) lista
+order by 1;
+ $function$
+;
+
