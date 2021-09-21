@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using Elastic.Apm;
 
 namespace SME.SGP.Dados
 {
@@ -21,10 +22,15 @@ namespace SME.SGP.Dados
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
-
+            IEnumerable<dynamic> result = default;
             try
             {
-                var result = SqlMapper.Query(cnn, sql, param, transaction, buffered, commandTimeout, commandType);
+                var transactionElk = Agent.Tracer.CurrentTransaction;
+                
+                transactionElk.CaptureSpan("Query", "Postgres", () =>
+                {
+                    result = SqlMapper.Query(cnn, sql, param, transaction, buffered, commandTimeout, commandType);
+                });                
 
                 timer.Stop();
 
@@ -70,11 +76,18 @@ namespace SME.SGP.Dados
 
             var inicioOperacao = DateTime.UtcNow;
             var timer = System.Diagnostics.Stopwatch.StartNew();
+            IEnumerable<T> result = default;
 
             try
             {
-                var result = await SqlMapper.QueryAsync<T>(cnn, sql, param, transaction, commandTimeout, commandType);
+                var transactionElk = Agent.Tracer.CurrentTransaction;
 
+                await transactionElk.CaptureSpan("Query", "Postgres", async (span) =>
+                {
+                    span.SetLabel("query", sql);
+                    result = await SqlMapper.QueryAsync<T>(cnn, sql, param, transaction, commandTimeout, commandType);
+                });
+                
                 timer.Stop();
 
                 insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);

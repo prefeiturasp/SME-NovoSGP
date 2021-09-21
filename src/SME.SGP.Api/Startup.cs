@@ -1,4 +1,7 @@
 ﻿using Dapper;
+using Elastic.Apm.AspNetCore;
+using Elastic.Apm.DiagnosticSource;
+using Elastic.Apm.SqlClient;
 using HealthChecks.UI.Client;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
@@ -42,6 +45,10 @@ namespace SME.SGP.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseElasticApm(Configuration, 
+                new SqlClientDiagnosticSubscriber(),
+                new HttpDiagnosticsSubscriber());
+
             app.UseResponseCompression();
 
             if (env.IsDevelopment())
@@ -101,6 +108,10 @@ namespace SME.SGP.Api
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
+
+
+           
+
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
