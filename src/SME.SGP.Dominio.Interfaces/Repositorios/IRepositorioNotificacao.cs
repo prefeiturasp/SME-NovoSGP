@@ -17,6 +17,7 @@ namespace SME.SGP.Dominio.Interfaces
         int ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(int anoLetivo, string usuarioRf);
 
         long ObterUltimoCodigoPorAno(int ano);
+        Task<long> ObterUltimoCodigoPorAnoAsync(int ano);
         Task<int> ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoEUsuarioAsync(int anoLetivo, string codigoRf);
         Task<long> ObterCodigoPorId(long notificacaoId);
         Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis();
