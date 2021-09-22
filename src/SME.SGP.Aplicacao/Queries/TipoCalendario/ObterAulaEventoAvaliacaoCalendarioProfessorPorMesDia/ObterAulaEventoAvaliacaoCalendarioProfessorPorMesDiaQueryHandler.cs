@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
                         Descricao = evento.Descricao
                     };
 
-                    if (evento.TipoEvento.TipoData == EventoTipoData.InicioFim)
+                    if (evento.DataInicio.Date != evento.DataFim.Date)
                     {
                         eventoParaAdicionar.DataInicio = evento.DataInicio;
                         eventoParaAdicionar.DataFim = evento.DataFim;

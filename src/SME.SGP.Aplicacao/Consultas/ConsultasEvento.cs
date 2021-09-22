@@ -56,11 +56,11 @@ namespace SME.SGP.Aplicacao
                         filtroEventosDto.ConsideraHistorico));
         }
 
-        public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
+        public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia, int anoLetivo)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario);
+            return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, anoLetivo, usuario);
         }
 
         public async Task<EventoCompletoDto> ObterPorId(long id)
