@@ -205,7 +205,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             Assert.True(auditoriaDto.Id > 0);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Valida o cadastro de 2 aulas de reposição com 1 existente deve inviar para aprovação > 3")]
         public async Task Professor_Deve_Cadastrar_Aula_Reposicao_E_Enviar_Para_Aprovacao()
         {
             // Arrange
