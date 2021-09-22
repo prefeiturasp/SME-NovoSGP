@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
                 foreach (var alunoEOL in alunosEOL.OrderBy(a => a.NomeAluno))
                 {
                     var turmaAluno = turmas != null && turmas.Any() ? turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()) : null;
-                    var turmaAlunoDescricao = turmaAluno == null ? string.Empty : $"- {turmaAluno.Id}";
+                    var turmaAlunoDescricao = turmaAluno == null ? string.Empty : $"- {turmaAluno.Nome}";
 
                     var alunoSimples = new AlunoSimplesDto()
                     {
