@@ -82,7 +82,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.E_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPorDia(int dia, int mes, [FromQuery]CalendarioEventosFiltroDto filtro, [FromServices] IConsultasEvento consultasEvento)
         {
-            var retorno = await consultasEvento.ObterEventosPorDia(filtro, mes, dia);
+            var retorno = await consultasEvento.ObterEventosPorDia(filtro, mes, dia, filtro.AnoLetivo);
             if (retorno.Any())
                 return Ok(retorno);
             else return StatusCode(204);

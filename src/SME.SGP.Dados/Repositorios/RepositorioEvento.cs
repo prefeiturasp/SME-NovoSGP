@@ -720,22 +720,22 @@ namespace SME.SGP.Dados.Repositorios
 
         #region Tipos de Eventos filtrados por Dia
 
-        public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia,
+        public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia, int anoLetivo,
             Usuario usuario)
         {
             var query = @"select id,
-                                 iniciofimdesc,
                                  nome,
                                  tipoevento,
                                  dreNome,
                                  ueNome,
+                                 ueTipo,
                                  descricao,
                                  data_inicio,
                                  data_fim
                             from f_eventos_calendario_eventos_do_dia(@login, 
                                                                      @perfil_id, 
                                                                      @historico,
-                                                                     @dia,
+                                                                     @dataReferencia,
                                                                      @mes,
                                                                      @tipo_calendario_id,
                                                                      @considera_evento_aprovado_e_pendente_aprovacao, 
@@ -744,16 +744,17 @@ namespace SME.SGP.Dados.Repositorios
                                                                      @desconsidera_local_dre,
                                                                      @desconsidera_eventos_sme)";
 
+            var dataConsulta = new DateTime(anoLetivo, mes, dia);
             // Está sendo utilizado a função com intuíto da melhoria de performance
             return await database.Conexao.QueryAsync<CalendarioEventosNoDiaRetornoDto>(query.ToString(), new
             {
                 login = usuario.CodigoRf,
                 perfil_id = usuario.PerfilAtual,
                 historico = calendarioEventosMesesFiltro.ConsideraHistorico,
-                dia,
+                dataReferencia = dataConsulta.Date,
                 mes,
                 tipo_calendario_id = calendarioEventosMesesFiltro.IdTipoCalendario,
-                considera_evento_aprovado_e_pendente_aprovacao = usuario.TemPerfilSupervisorOuDiretor() || usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(),
+                considera_evento_aprovado_e_pendente_aprovacao = false,
                 dre_id = calendarioEventosMesesFiltro.DreId,
                 ue_id = calendarioEventosMesesFiltro.UeId,
                 desconsidera_local_dre = !usuario.PodeVisualizarEventosOcorrenciaDre(),
