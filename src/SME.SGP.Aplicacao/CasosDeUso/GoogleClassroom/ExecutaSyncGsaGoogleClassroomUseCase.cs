@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
             this.googleClassroomSyncOptions = googleClassroomSyncOptions;
         }
 
-        public async Task<bool> Executar()
+        public async Task<bool> Executar(MensagemRabbit param)
         {
             if (!googleClassroomSyncOptions.ExecutarGsaSync)
                 return false;

@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using static SME.SGP.Aplicacao.ExecutarTipoCalendarioUseCase;
 
 namespace SME.SGP.Aplicacao
 {
@@ -37,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
             repositorio.Salvar(tipoCalendario);
 
-            SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarMetodosAsync(dto, false, tipoCalendario));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarTipoCalendario, new ExecutarTipoCalendarioParametro { Dto = dto, TipoCalendario = tipoCalendario }, Guid.NewGuid(), null));
         }
 
         public async Task ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
@@ -66,7 +67,7 @@ namespace SME.SGP.Aplicacao
 
             repositorio.Salvar(tipoCalendario);
 
-            SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarMetodosAsync(dto, true, tipoCalendario));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarTipoCalendario, new ExecutarTipoCalendarioParametro { Dto = dto, TipoCalendario = tipoCalendario }, Guid.NewGuid(), null));
         }
 
         public TipoCalendario MapearParaDominio(TipoCalendarioDto dto, long id)

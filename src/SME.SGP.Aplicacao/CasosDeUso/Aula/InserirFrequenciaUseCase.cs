@@ -71,7 +71,9 @@ namespace SME.SGP.Aplicacao
 
             // Quando for alteração de registro de frequencia chama o servico para verificar se atingiu o limite de dias para alteração e notificar
             if (alteracaoRegistro)
-                Background.Core.Cliente.Executar<IServicoNotificacaoFrequencia>(e => e.VerificaRegraAlteracaoFrequencia(registroFrequencia.Id, registroFrequencia.CriadoEm, DateTime.Now, usuario.Id));
+            {
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificacaoFrequencia, registroFrequencia, Guid.NewGuid(), usuario));
+            }
 
             await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId));
 

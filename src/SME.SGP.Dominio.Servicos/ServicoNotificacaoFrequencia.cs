@@ -181,7 +181,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId)
+        public async Task VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm)
         {
             int anoAtual = DateTime.Now.Year;
 

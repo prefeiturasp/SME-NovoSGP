@@ -31,9 +31,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AulaConsultaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public async Task<IActionResult> BuscarPorId(long id, [FromServices] IMediator mediator)
+        public async Task<IActionResult> BuscarPorId(long id, [FromServices] IObterAulaPorIdUseCase obterAulaPorIdUseCase)
         {
-            return Ok(await ObterAulaPorIdUseCase.Executar(mediator, id));
+            return Ok(await obterAulaPorIdUseCase.Executar(id));
         }
 
         [HttpDelete("{id}/recorrencias/{recorrencia}/disciplinaNome/{disciplinaNome}")]

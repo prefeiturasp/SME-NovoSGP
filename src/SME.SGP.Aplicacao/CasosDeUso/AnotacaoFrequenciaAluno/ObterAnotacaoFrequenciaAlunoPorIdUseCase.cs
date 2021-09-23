@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
                     DataAtualizacaoContato = aluno.DataAtualizacaoContato,
                     DataNascimento = aluno.DataNascimento,
                     DataSituacao = aluno.DataSituacao,
-                    Nome = aluno.NomeAluno,
+                    Nome = aluno.NomeValido(),
                     NomeResponsavel = aluno.NomeResponsavel,
                     NumeroChamada = aluno.NumeroAlunoChamada,
                     Situacao = aluno.SituacaoMatricula,

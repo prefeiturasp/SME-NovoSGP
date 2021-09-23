@@ -14,11 +14,14 @@ namespace SME.SGP.Aplicacao
         {
 
         }
-        public async Task Executar()
+
+        public async Task<bool> Executar(MensagemRabbit param) 
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExecutaSincronismoComponentesCurricularesEolUseCase", "Rabbit - ExecutaSincronismoComponentesCurricularesEolUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizaComponetesCurricularesEol, new SincronizarComponentesCurricularesUseCase(mediator), Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizaComponetesCurricularesEol, new ExecutarSincronismoComponentesCurricularesUseCase(mediator), Guid.NewGuid(), null));
+            return true;
         }
+
     }
 }

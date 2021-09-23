@@ -69,10 +69,12 @@ namespace SME.SGP.Aplicacao
                     turmasCodigos = new string[1] { turma.CodigoTurma };
                 }
 
+                var componentesComNotaFechamentoOuConselho = await mediator.Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo));
                 var componentesDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
-                var componentesDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesDaTurmaEol.Select(x => Convert.ToInt64(x.Codigo)).Distinct().ToArray()));
+               
 
-                var possuiComponentesSemNotaConceito = componentesDaTurma.Select(a => a.CodigoComponenteCurricular).Except(componentesDoAluno).Any();
+
+                var possuiComponentesSemNotaConceito = componentesDaTurmaEol.Where(x => x.LancaNota == true).Select(x => x.Codigo).ToArray().Except(componentesComNotaFechamentoOuConselho.Select(x=>x.Codigo).ToArray()).Any();
 
                 if (possuiComponentesSemNotaConceito)
                     statusNovo = SituacaoConselhoClasse.EmAndamento;
