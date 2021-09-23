@@ -151,6 +151,16 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpPost("frequencias/consolidar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> ConsolidarFrequencia([FromQuery] int ano, [FromServices] IExecutaConsolidacaoFrequenciaPorAnoUseCase useCase)
+        {
+            await useCase.Executar(ano);
+            return Ok();
+        }
+
         [HttpGet("migracao")]
         [ProducesResponseType(typeof(TipoFrequenciaDto), 500)]
         [ProducesResponseType(typeof(TipoFrequenciaDto), 601)]
