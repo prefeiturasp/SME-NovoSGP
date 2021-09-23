@@ -4,8 +4,7 @@ pipeline {
       kubeconfig = getKubeconf(env.branchname)
       registryCredential = 'jenkins_registry'
       deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"
-      deployment2 = "${env.branchname == 'release-r2' ? 'sme-pedagogico-worker-r2' : 'sme-pedagogico-worker' }"
-      deployment3 = "${env.branchname == 'release-r2' ? 'sme-workerservice-rc2' : 'sme-workerservice' }"
+      deployment2 = "${env.branchname == 'release-r2' ? 'sme-pedagogico-worker-r2' : 'sme-pedagogico-worker' }"      
       deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-rabbit-r2' : 'sme-worker-rabbit' }"
     }
   
@@ -48,17 +47,14 @@ pipeline {
           steps {
             script {
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-sgp-backend"
-              imagename2 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-rabbit"
-              imagename3 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-workerservice"              
+              imagename2 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-rabbit"                            
               dockerImage1 = docker.build(imagename1, "-f src/SME.SGP.Api/Dockerfile .")
-              dockerImage2 = docker.build(imagename2, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")
-              dockerImage3 = docker.build(imagename3, "-f src/SME.SGP.WorkerService/Dockerfile .")
+              dockerImage2 = docker.build(imagename2, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")              
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
               dockerImage1.push()
-              dockerImage2.push()
-              dockerImage3.push()
+              dockerImage2.push()              
               }
-              sh "docker rmi $imagename1 $imagename2 $imagename3"
+              sh "docker rmi $imagename1 $imagename2"
             }
           }
         }
