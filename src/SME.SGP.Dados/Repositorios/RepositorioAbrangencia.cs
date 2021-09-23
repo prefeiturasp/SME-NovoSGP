@@ -96,7 +96,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil, bool consideraHistorico, string[] anosInfantilDesconsiderar = null)
         {
-            texto = $"%{texto.ToUpper()}%";
+            texto = $"%{(texto ?? "").ToUpper()}%";
 
             var query = new StringBuilder();
 

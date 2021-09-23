@@ -333,13 +333,24 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.descricao,");
             query.AppendLine("e.data_inicio,");
             query.AppendLine("e.data_fim,");
+            query.AppendLine("e.dre_id,");
+            query.AppendLine("e.ue_id,");
             query.AppendLine("et.id,");
             query.AppendLine("et.descricao,");
-            query.AppendLine("et.tipo_data");
+            query.AppendLine("et.tipo_data,");
+            query.AppendLine("dre.id,");
+            query.AppendLine("dre.abreviacao,");
+            query.AppendLine("dre.nome,");
+            query.AppendLine("ue.id,");
+            query.AppendLine("ue.nome");
             query.AppendLine("from");
             query.AppendLine("evento e");
-            query.AppendLine("inner join evento_tipo et on");
-            query.AppendLine("e.tipo_evento_id = et.id");
+            query.AppendLine("      inner join evento_tipo et on");
+            query.AppendLine("          e.tipo_evento_id = et.id");
+            query.AppendLine("      inner join dre dre on");
+            query.AppendLine("e.dre_id = dre.dre_id");
+            query.AppendLine("      inner join ue ue on");
+            query.AppendLine("          e.ue_id = ue.ue_id");
             query.AppendLine("where");
             query.AppendLine("e.excluido = false");
             query.AppendLine("and e.status = 1");
@@ -357,20 +368,27 @@ namespace SME.SGP.Dados.Repositorios
             if (VisualizarEventosSME)
             {
                 query.AppendLine("UNION");
+
                 query.AppendLine("select distinct");
                 query.AppendLine("e.id,");
                 query.AppendLine("e.nome,");
                 query.AppendLine("e.descricao,");
                 query.AppendLine("e.data_inicio,");
                 query.AppendLine("e.data_fim,");
+                query.AppendLine("e.dre_id,");
+                query.AppendLine("e.ue_id,");
                 query.AppendLine("et.id,");
                 query.AppendLine("et.descricao,");
-                query.AppendLine("et.tipo_data");
-
+                query.AppendLine("et.tipo_data,");
+                query.AppendLine("0,");
+                query.AppendLine("'',");
+                query.AppendLine("'',");
+                query.AppendLine("0,");
+                query.AppendLine("''");
                 query.AppendLine("from");
                 query.AppendLine("evento e");
                 query.AppendLine("inner join evento_tipo et on");
-                query.AppendLine("e.tipo_evento_id = et.id");
+                query.AppendLine("    e.tipo_evento_id = et.id");
                 query.AppendLine("where");
                 query.AppendLine("e.excluido = false");
                 query.AppendLine("and e.status = 1");
@@ -381,9 +399,11 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and @dataDoEvento between symmetric e.data_inicio ::date and e.data_fim ::date");
             }
 
-            return await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(query.ToString(), (evento, eventoTipo) =>
+            return await database.Conexao.QueryAsync<Evento, EventoTipo, Dre, Ue, Evento>(query.ToString(), (evento, eventoTipo, dre, ue) =>
             {
                 evento.AdicionarTipoEvento(eventoTipo);
+                evento.AdicionarDre(dre);
+                evento.AdicionarUe(ue);
 
                 return evento;
 
@@ -700,17 +720,22 @@ namespace SME.SGP.Dados.Repositorios
 
         #region Tipos de Eventos filtrados por Dia
 
-        public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia,
+        public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia, int anoLetivo,
             Usuario usuario)
         {
             var query = @"select id,
-                                 iniciofimdesc,
                                  nome,
-                                 tipoevento
+                                 tipoevento,
+                                 dreNome,
+                                 ueNome,
+                                 ueTipo,
+                                 descricao,
+                                 data_inicio,
+                                 data_fim
                             from f_eventos_calendario_eventos_do_dia(@login, 
                                                                      @perfil_id, 
                                                                      @historico,
-                                                                     @dia,
+                                                                     @dataReferencia,
                                                                      @mes,
                                                                      @tipo_calendario_id,
                                                                      @considera_evento_aprovado_e_pendente_aprovacao, 
@@ -719,16 +744,17 @@ namespace SME.SGP.Dados.Repositorios
                                                                      @desconsidera_local_dre,
                                                                      @desconsidera_eventos_sme)";
 
+            var dataConsulta = new DateTime(anoLetivo, mes, dia);
             // Está sendo utilizado a função com intuíto da melhoria de performance
             return await database.Conexao.QueryAsync<CalendarioEventosNoDiaRetornoDto>(query.ToString(), new
             {
                 login = usuario.CodigoRf,
                 perfil_id = usuario.PerfilAtual,
                 historico = calendarioEventosMesesFiltro.ConsideraHistorico,
-                dia,
+                dataReferencia = dataConsulta.Date,
                 mes,
                 tipo_calendario_id = calendarioEventosMesesFiltro.IdTipoCalendario,
-                considera_evento_aprovado_e_pendente_aprovacao = usuario.TemPerfilSupervisorOuDiretor() || usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(),
+                considera_evento_aprovado_e_pendente_aprovacao = false,
                 dre_id = calendarioEventosMesesFiltro.DreId,
                 ue_id = calendarioEventosMesesFiltro.UeId,
                 desconsidera_local_dre = !usuario.PodeVisualizarEventosOcorrenciaDre(),
@@ -1273,10 +1299,10 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(dreCodigo) && dreCodigo != "-99")
                 query.AppendLine("and e.dre_id = @dreCodigo ");
-            
+
             if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
                 query.AppendLine("and e.ue_id = @ueCodigo ");
-            
+
             if (modalidades != null && !modalidades.Any(c => c == -99))
                 query.AppendLine("and tc.modalidade = any(@modalidades) ");
 
