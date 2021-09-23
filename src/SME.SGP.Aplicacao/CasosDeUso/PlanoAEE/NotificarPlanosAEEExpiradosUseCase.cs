@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -43,13 +44,13 @@ namespace SME.SGP.Aplicacao
             var descricao = $@"O Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} expirou em {dataFim:dd/MM/yyyy} e até o momento não teve sua vigência prorrogada ou foi encerrado.<br/>
                 <a href='{hostAplicacao}aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano. ";
 
-            var usuarioId = await ObterCEFAI(turma.Ue.Dre.CodigoDre);
+            var usuariosId = await ObterCEFAI(turma.Ue.Dre.CodigoDre);
 
-            if (usuarioId > 0)
+            foreach(var usuarioId in usuariosId)
                 await mediator.Send(new GerarNotificacaoPlanoAEECommand(plano.Id, usuarioId, titulo, descricao, NotificacaoPlanoAEETipo.PlanoExpirado));
         }
 
-        private async Task<long> ObterCEFAI(string codigoDre)
+        private async Task<IEnumerable<long>> ObterCEFAI(string codigoDre)
             => await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(codigoDre));
 
         private async Task<Turma> ObterTurma(long turmaId)

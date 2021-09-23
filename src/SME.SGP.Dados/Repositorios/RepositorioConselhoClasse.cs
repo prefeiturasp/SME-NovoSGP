@@ -193,7 +193,20 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder("select distinct * from ( ");
+            var query = new StringBuilder(@"select * from (
+                                                            select
+                                                            x.TurmaAnoNome,
+                                                            x.Bimestre,
+                                                            x.ComponenteCurricularCodigo,
+                                                            x.ConselhoClasseNotaId,
+                                                            x.ConceitoId,
+                                                            x.Nota,
+                                                            x.AlunoCodigo,
+                                                            x.Conceito,
+                                                            row_number() over(partition by x.TurmaAnoNome, x.ComponenteCurricularCodigo, x.AlunoCodigo
+                                                            order by x.Prioridade) as linha
+                                                            from
+                                                            (");
 
             query.AppendLine(MontarQueryNotasFinasFechamentoQuantidade(ueId, anoLetivo, dreId, modalidade, semestre, bimestre));
 
@@ -201,7 +214,9 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine(MontarQueryNotasFinasConselhoClasseQuantidade(ueId, anoLetivo, dreId, modalidade, semestre, bimestre));
 
-            query.AppendLine(" ) x ");
+            query.AppendLine(@" ) x 
+                                 ) a
+                                where a.linha = 1 ");
 
             var parametros = new
             {
@@ -217,44 +232,34 @@ namespace SME.SGP.Dados.Repositorios
 
         private string MontarQueryNotasFinasFechamentoQuantidade(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder(" select ");
-
-            if (ueId > 0)
-                query.AppendLine("t.nome as TurmaAnoNome, ");
-            else
-                query.AppendLine("t.ano as TurmaAnoNome, ");
-
-            query.AppendLine(@"pe.bimestre, 
-		                        fn.disciplina_id as ComponenteCurricularCodigo, 
-		                        ccn.id as ConselhoClasseNotaId, 
-		                        coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, 
-		                        coalesce(ccn.nota, fn.nota) as Nota, 
-		                        fa.aluno_codigo as AlunoCodigo,
-		                        cv.valor as Conceito
-	                        from
-		                        fechamento_turma ft
-	                        left join periodo_escolar pe on
-		                        pe.id = ft.periodo_escolar_id
-	                        inner join turma t on
-		                        t.id = ft.turma_id
-	                        inner join ue on
-		                        ue.id = t.ue_id
-	                        inner join fechamento_turma_disciplina ftd on
-		                        ftd.fechamento_turma_id = ft.id
-	                        inner join fechamento_aluno fa on
-		                        fa.fechamento_turma_disciplina_id = ftd.id
-	                        inner join fechamento_nota fn on
-		                        fn.fechamento_aluno_id = fa.id
-	                        left join conselho_classe cc on
-		                        cc.fechamento_turma_id = ft.id
-	                        left join conselho_classe_aluno cca on
-		                        cca.conselho_classe_id = cc.id
-		                        and cca.aluno_codigo = fa.aluno_codigo
-	                        left join conselho_classe_nota ccn on
-		                        ccn.conselho_classe_aluno_id = cca.id
-		                        and ccn.componente_curricular_codigo = fn.disciplina_id
-	                        left join conceito_valores cv on fn.conceito_id = cv.id
-	                        where t.ano_letivo = @anoLetivo ");
+            var query = new StringBuilder(@" select t.nome as TurmaAnoNome, 
+				                                     pe.bimestre, 
+                                                    fn.disciplina_id as ComponenteCurricularCodigo, 
+                                                    null as ConselhoClasseNotaId, 
+                                                    fn.conceito_id as ConceitoId, 
+                                                    fn.nota as Nota, 
+                                                    fa.aluno_codigo as AlunoCodigo,
+                                                    cv.valor as Conceito,
+                                                    2 as prioridade
+                                                from
+                                                    fechamento_turma ft
+                                                left join periodo_escolar pe on
+                                                    pe.id = ft.periodo_escolar_id
+                                                inner join turma t on
+                                                    t.id = ft.turma_id
+                                                inner join ue on
+                                                    ue.id = t.ue_id
+                                                inner join fechamento_turma_disciplina ftd on
+                                                    ftd.fechamento_turma_id = ft.id
+                                                    and not ftd.excluido
+                                                inner join fechamento_aluno fa on
+                                                    fa.fechamento_turma_disciplina_id = ftd.id
+                                                    and not fa.excluido
+                                                inner join fechamento_nota fn on
+                                                    fn.fechamento_aluno_id = fa.id
+                                                    and not fn.excluido
+				                                inner join conceito_valores cv on fn.conceito_id = cv.id
+                                                where t.ano_letivo = @anoLetivo ");            
 
             if (ueId > 0)
                 query.Append(" and ue.id = @ueId ");
@@ -276,44 +281,31 @@ namespace SME.SGP.Dados.Repositorios
 
         private string MontarQueryNotasFinasConselhoClasseQuantidade(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder(" select ");
-
-            if (ueId > 0)
-                query.AppendLine("t.nome as TurmaAnoNome, ");
-            else
-                query.AppendLine("t.ano as TurmaAnoNome, ");
-
-            query.AppendLine(@"pe.bimestre, 
-		                        fn.disciplina_id as ComponenteCurricularCodigo, 
-		                        ccn.id as ConselhoClasseNotaId, 
-		                        coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, 
-		                        coalesce(ccn.nota, fn.nota) as Nota, 
-		                        fa.aluno_codigo as AlunoCodigo,
-		                        cv.valor as Conceito
-	                        from
-		                        fechamento_turma ft
-	                        left join periodo_escolar pe on
-		                        pe.id = ft.periodo_escolar_id
-	                        inner join turma t on
-		                        t.id = ft.turma_id
-	                        inner join ue on
-		                        ue.id = t.ue_id
-	                        inner join conselho_classe cc on
-		                        cc.fechamento_turma_id = ft.id
-	                        inner join conselho_classe_aluno cca on
-		                        cca.conselho_classe_id = cc.id
-	                        inner join conselho_classe_nota ccn on
-		                        ccn.conselho_classe_aluno_id = cca.id
-	                        left join fechamento_turma_disciplina ftd on
-		                        ftd.fechamento_turma_id = ft.id
-	                        left join fechamento_aluno fa on
-		                        fa.fechamento_turma_disciplina_id = ftd.id
-		                        and cca.aluno_codigo = fa.aluno_codigo
-	                        left join fechamento_nota fn on
-		                        fn.fechamento_aluno_id = fa.id
-		                        and ccn.componente_curricular_codigo = fn.disciplina_id
-	                        left join conceito_valores cv on fn.conceito_id = cv.id
-	                        where t.ano_letivo = @anoLetivo ");
+            var query = new StringBuilder(@" select t.nome as TurmaAnoNome, 
+                                                    pe.bimestre, 
+		                                            ccn.componente_curricular_codigo as ComponenteCurricularCodigo, 
+		                                            ccn.id as ConselhoClasseNotaId, 
+		                                            ccn.conceito_id as ConceitoId, 
+		                                            ccn.nota as Nota, 
+		                                            cca.aluno_codigo as AlunoCodigo,
+		                                            cv.valor as Conceito,
+		                                            1 as prioridade
+	                                            from
+		                                            fechamento_turma ft
+	                                            left join periodo_escolar pe on
+		                                            pe.id = ft.periodo_escolar_id
+	                                            inner join turma t on
+		                                            t.id = ft.turma_id
+	                                            inner join ue on
+		                                            ue.id = t.ue_id
+	                                            inner join conselho_classe cc on
+		                                            cc.fechamento_turma_id = ft.id
+	                                            inner join conselho_classe_aluno cca on
+		                                            cca.conselho_classe_id = cc.id
+	                                            inner join conselho_classe_nota ccn on
+		                                            ccn.conselho_classe_aluno_id = cca.id
+	                                            inner join conceito_valores cv on ccn.conceito_id = cv.id
+	                                            where t.ano_letivo = @anoLetivo ");            
 
             if (ueId > 0)
                 query.Append(" and ue.id = @ueId ");

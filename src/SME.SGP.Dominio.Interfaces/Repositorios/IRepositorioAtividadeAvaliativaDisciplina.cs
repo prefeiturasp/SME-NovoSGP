@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -9,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
         bool PossuiDisciplinas(long atividadeAvaliativaId, string disciplinaId);
         Task<IEnumerable<AtividadeAvaliativaDisciplina>> ObterAvaliacoesBimestrais(long tipoCalendarioId, string turmaId, string disciplinaId, int bimestre);
         Task<IEnumerable<AtividadeAvaliativaDisciplina>> ObterDisciplinasAtividadeAvaliativa(long atividadeAvaliativaId);
+        Task<IEnumerable<ComponentesRegenciaComAtividadeAvaliativaDto>> TotalAtividadesAvaliativasRegenciaPorAtividadesAvaliativas(long[] atividadesAvaliativasId);
     }
 }

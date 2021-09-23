@@ -1,18 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dapper;
+﻿using Microsoft.Extensions.Configuration;
+using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAtividadeAvaliativaDisciplina : RepositorioBase<AtividadeAvaliativaDisciplina>, IRepositorioAtividadeAvaliativaDisciplina
     {
-        public RepositorioAtividadeAvaliativaDisciplina(ISgpContext conexao) : base(conexao)
+        private readonly string connectionString;
+        public RepositorioAtividadeAvaliativaDisciplina(ISgpContext conexao, IConfiguration configuration) : base(conexao)
         {
+            this.connectionString = configuration.GetConnectionString("SGP_Postgres");
         }
 
         public async Task<IEnumerable<AtividadeAvaliativaDisciplina>> ListarPorIdAtividade(long atividadeAvaliativaId)
@@ -87,6 +90,29 @@ namespace SME.SGP.Dados.Repositorios
             {
                 atividadeAvaliativaId
             });
+        }
+
+        public async Task<IEnumerable<ComponentesRegenciaComAtividadeAvaliativaDto>> TotalAtividadesAvaliativasRegenciaPorAtividadesAvaliativas(long[] atividadesAvaliativasId)
+        {
+            var query = @"select count(a.id) as TotalAtividades,
+                            			 aar.disciplina_contida_regencia_id as DisciplinaId
+                                    from atividade_avaliativa a 
+                                   inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id 
+                                     and a.id = any(@atividadesAvaliativasId) 
+                                     and a.excluido = false
+                                     and aar.excluido = false
+                                   group by(aar.disciplina_contida_regencia_id)";
+
+            using (var conexao = new NpgsqlConnection(connectionString))
+            {
+                await conexao.OpenAsync();
+                var totalizador = await conexao.QueryAsync<ComponentesRegenciaComAtividadeAvaliativaDto>(query.ToString(), new
+                {
+                    atividadesAvaliativasId
+                });
+                conexao.Close();
+                return totalizador;
+            }
         }
 
     }
