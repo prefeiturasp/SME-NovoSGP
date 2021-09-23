@@ -228,7 +228,7 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private async Task<double?> CalculoFrequenciaGlobal2020(string alunoCodigo, Turma turma)
+        private async Task<string> CalculoFrequenciaGlobal2020(string alunoCodigo, Turma turma)
         {
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
@@ -259,9 +259,9 @@ namespace SME.SGP.Aplicacao
             var frequenciaGlobal2020 = Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
 
             if (frequenciaGlobal2020 == 0)
-                return null;
+                return string.Empty;
             else
-                return frequenciaGlobal2020;
+                return frequenciaGlobal2020.ToString();
 
         }
 

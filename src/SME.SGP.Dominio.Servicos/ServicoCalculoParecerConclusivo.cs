@@ -136,8 +136,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo);
             double valorFrequenciaAluno = 0;
-            if (frequenciaAluno.HasValue)
-                valorFrequenciaAluno = frequenciaAluno.Value;
+            if (frequenciaAluno != "")
+                valorFrequenciaAluno = Convert.ToDouble(frequenciaAluno);
 
 
             var parametroFrequenciaGeral = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, DateTime.Today.Year)));
