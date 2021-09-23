@@ -37,11 +37,14 @@ namespace SME.SGP.Worker.RabbitMQ
         /// </summary>
         private readonly Dictionary<string, ComandoRabbit> comandos;
 
-        public WorkerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
+        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, ConnectionFactory factory)
         {
             sentryDSN = configuration.GetValue<string>("Sentry:DSN");
-            this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
-            this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+          
+            this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException("Service Scope Factory não localizado");
+
+            var conexaoRabbit = factory.CreateConnection();
+            
             canalRabbit = conexaoRabbit.CreateModel();
 
             canalRabbit.BasicQos(0, 10, false);
@@ -58,8 +61,7 @@ namespace SME.SGP.Worker.RabbitMQ
         private void DeclararFilasSgp()
         {
             DeclararFilasPorRota(typeof(RotasRabbitSgp), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
-            DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
-            //DeclararFilasPorRota(typeof(RotasRabbitSgpRelatorios), ExchangeSgpRabbit.ServidorRelatorios, ExchangeSgpRabbit.ServidorRelatoriosDeadLetter);
+            DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);            
         }
 
         private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter)
@@ -264,7 +266,7 @@ namespace SME.SGP.Worker.RabbitMQ
                 using (SentrySdk.Init(sentryDSN))
                 {
                     var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
-                    //SentrySdk.AddBreadcrumb($"Dados: {mensagemRabbit.Mensagem}");
+                    
                     var comandoRabbit = comandos[rota];
                     try
                     {
@@ -272,12 +274,11 @@ namespace SME.SGP.Worker.RabbitMQ
                         {
                             AtribuirContextoAplicacao(mensagemRabbit, scope);
 
-                            //SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey} - {DateTime.Now:dd/MM/yyyy HH:mm:ss}", SentryLevel.Debug);
+                            
                             var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
                             await ObterMetodo(comandoRabbit.TipoCasoUso, "Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
-
-                            //SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - SUCESSO - {ea.RoutingKey}", SentryLevel.Info);
+                            
                             canalRabbit.BasicAck(ea.DeliveryTag, false);
                         }
                     }
