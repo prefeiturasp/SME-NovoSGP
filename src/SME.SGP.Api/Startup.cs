@@ -63,10 +63,10 @@ namespace SME.SGP.Api
             });
 
             //TODO: Ajustar para as os origins que irão consumir
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
+            app.UseCors(config => config
                 .AllowAnyMethod()
                 .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials());
 
             app.UseMetricServer();
@@ -165,6 +165,8 @@ namespace SME.SGP.Api
             DapperExtensionMethods.Init(clientTelemetry);
 
             services.AddMemoryCache();
+
+            services.AddCors();
         }
 
         private void ConfiguraVariaveisAmbiente(IServiceCollection services)
