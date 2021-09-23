@@ -21,7 +21,6 @@ namespace SME.SGP.Api
 
             services.AddMvc(options =>
             {
-                options.AllowValidatingTopLevelNodes = false;
                 options.EnableEndpointRouting = true;
                 options.Filters.Add(new ValidaDtoAttribute());
                 options.Filters.Add(new FiltroExcecoesAttribute(configuration));
