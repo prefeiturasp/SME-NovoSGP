@@ -28,7 +28,6 @@ namespace SME.SGP.Aplicacao
                 if (usuarioLogado == null)
                     throw new NegocioException("Não foi possível localizar o Usuário logado.");
 
-
                 var eventosDaUeSME = await mediator.Send(new ObterEventosCalendarioProfessorPorMesDiaQuery()
                 {
                     UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,

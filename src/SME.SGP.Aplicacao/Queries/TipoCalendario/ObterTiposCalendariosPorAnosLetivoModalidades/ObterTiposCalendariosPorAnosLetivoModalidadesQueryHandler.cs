@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<TipoCalendarioBuscaDto>> Handle(ObterTiposCalendariosPorAnosLetivoModalidadesQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTipoCalendario.ListarPorAnosLetivoEModalidades(request.AnosLetivos, request.Modalidades);
+            return await repositorioTipoCalendario.ListarPorAnosLetivoEModalidades(request.AnosLetivos, request.Modalidades, request.Descricao);
         }
     }
 }
