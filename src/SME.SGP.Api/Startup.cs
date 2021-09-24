@@ -75,10 +75,6 @@ namespace SME.SGP.Api
 
             app.UseAuthentication();
 
-            app.UseMvc();
-
-            app.UseStaticFiles();
-
             Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
 

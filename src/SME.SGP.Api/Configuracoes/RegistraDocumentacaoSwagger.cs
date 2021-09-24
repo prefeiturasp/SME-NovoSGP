@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Integracoes;
-using Swashbuckle.AspNetCore.Swagger;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SME.SGP.Api
 {
-    public static class RegistraDocumentacaoSwagger
+	public static class RegistraDocumentacaoSwagger
     {
         public static void Registrar(IServiceCollection services)
         {
@@ -15,21 +13,39 @@ namespace SME.SGP.Api
 
             var versaoService = sp.GetService<IServicoGithub>();
             var versaoAtual = versaoService.RecuperarUltimaVersao().Result;
-            
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = $"SGP v1", Version = versaoAtual });
-                c.AddSecurityDefinition("Bearer",
-                    new ApiKeyScheme
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = $"SGP v1",
+                    Version = versaoAtual
+                });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Para autenticação, incluir 'Bearer' seguido do token JWT",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement 
+                {
                     {
-                        In = "header",
-                        Description = "Para autenticação, incluir 'Bearer' seguido do token JWT",
-                        Name = "Authorization",
-                        Type = "apiKey"
-                    });
-                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
-                    { "Bearer", Enumerable.Empty<string>() },
-                            });
+                        new OpenApiSecurityScheme
+                        {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                        },
+                        new string[] { }
+                    }
+                });
             });
 
             services.AddSwaggerGen(o =>
