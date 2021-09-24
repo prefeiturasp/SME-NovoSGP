@@ -123,7 +123,7 @@ namespace SME.SGP.Dominio
         HabilitaFrequenciaRemotaEM = 65,
         HabilitaFrequenciaRemotaCMCT = 66,
         HabilitaFrequenciaRemotaMOVA = 67,
-        HabilitaFrequenciaRemotaETEC = 68,\
+        HabilitaFrequenciaRemotaETEC = 68,
 
         PeriodoDeDiasDevolutiva = 69,
 
