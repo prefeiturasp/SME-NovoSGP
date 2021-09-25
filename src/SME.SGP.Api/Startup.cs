@@ -24,7 +24,7 @@ using System.IO.Compression;
 
 namespace SME.SGP.Api
 {
-    public class Startup
+	public class Startup
     {
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
@@ -53,6 +53,7 @@ namespace SME.SGP.Api
             app.UseRequestLocalization();
 
             app.UseHttpsRedirection();
+            app.UseRouting();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -71,6 +72,13 @@ namespace SME.SGP.Api
             app.UseHttpMetrics();
 
             app.UseAuthentication();
+
+            app.UseStaticFiles();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
@@ -150,6 +158,8 @@ namespace SME.SGP.Api
             services.AddMemoryCache();
 
             services.AddCors();
+
+            services.AddControllers();
         }
 
         private void ConfiguraVariaveisAmbiente(IServiceCollection services)
