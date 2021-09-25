@@ -15,7 +15,6 @@ COPY ["src/SME.SGP.Dominio.Servicos/SME.SGP.Dominio.Servicos.csproj", "src/SME.S
 COPY ["src/SME.SGP.Dados/SME.SGP.Dados.csproj", "src/SME.SGP.Dados/"]
 COPY ["src/SME.SGP.Dominio.Interfaces/SME.SGP.Dominio.Interfaces.csproj", "src/SME.SGP.Dominio.Interfaces/"]
 COPY ["src/SME.SGP.Aplicacao/SME.SGP.Aplicacao.csproj", "src/SME.SGP.Aplicacao/"]
-COPY ["src/Bibliotecas/SME.Background.Core/SME.Background.Core.csproj", "src/Bibliotecas/SME.Background.Core/"]
 RUN dotnet restore "src/SME.SGP.Worker.Rabbbit/SME.SGP.Worker.Rabbbit.csproj"
 COPY . .
 WORKDIR "/src/src/SME.SGP.Worker.Rabbbit"

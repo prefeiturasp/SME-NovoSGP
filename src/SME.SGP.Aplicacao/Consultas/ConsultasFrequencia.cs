@@ -24,13 +24,11 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAluno servicoAluno;
         private readonly IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase obterInformacoesDeFrequenciaAlunoPorSemestreUseCase;
         private readonly IServicoEol servicoEOL;
-        private readonly IServicoFrequencia servicoFrequencia;
         private readonly IMediator mediator;
 
         private double _mediaFrequencia;
 
         public ConsultasFrequencia(IMediator mediator,
-                                   IServicoFrequencia servicoFrequencia,
                                    IServicoEol servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                     IRepositorioComponenteCurricular repositorioComponenteCurricular,
@@ -45,7 +43,6 @@ namespace SME.SGP.Aplicacao
                                    IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase obterInformacoesDeFrequenciaAlunoPorSemestreUseCase)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
@@ -261,7 +258,10 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaGlobal2020 = Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
 
-            return frequenciaGlobal2020 == 0 ? "" : frequenciaGlobal2020.ToString();
+            if (frequenciaGlobal2020 == 0)
+                return string.Empty;
+            else
+                return frequenciaGlobal2020.ToString();
 
         }
 

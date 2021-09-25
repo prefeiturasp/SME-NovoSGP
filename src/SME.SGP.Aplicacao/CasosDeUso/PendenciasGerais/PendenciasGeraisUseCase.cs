@@ -12,11 +12,12 @@ namespace SME.SGP.Aplicacao
         {           
         }
 
-        public async Task Executar()
+        public async Task<bool> Executar(MensagemRabbit param)
         {
             SentrySdk.AddBreadcrumb($"Mensagem PendenciasGeraisUseCase", "Rabbit - PendenciasGeraisUseCase");
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaVerificacaoPendenciasGerais, new ExecutaVerificacaoPendenciasGeraisUseCase(mediator), Guid.NewGuid(), null));
+            return true;
         }
     }
 }
