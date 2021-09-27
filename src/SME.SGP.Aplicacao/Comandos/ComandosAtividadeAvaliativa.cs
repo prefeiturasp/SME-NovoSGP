@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
 
             atividadeAvaliativa.PodeSerAlterada(usuario);
 
-            if(!usuario.EhGestorEscolar())
+            if (!usuario.EhGestorEscolar())
                 await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, dto.DisciplinasId[0], atividadeAvaliativa.DataAvaliacao, usuario);
 
             unitOfWork.IniciarTransacao();
@@ -148,7 +148,7 @@ namespace SME.SGP.Aplicacao
                 {
                     await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeDisciplina.DisciplinaId, atividadeAvaliativa.DataAvaliacao, usuario);
                 }
-            }               
+            }
 
             unitOfWork.IniciarTransacao();
 
@@ -371,20 +371,14 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            if(!usuario.EhGestorEscolar())
-                foreach (var id in dto.DisciplinasId)                
+            if (!usuario.EhGestorEscolar())
+                foreach (var id in dto.DisciplinasId)
                     await VerificaSeProfessorPodePersistirTurma(atividadeAvaliativa.ProfessorRf, atividadeAvaliativa.TurmaId, id, atividadeAvaliativa.DataAvaliacao.Date, usuario);
-            
+
             unitOfWork.IniciarTransacao();
-            try
-            {
-                await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            
+
+            await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
+
             if (atividadeAvaliativa.EhRegencia)
             {
                 if (dto.DisciplinaContidaRegenciaId.Length == 0)
