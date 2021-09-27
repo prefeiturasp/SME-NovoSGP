@@ -9,7 +9,15 @@ namespace SME.SGP.Aplicacao
 {
     public class EnviarNotificacaoCommand : IRequest<long>
     {
-        public EnviarNotificacaoCommand(string titulo, string mensagem, NotificacaoCategoria notificacaoCategoria, NotificacaoTipo tipoNotificacao, Cargo[] cargos, string dreCodigo = "", string ueCodigo = "", string turmaCodigo = "")
+        public EnviarNotificacaoCommand(string titulo,
+                                        string mensagem,
+                                        NotificacaoCategoria notificacaoCategoria,
+                                        NotificacaoTipo tipoNotificacao,
+                                        Cargo[] cargos,
+                                        string dreCodigo = "",
+                                        string ueCodigo = "",
+                                        string turmaCodigo = "",
+                                        WorkflowAprovacaoTipo tipoWorkflow = WorkflowAprovacaoTipo.Basica)
         {
             Titulo = titulo;
             Mensagem = mensagem;
@@ -18,6 +26,7 @@ namespace SME.SGP.Aplicacao
             DreCodigo = dreCodigo;
             UeCodigo = ueCodigo;
             TurmaCodigo = turmaCodigo;
+            TipoWorkflow = tipoWorkflow;
             Cargos = cargos;
         }
 
@@ -28,6 +37,7 @@ namespace SME.SGP.Aplicacao
         public string DreCodigo { get; set; }
         public string UeCodigo { get; set; }
         public string TurmaCodigo { get; set; }
+        public WorkflowAprovacaoTipo TipoWorkflow { get; }
         public Cargo[] Cargos { get; set; }
     }
 
