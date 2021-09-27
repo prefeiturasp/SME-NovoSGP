@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             {
                 Ano = DateTime.Today.Year,
                 NotificacaoCategoria = request.CategoriaNotificacao,
-                Tipo = WorkflowAprovacaoTipo.Basica,
+                Tipo = request.TipoWorkflow,
                 DreId = request.DreCodigo,
                 UeId = request.UeCodigo,
                 TurmaId = request.TurmaCodigo,

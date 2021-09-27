@@ -9,6 +9,6 @@
         Fechamento_Reabertura = 5,
         AlteracaoNotaFechamento = 6,
         RegistroItinerancia = 7,
-
+        AlteracaoNotaConselho = 8,
     }
 }
