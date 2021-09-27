@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 ConselhoClasseNotaId = request.ConselhoClasseNotaId,
                 Nota = request.Nota,
                 ConceitoId = request.ConceitoId,
-                WfAprovacaoId = wfAprovacaoId
+                WfAprovacaoId = wfAprovacaoId,
             });
         }
 
@@ -59,7 +59,8 @@ namespace SME.SGP.Aplicacao
                                                                     ue.Dre.CodigoDre,
                                                                     ue.CodigoUe,
                                                                     request.Turma.CodigoTurma,
-                                                                    WorkflowAprovacaoTipo.AlteracaoNotaConselho));
+                                                                    WorkflowAprovacaoTipo.AlteracaoNotaConselho,
+                                                                    request.ConselhoClasseNotaId));
         }
 
         private async Task<string> ObterTabelaAluno(AlunoReduzidoDto aluno, double? nota, long? conceitoId, double? notaAnterior, long? conceitoIdAnterior)

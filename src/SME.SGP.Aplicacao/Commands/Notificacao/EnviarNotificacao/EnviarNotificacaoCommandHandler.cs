@@ -30,7 +30,8 @@ namespace SME.SGP.Aplicacao
                 TurmaId = request.TurmaCodigo,
                 NotificacaoTitulo = request.Titulo,
                 NotificacaoTipo = request.TipoNotificacao,
-                NotificacaoMensagem = request.Mensagem
+                NotificacaoMensagem = request.Mensagem,
+                EntidadeParaAprovarId = request.EntidadeId
             };
 
             foreach(var cargo in request.Cargos)

@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Text;
+using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -215,6 +216,37 @@ namespace SME.SGP.Dados.Repositorios
                 ) x ";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, ueCodigo, turmaCodigo, bimestres });
+        }
+
+        public async Task<IEnumerable<WFAprovacaoNotaConselho>> ObterNotasEmAprovacaoWf(long workFlowId)
+        {
+            var query = @"select w.*, n.*
+                            from wf_aprovacao_nota_conselho w
+                          inner join conselho_classe_nota n on n.id = w.conselho_classe_nota_id 
+                          where w.wf_aprovacao_id = @workFlowId";
+
+            return await database.Conexao.QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, WFAprovacaoNotaConselho>(query
+                , (wfAprovacaoNota, conselhoNota) =>
+                {
+                    wfAprovacaoNota.ConselhoClasseNota = conselhoNota;
+                    return wfAprovacaoNota;
+                }
+                , new { workFlowId });
+        }
+
+        public async Task<int> ObterBimestreEmAprovacaoWf(long workFlowId)
+        {
+            var query = @"select coalesce(pe.bimestre,0)
+                            from wf_aprovacao_nota_conselho w
+                          inner join conselho_classe_nota n on n.id = w.conselho_classe_nota_id 
+                          inner join conselho_classe_aluno a on a.id = n.conselho_classe_aluno_id
+                          inner join conselho_classe cc on c.id = a.conselho_classe_id 
+                          inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id 
+                          left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
+                          where w.wf_aprovacao_id = @workFlowId";
+
+            return await database.Conexao.QueryFirstAsync<int>(query
+                , new { workFlowId });
         }
     }
 }

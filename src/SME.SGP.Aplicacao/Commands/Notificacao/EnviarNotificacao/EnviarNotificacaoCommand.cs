@@ -17,7 +17,8 @@ namespace SME.SGP.Aplicacao
                                         string dreCodigo = "",
                                         string ueCodigo = "",
                                         string turmaCodigo = "",
-                                        WorkflowAprovacaoTipo tipoWorkflow = WorkflowAprovacaoTipo.Basica)
+                                        WorkflowAprovacaoTipo tipoWorkflow = WorkflowAprovacaoTipo.Basica,
+                                        long entidadeId = 0)
         {
             Titulo = titulo;
             Mensagem = mensagem;
@@ -28,6 +29,7 @@ namespace SME.SGP.Aplicacao
             TurmaCodigo = turmaCodigo;
             TipoWorkflow = tipoWorkflow;
             Cargos = cargos;
+            EntidadeId = entidadeId;
         }
 
         public string Titulo { get; set; }
@@ -39,6 +41,7 @@ namespace SME.SGP.Aplicacao
         public string TurmaCodigo { get; set; }
         public WorkflowAprovacaoTipo TipoWorkflow { get; }
         public Cargo[] Cargos { get; set; }
+        public long EntidadeId { get; set; }
     }
 
     public class EnviarNotificacaoCommandValidator : AbstractValidator<EnviarNotificacaoCommand>
