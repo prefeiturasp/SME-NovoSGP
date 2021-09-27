@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         {
             var wfAprovacaoId = await GerarWFAprovacao(request);
 
-            await repositorioWFAprovacaoNotaConselho.Salvar(new Dominio.Entidades.WFAprovacaoNotaConselho()
+            await repositorioWFAprovacaoNotaConselho.Salvar(new WFAprovacaoNotaConselho()
             {
                 ConselhoClasseNotaId = request.ConselhoClasseNotaId,
                 Nota = request.Nota,

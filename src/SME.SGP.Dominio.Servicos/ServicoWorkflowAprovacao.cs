@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Sentry;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -174,6 +175,10 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     await AprovarRegistroDeItinerancia(codigoDaNotificacao, workflow.Id, workflow.CriadoRF, workflow.CriadoPor);
                 }
+                else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaConselho)
+                {
+                    await AprovarAlteracaoNotaConselho(workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor);
+                }
             }
         }
 
@@ -199,9 +204,14 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
+        private async Task AprovarAlteracaoNotaConselho(long workflowId, string turmaCodigo, string criadoRF, string criadoPor)
+        {
+            await mediator.Send(new AprovarWorkflowAlteracaoNotaConselhoCommand(workflowId, turmaCodigo, criadoRF, criadoPor));
+        }
+
         private async Task AprovarAlteracaoNotaFechamento(long codigoDaNotificacao, long workFlowId, string turmaCodigo, string criadoRF, string criadoPor)
         {
-            var notasEmAprovacao = ObterNotasEmAprovacao(workFlowId);
+            var notasEmAprovacao = await ObterNotasFechamentoEmAprovacao(workFlowId);
             if (notasEmAprovacao != null && notasEmAprovacao.Any())
             {
                 await AtualizarNotasFechamento(notasEmAprovacao, criadoRF, criadoPor, workFlowId);
@@ -860,16 +870,13 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task TrataReprovacaoAlteracaoNotaFechamento(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
-            var notasEmAprovacao = ObterNotasEmAprovacao(workflow.Id);
+            var notasEmAprovacao = await ObterNotasFechamentoEmAprovacao(workflow.Id);
 
             await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, workflow.TurmaId, false, motivo);
         }
 
-        private IEnumerable<WfAprovacaoNotaFechamento> ObterNotasEmAprovacao(long workflowId)
-            => repositorioFechamentoNota.ObterNotasEmAprovacaoWf(workflowId).Result;
-
-
-
+        private async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasFechamentoEmAprovacao(long workflowId)
+            => await repositorioFechamentoNota.ObterNotasEmAprovacaoWf(workflowId);
 
         private void TrataReprovacaoEventoDataPassada(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
