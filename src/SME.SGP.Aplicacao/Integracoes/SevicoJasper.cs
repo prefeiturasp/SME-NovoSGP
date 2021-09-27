@@ -26,8 +26,8 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
                 return await resposta.Content.ReadAsByteArrayAsync();
 
-            SentrySdk.CaptureMessage($"DOWNLOAD RELATÓRIO ERRO STATUS CODE: {resposta.StatusCode}", Sentry.Protocol.SentryLevel.Error);
-            SentrySdk.CaptureMessage($"DOWNLOAD RELATÓRIO ERRO: {await resposta.Content.ReadAsStringAsync()}", Sentry.Protocol.SentryLevel.Error);
+            SentrySdk.CaptureMessage($"DOWNLOAD RELATÓRIO ERRO STATUS CODE: {resposta.StatusCode}", SentryLevel.Error);
+            SentrySdk.CaptureMessage($"DOWNLOAD RELATÓRIO ERRO: {await resposta.Content.ReadAsStringAsync()}", SentryLevel.Error);
 
             return null;
         }

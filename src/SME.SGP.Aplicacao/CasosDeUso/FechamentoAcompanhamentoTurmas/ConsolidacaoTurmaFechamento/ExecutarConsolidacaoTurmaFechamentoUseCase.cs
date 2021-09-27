@@ -23,13 +23,13 @@ namespace SME.SGP.Aplicacao
 
             if (consolidacaoTurma == null)
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do fechamento da turma. O id da turma e o bimestre não foram informados", Sentry.Protocol.SentryLevel.Error);
+                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do fechamento da turma. O id da turma e o bimestre não foram informados", SentryLevel.Error);
                 return false;
             }
 
             if (consolidacaoTurma.TurmaId == 0)
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do fechamento da turma. O id da turma não foi informado", Sentry.Protocol.SentryLevel.Error);
+                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do fechamento da turma. O id da turma não foi informado", SentryLevel.Error);
                 return false;
             }
 
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
             if (turma == null)
             {
-                SentrySdk.CaptureMessage($"Não foi possível encontrar a turma de id {consolidacaoTurma.TurmaId}.", Sentry.Protocol.SentryLevel.Error);
+                SentrySdk.CaptureMessage($"Não foi possível encontrar a turma de id {consolidacaoTurma.TurmaId}.", SentryLevel.Error);
                 return false;
             }
 
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
 
             if (componentes == null || !componentes.Any())
             {
-                SentrySdk.CaptureMessage($"Não foi possível encontrar os componentes curricularres da turma de id {consolidacaoTurma.TurmaId}.", Sentry.Protocol.SentryLevel.Error);
+                SentrySdk.CaptureMessage($"Não foi possível encontrar os componentes curricularres da turma de id {consolidacaoTurma.TurmaId}.", SentryLevel.Error);
                 return false;
             }
 

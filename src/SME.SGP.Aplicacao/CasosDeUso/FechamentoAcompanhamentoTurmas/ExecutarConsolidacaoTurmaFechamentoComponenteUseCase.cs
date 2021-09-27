@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
             if (filtro == null)
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do fechamento da turma -> componente. O id da turma bimestre componente curricular não foram informados", Sentry.Protocol.SentryLevel.Error);
+                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do fechamento da turma -> componente. O id da turma bimestre componente curricular não foram informados", SentryLevel.Error);
                 return false;
             }
 

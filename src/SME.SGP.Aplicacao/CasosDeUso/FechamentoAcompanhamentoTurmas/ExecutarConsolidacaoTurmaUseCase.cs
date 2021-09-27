@@ -22,13 +22,13 @@ namespace SME.SGP.Aplicacao
 
             if (consolidacaoTurma == null)
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação das turmas. O id da turma e o bimestre não foram informados", Sentry.Protocol.SentryLevel.Error);
+                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação das turmas. O id da turma e o bimestre não foram informados", SentryLevel.Error);
                 return false;
             }
 
             if (consolidacaoTurma.TurmaId == 0)
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação das turmas. O id da turma não foi informado", Sentry.Protocol.SentryLevel.Error);
+                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação das turmas. O id da turma não foi informado", SentryLevel.Error);
                 return false;
             }
 

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             if (filtro == null)
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do conselho de clase da turma -> aluno. O id da turma bimestre aluno não foram informados", Sentry.Protocol.SentryLevel.Error);
+                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do conselho de clase da turma -> aluno. O id da turma bimestre aluno não foram informados", SentryLevel.Error);
                 return false;
             }
 
