@@ -54,6 +54,7 @@ namespace SME.SGP.Api
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthorization();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
