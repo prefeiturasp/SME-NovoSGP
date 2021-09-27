@@ -376,8 +376,15 @@ namespace SME.SGP.Aplicacao
                     await VerificaSeProfessorPodePersistirTurma(atividadeAvaliativa.ProfessorRf, atividadeAvaliativa.TurmaId, id, atividadeAvaliativa.DataAvaliacao.Date, usuario);
             
             unitOfWork.IniciarTransacao();
-
-            await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
+            try
+            {
+                await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
             if (atividadeAvaliativa.EhRegencia)
             {
                 if (dto.DisciplinaContidaRegenciaId.Length == 0)
