@@ -32,5 +32,7 @@ namespace SME.SGP.Infra
         public bool EhReposicao { get; set; }
         public bool EstaAguardandoAprovacao { get; set; }
         public long[] Pendencias { get; set; }
+        public string Dre { get; set; }
+        public string Ue { get; set; }
     }
 }

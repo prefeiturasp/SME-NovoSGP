@@ -182,5 +182,26 @@
         public const string PlanoAulaDaAulaExcluir = "sgp.plano.aula.excluir";
         public const string AnotacoesFrequenciaDaAulaExcluir = "sgp.anotacoes.frequencia.aula.excluir";
         public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";
+        public const string NotificacaoFrequencia = "sgp.notificacoes.frequencia";
+        public const string ExecutarTipoCalendario = "sgp.executar.tipo.calendario";
+        public const string ExecutarGravarRecorrencia = "sgp.executar.gravar.recorrencia";
+        public const string NotificarCompensacaoAusencia = "sgp.notificar.compensacao.ausencia";
+        public const string GerarNotificacaoAlteracaoLimiteDias = "sgp.gerar.notificacao.alteracao.limite.dias";
+        public const string VerificarPendenciasFechamentoTurmaDisciplina = "sgp.verificar.pendencias.fechamento.turma.disciplina";
+        public const string AlterarPeriodosComHierarquiaInferiorFechamento = "sgp.alterar.periodo.hierarquia.inferior.fechamento";
+        public const string AlterarRecorrenciaEventos = "sgp.alterar.recorrencia.eventos";
+        
+
+        public const string NotifificarRegistroFrequencia = "sgp.registro.frequencia.notificacao";
+        public const string SincronizarObjetivosComJurema = "sgp.sincronizar.objetivos.com.jurema";
+        public const string NotificarAlunosFaltososBimestre = "sgp.alunos.faltosos.bimestre.notificacao";
+        public const string NotificacoesNiveisCargos = "sgp.notificacoes.nivel.cargos";
+        public const string SincronizarComponentesCurriculares = "sgp.sincronizar.componentes.curriculares";
+        public const string SincronizarComponentesCurricularesEol = "sgp.sincronizar.componentes.curriculares.eol";
+        public const string SyncGeralGoogleClassroom = "sgp.sync.geral.google.classroom";
+        public const string SyncGsaGoogleClassroom = "sgp.sync.gsa.google.classroom";
+        public const string SyncSerapEstudantesProvas = "sgp.sync.serap.estudantes.provas";
+        public const string TratarNotificacoesNiveisCargos = "sgp.tratar.notificacoes.niveis.cargos";
+        public const string PendenciasGerais = "sgp.pendencias.gerais";
     }
 }

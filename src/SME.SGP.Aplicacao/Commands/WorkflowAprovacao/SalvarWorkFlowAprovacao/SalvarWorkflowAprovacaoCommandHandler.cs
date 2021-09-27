@@ -47,14 +47,15 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var usuario in workflowAprovacaoNivel.Usuarios)
                 {
-                    repositorioWorkflowAprovacaoNivelUsuario.Salvar(new WorkflowAprovacaoNivelUsuario()
+                    await repositorioWorkflowAprovacaoNivelUsuario.SalvarAsync(new WorkflowAprovacaoNivelUsuario()
                     {
                         UsuarioId = usuario.Id,
                         WorkflowAprovacaoNivelId = workflowAprovacaoNivel.Id
                     });
                 }
             }
-            servicoWorkflowAprovacao.ConfiguracaoInicial(workflowAprovacao, request.WorkflowAprovacao.EntidadeParaAprovarId);
+
+            await servicoWorkflowAprovacao.ConfiguracaoInicialAsync(workflowAprovacao, request.WorkflowAprovacao.EntidadeParaAprovarId);
 
             return workflowAprovacao.Id;
         }

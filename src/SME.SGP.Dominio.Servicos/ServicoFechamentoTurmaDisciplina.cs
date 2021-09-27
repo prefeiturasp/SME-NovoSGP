@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
-using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
@@ -12,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SME.SGP.Aplicacao.GerarNotificacaoAlteracaoLimiteDiasUseCase;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -283,7 +282,17 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.PersistirTransacao();
 
                 if (alunosComNotaAlterada.Length > 0)
-                    Cliente.Executar<IServicoFechamentoTurmaDisciplina>(s => s.GerarNotificacaoAlteracaoLimiteDias(turmaFechamento, usuarioLogado, ue, entidadeDto.Bimestre, alunosComNotaAlterada));
+                {
+                    var dados = new GerarNotificacaoAlteracaoLimiteDiasParametros
+                    {
+                        TurmaFechamento = turmaFechamento,
+                        UsuarioLogado = usuarioLogado,
+                        Ue = ue,
+                        Bimestre = entidadeDto.Bimestre,
+                        AlunosComNotaAlterada = alunosComNotaAlterada
+                    };
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.GerarNotificacaoAlteracaoLimiteDias, dados, Guid.NewGuid(), null));
+                }
 
                 await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
                                                 turmaFechamento.CodigoTurma,

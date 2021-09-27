@@ -40,6 +40,11 @@ namespace SME.SGP.Dominio.Servicos
             return repositorioNotificacao.ObterUltimoCodigoPorAno(DateTime.Now.Year) + 1;
         }
 
+        public async Task<long> ObtemNovoCodigoAsync()
+        {
+            return await repositorioNotificacao.ObterUltimoCodigoPorAnoAsync(DateTime.Now.Year) + 1;
+        }
+
         public void Salvar(Notificacao notificacao)
         {
             GeraNovoCodigo(notificacao);
@@ -76,6 +81,39 @@ namespace SME.SGP.Dominio.Servicos
                     return Enumerable.Empty<(Cargo?, string)>();
 
                 return ObterFuncionariosPorNivel(codigoUe, cargoProximoNivel, false);
+            }
+            else
+            {
+                if (cargo == Cargo.Supervisor)
+                    return supervisoresEscola.Select(s => (Cargo: cargo, Id: s.SupervisorId));
+                else
+                    return funcionarios.Select(f => (Cargo: cargo, Id: f.CodigoRf));
+            }
+
+        }
+
+        public async Task<IEnumerable<(Cargo? Cargo, string Id)>> ObterFuncionariosPorNivelAsync(string codigoUe, Cargo? cargo, bool primeiroNivel = true, bool? notificacaoExigeAcao = false)
+        {
+            IEnumerable<SupervisorEscolasDreDto> supervisoresEscola = null;
+            IEnumerable<UsuarioEolRetornoDto> funcionarios = null;
+
+            if (cargo == Cargo.Supervisor)
+                supervisoresEscola = await repositorioSupervisorEscolaDre.ObtemSupervisoresPorUeAsync(codigoUe);
+            else
+                funcionarios = await servicoEOL.ObterFuncionariosPorCargoUeAsync(codigoUe, (int)cargo);
+
+            var funcionariosDisponiveis = funcionarios?.Where(f => !f.EstaAfastado);
+
+            if (cargo == Cargo.Supervisor ?
+                supervisoresEscola == null || !supervisoresEscola.Any() :
+                funcionarios == null || !funcionarios.Any() || (!funcionariosDisponiveis.Any() && notificacaoExigeAcao.Value))
+            {
+                Cargo? cargoProximoNivel = ObterProximoNivel(cargo, primeiroNivel);
+
+                if (!cargoProximoNivel.HasValue)
+                    return Enumerable.Empty<(Cargo?, string)>();
+
+                return await ObterFuncionariosPorNivelAsync(codigoUe, cargoProximoNivel, false);
             }
             else
             {

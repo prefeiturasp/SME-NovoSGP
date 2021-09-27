@@ -44,17 +44,6 @@ namespace SME.SGP.Aplicacao
             return false;
         }
 
-        private async Task AtualizarDataExecucao(int ano)
-        {
-            var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoFrequenciaTurma, ano));
-            if (parametroSistema != null)
-            {
-                parametroSistema.Valor = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff tt");
-
-                await mediator.Send(new AtualizarParametroSistemaCommand(parametroSistema));
-            }
-        }
-
         private async Task ConsolidarFrequenciaTurmasAnoAtual()
         {
             var anoAtual = DateTime.Now.Year;
@@ -75,8 +64,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ConsolidarFrequenciasTurmasNoAno(int ano)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarFrequenciasTurmasNoAno, new FiltroAnoDto(ano), Guid.NewGuid(), null));
-            await AtualizarDataExecucao(ano);
+            await mediator.Send(new ExecutarConsolidacaoFrequenciaNoAnoCommand(ano));
         }
     }
 }

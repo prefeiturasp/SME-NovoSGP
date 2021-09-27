@@ -13,10 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Prometheus;
-using SME.Background.Core;
-using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
-using SME.SGP.Background;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
@@ -148,16 +145,6 @@ namespace SME.SGP.Api
             ConfiguraGoogleClassroomSync(services);
 
             var serviceProvider = services.BuildServiceProvider();
-
-            Orquestrador.Inicializar(serviceProvider);
-
-            if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
-            {
-                Orquestrador.Registrar(new Processor(Configuration, "SGP_Postgres"));
-                RegistraServicosRecorrentes.Registrar();
-            }
-            else
-                Orquestrador.Desativar();
 
             services.AddHealthChecks()
                     .AddNpgSql(

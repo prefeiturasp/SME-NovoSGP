@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObtemUsuarioCEFAIDaDreQuery : IRequest<long>
+    public class ObtemUsuarioCEFAIDaDreQuery : IRequest<IEnumerable<long>>
     {
         public ObtemUsuarioCEFAIDaDreQuery(string codigoDRE)
         {
