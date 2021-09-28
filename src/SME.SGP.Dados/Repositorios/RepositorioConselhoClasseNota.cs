@@ -216,5 +216,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, ueCodigo, turmaCodigo, bimestres });
         }
+
+        public async Task<double> VerificaNotaConselhoEmAprovacao(long conselhoClasseNotaId)
+        {
+            var query = $@"select coalesce(wf.nota,-1) from wf_aprovacao_nota_conselho wf 
+                                where wf.conselho_classe_nota_id = @conselhoClasseNotaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<double>(query, new {conselhoClasseNotaId});
+
+        }
     }
 }
