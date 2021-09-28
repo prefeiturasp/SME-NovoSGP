@@ -98,14 +98,14 @@ namespace SME.SGP.Dados.Repositorios
 
         public virtual async Task<bool> Exists(long id, string coluna = null)
         {
-            var tableName = Dommel.DommelMapper.Resolvers.Table(typeof(T));
+            var tableName = Dommel.Resolvers.Table(typeof(T), database.Conexao);
             var columName = coluna ?? "id";
             return await database.Conexao.ExecuteScalarAsync<bool>($"select count(1) from {tableName} where {columName}=@id", new { id });
         }
 
         public virtual async Task<long> RemoverLogico(long id, string coluna = null)
         {
-            var tableName = Dommel.DommelMapper.Resolvers.Table(typeof(T));
+            var tableName = Dommel.Resolvers.Table(typeof(T), database.Conexao);
             var columName = coluna ?? "id";
 
             var query = $@"update {tableName} 

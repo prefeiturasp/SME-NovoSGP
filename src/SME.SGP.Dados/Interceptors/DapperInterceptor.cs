@@ -450,7 +450,7 @@ namespace SME.SGP.Dados
 
             try
             {
-                var result = Dommel.DommelMapper.GetAll<TEntity>(connection, buffered);
+                var result = Dommel.DommelMapper.GetAll<TEntity>(connection, buffered: buffered);
 
                 timer.Stop();
 
