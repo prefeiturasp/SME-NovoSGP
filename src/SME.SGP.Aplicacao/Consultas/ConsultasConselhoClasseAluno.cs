@@ -505,6 +505,10 @@ namespace SME.SGP.Aplicacao
                 nota.EmAprovacao = true;
                 nota.Nota = notaConselhoEmAprovacao;
             }
+            else
+            {
+                nota.EmAprovacao = false;
+            }
         }
 
         private List<NotaBimestreDto> ObterNotasComponente(long componenteCurricularCodigo, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)

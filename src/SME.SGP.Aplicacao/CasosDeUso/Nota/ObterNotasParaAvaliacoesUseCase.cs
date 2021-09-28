@@ -362,6 +362,10 @@ namespace SME.SGP.Aplicacao
                 notasConceito.NotaConceito = nota;
                 notasConceito.EmAprovacao = true;
             }
+            else
+            {
+                notasConceito.EmAprovacao = false;
+            }
         }
 
         private IEnumerable<DisciplinaResposta> MapearParaDto(IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol)
