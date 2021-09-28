@@ -397,6 +397,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IImpressaoConselhoClasseTurmaUseCase, ImpressaoConselhoClasseTurmaUseCase>();
             services.TryAddScopedWorkerService<IReceberRelatorioProntoUseCase, ReceberRelatorioProntoUseCase>();
             services.TryAddScopedWorkerService<IBoletimUseCase, BoletimUseCase>();
+            services.TryAddScopedWorkerService<IBoletimEscolaAquiUseCase, BoletimEscolaAquiUseCase>();
             services.TryAddScopedWorkerService<IObterListaAlunosDaTurmaUseCase, ObterListaAlunosDaTurmaUseCase>();
             services.TryAddScopedWorkerService<IReceberDadosDownloadRelatorioUseCase, ReceberDadosDownloadRelatorioUseCase>();
             services.TryAddScopedWorkerService<IRelatorioConselhoClasseAtaFinalUseCase, RelatorioConselhoClasseAtaFinalUseCase>();
