@@ -490,7 +490,8 @@ namespace SME.SGP.Aplicacao
                 PodeEditar = componenteLancaNota
             };
 
-            await VerificaNotaEmAprovacao(notaComponente.ConselhoClasseNotaId, notaPosConselho);
+            if(notaComponente != null && notaComponente.ConselhoClasseNotaId > 0) 
+                await VerificaNotaEmAprovacao(notaComponente.ConselhoClasseNotaId, notaPosConselho);
 
             return notaPosConselho;
         }
