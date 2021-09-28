@@ -259,7 +259,7 @@ namespace SME.SGP.Dados.Repositorios
                                                     fn.fechamento_aluno_id = fa.id
                                                     and not fn.excluido
 				                                inner join conceito_valores cv on fn.conceito_id = cv.id
-                                                where t.ano_letivo = @anoLetivo ");            
+                                                where t.ano_letivo = @anoLetivo ");
 
             if (ueId > 0)
                 query.Append(" and ue.id = @ueId ");
@@ -305,7 +305,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                            inner join conselho_classe_nota ccn on
 		                                            ccn.conselho_classe_aluno_id = cca.id
 	                                            inner join conceito_valores cv on ccn.conceito_id = cv.id
-	                                            where t.ano_letivo = @anoLetivo ");            
+	                                            where t.ano_letivo = @anoLetivo ");
 
             if (ueId > 0)
                 query.Append(" and ue.id = @ueId ");
@@ -324,5 +324,27 @@ namespace SME.SGP.Dados.Repositorios
 
             return query.ToString();
         }
+
+        public async Task<IEnumerable<dto>> ObterParecerErrado()
+        {
+            var query = new StringBuilder(@"select cc.id as conselhoClasseId,
+                                            cc.fechamento_turma_id as fechamentoId,
+                                            cca.aluno_codigo as alunoCodigo
+
+                            from conselho_classe_aluno cca
+                          inner join conselho_classe cc on cc.id = cca.conselho_classe_id
+                          inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id
+                          inner join turma t on t.id = ft.turma_id
+                          inner join conselho_classe_parecer pc on pc.id = cca.conselho_classe_parecer_id
+                         -- where cca.conselho_classe_id = 335834
+                           -- and cca.aluno_codigo = '7111631'
+                            where t.modalidade_codigo = 3
+                            and pc.id in (4, 5)-- 51267
+                            and t.ano_letivo = 2021");
+
+            return await database.Conexao.QueryAsync<dto>(query.ToString());
+        }
     }
+    
+
 }

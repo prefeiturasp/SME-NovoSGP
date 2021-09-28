@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ConsultasConselhoClasseRecomendacaoConsultaDto), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRecomendacoesAlunoFamilia([FromServices] IConsultasConselhoClasseRecomendacao consultasConselhoClasseRecomendacao,
-            long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromQuery]bool consideraHistorico = false)
+            long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromQuery] bool consideraHistorico = false)
         {
             var retorno = await consultasConselhoClasseRecomendacao.ObterRecomendacoesAlunoFamilia(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre, consideraHistorico);
             return Ok(retorno);
@@ -131,5 +132,24 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterBimestresComConselhoClasseTurma(long turmaId, [FromServices] IObterBimestresComConselhoClasseTurmaUseCase obterBimestresComConselhoClasseTurmaUseCase)
          => Ok(await obterBimestresComConselhoClasseTurmaUseCase.Executar(turmaId));
+
+
+        [HttpGet("AjusteDeParecerErrado")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(IEnumerable<BimestreComConselhoClasseTurmaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> AtualizaParecer([FromServices] IRepositorioConselhoClasse repo, [FromServices] IServicoConselhoClasse serv)
+        {
+            var listaParecer = repo.ObterParecerErrado().Result;
+
+            foreach (var item in listaParecer)
+            {
+                serv.GerarParecerConclusivoAlunoAsync(item.conselhoClasseId, item.fechamentoId, item.alunoCodigo).Wait();
+            }
+             return Ok();
+        }
+
     }
+
 }

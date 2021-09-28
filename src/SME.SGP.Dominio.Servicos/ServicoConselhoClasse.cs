@@ -480,6 +480,7 @@ namespace SME.SGP.Dominio.Servicos
             return conselhoClasseAluno;
         }
 
+
         private async Task<FechamentoTurma> ObterFechamentoTurma(long fechamentoTurmaId, string alunoCodigo)
         {
             return await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo));

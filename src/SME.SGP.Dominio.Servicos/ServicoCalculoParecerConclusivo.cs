@@ -70,7 +70,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
-            string[] turmasCodigos;
+            string[] turmasCodigos = null;
 
             if (turma.DeveVerificarRegraRegulares())
             {
@@ -78,10 +78,23 @@ namespace SME.SGP.Dominio.Servicos
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
             }
+           
+             if(turmasCodigos == null || !turmasCodigos.Any())
+                {
+                  turmasCodigos = new string[1] { turma.CodigoTurma };
+                }
+
             else
             {
-                turmasCodigos = new string[1] { turma.CodigoTurma };
+
+                var cd = new string[1] { turma.CodigoTurma };
+                var lista = turmasCodigos.ToList();
+                lista.Add(turma.CodigoTurma);
+                turmasCodigos = lista.Distinct().ToArray();
+
             }
+             
+            
             // Frequencia
             Filtrar(pareceresDaTurma.Where(c => c.Frequencia), "Frequência");
             if (!await ValidarParecerPorFrequencia(alunoCodigo, turma, turmasCodigos))
