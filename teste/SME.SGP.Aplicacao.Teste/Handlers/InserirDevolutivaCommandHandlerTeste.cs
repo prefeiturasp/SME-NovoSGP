@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             result.ShouldHaveValidationErrorFor(a => a.PeriodoFim);
         }
 
-        private TestValidationResult<InserirDevolutivaCommand, InserirDevolutivaCommand> ValidarCommand(InserirDevolutivaCommand command)
+        private TestValidationResult<InserirDevolutivaCommand> ValidarCommand(InserirDevolutivaCommand command)
         {
             var validator = new InserirDevolutivaCommandValidator();
             return validator.TestValidate(command);

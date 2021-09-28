@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao.Pipelines
         {
             if (validadores.Any())
             {
-                var context = new ValidationContext(request);
+                var context = new ValidationContext<TRequest>(request);
 
                 var erros = validadores
                     .Select(v => v.Validate(context))
