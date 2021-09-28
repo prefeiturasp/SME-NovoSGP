@@ -47,11 +47,7 @@ namespace SME.SGP.Aplicacao
             await ExcluirPendenciaCEFAI(planoAEE);
 
             if (!await ParametroGeracaoPendenciaAtivo() || await AtribuidoAoMesmoUsuario(planoAEE))
-                return;
-
-            var ultimaVersaoPlano = await mediator.Send(new ObterUltimaVersaoPlanoAEEQuery(planoAEE.Id));
-            if (ultimaVersaoPlano != null && ultimaVersaoPlano.Numero > 1)
-                return;
+                return;            
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
             if (turma == null)
