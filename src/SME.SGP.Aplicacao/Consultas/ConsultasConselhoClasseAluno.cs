@@ -522,12 +522,9 @@ namespace SME.SGP.Aplicacao
 
         private ConselhoClasseComponenteFrequenciaDto ObterNotasFrequenciaComponente(string componenteCurricularNome, long componenteCurricularCodigo, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool turmaPossuiRegistroFrequencia, bool componenteLancaNota, bool percentualFrequenciaPadrao)
         {
-            var percentualFrequencia = double.MinValue;
+            var percentualFrequencia = double.MinValue;  
 
-            if (turmaPossuiRegistroFrequencia && percentualFrequenciaPadrao)
-                percentualFrequencia = 100;
-
-            else if (turmaPossuiRegistroFrequencia)
+            if (turmaPossuiRegistroFrequencia)
                 percentualFrequencia = (double)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
 
             // Cálculo de frequência particular do ano de 2020
