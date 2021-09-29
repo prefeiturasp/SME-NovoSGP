@@ -31,21 +31,57 @@ namespace SME.SGP.Aplicacao
                 return new ParecerConclusivoDto();
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
-
             var parecerConclusivo = await mediator.Send(new ObterParecerConclusivoAlunoQuery(conselhoClasseAluno.AlunoCodigo, turma.CodigoTurma, pareceresDaTurma));
-            conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
 
-            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
+            if (await EnviarParaAprovacao(turma))
+                await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma);
+            else
+            {
+                conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
+                await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
-            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar != null ?
-                   conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre : 0);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, consolidacaoTurma, Guid.NewGuid(), null));
+                var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar != null ?
+                       conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre : 0);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, consolidacaoTurma, Guid.NewGuid(), null));
+            }
 
             return new ParecerConclusivoDto()
             {
                 Id = parecerConclusivo.Id,
                 Nome = parecerConclusivo.Nome
             };
+        }
+
+        private async Task GerarWFAprovacao(ConselhoClasseAluno conselhoClasseAluno, long parecerConclusivoId, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
+        {
+            if (parecerConclusivoId == conselhoClasseAluno.ConselhoClasseParecerId)
+                return;
+
+            var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
+            var parecerAnterior = pareceresDaTurma.FirstOrDefault(a => a.Id == conselhoClasseAluno.ConselhoClasseParecerId)?.Nome;
+            var parecerNovo = pareceresDaTurma.FirstOrDefault(a => a.Id == parecerConclusivoId).Nome;
+
+            await mediator.Send(new GerarWFAprovacaoParecerConclusivoCommand(conselhoClasseAluno.Id,
+                                                                             turma,
+                                                                             conselhoClasseAluno.AlunoCodigo,
+                                                                             parecerConclusivoId,
+                                                                             parecerAnterior,
+                                                                             parecerNovo));
+        }
+
+        private async Task<bool> EnviarParaAprovacao(Turma turma)
+        {
+            return turma.AnoLetivo < DateTime.Today.Year
+                && await ParametroAprovacaoAtivo(turma.AnoLetivo);
+        }
+
+        private async Task<bool> ParametroAprovacaoAtivo(int anoLetivo)
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoParecerConclusivo, anoLetivo));
+            if (parametro == null)
+                throw new NegocioException($"Não localizado parametro de aprovação de alteração de parecer conclusivo para o ano {anoLetivo}");
+
+            return parametro.Ativo;
         }
 
         private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(long turmaId)
