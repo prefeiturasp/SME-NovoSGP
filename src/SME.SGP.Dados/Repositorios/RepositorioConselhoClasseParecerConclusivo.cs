@@ -104,6 +104,21 @@ namespace SME.SGP.Dados.Repositorios
                 bimestre
             });
         }
+
+        public async Task<IEnumerable<WFAprovacaoParecerConclusivo>> VerificaSePossuiAprovacaoParecerConclusivo(long? conselhoClasseAlunoId)
+        {
+            var query = $@"select wf.*, cp.* from wf_aprovacao_parecer_conclusivo wf
+                            inner join conselho_classe_parecer cp on cp.id = wf.conselho_classe_parecer_id
+                            where wf.conselho_classe_aluno_id = @conselhoClasseAlunoId";
+
+            return await database.Conexao.QueryAsync<WFAprovacaoParecerConclusivo, ConselhoClasseParecerConclusivo, WFAprovacaoParecerConclusivo>(query
+                , (wfAprovacaoNota, conselhoClasseParecer) =>
+                {
+                    wfAprovacaoNota.ConselhoClasseParecer = conselhoClasseParecer;
+                    return wfAprovacaoNota;
+                }
+                , new { conselhoClasseAlunoId });
+        }
     }
 }
 
