@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<double> Handle(ObterNotaEmAprovacaoQuery request, CancellationToken cancellationToken)
-            => await repositorioNotasConceitos.ObterNotaEmAprovacao(request.CodigoAluno, request.DisciplinaId, request.TurmaFechamentoId, request.PeriodoEscolarId);
+            => await repositorioNotasConceitos.ObterNotaEmAprovacao(request.CodigoAluno, request.DisciplinaId, request.TurmaFechamentoId);
     }
 }

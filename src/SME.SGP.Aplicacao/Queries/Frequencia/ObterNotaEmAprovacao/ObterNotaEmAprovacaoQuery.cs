@@ -9,12 +9,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotaEmAprovacaoQuery : IRequest<double>
     {
-        public ObterNotaEmAprovacaoQuery(string codigoAluno, long turmafechamentoId, long disciplinaId, long? periodoEscolarId)
+        public ObterNotaEmAprovacaoQuery(string codigoAluno, long turmafechamentoId, long disciplinaId)
         {
             CodigoAluno = codigoAluno;
             TurmaFechamentoId = turmafechamentoId;
             DisciplinaId = disciplinaId;
-            PeriodoEscolarId = periodoEscolarId;
         }
         public string CodigoAluno { get; set; }
         public long TurmaFechamentoId { get; set; }

@@ -283,7 +283,7 @@ namespace SME.SGP.Aplicacao
                                         ConceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : string.Empty,
                                     };
 
-                                    await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.Id, fechamentoTurma.DisciplinaId, fechamentoTurma.FechamentoTurma.PeriodoEscolarId, nota);
+                                    await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
 
                                     ((List<FechamentoNotaRetornoDto>)alunoDto.Notas).Add(nota);
                                 }
@@ -313,9 +313,9 @@ namespace SME.SGP.Aplicacao
             return fechamentoBimestre;
         }
 
-        private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, long? periodoEscolarId, FechamentoNotaRetornoDto notasConceito)
+        private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoNotaRetornoDto notasConceito)
         {
-            double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId, periodoEscolarId));
+            double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
 
             if (nota > 0)
             {
