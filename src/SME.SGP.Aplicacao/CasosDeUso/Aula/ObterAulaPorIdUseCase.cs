@@ -24,13 +24,18 @@ namespace SME.SGP.Aplicacao
             if (aula == null || aula.Excluido)
                 throw new NegocioException($"Aula de id {aulaId} não encontrada");
 
-            var aberto = await AulaDentroDoPeriodo(aula.TurmaId, aula.DataAula);
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
+            var aberto = await AulaDentroDoPeriodo(mediator, aula.TurmaId, aula.DataAula);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var usuarioAcessoAoComponente = await UsuarioComAcessoAoComponente(usuarioLogado, aula, usuarioLogado.EhProfessorCj());
             var aulaEmManutencao = await mediator.Send(new ObterAulaEmManutencaoQuery(aula.Id));
 
-            return MapearParaDto(aula, aberto, usuarioAcessoAoComponente, aulaEmManutencao);
+            var mesmoAnoLetivo = DateTime.Today.Year == aula.DataAula.Year;
+            var bimestreAula = await mediator.Send(new ObterBimestreAtualQuery(aula.DataAula, turma));
+            bool temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));
+
+            return MapearParaDto(aula, aberto, usuarioAcessoAoComponente, aulaEmManutencao, temPeriodoAberto);
         }
 
         private async Task<bool> AulaDentroDoPeriodo(string turmaCodigo, DateTime dataAula)
@@ -69,7 +74,7 @@ namespace SME.SGP.Aplicacao
             return disciplina != null;
         }
 
-        private AulaConsultaDto MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente, bool aulaEmManutencao)
+        private static AulaConsultaDto MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente, bool aulaEmManutencao, bool temPeriodoAberto)
         {
             AulaConsultaDto dto = new AulaConsultaDto()
             {
@@ -92,7 +97,7 @@ namespace SME.SGP.Aplicacao
                 CriadoPor = aula.CriadoPor,
                 CriadoRF = aula.CriadoRF,
                 Migrado = aula.Migrado,
-                SomenteLeitura = !usuarioAcessoAoComponente,
+                SomenteLeitura = !usuarioAcessoAoComponente || !temPeriodoAberto,
                 EmManutencao = aulaEmManutencao
             };
 
