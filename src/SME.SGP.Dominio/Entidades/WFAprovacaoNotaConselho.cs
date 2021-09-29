@@ -1,4 +1,4 @@
-﻿namespace SME.SGP.Dominio.Entidades
+﻿namespace SME.SGP.Dominio
 {
     public class WFAprovacaoNotaConselho
     {

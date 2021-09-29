@@ -96,6 +96,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConselhoClasseNotaMap());
                config.AddMap(new WfAprovacaoNotaFechamentoMap());
                config.AddMap(new WfAprovacaoNotaConselhoMap());
+               config.AddMap(new WFAprovacaoParecerConclusivoMap());
                config.AddMap(new ComunicadoMap());
                config.AddMap(new ComunicadoAlunoMap());
                config.AddMap(new ComunicadoTurmaMap());               
