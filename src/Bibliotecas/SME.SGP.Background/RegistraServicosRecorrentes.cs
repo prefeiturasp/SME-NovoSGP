@@ -97,6 +97,8 @@ namespace SME.SGP.Background
             Cliente.ExecutarPeriodicamente<IRotasAgendamentoSyncUseCase>(c => c.Executar(), Cron.Daily(10));
 
             Cliente.ExecutarPeriodicamente<IExecutarSyncSerapEstudantesProvasUseCase>(c => c.Executar(), Cron.Daily(1));
+
+            Cliente.ExecutarPeriodicamente<IVarreduraFechamentosEmProcessamentoPendentesUseCase>(c => c.Executar(), Cron.HourInterval(1));
         }
     }
 }

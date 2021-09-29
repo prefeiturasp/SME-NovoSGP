@@ -488,6 +488,7 @@ namespace SME.SGP.IoC
             
             // Fechamento
             services.TryAddScopedWorkerService<IGerarPendenciasFechamentoUseCase, GerarPendenciasFechamentoUseCase>();
+            services.TryAddScopedWorkerService<IVarreduraFechamentosEmProcessamentoPendentesUseCase, VarreduraFechamentosEmProcessamentoPendentesUseCase>();            
 
             // Frequência
             services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasCronUseCase, ConciliacaoFrequenciaTurmasCronUseCase>();
@@ -667,6 +668,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExcluirPlanoAulaPorAulaIdUseCase, ExcluirPlanoAulaPorAulaIdUseCase>();
             services.TryAddScopedWorkerService<IExcluirAnotacoesFrequenciaPorAulaIdUseCase, ExcluirAnotacoesFrequenciaPorAulaIdUseCase>();
             services.TryAddScopedWorkerService<IExcluirDiarioBordoPorAulaIdUseCase, ExcluirDiarioBordoPorAulaIdUseCase>();
+
+            services.TryAddScopedWorkerService<IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase, ObterInformacoesDeFrequenciaAlunoPorSemestreUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
