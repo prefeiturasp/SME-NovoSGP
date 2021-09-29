@@ -229,6 +229,7 @@ namespace SME.SGP.Aplicacao
                         retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {(dadosAuditoriaAlteracaoBimestre.AlteradoPor)}({dadosAuditoriaAlteracaoBimestre.AlteradoRf}) em {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("dd/MM/yyyy")}, às {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("HH:mm")}.";
                     }
 
+
                     if (componenteReferencia.Regencia)
                     {
                         // Regencia carrega disciplinas mesmo sem nota de fechamento
@@ -246,21 +247,31 @@ namespace SME.SGP.Aplicacao
                                 nota.EhConceito = notaRegencia.ConceitoId.HasValue;
                             }
 
+                            await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
+
                             notaConceitoAluno.NotasBimestre.Add(nota);
                         }
                     }
                     else
                     {
+
                         foreach (var notaConceitoBimestre in notasConceitoBimestre)
-                            notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
+                        {
+                            var nota = new FechamentoNotaRetornoDto()
                             {
                                 DisciplinaId = notaConceitoBimestre.DisciplinaId,
                                 Disciplina = componenteReferencia.Nome,
                                 NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ?
-                                    notaConceitoBimestre.ConceitoId.Value :
-                                    notaConceitoBimestre.Nota,
+                                   notaConceitoBimestre.ConceitoId.Value :
+                                   notaConceitoBimestre.Nota,
                                 EhConceito = notaConceitoBimestre.ConceitoId.HasValue
-                            });
+                            };
+
+                            await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
+
+                            notaConceitoAluno.NotasBimestre.Add(nota);
+                        }
+                           
                     }
                 }
                 else if (componenteReferencia.Regencia && componenteReferencia != null)
@@ -340,6 +351,21 @@ namespace SME.SGP.Aplicacao
             retorno.Bimestres.Add(bimestreParaAdicionar);
 
             return retorno;
+        }
+
+        private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoNotaRetornoDto notasConceito)
+        {
+            double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
+
+            if(nota > 0)
+            {
+                notasConceito.NotaConceito = nota;
+                notasConceito.EmAprovacao = true;
+            }
+            else
+            {
+                notasConceito.EmAprovacao = false;
+            }
         }
 
         private IEnumerable<DisciplinaResposta> MapearParaDto(IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol)
