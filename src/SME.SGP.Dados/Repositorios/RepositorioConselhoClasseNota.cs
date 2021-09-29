@@ -249,7 +249,7 @@ namespace SME.SGP.Dados.Repositorios
                             from wf_aprovacao_nota_conselho w
                           inner join conselho_classe_nota n on n.id = w.conselho_classe_nota_id 
                           inner join conselho_classe_aluno a on a.id = n.conselho_classe_aluno_id
-                          inner join conselho_classe cc on c.id = a.conselho_classe_id 
+                          inner join conselho_classe cc on cc.id = a.conselho_classe_id 
                           inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id 
                           left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                           where w.wf_aprovacao_id = @workFlowId";

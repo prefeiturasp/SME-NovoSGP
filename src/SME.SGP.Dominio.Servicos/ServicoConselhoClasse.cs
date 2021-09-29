@@ -193,7 +193,8 @@ namespace SME.SGP.Dominio.Servicos
             {
                 ConselhoClasseId = conselhoClasseId,
                 FechamentoTurmaId = fechamentoTurmaId,
-                Auditoria = auditoria
+                Auditoria = auditoria,
+                ConselhoClasseAlunoId = conselhoClasseAluno.Id
             };
 
             return conselhoClasseNotaRetorno;

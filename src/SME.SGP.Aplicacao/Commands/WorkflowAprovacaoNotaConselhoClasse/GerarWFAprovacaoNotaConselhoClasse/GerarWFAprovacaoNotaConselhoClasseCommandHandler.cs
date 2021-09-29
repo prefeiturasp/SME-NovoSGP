@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
         private async Task<long> GerarWFAprovacao(GerarWFAprovacaoNotaConselhoClasseCommand request)
         {
             var componenteCurricular = await ObterComponente(request.ComponenteCurricularCodigo);
-            var bimestre = request.Bimestre.HasValue ? request.Bimestre.ToString() : "Final";
+            var bimestre = request.Bimestre.HasValue && request.Bimestre.Value > 0 ? request.Bimestre.ToString() : "Final";
             var ue = await ObterUe(request.Turma.UeId);
             var turma = $"{request.Turma.Nome} da {ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao}) de {request.Turma.AnoLetivo}";
             var professor = $"{request.UsuarioLogado.Nome} ({request.UsuarioLogado.CodigoRf})";

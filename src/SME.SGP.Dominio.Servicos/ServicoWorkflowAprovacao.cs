@@ -601,16 +601,16 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
                     Titulo = $"Alteração em {notaConceitoTitulo} final - Turma {turma.Nome} ({turma.AnoLetivo})",
                     Tipo = NotificacaoTipo.Notas,
                     Codigo = codigoDaNotificacao,
-                    Mensagem = MontaMensagemAprovacaoNotaPosConselho(turma, usuario, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa, bimestre)
+                    Mensagem = await MontaMensagemAprovacaoNotaPosConselho(turma, usuario, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa, bimestre)
                 });
 
             }
         }
-        private string MontaMensagemAprovacaoNotaPosConselho(Turma turma, Usuario usuario, string notaConceitoTitulo, IEnumerable<WFAprovacaoNotaConselho> notasEmAprovacao, bool aprovado, string justificativa, int bimestre)
+        private async Task<string> MontaMensagemAprovacaoNotaPosConselho(Turma turma, Usuario usuario, string notaConceitoTitulo, IEnumerable<WFAprovacaoNotaConselho> notasEmAprovacao, bool aprovado, string justificativa, int bimestre)
         {
             var aprovadaRecusada = aprovado ? "aprovada" : "recusada";
             var motivo = aprovado ? "" : $"Motivo: {justificativa}.";
-            var componenteCurricular = ObterComponente(notasEmAprovacao.First().ConselhoClasseNota.ComponenteCurricularCodigo);
+            var componenteCurricular = await ObterComponente(notasEmAprovacao.First().ConselhoClasseNota.ComponenteCurricularCodigo);
             var bimestreFormatado = bimestre == 0 ? "bimestre final" : $"{bimestre}º bimestre";
 
             var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) final(is) do {bimestreFormatado} do componente curricular {componenteCurricular}  
@@ -640,7 +640,7 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
                 }
                 else
                 {
-                    mensagem.Append($"<td style='padding: 5px;'>{ObterNota(notaAprovacao.Conceito.Id)}</td>");
+                    mensagem.Append($"<td style='padding: 5px;'>{ObterNota(notaAprovacao.ConselhoClasseNota.ConceitoId)}</td>");
                     mensagem.Append($"<td style='padding: 5px;'>{ObterNota(notaAprovacao.ConceitoId)}</td>");
                 }
                 mensagem.AppendLine("</tr>");
