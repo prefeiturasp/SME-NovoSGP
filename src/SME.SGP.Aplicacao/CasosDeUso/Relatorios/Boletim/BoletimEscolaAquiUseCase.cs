@@ -46,8 +46,6 @@ namespace SME.SGP.Aplicacao
                 else if (await repositorioTurma.ObterPorCodigo(relatorioBoletimEscolaAquiDto.TurmaCodigo) == null)
                     throw new NegocioException("Não foi possível encontrar a turma");
             }
-
-
             try
             {
                 unitOfWork.IniciarTransacao();
@@ -64,7 +62,6 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-
                 throw;
             }
         }
