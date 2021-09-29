@@ -46,24 +46,18 @@ namespace SME.SGP.Aplicacao
                 else if (await repositorioTurma.ObterPorCodigo(relatorioBoletimEscolaAquiDto.TurmaCodigo) == null)
                     throw new NegocioException("Não foi possível encontrar a turma");
             }
-            try
-            {
-                unitOfWork.IniciarTransacao();
-                var usuarioLogado = repositorioUsuario.ObterPorId(usuarioLogadoId); 
-                bool retorno;
 
-                if (relatorioBoletimEscolaAquiDto.Modelo == (int)ModeloBoletim.Detalhado)
-                    retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhadoApp, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui,notificarErroUsuario:true));
-                else
-                    retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimEscolaAqui));
+            unitOfWork.IniciarTransacao();
+            var usuarioLogado = repositorioUsuario.ObterPorId(usuarioLogadoId);
+            bool retorno;
 
-                unitOfWork.PersistirTransacao();
-                return retorno;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            if (relatorioBoletimEscolaAquiDto.Modelo == (int)ModeloBoletim.Detalhado)
+                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhadoApp, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui, notificarErroUsuario: true));
+            else
+                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimEscolaAqui));
+
+            unitOfWork.PersistirTransacao();
+            return retorno;
         }
     }
 }
