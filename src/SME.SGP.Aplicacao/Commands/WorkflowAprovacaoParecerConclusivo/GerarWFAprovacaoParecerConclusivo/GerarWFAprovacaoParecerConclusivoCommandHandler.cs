@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                                                                     ue.Dre.CodigoDre,
                                                                     ue.CodigoUe,
                                                                     request.Turma.CodigoTurma,
-                                                                    WorkflowAprovacaoTipo.AlteracaoNotaConselho
+                                                                    WorkflowAprovacaoTipo.AlteracaoParecerConclusivo
                                                                     /*TODO remover comentario depois de mergear a alteração do Hélio no command, request.ConselhoClasseAlunoId*/));
         }
 
