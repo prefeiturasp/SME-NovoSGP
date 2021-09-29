@@ -1106,26 +1106,6 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
             return null;
         }
 
-        private string ObterNota(double? nota)
-        {
-            if (!nota.HasValue)
-                return string.Empty;
-
-            return nota.ToString();
-        }
-
-        private string ObterConceito(long? conceitoId)
-        {
-            if (!conceitoId.HasValue)
-                return string.Empty;
-
-            if (conceitoId == (int)ConceitoValores.P)
-                return ConceitoValores.P.ToString();
-            else if (conceitoId == (int)ConceitoValores.S)
-                return ConceitoValores.S.ToString();
-            else
-                return ConceitoValores.NS.ToString();
-        }
 
     }
 }
