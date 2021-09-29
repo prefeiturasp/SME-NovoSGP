@@ -360,12 +360,10 @@ namespace SME.SGP.Aplicacao
             {
                 var wfAprovacaoParecerConclusivo = await mediator.Send(new ObterSePossuiParecerEmAprovacaoQuery(conselhoClasseAlunoId));
 
-                if (wfAprovacaoParecerConclusivo.Any())
+                if (wfAprovacaoParecerConclusivo != null)
                 {
-                    var parecerConclusivo = wfAprovacaoParecerConclusivo.FirstOrDefault();
-
-                    parecerConclusivoDto.Id = parecerConclusivo.ConselhoClasseParecerId.Value;
-                    parecerConclusivoDto.Nome = parecerConclusivo.ConselhoClasseParecer.Nome;
+                    parecerConclusivoDto.Id = wfAprovacaoParecerConclusivo.ConselhoClasseParecerId.Value;
+                    parecerConclusivoDto.Nome = wfAprovacaoParecerConclusivo.ConselhoClasseParecer.Nome;
                     parecerConclusivoDto.EmAprovacao = true;
                 }
             } 

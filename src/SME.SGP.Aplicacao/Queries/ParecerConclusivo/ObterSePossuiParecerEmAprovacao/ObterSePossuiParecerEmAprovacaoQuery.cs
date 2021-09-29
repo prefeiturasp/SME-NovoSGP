@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterSePossuiParecerEmAprovacaoQuery : IRequest<IEnumerable<WFAprovacaoParecerConclusivo>>
+    public class ObterSePossuiParecerEmAprovacaoQuery : IRequest<WFAprovacaoParecerConclusivo>
     {
         public ObterSePossuiParecerEmAprovacaoQuery(long? conselhoClasseAlunoId)
         {

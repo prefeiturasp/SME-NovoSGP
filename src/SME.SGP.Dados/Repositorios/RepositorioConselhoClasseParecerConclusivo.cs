@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -105,19 +106,19 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<WFAprovacaoParecerConclusivo>> VerificaSePossuiAprovacaoParecerConclusivo(long? conselhoClasseAlunoId)
+        public async Task<WFAprovacaoParecerConclusivo> VerificaSePossuiAprovacaoParecerConclusivo(long? conselhoClasseAlunoId)
         {
             var query = $@"select wf.*, cp.* from wf_aprovacao_parecer_conclusivo wf
                             inner join conselho_classe_parecer cp on cp.id = wf.conselho_classe_parecer_id
                             where wf.conselho_classe_aluno_id = @conselhoClasseAlunoId";
 
-            return await database.Conexao.QueryAsync<WFAprovacaoParecerConclusivo, ConselhoClasseParecerConclusivo, WFAprovacaoParecerConclusivo>(query
+            return (await database.Conexao.QueryAsync<WFAprovacaoParecerConclusivo, ConselhoClasseParecerConclusivo, WFAprovacaoParecerConclusivo>(query
                 , (wfAprovacaoNota, conselhoClasseParecer) =>
                 {
                     wfAprovacaoNota.ConselhoClasseParecer = conselhoClasseParecer;
                     return wfAprovacaoNota;
                 }
-                , new { conselhoClasseAlunoId });
+                , new { conselhoClasseAlunoId })).FirstOrDefault();
         }
     }
 }

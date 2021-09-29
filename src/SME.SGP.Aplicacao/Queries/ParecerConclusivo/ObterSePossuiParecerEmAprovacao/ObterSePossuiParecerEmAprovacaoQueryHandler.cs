@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterSePossuiParecerEmAprovacaoQueryHandler : IRequestHandler<ObterSePossuiParecerEmAprovacaoQuery,IEnumerable<WFAprovacaoParecerConclusivo>>
+    public class ObterSePossuiParecerEmAprovacaoQueryHandler : IRequestHandler<ObterSePossuiParecerEmAprovacaoQuery,WFAprovacaoParecerConclusivo>
     {
         private readonly IRepositorioConselhoClasseParecerConclusivo repositorioParecer;
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioParecer = repositorioParecer ?? throw new ArgumentNullException(nameof(repositorioParecer));
         }
 
-        public async Task<IEnumerable<WFAprovacaoParecerConclusivo>> Handle(ObterSePossuiParecerEmAprovacaoQuery request, CancellationToken cancellationToken)
+        public async Task<WFAprovacaoParecerConclusivo> Handle(ObterSePossuiParecerEmAprovacaoQuery request, CancellationToken cancellationToken)
             => await repositorioParecer.VerificaSePossuiAprovacaoParecerConclusivo(request.ConselhoClasseAlunoId);
     }
 }
