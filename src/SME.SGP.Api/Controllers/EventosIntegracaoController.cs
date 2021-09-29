@@ -17,8 +17,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterBimestresLiberacaoBoletim(string turmaCodigo, [FromServices] IObterBimestresLiberacaoBoletimUseCase obterBimestresLiberacaoBoletimUseCase)
         {
-            var retorno = await obterBimestresLiberacaoBoletimUseCase.Executar(turmaCodigo);
-            return Ok(retorno);
+            return Ok(await obterBimestresLiberacaoBoletimUseCase.Executar(turmaCodigo));
         }
     }
 }

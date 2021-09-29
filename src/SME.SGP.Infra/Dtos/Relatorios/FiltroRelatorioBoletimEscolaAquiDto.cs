@@ -14,9 +14,9 @@ namespace SME.SGP.Infra
 
         public int AnoLetivo { get; set; }
 
-        public Modalidade Modalidade { get; set; }
+        public int ModalidadeCodigo { get; set; }
 
-        public ModeloBoletim Modelo { get; set; }
+        public int Modelo { get; set; }
 
         public string AlunosCodigo { get; set; }
 

@@ -139,6 +139,7 @@
         public const string RotaAgendamentoTratar = "sgp.agendamento.tratar";
 
         public const string RotaRelatoriosProntos = "sgp.relatorios.prontos.notificar";
+        public const string RotaRelatoriosProntosApp = "sgp.relatorio.app.pronto.notificar";
         public const string RotaRelatorioCorrelacaoCopiar = "sgp.relatorios.correlacao.copiar";
         public const string RotaRelatorioCorrelacaoInserir = "sgp.relatorios.correlacao.inserir";
         
