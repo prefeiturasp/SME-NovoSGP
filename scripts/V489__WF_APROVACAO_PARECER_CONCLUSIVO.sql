@@ -5,6 +5,7 @@ CREATE TABLE public.wf_aprovacao_parecer_conclusivo (
 	conselho_classe_aluno_id int8 not null,
 
 	conselho_classe_parecer_id int8 NULL,
+	criado_em timestamp NOT null,
 
 	CONSTRAINT wf_aprovacao_nota_conselho_pk PRIMARY KEY (id)
 );

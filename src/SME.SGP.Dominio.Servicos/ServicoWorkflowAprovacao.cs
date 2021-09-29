@@ -179,6 +179,10 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     await AprovarAlteracaoNotaConselho(workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor);
                 }
+                else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoParecerConclusivo)
+                {
+                    await AprovarAlteracaoParecerConclusivo(workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor);
+                }
             }
         }
 
@@ -202,6 +206,11 @@ namespace SME.SGP.Dominio.Servicos
 
                 await mediator.Send(new NotificacaoUsuarioCriadorRegistroItineranciaCommand(itineranciaEmAprovacao.ItineranciaId, workFlowId));
             }
+        }
+
+        private async Task AprovarAlteracaoParecerConclusivo(long workflowId, string turmaCodigo, string criadoRF, string criadoPor)
+        {
+            await mediator.Send(new AprovarWorkflowAlteracaoParecerConclusivoCommand(workflowId, turmaCodigo, criadoRF, criadoPor));
         }
 
         private async Task AprovarAlteracaoNotaConselho(long workflowId, string turmaCodigo, string criadoRF, string criadoPor)
