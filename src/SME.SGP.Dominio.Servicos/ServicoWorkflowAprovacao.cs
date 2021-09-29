@@ -875,6 +875,15 @@ namespace SME.SGP.Dominio.Servicos
             {
                 await ReprovarRegistroDeItinerancia(workflow.Id, motivo);
             }
+            else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoParecerConclusivo)
+            {
+                await ReprovarParecerConclusivo(workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor, motivo);
+            }
+        }
+
+        private async Task ReprovarParecerConclusivo(long workflowId, string turmaCodigo, string criadoRF, string criadoNome, string motivo)
+        {
+            await mediator.Send(new ReprovarWorkflowAlteracaoParecerConclusivoCommand(workflowId, turmaCodigo, criadoRF, criadoNome, motivo));
         }
 
         private async Task TrataReprovacaoAlteracaoNotaFechamento(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
