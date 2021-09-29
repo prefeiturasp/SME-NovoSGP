@@ -16,21 +16,18 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
-        private readonly IRepositorioConselhoClasseParecerConclusivo repositorioParecer;
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioDre repositorioDre;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo;
         private readonly IMediator mediator;
         private readonly IConsultasConselhoClasseNota consultasConselhoClasseNota;
 
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                      IRepositorioFechamentoTurma repositorioFechamentoTurma,
-                                     IRepositorioConselhoClasseParecerConclusivo repositorioParecer,
                                      IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                      IRepositorioUe repositorioUe,
                                      IRepositorioDre repositorioDre,
@@ -38,7 +35,6 @@ namespace SME.SGP.Dominio.Servicos
                                      IConsultasConselhoClasse consultasConselhoClasse,
                                      IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                      IUnitOfWork unitOfWork,
-                                     IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo,
                                      IMediator mediator,
                                      IConsultasConselhoClasseNota consultasConselhoClasseNota)
 
@@ -46,7 +42,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
-            this.repositorioParecer = repositorioParecer ?? throw new ArgumentNullException(nameof(repositorioParecer));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
@@ -54,7 +49,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.servicoCalculoParecerConclusivo = servicoCalculoParecerConclusivo ?? throw new ArgumentNullException(nameof(servicoCalculoParecerConclusivo));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.consultasConselhoClasseNota = consultasConselhoClasseNota ?? throw new ArgumentNullException(nameof(consultasConselhoClasseNota));
         }
@@ -108,7 +102,6 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<ConselhoClasseNotaRetornoDto> GravarConselhoClasse(FechamentoTurma fechamentoTurma, long conselhoClasseId, string alunoCodigo, Turma turma, ConselhoClasseNotaDto conselhoClasseNotaDto, int? bimestre)
         {
-            long conselhoClasseAlunoId = 0;
             var conselhoClasseNota = new ConselhoClasseNota();
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
@@ -119,9 +112,9 @@ namespace SME.SGP.Dominio.Servicos
 
             // TODO Verificar se o fechamentoTurma.Turma carregou UE
             if (await VerificaNotasTodosComponentesCurriculares(alunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
-                await VerificaRecomendacoesAluno(conselhoClasseAlunoId);
+                await VerificaRecomendacoesAluno(conselhoClasseNotaRetorno.ConselhoClasseAlunoId);
 
-            await mediator.Send(new PublicaFilaAtualizacaoSituacaoConselhoClasseCommand(conselhoClasseId, usuarioLogado));
+            await mediator.Send(new PublicaFilaAtualizacaoSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId, usuarioLogado));
 
             return conselhoClasseNotaRetorno;
         }
@@ -211,6 +204,7 @@ namespace SME.SGP.Dominio.Servicos
             AuditoriaDto auditoria = null;
             long conselhoClasseId = 0;
             var conselhoClasse = new ConselhoClasse();
+            long conselhoClasseAlunoId = 0;
             conselhoClasse.FechamentoTurmaId = fechamentoTurma.Id;
 
             unitOfWork.IniciarTransacao();
@@ -220,7 +214,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 conselhoClasseId = conselhoClasse.Id;
 
-                var conselhoClasseAlunoId = await SalvarConselhoClasseAlunoResumido(conselhoClasse.Id, alunoCodigo);
+                conselhoClasseAlunoId = await SalvarConselhoClasseAlunoResumido(conselhoClasse.Id, alunoCodigo);
 
                 await mediator.Send(new InserirTurmasComplementaresCommand(turma.Id, conselhoClasseAlunoId, alunoCodigo));
 
@@ -247,7 +241,8 @@ namespace SME.SGP.Dominio.Servicos
             {
                 ConselhoClasseId = conselhoClasseId,
                 FechamentoTurmaId = fechamentoTurma.Id,
-                Auditoria = auditoria
+                Auditoria = auditoria,
+                ConselhoClasseAlunoId = conselhoClasseAlunoId
             };
             return conselhoClasseNotaRetorno;
         }
@@ -270,10 +265,21 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task GerarWFAprovacao(ConselhoClasseNota conselhoClasseNota, Turma turma, int? bimestre, Usuario usuarioLogado, string alunoCodigo, double? notaAnterior, long? conceitoIdAnterior)
         {
+            double? notaAtual = conselhoClasseNota.Nota;
+            long? conceitoIdAtual = conselhoClasseNota.ConceitoId;
+
+            if(conselhoClasseNota.Id == 0)
+            {
+                conselhoClasseNota.Nota = null;
+                conselhoClasseNota.ConceitoId = null;
+
+                await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
+            }
+
             await mediator.Send(new GerarWFAprovacaoNotaConselhoClasseCommand(conselhoClasseNota.Id,
                                                                               conselhoClasseNota.ComponenteCurricularCodigo,
-                                                                              conselhoClasseNota.Nota,
-                                                                              conselhoClasseNota.ConceitoId,
+                                                                              notaAtual,
+                                                                              conceitoIdAtual,
                                                                               turma,
                                                                               bimestre,
                                                                               usuarioLogado,
@@ -455,8 +461,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 foreach (var conselhosClassesId in conselhosClassesIds)
                 {
-                    var notasParaAdicionar = await consultasConselhoClasseNota
-                        .ObterNotasAlunoAsync(conselhosClassesId, alunoCodigo);
+                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, alunoCodigo));
 
                     notasParaVerificar.AddRange(notasParaAdicionar);
                 }
@@ -466,8 +471,7 @@ namespace SME.SGP.Dominio.Servicos
                 notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)));
             else
             {
-                var todasAsNotas = await consultasConselhoClasseNota
-                    .ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigos);
+                var todasAsNotas = await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, alunoCodigo));
 
                 if (todasAsNotas != null && todasAsNotas.Any())
                     notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
@@ -504,37 +508,8 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
             var conselhoClasseAluno = await ObterConselhoClasseAluno(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
-            var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
 
-            // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
-            if (!await VerificaNotasTodosComponentesCurriculares(alunoCodigo, turma, null))
-                return new ParecerConclusivoDto();
-
-            var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
-
-            var parecerConclusivo = await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma);
-            conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
-            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
-
-            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar != null ?
-                   conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre : 0);
-            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
-
-            return new ParecerConclusivoDto()
-            {
-                Id = parecerConclusivo.Id,
-                Nome = parecerConclusivo.Nome
-            };
-        }
-
-        private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(long turmaId)
-        {
-            var pareceresConclusivos = await repositorioParecer.ObterListaPorTurmaIdAsync(turmaId, DateTime.Today);
-            if (pareceresConclusivos == null || !pareceresConclusivos.Any())
-                throw new NegocioException("Não foram encontrados pareceres conclusivos para a turma!");
-
-            return pareceresConclusivos;
+            return await mediator.Send(new GerarParecerConclusivoAlunoCommand(conselhoClasseAluno));
         }
 
         private async Task<ConselhoClasseAluno> ObterConselhoClasseAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)

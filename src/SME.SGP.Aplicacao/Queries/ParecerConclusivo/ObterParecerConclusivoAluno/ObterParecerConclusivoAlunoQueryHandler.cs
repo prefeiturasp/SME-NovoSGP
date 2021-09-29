@@ -1,45 +1,31 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Dominio.Servicos
+namespace SME.SGP.Aplicacao
 {
-    public class ServicoCalculoParecerConclusivo : IServicoCalculoParecerConclusivo
+    public class ObterParecerConclusivoAlunoQueryHandler : IRequestHandler<ObterParecerConclusivoAlunoQuery, ConselhoClasseParecerConclusivo>
     {
-        protected IServicoCalculoParecerConclusivo quandoVerdadeiro;
-        protected IServicoCalculoParecerConclusivo quandoFalso;
         protected IEnumerable<ConselhoClasseParecerConclusivo> pareceresDoServico;
 
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioConceito repositorioConceito;
-        private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IConsultasFrequencia consultasFrequencia;
-        private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
 
-        public ServicoCalculoParecerConclusivo(IRepositorioParametrosSistema repositorioParametrosSistema,
-                                               IRepositorioFechamentoNota repositorioFechamentoNota,
-                                               IRepositorioConceito repositorioConceito,
-                                               IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
-                                               IConsultasFrequencia consultasFrequencia,
-                                               IServicoEol servicoEOL,
-                                               IMediator mediator)
+        public ObterParecerConclusivoAlunoQueryHandler(IRepositorioConceito repositorioConceito,
+                                                            IConsultasFrequencia consultasFrequencia,
+                                                            IMediator mediator)
         {
-            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
-            this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
-            this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
-            this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
-            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioConceito = repositorioConceito ?? throw new System.ArgumentNullException(nameof(repositorioConceito));
+            this.consultasFrequencia = consultasFrequencia ?? throw new System.ArgumentNullException(nameof(consultasFrequencia));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public bool Filtrar(IEnumerable<ConselhoClasseParecerConclusivo> pareceresDoServico, string nomeClasseCalculo)
@@ -66,9 +52,9 @@ namespace SME.SGP.Dominio.Servicos
         private ConselhoClasseParecerConclusivo ObterParecerValidacao(bool retornoValidacao)
             => pareceresDoServico.FirstOrDefault(c => c.Aprovado == retornoValidacao);
 
-        public async Task<ConselhoClasseParecerConclusivo> Calcular(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
+        public async Task<ConselhoClasseParecerConclusivo> Handle(ObterParecerConclusivoAlunoQuery request, CancellationToken cancellationToken)
         {
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
 
             string[] turmasCodigos;
 
@@ -76,30 +62,30 @@ namespace SME.SGP.Dominio.Servicos
             {
                 List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, turmasCodigosParaConsulta));
             }
             else
             {
                 turmasCodigos = new string[1] { turma.CodigoTurma };
             }
             // Frequencia
-            Filtrar(pareceresDaTurma.Where(c => c.Frequencia), "Frequência");
-            if (!await ValidarParecerPorFrequencia(alunoCodigo, turma, turmasCodigos))
+            Filtrar(request.PareceresDaTurma.Where(c => c.Frequencia), "Frequência");
+            if (!await ValidarParecerPorFrequencia(request.AlunoCodigo, turma, turmasCodigos))
                 return ObterParecerValidacao(false);
 
             var parecerFrequencia = ObterParecerValidacao(true);
 
             // Nota
-            if (!Filtrar(pareceresDaTurma.Where(c => c.Nota), "Nota"))
+            if (!Filtrar(request.PareceresDaTurma.Where(c => c.Nota), "Nota"))
                 return parecerFrequencia;
 
-            var parecerNota = ObterParecerValidacao(await ValidarParecerPorNota(alunoCodigo, turmasCodigos));
+            var parecerNota = ObterParecerValidacao(await ValidarParecerPorNota(request.AlunoCodigo, turmasCodigos));
 
             // Conselho
-            if (!Filtrar(pareceresDaTurma.Where(c => c.Conselho), "Conselho"))
+            if (!Filtrar(request.PareceresDaTurma.Where(c => c.Conselho), "Conselho"))
                 return parecerNota;
 
-            var validacaoConselho = await ValidarParecerPorConselho(alunoCodigo, turmasCodigos);
+            var validacaoConselho = await ValidarParecerPorConselho(request.AlunoCodigo, turmasCodigos);
             if (!validacaoConselho.ExisteNotaConselho)
                 return parecerNota;
 

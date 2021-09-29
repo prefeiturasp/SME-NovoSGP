@@ -10,5 +10,6 @@
         AlteracaoNotaFechamento = 6,
         RegistroItinerancia = 7,
         AlteracaoNotaConselho = 8,
+        AlteracaoParecerConclusivo = 9,
     }
 }
