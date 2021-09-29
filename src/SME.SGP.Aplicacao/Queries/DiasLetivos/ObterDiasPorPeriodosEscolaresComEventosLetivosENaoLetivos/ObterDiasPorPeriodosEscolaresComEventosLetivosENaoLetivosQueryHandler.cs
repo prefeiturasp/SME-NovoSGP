@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 Data = diaAtual,
                                 PossuiEvento = true,
-                                EhLetivo = diaAtual.DayOfWeek != DayOfWeek.Saturday && elue.EhEventoLetivo(),
+                                EhLetivo = !diaAtual.FimDeSemana() && elue.EhEventoLetivo(),
                                 Motivo = elue.Nome,
                                 UesIds = new List<string>() { elue.UeId }
                             });

@@ -838,13 +838,20 @@ namespace SME.SGP.Dados.Repositorios
                                 not a.excluido and
                                 extract(year from a.data_aula) = t.ano_letivo";
 
+            var criadoRf = new string[] { criadoPor };
+
             if (!string.IsNullOrWhiteSpace(criadoPor))
+            {
+                if (criadoPor.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase))
+                    criadoRf = criadoRf.Concat(new string[] { "0" }).ToArray();
+
                 query += @" and a.criado_por = @criadoPor 
-                            and a.criado_rf = @criadoPor ";
+                            and a.criado_rf = any(@criadoRf) ";
+            }
 
             query += " order by a.data_aula;";
 
-            return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId, criadoPor });
+            return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId, criadoPor, criadoRf });
         }
 
         public async Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasParaPendenciasAulaDiasNaoLetivos(long tipoCalendarioId, TipoEscola[] tiposEscola)
