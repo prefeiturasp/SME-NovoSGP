@@ -7,7 +7,7 @@ CREATE TABLE public.wf_aprovacao_parecer_conclusivo (
 	conselho_classe_parecer_id int8 NULL,
 	criado_em timestamp NOT null,
 
-	CONSTRAINT wf_aprovacao_nota_conselho_pk PRIMARY KEY (id)
+	CONSTRAINT wf_aprovacao_parecer_conclusivo_pk PRIMARY KEY (id)
 );
 
 ALTER TABLE public.wf_aprovacao_parecer_conclusivo ADD CONSTRAINT wf_aprovacao_parecer_conclusivo_aprovacao_fk FOREIGN KEY (wf_aprovacao_id) REFERENCES wf_aprovacao(id);
