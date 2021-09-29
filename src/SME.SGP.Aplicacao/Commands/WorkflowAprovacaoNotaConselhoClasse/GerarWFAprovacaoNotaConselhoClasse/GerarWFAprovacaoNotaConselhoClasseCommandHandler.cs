@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 ConselhoClasseNotaId = request.ConselhoClasseNotaId,
                 Nota = request.Nota,
                 ConceitoId = request.ConceitoId,
-                WfAprovacaoId = wfAprovacaoId
+                WfAprovacaoId = wfAprovacaoId,
             });
         }
 
@@ -46,8 +46,8 @@ namespace SME.SGP.Aplicacao
             var data = $"{DateTime.Today:dd/MM/yyyy} às {DateTime.Now:hh:mm}";
             var aluno = await ObterAluno(request.AlunoCodigo, request.Turma.AnoLetivo);
 
-            var titulo = $"Alteração em nota/conceito final - {componenteCurricular} - {request.Turma.Nome} ({request.Turma.AnoLetivo}) <br/>.";
-            var descricao = new StringBuilder($"A nota/conceito pós conselho do bimestre {bimestre} do componente curricular {componenteCurricular} da turma {turma} foi alterada pelo Professor {professor} em {data}.");
+            var titulo = $"Alteração em nota/conceito final - {componenteCurricular} - {request.Turma.Nome} ({request.Turma.AnoLetivo})";
+            var descricao = new StringBuilder($"A nota/conceito pós conselho do bimestre {bimestre} do componente curricular {componenteCurricular} da turma {turma} foi alterada pelo Professor {professor} em {data}.<br/>");
             descricao.AppendLine(await ObterTabelaAluno(aluno, request.Nota, request.ConceitoId, request.NotaAnterior, request.ConceitoIdAnterior));
             descricao.AppendLine("<br/>Você precisa aceitar esta notificação para que a alteração seja considerada válida.");
 
@@ -59,7 +59,8 @@ namespace SME.SGP.Aplicacao
                                                                     ue.Dre.CodigoDre,
                                                                     ue.CodigoUe,
                                                                     request.Turma.CodigoTurma,
-                                                                    WorkflowAprovacaoTipo.AlteracaoNotaConselho));
+                                                                    WorkflowAprovacaoTipo.AlteracaoNotaConselho,
+                                                                    request.ConselhoClasseNotaId));
         }
 
         private async Task<string> ObterTabelaAluno(AlunoReduzidoDto aluno, double? nota, long? conceitoId, double? notaAnterior, long? conceitoIdAnterior)
