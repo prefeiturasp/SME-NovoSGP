@@ -6,6 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task Salvar(WFAprovacaoParecerConclusivo entidade);
         Task<WFAprovacaoParecerConclusivo> ObterPorWorkflowId(long workflowId);
+        Task<WFAprovacaoParecerConclusivo> ObterPorConselhoClasseAlunoId(long conselhoClasseAlunoId);
         Task Excluir(long id);
     }
 }
