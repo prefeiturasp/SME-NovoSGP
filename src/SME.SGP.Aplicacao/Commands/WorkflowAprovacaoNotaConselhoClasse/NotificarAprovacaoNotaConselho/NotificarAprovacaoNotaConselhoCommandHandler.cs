@@ -20,7 +20,13 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IServicoEol servicoEOL;
-        public NotificarAprovacaoNotaConselhoCommandHandler(IMediator mediator)
+        public NotificarAprovacaoNotaConselhoCommandHandler(IMediator mediator, 
+                                                            IRepositorioNotificacao repositorioNotificacao,
+                                                            IRepositorioTurma repositorioTurma,
+                                                            IRepositorioUsuario repositorioUsuario,
+                                                            IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
+                                                            IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
+                                                            IServicoEol servicoEOL)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
@@ -37,9 +43,9 @@ namespace SME.SGP.Aplicacao
             var usuarioRf = request.NotasEmAprovacao.ConselhoClasseNota.AlteradoRF;
             var notaConceitoTitulo = request.NotasEmAprovacao.ConceitoId.HasValue ? "conceito" : "nota";
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(usuarioRf, "");
-            var bimestre = repositorioConselhoClasseNota.ObterBimestreEmAprovacaoWf(request.WorkFlowId).Result;
+            var bimestre = await repositorioConselhoClasseNota.ObterBimestreEmAprovacaoWf(request.WorkFlowId);
 
-            if (usuario != null)
+            if(usuario != null)
             {
                 repositorioNotificacao.Salvar(new Notificacao()
                 {

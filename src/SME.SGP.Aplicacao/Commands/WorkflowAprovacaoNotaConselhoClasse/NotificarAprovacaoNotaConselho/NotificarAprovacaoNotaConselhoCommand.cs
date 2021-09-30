@@ -42,10 +42,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.WorkFlowId)
                 .NotEmpty()
                 .WithMessage("O código do workflow deve ser informado para notificação de sua aprovação");
-
-            RuleFor(a => a.Justificativa)
-                .NotEmpty()
-                .WithMessage("A justificativa deve ser informado para notificação de sua aprovação");
         }
     }
 }
