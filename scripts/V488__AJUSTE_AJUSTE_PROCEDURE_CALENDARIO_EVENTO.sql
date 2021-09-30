@@ -169,17 +169,26 @@ where not e.excluido
     and (extract(year from e.data_inicio) = tc.ano_letivo or extract(year from e.data_fim) = tc.ano_letivo)
     and e.tipo_calendario_id = p_tipo_calendario_id
 
-    and ((p_eh_perfil_sme = true and p_dre_id is not null and p_ue_id is not null and e.ue_id = p_ue_id and e.dre_id=p_dre_id)
-        or
-         (p_eh_perfil_sme = true and p_dre_id is not null and e.dre_id=p_dre_id)
-        or
-         (p_eh_perfil_sme = true and p_ue_id is not null and e.ue_id = p_ue_id))
-   or ((p_eh_perfil_dre = true and p_dre_id is not null and p_ue_id is not null and e.ue_id = p_ue_id and e.dre_id=p_dre_id)
-    or
-       (p_eh_perfil_dre = true and p_ue_id is not null and e.ue_id = p_ue_id and e.dre_id=p_dre_id )
-    or
-       (p_eh_perfil_dre = true and p_ue_id is null and e.dre_id=p_dre_id ))
-   or (p_eh_perfil_ue = true and p_dre_id is not null and p_ue_id is not null and e.ue_id = p_ue_id and e.dre_id=p_dre_id)
+    and (
+	    	(p_eh_perfil_sme 
+			and ((p_dre_id is null)
+			  or (p_ue_id is null and e.dre_id = p_dre_id)
+			  or (p_ue_id is not null and e.dre_id = p_dre_id and e.ue_id = p_ue_id))
+   			)
+   			or
+   			(p_eh_perfil_dre
+   			and ((p_ue_id is null and e.dre_id is null)
+   			  or (p_dre_id = e.dre_id and p_ue_id = e.ue_id) )
+   			)
+   			or
+   			(p_eh_perfil_ue
+   			  and (e.dre_id is null
+   			    or e.ue_id = p_ue_id
+   			    or (p_perfil_id in ('46e1e074-37d6-e911-abd6-f81654fe895d', '45e1e074-37d6-e911-abd6-f81654fe895d', '44e1e074-37d6-e911-abd6-f81654fe895d')
+   			      and p_dre_id = e.dre_id
+   			      and e.ue_id is null))
+   			)
+	)
     -- caso considere 1 (aprovado) e 2 (pendente de aprovacao), senao considera so aprovados
     and ((p_considera_pendente_aprovacao = true and e.status in (1,2)) or (p_considera_pendente_aprovacao = false and e.status = 1))
     and (p_desconsidera_local_dre = false or (p_desconsidera_local_dre = true and et.local_ocorrencia != 2))
