@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                 dreCodigo = await mediator.Send(new ObterCodigoDREPorUeIdQuery(dreId));
 
             var totalEstudantesAgrupado = await ObterQuantidadeAlunosMatriculadosEol(anoLetivo, ueId, modalidade, anoTurma, dreCodigo, ueCodigo, visaoDre);
-            return MapearParaDto(dadosFrequenciaAlunos.GroupBy(c => c.DescricaoAnoTurma), totalFrequencia, totalEstudantesAgrupado);
+            return MapearParaDto(dadosFrequenciaAlunos, totalFrequencia, totalEstudantesAgrupado);
         }
 
         private async Task<IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>>> ObterQuantidadeAlunosMatriculadosEol(int anoLetivo, long ueId, int modalidade, string anoTurma, string dreCodigo, string ueCodigo, bool visaoDre)
@@ -93,46 +93,40 @@ namespace SME.SGP.Aplicacao
             return totalEstudantesAgrupado;
         }
 
-        private GraficoFrequenciaAlunoDto MapearParaDto(IEnumerable<IGrouping<string, FrequenciaAlunoDashboardDto>> frequenciasAlunosAgrupadas, string tagTotalFrequencia, IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>> totalEstudantesAgrupado)
+        private GraficoFrequenciaAlunoDto MapearParaDto(IEnumerable<FrequenciaAlunoDashboardDto> frequenciasAlunos, string tagTotalFrequencia, IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>> totalEstudantesAgrupado)
         {
             var dadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>();
 
-            foreach (var frequenciasAlunos in frequenciasAlunosAgrupadas)
+            foreach (var frequencias in frequenciasAlunos.GroupBy(f => f.DescricaoAnoTurma))
             {
-                var anoTurma = frequenciasAlunos.First().DescricaoAnoTurmaFormatado;
-                var dreAbreviacao = frequenciasAlunos.First().DreAbreviacao;
+                var dreAbreviacao = frequencias.First().DreAbreviacao;
+                var descricaoAnoTurmaFormatado = frequencias.First().DescricaoAnoTurmaFormatado;
 
-                var frequenciaPresente = frequenciasAlunos.FirstOrDefault(f => f.TipoFrequenciaAluno == TipoFrequencia.C);
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Presentes.Name(),
                     TurmaAno = !string.IsNullOrEmpty(dreAbreviacao) ?
                     FormatarAbreviacaoDre(dreAbreviacao) :
-                    frequenciaPresente != null ?
-                    frequenciaPresente.DescricaoAnoTurmaFormatado : anoTurma,
-                    Quantidade = frequenciaPresente != null ? frequenciaPresente.Quantidade : 0
+                    descricaoAnoTurmaFormatado,
+                    Quantidade = frequencias.Select(f => f.Presentes).Sum()
                 });
 
-                var frequenciaRemotos = frequenciasAlunos.FirstOrDefault(f => f.TipoFrequenciaAluno == TipoFrequencia.R);
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Remotos.Name(),
                     TurmaAno = !string.IsNullOrEmpty(dreAbreviacao) ?
                     FormatarAbreviacaoDre(dreAbreviacao) :
-                    frequenciaPresente != null ?
-                    frequenciaPresente.DescricaoAnoTurmaFormatado : anoTurma,
-                    Quantidade = frequenciaRemotos != null ? frequenciaRemotos.Quantidade : 0
+                    descricaoAnoTurmaFormatado,
+                    Quantidade = frequencias.Select(f => f.Remotos).Sum()
                 });
 
-                var frequenciaAusentes = frequenciasAlunos.FirstOrDefault(f => f.TipoFrequenciaAluno == TipoFrequencia.F);
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Ausentes.Name(),
                     TurmaAno = !string.IsNullOrEmpty(dreAbreviacao) ?
                     FormatarAbreviacaoDre(dreAbreviacao) :
-                    frequenciaPresente != null ?
-                    frequenciaPresente.DescricaoAnoTurmaFormatado : anoTurma,
-                    Quantidade = frequenciaAusentes != null ? frequenciaAusentes.Quantidade : 0
+                    descricaoAnoTurmaFormatado,
+                    Quantidade = frequencias.Select(f => f.Ausentes).Sum()
                 });
 
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
@@ -140,8 +134,8 @@ namespace SME.SGP.Aplicacao
                     Descricao = TipoFrequenciaDashboard.TotalEstudantes.Name(),
                     TurmaAno = !string.IsNullOrEmpty(dreAbreviacao) ?
                     FormatarAbreviacaoDre(dreAbreviacao) :
-                    anoTurma,
-                    Quantidade = totalEstudantesAgrupado != null ? (totalEstudantesAgrupado.FirstOrDefault(c => c.Key == frequenciasAlunos.Key) != null ? totalEstudantesAgrupado.First(c => c.Key == frequenciasAlunos.Key).Select(x => x.Quantidade).Sum() : 0) : 0
+                    descricaoAnoTurmaFormatado,
+                    Quantidade = totalEstudantesAgrupado != null ? (totalEstudantesAgrupado.FirstOrDefault(c => c.Key == frequencias.First().DescricaoAnoTurma) != null ? totalEstudantesAgrupado.First(c => c.Key == frequencias.First().DescricaoAnoTurma).Select(x => x.Quantidade).Sum() : 0) : 0
                 });
             }
 
