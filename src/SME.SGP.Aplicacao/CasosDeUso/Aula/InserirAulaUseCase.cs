@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Commands.Aulas.InserirAula;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -62,8 +63,7 @@ namespace SME.SGP.Aplicacao
                     }
                     catch (Exception ex)
                     {
-                        //SentrySdk.AddBreadcrumb("Criação de aulas recorrentes", "RabbitMQ");
-                        //SentrySdk.CaptureException(ex);
+                        await mediator.Send(new SalvarLogViaRabbitCommand("Criação de aulas recorrentes", LogNivel.Critico, LogContexto.Aula, ex.Message));                        
                     }
                     return new RetornoBaseDto("Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente.");
                 }

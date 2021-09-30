@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -22,9 +23,9 @@ namespace SME.SGP.Aplicacao
                 await ConsolidarAcompanhamentoAprendizagemAluno();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //SentrySdk.CaptureException(ex);
+                await mediator.Send(new SalvarLogViaRabbitCommand("Consolidacao Acompanhamento Aprendizagem Alunos Sync UseCase", LogNivel.Critico, LogContexto.AcompanhamentoAprendizagem, ex.Message));
                 throw;
             }
         }

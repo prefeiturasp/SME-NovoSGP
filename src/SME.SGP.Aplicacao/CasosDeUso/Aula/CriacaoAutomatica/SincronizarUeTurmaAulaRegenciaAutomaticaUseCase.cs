@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -27,10 +28,10 @@ namespace SME.SGP.Aplicacao
                 }
                 return true;
             }
-            //else
-            //{
-            //    SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Calendário Escolar cadastrado.", SentryLevel.Error);
-            //}
+            else
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Calendário Escolar cadastrado.", LogNivel.Critico, LogContexto.Aula));                
+            }
             return false;
         }
     }

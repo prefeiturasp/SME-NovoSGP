@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao publicar na fila do google  - PublicarAtribuicaoNoGoogleClassroomApiAsync", LogNivel.Negocio, LogContexto.CJ, ex.Message));                
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao publicar na fila do google  - PublicarAtribuicaoNoGoogleClassroomApiAsync", LogNivel.Critico, LogContexto.CJ, ex.Message));                
             }
         }
     }

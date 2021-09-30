@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -20,13 +21,13 @@ namespace SME.SGP.Aplicacao
 
             if (consolidacaoTurma == null)
             {
-                //SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do fechamento da turma. O id da turma e o bimestre não foram informados", Sentry.Protocol.SentryLevel.Error);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do fechamento da turma. O id da turma e o bimestre não foram informados", LogNivel.Negocio, LogContexto.Fechamento));                
                 return false;
             }
 
             if (consolidacaoTurma.TurmaId == 0)
             {
-                //SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do fechamento da turma. O id da turma não foi informado", Sentry.Protocol.SentryLevel.Error);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do fechamento da turma. O id da turma não foi informado", LogNivel.Negocio, LogContexto.Fechamento));                
                 return false;
             }
 
@@ -34,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
             if (turma == null)
             {
-                //SentrySdk.CaptureMessage($"Não foi possível encontrar a turma de id {consolidacaoTurma.TurmaId}.", Sentry.Protocol.SentryLevel.Error);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível encontrar a turma de id {consolidacaoTurma.TurmaId}.", LogNivel.Negocio, LogContexto.Fechamento));                
                 return false;
             }
 
@@ -42,14 +43,13 @@ namespace SME.SGP.Aplicacao
 
             if (componentes == null || !componentes.Any())
             {
-                //SentrySdk.CaptureMessage($"Não foi possível encontrar os componentes curricularres da turma de id {consolidacaoTurma.TurmaId}.", Sentry.Protocol.SentryLevel.Error);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível encontrar os componentes curricularres da turma de id {consolidacaoTurma.TurmaId}.", LogNivel.Negocio, LogContexto.Fechamento));                
                 return false;
             }
 
             foreach (var componente in componentes)
             {
                 var mensagem = JsonConvert.SerializeObject(new FechamentoConsolidacaoTurmaComponenteBimestreDto(consolidacaoTurma.TurmaId, consolidacaoTurma.Bimestre, Convert.ToInt64(componente.Codigo)));
-
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaFechamentoComponenteTratar, mensagem, mensagemRabbit.CodigoCorrelacao, null));
             }
 

@@ -132,7 +132,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Exclusão de registro em manutenção de aula.", LogNivel.Negocio, LogContexto.Aula, ex.Message));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Exclusão de registro em manutenção de aula.", LogNivel.Critico, LogContexto.Aula, ex.Message));
             }
         }
 

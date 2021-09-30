@@ -122,11 +122,6 @@ namespace SME.SGP.Aplicacao
             if (idsAulasAExcluir.Any())
                 contadorAulasExcluidas = await ExcluirAulas(contadorAulasExcluidas, idsAulasAExcluir);
 
-            Console.WriteLine($"Manutenção de aulas realizada em {timerGeral.Elapsed}");
-
-            //SentrySdk.AddBreadcrumb($"Foram excluídas {contadorAulasExcluidas} aulas.");
-            //SentrySdk.AddBreadcrumb($"Foram criadas {contadorAulasCriadas} aulas.");
-            //SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Finalizada Rotina de manutenção de aulas do Infantil");
             return true;
         }
 

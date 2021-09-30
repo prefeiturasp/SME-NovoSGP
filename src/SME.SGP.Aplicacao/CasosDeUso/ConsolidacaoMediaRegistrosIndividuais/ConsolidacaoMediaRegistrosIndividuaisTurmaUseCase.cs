@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             foreach (var turma in turmasInfantil)
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarMediaRegistrosIndividuais, new FiltroMediaRegistroIndividualTurmaDTO(turma.TurmaId, anoLetivo), Guid.NewGuid(), null));
+                try
+                {
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarMediaRegistrosIndividuais, new FiltroMediaRegistroIndividualTurmaDTO(turma.TurmaId, anoLetivo), Guid.NewGuid(), null));
+                }
+                catch (Exception ex)
+                {
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Consolidacao Media Registros Individuais Turma UseCase", LogNivel.Critico, LogContexto.ConsolidacaoMatricula, ex.Message));                    
+                }
+                
             }
         }
 

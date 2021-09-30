@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -40,8 +41,15 @@ namespace SME.SGP.Aplicacao
             foreach (var dreId in dres)
             {
                 var dre = new FiltroConsolidacaoMatriculaDreDto(dreId, anosLetivosParaConsolidar);
-
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDresMatriculasTurmas, dre, Guid.NewGuid(), null));
+                try
+                {
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDresMatriculasTurmas, dre, Guid.NewGuid(), null));
+                }
+                catch (Exception ex)
+                {
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Carregar Dres Consolidacao Matricula UseCase", LogNivel.Critico, LogContexto.ConsolidacaoMatricula, ex.Message));                    
+                }
+                
 
             }
             return true;

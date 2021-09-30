@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na consolidação de Frequência da turma.", LogNivel.Negocio, LogContexto.Frequencia, ex.Message));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na consolidação de Frequência da turma.", LogNivel.Critico, LogContexto.Frequencia, ex.Message));
                 throw;
             }
         }

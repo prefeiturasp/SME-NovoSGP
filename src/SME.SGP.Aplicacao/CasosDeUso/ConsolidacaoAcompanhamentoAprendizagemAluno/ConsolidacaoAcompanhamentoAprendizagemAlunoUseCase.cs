@@ -26,7 +26,6 @@ namespace SME.SGP.Aplicacao
             }
             catch (System.Exception ex)
             {
-                //SentrySdk.CaptureException(ex);
                 throw ex;
             }
         }

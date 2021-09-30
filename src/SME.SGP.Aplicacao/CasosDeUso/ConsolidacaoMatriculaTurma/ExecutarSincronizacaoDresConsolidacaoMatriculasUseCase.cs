@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -21,15 +22,15 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     var publicarTratamentoCiclo = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasCarregar, ueDto, Guid.NewGuid(), null));
-                    //if (!publicarTratamentoCiclo)
-                    //{
-                    //    var mensagemSentry = $"Não foi possível inserir a dre : {publicarTratamentoCiclo} na fila de sync.";
-                    //    SentrySdk.CaptureMessage(mensagemSentry);
-                    //}
+                    if (!publicarTratamentoCiclo)
+                    {
+                        var mensagemLog = $"Não foi possível inserir a dre : {publicarTratamentoCiclo} na fila de sync.";
+                        await mediator.Send(new SalvarLogViaRabbitCommand(mensagemLog, LogNivel.Negocio, LogContexto.Frequencia, "Executar Sincronizacao Dres Consolidacao Matriculas UseCase"));                        
+                    }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    //SentrySdk.CaptureException(ex);
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Executar Sincronizacao Dres Consolidacao Matriculas UseCase", LogNivel.Critico, LogContexto.ConsolidacaoMatricula, ex.Message));                    
                 }
             }
             return true;

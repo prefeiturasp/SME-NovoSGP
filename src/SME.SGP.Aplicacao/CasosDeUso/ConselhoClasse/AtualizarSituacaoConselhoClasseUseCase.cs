@@ -19,10 +19,5 @@ namespace SME.SGP.Aplicacao
 
             return true;
         }
-
-        private void LogSentry(AtualizaSituacaoConselhoClasseCommand command, string mensagem)
-        {
-            //SentrySdk.AddBreadcrumb($"Mensagem AtualizarSituacaoConselhoClasseUseCase : {mensagem} - ConselhoClasseId:{command.ConselhoClasseId}", "Rabbit - AtualizarSituacaoConselhoClasseUseCase");
-        }
     }
 }

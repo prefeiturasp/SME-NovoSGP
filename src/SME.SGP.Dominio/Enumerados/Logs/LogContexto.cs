@@ -23,6 +23,8 @@
         Geral = 19,
         WorkflowAprovacao = 20,
         ObjetivosAprendizagem = 21,
-        WorkerRabbit = 22
+        WorkerRabbit = 22,
+        ConsolidacaoMatricula = 23,
+        ConselhoClasse = 24
     }
 }
