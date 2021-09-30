@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Aula de id {aulaId} não encontrada");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
-            var aberto = await AulaDentroDoPeriodo(mediator, aula.TurmaId, aula.DataAula);
+            var aberto = await AulaDentroDoPeriodo(aula.TurmaId, aula.DataAula);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var usuarioAcessoAoComponente = await UsuarioComAcessoAoComponente(usuarioLogado, aula, usuarioLogado.EhProfessorCj());
