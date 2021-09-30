@@ -58,7 +58,7 @@ $$;
 
 alter function f_eventos_por_rf_criador(varchar, bigint, varchar, varchar, date, date, boolean, boolean, boolean) owner to postgres;
 
-create function f_eventos_por_rf_criador(p_login character varying, p_tipo_calendario_id bigint, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_data_inicio date DEFAULT NULL::date, p_data_fim date DEFAULT NULL::date, p_eh_perfil_sme  boolean DEFAULT false, p_eh_perfil_dre boolean DEFAULT false, p_eh_perfil_ue boolean DEFAULT false) returns SETOF v_estrutura_eventos
+create or replace function f_eventos_por_rf_criador(p_login character varying, p_tipo_calendario_id bigint, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_data_inicio date DEFAULT NULL::date, p_data_fim date DEFAULT NULL::date, p_eh_perfil_sme  boolean DEFAULT false, p_eh_perfil_dre boolean DEFAULT false, p_eh_perfil_ue boolean DEFAULT false) returns SETOF v_estrutura_eventos
     language sql
 as
 $$
