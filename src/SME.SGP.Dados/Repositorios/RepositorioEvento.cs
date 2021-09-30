@@ -714,6 +714,9 @@ namespace SME.SGP.Dados.Repositorios
             queryNova.AppendLine($"{(dataFim.HasValue ? $"'{dataFim.Value.Date}'" : "null")}, ");
             queryNova.AppendLine($"{(tipoEventoId.HasValue ? tipoEventoId.ToString() : "null")}, ");
             queryNova.AppendLine($"{(string.IsNullOrWhiteSpace(nomeEvento) ? "null" : $"'{nomeEvento}'")})");
+            queryNova.AppendLine($"{usuario.EhPerfilSME()}");
+            queryNova.AppendLine($"{usuario.EhPerfilDRE()}");
+            queryNova.AppendLine($"{usuario.EhPerfilUE()})");
         }
 
         #endregion Listar
