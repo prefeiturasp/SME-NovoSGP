@@ -28,10 +28,6 @@ namespace SME.SGP.Aplicacao
                   .NotEmpty()
                   .WithMessage("O id da nota do consecho de classe deve ser informada para geração do histórico!");
 
-            RuleFor(a => a.ConceitoAnteriorId)
-                  .NotEmpty()
-                  .WithMessage("O id do conceito anterior do conselho de classe deve ser informada para geração do histórico!");
-
             RuleFor(a => a.ConceitoNovoId)
                   .NotEmpty()
                   .WithMessage("O id do conceito novo do conselho de classe deve ser informada para geração do histórico!");

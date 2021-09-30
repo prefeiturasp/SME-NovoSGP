@@ -58,7 +58,7 @@ namespace SME.SGP.Dados
 
         public async Task<WFAprovacaoNotaConselho> ObterWorkflowAprovacaoNota(long conselhoClasseNotaId)
         {
-            var query = @"select * from wf_aprovacao_nota_conselho where wf_aprovacao_id = @conselhoClasseNotaId";
+            var query = @"select * from wf_aprovacao_nota_conselho where conselho_classe_nota_id = @conselhoClasseNotaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<WFAprovacaoNotaConselho>(query, new { conselhoClasseNotaId });
         }

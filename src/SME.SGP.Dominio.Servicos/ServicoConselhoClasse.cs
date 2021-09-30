@@ -161,7 +161,7 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         // Gera histórico de alteração
                         if (conselhoClasseNota.ConceitoId != conselhoClasseNotaDto.Conceito.Value)
-                            await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId.Value, conselhoClasseNotaDto.Conceito.Value));
+                            await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, conselhoClasseNotaDto.Conceito.Value));
 
                         conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
                     }

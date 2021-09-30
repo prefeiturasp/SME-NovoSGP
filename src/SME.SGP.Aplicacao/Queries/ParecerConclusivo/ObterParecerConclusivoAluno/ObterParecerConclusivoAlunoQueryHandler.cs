@@ -160,7 +160,7 @@ namespace SME.SGP.Aplicacao
             foreach (var conceitoFechamentoAluno in conceitosFechamentoAluno)
             {
                 var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoFechamentoAluno.ConceitoId);
-                if (!conceitoAluno.Aprovado)
+                if (conceitoAluno != null && !conceitoAluno.Aprovado)
                     return false;
             }
 
@@ -213,7 +213,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoId);
-                if (!conceitoAluno.Aprovado)
+                if (conceitoAluno != null && !conceitoAluno.Aprovado)
                     return false;
             }
 

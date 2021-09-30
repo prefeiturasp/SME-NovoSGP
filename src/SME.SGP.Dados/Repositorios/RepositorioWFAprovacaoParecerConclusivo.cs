@@ -49,7 +49,7 @@ namespace SME.SGP.Dados
                     wfAprovacao.ConselhoClasseAluno = conselhoClasseAluno;
 
                     return wfAprovacao;
-                })).FirstOrDefault();
+                }, new { workflowId })).FirstOrDefault();
         }
 
         public async Task Salvar(WFAprovacaoParecerConclusivo entidade)

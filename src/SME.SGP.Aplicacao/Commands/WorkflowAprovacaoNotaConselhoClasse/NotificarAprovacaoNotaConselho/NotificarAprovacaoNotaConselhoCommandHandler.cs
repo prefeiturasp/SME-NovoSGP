@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
 
             var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) final(is) do {bimestreFormatado} do componente curricular {componenteCurricular}  
                             da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) 
-                            de {turma.AnoLetivo} para o(s) estudantes(s) abaxo foi {aprovadaRecusada}. {motivo}</p>");
+                            de {turma.AnoLetivo} para o(s) estudantes(s) abaixo foi {aprovadaRecusada}. {motivo}</p>");
 
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
             mensagem.AppendLine("<tr>");
