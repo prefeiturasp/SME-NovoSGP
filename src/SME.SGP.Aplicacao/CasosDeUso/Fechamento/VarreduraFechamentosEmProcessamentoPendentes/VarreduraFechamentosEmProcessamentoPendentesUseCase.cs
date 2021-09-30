@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
             this.comandosFechamentoTurmaDisciplina = comandosFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(comandosFechamentoTurmaDisciplina));
         }
 
-        public async Task Executar()
+        public async Task<bool> Executar(MensagemRabbit param)
         {
             try
             {
@@ -49,12 +50,16 @@ namespace SME.SGP.Aplicacao
                     unitOfWork
                         .PersistirTransacao();
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
                 unitOfWork.Rollback();
                 SentrySdk.CaptureException(ex);
             }
+
+            return false;
         }
     }
 }

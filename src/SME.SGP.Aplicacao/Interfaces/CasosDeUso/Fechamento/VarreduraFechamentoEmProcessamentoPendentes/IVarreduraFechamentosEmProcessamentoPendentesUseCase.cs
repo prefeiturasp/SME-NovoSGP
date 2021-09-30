@@ -2,8 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IVarreduraFechamentosEmProcessamentoPendentesUseCase
+    public interface IVarreduraFechamentosEmProcessamentoPendentesUseCase : IRabbitUseCase
     {
-        Task Executar();
     }
 }
