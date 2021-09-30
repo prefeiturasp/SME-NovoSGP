@@ -1,15 +1,19 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class NotificarAprovacaoNotaConselhoCommand : IRequest
     {
-        public NotificarAprovacaoNotaConselhoCommand(WFAprovacaoNotaConselho notasEmAprovacao, long? codigoDaNotificacao, string turmaCodigo, long workflowId, bool aprovada = true, string justificativa = "")
+        public NotificarAprovacaoNotaConselhoCommand(WFAprovacaoNotaConselho notasEmAprovacao,
+                                                     long? codigoDaNotificacao,
+                                                     string turmaCodigo,
+                                                     long workflowId,
+                                                     bool aprovada = true,
+                                                     string justificativa = "",
+                                                     double? notaAnterior = null,
+                                                     long? conceitoAnterior = null)
         {
             NotasEmAprovacao = notasEmAprovacao;
             TurmaCodigo = turmaCodigo;
@@ -17,6 +21,8 @@ namespace SME.SGP.Aplicacao
             WorkFlowId = workflowId;
             Aprovada = aprovada;
             Justificativa = justificativa;
+            NotaAnterior = notaAnterior;
+            ConceitoAnterior = conceitoAnterior;
         }
 
         public WFAprovacaoNotaConselho NotasEmAprovacao { get; }
@@ -25,7 +31,8 @@ namespace SME.SGP.Aplicacao
         public long WorkFlowId { get; }
         public bool Aprovada { get; }
         public string Justificativa { get; }
-
+        public double? NotaAnterior { get; }
+        public long? ConceitoAnterior { get; }
     }
     public class NotificarAprovacaoNotaConselhoCommandValidator : AbstractValidator<NotificarAprovacaoNotaConselhoCommand>
     {

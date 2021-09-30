@@ -254,7 +254,7 @@ namespace SME.SGP.Dados.Repositorios
                           left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                           where w.wf_aprovacao_id = @workFlowId";
 
-            return await database.Conexao.QueryFirstAsync<int>(query
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query
                 , new { workFlowId });
         }
     }

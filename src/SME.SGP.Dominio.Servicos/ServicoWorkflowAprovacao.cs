@@ -945,7 +945,14 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
         private async Task TrataReprovacaoAlteracaoNotaPosConselho(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
             var notasEmAprovacao = ObterNotaEmAprovacaoPosConselho(workflow.Id);
-            await mediator.Send(new NotificarAprovacaoNotaConselhoCommand(notasEmAprovacao, codigoDaNotificacao, workflow.TurmaId, workflow.Id, false, motivo));
+            await mediator.Send(new RecusarAprovacaoNotaConselhoCommand(notasEmAprovacao,
+                                                                        codigoDaNotificacao,
+                                                                        workflow.TurmaId,
+                                                                        workflow.Id,
+                                                                        motivo,
+                                                                        notasEmAprovacao.ConselhoClasseNota.Nota,
+                                                                        notasEmAprovacao.ConselhoClasseNota.ConceitoId));
+
         }
 
         private IEnumerable<WfAprovacaoNotaFechamento> ObterNotasEmAprovacao(long workflowId)

@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(NotificarAprovacaoNotaConselhoCommand request, CancellationToken cancellationToken)
         {
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
-            var usuarioRf = request.NotasEmAprovacao.ConselhoClasseNota.AlteradoRF;
+            var usuarioRf = await mediator.Send(new ObterCriadorWorkflowQuery(request.WorkFlowId));
             var notaConceitoTitulo = request.NotasEmAprovacao.ConceitoId.HasValue ? "conceito" : "nota";
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(usuarioRf, "");
             var bimestre = await repositorioConselhoClasseNota.ObterBimestreEmAprovacaoWf(request.WorkFlowId);
@@ -57,12 +58,26 @@ namespace SME.SGP.Aplicacao
                     Titulo = $"Alteração em {notaConceitoTitulo} final - Turma {turma.Nome} ({turma.AnoLetivo})",
                     Tipo = NotificacaoTipo.Notas,
                     Codigo = request.CodigoDaNotificacao ?? 0,
-                    Mensagem = await MontaMensagemAprovacaoNotaPosConselho(turma, notaConceitoTitulo, request.NotasEmAprovacao, request.Aprovada, request.Justificativa, bimestre)
+                    Mensagem = await MontaMensagemAprovacaoNotaPosConselho(turma,
+                                                                           notaConceitoTitulo,
+                                                                           request.NotasEmAprovacao,
+                                                                           request.Aprovada,
+                                                                           request.Justificativa,
+                                                                           bimestre,
+                                                                           request.NotaAnterior,
+                                                                           request.ConceitoAnterior)
                 });
             }
         }
 
-        private async Task<string> MontaMensagemAprovacaoNotaPosConselho(Turma turma, string notaConceitoTitulo, WFAprovacaoNotaConselho notaEmAprovacao, bool aprovado, string justificativa, int bimestre)
+        private async Task<string> MontaMensagemAprovacaoNotaPosConselho(Turma turma,
+                                                                         string notaConceitoTitulo,
+                                                                         WFAprovacaoNotaConselho notaEmAprovacao,
+                                                                         bool aprovado,
+                                                                         string justificativa,
+                                                                         int bimestre,
+                                                                         double? notaAnterior,
+                                                                         long? conceitoAnterior)
         {
             var aprovadaRecusada = aprovado ? "aprovada" : "recusada";
             var motivo = aprovado ? "" : $"Motivo: {justificativa}.";
@@ -90,12 +105,12 @@ namespace SME.SGP.Aplicacao
 
             if (!notaEmAprovacao.ConceitoId.HasValue)
             {
-                mensagem.Append($"<td style='padding: 5px;'>{ObterNota(notaEmAprovacao.ConselhoClasseNota.Nota.Value)}</td>");
+                mensagem.Append($"<td style='padding: 5px;'>{ObterNota(notaAnterior)}</td>");
                 mensagem.Append($"<td style='padding: 5px;'>{ObterNota(notaEmAprovacao.Nota.Value)}</td>");
             }
             else
             {
-                mensagem.Append($"<td style='padding: 5px;'>{ObterConceito(notaEmAprovacao.ConselhoClasseNota.ConceitoId)}</td>");
+                mensagem.Append($"<td style='padding: 5px;'>{ObterConceito(conceitoAnterior)}</td>");
                 mensagem.Append($"<td style='padding: 5px;'>{ObterConceito(notaEmAprovacao.ConceitoId)}</td>");
             }
             mensagem.AppendLine("</tr>");
@@ -119,11 +134,11 @@ namespace SME.SGP.Aplicacao
                 return string.Empty;
 
             if (conceitoId == (int)ConceitoValores.P)
-                return ConceitoValores.P.ToString();
+                return ConceitoValores.P.Name();
             else if (conceitoId == (int)ConceitoValores.S)
-                return ConceitoValores.S.ToString();
+                return ConceitoValores.S.Name();
             else
-                return ConceitoValores.NS.ToString();
+                return ConceitoValores.NS.Name();
         }
 
         private async Task<string> ObterComponente(long componenteCurricularCodigo)
