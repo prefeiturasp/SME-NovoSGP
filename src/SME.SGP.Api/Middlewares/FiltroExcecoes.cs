@@ -46,7 +46,7 @@ namespace SME.SGP.Api.Middlewares
         }
         public async Task SalvaLogAsync(LogNivel nivel, string erro, string observacoes)
         {
-            await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Geral, observacoes));
+            await mediator.Send(new SalvarLogViaRabbitCommand(erro, nivel, LogContexto.Geral, observacoes));
         }
     }
 }
