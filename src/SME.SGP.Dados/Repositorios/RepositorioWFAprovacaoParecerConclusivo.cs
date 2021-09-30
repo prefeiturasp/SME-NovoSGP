@@ -24,6 +24,13 @@ namespace SME.SGP.Dados
             await database.Conexao.ExecuteScalarAsync(query, new { id });
         }
 
+        public async Task<WFAprovacaoParecerConclusivo> ObterPorConselhoClasseAlunoId(long conselhoClasseAlunoId)
+        {
+            var query = @"select * from wf_aprovacao_parecer_conclusivo where conselho_classe_aluno_id = @conselhoClasseAlunoId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<WFAprovacaoParecerConclusivo>(query, new { conselhoClasseAlunoId });
+        }
+
         public async Task<WFAprovacaoParecerConclusivo> ObterPorWorkflowId(long workflowId)
         {
             var query = @"select wa.*, ca.*, cpa.*, cpp.*

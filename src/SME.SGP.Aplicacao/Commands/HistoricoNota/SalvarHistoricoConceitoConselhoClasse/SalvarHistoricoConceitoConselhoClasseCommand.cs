@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarHistoricoConceitoConselhoClasseCommand : IRequest<long>
     {
-        public SalvarHistoricoConceitoConselhoClasseCommand(long conselhoClasseNotaId, long conceitoAnteriorId, long conceitoNovoId)
+        public SalvarHistoricoConceitoConselhoClasseCommand(long conselhoClasseNotaId, long? conceitoAnteriorId, long conceitoNovoId)
         {
             ConselhoClasseNotaId = conselhoClasseNotaId;
             ConceitoAnteriorId = conceitoAnteriorId;
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public long ConselhoClasseNotaId { get; set; }
-        public long ConceitoAnteriorId { get; set; }
+        public long? ConceitoAnteriorId { get; set; }
         public long ConceitoNovoId { get; set; }
     }
 

@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<WFAprovacaoNotaConselho> Handle(ObterNotaConselhoEmAprovacaoPorWorkflowQuery request, CancellationToken cancellationToken)
-            => await repositorio.ObterNotaEmAprovacao(request.WorkflowId);
+            => await repositorio.ObterNotaEmAprovacaoPorWorkflow(request.WorkflowId);
     }
 }

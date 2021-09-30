@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(GerarWFAprovacaoParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
+            await ExcluirWorkflow(request.ConselhoClasseAlunoId);
             var wfAprovacaoId = await GerarWFAprovacao(request);
 
             await repositorio.Salvar(new WFAprovacaoParecerConclusivo()
@@ -30,6 +31,11 @@ namespace SME.SGP.Aplicacao
                 WfAprovacaoId = wfAprovacaoId,
                 ConselhoClasseParecerId = request.ParecerConclusivoId
             });
+        }
+
+        private async Task ExcluirWorkflow(long conselhoClasseAlunoId)
+        {
+            await mediator.Send(new ExcluirWFAprovacaoParecerPorAlunoCommand(conselhoClasseAlunoId));
         }
 
         private async Task<long> GerarWFAprovacao(GerarWFAprovacaoParecerConclusivoCommand request)

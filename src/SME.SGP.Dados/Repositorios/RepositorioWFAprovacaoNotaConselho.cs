@@ -24,7 +24,7 @@ namespace SME.SGP.Dados
             await database.Conexao.ExecuteScalarAsync(query, new { id });
         }
 
-        public async Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacao(long workflowId)
+        public async Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoPorWorkflow(long workflowId)
         {
             var query = @"select nwf.*
 	                    , ccn.*
@@ -54,6 +54,13 @@ namespace SME.SGP.Dados
                 }
                 , new { workflowId }))
                 .FirstOrDefault();
+        }
+
+        public async Task<WFAprovacaoNotaConselho> ObterWorkflowAprovacaoNota(long conselhoClasseNotaId)
+        {
+            var query = @"select * from wf_aprovacao_nota_conselho where wf_aprovacao_id = @conselhoClasseNotaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<WFAprovacaoNotaConselho>(query, new { conselhoClasseNotaId });
         }
 
         public async Task Salvar(WFAprovacaoNotaConselho entidade)
