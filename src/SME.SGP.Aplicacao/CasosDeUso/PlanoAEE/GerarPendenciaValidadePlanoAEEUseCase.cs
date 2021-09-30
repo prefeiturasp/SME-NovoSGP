@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -27,18 +26,10 @@ namespace SME.SGP.Aplicacao
             var dataFim = DateTime.Today.AddDays(-1);
             var planosEncerrados = await mediator.Send(new ObterPlanosAEEPorDataFimQuery(dataFim));
 
-            foreach(var planoEncerrado in planosEncerrados)
+            foreach (var planoEncerrado in planosEncerrados)
             {
-                try
-                {
-                    await ExpirarPlano(planoEncerrado);
-                    await GerarPendenciaValidadePlano(planoEncerrado, dataFim);
-                }
-                catch (Exception e)
-                {
-                    SentrySdk.CaptureException(e);
-                    throw;
-                }
+                await ExpirarPlano(planoEncerrado);
+                await GerarPendenciaValidadePlano(planoEncerrado, dataFim);
             }
 
             return true;

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -29,7 +28,7 @@ namespace SME.SGP.Aplicacao
             var anosLetivosParaConsolidar = new List<int>();
             for (var ano = 2014; ano < DateTime.Now.Year; ano++)
             {
-                if (!await mediator.Send(new ExisteConsolidacaoMatriculaTurmaPorAnoQuery(ano)) 
+                if (!await mediator.Send(new ExisteConsolidacaoMatriculaTurmaPorAnoQuery(ano))
                     && await mediator.Send(new ObterQuantidadeUesPorAnoLetivoQuery(ano)) > 0)
                 {
                     await AtualizarDataExecucao(ano);
@@ -41,14 +40,9 @@ namespace SME.SGP.Aplicacao
             foreach (var dreId in dres)
             {
                 var dre = new FiltroConsolidacaoMatriculaDreDto(dreId, anosLetivosParaConsolidar);
-                try
-                {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDresMatriculasTurmas, dre, Guid.NewGuid(), null));
-                }
-                catch (Exception ex)
-                {
-                    SentrySdk.CaptureException(ex);
-                }
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDresMatriculasTurmas, dre, Guid.NewGuid(), null));
+
             }
             return true;
         }

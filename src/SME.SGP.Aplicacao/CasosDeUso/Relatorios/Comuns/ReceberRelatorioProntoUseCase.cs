@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -29,8 +28,6 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
             }
 
-            SentrySdk.AddBreadcrumb($"Correlação obtida com sucesso {relatorioCorrelacao.Codigo}", "9 - ReceberRelatorioProntoUseCase");
-
             unitOfWork.IniciarTransacao();
 
             if (relatorioCorrelacao.EhRelatorioJasper)
@@ -39,8 +36,6 @@ namespace SME.SGP.Aplicacao
                 receberRelatorioProntoCommand.RelatorioCorrelacao = relatorioCorrelacao;
 
                 var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
-
-                SentrySdk.AddBreadcrumb("Salvando Correlação Relatório Jasper de retorno", "9 - ReceberRelatorioProntoUseCase");
 
                 relatorioCorrelacao.AdicionarCorrelacaoJasper(relatorioCorrelacaoJasper);
             }
@@ -56,7 +51,6 @@ namespace SME.SGP.Aplicacao
                 case TipoRelatorio.ConselhoClasseAtaFinal:
                 case TipoRelatorio.Frequencia:
                 case TipoRelatorio.Pendencias:
-                    SentrySdk.AddBreadcrumb($"Enviando notificação..", $"{relatorioCorrelacao.Codigo.ToString().Substring(0, 3)}{relatorioCorrelacao.TipoRelatorio.ShortName()}");
                     await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo);
                     break;
                 default:
@@ -64,10 +58,7 @@ namespace SME.SGP.Aplicacao
                     break;
             }
 
-
             unitOfWork.PersistirTransacao();
-            SentrySdk.CaptureMessage("9 - ReceberRelatorioProntoUseCase -> Finalizado Fluxo de relatórios");
-
 
             return await Task.FromResult(true);
         }

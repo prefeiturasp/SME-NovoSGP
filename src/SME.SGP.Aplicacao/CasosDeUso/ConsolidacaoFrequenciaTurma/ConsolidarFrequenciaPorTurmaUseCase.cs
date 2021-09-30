@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -16,21 +15,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            try
-            {
-                var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
+            var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
 
-                var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(filtro.TurmaCodigo));
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(filtro.TurmaCodigo));
 
-                await ConsolidarFrequenciaAlunos(filtro.TurmaId, filtro.TurmaCodigo, filtro.PercentualFrequenciaMinimo, alunos);
+            await ConsolidarFrequenciaAlunos(filtro.TurmaId, filtro.TurmaCodigo, filtro.PercentualFrequenciaMinimo, alunos);
 
-                return true;
-            }
-            catch (System.Exception ex)
-            {
-                SentrySdk.CaptureException(ex);
-                throw;
-            }        
+            return true;
         }
 
         private async Task ConsolidarFrequenciaAlunos(long turmaId, string turmaCodigo, double percentualFrequenciaMinimo, IEnumerable<AlunoPorTurmaResposta> alunos)

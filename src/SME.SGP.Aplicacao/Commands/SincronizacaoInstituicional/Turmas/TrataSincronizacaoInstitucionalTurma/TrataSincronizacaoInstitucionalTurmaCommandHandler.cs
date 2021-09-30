@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
 
             if (!turmaAtualizada)
             {
-                SentrySdk.CaptureMessage($"Não foi possível atualizar a turma id {turmaId} para histórica.");
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao atualizar a turma para histórica.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, "Atualizar Turma Para Historica Async"));
                 return false;
             }
             return true;
@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao
 
                 if (ue == null)
                 {
-                    SentrySdk.CaptureMessage($"Não foi possível Incluir a turma de código {turmaEol.Codigo}. Pois não foi encontrado a UE {turmaEol.UeCodigo}.");
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível Incluir a turma de código {turmaEol.Codigo}. Pois não foi encontrado a UE {turmaEol.UeCodigo}.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, "Atualizar Turma Para Historica Async"));
                     return false;
                 }
                 await repositorioTurma.SalvarAsync(turmaEol, ue.Id);

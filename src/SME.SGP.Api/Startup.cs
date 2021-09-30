@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Prometheus;
 using SME.SGP.Api.HealthCheck;
+using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
@@ -104,10 +105,7 @@ namespace SME.SGP.Api
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });
-
-
-           
+            });         
 
         }
 
@@ -129,22 +127,26 @@ namespace SME.SGP.Api
 
             services.AddSingleton(Configuration);
             services.AddHttpContextAccessor();
-
-            RegistraDependencias.Registrar(services);
-            RegistraClientesHttp.Registrar(services, Configuration);
-            RegistraAutenticacao.Registrar(services, Configuration);
-            RegistrarMvc.Registrar(services, Configuration);
-            RegistraDocumentacaoSwagger.Registrar(services);
-            services.AddPolicies();
-
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-
             services.AddApplicationInsightsTelemetry(Configuration);
 
             ConfiguraVariaveisAmbiente(services);
             ConfiguraGoogleClassroomSync(services);
+            var telemetriaOptions = ConfiguraTelemetria(services);
 
             var serviceProvider = services.BuildServiceProvider();
+
+            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
+            
+            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, telemetriaOptions);
+
+            RegistraDependencias.Registrar(services);
+            RegistraClientesHttp.Registrar(services, Configuration);
+            RegistraAutenticacao.Registrar(services, Configuration);
+            RegistrarMvc.Registrar(services, serviceProvider);
+            RegistraDocumentacaoSwagger.Registrar(services);
+            services.AddPolicies();
+
+            DefaultTypeMap.MatchNamesWithUnderscores = true;            
 
             services.AddHealthChecks()
                     .AddNpgSql(
@@ -157,10 +159,11 @@ namespace SME.SGP.Api
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
-            });
+            });            
 
-            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-            DapperExtensionMethods.Init(clientTelemetry);
+            DapperExtensionMethods.Init(servicoTelemetria);
+
+            services.AddSingleton(servicoTelemetria);
 
             services.AddMemoryCache();
         }
@@ -179,6 +182,15 @@ namespace SME.SGP.Api
             Configuration.GetSection(nameof(GoogleClassroomSyncOptions)).Bind(googleClassroomSyncOptions, c => c.BindNonPublicProperties = true);
 
             services.AddSingleton(googleClassroomSyncOptions);
+        }
+        private TelemetriaOptions ConfiguraTelemetria(IServiceCollection services)
+        {
+            var telemetriaOptions = new TelemetriaOptions();
+            Configuration.GetSection(TelemetriaOptions.Secao).Bind(telemetriaOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(telemetriaOptions);
+
+            return telemetriaOptions;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -35,8 +34,8 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.AddBreadcrumb("Exclusão de aulas recorrentes", "RabbitMQ");
-                    SentrySdk.CaptureException(ex);
+                    //SentrySdk.AddBreadcrumb("Exclusão de aulas recorrentes", "RabbitMQ");
+                    //SentrySdk.CaptureException(ex);
                 }
                 return new RetornoBaseDto("Ocorreu um erro ao solicitar a exclusão de aulas recorrentes, por favor tente novamente.");
             }

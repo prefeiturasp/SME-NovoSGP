@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -21,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var fechamento = mensagem.ObterObjetoMensagem<PeriodoFechamento>();
             servicoPeriodoFechamento.AlterarPeriodosComHierarquiaInferior(fechamento);
-            return true;
+            return await Task.FromResult(true);
         }
     }
 }

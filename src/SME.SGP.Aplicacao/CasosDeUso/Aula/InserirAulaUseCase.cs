@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Commands.Aulas.InserirAula;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
@@ -21,13 +20,13 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var retornoPodeCadastrarAula = await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(0, 
-                inserirAulaDto.CodigoTurma, 
-                inserirAulaDto.CodigoComponenteCurricular, 
-                inserirAulaDto.DataAula, 
-                inserirAulaDto.EhRegencia, 
+            var retornoPodeCadastrarAula = await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(0,
+                inserirAulaDto.CodigoTurma,
+                inserirAulaDto.CodigoComponenteCurricular,
+                inserirAulaDto.DataAula,
+                inserirAulaDto.EhRegencia,
                 inserirAulaDto.TipoAula));
-            
+
             if (retornoPodeCadastrarAula.PodeCadastrarAula)
             {
                 if (inserirAulaDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
@@ -63,14 +62,14 @@ namespace SME.SGP.Aplicacao
                     }
                     catch (Exception ex)
                     {
-                        SentrySdk.AddBreadcrumb("Criação de aulas recorrentes", "RabbitMQ");
-                        SentrySdk.CaptureException(ex);
+                        //SentrySdk.AddBreadcrumb("Criação de aulas recorrentes", "RabbitMQ");
+                        //SentrySdk.CaptureException(ex);
                     }
                     return new RetornoBaseDto("Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente.");
-                }                
+                }
             }
             else
-            {               
+            {
                 throw new NegocioException($"Não é possível cadastrar aula do tipo '{inserirAulaDto.TipoAula.Name()}' para o dia selecionado!");
             }
         }

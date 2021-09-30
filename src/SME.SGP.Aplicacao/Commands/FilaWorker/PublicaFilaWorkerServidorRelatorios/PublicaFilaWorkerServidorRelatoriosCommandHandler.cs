@@ -2,9 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
-using Sentry;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Text;
 using System.Threading;
@@ -39,9 +37,7 @@ namespace SME.SGP.Aplicacao
                 {
                     _channel.BasicPublish(ExchangeSgpRabbit.ServidorRelatorios, request.Fila, null, body);
                 }
-            }
-
-            SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
+            }            
 
             return Task.FromResult(true);
         }

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -22,15 +21,15 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     var publicarTratamentoCiclo = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasCarregar, ueDto, Guid.NewGuid(), null));
-                    if (!publicarTratamentoCiclo)
-                    {
-                        var mensagemSentry = $"Não foi possível inserir a dre : {publicarTratamentoCiclo} na fila de sync.";
-                        SentrySdk.CaptureMessage(mensagemSentry);
-                    }
+                    //if (!publicarTratamentoCiclo)
+                    //{
+                    //    var mensagemSentry = $"Não foi possível inserir a dre : {publicarTratamentoCiclo} na fila de sync.";
+                    //    SentrySdk.CaptureMessage(mensagemSentry);
+                    //}
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    SentrySdk.CaptureException(ex);
+                    //SentrySdk.CaptureException(ex);
                 }
             }
             return true;

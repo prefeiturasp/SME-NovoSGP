@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -24,7 +23,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             var ueSgp = await mediator.Send(new ObterUeComDrePorCodigoQuery(ueCodigo));
 
-            
+
 
             if (await mediator.Send(new TrataSincronizacaoInstitucionalUeCommand(ueEol, ueSgp)))
                 return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalTurmasSync, ueCodigo, mensagemRabbit.CodigoCorrelacao, null));

@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using Sentry;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
@@ -27,13 +26,14 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;        
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasFeriadoCalendario consultasFeriadoCalendario;
+        private readonly IMediator mediator;
 
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
@@ -52,7 +52,8 @@ namespace SME.SGP.Dominio.Servicos
                                             IServicoUsuario servicoUsuario,
                                             IServicoEol servicoEOL,
                                             IConfiguration configuration,
-                                            IConsultasFeriadoCalendario consultasFeriadoCalendario)
+                                            IConsultasFeriadoCalendario consultasFeriadoCalendario,
+                                            IMediator mediator)
         {
             this.repositorioNotificacaoFrequencia = repositorioNotificacaoFrequencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoFrequencia));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
@@ -72,6 +73,7 @@ namespace SME.SGP.Dominio.Servicos
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasFeriadoCalendario = consultasFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(consultasFeriadoCalendario));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         #region Metodos Publicos
@@ -90,7 +92,7 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         public async Task NotificarAlunosFaltosos()
-        {            
+        {
             var dataReferencia = DateTime.Today.AddDays(-1);
 
             var quantidadeDiasCP = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes));
@@ -194,7 +196,8 @@ namespace SME.SGP.Dominio.Servicos
 
             if (!parseado)
             {
-                SentrySdk.CaptureEvent(new SentryEvent(new Exception($"Não foi encontrado parametro ativo para o tipo 'QuantidadeDiasNotificarAlteracaoChamadaEfetivada' para o ano de {anoAtual}")));
+                var mensagem = $"Não foi encontrado parametro ativo para o tipo 'QuantidadeDiasNotificarAlteracaoChamadaEfetivada' para o ano de {anoAtual}";
+                await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, Enumerados.LogNivel.Negocio, Enumerados.LogContexto.Frequencia));
                 return;
             }
 
@@ -692,8 +695,8 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
             {
-                Console.WriteLine("Não foi possível obter o componente curricular pois o EOL não respondeu");
-                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException("Não foi possível obter o componente curricular pois o EOL não respondeu")));
+                var mensagem = $"Não foi possível obter os dados do Eol para notificação do registro de frequência";
+                await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, Enumerados.LogNivel.Negocio, Enumerados.LogContexto.Frequencia));
             }
         }
 
@@ -746,7 +749,7 @@ namespace SME.SGP.Dominio.Servicos
             FiltroFeriadoCalendarioDto filtro = new FiltroFeriadoCalendarioDto();
             filtro.Ano = data.Year;
             var ret = consultasFeriadoCalendario.Listar(filtro).Result;
-            return ret.Any(x => x.DataFeriado == data);            
+            return ret.Any(x => x.DataFeriado == data);
         }
 
         #endregion Metodos Privados

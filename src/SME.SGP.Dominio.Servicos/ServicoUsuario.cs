@@ -146,7 +146,7 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Usuário não encontrado.");
             }
 
-            var perfisDoUsuario = await repositorioCache.Obter($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
+            var perfisDoUsuario = await repositorioCache.ObterAsync($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
 
             usuario.DefinirPerfis(perfisDoUsuario);
             usuario.DefinirPerfilAtual(ObterPerfilAtual());

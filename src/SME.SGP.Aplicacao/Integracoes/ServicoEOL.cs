@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
-using Sentry;
+﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -19,14 +20,15 @@ namespace SME.SGP.Aplicacao.Integracoes
     public class ServicoEOL : IServicoEol
     {
         private readonly IRepositorioCache cache;
+        private readonly IMediator mediator;
         private readonly HttpClient httpClient;
-        private readonly IServicoLog servicoLog;
 
-        public ServicoEOL(HttpClient httpClient, IRepositorioCache cache, IServicoLog servicoLog)
+
+        public ServicoEOL(HttpClient httpClient, IRepositorioCache cache, IMediator mediator)
         {
             this.httpClient = httpClient;
-            this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.cache = cache;
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task AlterarEmail(string login, string email)
@@ -144,7 +146,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                RegistrarLogSentry(resposta, "escolas/tiposEscolas", string.Empty);
+                RegistrarLog(resposta, "escolas/tiposEscolas", string.Empty);
                 throw new NegocioException("Ocorreu um erro na tentativa de buscar ciclos de ensino no EOL.");
             }
         }
@@ -162,7 +164,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                RegistrarLogSentry(resposta, "escolas/tiposEscolas", string.Empty);
+                RegistrarLog(resposta, "escolas/tiposEscolas", string.Empty);
                 throw new NegocioException("Ocorreu um erro na tentativa de buscar tipos de escolas no EOL.");
             }
         }
@@ -375,7 +377,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             {
-                await RegistrarLogSentryAsync(resposta, "obter as disciplinas", parametros);
+                await RegistrarLogAsync(resposta, "obter as disciplinas", parametros);
                 return null;
             }
 
@@ -446,7 +448,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                     }
                     else
                     {
-                        SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente por Dre: {item} - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
+                        _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
                         throw new NegocioException($"Erro ao obter a estrutura organizacional vigente no EOL. URL base: {httpClient.BaseAddress}");
                     }
                 }
@@ -472,7 +474,8 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
+                _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
+                                
                 return null;
             }
         }
@@ -566,7 +569,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode)
             {
-                await RegistrarLogSentryAsync(resposta, "ObterMeusDados", "login = " + login);
+                await RegistrarLogAsync(resposta, "ObterMeusDados", "login = " + login);
                 throw new NegocioException("Não foi possível obter os dados do usuário");
             }
             var json = await resposta.Content.ReadAsStringAsync();
@@ -597,7 +600,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string ueId,string nomeProfessor)
+        public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string ueId, string nomeProfessor)
         {
             var resposta = await httpClient.GetAsync($"professores/{anoLetivo}/AutoComplete/{dreId}?nome={nomeProfessor}&ueId={ueId}");
             if (!resposta.IsSuccessStatusCode)
@@ -902,7 +905,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - URL: {httpClient.BaseAddress}");
+                _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - URL: {httpClient.BaseAddress}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;                
                 throw new NegocioException($"Erro ao obter os códigos de DREs no EOL. URL base: {httpClient.BaseAddress}");
             }
         }
@@ -913,7 +916,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
-                await RegistrarLogSentryAsync(resposta, "ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", url);
+                await RegistrarLogAsync(resposta, "ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", url);
                 throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
             }
 
@@ -934,7 +937,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.StatusCode == HttpStatusCode.BadRequest)
                 throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
 
-            await RegistrarLogSentryAsync(resposta, rotina, string.Empty);
+            await RegistrarLogAsync(resposta, rotina, string.Empty);
             return null;
         }
 
@@ -944,21 +947,22 @@ namespace SME.SGP.Aplicacao.Integracoes
         /// <param name="resposta">HttpResponse para registrar o request realizado</param>
         /// <param name="rotina">Nome da rotina executada, Ex: Obter Disciplinas</param>
         /// <param name="parametros">Parâmetros do requet caso utilize, Ex:Ids, Datas, Códigos</param>
-        private void RegistrarLogSentry(HttpResponseMessage resposta, string rotina, string parametros)
+        private void RegistrarLog(HttpResponseMessage resposta, string rotina, string parametros)
         {
             if (resposta.StatusCode != HttpStatusCode.NotFound)
             {
                 var mensagem = resposta.Content.ReadAsStringAsync().Result;
-                servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
+                _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, ", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
+
             }
         }
 
-        private async Task RegistrarLogSentryAsync(HttpResponseMessage resposta, string rotina, string parametros)
+        private async Task RegistrarLogAsync(HttpResponseMessage resposta, string rotina, string parametros)
         {
             if (resposta.StatusCode != HttpStatusCode.NotFound)
             {
                 var mensagem = await resposta.Content.ReadAsStringAsync();
-                servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, ", LogNivel.Negocio, LogContexto.ApiEol, string.Empty));
             }
         }
 
@@ -1043,7 +1047,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             {
-                await RegistrarLogSentryAsync(resposta, "obter as disciplinas", parametros);
+                await RegistrarLogAsync(resposta, "obter as disciplinas", parametros);
                 return null;
             }
 
@@ -1064,11 +1068,11 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foram encontrados dados de necessidades especiais para o aluno no EOL");
 
-            
+
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<InformacoesEscolaresAlunoDto>(json);
-                        
-        }        
+
+        }
 
         public async Task<IEnumerable<string>> DefinirTurmasRegulares(string[] codigosTurmas)
         {
@@ -1077,7 +1081,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             {
-                await RegistrarLogSentryAsync(resposta, "definir turmas regulares", parametros);
+                await RegistrarLogAsync(resposta, "definir turmas regulares", parametros);
                 return Enumerable.Empty<string>();
             }
 

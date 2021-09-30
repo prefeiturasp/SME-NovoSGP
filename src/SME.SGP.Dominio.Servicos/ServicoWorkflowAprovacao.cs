@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using Sentry;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -387,7 +387,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
                     catch (Exception e)
                     {
-                        SentrySdk.CaptureException(e);
+                        _ = mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao enviar notificação para nível", LogNivel.Negocio, LogContexto.WorkflowAprovacao, e.Message)).Result;                        
                     }
                 }
             }
@@ -445,7 +445,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
                     catch (Exception e)
                     {
-                        SentrySdk.CaptureException(e);
+                        _ = mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao enviar notificação para nível", LogNivel.Negocio, LogContexto.WorkflowAprovacao, e.Message)).Result;
                     }
                 }
             }

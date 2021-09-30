@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -44,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
                 atribuiuCj = await AtribuirPerfilCJ(atribuicaoCJPersistenciaDto, perfilCJ, atribuiuCj);
 
-                if(DateTime.Now.Year == anoLetivo)
+                if (DateTime.Now.Year == anoLetivo)
                     await PublicarAtribuicaoNoGoogleClassroomApiAsync(atribuicao);
             }
         }
@@ -93,13 +92,13 @@ namespace SME.SGP.Aplicacao
             {
                 if (!long.TryParse(atribuicaoCJ.ProfessorRf, out var rf))
                 {
-                    SentrySdk.CaptureMessage("Não foi possível publicar a atribuição CJ no Google Classroom Api. O RF informado é inválido.");
+                    //SentrySdk.CaptureMessage("Não foi possível publicar a atribuição CJ no Google Classroom Api. O RF informado é inválido.");
                     return;
                 }
 
                 if (!long.TryParse(atribuicaoCJ.TurmaId, out var turmaId))
                 {
-                    SentrySdk.CaptureMessage("Não foi possível publicar a atribuição CJ no Google Classroom Api. A turma informada é inválida.");
+                    //SentrySdk.CaptureMessage("Não foi possível publicar a atribuição CJ no Google Classroom Api. A turma informada é inválida.");
                     return;
                 }
 
@@ -110,14 +109,14 @@ namespace SME.SGP.Aplicacao
                     : await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitSgpGoogleClassroomApi.FilaProfessorCursoRemover, dto));
                 if (!publicacaoConcluida)
                 {
-                    SentrySdk.AddBreadcrumb("Atribuição CJ", "Google Classroom Api");
-                    SentrySdk.CaptureMessage($"Não foi possível publicar na fila {RotasRabbitSgpGoogleClassroomApi.FilaProfessorCursoIncluir}."); ;
+                    //SentrySdk.AddBreadcrumb("Atribuição CJ", "Google Classroom Api");
+                    //SentrySdk.CaptureMessage($"Não foi possível publicar na fila {RotasRabbitSgpGoogleClassroomApi.FilaProfessorCursoIncluir}."); ;
                 }
             }
             catch (Exception ex)
             {
-                SentrySdk.AddBreadcrumb("Atribuição CJ", "Google Classroom Api");
-                SentrySdk.CaptureException(ex);
+                //SentrySdk.AddBreadcrumb("Atribuição CJ", "Google Classroom Api");
+                //SentrySdk.CaptureException(ex);
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -18,22 +17,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            try
-            {
-                if (!await ExecutarConsolidacaoDevolutivas())
-                    return false;
 
-                await ConsolidarDevolutivasAnoAtual();
+            if (!await ExecutarConsolidacaoDevolutivas())
+                return false;
 
-                await ConsolidarDevolutivasHistorico();
+            await ConsolidarDevolutivasAnoAtual();
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                SentrySdk.CaptureException(ex);
-                throw;
-            }
+            await ConsolidarDevolutivasHistorico();
+
+            return true;
+
         }
 
         private async Task ConsolidarDevolutivasAnoAtual()
@@ -78,14 +71,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             foreach (var turma in turmasInfantil)
             {
-                try
-                {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurma, new FiltroDevolutivaTurmaDTO(turma.TurmaId, anoLetivo), Guid.NewGuid(), null));
-                }
-                catch (Exception ex)
-                {
-                    SentrySdk.CaptureException(ex);
-                }
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurma, new FiltroDevolutivaTurmaDTO(turma.TurmaId, anoLetivo), Guid.NewGuid(), null));
+
             }
         }
 

@@ -1,14 +1,11 @@
-﻿using Microsoft.ApplicationInsights;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
-using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
@@ -55,9 +52,11 @@ namespace SME.SGP.Worker.Rabbbit
 
 
             var serviceProvider = services.BuildServiceProvider();
-            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-            DapperExtensionMethods.Init(clientTelemetry);
-            SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN"));
+            //var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
+
+            //TODO: Implementar APM para o worker!
+            //DapperExtensionMethods.Init(clientTelemetry);
+            //SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN"));
 
             services.AddMemoryCache();
         }

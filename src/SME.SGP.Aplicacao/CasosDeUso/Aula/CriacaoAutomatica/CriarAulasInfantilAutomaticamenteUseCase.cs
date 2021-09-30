@@ -1,8 +1,5 @@
 ﻿using MediatR;
-using Sentry;
-using Sentry.Protocol;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -25,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             if (!executarManutencao)
             {
-                SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", SentryLevel.Warning);
+                //SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", SentryLevel.Warning);
                 return false;
             }
 
@@ -50,22 +47,22 @@ namespace SME.SGP.Aplicacao
                             {
                                 var comando = new CriarAulasInfantilAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), lista, tipoCalendarioId, diasForaDoPeriodoEscolar);
 
-                                SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Iniciando Rotina de manutenção de aulas do Infantil");
+                                //SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Iniciando Rotina de manutenção de aulas do Infantil");
                                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
                             }
                         }
                     }
                     return true;
                 }
-                else
-                {
-                    SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Período Escolar cadastrado.", SentryLevel.Error);
-                }
+                //else
+                //{
+                //    SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Período Escolar cadastrado.", SentryLevel.Error);
+                //}
             }
-            else
-            {
-                SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Calendário Escolar cadastrado.", SentryLevel.Error);
-            }
+            //else
+            //{
+            //    SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Calendário Escolar cadastrado.", SentryLevel.Error);
+            //}
             return false;
         }
     }

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -51,9 +50,9 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAlunoTratar, new FiltroAcompanhamentoAprendizagemAlunoTurmaDTO(turma.TurmaId, anoLetivo, 1, quantidade), Guid.NewGuid(), null));
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAlunoTratar, new FiltroAcompanhamentoAprendizagemAlunoTurmaDTO(turma.TurmaId, anoLetivo, 2, quantidade), Guid.NewGuid(), null));
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    SentrySdk.CaptureException(ex);
+                    //SentrySdk.CaptureException(ex);
                 }
             }
         }
