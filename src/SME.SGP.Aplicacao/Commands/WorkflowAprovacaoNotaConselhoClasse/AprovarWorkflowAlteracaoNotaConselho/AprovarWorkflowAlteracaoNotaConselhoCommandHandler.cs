@@ -19,14 +19,15 @@ namespace SME.SGP.Aplicacao
         {
             var notaEmAprovacao = await ObterNotaConselhoEmAprovacao(request.WorkflowId);
             if (notaEmAprovacao != null)
-                await AtualizarNotaConselho(notaEmAprovacao);
+                await AtualizarNotaConselho(notaEmAprovacao, request);
         }
 
-        private async Task AtualizarNotaConselho(WFAprovacaoNotaConselho notaEmAprovacao)
+        private async Task AtualizarNotaConselho(WFAprovacaoNotaConselho notaEmAprovacao, AprovarWorkflowAlteracaoNotaConselhoCommand request)
         {
             await AlterarNota(notaEmAprovacao);
             await ExcluirWorkFlow(notaEmAprovacao);
 
+            await mediator.Send(new NotificarAprovacaoNotaConselhoCommand(notaEmAprovacao, request.CodigoDaNotificacao, request.TurmaCodigo, request.WorkflowId, true, ""));
             await GerarParecerConclusivo(notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno);
         }
 

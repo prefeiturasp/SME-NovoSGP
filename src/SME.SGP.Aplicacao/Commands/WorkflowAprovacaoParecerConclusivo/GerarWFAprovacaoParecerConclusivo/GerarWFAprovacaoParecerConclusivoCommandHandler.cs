@@ -53,8 +53,8 @@ namespace SME.SGP.Aplicacao
                                                                     ue.Dre.CodigoDre,
                                                                     ue.CodigoUe,
                                                                     request.Turma.CodigoTurma,
-                                                                    WorkflowAprovacaoTipo.AlteracaoParecerConclusivo
-                                                                    /*TODO remover comentario depois de mergear a alteração do Hélio no command, request.ConselhoClasseAlunoId*/));
+                                                                    WorkflowAprovacaoTipo.AlteracaoParecerConclusivo,
+                                                                    request.ConselhoClasseAlunoId));
         }
 
         private async Task<Usuario> ObterUsuarioLogado()

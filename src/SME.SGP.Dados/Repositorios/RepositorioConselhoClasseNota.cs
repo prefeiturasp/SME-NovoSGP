@@ -227,20 +227,20 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<WFAprovacaoNotaConselho>> ObterNotasEmAprovacaoWf(long workFlowId)
+        public async Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoWf(long workFlowId)
         {
             var query = @"select w.*, n.*
                             from wf_aprovacao_nota_conselho w
                           inner join conselho_classe_nota n on n.id = w.conselho_classe_nota_id 
                           where w.wf_aprovacao_id = @workFlowId";
 
-            return await database.Conexao.QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, WFAprovacaoNotaConselho>(query
+            return (await database.Conexao.QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, WFAprovacaoNotaConselho>(query
                 , (wfAprovacaoNota, conselhoNota) =>
                 {
                     wfAprovacaoNota.ConselhoClasseNota = conselhoNota;
                     return wfAprovacaoNota;
                 }
-                , new { workFlowId });
+                , new { workFlowId })).FirstOrDefault();
         }
 
         public async Task<int> ObterBimestreEmAprovacaoWf(long workFlowId)

@@ -183,7 +183,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaConselho)
                 {
-                    await AprovarAlteracaoNotaConselho(workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor);
+                    await AprovarAlteracaoNotaConselho(workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor, codigoDaNotificacao);
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoParecerConclusivo)
                 {
@@ -219,9 +219,9 @@ namespace SME.SGP.Dominio.Servicos
             await mediator.Send(new AprovarWorkflowAlteracaoParecerConclusivoCommand(workflowId, turmaCodigo, criadoRF, criadoPor));
         }
 
-        private async Task AprovarAlteracaoNotaConselho(long workflowId, string turmaCodigo, string criadoRF, string criadoPor)
+        private async Task AprovarAlteracaoNotaConselho(long workflowId, string turmaCodigo, string criadoRF, string criadoPor, long? codigoDaNotificacao)
         {
-            await mediator.Send(new AprovarWorkflowAlteracaoNotaConselhoCommand(workflowId, turmaCodigo, criadoRF, criadoPor));
+            await mediator.Send(new AprovarWorkflowAlteracaoNotaConselhoCommand(workflowId, turmaCodigo, criadoRF, criadoPor, codigoDaNotificacao));
         }
 
         private async Task AprovarAlteracaoNotaFechamento(long codigoDaNotificacao, long workFlowId, string turmaCodigo, string criadoRF, string criadoPor)
@@ -574,75 +574,6 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoId)}</td>");
                 }
 
-                mensagem.AppendLine("</tr>");
-            }
-            mensagem.AppendLine("</table>");
-
-            return mensagem.ToString();
-        }
-
-        private async Task NotificarAprovacaoNotasPosConselho(IEnumerable<WFAprovacaoNotaConselho> notasEmAprovacao, long codigoDaNotificacao, string turmaCodigo, long workflowId, bool aprovada = true, string justificativa = "")
-        {
-            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
-            var usuarioRf = notasEmAprovacao.First().ConselhoClasseNota.AlteradoRF;
-            var notaConceitoTitulo = notasEmAprovacao.First().ConceitoId.HasValue ? "conceito" : "nota";
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(usuarioRf, "");
-            var bimestre = repositorioConselhoClasseNota.ObterBimestreEmAprovacaoWf(workflowId).Result;
-
-            if (usuario != null)
-            {
-                repositorioNotificacao.Salvar(new Notificacao()
-                {
-                    UeId = turma.Ue.CodigoUe,
-                    UsuarioId = usuario.Id,
-                    Ano = DateTime.Today.Year,
-                    Categoria = NotificacaoCategoria.Aviso,
-                    DreId = turma.Ue.Dre.CodigoDre,
-                    Titulo = $"Alteração em {notaConceitoTitulo} final - Turma {turma.Nome} ({turma.AnoLetivo})",
-                    Tipo = NotificacaoTipo.Notas,
-                    Codigo = codigoDaNotificacao,
-                    Mensagem = await MontaMensagemAprovacaoNotaPosConselho(turma, usuario, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa, bimestre)
-                });
-
-            }
-        }
-        private async Task<string> MontaMensagemAprovacaoNotaPosConselho(Turma turma, Usuario usuario, string notaConceitoTitulo, IEnumerable<WFAprovacaoNotaConselho> notasEmAprovacao, bool aprovado, string justificativa, int bimestre)
-        {
-            var aprovadaRecusada = aprovado ? "aprovada" : "recusada";
-            var motivo = aprovado ? "" : $"Motivo: {justificativa}.";
-            var componenteCurricular = await ObterComponente(notasEmAprovacao.First().ConselhoClasseNota.ComponenteCurricularCodigo);
-            var bimestreFormatado = bimestre == 0 ? "bimestre final" : $"{bimestre}º bimestre";
-
-            var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) final(is) do {bimestreFormatado} do componente curricular {componenteCurricular}  
-                            da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) 
-                            de {turma.AnoLetivo} para o(s) estudantes(s) abaxo foi {aprovadaRecusada}. {motivo}</p>");
-
-            mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
-            mensagem.AppendLine("<tr>");
-            mensagem.AppendLine("<td style='padding: 10px;'>Estudante</td>");
-            mensagem.AppendLine("<td style='padding: 5px;'>Valor Anterior</td>");
-            mensagem.AppendLine("<td style='padding: 5px;'>Novo Valor</td>");
-            mensagem.AppendLine("</tr>");
-
-            var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
-            foreach (var notaAprovacao in notasEmAprovacao)
-            {
-                var codigoAluno = repositorioConselhoClasseAluno.ObterPorId(notaAprovacao.ConselhoClasseNota.ConselhoClasseAlunoId);
-                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == codigoAluno.AlunoCodigo);
-
-                mensagem.AppendLine("<tr>");
-                mensagem.Append($"<td style='padding: 10px;'> {aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({aluno?.CodigoAluno})</td>");
-
-                if (!notaAprovacao.ConceitoId.HasValue)
-                {
-                    mensagem.Append($"<td style='padding: 5px;'>{ObterNota(notaAprovacao.ConselhoClasseNota.Nota.Value)}</td>");
-                    mensagem.Append($"<td style='padding: 5px;'>{ObterNota(notaAprovacao.Nota.Value)}</td>");
-                }
-                else
-                {
-                    mensagem.Append($"<td style='padding: 5px;'>{ObterNota(notaAprovacao.ConselhoClasseNota.ConceitoId)}</td>");
-                    mensagem.Append($"<td style='padding: 5px;'>{ObterNota(notaAprovacao.ConceitoId)}</td>");
-                }
                 mensagem.AppendLine("</tr>");
             }
             mensagem.AppendLine("</table>");
@@ -1013,15 +944,15 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
 
         private async Task TrataReprovacaoAlteracaoNotaPosConselho(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
-            var notasEmAprovacao = ObterNotasEmAprovacaoPosConselho(workflow.Id);
-            await NotificarAprovacaoNotasPosConselho(notasEmAprovacao, codigoDaNotificacao, workflow.TurmaId, workflow.Id, false, motivo);
+            var notasEmAprovacao = ObterNotaEmAprovacaoPosConselho(workflow.Id);
+            await mediator.Send(new NotificarAprovacaoNotaConselhoCommand(notasEmAprovacao, codigoDaNotificacao, workflow.TurmaId, workflow.Id, false, motivo));
         }
 
         private IEnumerable<WfAprovacaoNotaFechamento> ObterNotasEmAprovacao(long workflowId)
             => repositorioFechamentoNota.ObterNotasEmAprovacaoWf(workflowId).Result;
 
-        private IEnumerable<WFAprovacaoNotaConselho> ObterNotasEmAprovacaoPosConselho(long workflowId)
-            => repositorioConselhoClasseNota.ObterNotasEmAprovacaoWf(workflowId).Result;
+        private WFAprovacaoNotaConselho ObterNotaEmAprovacaoPosConselho(long workflowId)
+            => repositorioConselhoClasseNota.ObterNotaEmAprovacaoWf(workflowId).Result;
 
         private async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasFechamentoEmAprovacao(long workflowId)
             => await repositorioFechamentoNota.ObterNotasEmAprovacaoWf(workflowId);
