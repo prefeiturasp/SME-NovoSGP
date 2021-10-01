@@ -91,8 +91,8 @@ namespace SME.SGP.Dados.Repositorios
 
             var sql = $@"select
 	                        distinct 
-	                        (select count(id) from comunicado where excluido = false and ano_letivo = @anoLetivo and data_expiracao >= current_date {filtroPorDre} {filtroPorUe} ) as TotalComunicadosVigentes,
-	                        (select count(id) from comunicado where excluido = false and ano_letivo = @anoLetivo and data_expiracao < current_date {filtroPorDre} {filtroPorUe}) as TotalComunicadosExpirados 
+	                        (select count(id) from comunicado where excluido = false and tipo_comunicado <>9 and ano_letivo = @anoLetivo and data_expiracao >= current_date {filtroPorDre} {filtroPorUe} ) as TotalComunicadosVigentes,
+	                        (select count(id) from comunicado where excluido = false and tipo_comunicado <>9 and ano_letivo = @anoLetivo and data_expiracao < current_date {filtroPorDre} {filtroPorUe}) as TotalComunicadosExpirados 
                         from comunicado";
             var parametros = new { anoLetivo, codigoDre, codigoUe };
             return await database.QueryFirstAsync<ComunicadosTotaisResultado>(sql, parametros);
@@ -319,14 +319,14 @@ namespace SME.SGP.Dados.Repositorios
                 where.Append($" AND lower(f_unaccent(cm.titulo)) LIKE lower(f_unaccent('%" + filtro.Titulo + "%'))");
             }
 
-            where.Append($" and not {comunicadoAlias}.excluido ");
+            where.Append($" and not {comunicadoAlias}.excluido and {comunicadoModalidadeAlias}.tipo_comunicado <>9 ");
 
             return where.ToString();
         }
 
         public async Task<bool> VerificaExistenciaComunicadoParaEvento(long eventoId)
         {
-            var sql = $@"select count(id) from comunicado where not excluido and data_expiracao >= current_date and evento_id = @eventoId";
+            var sql = $@"select count(id) from comunicado where not excluido and tipo_comunicado <>9 and data_expiracao >= current_date and evento_id = @eventoId";
             var parametros = new { eventoId };
             var quantidadeComunicadosComEvento = await database.QuerySingleAsync<int>(sql, parametros);
             return (quantidadeComunicadosComEvento > 0 ? true : false);
@@ -457,7 +457,7 @@ namespace SME.SGP.Dados.Repositorios
             var sql = @"select *  
                           from comunicado 
                          where id = ANY(@ids)
-                           and not excluido ";
+                           and not excluido and tipo_comunicado <>9 ";
             var parametros = new { ids };
             return await database.QueryAsync<Comunicado>(sql, parametros);
         }
@@ -465,7 +465,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select distinct c.ano_letivo 
                                               from comunicado c 
-                                             where not c.excluido ");
+                                             where not c.excluido  and c.tipo_comunicado <>9 ");
 
             if (dataInicio.HasValue)
                 query.AppendLine("and c.criado_em::date between @dataInicio::date and @dataAtual::date  ");
@@ -568,7 +568,7 @@ namespace SME.SGP.Dados.Repositorios
                                               left join turma t on t.turma_id = ct.turma_codigo
                                               left join ue on ue.ue_id = c.codigo_ue
                                              where c.ano_letivo = @anoLetivo
-                                               and not c.excluido ");
+                                               and not c.excluido and c.tipo_comunicado <>9 ");
 
             if (!string.IsNullOrEmpty(dreCodigo) && dreCodigo != "-99")
                 query.AppendLine("and c.codigo_dre = @dreCodigo ");
@@ -624,7 +624,7 @@ namespace SME.SGP.Dados.Repositorios
                                               left join turma t on t.turma_id = ct.turma_codigo
                                               left join ue on ue.ue_id = c.codigo_ue
                                              where c.ano_letivo = @anoLetivo
-                                               and not c.excluido
+                                               and not c.excluido and c.tipo_comunicado <>9 
                                                and cm.modalidade = any(@modalidades)
                                                and t.semestre = @semestre ");
 
