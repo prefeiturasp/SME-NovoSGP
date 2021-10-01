@@ -1,4 +1,74 @@
-﻿create or replace function f_eventos_por_rf_criador(p_login character varying, p_tipo_calendario_id bigint,
+﻿create or replace view v_estrutura_eventos_listar
+            (eventoid, nome, descricaoevento, data_inicio, data_fim, dre_id, letivo, feriado_id, tipo_calendario_id,
+             tipo_evento_id, ue_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, status,
+             tipoeventoid, ativo, tipo_data, descricaotipoevento, excluido, total_registros)
+as
+SELECT e.id         AS eventoid,
+       e.nome,
+       e.descricao  AS descricaoevento,
+       e.data_inicio,
+       e.data_fim,
+       e.dre_id,
+       e.letivo,
+       e.feriado_id,
+       e.tipo_calendario_id,
+       e.tipo_evento_id,
+       e.ue_id,
+       e.criado_em,
+       e.criado_por,
+       e.alterado_em,
+       e.alterado_por,
+       e.criado_rf,
+       e.alterado_rf,
+       e.status,
+       et.id        AS tipoeventoid,
+       et.ativo,
+       et.tipo_data,
+       et.descricao AS descricaotipoevento,
+       et.excluido,
+       0            AS total_registros
+FROM evento e
+         JOIN evento_tipo et ON e.tipo_evento_id = et.id;
+
+alter table v_estrutura_eventos_listar
+    owner to postgres;
+
+create or replace view v_estrutura_eventos
+            (eventoid, nome, descricaoevento, data_inicio, data_fim, dre_id, letivo, feriado_id, tipo_calendario_id,
+             tipo_evento_id, ue_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, status,
+             tipoeventoid, ativo, tipo_data, descricaotipoevento, excluido, local_ocorrencia)
+as
+SELECT e.id         AS eventoid,
+       e.nome,
+       e.descricao  AS descricaoevento,
+       e.data_inicio,
+       e.data_fim,
+       e.dre_id,
+       e.letivo,
+       e.feriado_id,
+       e.tipo_calendario_id,
+       e.tipo_evento_id,
+       e.ue_id,
+       e.criado_em,
+       e.criado_por,
+       e.alterado_em,
+       e.alterado_por,
+       e.criado_rf,
+       e.alterado_rf,
+       e.status,
+       et.id        AS tipoeventoid,
+       et.ativo,
+       et.tipo_data,
+       et.descricao AS descricaotipoevento,
+       et.excluido,
+       et.local_ocorrencia
+FROM evento e
+         JOIN evento_tipo et ON e.tipo_evento_id = et.id;
+
+alter table v_estrutura_eventos
+    owner to postgres;
+
+create or replace function f_eventos_por_rf_criador(p_login character varying, p_tipo_calendario_id bigint,
                                                     p_dre_id character varying DEFAULT NULL::character varying,
                                                     p_ue_id character varying DEFAULT NULL::character varying,
                                                     p_data_inicio date DEFAULT NULL::date,
@@ -15,12 +85,11 @@ select e.id,
        e.descricao,
        e.data_inicio,
        e.data_fim,
-       e.dre_id,
+      
        e.letivo,
        e.feriado_id,
        e.tipo_calendario_id,
-       e.tipo_evento_id,
-       e.ue_id,
+       e.tipo_evento_id,       
        e.criado_em,
        e.criado_por,
        e.alterado_em,
@@ -33,12 +102,20 @@ select e.id,
        et.tipo_data,
        et.descricao,
        et.excluido,
-       et.local_ocorrencia
+       et.local_ocorrencia,
+       dre.dre_id,
+       coalesce(dre.abreviacao, 'TODAS') as DreNome,
+       ue.ue_id,
+       coalesce(ue.nome, 'TODAS') as UeNome
 from evento e
          inner join evento_tipo et
                     on e.tipo_evento_id = et.id
          inner join tipo_calendario tc
                     on e.tipo_calendario_id = tc.id
+         left join dre
+                   on e.dre_id = dre.dre_id
+         left join ue
+                   on e.ue_id = ue.ue_id
 where not et.excluido
     and not e.excluido
     -- considera somente pendente de aprovao
