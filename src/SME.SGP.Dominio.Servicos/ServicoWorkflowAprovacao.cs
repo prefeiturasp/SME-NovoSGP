@@ -545,7 +545,7 @@ namespace SME.SGP.Dominio.Servicos
             var bimestreFormatado = bimestre == 0 ? "bimestre final" : $"{bimestre}º bimestre";
 
             var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) final(is) do {bimestreFormatado} do componente curricular {componenteCurricularNome} 
-da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) de {turma.AnoLetivo} para o(s) estudante(s) abaxo foi {aprovadaRecusada}. {motivo}</p>");
+da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo} para o(s) estudante(s) abaixo foi {aprovadaRecusada}. {motivo}</p>");
 
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
             mensagem.AppendLine("<tr>");

@@ -441,9 +441,9 @@ namespace SME.SGP.Dominio.Servicos
             if (notasEnvioWfAprovacao.Any())
             {
                 var lancaNota = !notasEnvioWfAprovacao.First().ConceitoId.HasValue;
-                var notaConceitoMensagem = lancaNota ? "A(s) nota" : "O(s) conceito";
+                var notaConceitoMensagem = lancaNota ? "nota(s)" : "conceito(s)";
 
-                var mensagem = await MontaMensagemWfAprovacao(notaConceitoMensagem, periodoEscolar, usuarioLogado, componenteCurricularNome);
+                var mensagem = await MontaMensagemWfAprovacao(lancaNota, periodoEscolar, usuarioLogado, componenteCurricularNome);
 
                 var wfAprovacaoNota = new WorkflowAprovacaoDto()
                 {
@@ -507,13 +507,15 @@ namespace SME.SGP.Dominio.Servicos
             return fechamento;
         }
 
-        private async Task<string> MontaMensagemWfAprovacao(string notaConceitoMensagem, PeriodoEscolar periodoEscolar, Usuario usuarioLogado, string componenteCurricularNome)
+        private async Task<string> MontaMensagemWfAprovacao(bool lancaNota, PeriodoEscolar periodoEscolar, Usuario usuarioLogado, string componenteCurricularNome)
         {
+            var notaConceitoMensagem = lancaNota ? "A(s) nota(s)" : "O(s) conceito(s)";
+
             var mensagem = new StringBuilder();
             var bimestre = periodoEscolar.Bimestre == 0 ? "bimestre final" : $"{periodoEscolar.Bimestre}º bimestre";
-            mensagem.Append($"<p>{notaConceitoMensagem}(s) do {bimestre} do componente curricular {componenteCurricularNome} da turma {turmaFechamento.Nome} da ");
-            mensagem.Append($"{turmaFechamento.Ue.TipoEscola.ObterNomeCurto()} {turmaFechamento.Ue.Nome} (DRE {turmaFechamento.Ue.Dre.Nome}) ");
-            mensagem.Append($"de {turmaFechamento.AnoLetivo} foram alterados pelo Professor {usuarioLogado.Nome}");
+            mensagem.Append($"<p>{notaConceitoMensagem} do {bimestre} do componente curricular {componenteCurricularNome} da turma {turmaFechamento.Nome} da ");
+            mensagem.Append($"{turmaFechamento.Ue.TipoEscola.ObterNomeCurto()} {turmaFechamento.Ue.Nome} ({turmaFechamento.Ue.Dre.Abreviacao}) ");
+            mensagem.Append($"de {turmaFechamento.AnoLetivo} foram alterados pelo Professor {usuarioLogado.Nome} ");
             mensagem.Append($"({usuarioLogado.CodigoRf}) em {DateTime.Now.ToString("dd/MM/yyyy")} às {DateTime.Now.ToString("HH:mm")} para o(s) seguinte(s) estudantes(s):</p>");
 
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
