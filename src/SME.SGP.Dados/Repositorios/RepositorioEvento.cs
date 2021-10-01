@@ -680,7 +680,7 @@ namespace SME.SGP.Dados.Repositorios
 								 f_eventos_listar_sem_paginacao.excluido,
 								 f_eventos_listar_sem_paginacao.total_registros,
                                  ue.ue_id ue,
-                                 ue.nome as nomeUe,
+                                 ue.nome,
                                  dre.dre_id as dre,
                                  dre.abreviacao ");
 
