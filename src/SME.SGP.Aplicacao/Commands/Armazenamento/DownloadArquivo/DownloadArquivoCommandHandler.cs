@@ -17,12 +17,21 @@ namespace SME.SGP.Aplicacao
             var nomeArquivo = $"{request.Codigo}{extencao}";
             var caminhoArquivo = Path.Combine($"{caminhoBase}", nomeArquivo);
 
-            var arquivo = File.ReadAllBytes(caminhoArquivo);
+            try
+            {
+                var arquivo = File.ReadAllBytes(caminhoArquivo);
 
-            if (arquivo != null)
-                return Task.FromResult(arquivo);
+                if (arquivo != null)
+                    return Task.FromResult(arquivo);
 
-            throw new NegocioException("Não foi possível fazer download do arquivo");
+                throw new NegocioException("A imagem da criança/aluno não foi encontrada");
+            }
+            catch (Exception)
+            {
+                throw new NegocioException("A imagem da criança/aluno não foi encontrada.");
+            }
+         
+
         }
 
         private string ObterCaminhoArquivos(TipoArquivo tipo)
