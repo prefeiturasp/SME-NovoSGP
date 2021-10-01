@@ -629,25 +629,31 @@ namespace SME.SGP.Dados.Repositorios
 
         #region Listar
 
-        public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim,
-            Paginacao paginacao, string dreId, string ueId, bool ehTodasDres, bool ehTodasUes, Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor,
-            bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, bool consideraHistorico, bool eventosTodaRede)
+        public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId,
+            string nomeEvento, DateTime? dataInicio, DateTime? dataFim,
+            Paginacao paginacao, string dreId, string ueId, bool ehTodasDres, bool ehTodasUes, Usuario usuario,
+            Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor,
+            bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme,
+            bool consideraHistorico, bool eventosTodaRede)
         {
-            try
-            {
+            if (paginacao == null ||
+                (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+                paginacao = new Paginacao(1, 10);
 
-                if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
-                    paginacao = new Paginacao(1, 10);
+            var retornoPaginado = new PaginacaoResultadoDto<Evento>();
 
-                var retornoPaginado = new PaginacaoResultadoDto<Evento>();
+            var queryTotalRegistros = new StringBuilder("select count(0) ");
+            ObterParametrosDaFuncaoEventosListarSemPaginacao(tipoCalendarioId, tipoEventoId, nomeEvento, dataInicio,
+                dataFim, dreId, ueId, ehTodasDres, ehTodasUes, usuario, usuarioPerfil,
+                usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLocalOcorrenciaDre,
+                podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, consideraHistorico, queryTotalRegistros,
+                eventosTodaRede);
 
-                var queryTotalRegistros = new StringBuilder("select count(0) ");
-                ObterParametrosDaFuncaoEventosListarSemPaginacao(tipoCalendarioId, tipoEventoId, nomeEvento, dataInicio, dataFim, dreId, ueId, ehTodasDres, ehTodasUes, usuario, usuarioPerfil, usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLocalOcorrenciaDre, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, consideraHistorico, queryTotalRegistros, eventosTodaRede);
-
-                var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros.ToString());
+            var totalRegistrosDaQuery =
+                await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros.ToString());
 
 
-                var queryEventos = new StringBuilder(@"select f_eventos_listar_sem_paginacao.eventoid,
+            var queryEventos = new StringBuilder(@"select f_eventos_listar_sem_paginacao.eventoid,
                                  f_eventos_listar_sem_paginacao.eventoid id,
 								 f_eventos_listar_sem_paginacao.nome,
 								 f_eventos_listar_sem_paginacao.descricaoevento descricao,
@@ -678,35 +684,37 @@ namespace SME.SGP.Dados.Repositorios
                                  dre.dre_id as dre,
                                  dre.abreviacao ");
 
-                ObterParametrosDaFuncaoEventosListarSemPaginacao(tipoCalendarioId, tipoEventoId, nomeEvento, dataInicio, dataFim, dreId, ueId, ehTodasDres, ehTodasUes, usuario, usuarioPerfil, usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLocalOcorrenciaDre, podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, consideraHistorico, queryEventos, eventosTodaRede);
-                queryEventos.AppendLine("left join dre on dre.dre_id = f_eventos_listar_sem_paginacao.dre_id ");
-                queryEventos.AppendLine("left join ue on ue.ue_id = f_eventos_listar_sem_paginacao.ue_id ");
-                queryEventos.AppendLine("order by data_inicio ");
-                queryEventos.AppendLine("offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;");
+            ObterParametrosDaFuncaoEventosListarSemPaginacao(tipoCalendarioId, tipoEventoId, nomeEvento, dataInicio,
+                dataFim, dreId, ueId, ehTodasDres, ehTodasUes, usuario, usuarioPerfil,
+                usuarioTemPerfilSupervisorOuDiretor, podeVisualizarEventosLocalOcorrenciaDre,
+                podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, consideraHistorico, queryEventos,
+                eventosTodaRede);
+            queryEventos.AppendLine("left join dre on dre.dre_id = f_eventos_listar_sem_paginacao.dre_id ");
+            queryEventos.AppendLine("left join ue on ue.ue_id = f_eventos_listar_sem_paginacao.ue_id ");
+            queryEventos.AppendLine("order by data_inicio ");
+            queryEventos.AppendLine("offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;");
 
-                retornoPaginado.Items = await database.Conexao.QueryAsync<Evento, EventoTipo, Ue, Dre, Evento>(
-                    queryEventos.ToString(),
-                    (evento, tipoEvento, ue, dre) =>
-                    {
-                        evento.AdicionarDre(dre);
-                        evento.AdicionarUe(ue);
-                        evento.AdicionarTipoEvento(tipoEvento);
-                        return evento;
-                    },
-               param: new { qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados, qtde_registros = paginacao.QuantidadeRegistros },
-               splitOn: "EventoId, TipoEventoId, ue, dre");
+            retornoPaginado.Items = await database.Conexao.QueryAsync<Evento, EventoTipo, Ue, Dre, Evento>(
+                queryEventos.ToString(),
+                (evento, tipoEvento, ue, dre) =>
+                {
+                    evento.AdicionarDre(dre);
+                    evento.AdicionarUe(ue);
+                    evento.AdicionarTipoEvento(tipoEvento);
+                    return evento;
+                },
+                param: new
+                {
+                    qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
+                    qtde_registros = paginacao.QuantidadeRegistros
+                },
+                splitOn: "EventoId, TipoEventoId, ue, dre");
 
-                retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
-                retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
+            retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
+            retornoPaginado.TotalPaginas =
+                (int) Math.Ceiling((double) retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
-                return retornoPaginado;
-            }
-
-            catch (Exception)
-            {
-                throw;
-            }
-
+            return retornoPaginado;
         }
 
         private static void ObterParametrosDaFuncaoEventosListarSemPaginacao(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim, string dreId, string ueId, bool ehTodasDres, bool ehTodasUes, Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor, bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, bool consideraHistorico, StringBuilder queryNova, bool eventosTodaRede)
