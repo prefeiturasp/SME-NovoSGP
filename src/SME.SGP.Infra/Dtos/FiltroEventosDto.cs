@@ -14,5 +14,6 @@ namespace SME.SGP.Infra
         public long? TipoEventoId { get; set; }
         public string UeId { get; set; }
         public bool ConsideraHistorico { get; set; }
+        public bool EhEventosTodaRede { get; set; } = false;
     }
 }
