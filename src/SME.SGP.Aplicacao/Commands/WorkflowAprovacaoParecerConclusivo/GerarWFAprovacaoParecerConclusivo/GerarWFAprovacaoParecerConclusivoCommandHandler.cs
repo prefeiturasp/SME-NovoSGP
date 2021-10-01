@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
             var turma = $"{request.Turma.Nome} da {ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao}) de {request.Turma.AnoLetivo}";
             var usuarioLogado = await ObterUsuarioLogado();
             var professor = $"{usuarioLogado.Nome} ({usuarioLogado.CodigoRf})";
-            var data = $"{DateTime.Today:dd/MM/yyyy} às {DateTime.Now:hh:mm}";
+            var data = $"{DateTime.Today:dd/MM/yyyy} às {DateTime.Now:HH:mm}";
             var aluno = await ObterAluno(request.AlunoCodigo, request.Turma.AnoLetivo);
 
             var titulo = $"Alteração de parecer conclusivo - Turma {request.Turma.Nome} ({request.Turma.AnoLetivo})";
