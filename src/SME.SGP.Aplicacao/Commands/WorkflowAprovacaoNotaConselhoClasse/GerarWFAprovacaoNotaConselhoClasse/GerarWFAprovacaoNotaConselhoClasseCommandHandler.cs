@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             var ue = await ObterUe(request.Turma.UeId);
             var turma = $"{request.Turma.Nome} da {ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao}) de {request.Turma.AnoLetivo}";
             var professor = $"{request.UsuarioLogado.Nome} ({request.UsuarioLogado.CodigoRf})";
-            var data = $"{DateTime.Today:dd/MM/yyyy} às {DateTime.Now:hh:mm}";
+            var data = $"{DateTime.Today:dd/MM/yyyy} às {DateTime.Now:HH:mm}";
             var aluno = await ObterAluno(request.AlunoCodigo, request.Turma.AnoLetivo);
 
             var titulo = $"Alteração em nota/conceito final - {componenteCurricular} - {request.Turma.Nome} ({request.Turma.AnoLetivo})";

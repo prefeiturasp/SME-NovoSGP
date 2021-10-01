@@ -123,10 +123,12 @@ namespace SME.SGP.Dominio.Servicos
         {
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
             AuditoriaDto auditoria = null;
+            long conselhoClasseAlunoId = 0;
+
             unitOfWork.IniciarTransacao();
             try
             {
-                var conselhoClasseAlunoId = conselhoClasseAluno != null ?
+                conselhoClasseAlunoId = conselhoClasseAluno != null ?
                     conselhoClasseAluno.Id : 
                     await SalvarConselhoClasseAlunoResumido(conselhoClasseId, alunoCodigo);
 
@@ -194,7 +196,7 @@ namespace SME.SGP.Dominio.Servicos
                 ConselhoClasseId = conselhoClasseId,
                 FechamentoTurmaId = fechamentoTurmaId,
                 Auditoria = auditoria,
-                ConselhoClasseAlunoId = conselhoClasseAluno.Id
+                ConselhoClasseAlunoId = conselhoClasseAlunoId
             };
 
             return conselhoClasseNotaRetorno;

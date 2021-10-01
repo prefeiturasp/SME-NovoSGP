@@ -24,9 +24,9 @@ namespace SME.SGP.Aplicacao
             var nomeTurma = $"{turma.Nome} da {turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo}";
             var aluno = await ObterAluno(request.ParecerEmAprovacao.ConselhoClasseAluno.AlunoCodigo, turma.AnoLetivo);
             var nomeAluno = $"{aluno.Nome} ({aluno.CodigoAluno})";
-            var data = $"{request.ParecerEmAprovacao.CriadoEm:dd/MM/yyyy} às {request.ParecerEmAprovacao.CriadoEm:hh:mm}";
+            var data = $"{request.ParecerEmAprovacao.CriadoEm:dd/MM/yyyy} às {request.ParecerEmAprovacao.CriadoEm:HH:mm}";
 
-            var parecerAnterior = request.ParecerEmAprovacao.ConselhoClasseAluno.ConselhoClasseParecer?.Nome;
+            var parecerAnterior = request.ParecerEmAprovacao.ConselhoClasseAluno.ConselhoClasseParecer?.Nome ?? "Nenhum";
             var parecerNovo = request.ParecerEmAprovacao.ConselhoClasseParecer?.Nome;
 
             var titulo = $"Alteração de parecer conclusivo - Turma {turma.Nome} ({turma.AnoLetivo})";
