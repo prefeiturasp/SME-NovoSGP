@@ -189,9 +189,9 @@ namespace SME.SGP.Aplicacao
         {
             if (evento.Dre is not null && !string.IsNullOrEmpty(evento.Ue.Nome))
             {
-                return $"Ue: {evento.Ue.Nome} ";
+                return $"UE: {evento.Ue.Nome} ";
             }
-            return "Ue: Todas ";
+            return "UE: Todas ";
         }
 
         private PaginacaoResultadoDto<EventoCompletoDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<Evento> eventosPaginados)
