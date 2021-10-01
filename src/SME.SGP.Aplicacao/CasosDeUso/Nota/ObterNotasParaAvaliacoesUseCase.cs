@@ -247,7 +247,7 @@ namespace SME.SGP.Aplicacao
                                 nota.EhConceito = notaRegencia.ConceitoId.HasValue;
                             }
 
-                            await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
+                            await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaId, nota);
 
                             notaConceitoAluno.NotasBimestre.Add(nota);
                         }
@@ -267,7 +267,7 @@ namespace SME.SGP.Aplicacao
                                 EhConceito = notaConceitoBimestre.ConceitoId.HasValue
                             };
 
-                            await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
+                            await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaId, nota);
 
                             notaConceitoAluno.NotasBimestre.Add(nota);
                         }
