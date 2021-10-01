@@ -37,24 +37,25 @@ namespace SME.SGP.Aplicacao
                 var turmaId = turma.Key;
                 var alunos = turma.ToList();
                 var totalDisciplinasNaTurma = totalDisciplinas.FirstOrDefault(a => a.TurmaId == turmaId);
+                var alunoComFechamentoTurma = alunosComFechamento.Where(a => a.TurmaId == turmaId);
                 foreach (var aluno in alunos)
                 {
                     var alunoFechamento = new FechamentoAlunoStatusDto()
                     {
                         TurmaId = turmaId,
-                        Ano = param.UeId == 0 && aluno.TurmaTipo == 2 ? -88 : aluno.Ano,
+                        Ano = param.UeId == 0 && aluno.TurmaTipo == 2 ? "-88" : aluno.Ano,
                         Modalidade = aluno.TurmaModalidade,
                         TurmaNome = aluno.TurmaNome,
                         AlunoCodigo = aluno.AlunoCodigo,
                         Situacao = Dominio.SituacaoFechamentoAluno.SemRegistros
                     };
 
-                    var alunoComFechamento = alunosComFechamento.FirstOrDefault(a => a.AlunoCodigo == aluno.AlunoCodigo && a.TurmaId == turmaId);
+                    var alunoComFechamento = alunoComFechamentoTurma.FirstOrDefault(a => a.AlunoCodigo == aluno.AlunoCodigo);
 
-                    if (alunoComFechamento != null)
+                    if (alunoComFechamentoTurma.Where(a => a.AlunoCodigo == aluno.AlunoCodigo).Any())
                         alunoFechamento.Situacao = Dominio.SituacaoFechamentoAluno.Parcial;
 
-                    if (alunoComFechamento != null && totalDisciplinasNaTurma != null)
+                    if (alunoComFechamentoTurma.Where(a => a.AlunoCodigo == aluno.AlunoCodigo).Any() && totalDisciplinasNaTurma != null)
                         if (alunoComFechamento.QuantidadeDisciplinaFechadas == totalDisciplinasNaTurma.QuantidadeDisciplinas)
                             alunoFechamento.Situacao = Dominio.SituacaoFechamentoAluno.Completo;
 
@@ -95,11 +96,11 @@ namespace SME.SGP.Aplicacao
                     fechamento.AdicionarQuantidadeSemRegistro(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.SemRegistros).Count());
 
                     if (fechamento.QuantidadeSemRegistro > 0)
-                        fechamentos.Add(new GraficoBaseDto(turmaAno == -88 ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeSemRegistro, fechamento.LegendaSemRegistro));
+                        fechamentos.Add(new GraficoBaseDto(turmaAno == "-88" ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeSemRegistro, fechamento.LegendaSemRegistro));
                     if (fechamento.QuantidadeParcial > 0)
-                        fechamentos.Add(new GraficoBaseDto(turmaAno == -88 ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeParcial, fechamento.LegendaParcial));
+                        fechamentos.Add(new GraficoBaseDto(turmaAno == "-88" ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeParcial, fechamento.LegendaParcial));
                     if (fechamento.QuantidadeCompleto > 0)
-                        fechamentos.Add(new GraficoBaseDto(turmaAno == -88 ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeCompleto, fechamento.LegendaCompleto));
+                        fechamentos.Add(new GraficoBaseDto(turmaAno == "-88" ? "Ed. Física" : turmaAno.ToString(), fechamento.QuantidadeCompleto, fechamento.LegendaCompleto));
                 }
             }
             return fechamentos.OrderBy(a => a.Grupo).ToList();
