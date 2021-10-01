@@ -53,7 +53,8 @@ namespace SME.SGP.Aplicacao
                         usuario.TemPerfilSupervisorOuDiretor(),
                         usuario.PodeVisualizarEventosOcorrenciaDre(),
                         usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(),
-                        filtroEventosDto.ConsideraHistorico));
+                        filtroEventosDto.ConsideraHistorico,
+                        filtroEventosDto.EhEventosTodaRede));
         }
 
         public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia, int anoLetivo)
