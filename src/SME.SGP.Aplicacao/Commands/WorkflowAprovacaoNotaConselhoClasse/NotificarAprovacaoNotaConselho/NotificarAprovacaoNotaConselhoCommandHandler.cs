@@ -40,14 +40,20 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(NotificarAprovacaoNotaConselhoCommand request, CancellationToken cancellationToken)
         {
-            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
             var usuarioRf = await mediator.Send(new ObterCriadorWorkflowQuery(request.WorkFlowId));
-            var notaConceitoTitulo = request.NotasEmAprovacao.ConceitoId.HasValue ? "conceito" : "nota";
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(usuarioRf, "");
-            var bimestre = await repositorioConselhoClasseNota.ObterBimestreEmAprovacaoWf(request.WorkFlowId);
 
             if(usuario != null)
             {
+                var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
+                var notaConceitoTitulo = request.NotasEmAprovacao.ConceitoId.HasValue ? "conceito" : "nota";
+                var bimestre = await repositorioConselhoClasseNota.ObterBimestreEmAprovacaoWf(request.WorkFlowId);
+
+                var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
+
+                var codigoAluno = repositorioConselhoClasseAluno.ObterPorId(request.NotasEmAprovacao.ConselhoClasseNota.ConselhoClasseAlunoId);
+                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == codigoAluno.AlunoCodigo);
+
                 repositorioNotificacao.Salvar(new Notificacao()
                 {
                     UeId = turma.Ue.CodigoUe,
@@ -55,10 +61,11 @@ namespace SME.SGP.Aplicacao
                     Ano = DateTime.Today.Year,
                     Categoria = NotificacaoCategoria.Aviso,
                     DreId = turma.Ue.Dre.CodigoDre,
-                    Titulo = $"Alteração em {notaConceitoTitulo} final - Turma {turma.Nome} ({turma.AnoLetivo})",
+                    Titulo = $"Alteração em {notaConceitoTitulo} pós-conselho - {aluno.NomeAluno} ({aluno.CodigoAluno}) - {turma.Nome} ({turma.AnoLetivo})",
                     Tipo = NotificacaoTipo.Notas,
                     Codigo = request.CodigoDaNotificacao ?? 0,
                     Mensagem = await MontaMensagemAprovacaoNotaPosConselho(turma,
+                                                                           aluno,
                                                                            notaConceitoTitulo,
                                                                            request.NotasEmAprovacao,
                                                                            request.Aprovada,
@@ -71,6 +78,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<string> MontaMensagemAprovacaoNotaPosConselho(Turma turma,
+                                                                         AlunoPorTurmaResposta aluno,
                                                                          string notaConceitoTitulo,
                                                                          WFAprovacaoNotaConselho notaEmAprovacao,
                                                                          bool aprovado,
@@ -94,11 +102,6 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine("<td style='padding: 5px;'>Valor Anterior</td>");
             mensagem.AppendLine("<td style='padding: 5px;'>Novo Valor</td>");
             mensagem.AppendLine("</tr>");
-
-            var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
-
-            var codigoAluno = repositorioConselhoClasseAluno.ObterPorId(notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAlunoId);
-            var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == codigoAluno.AlunoCodigo);
 
             mensagem.AppendLine("<tr>");
             mensagem.Append($"<td style='padding: 10px;'> {aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({aluno?.CodigoAluno})</td>");
