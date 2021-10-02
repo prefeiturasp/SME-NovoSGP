@@ -5,11 +5,8 @@ namespace SME.SGP.Infra
 {
     public interface IServicoTelemetria
     {
-        Task<dynamic> RegistrarAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor);
-
-        dynamic Registrar<T>(Func<object> acao, string acaoNome, string telemetriaNome, string telemetriaValor);
-
+        Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor);
+        dynamic RegistrarComRetorno<T>(Func<object> acao, string acaoNome, string telemetriaNome, string telemetriaValor);
+        void Registrar(Action acao, string acaoNome, string telemetriaNome, string telemetriaValor);
     }
-
-
 }

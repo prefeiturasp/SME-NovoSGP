@@ -21,16 +21,23 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(SalvarLogViaRabbitCommand request, CancellationToken cancellationToken)
         {
-            var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
+            try
             {
-                NullValueHandling = NullValueHandling.Ignore
-            });
+                var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
 
-            var body = Encoding.UTF8.GetBytes(mensagem);
+                var body = Encoding.UTF8.GetBytes(mensagem);
 
-            servicoTelemetria.Registrar(() => PublicarMensagem(body), "RabbitMQ", "Fila", RotasRabbitSgp.RotaLogs);
+                servicoTelemetria.Registrar(() => PublicarMensagem(body), "RabbitMQ", "Salvar Log Via Rabbit", RotasRabbitSgp.RotaLogs);
 
-            return await Task.FromResult(true);
+                return await Task.FromResult(true);
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
         }
         private void PublicarMensagem(byte[] body)
         {

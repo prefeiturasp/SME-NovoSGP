@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Prometheus;
+using RabbitMQ.Client;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
@@ -131,15 +132,18 @@ namespace SME.SGP.Api
 
             ConfiguraVariaveisAmbiente(services);
             ConfiguraGoogleClassroomSync(services);
+            ConfiguraRabbitParaLogs(services);
             var telemetriaOptions = ConfiguraTelemetria(services);
+
+            RegistraDependencias.Registrar(services);
+
 
             var serviceProvider = services.BuildServiceProvider();
 
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-            
+
             var servicoTelemetria = new ServicoTelemetria(clientTelemetry, telemetriaOptions);
 
-            RegistraDependencias.Registrar(services);
             RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services, serviceProvider);
@@ -182,6 +186,14 @@ namespace SME.SGP.Api
             Configuration.GetSection(nameof(GoogleClassroomSyncOptions)).Bind(googleClassroomSyncOptions, c => c.BindNonPublicProperties = true);
 
             services.AddSingleton(googleClassroomSyncOptions);
+        }
+
+        private void ConfiguraRabbitParaLogs(IServiceCollection services)
+        {
+            var configuracaoRabbitLogOptions = new ConfiguracaoRabbitLogOptions();
+            Configuration.GetSection("ConfiguracaoRabbitLog").Bind(configuracaoRabbitLogOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(configuracaoRabbitLogOptions);
         }
         private TelemetriaOptions ConfiguraTelemetria(IServiceCollection services)
         {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
 {
-    public class ServicoTelemetria
+    public class ServicoTelemetria : IServicoTelemetria
     {
         private readonly TelemetryClient insightsClient;
         private readonly TelemetriaOptions telemetriaOptions;
@@ -94,7 +94,6 @@ namespace SME.SGP.Infra
             return result;
         }
 
-
         public void Registrar(Action acao, string acaoNome, string telemetriaNome, string telemetriaValor)
         {
             DateTime inicioOperacao = default;
@@ -129,6 +128,4 @@ namespace SME.SGP.Infra
         }
 
     }
-
-
 }
