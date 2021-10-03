@@ -174,5 +174,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<long>(query.ToString(), new { alunoCodigo, turmaId, bimestre });
         }
+        public async Task<long> ObterConselhoClasseAlunoIdAsync(long conselhoClasseId, string alunoCodigo)
+        {
+            var query = @"select id 
+                            from conselho_classe_aluno 
+                            where conselho_classe_id = @conselhoClasseId 
+                              and aluno_codigo = @alunoCodigo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { conselhoClasseId, alunoCodigo });
+        }
     }
 }
