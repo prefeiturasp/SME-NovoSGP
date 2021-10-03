@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarLogViaRabbitCommand : IRequest<bool>
     {
-        public SalvarLogViaRabbitCommand(string mensagem, LogNivel nivel, LogContexto contexto, string projeto = "SGP", string observacao = "")
+        public SalvarLogViaRabbitCommand(string mensagem, LogNivel nivel, LogContexto contexto, string observacao = "", string projeto = "SGP")
         {
             Mensagem = mensagem;
             Nivel = nivel;

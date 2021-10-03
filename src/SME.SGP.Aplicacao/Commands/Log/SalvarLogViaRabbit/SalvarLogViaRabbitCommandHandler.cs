@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
+using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,9 +24,9 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
+                var mensagem = JsonConvert.SerializeObject(new LogMensagem(request.Mensagem, request.Nivel.ToString(), request.Contexto.ToString(), request.Observacao, request.Projeto), new JsonSerializerSettings
                 {
-                    NullValueHandling = NullValueHandling.Ignore                    
+                    NullValueHandling = NullValueHandling.Ignore
 
                 });
 
@@ -59,6 +60,26 @@ namespace SME.SGP.Aplicacao
             _channel.QueueBind(RotasRabbitSgp.RotaLogs, ExchangeSgpRabbit.SgpLogs, RotasRabbitSgp.RotaLogs);
             _channel.BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasRabbitSgp.RotaLogs, props, body);
         }
+    }
+    public class LogMensagem
+    {
+        public LogMensagem(string mensagem, string nivel, string contexto, string observacao, string projeto)
+        {
+            Mensagem = mensagem;
+            Nivel = nivel;
+            Contexto = contexto;
+            Observacao = observacao;
+            Projeto = projeto;
+            DataHora = DateTime.Now;
+        }
+
+        public string Mensagem { get; set; }
+        public string Nivel { get; set; }
+        public string Contexto { get; set; }
+        public string Observacao { get; set; }
+        public string Projeto { get; set; }
+        public DateTime DataHora { get; set; }
+
     }
 
 }
