@@ -25,7 +25,8 @@ namespace SME.SGP.Aplicacao
             {
                 var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
                 {
-                    NullValueHandling = NullValueHandling.Ignore
+                    NullValueHandling = NullValueHandling.Ignore                    
+
                 });
 
                 var body = Encoding.UTF8.GetBytes(mensagem);
@@ -53,8 +54,9 @@ namespace SME.SGP.Aplicacao
             using IModel _channel = conexaoRabbit.CreateModel();
 
             var props = _channel.CreateBasicProperties();
-            props.Persistent = true;
 
+            //TODO: Trocar a fila para direct;
+            _channel.QueueBind(RotasRabbitSgp.RotaLogs, ExchangeSgpRabbit.SgpLogs, RotasRabbitSgp.RotaLogs);
             _channel.BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasRabbitSgp.RotaLogs, props, body);
         }
     }

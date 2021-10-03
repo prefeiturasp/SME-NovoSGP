@@ -163,15 +163,16 @@ namespace SME.SGP.Dados
 
         public static IEnumerable<TEntity> GetAll<TEntity>(this IDbConnection connection, bool buffered = true) where TEntity : class
         {
-            var entidade = nameof(TEntity).ToString();
+            //Descobrir como obter a classe;;
+            //var entidade = this. TEntity?.GetType()?.Name;
 
-            var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.GetAll<TEntity>(connection, buffered), "Postgres", $"GetAll Entidade {entidade}", "GetAll");
+            var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.GetAll<TEntity>(connection, buffered), "Postgres", $"GetAll Entidade ??", "GetAll");
 
             return result;
         }
         public static object Insert<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null) where TEntity : class
         {
-            var entidade = nameof(TEntity).ToString();
+            var entidade = entity?.GetType()?.Name;
 
             var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.Insert<TEntity>(connection, entity, transaction), "Postgres", $"Insert Entidade {entidade}", "Insert");
 
@@ -180,7 +181,7 @@ namespace SME.SGP.Dados
 
         public static bool Update<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null)
         {
-            var entidade = nameof(TEntity).ToString();
+            var entidade = entity?.GetType()?.Name;
 
             var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.Update<TEntity>(connection, entity, transaction), "Postgres", $"Update Entidade {entidade}", "Insert");
 
@@ -188,15 +189,15 @@ namespace SME.SGP.Dados
         }
         public static TEntity Get<TEntity>(this IDbConnection connection, object id) where TEntity : class
         {
-            var entidade = nameof(TEntity).ToString();
+            //var entidade = entity?.GetType()?.Name;
 
-            var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.Get<TEntity>(connection, id), "Postgres", $"Get Entidade {entidade}", "Get");
+            var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.Get<TEntity>(connection, id), "Postgres", $"Get Entidade ??", "Get");
 
             return result;
         }
         public static bool Delete<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null, string queryName = "Command Postgres")
         {
-            var entidade = nameof(TEntity).ToString();
+            var entidade = entity?.GetType()?.Name;
 
             var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.Delete<TEntity>(connection, entity, transaction), "Postgres", $"Get Entidade {entidade}", "Get");
 
@@ -204,16 +205,16 @@ namespace SME.SGP.Dados
         }
         public static async Task<TEntity> GetAsync<TEntity>(this IDbConnection connection, object id) where TEntity : class
         {
-            var entidade = nameof(TEntity).ToString();
+            //var entidade = entity?.GetType()?.Name;
 
-            var result = await servicoTelemetria.RegistrarComRetornoAsync<TEntity>(async () => await Dommel.DommelMapper.GetAsync<TEntity>(connection, id), "Postgres", $"GetAsync Entidade {entidade}", "GetAsync");
+            var result = await servicoTelemetria.RegistrarComRetornoAsync<TEntity>(async () => await Dommel.DommelMapper.GetAsync<TEntity>(connection, id), "Postgres", $"GetAsync Entidade ??", "GetAsync");
 
             return result;
 
         }
         public static async Task<bool> UpdateAsync<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null)
         {
-            var entidade = nameof(TEntity).ToString();
+            var entidade = entity?.GetType()?.Name;
 
             var result = await servicoTelemetria.RegistrarComRetornoAsync<TEntity>(async () => await Dommel.DommelMapper.UpdateAsync<TEntity>(connection, entity, transaction), "Postgres", $"UpdateAsync Entidade {entidade}", "UpdateAsync");
 
@@ -221,7 +222,7 @@ namespace SME.SGP.Dados
         }
         public static async Task<object> InsertAsync<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null) where TEntity : class
         {
-            var entidade = nameof(TEntity).ToString();
+            var entidade = entity?.GetType()?.Name;
 
             var result = await servicoTelemetria.RegistrarComRetornoAsync<TEntity>(async () => await Dommel.DommelMapper.InsertAsync<TEntity>(connection, entity, transaction), "Postgres", $"UpdateAsync Entidade {entidade}", "UpdateAsync");
 
