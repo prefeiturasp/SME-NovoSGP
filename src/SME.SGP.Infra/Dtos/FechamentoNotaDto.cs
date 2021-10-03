@@ -21,5 +21,7 @@ namespace SME.SGP.Infra
         public DateTime? AlteradoEm { get; set; }
         public string AlteradoRf { get; set; }
         public string AlteradoPor { get; set; }
+        public double? NotaAnterior { get; set; }
+        public long? ConceitoIdAnterior { get; set; }
     }
 }

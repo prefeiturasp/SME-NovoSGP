@@ -14,12 +14,12 @@ namespace SME.SGP.Aplicacao
 {
     public class GerarPendenciaValidacaoPlanoAEECommandHandler : IRequestHandler<GerarPendenciaValidacaoPlanoAEECommand, bool>
     {
-        private readonly IMediator mediator;        
+        private readonly IMediator mediator;
         private readonly IConfiguration configuration;
 
         public GerarPendenciaValidacaoPlanoAEECommandHandler(IMediator mediator, IConfiguration configuration)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));            
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
@@ -30,27 +30,30 @@ namespace SME.SGP.Aplicacao
             if (planoAEE == null)
                 throw new NegocioException("Não foi possível localizar o PlanoAEE");
 
-            if (planoAEE.Situacao == SituacaoPlanoAEE.ParecerCP)
-            {
-                var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
+            var existePendencia = await mediator.Send(new ExistePendenciaPlanoAEEQuery(request.PlanoAEEId));
 
-                var funcionarios = await ObterFuncionarios(turma.Ue.CodigoUe);
+            if (existePendencia)
+                return false;
 
-                if (funcionarios == null)
-                    return false;
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
 
-                var usuarios = await ObterUsuariosId(funcionarios);
+            var funcionarios = await ObterFuncionarios(turma.Ue.CodigoUe);
 
-                var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
-                var hostAplicacao = configuration["UrlFrontEnd"];
-                var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? "da criança" : "do estudante";
+            if (funcionarios == null)
+                return false;
 
-                var titulo = $"Plano AEE para validação - {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) - {ueDre}";
-                var descricao = $"O Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} foi cadastrado. <br/><a href='{hostAplicacao}aee/plano/editar/{planoAEE.Id}'>Clique aqui</a> para acessar o plano e registrar o seu parecer. " +
-                    $"<br/><br/>A pendência será resolvida automaticamente após este registro.";
+            var usuarios = await ObterUsuariosId(funcionarios);
 
-                await mediator.Send(new GerarPendenciaPlanoAEECommand(planoAEE.Id, usuarios, titulo, descricao));
-            }
+            var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
+            var hostAplicacao = configuration["UrlFrontEnd"];
+            var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? "da criança" : "do estudante";
+
+            var titulo = $"Plano AEE para validação - {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) - {ueDre}";
+            var descricao = $"O Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} foi cadastrado. <br/><a href='{hostAplicacao}aee/plano/editar/{planoAEE.Id}'>Clique aqui</a> para acessar o plano e registrar o seu parecer. " +
+                $"<br/><br/>A pendência será resolvida automaticamente após este registro.";
+
+            await mediator.Send(new GerarPendenciaPlanoAEECommand(planoAEE.Id, usuarios, titulo, descricao));
+
             return false;
         }
         private async Task<List<string>> ObterFuncionarios(string codigoUe)
