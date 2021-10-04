@@ -118,7 +118,8 @@ namespace SME.SGP.Dados.Repositorios
                         inner join dre on dre.id = u.dre_id
                         WHERE t.ano_letivo = @anoLetivo
                             {filtroAno}
-                        GROUP BY dre.abreviacao";
+                        GROUP BY dre.abreviacao, dre.dre_id 
+                        order by dre.dre_id ";
 
             return await database.Conexao.QueryAsync<GraficoBaseDto>(query, new { anoLetivo, ano });
         }
