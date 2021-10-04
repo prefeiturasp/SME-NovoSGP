@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirComunicadoBoletimEscolaAquiCommandHendler : IRequestHandler<InserirComunicadoBoletimEscolaAquiCommand, bool>
+    public class InserirComunicadoBoletimEscolaAquiCommandHandler : IRequestHandler<InserirComunicadoBoletimEscolaAquiCommand, bool>
     {
         private readonly IRepositorioComunicado repositorioComunicado;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
 
-        public InserirComunicadoBoletimEscolaAquiCommandHendler(IRepositorioComunicado repositorioComunicado, IUnitOfWork unitOfWork, IMediator mediator)
+        public InserirComunicadoBoletimEscolaAquiCommandHandler(IRepositorioComunicado repositorioComunicado, IUnitOfWork unitOfWork, IMediator mediator)
         {
             this.repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
