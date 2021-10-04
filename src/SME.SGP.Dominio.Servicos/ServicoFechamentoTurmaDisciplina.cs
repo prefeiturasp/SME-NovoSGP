@@ -457,7 +457,7 @@ namespace SME.SGP.Dominio.Servicos
                     TurmaId = turmaFechamento.CodigoTurma,
                     UeId = turmaFechamento.Ue.CodigoUe,
                     DreId = turmaFechamento.Ue.Dre.CodigoDre,
-                    NotificacaoTitulo = $"Alteração em {notaConceitoMensagem} final - {disciplinaEOL} - {turmaFechamento.Nome} ({turmaFechamento.AnoLetivo})",
+                    NotificacaoTitulo = $"Alteração em {notaConceitoMensagem} final - {componenteSgp.Descricao} - {turmaFechamento.Nome} ({turmaFechamento.AnoLetivo})",
                     NotificacaoTipo = NotificacaoTipo.Notas,
                     NotificacaoMensagem = mensagem
                 };
