@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.AnoLetivo)
                 .NotEmpty()
-                .WithMessage("O ano letivo deve ser informado para consulta dos diarios de bordos pendentes por DRE");
+                .WithMessage("O ano letivo deve ser informado para consulta dos diários de bordos pendentes por DRE");
         }
     }
 }
