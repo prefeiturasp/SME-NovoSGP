@@ -31,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine("or login = @codigoRf");
 
-            return database.Conexao.Query<Usuario>(query.ToString(), new { codigoRf, login })
+            return database.Conexao.Query<Usuario>(query.ToString(), new { codigoRf, login }, queryName: "ObterPorCodigoRfLogin")
                 .FirstOrDefault();
         }
 

@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -16,16 +14,9 @@ namespace SME.SGP.Aplicacao
         {
             var command = mensagem.ObterObjetoMensagem<ExcluirPendenciasDiasLetivosInsuficientesCommand>();
 
-            LogSentry(command, "Inicio");
             await mediator.Send(command);
-            LogSentry(command, "Fim");
-            
-            return true;
-        }
 
-        private void LogSentry(ExcluirPendenciasDiasLetivosInsuficientesCommand command, string mensagem)
-        {
-            SentrySdk.AddBreadcrumb($"Mensagem ExecutarExclusaoPendenciaDiasLetivosInsuficientes : {mensagem} - TipoCalendario:{command.TipoCalendarioId} Dre:{command.DreCodigo} Ue:{command.UeCodigo}", "Rabbit - ExecutarExclusaoPendenciaDiasLetivosInsuficientes");
+            return true;
         }
     }
 }

@@ -52,10 +52,6 @@ namespace SME.SGP.Aplicacao.Commands
             if (!await ParametroGeracaoPendenciaAtivo())
                 return;
 
-            var ultimaVersaoPlano = await mediator.Send(new ObterUltimaVersaoPlanoAEEQuery(plano.Id));
-            if (ultimaVersaoPlano != null && ultimaVersaoPlano.Numero > 1)
-                return;
-
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
             if (turma == null)
                 throw new NegocioException($"Não foi possível localizar a turma [{turmaId}]");

@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             var ueId = mensagemRabbit.Mensagem.ToString();
             if (string.IsNullOrEmpty(ueId))
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a sincronização das turmas. O codígo da Ue não foi informado", SentryLevel.Error);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a sincronização das turmas. O codígo da Ue não foi informado", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
             }
 
             var codigosTurma = await mediator.Send(new ObterCodigosTurmasEOLPorUeIdParaSyncEstruturaInstitucionalQuery(ueId));
@@ -37,14 +37,12 @@ namespace SME.SGP.Aplicacao
                     var publicarFilaIncluirTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalTurmaTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null));
                     if (!publicarFilaIncluirTurma)
                     {
-                        var mensagem = $"Não foi possível inserir a turma de codígo : {codigoTurma} na fila de inclusão.";
-                        SentrySdk.CaptureMessage(mensagem, SentryLevel.Error);
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir a turma de codígo : {codigoTurma} na fila de inclusão.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));                        
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    SentrySdk.AddBreadcrumb($"Não foi possível incluir a turma {codigoTurma} na fila para tratamento", "sincronizacao-institucional", null, null, BreadcrumbLevel.Error);
-                    SentrySdk.CaptureException(ex);
+                    
                 }
             }
             return true;

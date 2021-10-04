@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
-using Sentry;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System.Text;
@@ -13,13 +12,22 @@ namespace SME.SGP.Aplicacao
     public class PublicarFilaGoogleClassroomCommandHandler : IRequestHandler<PublicarFilaGoogleClassroomCommand, bool>
     {
         private readonly ConfiguracaoRabbitOptions configuracaoRabbitOptions;
+        private readonly IServicoTelemetria servicoTelemetria;
 
-        public PublicarFilaGoogleClassroomCommandHandler(ConfiguracaoRabbitOptions configuracaoRabbitOptions)
+        public PublicarFilaGoogleClassroomCommandHandler(ConfiguracaoRabbitOptions configuracaoRabbitOptions, IServicoTelemetria servicoTelemetria)
         {
             this.configuracaoRabbitOptions = configuracaoRabbitOptions ?? throw new System.ArgumentNullException(nameof(configuracaoRabbitOptions));
+            this.servicoTelemetria = servicoTelemetria ?? throw new System.ArgumentNullException(nameof(servicoTelemetria));
         }
 
         public Task<bool> Handle(PublicarFilaGoogleClassroomCommand request, CancellationToken cancellationToken)
+        {
+            servicoTelemetria.Registrar(() => PublicarMensagem(request), "RabbitMQ", "Fila", request.Fila);            
+
+            return Task.FromResult(true);
+        }
+
+        private void PublicarMensagem(PublicarFilaGoogleClassroomCommand request)
         {
             var factory = new ConnectionFactory
             {
@@ -43,8 +51,6 @@ namespace SME.SGP.Aplicacao
                     _channel.BasicPublish(RotasRabbitSgpGoogleClassroomApi.ExchangeGoogleSync, request.Fila, null, body);
                 }
             }
-
-            return Task.FromResult(true);
         }
 
         private static byte[] FormataBodyWorker(PublicarFilaGoogleClassroomCommand request)

@@ -1,11 +1,8 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -22,13 +19,13 @@ namespace SME.SGP.Aplicacao
 
             if (consolidacaoTurma == null)
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação das turmas. O id da turma e o bimestre não foram informados", SentryLevel.Error);
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível iniciar a consolidação das turmas. O id da turma e o bimestre não foram informados.", LogNivel.Negocio, LogContexto.Turma));
                 return false;
             }
 
             if (consolidacaoTurma.TurmaId == 0)
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação das turmas. O id da turma não foi informado", SentryLevel.Error);
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível iniciar a consolidação das turmas. O id da turma não foi informado.", LogNivel.Negocio, LogContexto.Turma));                
                 return false;
             }
 

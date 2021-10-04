@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using Sentry;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -29,8 +29,6 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
             }
 
-            SentrySdk.AddBreadcrumb($"Correlação obtida com sucesso {relatorioCorrelacao.Codigo}", "9 - ReceberRelatorioProntoUseCase");
-
             unitOfWork.IniciarTransacao();
 
             if (relatorioCorrelacao.EhRelatorioJasper)
@@ -40,12 +38,11 @@ namespace SME.SGP.Aplicacao
 
                 var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
 
-                SentrySdk.AddBreadcrumb("Salvando Correlação Relatório Jasper de retorno", "9 - ReceberRelatorioProntoUseCase");
-
                 relatorioCorrelacao.AdicionarCorrelacaoJasper(relatorioCorrelacaoJasper);
             }
 
             var mensagem = mensagemRabbit.ObterObjetoMensagem<MensagemRelatorioProntoDto>();
+            var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
             switch (relatorioCorrelacao.TipoRelatorio)
             {
                 case TipoRelatorio.RelatorioExemplo:
@@ -56,26 +53,29 @@ namespace SME.SGP.Aplicacao
                 case TipoRelatorio.ConselhoClasseAtaFinal:
                 case TipoRelatorio.Frequencia:
                 case TipoRelatorio.Pendencias:
-                    SentrySdk.AddBreadcrumb($"Enviando notificação..", $"{relatorioCorrelacao.Codigo.ToString().Substring(0, 3)}{relatorioCorrelacao.TipoRelatorio.ShortName()}");
-                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo);
+                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo, urlRedirecionamentoBase);
+                    break;
+                case TipoRelatorio.BoletimDetalhadoApp:
+                     await EnviarNotificacaoAutomatica(mensagem, urlRedirecionamentoBase);
                     break;
                 default:
-                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo);
+                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo, urlRedirecionamentoBase);
                     break;
             }
 
-
             unitOfWork.PersistirTransacao();
-            SentrySdk.CaptureMessage("9 - ReceberRelatorioProntoUseCase -> Finalizado Fluxo de relatórios");
-
 
             return await Task.FromResult(true);
         }
 
-        private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario, string mensagemTitulo)
+        private async Task EnviarNotificacaoAutomatica(MensagemRelatorioProntoDto relatorioPronto, string urlRedirecionamentoBase)
         {
-            var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
-
+            var parametros = JsonConvert.DeserializeObject<MensagemRelatorioBoletimAppDto>(relatorioPronto.MensagemDados.ToString());
+            await mediator.Send(new InserirComunicadoBoletimEscolaAquiCommand(relatorioPronto.MensagemUsuario,relatorioPronto.MensagemTitulo,parametros.AnoLetivo,parametros.TurmaCodigo,parametros.Modalidade,
+                parametros.Semestre,parametros.AlunoCodigo,parametros.CodigoArquivo, urlRedirecionamentoBase));
+        }
+        private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario, string mensagemTitulo,string urlRedirecionamentoBase)
+        {
             await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase, mensagemUsuario, mensagemTitulo));
         }
     }

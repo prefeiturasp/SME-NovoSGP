@@ -24,5 +24,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.QueryAsync<Conceito>(sql, parametros);
         }
+
     }
 }

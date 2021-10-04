@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Sentry;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -25,9 +25,9 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new PublicarAtualizacaoPendenciaRegistroIndividualCommand(turmaId, codigoAluno, data));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                SentrySdk.CaptureMessage($"Não foi possível publicar o evento de atualização de pendências por ausência de registro individual. {ex.InnerException?.Message ?? ex.Message}");
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível publicar o evento de atualização de pendências por ausência de registro individual. {ex.InnerException?.Message ?? ex.Message}", LogNivel.Negocio, LogContexto.RegistroIndividual));
             }
         }
     }

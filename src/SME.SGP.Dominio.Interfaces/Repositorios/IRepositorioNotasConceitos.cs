@@ -13,5 +13,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<NotaConceito> ObterNotasPorAtividadeIdCodigoAluno(long atividadeId,string codigoAluno);
         Task<NotaConceito> ObterNotasPorId(long id);
+
+        Task<double> ObterNotaEmAprovacao(string codigoAluno, long disciplinaId, long turmaFechamentoId);
     }
 }

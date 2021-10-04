@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
-using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
@@ -48,18 +47,33 @@ namespace SME.SGP.Worker.Rabbbit
 
             ConfiguraVariaveisAmbiente(services);
             ConfiguraGoogleClassroomSync(services);
+            ConfiguraRabbitParaLogs(services);
 
-            services.AddRabbit(configuracaoRabbitOptions);
+            services.AddRabbit(configuracaoRabbitOptions);            
 
-            services.AddHostedService<WorkerRabbitMQ>();
+            var telemetriaOptions = ConfiguraTelemetria(services);
+            var serviceProvider = services.BuildServiceProvider();            
 
-
-            var serviceProvider = services.BuildServiceProvider();
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-            DapperExtensionMethods.Init(clientTelemetry);
-            SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN"));
+
+            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, telemetriaOptions);
+
+            DapperExtensionMethods.Init(servicoTelemetria);
+
+            services.AddSingleton(servicoTelemetria);
 
             services.AddMemoryCache();
+
+            services.AddHostedService<WorkerRabbitMQ>();
+        }
+        private TelemetriaOptions ConfiguraTelemetria(IServiceCollection services)
+        {
+            var telemetriaOptions = new TelemetriaOptions();
+            configuration.GetSection(TelemetriaOptions.Secao).Bind(telemetriaOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(telemetriaOptions);
+
+            return telemetriaOptions;
         }
         private void ConfiguraVariaveisAmbiente(IServiceCollection services)
         {
@@ -89,6 +103,13 @@ namespace SME.SGP.Worker.Rabbbit
             {
                 await context.Response.WriteAsync("WorkerRabbitMQ!");
             });
+        }
+        private void ConfiguraRabbitParaLogs(IServiceCollection services)
+        {
+            var configuracaoRabbitLogOptions = new ConfiguracaoRabbitLogOptions();
+            configuration.GetSection("ConfiguracaoRabbitLog").Bind(configuracaoRabbitLogOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(configuracaoRabbitLogOptions);
         }
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
@@ -123,6 +144,13 @@ namespace SME.SGP.Worker.Rabbbit
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            services.AddHttpClient(name: "servicoAcompanhamentoEscolar", c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-integration-key", configuration.GetSection("AE_ChaveIntegracao").Value);
             });
 
             services.AddHttpClient<IServicoGithub, SevicoGithub>(c =>

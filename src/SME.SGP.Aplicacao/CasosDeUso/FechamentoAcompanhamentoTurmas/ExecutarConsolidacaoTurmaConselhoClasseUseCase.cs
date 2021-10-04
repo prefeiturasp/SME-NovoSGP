@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -22,13 +22,13 @@ namespace SME.SGP.Aplicacao
 
             if (consolidacaoTurmaConselhoClasse == null)
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do conselho de clase da turma. O id da turma e o bimestre não foram informados", SentryLevel.Error);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do conselho de clase da turma. O id da turma e o bimestre não foram informados", LogNivel.Critico, LogContexto.ConselhoClasse));                
                 return false;
             }
 
             if (consolidacaoTurmaConselhoClasse.TurmaId == 0)
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do conselho de clase da turma. O id da turma não foi informado", SentryLevel.Error);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do conselho de clase da turma. O id da turma não foi informado", LogNivel.Critico, LogContexto.ConselhoClasse));                
                 return false;
             }
 
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
-                        
+
             var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
 
             if (alunos == null || !alunos.Any())
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
                 var matriculadoDepois = !aluno.Inativo ?
                     periodosEscolares.FirstOrDefault(p => p.PeriodoInicio <= aluno.DataSituacao && p.PeriodoFim >= aluno.DataSituacao)?.Bimestre : null;
 
-                if(!aluno.Inativo && matriculadoDepois != null)
+                if (!aluno.Inativo && matriculadoDepois != null)
                 {
                     if (consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
                         continue;
@@ -80,14 +80,13 @@ namespace SME.SGP.Aplicacao
                     if (!publicarFilaConsolidacaoConselhoClasseAluno)
                     {
                         var mensagem = $"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.";
-                        SentrySdk.CaptureMessage(mensagem, SentryLevel.Error);
+                        await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, LogNivel.Critico, LogContexto.ConselhoClasse));                        
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.AddBreadcrumb($"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.", "consolidação-conselho-classe-aluno", null, null, BreadcrumbLevel.Error);
-                    SentrySdk.CaptureException(ex);
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
                     return false;
                 }
             }

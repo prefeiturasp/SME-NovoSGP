@@ -1,8 +1,6 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -24,7 +22,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var turmaEOL = await mediator.Send(new ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(filtro.CodigoTurma, filtro.UeId));
-                
+
                 if (turmaEOL == null)
                     return true;
 
@@ -39,8 +37,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureMessage($"Não foi possível realizar o tratamento da turma id {filtro.CodigoTurma}.", SentryLevel.Error );
-                SentrySdk.CaptureException(ex);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível realizar o tratamento da turma id {filtro.CodigoTurma}.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, ex.Message));
                 throw;
             }
             return true;
