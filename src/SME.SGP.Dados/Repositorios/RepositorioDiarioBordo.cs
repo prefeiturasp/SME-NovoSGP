@@ -645,8 +645,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             var filtroAno = !string.IsNullOrEmpty(ano) ? "and t.ano = @ano" : "";
 
-            var query = $@"select dre.abreviacao as Dre
+            var query = $@"select * from (
+                    select dre.abreviacao as Dre
 	                    , dre.abreviacao as Grupo
+	                    , dre.dre_id as DreId
 	                    , count(a.id) as Quantidade
 	                    , 'Quantidade de Diarios de Bordos Pendentes' as Descricao
                       from aula a
@@ -659,12 +661,13 @@ namespace SME.SGP.Dados.Repositorios
                        and db.id is null
                        and t.ano_letivo = @anoLetivo
                        {filtroAno}
-                    group by dre.abreviacao   
+                    group by dre.abreviacao, dre.dre_id
    
                     union all
 
                     select dre.abreviacao as Dre
 	                    , dre.abreviacao as Grupo
+	                    , dre.dre_id as DreId
 	                    , count(a.id) as Quantidade
 	                    , 'Quantidade de Diarios de Bordos Preenchidos' as Descricao
                       from aula a
@@ -676,7 +679,8 @@ namespace SME.SGP.Dados.Repositorios
                        and a.data_aula < NOW()
                        and t.ano_letivo = @anoLetivo
                        {filtroAno}
-                    group by dre.abreviacao";
+                    group by dre.abreviacao, dre.dre_id) t
+                    order by DreId";
 
             return await database.Conexao.QueryAsync<GraficoTotalDiariosEDevolutivasPorDreDTO>(query, new { anoLetivo });
         }
