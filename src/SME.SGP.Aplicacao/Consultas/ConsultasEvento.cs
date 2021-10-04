@@ -175,7 +175,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private string montarDescricaoDre(Evento evento)
+        private string MontarDescricaoDre(Evento evento)
         {
             if (evento.Dre != null && !string.IsNullOrEmpty(evento.Dre.Abreviacao))
             {
