@@ -170,12 +170,12 @@ namespace SME.SGP.Aplicacao
                 PodeAlterarExcluirPorPerfilAbrangencia = podeAlterarExcluirPorPerfilAbrangencia != null ? podeAlterarExcluirPorPerfilAbrangencia : false,
                 Status = evento.Status,
                 Bimestre = bimestres,
-                DescricaoDreUe = $"{montarDescricaoDre(evento)} - {MontarDescricaoUe(evento)}"
+                DescricaoDreUe = $"{MontarDescricaoDre(evento)} - {MontarDescricaoUe(evento)}"
                 
             };
         }
 
-        private string montarDescricaoDre(Evento evento)
+        private string MontarDescricaoDre(Evento evento)
         {
             if (evento.Dre != null && !string.IsNullOrEmpty(evento.Dre.Abreviacao))
             {
