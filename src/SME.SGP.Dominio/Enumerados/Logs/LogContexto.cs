@@ -25,6 +25,7 @@
         ObjetivosAprendizagem = 21,
         WorkerRabbit = 22,
         ConsolidacaoMatricula = 23,
-        ConselhoClasse = 24
+        ConselhoClasse = 24,
+        Infantil = 25
     }
 }
