@@ -290,5 +290,21 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<GraficoBaseDto>(query, new { anoLetivo, ueId, modalidade, dataInicial });
         }
 
+        public async Task<IEnumerable<GraficoBaseDto>> ObterTotalPorDRE(int anoLetivo, string ano)
+        {
+            var query = @"select
+	                        dre.abreviacao as Descricao,
+	                        count(ri.id) as Quantidade
+                        from registro_individual ri 
+                        inner join turma t on t.id = ri.turma_id 
+                        inner join ue on ue.id = t.ue_id
+                        inner join dre on dre.id = ue.dre_id 
+                        where not ri.excluido 
+                          and t.ano_letivo = :anoLetivo
+                        group by dre.abreviacao, dre.dre_id 
+                        order by dre.dre_id";
+
+            return await database.Conexao.QueryAsync<GraficoBaseDto>(query, new { anoLetivo, ano });
+        }
     }
 }
