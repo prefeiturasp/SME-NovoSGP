@@ -1,12 +1,14 @@
-﻿using SME.SGP.Dominio;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -25,12 +27,12 @@ namespace SME.SGP.Aplicacao
                                IRepositorioEventoBimestre repositorioEventoBimestre,
                                IConsultasAbrangencia consultasAbrangencia) : base(contextoAplicacao)
         {
-            this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
-            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
-            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
-            this.consultasAbrangencia = consultasAbrangencia ?? throw new System.ArgumentNullException(nameof(consultasAbrangencia));
-            this.repositorioEventoBimestre = repositorioEventoBimestre ?? throw new System.ArgumentNullException(nameof(repositorioEventoBimestre));
+            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
+            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
+            this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
+            this.repositorioEventoBimestre = repositorioEventoBimestre ?? throw new ArgumentNullException(nameof(repositorioEventoBimestre));
         }
 
         public async Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto)
@@ -53,7 +55,8 @@ namespace SME.SGP.Aplicacao
                         usuario.TemPerfilSupervisorOuDiretor(),
                         usuario.PodeVisualizarEventosOcorrenciaDre(),
                         usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(),
-                        filtroEventosDto.ConsideraHistorico));
+                        filtroEventosDto.ConsideraHistorico,
+                        filtroEventosDto.EhEventosTodaRede));
         }
 
         public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia, int anoLetivo)
@@ -166,8 +169,29 @@ namespace SME.SGP.Aplicacao
                 PodeAlterar = podeAlterar != null ? podeAlterar.Value && evento.PodeAlterar() : evento.PodeAlterar(),
                 PodeAlterarExcluirPorPerfilAbrangencia = podeAlterarExcluirPorPerfilAbrangencia != null ? podeAlterarExcluirPorPerfilAbrangencia : false,
                 Status = evento.Status,
-                Bimestre = bimestres
+                Bimestre = bimestres,
+                DescricaoDreUe = $"{montarDescricaoDre(evento)} - {montarDescricaoUe(evento)}"
+                
             };
+        }
+
+        private string montarDescricaoDre(Evento evento)
+        {
+            if (evento.Dre is not null && !string.IsNullOrEmpty(evento.Dre.Abreviacao))
+            {
+                return $"{evento.Dre.Abreviacao.Replace("-", ":")}";
+            }
+
+            return "Dre: Todas";
+        }
+        
+        private string montarDescricaoUe(Evento evento)
+        {
+            if (evento.Ue is not null && !string.IsNullOrEmpty(evento.Ue.Nome))
+            {
+                return $"UE: {evento.Ue.Nome} ";
+            }
+            return "UE: Todas ";
         }
 
         private PaginacaoResultadoDto<EventoCompletoDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<Evento> eventosPaginados)
