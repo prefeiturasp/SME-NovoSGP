@@ -170,14 +170,14 @@ namespace SME.SGP.Aplicacao
                 PodeAlterarExcluirPorPerfilAbrangencia = podeAlterarExcluirPorPerfilAbrangencia != null ? podeAlterarExcluirPorPerfilAbrangencia : false,
                 Status = evento.Status,
                 Bimestre = bimestres,
-                DescricaoDreUe = $"{montarDescricaoDre(evento)} - {montarDescricaoUe(evento)}"
+                DescricaoDreUe = $"{montarDescricaoDre(evento)} - {MontarDescricaoUe(evento)}"
                 
             };
         }
 
         private string montarDescricaoDre(Evento evento)
         {
-            if (evento.Dre is not null && !string.IsNullOrEmpty(evento.Dre.Abreviacao))
+            if (evento.Dre != null && !string.IsNullOrEmpty(evento.Dre.Abreviacao))
             {
                 return $"{evento.Dre.Abreviacao.Replace("-", ":")}";
             }
@@ -185,9 +185,9 @@ namespace SME.SGP.Aplicacao
             return "Dre: Todas";
         }
         
-        private string montarDescricaoUe(Evento evento)
+        private string MontarDescricaoUe(Evento evento)
         {
-            if (evento.Ue is not null && !string.IsNullOrEmpty(evento.Ue.Nome))
+            if (evento.Ue != null && !string.IsNullOrEmpty(evento.Ue.Nome))
             {
                 return $"UE: {evento.Ue.Nome} ";
             }
