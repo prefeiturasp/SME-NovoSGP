@@ -20,7 +20,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task Executar()
         {
-            //SentrySdk.AddBreadcrumb($"Mensagem ExecutaPendenciaAulaUseCase", "Rabbit - ExecutaPendenciaAulaUseCase");
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAula, new PendenciaAulaUseCase(mediator, unitOfWork), Guid.NewGuid(), null));
         }
     }

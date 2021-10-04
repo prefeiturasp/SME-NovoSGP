@@ -51,14 +51,17 @@ namespace SME.SGP.Aplicacao
                 VirtualHost = configuracaoRabbitOptions.VirtualHost
             };
 
-            using var conexaoRabbit = factory.CreateConnection();
-            using IModel _channel = conexaoRabbit.CreateModel();
+            using (var conexaoRabbit = factory.CreateConnection())
+            {
+                using (IModel _channel = conexaoRabbit.CreateModel())
+                {
+                    var props = _channel.CreateBasicProperties();
 
-            var props = _channel.CreateBasicProperties();
-
-            //TODO: Trocar a fila para direct;
-            _channel.QueueBind(RotasRabbitSgp.RotaLogs, ExchangeSgpRabbit.SgpLogs, RotasRabbitSgp.RotaLogs);
-            _channel.BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasRabbitSgp.RotaLogs, props, body);
+                    //TODO: Trocar a fila para direct;
+                    _channel.QueueBind(RotasRabbitSgp.RotaLogs, ExchangeSgpRabbit.SgpLogs, RotasRabbitSgp.RotaLogs);
+                    _channel.BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasRabbitSgp.RotaLogs, props, body);
+                }                
+            }            
         }
     }
     public class LogMensagem
