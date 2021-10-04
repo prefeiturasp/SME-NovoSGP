@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -58,7 +59,7 @@ namespace SME.SGP.Aplicacao
                      await EnviarNotificacaoAutomatica(mensagem, urlRedirecionamentoBase);
                     break;
                 default:
-                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo, urlRedirecionamentoBase);
+                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo);
                     break;
             }
 
@@ -73,9 +74,9 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new InserirComunicadoBoletimEscolaAquiCommand(relatorioPronto.MensagemUsuario,relatorioPronto.MensagemTitulo,parametros.AnoLetivo,parametros.TurmaCodigo,parametros.Modalidade,
                 parametros.Semestre,parametros.AlunosCodigo,parametros.CodigoArquivo, urlRedirecionamentoBase));
         }
-        private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario, string mensagemTitulo,string urlRedirecionamentoBase)
+        private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario, string mensagemTitulo)
         {
-            await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase, mensagemUsuario, mensagemTitulo));
+            await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, mensagemUsuario, mensagemTitulo));
         }
     }
 }
