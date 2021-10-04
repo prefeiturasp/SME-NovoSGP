@@ -146,7 +146,7 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Usuário não encontrado.");
             }
 
-            var perfisDoUsuario = await repositorioCache.Obter($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
+            var perfisDoUsuario = await repositorioCache.ObterAsync($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
 
             usuario.DefinirPerfis(perfisDoUsuario);
             usuario.DefinirPerfilAtual(ObterPerfilAtual());
@@ -186,6 +186,42 @@ namespace SME.SGP.Dominio
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
 
             repositorioUsuario.Salvar(usuario);
+
+            return usuario;
+        }
+
+        public async Task<Usuario> ObterUsuarioPorCodigoRfLoginOuAdicionaAsync(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
+        {
+            var eNumero = long.TryParse(codigoRf, out long n);
+
+            codigoRf = eNumero ? codigoRf : null;
+
+            var usuario = await repositorioUsuario.ObterPorCodigoRfLoginAsync(buscaLogin ? null : codigoRf, login);
+
+            if (usuario != null)
+            {
+                if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
+                {
+                    usuario.Nome = nome;
+                    await repositorioUsuario.SalvarAsync(usuario);
+                }
+
+                if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
+                {
+                    usuario.CodigoRf = codigoRf;
+                    await repositorioUsuario.SalvarAsync(usuario);
+                }
+
+                return usuario;
+            }
+
+            if (string.IsNullOrEmpty(login))
+                login = codigoRf;
+
+
+            usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
+
+            await repositorioUsuario.SalvarAsync(usuario);
 
             return usuario;
         }

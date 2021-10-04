@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SME.Background.Core;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
@@ -19,6 +19,13 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/calendarios")]
     public class FrequenciaController : ControllerBase
     {
+        private readonly IMediator mediator;
+
+        public FrequenciaController(IMediator mediator)
+        {
+            this.mediator = mediator;
+        }
+
         [HttpGet("frequencias")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
@@ -34,9 +41,9 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("frequencias/notificar")]
-        public IActionResult Notificar()
+        public async Task<IActionResult> Notificar()
         {
-            Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.ExecutaNotificacaoRegistroFrequencia());
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotifificarRegistroFrequencia, null, Guid.NewGuid(), null));
             return Ok();
         }
 
@@ -145,9 +152,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(bool), 200)]
-        public async Task<IActionResult> ConciliarFrequencia([FromQuery] DateTime dataReferencia, string turmaCodigo, [FromServices] IConciliacaoFrequenciaTurmasCronUseCase useCase)
+        public async Task<IActionResult> ConciliarFrequencia([FromQuery] DateTime dataReferencia, string turmaCodigo)
         {
-            await useCase.ProcessarNaData(dataReferencia, turmaCodigo);
+            var mensagem = new ConciliacaoFrequenciaTurmasSyncDto(dataReferencia, turmaCodigo);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasSync, mensagem, Guid.NewGuid(), null));
+            return Ok();
+        }
+
+        [HttpPost("frequencias/consolidar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> ConsolidarFrequencia([FromQuery] int ano, [FromServices] IExecutaConsolidacaoFrequenciaPorAnoUseCase useCase)
+        {
+            await useCase.Executar(ano);
             return Ok();
         }
 

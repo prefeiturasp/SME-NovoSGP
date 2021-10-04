@@ -31,8 +31,26 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine("or login = @codigoRf");
 
-            return database.Conexao.Query<Usuario>(query.ToString(), new { codigoRf, login })
+            return database.Conexao.Query<Usuario>(query.ToString(), new { codigoRf, login }, queryName: "ObterPorCodigoRfLogin")
                 .FirstOrDefault();
+        }
+
+        public async Task<Usuario> ObterPorCodigoRfLoginAsync(string codigoRf, string login)
+        {
+            var query = new StringBuilder();
+            query.AppendLine("select * from usuario");
+            query.AppendLine("where 1=1");
+
+            if (!string.IsNullOrEmpty(codigoRf))
+                query.AppendLine("and rf_codigo = @codigoRf");
+
+            if (!string.IsNullOrEmpty(login))
+                query.AppendLine("and login = @login");
+            else
+                query.AppendLine("or login = @codigoRf");
+
+            var usuarios = await database.Conexao.QueryAsync<Usuario>(query.ToString(), new { codigoRf, login });
+            return usuarios.FirstOrDefault();
         }
 
         public async Task<Usuario> ObterUsuarioPorCodigoRfAsync(string codigoRf)

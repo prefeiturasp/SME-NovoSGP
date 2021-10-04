@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -38,9 +38,9 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureException(ex);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do calendário da UE.", LogNivel.Negocio, LogContexto.Evento, ex.Message));
                 return false;
-            }        
+            }
         }
 
         private async Task VerificaPendenciaEventosCalendario(long tipoCalendarioId, int anoAtual)
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.CaptureException(ex);
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do calendário da UE.", LogNivel.Negocio, LogContexto.Evento, ex.Message));
                 }
             }
         }
@@ -157,7 +157,7 @@ namespace SME.SGP.Aplicacao
         private async Task GerarPendenciaParametroEvento(long pendenciaCalendarioUeId, IEnumerable<(bool gerarPedencia, long parametroSistemaId, int quantidadeEventos)> pendenciasEventos)
         {
             foreach (var pendenciaEvento in pendenciasEventos)
-                await mediator.Send(new SalvarPendenciaParametroEventoCommand(pendenciaCalendarioUeId, pendenciaEvento.parametroSistemaId, pendenciaEvento.quantidadeEventos));;
+                await mediator.Send(new SalvarPendenciaParametroEventoCommand(pendenciaCalendarioUeId, pendenciaEvento.parametroSistemaId, pendenciaEvento.quantidadeEventos)); ;
         }
     }
 }

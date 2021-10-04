@@ -1,8 +1,9 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using Sentry;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
+        private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
+        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
@@ -48,6 +51,8 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
                                         IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                         IRepositorioFechamentoNota repositorioFechamentoNota,
+                                        IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
+                                        IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                         IRepositorioUsuario repositorioUsuario,
                                         IRepositorioPendencia repositorioPendencia,
                                         IRepositorioEventoTipo repositorioEventoTipo,
@@ -67,6 +72,8 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
+            this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
+            this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
@@ -101,6 +108,19 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 EnviaNotificacaoParaNiveis(workflowAprovacao.Niveis.ToList());
+            }
+        }
+
+        public async Task ConfiguracaoInicialAsync(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)
+        {
+            if (workflowAprovacao.NotificacaoCategoria == NotificacaoCategoria.Workflow_Aprovacao)
+            {
+                var niveisIniciais = workflowAprovacao.ObtemNiveis(workflowAprovacao.ObtemPrimeiroNivel()).ToList();
+                await EnviaNotificacaoParaNiveisAsync(niveisIniciais);
+            }
+            else
+            {
+                await EnviaNotificacaoParaNiveisAsync(workflowAprovacao.Niveis.ToList());
             }
         }
 
@@ -161,6 +181,14 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     await AprovarRegistroDeItinerancia(codigoDaNotificacao, workflow.Id, workflow.CriadoRF, workflow.CriadoPor);
                 }
+                else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaConselho)
+                {
+                    await AprovarAlteracaoNotaConselho(workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor, codigoDaNotificacao);
+                }
+                else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoParecerConclusivo)
+                {
+                    await AprovarAlteracaoParecerConclusivo(workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor);
+                }
             }
         }
 
@@ -179,16 +207,26 @@ namespace SME.SGP.Dominio.Servicos
         {
             var itineranciaEmAprovacao = await mediator.Send(new ObterWorkflowAprovacaoItineranciaPorIdQuery(workFlowId));
             if (itineranciaEmAprovacao != null)
-            {          
+            {
                 await mediator.Send(new AprovarItineranciaCommand(itineranciaEmAprovacao.ItineranciaId, workFlowId, true));
 
                 await mediator.Send(new NotificacaoUsuarioCriadorRegistroItineranciaCommand(itineranciaEmAprovacao.ItineranciaId, workFlowId));
             }
         }
 
+        private async Task AprovarAlteracaoParecerConclusivo(long workflowId, string turmaCodigo, string criadoRF, string criadoPor)
+        {
+            await mediator.Send(new AprovarWorkflowAlteracaoParecerConclusivoCommand(workflowId, turmaCodigo, criadoRF, criadoPor));
+        }
+
+        private async Task AprovarAlteracaoNotaConselho(long workflowId, string turmaCodigo, string criadoRF, string criadoPor, long? codigoDaNotificacao)
+        {
+            await mediator.Send(new AprovarWorkflowAlteracaoNotaConselhoCommand(workflowId, turmaCodigo, criadoRF, criadoPor, codigoDaNotificacao));
+        }
+
         private async Task AprovarAlteracaoNotaFechamento(long codigoDaNotificacao, long workFlowId, string turmaCodigo, string criadoRF, string criadoPor)
         {
-            var notasEmAprovacao = ObterNotasEmAprovacao(workFlowId);
+            var notasEmAprovacao = await ObterNotasFechamentoEmAprovacao(workFlowId);
             if (notasEmAprovacao != null && notasEmAprovacao.Any())
             {
                 await AtualizarNotasFechamento(notasEmAprovacao, criadoRF, criadoPor, workFlowId);
@@ -343,6 +381,20 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
+        private async Task EnviaNotificacaoParaNiveisAsync(List<WorkflowAprovacaoNivel> niveis, long codigoNotificacao = 0)
+        {
+            if (codigoNotificacao == 0)
+                codigoNotificacao = await servicoNotificacao.ObtemNovoCodigoAsync();
+
+            List<Cargo?> cargosNotificados = new List<Cargo?>();
+
+            foreach (var aprovaNivel in niveis)
+            {
+                if (!cargosNotificados.Contains(aprovaNivel.Cargo))
+                    cargosNotificados.Add(await EnviaNotificacaoParaNivelAsync(aprovaNivel, codigoNotificacao));
+            }
+        }
+
         private Cargo? EnviaNotificacaoParaNivel(WorkflowAprovacaoNivel nivel, long codigoNotificacao)
         {
             Notificacao notificacao;
@@ -360,7 +412,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
                     catch (Exception e)
                     {
-                        SentrySdk.CaptureException(e);
+                        _ = mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao enviar notificação para nível", LogNivel.Negocio, LogContexto.WorkflowAprovacao, e.Message)).Result;                        
                     }
                 }
             }
@@ -401,6 +453,64 @@ namespace SME.SGP.Dominio.Servicos
             return nivel.Cargo;
         }
 
+        private async Task<Cargo?> EnviaNotificacaoParaNivelAsync(WorkflowAprovacaoNivel nivel, long codigoNotificacao)
+        {
+            Notificacao notificacao;
+            List<Usuario> usuarios = nivel.Usuarios.ToList();
+
+            if (nivel.Cargo.HasValue)
+            {
+                var funcionariosRetorno = await servicoNotificacao.ObterFuncionariosPorNivelAsync(nivel.Workflow.UeId, nivel.Cargo, true, true);
+
+                foreach (var funcionario in funcionariosRetorno)
+                {
+                    try
+                    {
+                        usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdicionaAsync(string.Empty, funcionario.Id, buscaLogin: true));
+                    }
+                    catch (Exception e)
+                    {
+                        _ = mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao enviar notificação para nível", LogNivel.Negocio, LogContexto.WorkflowAprovacao, e.Message)).Result;
+                    }
+                }
+            }
+
+            foreach (var usuario in usuarios)
+            {
+                notificacao = new Notificacao()
+                {
+                    Ano = nivel.Workflow.Ano,
+                    Categoria = nivel.Workflow.NotificacaoCategoria,
+                    DreId = nivel.Workflow.DreId,
+                    UeId = nivel.Workflow.UeId,
+                    Mensagem = nivel.Workflow.NotifacaoMensagem,
+                    Tipo = nivel.Workflow.NotificacaoTipo,
+                    Titulo = nivel.Workflow.NotifacaoTitulo,
+                    TurmaId = nivel.Workflow.TurmaId,
+                    UsuarioId = usuario.Id,
+                    Codigo = codigoNotificacao
+                };
+
+                nivel.Adicionar(notificacao);
+
+                await repositorioNotificacao.SalvarAsync(notificacao);
+
+                await repositorioWorkflowAprovacaoNivelNotificacao.SalvarAsync(new WorkflowAprovacaoNivelNotificacao()
+                {
+                    NotificacaoId = notificacao.Id,
+                    WorkflowAprovacaoNivelId = nivel.Id
+                });
+
+                if (notificacao.Categoria == NotificacaoCategoria.Workflow_Aprovacao)
+                {
+                    nivel.Status = WorkflowAprovacaoNivelStatus.AguardandoAprovacao;
+                    await workflowAprovacaoNivel.SalvarAsync(nivel);
+                }
+            }
+
+            return nivel.Cargo;
+        }
+
         private async Task NotificarAprovacaoNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, long codigoDaNotificacao, string turmaCodigo, bool aprovada = true, string justificativa = "")
         {
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
@@ -408,6 +518,7 @@ namespace SME.SGP.Dominio.Servicos
             var periodoEscolar = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar;
             var notaConceitoTitulo = notasEmAprovacao.First().ConceitoId.HasValue ? "conceito" : "nota";
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(usuarioRf, "");
+            var componenteCurricularNome = await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(notasEmAprovacao.First().FechamentoNota.DisciplinaId));
 
             if (usuario != null)
             {
@@ -421,41 +532,78 @@ namespace SME.SGP.Dominio.Servicos
                     Titulo = $"Alteração em {notaConceitoTitulo} final - Turma {turma.Nome} ({turma.AnoLetivo})",
                     Tipo = NotificacaoTipo.Notas,
                     Codigo = codigoDaNotificacao,
-                    Mensagem = MontaMensagemAprovacaoNotaFechamento(turma, usuario, periodoEscolar.Bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa)
+                    Mensagem = MontaMensagemAprovacaoNotaFechamento(turma, usuario, periodoEscolar.Bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa, componenteCurricularNome)
                 });
 
             }
         }
 
-        private string MontaMensagemAprovacaoNotaFechamento(Turma turma, Usuario usuario, int bimestre, string notaConceitoTitulo, IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, bool aprovado, string justificativa)
+        private string MontaMensagemAprovacaoNotaFechamento(Turma turma, Usuario usuario, int bimestre, string notaConceitoTitulo, IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, bool aprovado, string justificativa, string componenteCurricularNome)
         {
             var aprovadaRecusada = aprovado ? "aprovada" : "recusada";
             var motivo = aprovado ? "" : $"Motivo: {justificativa}.";
+            var bimestreFormatado = bimestre == 0 ? "bimestre final" : $"{bimestre}º bimestre";
 
-            var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) final(is) da turma {turma.Nome} da 
-                            {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) 
-                            no bimestre {bimestre} de {turma.AnoLetivo} para o(s) aluno(s) abaxo foi {aprovadaRecusada}. {motivo}</p>");
+            var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) final(is) do {bimestreFormatado} do componente curricular {componenteCurricularNome} 
+da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo} para o(s) estudante(s) abaixo foi {aprovadaRecusada}. {motivo}</p>");
 
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
             mensagem.AppendLine("<tr>");
-            mensagem.AppendLine("<td style='padding: 5px;'>Código Aluno</td>");
-            mensagem.AppendLine("<td style='padding: 5px;'>Nome do aluno</td>");
+            mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Estudante</b></td>");
+            mensagem.AppendLine("<td style='padding: 5px; text-align:left;'><b>Valor anterior</b></td>");
+            mensagem.AppendLine("<td style='padding: 5px; text-align:left;'><b>Novo valor</b></td>");
             mensagem.AppendLine("</tr>");
 
             var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
+
             foreach (var notaAprovacao in notasEmAprovacao)
             {
                 var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo);
 
                 mensagem.AppendLine("<tr>");
-                mensagem.Append($"<td style='padding: 5px;'>{notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo}</td>");
-                mensagem.Append($"<td style='padding: 5px;'>{aluno?.NomeAluno}</td>");
+                mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
+
+                if (!notaAprovacao.ConceitoId.HasValue)
+                {
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.FechamentoNota.Nota)}</td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.Nota.Value)}</td>");
+                }
+                else
+                {
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.FechamentoNota.ConceitoId)}</td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoId)}</td>");
+                }
+
                 mensagem.AppendLine("</tr>");
             }
             mensagem.AppendLine("</table>");
 
             return mensagem.ToString();
         }
+
+        private string ObterNota(double? nota)
+        {
+            if (!nota.HasValue)
+                return string.Empty;
+            else
+                return nota.ToString();
+        }
+
+        private string ObterConceito(long? conceitoId)
+        {
+            if (!conceitoId.HasValue)
+                return string.Empty;
+
+            if (conceitoId == (int)ConceitoValores.P)
+                return ConceitoValores.P.ToString();
+            else if (conceitoId == (int)ConceitoValores.S)
+                return ConceitoValores.S.ToString();
+            else
+                return ConceitoValores.NS.ToString();
+        }
+
+        private async Task<string> ObterComponente(long componenteCurricularCodigo)
+            => await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(componenteCurricularCodigo));
 
         private void NotificarAdminSgpUeFechamentoReaberturaAprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, long nivelId)
         {
@@ -767,24 +915,54 @@ namespace SME.SGP.Dominio.Servicos
             else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaFechamento)
             {
                 await TrataReprovacaoAlteracaoNotaFechamento(workflow, codigoDaNotificacao, motivo);
-            } else if (workflow.Tipo == WorkflowAprovacaoTipo.RegistroItinerancia)
+            }
+            else if (workflow.Tipo == WorkflowAprovacaoTipo.RegistroItinerancia)
             {
                 await ReprovarRegistroDeItinerancia(workflow.Id, motivo);
             }
+            else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaConselho)
+            {
+                await TrataReprovacaoAlteracaoNotaPosConselho(workflow, codigoDaNotificacao, motivo);
+            }
+            else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoParecerConclusivo)
+            {
+                await ReprovarParecerConclusivo(workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor, motivo);
+            }
+        }
+
+        private async Task ReprovarParecerConclusivo(long workflowId, string turmaCodigo, string criadoRF, string criadoNome, string motivo)
+        {
+            await mediator.Send(new ReprovarWorkflowAlteracaoParecerConclusivoCommand(workflowId, turmaCodigo, criadoRF, criadoNome, motivo));
         }
 
         private async Task TrataReprovacaoAlteracaoNotaFechamento(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
-            var notasEmAprovacao = ObterNotasEmAprovacao(workflow.Id);
+            var notasEmAprovacao = await ObterNotasFechamentoEmAprovacao(workflow.Id);
 
             await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, workflow.TurmaId, false, motivo);
+        }
+
+        private async Task TrataReprovacaoAlteracaoNotaPosConselho(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
+        {
+            var notasEmAprovacao = ObterNotaEmAprovacaoPosConselho(workflow.Id);
+            await mediator.Send(new RecusarAprovacaoNotaConselhoCommand(notasEmAprovacao,
+                                                                        codigoDaNotificacao,
+                                                                        workflow.TurmaId,
+                                                                        workflow.Id,
+                                                                        motivo,
+                                                                        notasEmAprovacao.ConselhoClasseNota.Nota,
+                                                                        notasEmAprovacao.ConselhoClasseNota.ConceitoId));
+
         }
 
         private IEnumerable<WfAprovacaoNotaFechamento> ObterNotasEmAprovacao(long workflowId)
             => repositorioFechamentoNota.ObterNotasEmAprovacaoWf(workflowId).Result;
 
+        private WFAprovacaoNotaConselho ObterNotaEmAprovacaoPosConselho(long workflowId)
+            => repositorioConselhoClasseNota.ObterNotaEmAprovacaoWf(workflowId).Result;
 
-
+        private async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasFechamentoEmAprovacao(long workflowId)
+            => await repositorioFechamentoNota.ObterNotasEmAprovacaoWf(workflowId);
 
         private void TrataReprovacaoEventoDataPassada(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
@@ -865,6 +1043,7 @@ namespace SME.SGP.Dominio.Servicos
             }
             return null;
         }
+
 
     }
 }

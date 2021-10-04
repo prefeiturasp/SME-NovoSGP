@@ -39,7 +39,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<FeriadoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("listar")]
-        [Permissao(Permissao.TF_C, Policy = "Bearer")]
+        [Permissao(Permissao.TF_C,Permissao.E_A, Policy = "Bearer")]
         public async Task<IActionResult> BuscarTodos([FromBody] FiltroFeriadoCalendarioDto filtro)
         {
             var retorno = await consultas.Listar(filtro);

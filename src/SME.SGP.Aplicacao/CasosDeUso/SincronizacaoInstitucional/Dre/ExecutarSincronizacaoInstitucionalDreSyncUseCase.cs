@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -30,13 +30,12 @@ namespace SME.SGP.Aplicacao
                     var publicarTratamentoDre = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalDreTratar, codigoDre, param.CodigoCorrelacao, null));
                     if (!publicarTratamentoDre)
                     {
-                        var mensagem = $"Não foi possível inserir a Dre : {publicarTratamentoDre} na fila de sync.";
-                        SentrySdk.CaptureMessage(mensagem);
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir a Dre : {publicarTratamentoDre} na fila de sync.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    SentrySdk.CaptureException(ex);
+                    
                 }
             }
 
