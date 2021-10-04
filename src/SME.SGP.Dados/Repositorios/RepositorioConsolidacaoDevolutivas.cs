@@ -105,5 +105,22 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ano });
         }
+
+        public async Task<IEnumerable<GraficoBaseDto>> ObterTotalDevolutivasPorDre(int anoLetivo, string ano)
+        {
+            var filtroAno = !string.IsNullOrEmpty(ano) ? "and t.ano = @ano" : "";
+            var query = $@"select
+	                        dre.abreviacao AS descricao,
+	                        sum(cd.quantidade_registrada_devolutivas) AS Quantidade
+                        from consolidacao_devolutivas cd
+                        inner join turma t on cd.turma_id = t.id
+                        inner join ue u on t.ue_id = u.id
+                        inner join dre on dre.id = u.dre_id
+                        WHERE t.ano_letivo = @anoLetivo
+                            {filtroAno}
+                        GROUP BY dre.abreviacao";
+
+            return await database.Conexao.QueryAsync<GraficoBaseDto>(query, new { anoLetivo, ano });
+        }
     }
 }
