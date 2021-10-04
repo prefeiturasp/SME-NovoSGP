@@ -34,6 +34,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task <IEnumerable<QuantidadeTotalDiariosEDevolutivasPorAnoETurmaDTO>>ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade);
 
         Task<IEnumerable<QuantidadeTotalDiariosPendentesPorAnoETurmaDTO>> ObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade);
+        Task<IEnumerable<GraficoTotalDiariosEDevolutivasPorDreDTO>> ObterQuantidadeTotalDeDiariosPendentesPorDre(int anoLetivo, string ano);
 
         Task<IEnumerable<QuantidadeDiariosDeBordoComDevolutivaEDevolutivaPendentePorTurmaAnoDto>> ObterDiariosDeBordoComDevolutivaEDevolutivaPendenteAsync(int anoLetivo, Modalidade modalidade, DateTime dataAula, long? dreId, long? ueId);
 
