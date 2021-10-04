@@ -26,10 +26,10 @@ namespace SME.SGP.Worker.RabbitMQ
 {
     public class WorkerRabbitMQ : IHostedService
     {
-        private readonly IModel canalRabbit;        
+        private readonly IModel canalRabbit;
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
-        private readonly IMediator mediator;
+        private IMediator mediator;
 
         /// <summary>
         /// configuração da lista de tipos para a fila do rabbit instanciar, seguindo a ordem de propriedades:
@@ -37,10 +37,15 @@ namespace SME.SGP.Worker.RabbitMQ
         /// </summary>
         private readonly Dictionary<string, ComandoRabbit> comandos;
 
-        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, ConnectionFactory factory, IMediator mediator)
+        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, ConnectionFactory factory)
         {
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException("Service Scope Factory não localizado");
-            this.mediator = mediator ?? throw new ArgumentNullException("Mediator não localizado");
+            //this.mediator = mediator;
+
+            ////TODO: REVER
+            var scope = serviceScopeFactory.CreateScope();
+            this.mediator = scope.ServiceProvider.GetService<IMediator>();
+            ////
 
             var conexaoRabbit = factory.CreateConnection();
 
@@ -262,16 +267,13 @@ namespace SME.SGP.Worker.RabbitMQ
             var rota = ea.RoutingKey;
             if (comandos.ContainsKey(rota))
             {
-
                 var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
-
                 var comandoRabbit = comandos[rota];
                 try
                 {
                     using (var scope = serviceScopeFactory.CreateScope())
                     {
                         AtribuirContextoAplicacao(mensagemRabbit, scope);
-
 
                         var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
@@ -283,17 +285,17 @@ namespace SME.SGP.Worker.RabbitMQ
                 catch (NegocioException nex)
                 {
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
-                    
+
                     await RegistrarLog(ea, mensagemRabbit, nex, LogNivel.Negocio, $"Erros: {nex.Message}");
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario(nex.Message, mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
                 }
                 catch (ValidacaoException vex)
                 {
-                    canalRabbit.BasicAck(ea.DeliveryTag, false);          
-                    
+                    canalRabbit.BasicAck(ea.DeliveryTag, false);
+
                     await RegistrarLog(ea, mensagemRabbit, vex, LogNivel.Negocio, $"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
-                    
+
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
                 }
@@ -308,13 +310,14 @@ namespace SME.SGP.Worker.RabbitMQ
             }
             else
                 canalRabbit.BasicReject(ea.DeliveryTag, false);
+
         }
 
         private async Task RegistrarLog(BasicDeliverEventArgs ea, MensagemRabbit mensagemRabbit, Exception ex, LogNivel logNivel, string observacao)
         {
             var mensagem = $"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - ERRO - {ea.RoutingKey}";
-            
-            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerRabbit, observacao ));            
+
+            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerRabbit, observacao));
         }
 
         private static void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)
@@ -387,7 +390,7 @@ namespace SME.SGP.Worker.RabbitMQ
                 }
                 catch (Exception ex)
                 {
-                    _ = mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message)).Result;                    
+                    _ = mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message)).Result;
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }
             };

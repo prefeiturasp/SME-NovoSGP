@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
@@ -45,20 +47,33 @@ namespace SME.SGP.Worker.Rabbbit
 
             ConfiguraVariaveisAmbiente(services);
             ConfiguraGoogleClassroomSync(services);
+            ConfiguraRabbitParaLogs(services);
 
-            services.AddRabbit(configuracaoRabbitOptions);
+            services.AddRabbit(configuracaoRabbitOptions);            
 
-            services.AddHostedService<WorkerRabbitMQ>();
+            var telemetriaOptions = ConfiguraTelemetria(services);
+            var serviceProvider = services.BuildServiceProvider();            
 
+            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
 
-            var serviceProvider = services.BuildServiceProvider();
-            //var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
+            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, telemetriaOptions);
 
-            //TODO: Implementar APM para o worker!
-            //DapperExtensionMethods.Init(clientTelemetry);
-            //SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN"));
+            DapperExtensionMethods.Init(servicoTelemetria);
+
+            services.AddSingleton(servicoTelemetria);
 
             services.AddMemoryCache();
+
+            services.AddHostedService<WorkerRabbitMQ>();
+        }
+        private TelemetriaOptions ConfiguraTelemetria(IServiceCollection services)
+        {
+            var telemetriaOptions = new TelemetriaOptions();
+            configuration.GetSection(TelemetriaOptions.Secao).Bind(telemetriaOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(telemetriaOptions);
+
+            return telemetriaOptions;
         }
         private void ConfiguraVariaveisAmbiente(IServiceCollection services)
         {
@@ -88,6 +103,13 @@ namespace SME.SGP.Worker.Rabbbit
             {
                 await context.Response.WriteAsync("WorkerRabbitMQ!");
             });
+        }
+        private void ConfiguraRabbitParaLogs(IServiceCollection services)
+        {
+            var configuracaoRabbitLogOptions = new ConfiguracaoRabbitLogOptions();
+            configuration.GetSection("ConfiguracaoRabbitLog").Bind(configuracaoRabbitLogOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(configuracaoRabbitLogOptions);
         }
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {

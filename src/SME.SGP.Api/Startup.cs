@@ -137,7 +137,6 @@ namespace SME.SGP.Api
 
             RegistraDependencias.Registrar(services);
 
-
             var serviceProvider = services.BuildServiceProvider();
 
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
