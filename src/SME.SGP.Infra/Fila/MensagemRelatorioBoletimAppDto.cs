@@ -11,7 +11,7 @@ namespace SME.SGP.Infra
         public int AnoLetivo { get; set; }
         public int Modalidade { get; set; }
         public int ModalidadeCodigo { get; set; }
-        public string AlunosCodigo { get; set; }
+        public string AlunoCodigo { get; set; }
         public bool ConsideraHistorico { get; set; }
         public Guid CodigoArquivo { get; set; }
     }

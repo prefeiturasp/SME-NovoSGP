@@ -18,7 +18,7 @@ namespace SME.SGP.Infra
 
         public int Modelo { get; set; }
 
-        public string AlunosCodigo { get; set; }
+        public string AlunoCodigo { get; set; }
 
     }
 }

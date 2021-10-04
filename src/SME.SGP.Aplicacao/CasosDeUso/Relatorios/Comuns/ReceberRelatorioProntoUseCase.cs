@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametros = JsonConvert.DeserializeObject<MensagemRelatorioBoletimAppDto>(relatorioPronto.MensagemDados.ToString());
             await mediator.Send(new InserirComunicadoBoletimEscolaAquiCommand(relatorioPronto.MensagemUsuario,relatorioPronto.MensagemTitulo,parametros.AnoLetivo,parametros.TurmaCodigo,parametros.Modalidade,
-                parametros.Semestre,parametros.AlunosCodigo,parametros.CodigoArquivo, urlRedirecionamentoBase));
+                parametros.Semestre,parametros.AlunoCodigo,parametros.CodigoArquivo, urlRedirecionamentoBase));
         }
         private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario, string mensagemTitulo,string urlRedirecionamentoBase)
         {
