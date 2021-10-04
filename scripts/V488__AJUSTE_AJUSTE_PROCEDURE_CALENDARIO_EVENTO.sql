@@ -80,42 +80,35 @@ create or replace function f_eventos_por_rf_criador(p_login character varying, p
     language sql
 as
 $$
-select e.id,
-       e.nome,
-       e.descricao,
-       e.data_inicio,
-       e.data_fim,
-      
-       e.letivo,
-       e.feriado_id,
-       e.tipo_calendario_id,
-       e.tipo_evento_id,       
-       e.criado_em,
-       e.criado_por,
-       e.alterado_em,
-       e.alterado_por,
-       e.criado_rf,
-       e.alterado_rf,
-       e.status,
-       et.id,
-       et.ativo,
-       et.tipo_data,
-       et.descricao,
-       et.excluido,
-       et.local_ocorrencia,
-       dre.dre_id,
-       coalesce(dre.abreviacao, 'TODAS') as DreNome,
-       ue.ue_id,
-       coalesce(ue.nome, 'TODAS') as UeNome
+select  e.id,
+        e.nome,
+        e.descricao,
+        e.data_inicio,
+        e.data_fim,
+        e.dre_id,
+        e.letivo,
+        e.feriado_id,
+        e.tipo_calendario_id,
+        e.tipo_evento_id,
+        e.ue_id,
+        e.criado_em,
+        e.criado_por,
+        e.alterado_em,
+        e.alterado_por,
+        e.criado_rf,
+        e.alterado_rf,
+        e.status,
+        et.id,
+        et.ativo,
+        et.tipo_data,
+        et.descricao,
+        et.excluido,
+        et.local_ocorrencia
 from evento e
          inner join evento_tipo et
                     on e.tipo_evento_id = et.id
          inner join tipo_calendario tc
                     on e.tipo_calendario_id = tc.id
-         left join dre
-                   on e.dre_id = dre.dre_id
-         left join ue
-                   on e.ue_id = ue.ue_id
 where not et.excluido
     and not e.excluido
     -- considera somente pendente de aprovao
@@ -224,7 +217,7 @@ where not e.excluido
             )
         or
         (p_eh_perfil_dre
-            and ((p_ue_id is null and e.dre_id is null)
+            and ((p_ue_id is null and p_dre_id = e.dre_id)
                 or (p_dre_id = e.dre_id and p_ue_id = e.ue_id))
             )
         or
