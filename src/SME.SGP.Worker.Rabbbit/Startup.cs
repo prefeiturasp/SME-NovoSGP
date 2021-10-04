@@ -146,6 +146,13 @@ namespace SME.SGP.Worker.Rabbbit
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
 
+            services.AddHttpClient(name: "servicoAcompanhamentoEscolar", c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-integration-key", configuration.GetSection("AE_ChaveIntegracao").Value);
+            });
+
             services.AddHttpClient<IServicoGithub, SevicoGithub>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiGithub").Value);
