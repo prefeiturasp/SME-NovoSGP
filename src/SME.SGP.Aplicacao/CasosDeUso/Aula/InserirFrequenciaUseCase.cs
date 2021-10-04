@@ -77,6 +77,9 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
 
+            // publicar na fila de consolidação dashboard frequencia
+
+
             return (AuditoriaDto)registroFrequencia;
 
 
