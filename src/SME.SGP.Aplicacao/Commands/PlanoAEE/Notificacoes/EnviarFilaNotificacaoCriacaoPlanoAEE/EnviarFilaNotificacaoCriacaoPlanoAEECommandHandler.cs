@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
 using System;
 using System.Threading;
@@ -24,8 +23,6 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarCriacaoPlanoAEE, command, Guid.NewGuid(), usuario));
 
-            SentrySdk.AddBreadcrumb($"Envio Fila de Notificação de Criação de PlanoAEE", "RabbitMQ");
-         
             return true;
         }
     }

@@ -1,12 +1,11 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,8 +25,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(NotificaFrequenciaPeriodoUeCommand request, CancellationToken cancellationToken)
         {
             var ues = await ObterUes();
-            
-            foreach(var ue in ues)
+
+            foreach (var ue in ues)
             {
                 try
                 {
@@ -35,10 +34,10 @@ namespace SME.SGP.Aplicacao
                     if (!codigoRelatorio.Equals(Guid.Empty))
                         await EnviarRelatorio(codigoRelatorio, ue, request.PeriodoEscolarEncerrado);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    SentrySdk.CaptureException(e);
-                }            
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na consolidação de Frequência da turma.", LogNivel.Negocio, LogContexto.Frequencia, ex.Message));
+                }
             }
 
             return true;

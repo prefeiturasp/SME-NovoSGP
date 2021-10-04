@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,7 +31,6 @@ namespace SME.SGP.Aplicacao
                                                            request.RecorrenciaAula);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAlterarAulaRecorrencia, command, Guid.NewGuid(), request.Usuario));
-            SentrySdk.AddBreadcrumb($"Incluir fila alteração de aula recorrente", "RabbitMQ");
 
             return true;
         }

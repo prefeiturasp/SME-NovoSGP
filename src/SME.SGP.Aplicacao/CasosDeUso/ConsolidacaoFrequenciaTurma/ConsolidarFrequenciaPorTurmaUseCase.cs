@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,9 +28,10 @@ namespace SME.SGP.Aplicacao
             }
             catch (System.Exception ex)
             {
-                SentrySdk.CaptureException(ex);
-                throw;
-            }        
+                await mediator.Send(new SalvarLogViaRabbitCommand("Consolidar Frequencia Por Turma UseCase", LogNivel.Critico, LogContexto.Frequencia, ex.Message));
+                throw(ex);
+            }
+            
         }
 
         private async Task ConsolidarFrequenciaAlunos(long turmaId, string turmaCodigo, double percentualFrequenciaMinimo, IEnumerable<AlunoPorTurmaResposta> alunos)

@@ -437,7 +437,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
             services.TryAddScoped<IServicoFila, FilaRabbit>();
-
+            services.TryAddScoped<IServicoTelemetria, ServicoTelemetria>();          
         }
 
         private static void RegistrarCasosDeUso(IServiceCollection services)

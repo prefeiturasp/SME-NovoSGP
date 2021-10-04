@@ -1,7 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Microsoft.Extensions.Configuration;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados;
+using SME.SGP.Dados.Contexto;
 using System;
 
 namespace SME.SGP.Benchmarks
@@ -17,11 +16,12 @@ namespace SME.SGP.Benchmarks
 
         private SgpContext ObterConexao()
         {
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-            .AddEnvironmentVariables()
-            .Build();
+            //IConfigurationRoot configuration = new ConfigurationBuilder()
+            //.AddEnvironmentVariables()
+            //.Build();
 
-            return new SgpContext(configuration, new ContextoBenchmark());
+            //return new SgpContext(configuration, new ContextoBenchmark());
+            return default;
         }
         [GlobalSetup]
         public void Setup()
