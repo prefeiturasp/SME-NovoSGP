@@ -623,6 +623,7 @@ namespace SME.SGP.IoC
             // Dashboard - Acompanhamento de Aprendizagem
             services.TryAddScoped<IObterUltimaConsolidacaoAcompanhamentoAprendizagemUseCase, ObterUltimaConsolidacaoAcompanhamentoAprendizagemUseCase>();
             services.TryAddScoped<IObterDashboardAcompanhamentoAprendizagemUseCase, ObterDashboardAcompanhamentoAprendizagemUseCase>();
+            services.TryAddScoped<IObterDashboardAcompanhamentoAprendizagemPorDreUseCase, ObterDashboardAcompanhamentoAprendizagemPorDreUseCase>();
 
             // Dashboard Diário de bordo
             services.TryAddScoped<IObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaUseCase, ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaUseCase>();
