@@ -64,7 +64,7 @@ namespace SME.SGP.Dados.Repositorios
                 return stringCache;
             }
 
-            return await Task.FromResult(stringCache);
+            return await Task.FromResult(string.Empty);
         }
 
         public async Task RemoverAsync(string nomeChave)
