@@ -312,7 +312,9 @@ namespace SME.SGP.Dominio.Servicos
 
                 await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId, periodoEscolar.Id, turmaFechamento.Id, usuarioLogado));
 
-                return (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
+                var auditoria = (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
+                auditoria.EmAprovacao = notasEnvioWfAprovacao.Any();
+                return auditoria;
             }
             catch (Exception e)
             {
