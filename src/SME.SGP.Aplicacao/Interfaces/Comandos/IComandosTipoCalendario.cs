@@ -9,6 +9,6 @@ namespace SME.SGP.Aplicacao
         void MarcarExcluidos(long[] ids);
         Task Incluir(TipoCalendarioDto dto);
         Task Alterar(TipoCalendarioDto dto, long id);
-        Task ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario);
+        Task ExecutarReplicacao(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario);
     }
 }
