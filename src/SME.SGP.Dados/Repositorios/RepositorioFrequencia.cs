@@ -84,7 +84,7 @@ namespace SME.SGP.Dados.Repositorios
 	                    from aula a
 	                      inner join registro_frequencia rf on a.id = rf.aula_id
 	                      inner join turma t on t.turma_id = a.turma_id
-	                       left join registro_ausencia_aluno raa on raa.registro_frequencia_id = rf.id and not raa.excluido
+	                       left join registro_frequencia_aluno raa on raa.registro_frequencia_id = rf.id and not raa.excluido and raa.valor = 2
 	                    where not a.excluido
 	                      and not rf.excluido
 	                      and a.data_aula >= @dataReferencia
@@ -168,8 +168,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select a.codigo_aluno as AlunoCodigo, a.data_aula as AulaData from (select raa.codigo_aluno, a.quantidade, a.data_aula, count(raa.id) as faltas  from registro_frequencia rf
                             inner join aula a
                             on rf.aula_id = a.id
-                            inner join registro_ausencia_aluno raa
-                            on raa.registro_frequencia_id = rf.id
+                            inner join registro_frequencia_aluno raa on raa.registro_frequencia_id = rf.id and raa.valor = 2
                             where  a.turma_id = @turmaCodigo
                             and a.disciplina_id = @disciplinaCodigo
                             and a.data_aula::date = ANY(@datas)
@@ -203,8 +202,9 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select ra.*
                         from
 	                        registro_frequencia rf
-                        inner join registro_ausencia_aluno ra on
-	                        rf.id = ra.registro_frequencia_id
+                        inner join registro_frequencia_aluno ra on
+	                        rf.id = ra.registro_frequencia_id 
+                            and ra.valor = 2
                         inner join aula a on
 	                        a.id = rf.aula_id
                         where ra.excluido = false and
@@ -259,7 +259,7 @@ namespace SME.SGP.Dados.Repositorios
                      left join motivo_ausencia ma on ma.id = afa.motivo_ausencia_id 
                      inner join aula a on a.id = afa.aula_id 
                      inner join registro_frequencia rf on rf.aula_id = a.id 
-                     inner join registro_ausencia_aluno raa on raa.registro_frequencia_id = rf.id and raa.codigo_aluno = afa.codigo_aluno 
+                     inner join registro_frequencia_aluno raa on raa.registro_frequencia_id = rf.id and raa.codigo_aluno = afa.codigo_aluno and raa.valor = 2
                      inner join turma t on t.turma_id = a.turma_id 
                      inner join ue on ue.id = t.ue_id 
                      inner join dre on dre.id = ue.dre_id 
@@ -332,71 +332,7 @@ namespace SME.SGP.Dados.Repositorios
                            and a.turma_id = @turmaCodigo ";
 
             return await database.Conexao.QueryAsync<AulaComFrequenciaNaDataDto>(query, new { turmaCodigo });
-        }
-
-        public async Task<IEnumerable<FrequenciaAlunoDashboardDto>> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
-        {
-            var query = new StringBuilder(@"select t.ano as ano, ");
-
-            if (visaoDre)
-                query.AppendLine("dre.dre_id as DescricaoAnoTurma, dre.abreviacao as DreAbreviacao, ");
-            else if (ueId == -99)
-                query.AppendLine("t.ano as DescricaoAnoTurma, ");
-            else if (ueId != -99 && !visaoDre)
-                query.AppendLine("t.nome as DescricaoAnoTurma, ");
-
-            query.AppendLine(@"rfa.valor as TipoFrequenciaAluno,
-                               t.modalidade_codigo as ModalidadeCodigo,
-                               sum(rfa.numero_aula) as Quantidade         
-                          from registro_frequencia_aluno rfa 
-                         inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
-                         inner join aula a on a.id = rf.aula_id 
-                         inner join turma t on t.turma_id = a.turma_id 
-                         inner join ue on ue.id = t.ue_id 
-                         inner join dre on dre.id = ue.dre_id 
-                         where t.ano_letivo = @anoLetivo
-                           and not rfa.excluido
-                           and t.modalidade_codigo = @modalidade ");
-
-            if (dreId != -99)
-                query.AppendLine("and dre.id = @dreId ");
-
-            if (ueId != -99)
-                query.AppendLine("and ue.id = @ueId ");
-
-            if (semestre > 0)
-                query.AppendLine("and t.semestre = @semestre ");
-
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine("and a.data_aula = @dataInicio ");
-
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine("and a.data_aula between @dataInicio and @dataFim ");
-
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Mensal)
-                query.AppendLine(@"and extract(month from a.data_aula) = @mes 
-                                   and extract(year from a.data_aula) = @anoLetivo ");
-
-            if (visaoDre)
-                query.AppendLine("group by dre.dre_id, dre.abreviacao, rfa.valor, t.modalidade_codigo");
-            else if (ueId == -99)
-                query.AppendLine("group by rfa.valor, t.modalidade_codigo");
-            else if (ueId != -99 && !visaoDre)
-                query.AppendLine("group by t.nome, rfa.valor, t.modalidade_codigo");
-
-            query.AppendLine(", t.ano");
-            return await database.Conexao.QueryAsync<FrequenciaAlunoDashboardDto>(query.ToString(), new
-            {
-                dreId,
-                ueId,
-                anoLetivo,
-                modalidade,
-                semestre,
-                dataInicio,
-                datafim,
-                mes
-            });
-        }
+        }        
 
         public async Task<IEnumerable<TotalFrequenciaEAulasPorPeriodoDto>> ObterTotalFrequenciaEAulasPorPeriodo(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard)
         {

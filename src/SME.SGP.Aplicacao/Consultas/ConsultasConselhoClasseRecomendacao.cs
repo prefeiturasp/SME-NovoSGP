@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
             IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasPeriodoFechamento consultasPeriodoFechamento,
-            IConsultasConselhoClasse consultasConselhoClasse, IRepositorioTipoCalendario repositorioTipoCalendario, 
+            IConsultasConselhoClasse consultasConselhoClasse, IRepositorioTipoCalendario repositorioTipoCalendario,
             IMediator mediator, IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
             IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado)
         {
@@ -66,7 +66,10 @@ namespace SME.SGP.Aplicacao
                 tipos.AddRange(turma.ObterTiposRegularesDiferentes());
 
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos, consideraHistorico));
-                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
+                if (turmasCodigos != null && turmasCodigos.Any())
+                    conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
+                else
+                    conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(new string[] { codigoTurma }, periodoEscolar?.Id));
             }
             else
             {
@@ -96,7 +99,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesDoAluno = null;
             if (periodoEscolar != null && periodoEscolar.Id != 0)
                 anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, turmasCodigos, periodoEscolar.Id);
-   
+
             var consultasConselhoClasseRecomendacaoConsultaDto = new ConsultasConselhoClasseRecomendacaoConsultaDto();
             var recomendacaoAluno = new StringBuilder();
             var recomendacaoFamilia = new StringBuilder();
