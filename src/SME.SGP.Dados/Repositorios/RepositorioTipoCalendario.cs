@@ -314,5 +314,22 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, parametros);
         }
+
+        public async Task<int> ObterAnoLetivoUltimoTipoCalendarioPorDataReferencia(int anoReferencia, ModalidadeTipoCalendario modalidadeTipoCalendario)
+        {
+            var sqlQuery = @"select ano_letivo
+	                            from tipo_calendario tc 
+                             where ano_letivo < @anoReferencia and
+	                               modalidade = @modalidadeTipoCalendario
+                             order by ano_letivo desc
+                             limit 1;";
+
+            return await database.Conexao
+                .QueryFirstOrDefaultAsync<int>(sqlQuery, new
+                {
+                    anoReferencia,
+                    modalidadeTipoCalendario
+                });
+        }
     }
 }
