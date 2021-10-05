@@ -289,6 +289,8 @@ namespace SME.SGP.Aplicacao
                 gruposMatrizesNotas.Add(conselhoClasseAlunoNotas);
             }
 
+            var conselhoClasseAluno = await ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
+            retorno.TemConselhoClasseAluno = conselhoClasseAluno != null;
             retorno.PodeEditarNota = await VerificaSePodeEditarNota(alunoCodigo, turma, periodoEscolar);
             retorno.NotasConceitos = gruposMatrizesNotas;
 
