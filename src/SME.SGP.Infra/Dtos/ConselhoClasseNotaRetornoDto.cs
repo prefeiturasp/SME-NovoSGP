@@ -11,5 +11,6 @@ namespace SME.SGP.Infra
         public AuditoriaDto Auditoria { get; set; }
 
         public long ConselhoClasseAlunoId { get; set; }
+        public bool EmAprovacao { get; set; }
     }
 }
