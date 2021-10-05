@@ -494,7 +494,7 @@ namespace SME.SGP.Aplicacao
         {
             // Busca nota do conselho de classe consultado
             var notaComponente = notasConselhoClasseAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo);
-            if (notaComponente == null)
+            if (notaComponente == null || !notaComponente.NotaConceito.HasValue)
             {
                 // Sugere nota final do fechamento
                 var notaComponenteComConselhoNota = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre && c.ConselhoClasseNotaId > 0);
