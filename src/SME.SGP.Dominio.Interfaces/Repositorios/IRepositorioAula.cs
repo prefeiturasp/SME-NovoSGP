@@ -83,7 +83,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool UsuarioPodeCriarAulaNaUeTurmaEModalidade(Aula aula, ModalidadeTipoCalendario modalidade);
 
-        Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId);
+        Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId, string criadoPor = null);
         void SalvarVarias(IEnumerable<Aula> aulas);
         Task ExcluirPeloSistemaAsync(long[] idsAulas);
 
