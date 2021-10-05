@@ -66,7 +66,6 @@ namespace SME.SGP.Aplicacao
                     Codigo = request.CodigoDaNotificacao ?? 0,
                     Mensagem = await MontaMensagemAprovacaoNotaPosConselho(turma,
                                                                            aluno,
-                                                                           notaConceitoTitulo,
                                                                            request.NotasEmAprovacao,
                                                                            request.Aprovada,
                                                                            request.Justificativa,
@@ -79,7 +78,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> MontaMensagemAprovacaoNotaPosConselho(Turma turma,
                                                                          AlunoPorTurmaResposta aluno,
-                                                                         string notaConceitoTitulo,
                                                                          WFAprovacaoNotaConselho notaEmAprovacao,
                                                                          bool aprovado,
                                                                          string justificativa,
@@ -87,13 +85,14 @@ namespace SME.SGP.Aplicacao
                                                                          double? notaAnterior,
                                                                          long? conceitoAnterior)
         {
+            var notaConceito = notaEmAprovacao.ConceitoId.HasValue ? "O conceito" : "A nota";
             var aprovadaRecusada = aprovado ? "aprovada" : "recusada";
             var motivo = aprovado ? "" : $"Motivo: {justificativa}.";
             var componenteCurricular = await ObterComponente(notaEmAprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
             var bimestreFormatado = bimestre == 0 ? "bimestre final" : $"{bimestre}º bimestre";
 
-            var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) final(is) do {bimestreFormatado} do componente curricular {componenteCurricular}  
-                            da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) 
+            var mensagem = new StringBuilder($@"<p>{notaConceito} pós-conselho do {bimestreFormatado} do componente curricular {componenteCurricular}  
+                            da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) 
                             de {turma.AnoLetivo} para o(s) estudantes(s) abaixo foi {aprovadaRecusada}. {motivo}</p>");
 
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
