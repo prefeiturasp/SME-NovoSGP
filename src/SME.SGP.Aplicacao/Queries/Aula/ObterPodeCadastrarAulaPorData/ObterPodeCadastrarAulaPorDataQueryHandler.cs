@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
                     if (periodoEscolarAtual == null || periodoEscolar.Id != periodoEscolarAtual.Id)
                     {
                         var periodoFechamento = await repositorioPeriodoFechamento.ObterPeriodoPorUeDataBimestreAsync(request.Turma.UeId, hoje, periodoEscolar.Bimestre);
-                        var fechamentoPeriodoDataAula = periodoFechamento.FechamentosBimestre.Where(x => x.PeriodoEscolarId == periodoEscolar.Id).ToList();
+                        var fechamentoPeriodoDataAula = periodoFechamento?.FechamentosBimestre.Where(x => x.PeriodoEscolarId == periodoEscolar.Id).ToList();
                         if (fechamentoPeriodoDataAula != null && fechamentoPeriodoDataAula.Any())
                         {
                             periodoFechamento.FechamentosBimestre = fechamentoPeriodoDataAula;
