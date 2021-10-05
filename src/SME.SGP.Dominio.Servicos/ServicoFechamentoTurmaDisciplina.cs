@@ -468,6 +468,7 @@ namespace SME.SGP.Dominio.Servicos
                 var idWorkflow = await comandosWorkflowAprovacao.Salvar(wfAprovacaoNota);
                 foreach (var notaFechamento in notasEnvioWfAprovacao)
                 {
+                    await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoPorNotaCommand(notaFechamento.Id));
                     await repositorioWfAprovacaoNotaFechamento.SalvarAsync(new WfAprovacaoNotaFechamento()
                     {
                         WfAprovacaoId = idWorkflow,
