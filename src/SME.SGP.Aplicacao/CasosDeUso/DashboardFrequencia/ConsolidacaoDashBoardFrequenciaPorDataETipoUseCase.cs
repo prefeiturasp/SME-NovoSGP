@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -20,23 +21,13 @@ namespace SME.SGP.Aplicacao
                 return false;
 
             try
-            {               
-
-                // excluir consolidação por tipo e data
-
-                // inserir consolidação por tipo e data
-                await mediator.Send(new InserirConsolidacaoDashBoardFrequenciaCommand(filtro.TurmaId, filtro.DataAula, filtro.TipoPeriodo));
-
-                var turmaTratada = await mediator.Send(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEOL, turmaSGP));
-
-                if (!turmaTratada)
-                {
-                    throw new Exception($"Não foi possível realizar o tratamento da turma id {filtro.CodigoTurma}.");
-                }
+            {                
+                if (!await mediator.Send(new InserirConsolidacaoDashBoardFrequenciaCommand(filtro.TurmaId, filtro.DataAula, filtro.TipoPeriodo)))                
+                    throw new Exception($"Não foi possível realizar a consolidação da turma id {filtro.TurmaId} na data {filtro.DataAula}.");                
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureMessage($"Não foi possível realizar o tratamento da turma id {filtro.CodigoTurma}.", Sentry.Protocol.SentryLevel.Error);
+                SentrySdk.CaptureMessage($"Não foi possível realizar a consolidação da turma id {filtro.TurmaId} na data {filtro.DataAula}.", Sentry.Protocol.SentryLevel.Error);
                 SentrySdk.CaptureException(ex);
                 throw;
             }

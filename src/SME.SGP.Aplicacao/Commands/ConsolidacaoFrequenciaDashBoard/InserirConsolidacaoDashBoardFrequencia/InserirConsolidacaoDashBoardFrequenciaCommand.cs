@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(a => a.TipoPeriodo)
                 .NotEmpty()
-                .WithMessage("o tipo do período deve ser informado para realizar a consolidação");
+                .WithMessage("O tipo do período deve ser informado para realizar a consolidação");
         }
     }
 }

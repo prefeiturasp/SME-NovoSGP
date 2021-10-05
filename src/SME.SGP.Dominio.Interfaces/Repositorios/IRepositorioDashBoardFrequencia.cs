@@ -8,7 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioDashBoardFrequencia
     {
         Task<IEnumerable<FrequenciaAlunoDashboardDto>> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard, bool visaoDre = false);
-        Task<DadosParaConsolidacaoDashBoardFrequenciaDto> ObterDadosParaConsolidacao(int anoLetivo, long turmaId, int modalidade, int tipoPeriodo, DateTime dataInicio, DateTime datafim, int mes);
-        Task<long> Inserir(ConsolidacaoDashBoardFrequencia consolidacao);
+        Task<DadosParaConsolidacaoDashBoardFrequenciaDto> ObterDadosParaConsolidacao(int anoLetivo, long turmaId, int modalidade, int tipoPeriodo, DateTime dataAula, DateTime? dataInicioSemana, DateTime? datafimSemana, int? mes);       
     }
 }

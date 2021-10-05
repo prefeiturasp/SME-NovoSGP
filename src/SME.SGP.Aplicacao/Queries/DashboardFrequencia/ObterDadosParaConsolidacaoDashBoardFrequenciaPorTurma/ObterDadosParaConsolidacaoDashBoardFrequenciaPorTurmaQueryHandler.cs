@@ -21,6 +21,7 @@ namespace SME.SGP.Aplicacao
                                                                                request.TurmaId,
                                                                                (int)request.Modalidade,
                                                                                (int)request.TipoPeriodo,
+                                                                               request.DataAula,
                                                                                request.DataInicio,
                                                                                request.DataFim,
                                                                                request.Mes);

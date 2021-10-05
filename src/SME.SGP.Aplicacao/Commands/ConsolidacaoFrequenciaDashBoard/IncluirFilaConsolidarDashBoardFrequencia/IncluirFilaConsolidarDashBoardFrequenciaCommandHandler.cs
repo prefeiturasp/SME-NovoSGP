@@ -20,15 +20,16 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = new FiltroConsolidadoDashBoardFrequenciaDto()
             {
-                Alunos = request.Alunos,
+                
+                TurmaId = request.TurmaId,
                 DataAula = request.DataAula,
-                TurmaId = request.TurmaId
+                TipoPeriodo = request.TipoPeriodo
             };            
 
             try
             {
-                var publicarSyncUe = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoDashBoardFrequencia, filtro, Guid.NewGuid(), null));
-                if (!publicarSyncUe)
+                var publicar = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoDashBoardFrequencia, filtro, Guid.NewGuid(), null));
+                if (!publicar)
                 {
                     var mensagem = $"Não foi possível inserir a turma: {request.TurmaId} na fila de consolidação de frequência.";
                     SentrySdk.CaptureMessage(mensagem);

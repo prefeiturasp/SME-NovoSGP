@@ -110,7 +110,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<DadosParaConsolidacaoDashBoardFrequenciaDto> ObterDadosParaConsolidacao(int anoLetivo, long turmaId, int modalidade, int tipoPeriodo, DateTime dataInicio, DateTime datafim, int mes)
+        public async Task<DadosParaConsolidacaoDashBoardFrequenciaDto> ObterDadosParaConsolidacao(int anoLetivo, long turmaId, int modalidade, int tipoPeriodo, DateTime dataAula, DateTime? dataInicioSemana, DateTime? datafimSemana, int? mes)
         {
             var query = new StringBuilder(@"select 
  	                                           count(*) filter(where x.QuantidadePresencas > 0) as Presentes
@@ -134,10 +134,10 @@ namespace SME.SGP.Dados.Repositorios
                                                    and t.id = @turmaId ");
 
             if (tipoPeriodo == (int)TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine("and a.data_aula = @dataInicio ");
+                query.AppendLine("and a.data_aula = @dataAula ");
 
             if (tipoPeriodo == (int)TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine("and a.data_aula between @dataInicio and @dataFim ");
+                query.AppendLine("and a.data_aula between @dataInicioSemana and @datafimSemana ");
 
             if (tipoPeriodo == (int)TipoPeriodoDashboardFrequencia.Mensal)
                 query.AppendLine(@"and extract(month from a.data_aula) = @mes 
@@ -152,16 +152,20 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId,
                 modalidade,
                 tipoPeriodo,
-                dataInicio,
-                datafim,
+                dataAula,
+                dataInicioSemana,
+                datafimSemana,
                 mes
             };
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<DadosParaConsolidacaoDashBoardFrequenciaDto>(query.ToString(), parametros);
-        }
-        public async Task<long> Inserir(ConsolidacaoDashBoardFrequencia consolidacao)
-        {
-            return (long)(await database.Conexao.InsertAsync(consolidacao));
-        }
+            try
+            {
+                return await database.Conexao.QueryFirstOrDefaultAsync<DadosParaConsolidacaoDashBoardFrequenciaDto>(query.ToString(), parametros);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }            
+        }        
     }
 }

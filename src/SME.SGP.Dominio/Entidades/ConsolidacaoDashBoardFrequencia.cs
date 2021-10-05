@@ -9,9 +9,9 @@ namespace SME.SGP.Dominio
         public string TurmaNome { get; set; }
         public string TurmaAno { get; set; }
         public DateTime DataAula { get; set; }
-        public DateTime DataInicio { get; set; }
-        public DateTime DataFim { get; set; }
-        public int Mes { get; set; }
+        public DateTime? DataInicio { get; set; }
+        public DateTime? DataFim { get; set; }
+        public int? Mes { get; set; }
         public int ModalidadeCodigo { get; set; }
         public int Tipo { get; set; }
         public int AnoLetivo { get; set; }

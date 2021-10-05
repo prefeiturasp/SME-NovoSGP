@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\ConsolidacaoFrequenciaDashBoard\ExcluirConsolidacaoDashBoardFrequencia\" />
     <Folder Include="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\" />
     <Folder Include="Interfaces\CasosDeUso\Aluno\" />
     <Folder Include="obj\" />

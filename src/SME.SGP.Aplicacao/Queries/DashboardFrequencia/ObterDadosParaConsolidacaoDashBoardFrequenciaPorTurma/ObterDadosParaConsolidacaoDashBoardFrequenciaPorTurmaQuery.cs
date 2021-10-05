@@ -8,12 +8,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDadosParaConsolidacaoDashBoardFrequenciaPorTurmaQuery : IRequest<DadosParaConsolidacaoDashBoardFrequenciaDto>
     {
-        public ObterDadosParaConsolidacaoDashBoardFrequenciaPorTurmaQuery(int anoLetivo, long turmaId, Modalidade modalidade, TipoPeriodoDashboardFrequencia tipoPeriodo, int mes, DateTime dataInicio, DateTime dataFim)
+        public ObterDadosParaConsolidacaoDashBoardFrequenciaPorTurmaQuery(int anoLetivo, long turmaId, Modalidade modalidade, TipoPeriodoDashboardFrequencia tipoPeriodo, DateTime dataAula, int? mes, DateTime? dataInicio, DateTime? dataFim)
         {
             AnoLetivo = anoLetivo;
             TurmaId = turmaId;
             Modalidade = modalidade;
             TipoPeriodo = tipoPeriodo;
+            DataAula = dataAula;
             Mes = mes;
             DataInicio = dataInicio;
             DataFim = dataFim;
@@ -23,8 +24,9 @@ namespace SME.SGP.Aplicacao
         public long TurmaId { get; set; }
         public Modalidade Modalidade { get; set; }
         public TipoPeriodoDashboardFrequencia TipoPeriodo { get; set; }
-        public int Mes { get; set; }
-        public DateTime DataInicio { get; set; }
-        public DateTime DataFim { get; set; }
+        public DateTime DataAula { get; set; }
+        public int? Mes { get; set; }
+        public DateTime? DataInicio { get; set; }
+        public DateTime? DataFim { get; set; }
     }
 }

@@ -1,20 +1,20 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Enumerados;
 using System;
-using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
     public class IncluirFilaConsolidarDashBoardFrequenciaCommand : IRequest<bool>
     {
-        public IncluirFilaConsolidarDashBoardFrequenciaCommand(IEnumerable<string> alunos, DateTime dataAula, string turmaId)
+        public IncluirFilaConsolidarDashBoardFrequenciaCommand(long turmaId, DateTime dataAula, TipoPeriodoDashboardFrequencia tipoPeriodo)
         {
-            Alunos = alunos;
-            DataAula = dataAula;
             TurmaId = turmaId;
+            DataAula = dataAula;
+            TipoPeriodo = tipoPeriodo;
         }
 
-        public IEnumerable<string> Alunos { get; set; }
+        public long TurmaId { get; set; }
         public DateTime DataAula { get; set; }
-        public string TurmaId { get; set; }
+        public TipoPeriodoDashboardFrequencia TipoPeriodo { get; set; }
     }
 }
