@@ -84,15 +84,14 @@ namespace SME.SGP.Aplicacao
                             {
                                 Data = diaAtual,
                                 PossuiEvento = true,
-                                EhLetivo = elue.EhEventoLetivo(),
+                                EhLetivo = !diaAtual.FimDeSemana() && elue.EhEventoLetivo(),
                                 Motivo = elue.Nome,
                                 UesIds = new List<string>() { elue.UeId }
                             });
                         });
+
                         if (request.DesconsiderarCriacaoDiaLetivoProximasUes)
-                        {
                             continue;
-                        }
                     }
                     diaLetivoDto.EhLetivo = !diaAtual.FimDeSemana();
                     datasDosPeriodosEscolares.Add(diaLetivoDto);

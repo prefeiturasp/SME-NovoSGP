@@ -171,6 +171,7 @@ namespace SME.SGP.IoC
         {
             services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
             services.TryAddScoped<ISgpContext, SgpContext>();
+            services.TryAddScoped<ISgpContextConsultas, SgpContextConsultas>();
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
         }
 
@@ -389,6 +390,7 @@ namespace SME.SGP.IoC
             // Frequência 
             services.TryAddScoped<IRepositorioFrequenciaPreDefinida, RepositorioFrequenciaPreDefinida>();
             services.TryAddScoped<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
+            services.TryAddScoped<IRepositorioDashBoardFrequencia, RepositorioDashBoardFrequencia>();
 
             //Evento Bimestre
             services.TryAddScoped<IRepositorioEventoBimestre, RepositorioEventoBimestre>();
