@@ -18,14 +18,12 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUsuario repositorioUsuario;
-        private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IServicoEol servicoEOL;
         public NotificarAprovacaoNotaConselhoCommandHandler(IMediator mediator, 
                                                             IRepositorioNotificacao repositorioNotificacao,
                                                             IRepositorioTurma repositorioTurma,
                                                             IRepositorioUsuario repositorioUsuario,
-                                                            IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                                             IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                                             IServicoEol servicoEOL)
         {
@@ -33,7 +31,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
-            this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
@@ -47,7 +44,10 @@ namespace SME.SGP.Aplicacao
             {
                 var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
                 var notaConceitoTitulo = request.NotasEmAprovacao.ConceitoId.HasValue ? "conceito" : "nota";
-                var bimestre = await repositorioConselhoClasseNota.ObterBimestreEmAprovacaoWf(request.WorkFlowId);
+                var periodoEscolarId = request.NotasEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolarId;
+                var bimestre = periodoEscolarId.HasValue ? 
+                    await mediator.Send(new ObterBimestreDoPeriodoEscolarQuery(periodoEscolarId.Value)) :
+                    0;
 
                 var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
 
