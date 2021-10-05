@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         {
             var data = param.ObterObjetoMensagem<ExecutarTipoCalendarioParametro>();
 
-            await comandosTipoCalendario.ExecutarMetodosAsync(data.Dto, false, data.TipoCalendario);
+            await comandosTipoCalendario.ExecutarReplicacao(data.Dto, false, data.TipoCalendario);
             return true;
         }
     }
