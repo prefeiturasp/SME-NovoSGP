@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                 var turmasDoEnsinoInfantil = await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(DateTime.Now.Year, Modalidade.EducacaoInfantil));
                 if (!turmasDoEnsinoInfantil?.Any() ?? true)
                 {
-                    SentrySdk.AddBreadcrumb($"Não foram encontradas turmas para geração de pendências de ausência de registro individual .", $"Rabbit - {nameof(GerarPendenciaAusenciaRegistroIndividualUseCase)}");
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Não foram encontradas turmas para geração de pendências de ausência de registro individual.", LogNivel.Negocio, LogContexto.RegistroIndividual));
                     return false;
                 }
 
@@ -37,9 +37,8 @@ namespace SME.SGP.Aplicacao
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                SentrySdk.CaptureException(ex);
                 return false;
             }
         }
@@ -48,25 +47,18 @@ namespace SME.SGP.Aplicacao
         {
             if (turma is null) return;
 
-            try
+            var retorno = await mediator.Send(new GerarPendenciaAusenciaRegistroIndividualTurmaCommand(turma));
+            if (retorno is null)
             {
-                var retorno = await mediator.Send(new GerarPendenciaAusenciaRegistroIndividualTurmaCommand(turma));
-                if (retorno is null)
-                {
-                    SentrySdk.AddBreadcrumb($"Não foi possível gerar a pendência de ausência de registro individual para a turma {turma.Id}.", $"Rabbit - {nameof(GerarPendenciaAusenciaRegistroIndividualUseCase)}");
-                    return;
-                }
-
-                if (retorno.ExistemErros)
-                {
-                    var erros = string.Join(", ", retorno.Mensagens);
-                    SentrySdk.AddBreadcrumb($"Não foi possível gerar a pendência de ausência de registro individual para a turma {turma.Id}. {erros}", $"Rabbit - {nameof(GerarPendenciaAusenciaRegistroIndividualUseCase)}");
-                    return;
-                }
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível gerar a pendência de ausência de registro individual para a turma {turma.Id}.", LogNivel.Negocio, LogContexto.RegistroIndividual));
+                return;
             }
-            catch (Exception ex)
+
+            if (retorno.ExistemErros)
             {
-                SentrySdk.CaptureException(ex);
+                var erros = string.Join(", ", retorno.Mensagens);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível gerar a pendência de ausência de registro individual para a turma {turma.Id}. {erros}", LogNivel.Negocio, LogContexto.RegistroIndividual));
+                return;
             }
         }
     }

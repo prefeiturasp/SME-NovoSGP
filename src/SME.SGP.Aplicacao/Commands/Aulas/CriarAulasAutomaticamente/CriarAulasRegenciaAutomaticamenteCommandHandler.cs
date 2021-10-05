@@ -1,6 +1,5 @@
 ﻿
 using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -41,8 +40,8 @@ namespace SME.SGP.Aplicacao
 
             foreach (var dadoTurma in dadosTurmas)
             {
-                var aulas = (List<Aula>)await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(dadoTurma.TurmaCodigo, tipoCalendarioId));
-                aulas.AddRange(await repositorioAula.ObterAulasExcluidasComDiarioDeBordoAtivos(dadoTurma.TurmaCodigo, tipoCalendarioId));
+                var aulas = (List<Aula>)await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(dadoTurma.TurmaCodigo, tipoCalendarioId, "Sistema"));
+                aulas.AddRange(await mediator.Send(new ObterAulasExcluidasComDiarioDeBordoAtivosQuery(dadoTurma.TurmaCodigo, tipoCalendarioId)));
                 var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(dadoTurma.TurmaCodigo, dadoTurma.ComponenteCurricularCodigo));
                 var professorRf = professorTitular != null ? professorTitular.ProfessorRf : "";
 
@@ -100,10 +99,7 @@ namespace SME.SGP.Aplicacao
 
             if (idsAulasAExcluir.Any())
                 contadorAulasExcluidas = await ExcluirAulas(contadorAulasExcluidas, idsAulasAExcluir);
-
-            SentrySdk.AddBreadcrumb($"Foram excluídas {contadorAulasExcluidas} aulas.");
-            SentrySdk.AddBreadcrumb($"Foram criadas {contadorAulasCriadas} aulas.");
-            SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Finalizada Rotina de manutenção de aulas do Infantil");
+            
             return true;
         }
 
@@ -197,7 +193,7 @@ namespace SME.SGP.Aplicacao
                         TipoAula = TipoAula.Normal,
                         TipoCalendarioId = tipoCalendarioId,
                         TurmaId = turma.TurmaCodigo,
-                        UeId =ueCodigo,
+                        UeId = ueCodigo,
                         ProfessorRf = rfProfessor,
                         CriadoPor = "Sistema",
                         CriadoRF = "0"

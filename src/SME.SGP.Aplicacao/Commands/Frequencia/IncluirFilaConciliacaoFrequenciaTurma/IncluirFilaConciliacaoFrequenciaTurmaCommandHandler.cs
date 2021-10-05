@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
 using System;
 using System.Threading;

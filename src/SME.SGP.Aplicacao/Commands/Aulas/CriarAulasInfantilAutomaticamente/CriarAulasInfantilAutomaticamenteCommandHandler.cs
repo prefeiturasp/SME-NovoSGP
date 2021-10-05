@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Commands.Aulas.ReaverAulaDiarioBordoExcluida;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -47,9 +46,9 @@ namespace SME.SGP.Aplicacao
                 var diasNaoLetivos = DeterminaDiasNaoLetivos(diasParaCriarAula, turma);
                 var diasLetivos = DeterminaDiasLetivos(diasParaCriarAula, diasNaoLetivos.Select(dnl => dnl.Data).Distinct(), turma);
 
-                var aulas = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId)))?.ToList();
-                // TODO: Implementar com mediator essa funcionalidade.
-                aulas.AddRange(await repositorioAula.ObterAulasExcluidasComDiarioDeBordoAtivos(turma.CodigoTurma, tipoCalendarioId));
+                var aulas = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId, "Sistema")))?.ToList();
+
+                aulas.AddRange(await mediator.Send(new ObterAulasExcluidasComDiarioDeBordoAtivosQuery(turma.CodigoTurma, tipoCalendarioId)));
 
                 if (aulas == null || !aulas.Any())
                 {
@@ -123,11 +122,6 @@ namespace SME.SGP.Aplicacao
             if (idsAulasAExcluir.Any())
                 contadorAulasExcluidas = await ExcluirAulas(contadorAulasExcluidas, idsAulasAExcluir);
 
-            Console.WriteLine($"Manutenção de aulas realizada em {timerGeral.Elapsed}");
-
-            SentrySdk.AddBreadcrumb($"Foram excluídas {contadorAulasExcluidas} aulas.");
-            SentrySdk.AddBreadcrumb($"Foram criadas {contadorAulasCriadas} aulas.");
-            SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Finalizada Rotina de manutenção de aulas do Infantil");
             return true;
         }
 

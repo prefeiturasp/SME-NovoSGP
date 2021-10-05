@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using Microsoft.ApplicationInsights;
+﻿using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,8 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
-using Sentry;
-using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
@@ -18,6 +13,9 @@ using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using SME.SGP.IoC.Extensions;
 using SME.SGP.Worker.RabbitMQ;
+using System;
+using System.Net;
+using System.Net.Http;
 
 
 namespace SME.SGP.Worker.Rabbbit
@@ -26,6 +24,7 @@ namespace SME.SGP.Worker.Rabbbit
     {
         private readonly IConfiguration configuration;
         private readonly IHostingEnvironment env;
+        private ConfiguracaoRabbitOptions configuracaoRabbitOptions;
 
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
@@ -39,33 +38,46 @@ namespace SME.SGP.Worker.Rabbbit
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
-            
+
             RegistraDependencias.Registrar(services);
-            
+
             RegistrarHttpClients(services, configuration);
             services.AddApplicationInsightsTelemetry(configuration);
             services.AddPolicies();
-            
-            if (env.EnvironmentName != "teste-integrado")
-            {
-                services.AddRabbit();
-            }
-
-            services.AddHostedService<WorkerRabbitMQ>();
 
             ConfiguraVariaveisAmbiente(services);
             ConfiguraGoogleClassroomSync(services);
+            ConfiguraRabbitParaLogs(services);
 
-            var serviceProvider = services.BuildServiceProvider();
+            services.AddRabbit(configuracaoRabbitOptions);            
+
+            var telemetriaOptions = ConfiguraTelemetria(services);
+            var serviceProvider = services.BuildServiceProvider();            
+
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-            DapperExtensionMethods.Init(clientTelemetry);
-            SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN"));
+
+            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, telemetriaOptions);
+
+            DapperExtensionMethods.Init(servicoTelemetria);
+
+            services.AddSingleton(servicoTelemetria);
 
             services.AddMemoryCache();
+
+            services.AddHostedService<WorkerRabbitMQ>();
+        }
+        private TelemetriaOptions ConfiguraTelemetria(IServiceCollection services)
+        {
+            var telemetriaOptions = new TelemetriaOptions();
+            configuration.GetSection(TelemetriaOptions.Secao).Bind(telemetriaOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(telemetriaOptions);
+
+            return telemetriaOptions;
         }
         private void ConfiguraVariaveisAmbiente(IServiceCollection services)
         {
-            var configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
+            configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
             configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
 
             services.AddSingleton(configuracaoRabbitOptions);
@@ -92,10 +104,17 @@ namespace SME.SGP.Worker.Rabbbit
                 await context.Response.WriteAsync("WorkerRabbitMQ!");
             });
         }
+        private void ConfiguraRabbitParaLogs(IServiceCollection services)
+        {
+            var configuracaoRabbitLogOptions = new ConfiguracaoRabbitLogOptions();
+            configuration.GetSection("ConfiguracaoRabbitLog").Bind(configuracaoRabbitLogOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(configuracaoRabbitLogOptions);
+        }
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
             return HttpPolicyExtensions
-                .HandleTransientHttpError()                
+                .HandleTransientHttpError()
                 .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(3,
                                                                             retryAttempt)));
         }
@@ -118,13 +137,20 @@ namespace SME.SGP.Worker.Rabbbit
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
-                
+
             }).AddPolicyHandler(GetRetryPolicy());
 
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            services.AddHttpClient(name: "servicoAcompanhamentoEscolar", c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-integration-key", configuration.GetSection("AE_ChaveIntegracao").Value);
             });
 
             services.AddHttpClient<IServicoGithub, SevicoGithub>(c =>
@@ -163,6 +189,6 @@ namespace SME.SGP.Worker.Rabbbit
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
 
-        }   
+        }
     }
 }

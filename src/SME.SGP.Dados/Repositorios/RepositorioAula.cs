@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Sentry;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -441,7 +440,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and disciplina_id = @componenteCurricular ");
             query.AppendLine("and extract('week' from data_aula::date + 1) = (@semana - 1)");
             query.AppendLine("and Date(data_aula) <> @dataExcecao");
-            
+
             if (!string.IsNullOrEmpty(codigoRf) && !ehGestor)
                 query.AppendLine("and professor_rf = @codigoRf");
 
@@ -827,7 +826,7 @@ namespace SME.SGP.Dados.Repositorios
             return modalidade == (int)Modalidade.EducacaoInfantil;
         }
 
-        public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId)
+        public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId, string criadoPor = null)
         {
             var query = @"select a.* 
                             from aula a
@@ -836,9 +835,22 @@ namespace SME.SGP.Dados.Repositorios
                           where a.tipo_calendario_id = @tipoCalendarioId and 
                                 a.turma_id = @turmaId and 
                                 not a.excluido and
-                                extract(year from a.data_aula) = t.ano_letivo
-                          order by a.data_aula";
-            return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId });
+                                extract(year from a.data_aula) = t.ano_letivo";
+
+            var criadoRf = new string[] { criadoPor };
+
+            if (!string.IsNullOrWhiteSpace(criadoPor))
+            {
+                if (criadoPor.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase))
+                    criadoRf = criadoRf.Concat(new string[] { "0" }).ToArray();
+
+                query += @" and a.criado_por = @criadoPor 
+                            and a.criado_rf = any(@criadoRf) ";
+            }
+
+            query += " order by a.data_aula;";
+
+            return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId, criadoPor, criadoRf });
         }
 
         public async Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasParaPendenciasAulaDiasNaoLetivos(long tipoCalendarioId, TipoEscola[] tiposEscola)
@@ -858,7 +870,7 @@ namespace SME.SGP.Dados.Repositorios
                         where not excluido and tipo_calendario_id = @tipoCalendarioId ";
 
             int[] tiposEscolaFiltro = null;
-            if(tiposEscola?.Any() ?? false)
+            if (tiposEscola?.Any() ?? false)
             {
                 tiposEscolaFiltro = tiposEscola.Select(x => (int)x).ToArray();
                 query += " AND ue.tipo_escola = any(@tiposEscolaFiltro)";
@@ -899,8 +911,8 @@ namespace SME.SGP.Dados.Repositorios
                     writer.Write(aula.UeId);
                     writer.Write(aula.ProfessorRf);
                     writer.Write(aula.CriadoEm);
-                    writer.Write(aula.CriadoPor != null? aula.CriadoPor: "Sistema");
-                    writer.Write(aula.CriadoRF != null? aula.CriadoRF: "Sistema");
+                    writer.Write(aula.CriadoPor != null ? aula.CriadoPor : "Sistema");
+                    writer.Write(aula.CriadoRF != null ? aula.CriadoRF : "Sistema");
                 }
                 writer.Complete();
             }
@@ -1017,7 +1029,9 @@ namespace SME.SGP.Dados.Repositorios
                              where t.turma_id = @codigoTurma and
 	                               a.tipo_calendario_id = @tipoCalendarioId and
 	                               a.excluido and
-	                               not db.excluido;";
+	                               not db.excluido and
+                                   a.criado_por = 'Sistema' and
+                                   a.criado_rf = 'Sistema';";
 
             return (await database.Conexao.QueryAsync<Aula>(sqlQuery, new { codigoTurma, tipoCalendarioId }));
         }
@@ -1031,37 +1045,6 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarInicioFimDto>(query, new { aulaId });
-        }
-
-        public override long Salvar(Aula entidade)
-        {
-            ValideQuantidadeDeAulas(entidade);
-
-            return base.Salvar(entidade);
-        }
-        public override Task<long> SalvarAsync(Aula entidade)
-        {
-            ValideQuantidadeDeAulas(entidade);
-
-            return base.SalvarAsync(entidade);
-        }
-
-        private void ValideQuantidadeDeAulas(Aula entidade)
-        {
-            if (entidade.Quantidade < 0 && !entidade.Excluido)
-            {
-                SentrySdk.AddBreadcrumb($@"
-                    Turma id: {entidade.TurmaId}, 
-                    Quantidade: {entidade.Quantidade},
-                    Data aula: {entidade.DataAula}, 
-                    Professor: {entidade.ProfessorRf},
-                    Disciplina: {entidade.DisciplinaId},
-                    Recorrência aula: {entidade.RecorrenciaAula},
-                    Tipo de aula: {entidade.TipoAula} -``
-                    {DateTime.Now:MM/dd/yyyy hh:mm:ss.fff tt}", "Erro ao salvar aulas com quantidade negativa");
-
-                throw new NegocioException("Não é possível salvar aula com quantidade negativa. Entre em contato com suporte.");
-            }
         }
 
         public async Task<DataAulaDto> ObterAulaPorCodigoTurmaComponenteEData(string turmaId, string componenteCurricularId, DateTime dataCriacao)

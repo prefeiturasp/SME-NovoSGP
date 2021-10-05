@@ -151,9 +151,95 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id }));
         }
 
+        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, long turmaId, int bimestre, string codigoAluno)
+        {
+            var query = @"	                        
+                           select
+                           distinct *
+                           from
+                           (
+                           select 
+                           fn.disciplina_id as Codigo,
+                           comp.descricao as Descricao, 
+                           comp.permite_lancamento_nota as LancaNota
+                           from
+                           fechamento_turma ft
+                           left join periodo_escolar pe on
+                           pe.id = ft.periodo_escolar_id
+                           inner join turma t on
+                           t.id = ft.turma_id
+                           inner join ue on
+                           ue.id = t.ue_id
+                           inner join fechamento_turma_disciplina ftd on
+                           ftd.fechamento_turma_id = ft.id
+                           inner join fechamento_aluno fa on
+                           fa.fechamento_turma_disciplina_id = ftd.id
+                           inner join fechamento_nota fn on
+                           fn.fechamento_aluno_id = fa.id
+                           inner join componente_curricular comp 
+                           on comp.id = fn.disciplina_id
+                           inner join conselho_classe cc on
+                           cc.fechamento_turma_id = ft.id
+                           inner join conselho_classe_aluno cca on
+                           cca.conselho_classe_id = cc.id
+                           and cca.aluno_codigo = fa.aluno_codigo
+                           left join conselho_classe_nota ccn on
+                           ccn.conselho_classe_aluno_id = cca.id
+                           and ccn.componente_curricular_codigo = fn.disciplina_id
+                           where
+                           pe.bimestre = @bimestre
+                           and cca.aluno_codigo = @codigoAluno
+                           and t.ano_letivo = @anoLetivo
+                           and ft.turma_id = @turmaId
+                           union all
+                           
+                           select 
+                           ccn.componente_curricular_codigo as Codigo,
+                           comp.descricao as Descricao, 
+                           comp.permite_lancamento_nota as LancaNota
+                           from
+                           fechamento_turma ft
+                           left join periodo_escolar pe on
+                           pe.id = ft.periodo_escolar_id
+                           inner join turma t on
+                           t.id = ft.turma_id
+                           inner join ue on
+                           ue.id = t.ue_id
+                           inner join conselho_classe cc on
+                           cc.fechamento_turma_id = ft.id
+                           inner join conselho_classe_aluno cca on
+                           cca.conselho_classe_id = cc.id
+                           inner join conselho_classe_nota ccn on
+                           ccn.conselho_classe_aluno_id = cca.id
+                           inner join componente_curricular comp 
+                           on comp.id = ccn.componente_curricular_codigo
+                           left join fechamento_turma_disciplina ftd on
+                           ftd.fechamento_turma_id = ft.id
+                           left join fechamento_aluno fa on
+                           fa.fechamento_turma_disciplina_id = ftd.id
+                           and cca.aluno_codigo = fa.aluno_codigo
+                           left join fechamento_nota fn on 
+                           fn.fechamento_aluno_id = fa.id
+                           and ccn.componente_curricular_codigo = fn.disciplina_id
+                           where
+                           pe.bimestre = @bimestre
+                           and cca.aluno_codigo = @codigoAluno
+                           and t.ano_letivo = @anoLetivo
+                           and ft.turma_id = @turmaId ) x   ";
+
+            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { bimestre , anoLetivo, turmaId, codigoAluno, }));
+        }
+
         public async Task<bool> LancaNota(long id)
         {
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>("select permite_lancamento_nota from componente_curricular where id = @id", new { id });
+        }
+
+        public async Task<string> ObterDescricaoPorId(long id)
+        {
+            var query = @"select coalesce(descricao_sgp, descricao) from componente_curricular cc where id = @id";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
         }
     }
 

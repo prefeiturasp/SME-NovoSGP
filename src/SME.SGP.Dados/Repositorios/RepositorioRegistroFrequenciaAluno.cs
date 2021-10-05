@@ -72,6 +72,18 @@ namespace SME.SGP.Dados
 			return await database.Conexao.QueryAsync<FrequenciaAlunoSimplificadoDto>(query, new { aulaId });
 		}
 
+        public Task<IEnumerable<RegistroFrequenciaAluno>> ObterRegistrosAusenciaPorAulaAsync(long aulaId)
+        {
+            var query = @"select a.* 
+                      from registro_frequencia_aluno a
+                      inner join registro_frequencia f on f.id = a.registro_frequencia_id
+                      where not a.excluido and not f.excluido
+                        and a.valor = @tipo
+                        and f.aula_id = @aulaId ";
+
+            return database.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { aulaId, tipo = (int)TipoFrequencia.F });
+        }
+
         public async Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId)
         {
             await database.Conexao.ExecuteAsync("DELETE FROM registro_frequencia_aluno WHERE registro_frequencia_id = @registroFrequenciaId", 
@@ -108,6 +120,24 @@ namespace SME.SGP.Dados
             }
 
             return true;
+        }
+
+        public async Task ExcluirVarios(List<long> idsParaExcluir)
+        {
+            var query = "delete from registro_frequencia_aluno where = any(@idsParaExcluir)";
+
+            using (var conexao = (NpgsqlConnection)database.Conexao)
+            {
+                await conexao.OpenAsync();
+                await conexao.ExecuteAsync(
+                    query,
+                    new
+                    {
+                        idsParaExcluir
+
+                    });
+                conexao.Close();
+            }
         }
     }
 }

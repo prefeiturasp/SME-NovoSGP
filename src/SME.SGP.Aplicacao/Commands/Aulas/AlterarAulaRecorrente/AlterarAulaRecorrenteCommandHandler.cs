@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
                 listaAlteracoes.Add(await TratarAlteracaoAula(request, aulaOrigem, dataAula, turma));
 
                 var diasRecorrencia = ObterDiasDaRecorrencia(dataAula.AddDays(7), fimRecorrencia);
-                foreach(var diaAula in diasRecorrencia)
+                foreach (var diaAula in diasRecorrencia)
                 {
                     // Obter a aula na mesma semana da nova data
                     var aulaRecorrente = aulasDaRecorrencia.FirstOrDefault(c => UtilData.ObterSemanaDoAno(c.DataAula) == UtilData.ObterSemanaDoAno(diaAula));
@@ -130,8 +130,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.AddBreadcrumb("Exclusao de Registro em Manutenção da Aula", "Alteração de Aula Recorrente");
-                SentrySdk.CaptureException(ex);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Exclusao de Registro em Manutenção da Aula", LogNivel.Negocio, LogContexto.Aula, ex.Message));
             }
         }
 
@@ -159,9 +158,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception e)
             {
-                SentrySdk.AddBreadcrumb("Erro alterando aula recorrente", "Alteração de Aula Recorrente");
-                SentrySdk.CaptureException(e);
-                // retorna erro = true
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro alterando aula recorrente", LogNivel.Negocio, LogContexto.Aula, e.Message));
                 return (false, true, dataAula, e.Message);
             }
 
@@ -174,6 +171,7 @@ namespace SME.SGP.Aplicacao
             aula.DataAula = dataAula;
             aula.Quantidade = request.Quantidade;
             aula.RecorrenciaAula = request.RecorrenciaAula;
+            aula.DisciplinaId = request.ComponenteCurricularId.ToString();
 
             if (request.AulaId == aula.Id)
                 aula.AulaPaiId = null;

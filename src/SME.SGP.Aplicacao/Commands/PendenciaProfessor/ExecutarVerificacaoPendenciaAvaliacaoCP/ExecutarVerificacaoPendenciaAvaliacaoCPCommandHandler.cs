@@ -1,12 +1,11 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -49,7 +48,7 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.CaptureException(ex);
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência de avaliação do CP.", LogNivel.Negocio, LogContexto.Avaliacao, ex.Message));
                 }
             }
 

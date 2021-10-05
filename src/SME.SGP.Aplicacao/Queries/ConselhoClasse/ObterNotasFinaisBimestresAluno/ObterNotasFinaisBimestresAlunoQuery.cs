@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public  class ObterNotasFinaisBimestresAlunoQuery : IRequest<IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
-        public ObterNotasFinaisBimestresAlunoQuery(string[] turmasCodigos, string alunoCodigo, int bimestre)
+        public ObterNotasFinaisBimestresAlunoQuery(string[] turmasCodigos, string alunoCodigo, int bimestre=0)
         {
             TurmasCodigos = turmasCodigos;
             AlunoCodigo = alunoCodigo;

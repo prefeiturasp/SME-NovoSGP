@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
 
             // Carrega alunos
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma, turma.AnoLetivo);
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaId));
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
@@ -207,7 +207,7 @@ namespace SME.SGP.Aplicacao
                         CodigoAluno = aluno.CodigoAluno,
                         NumeroChamada = aluno.NumeroAlunoChamada,
                         Nome = aluno.NomeAluno,
-                        Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo),
+                        Ativo = aluno.EstaAtivo(periodoAtual.PeriodoFim),
                         EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
                     };
 
@@ -274,14 +274,18 @@ namespace SME.SGP.Aplicacao
                                         nomeDisciplina = disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId)?.Nome;
                                     else nomeDisciplina = disciplinaEOL.Nome;
 
-                                    ((List<FechamentoNotaRetornoDto>)alunoDto.Notas).Add(new FechamentoNotaRetornoDto()
+                                    var nota = new FechamentoNotaRetornoDto()
                                     {
                                         DisciplinaId = notaConceitoBimestre.DisciplinaId,
                                         Disciplina = nomeDisciplina,
                                         NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceito(notaConceitoBimestre.ConceitoId.Value) : notaConceitoBimestre.Nota,
                                         EhConceito = notaConceitoBimestre.ConceitoId.HasValue,
-                                        ConceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : string.Empty
-                                    });
+                                        ConceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : string.Empty,
+                                    };
+
+                                    await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
+
+                                    ((List<FechamentoNotaRetornoDto>)alunoDto.Notas).Add(nota);
                                 }
                         }
 
@@ -307,6 +311,21 @@ namespace SME.SGP.Aplicacao
             fechamentoBimestre.PodeProcessarReprocessar = await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
 
             return fechamentoBimestre;
+        }
+
+        private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoNotaRetornoDto notasConceito)
+        {
+            double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
+
+            if (nota > 0)
+            {
+                notasConceito.NotaConceito = nota;
+                notasConceito.EmAprovacao = true;
+            }
+            else
+            {
+                notasConceito.EmAprovacao = false;
+            }
         }
 
         private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)

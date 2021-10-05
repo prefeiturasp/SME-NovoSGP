@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public class ConselhoClasseNota: EntidadeBase
     {
+        public ConselhoClasseAluno ConselhoClasseAluno { get; set; }
         public long ConselhoClasseAlunoId { get; set; }
         public long ComponenteCurricularCodigo { get; set; }
         public double? Nota { get; set; }

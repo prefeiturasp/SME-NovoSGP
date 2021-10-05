@@ -19,7 +19,9 @@ namespace SME.SGP.Dominio.Enumerados
         [Display(Name = "SME Ano")]
         SME_ANO = 7,
         [Display(Name = "DRE Ano")]
-        DRE_ANO = 8
+        DRE_ANO = 8,
+        [Display(Name = "Mensagem Automática")]
+        MENSAGEM_AUTOMATICA = 9
 
     }
 }

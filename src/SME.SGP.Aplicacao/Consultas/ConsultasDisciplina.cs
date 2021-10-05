@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
                     componentesCurriculares?
                     .Select(a => a.TerritorioSaber ? (a.CodigoComponenteTerritorioSaber == 0 ? a.Codigo : a.CodigoComponenteTerritorioSaber) : a.Codigo).ToArray()))?.OrderBy(c => c.Nome)?.ToList();
 
-                var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
+                var componentesCurricularesJurema = await repositorioCache.ObterAsync("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
                 if (componentesCurricularesJurema == null)
                 {
                     throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
+            var componentesCurricularesJurema = await repositorioCache.ObterAsync("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
             if (componentesCurricularesJurema == null)
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");

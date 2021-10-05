@@ -1,8 +1,5 @@
 ﻿using MediatR;
-using Sentry;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;

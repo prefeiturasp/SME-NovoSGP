@@ -77,12 +77,12 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet("meses/{mes}/dias/{dia}")]
         [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(IEnumerable<CalendarioTipoEventoPorDiaDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<CalendarioEventosNoDiaRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.E_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPorDia(int dia, int mes, [FromQuery]CalendarioEventosFiltroDto filtro, [FromServices] IConsultasEvento consultasEvento)
         {
-            var retorno = await consultasEvento.ObterEventosPorDia(filtro, mes, dia);
+            var retorno = await consultasEvento.ObterEventosPorDia(filtro, mes, dia, filtro.AnoLetivo);
             if (retorno.Any())
                 return Ok(retorno);
             else return StatusCode(204);
