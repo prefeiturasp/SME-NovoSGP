@@ -46,9 +46,9 @@ namespace SME.SGP.Aplicacao
                 var diasNaoLetivos = DeterminaDiasNaoLetivos(diasParaCriarAula, turma);
                 var diasLetivos = DeterminaDiasLetivos(diasParaCriarAula, diasNaoLetivos.Select(dnl => dnl.Data).Distinct(), turma);
 
-                var aulas = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId)))?.ToList();
-                // TODO: Implementar com mediator essa funcionalidade.
-                aulas.AddRange(await repositorioAula.ObterAulasExcluidasComDiarioDeBordoAtivos(turma.CodigoTurma, tipoCalendarioId));
+                var aulas = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId, "Sistema")))?.ToList();
+
+                aulas.AddRange(await mediator.Send(new ObterAulasExcluidasComDiarioDeBordoAtivosQuery(turma.CodigoTurma, tipoCalendarioId)));
 
                 if (aulas == null || !aulas.Any())
                 {
