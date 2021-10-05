@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -6,7 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task Salvar(WFAprovacaoNotaConselho entidade);
         Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoPorWorkflow(long workflowId);
-        Task<WFAprovacaoNotaConselho> ObterWorkflowAprovacaoNota(long conselhoClasseNotaId);
+        Task<IEnumerable<WFAprovacaoNotaConselho>> ObterWorkflowAprovacaoNota(long conselhoClasseNotaId);
         Task Excluir(long id);
     }
 }
