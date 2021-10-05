@@ -364,5 +364,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(sql, new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestres });
         }
+
+        public async Task<int> ObterBimestre(long periodoEscolarId)
+        {
+            var query = @"select bimestre from periodo_escolar where id = @periodoEscolarId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { periodoEscolarId });
+        }
     }
 }
