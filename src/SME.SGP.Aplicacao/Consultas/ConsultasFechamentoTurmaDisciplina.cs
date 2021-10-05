@@ -207,7 +207,7 @@ namespace SME.SGP.Aplicacao
                         CodigoAluno = aluno.CodigoAluno,
                         NumeroChamada = aluno.NumeroAlunoChamada,
                         Nome = aluno.NomeAluno,
-                        Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo),
+                        Ativo = VerifiqueAlunoAtivo(aluno.CodigoSituacaoMatricula),
                         EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
                     };
 
@@ -307,6 +307,14 @@ namespace SME.SGP.Aplicacao
             fechamentoBimestre.PodeProcessarReprocessar = await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
 
             return fechamentoBimestre;
+        }
+
+        private bool VerifiqueAlunoAtivo(SituacaoMatriculaAluno codigoSituacaoMatricula)
+        {
+            return codigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo ||
+                   codigoSituacaoMatricula == SituacaoMatriculaAluno.PendenteRematricula || 
+                   codigoSituacaoMatricula == SituacaoMatriculaAluno.Rematriculado || 
+                   codigoSituacaoMatricula == SituacaoMatriculaAluno.SemContinuidade;
         }
 
         private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
