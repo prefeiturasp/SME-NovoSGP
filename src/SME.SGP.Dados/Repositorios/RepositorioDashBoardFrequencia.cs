@@ -158,14 +158,7 @@ namespace SME.SGP.Dados.Repositorios
                 mes
             };
 
-            try
-            {
-                return await database.Conexao.QueryFirstOrDefaultAsync<DadosParaConsolidacaoDashBoardFrequenciaDto>(query.ToString(), parametros);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }            
-        }        
+            return await database.Conexao.QueryFirstOrDefaultAsync<DadosParaConsolidacaoDashBoardFrequenciaDto>(query.ToString(), parametros);
+        }
     }
 }

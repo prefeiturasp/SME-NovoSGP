@@ -166,7 +166,7 @@ namespace SME.SGP.Dados.Repositorios
                                                and tipo = @tipoPeriodo
                                                and ano_letivo = @anoLetivo ");
 
-            if(tipoPeriodo == TipoPeriodoDashboardFrequencia.Diario)
+            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Diario)
                 query.AppendLine("and data_aula::date = @dataAula::date ");
 
             if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Semanal)
@@ -187,14 +187,7 @@ namespace SME.SGP.Dados.Repositorios
                 tipoPeriodo
             };
 
-            try
-            {
-                await database.Conexao.ExecuteScalarAsync(query.ToString(), parametros);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }            
+            await database.Conexao.ExecuteScalarAsync(query.ToString(), parametros);
         }
     }
 }
