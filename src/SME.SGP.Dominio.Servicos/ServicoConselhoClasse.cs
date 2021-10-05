@@ -124,6 +124,7 @@ namespace SME.SGP.Dominio.Servicos
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
             AuditoriaDto auditoria = null;
             long conselhoClasseAlunoId = 0;
+            bool enviarAprovacao = false;
 
             unitOfWork.IniciarTransacao();
             try
@@ -172,7 +173,8 @@ namespace SME.SGP.Dominio.Servicos
                 if (turma.AnoLetivo == 2020)
                     ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
 
-                if (await EnviarParaAprovacao(turma, usuarioLogado))
+                enviarAprovacao = await EnviarParaAprovacao(turma, usuarioLogado);
+                if (enviarAprovacao)
                     await GerarWFAprovacao(conselhoClasseNota, turma, bimestre, usuarioLogado, alunoCodigo, notaAnterior, conceitoIdAnterior);
                 else
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
@@ -196,7 +198,8 @@ namespace SME.SGP.Dominio.Servicos
                 ConselhoClasseId = conselhoClasseId,
                 FechamentoTurmaId = fechamentoTurmaId,
                 Auditoria = auditoria,
-                ConselhoClasseAlunoId = conselhoClasseAlunoId
+                ConselhoClasseAlunoId = conselhoClasseAlunoId,
+                EmAprovacao = enviarAprovacao
             };
 
             return conselhoClasseNotaRetorno;
@@ -209,6 +212,7 @@ namespace SME.SGP.Dominio.Servicos
             var conselhoClasse = new ConselhoClasse();
             long conselhoClasseAlunoId = 0;
             conselhoClasse.FechamentoTurmaId = fechamentoTurma.Id;
+            bool enviarAprovacao = false;
 
             unitOfWork.IniciarTransacao();
             try
@@ -225,8 +229,8 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (fechamentoTurma.Turma.AnoLetivo == 2020)
                     ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
-
-                if (await EnviarParaAprovacao(fechamentoTurma.Turma, usuarioLogado))
+                enviarAprovacao = await EnviarParaAprovacao(fechamentoTurma.Turma, usuarioLogado);
+                if (enviarAprovacao)
                     await GerarWFAprovacao(conselhoClasseNota, turma, bimestre, usuarioLogado, alunoCodigo, null, null);
                 else
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
@@ -245,7 +249,8 @@ namespace SME.SGP.Dominio.Servicos
                 ConselhoClasseId = conselhoClasseId,
                 FechamentoTurmaId = fechamentoTurma.Id,
                 Auditoria = auditoria,
-                ConselhoClasseAlunoId = conselhoClasseAlunoId
+                ConselhoClasseAlunoId = conselhoClasseAlunoId,
+                EmAprovacao = enviarAprovacao
             };
             return conselhoClasseNotaRetorno;
         }
