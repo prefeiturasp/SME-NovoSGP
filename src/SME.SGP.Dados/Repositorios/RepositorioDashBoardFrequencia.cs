@@ -23,11 +23,11 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select x.ano as ano, ");
 
             if (visaoDre)
-                query.AppendLine("x.dre_id as DescricaoAnoTurma, x.abreviacao as DreAbreviacao ");
+                query.AppendLine("x.DescricaoAnoTurma, x.abreviacao as DreAbreviacao ");
             else if (ueId == -99)
-                query.AppendLine("x.ano as DescricaoAnoTurma ");
+                query.AppendLine("x.DescricaoAnoTurma ");
             else if (ueId != -99 && !visaoDre)
-                query.AppendLine("x.nome as DescricaoAnoTurma ");
+                query.AppendLine("x.DescricaoAnoTurma ");
 
             query.AppendLine(@" , count(*) filter(where x.QuantidadePresencas > 0) as Presentes
                                 , count(*) filter(where x.QuantidadeRemotos > 0) as Remotos
@@ -39,11 +39,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("select rfa.codigo_aluno, t.ano, ");
 
             if (visaoDre)
-                query.AppendLine("dre.dre_id, dre.abreviacao, ");
+                query.AppendLine("dre.dre_id as DescricaoAnoTurma, dre.abreviacao, ");
             else if (ueId == -99)
-                query.AppendLine("t.ano, ");
+                query.AppendLine("t.ano as DescricaoAnoTurma, ");
             else if (ueId != -99 && !visaoDre)
-                query.AppendLine("t.nome, ");
+                query.AppendLine("t.nome as DescricaoAnoTurma, ");
 
             query.AppendLine(@"t.modalidade_codigo as ModalidadeCodigo,
                                count(rfa.id) filter(where rfa.valor = 1) as QuantidadePresencas,
@@ -90,11 +90,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(@") as x ");
 
             if (visaoDre)
-                query.AppendLine("group by x.ano, x.dre_id, x.abreviacao, x.ModalidadeCodigo");
+                query.AppendLine("group by x.ano, x.DescricaoAnoTurma, x.abreviacao, x.ModalidadeCodigo");
             else if (ueId == -99)
-                query.AppendLine("group by x.ano, x.ModalidadeCodigo");
+                query.AppendLine("group by x.ano, x.DescricaoAnoTurma, x.ModalidadeCodigo");
             else if (ueId != -99 && !visaoDre)
-                query.AppendLine("group by x.ano, x.nome, x.ModalidadeCodigo");
+                query.AppendLine("group by x.ano, x.DescricaoAnoTurma, x.ModalidadeCodigo");
 
             return await database.Conexao.QueryAsync<FrequenciaAlunoDashboardDto>(query.ToString(), new
             {
