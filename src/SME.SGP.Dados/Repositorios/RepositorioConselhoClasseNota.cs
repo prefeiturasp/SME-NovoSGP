@@ -229,14 +229,20 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoWf(long workFlowId)
         {
-            var query = @"select w.*, n.*
+            var query = @"select w.*, n.*, cca.*, cc.*, ft.*
                             from wf_aprovacao_nota_conselho w
                           inner join conselho_classe_nota n on n.id = w.conselho_classe_nota_id 
+                          inner join conselho_classe_aluno cca on cca.id = n.conselho_classe_aluno_id
+                          inner join conselho_classe cc on cc.id = cca.conselho_classe_id
+                          inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id
                           where w.wf_aprovacao_id = @workFlowId";
 
-            return (await database.Conexao.QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, WFAprovacaoNotaConselho>(query
-                , (wfAprovacaoNota, conselhoNota) =>
+            return (await database.Conexao.QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, ConselhoClasseAluno, ConselhoClasse, FechamentoTurma, WFAprovacaoNotaConselho>(query
+                , (wfAprovacaoNota, conselhoNota, conselhoClasseAluno, conselhoClasse, fechamentoTurma) =>
                 {
+                    conselhoClasse.FechamentoTurma = fechamentoTurma;
+                    conselhoClasseAluno.ConselhoClasse = conselhoClasse;
+                    conselhoNota.ConselhoClasseAluno = conselhoClasseAluno;
                     wfAprovacaoNota.ConselhoClasseNota = conselhoNota;
                     return wfAprovacaoNota;
                 }
