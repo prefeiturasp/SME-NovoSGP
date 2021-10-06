@@ -21,9 +21,9 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.DreId).ToColumn("dre_id");
             Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.DreAbreviacao).ToColumn("dre_abreviacao");
-            Map(c => c.QuantidadePresencas).ToColumn("quantidadepresencas");
-            Map(c => c.QuantidadeAusentes).ToColumn("quantidadeausencias");
-            Map(c => c.QuantidadeRemotos).ToColumn("quantidaderemotos");
+            Map(c => c.QuantidadePresencas).ToColumn("quantidade_presencas");
+            Map(c => c.QuantidadeAusentes).ToColumn("quantidade_ausencias");
+            Map(c => c.QuantidadeRemotos).ToColumn("quantidade_remotos");
             Map(c => c.CriadoEm).ToColumn("criado_em");
         }
     }
