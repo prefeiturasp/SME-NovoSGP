@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
                     turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                     turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, filtro.AlunoCodigo, turmasCodigosParaConsulta));
                 }
-                else if (turmasCodigos.Length == 0)
+                if (turmasCodigos.Length == 0)
                     turmasCodigos = new string[1] { turma.CodigoTurma };
 
 
