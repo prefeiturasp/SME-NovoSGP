@@ -41,8 +41,8 @@ namespace SME.SGP.Aplicacao
 
             foreach (var dadoTurma in dadosTurmas)
             {
-                var aulas = (List<Aula>)await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(dadoTurma.TurmaCodigo, tipoCalendarioId));
-                aulas.AddRange(await repositorioAula.ObterAulasExcluidasComDiarioDeBordoAtivos(dadoTurma.TurmaCodigo, tipoCalendarioId));
+                var aulas = (List<Aula>)await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(dadoTurma.TurmaCodigo, tipoCalendarioId, "Sistema"));
+                aulas.AddRange(await mediator.Send(new ObterAulasExcluidasComDiarioDeBordoAtivosQuery(dadoTurma.TurmaCodigo, tipoCalendarioId)));
                 var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(dadoTurma.TurmaCodigo, dadoTurma.ComponenteCurricularCodigo));
                 var professorRf = professorTitular != null ? professorTitular.ProfessorRf : "";
 
