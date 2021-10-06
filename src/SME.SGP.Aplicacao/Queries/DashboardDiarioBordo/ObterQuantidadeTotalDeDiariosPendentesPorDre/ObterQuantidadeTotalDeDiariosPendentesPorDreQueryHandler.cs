@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuantidadeTotalDeDiariosPendentesPorDreQueryHandler : IRequestHandler<ObterQuantidadeTotalDeDiariosPendentesPorDreQuery, IEnumerable<GraficoTotalDiariosEDevolutivasPorDreDTO>>
     {
-        private readonly IRepositorioDiarioBordo repositorio;
+        private readonly IRepositorioConsolidacaoDiariosBordo repositorio;
 
-        public ObterQuantidadeTotalDeDiariosPendentesPorDreQueryHandler(IRepositorioDiarioBordo repositorio)
+        public ObterQuantidadeTotalDeDiariosPendentesPorDreQueryHandler(IRepositorioConsolidacaoDiariosBordo repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
