@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase : IUseCase<MensagemRabbit, bool>
+    public interface IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase : IRabbitUseCase
     {
     }
 }
