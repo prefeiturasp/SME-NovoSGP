@@ -60,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
 	                    , sum(c.quantidade_pendentes) as Quantidade
 	                    , 'Quantidade de Diarios de Bordos Pendentes' as Descricao
                       from consolidacao_diarios_bordo c
-                     inner join turma t on t.turma_id = a.turma_id 
+                     inner join turma t on t.id = c.turma_id 
                      inner join ue on ue.id = t.ue_id 
                      inner join dre on dre.id = ue.dre_id 
                      where t.ano_letivo = @anoLetivo
@@ -75,7 +75,7 @@ namespace SME.SGP.Dados.Repositorios
 	                    , sum(c.quantidade_preenchidos) as Quantidade
 	                    , 'Quantidade de Diarios de Bordos Preenchidos' as Descricao
                       from consolidacao_diarios_bordo c
-                     inner join turma t on t.turma_id = a.turma_id 
+                     inner join turma t on t.id = c.turma_id 
                      inner join ue on ue.id = t.ue_id 
                      inner join dre on dre.id = ue.dre_id 
                      where t.ano_letivo = @anoLetivo

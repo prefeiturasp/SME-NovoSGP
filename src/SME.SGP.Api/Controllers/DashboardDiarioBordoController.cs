@@ -50,9 +50,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterUltimaConsolidacao([FromQuery] int anoLetivo/*, [FromServices] IObterUltimaConsolidacaoDevolutivaUseCase useCase*/)
+        public async Task<IActionResult> ObterUltimaConsolidacao([FromQuery] int anoLetivo, [FromServices] IObterUltimaConsolidacaoDiarioBordoUseCase useCase)
         {
-            return Ok(DateTime.Now);
+            return Ok(await useCase.Executar(anoLetivo));
         }
 
     }
