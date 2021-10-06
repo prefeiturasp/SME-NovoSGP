@@ -58,7 +58,7 @@ namespace SME.SGP.Dados.Repositorios
 	                    , RIGHT(dre.abreviacao,2) as Grupo
 	                    , dre.dre_id as DreId
 	                    , sum(c.quantidade_pendentes) as Quantidade
-	                    , 'Quantidade de Diarios de Bordos Pendentes' as Descricao
+	                    , 'Pendentes' as Descricao
                       from consolidacao_diarios_bordo c
                      inner join turma t on t.id = c.turma_id 
                      inner join ue on ue.id = t.ue_id 
@@ -73,7 +73,7 @@ namespace SME.SGP.Dados.Repositorios
 	                    , RIGHT(dre.abreviacao,2) as Grupo
 	                    , dre.dre_id as DreId
 	                    , sum(c.quantidade_preenchidos) as Quantidade
-	                    , 'Quantidade de Diarios de Bordos Preenchidos' as Descricao
+	                    , 'Preenchidos' as Descricao
                       from consolidacao_diarios_bordo c
                      inner join turma t on t.id = c.turma_id 
                      inner join ue on ue.id = t.ue_id 
@@ -83,7 +83,7 @@ namespace SME.SGP.Dados.Repositorios
                     group by dre.abreviacao, dre.dre_id) t
                     order by DreId";
 
-            return await database.Conexao.QueryAsync<GraficoTotalDiariosEDevolutivasPorDreDTO>(query, new { anoLetivo });
+            return await database.Conexao.QueryAsync<GraficoTotalDiariosEDevolutivasPorDreDTO>(query, new { anoLetivo, ano });
         }
     }
 }

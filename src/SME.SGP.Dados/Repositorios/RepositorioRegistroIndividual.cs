@@ -292,7 +292,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<GraficoBaseDto>> ObterTotalPorDRE(int anoLetivo, string ano)
         {
-            var query = @"select
+            var filtroAno = !string.IsNullOrEmpty(ano) ? "and t.ano = @ano" : "";
+            var query = $@"select
 	                        dre.abreviacao as Descricao,
 	                        count(ri.id) as Quantidade
                         from registro_individual ri 
@@ -300,7 +301,8 @@ namespace SME.SGP.Dados.Repositorios
                         inner join ue on ue.id = t.ue_id
                         inner join dre on dre.id = ue.dre_id 
                         where not ri.excluido 
-                          and t.ano_letivo = :anoLetivo
+                          and t.ano_letivo = @anoLetivo
+                          {filtroAno}
                         group by dre.abreviacao, dre.dre_id 
                         order by dre.dre_id";
 
