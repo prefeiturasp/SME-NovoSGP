@@ -293,7 +293,7 @@ namespace SME.SGP.Aplicacao
                 gruposMatrizesNotas.Add(conselhoClasseAlunoNotas);
             }
 
-            retorno.TemConselhoClasseAluno = await VerificaSePossuiConselhoClasseAlunoAsync(conselhoClasseId, alunoCodigo);
+            retorno.TemConselhoClasseAluno = conselhoClasseId > 0 ? await VerificaSePossuiConselhoClasseAlunoAsync(conselhoClasseId, alunoCodigo) : false;
             retorno.PodeEditarNota = await VerificaSePodeEditarNota(alunoCodigo, turma, periodoEscolar);
             retorno.NotasConceitos = gruposMatrizesNotas;
 
