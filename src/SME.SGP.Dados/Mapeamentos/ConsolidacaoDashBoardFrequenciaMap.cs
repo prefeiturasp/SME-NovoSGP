@@ -14,9 +14,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.DataAula).ToColumn("data_aula");
             Map(c => c.DataInicio).ToColumn("data_inicio");
             Map(c => c.DataFim).ToColumn("data_fim");
-            Map(c => c.Mes).ToColumn("mes");
             Map(c => c.ModalidadeCodigo).ToColumn("modalidade_codigo");
-            Map(c => c.Tipo).ToColumn("tipo");
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
             Map(c => c.DreId).ToColumn("dre_id");
             Map(c => c.UeId).ToColumn("ue_id");
