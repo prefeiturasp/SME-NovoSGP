@@ -593,7 +593,6 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (!notaAprovacao.ConceitoId.HasValue)
                 {
-
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.Nota)}</td>");
                 }
