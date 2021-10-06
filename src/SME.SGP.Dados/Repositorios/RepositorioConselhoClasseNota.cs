@@ -263,5 +263,12 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query
                 , new { workFlowId });
         }
+
+        public async Task Excluir(long id)
+        {
+            var query = @"delete from conselho_classe_nota where id = @id";
+
+            await database.Conexao.ExecuteScalarAsync(query, new { id });
+        }
     }
 }

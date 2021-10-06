@@ -18,6 +18,11 @@ namespace SME.SGP.Aplicacao
         {
             await mediator.Send(new ExcluirWfAprovacaoNotaConselhoClasseCommand(request.NotasEmAprovacao.Id));
 
+            if(request.NotaAnterior == null && request.ConceitoAnterior == null)
+            {
+                await mediator.Send(new ExcluirConselhoClasseNotaCommand(request.NotasEmAprovacao.ConselhoClasseNotaId));
+            }
+
             await mediator.Send(new NotificarAprovacaoNotaConselhoCommand(request.NotasEmAprovacao,
                                                                           request.CodigoDaNotificacao,
                                                                           request.TurmaCodigo,
