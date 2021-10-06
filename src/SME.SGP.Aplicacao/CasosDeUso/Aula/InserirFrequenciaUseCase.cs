@@ -77,8 +77,7 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId));
 
             await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
-
-            // Incluir na fila de consolidação dashboard frequencia
+                        
             foreach (var tipo in Enum.GetValues(typeof(TipoPeriodoDashboardFrequencia)))
                 await mediator.Send(new IncluirFilaConsolidarDashBoardFrequenciaCommand(turma.Id, aula.DataAula, (TipoPeriodoDashboardFrequencia)tipo));            
 
