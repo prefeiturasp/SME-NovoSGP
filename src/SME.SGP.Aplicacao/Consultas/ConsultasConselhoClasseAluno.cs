@@ -513,7 +513,7 @@ namespace SME.SGP.Aplicacao
                 PodeEditar = componenteLancaNota
             };
 
-            if(notaComponente != null && notaComponenteId.HasValue)
+            if(notaComponenteId.HasValue)
                 await VerificaNotaEmAprovacao(notaComponenteId.Value, notaPosConselho);
 
             return notaPosConselho;
