@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -43,5 +44,16 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(anoLetivo, ano));
         }
+
+        [HttpGet("consolidacao")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterUltimaConsolidacao([FromQuery] int anoLetivo/*, [FromServices] IObterUltimaConsolidacaoDevolutivaUseCase useCase*/)
+        {
+            return Ok(DateTime.Now);
+        }
+
     }
 }
