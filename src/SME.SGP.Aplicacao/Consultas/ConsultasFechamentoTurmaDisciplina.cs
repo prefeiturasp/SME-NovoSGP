@@ -207,7 +207,7 @@ namespace SME.SGP.Aplicacao
                         CodigoAluno = aluno.CodigoAluno,
                         NumeroChamada = aluno.NumeroAlunoChamada,
                         Nome = aluno.NomeAluno,
-                        Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo),
+                        Ativo = VerifiqueAlunoAtivo(aluno.CodigoSituacaoMatricula),
                         EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
                     };
 
