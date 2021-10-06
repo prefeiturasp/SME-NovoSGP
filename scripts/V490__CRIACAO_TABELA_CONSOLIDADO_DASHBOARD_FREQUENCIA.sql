@@ -17,9 +17,9 @@ IF NOT EXISTS public.consolidado_dashboard_frequencia
     ue_id int8 NOT NULL, 
 	dre_abreviacao varchar
 (15) NOT NULL,
-	QuantidadePresencas int8 NOT NULL,   
-	QuantidadeAusencias int8 NOT NULL,
-	QuantidadeRemotos int8 NOT NULL,	
+	quantidade_presencas int8 NOT NULL,   
+	quantidade_ausencias int8 NOT NULL,
+	quantidade_remotos int8 NOT NULL,	
 	excluido bool NOT NULL DEFAULT false,
 	CONSTRAINT consolidado_dashboard_frequencia_pk PRIMARY KEY
 (id)
