@@ -382,5 +382,12 @@ namespace SME.SGP.Dados.Repositorios
             var modalidadeInt = (int)modalidade;
             return await contexto.Conexao.QueryAsync<string>(query, new { modalidadeInt, anoLetivo });
         }
+
+        public async Task<IEnumerable<long>> ObterTodosIds()
+        {
+            var query = @"select id from ue";
+
+            return await contexto.Conexao.QueryAsync<long>(query);
+        }
     }
 }

@@ -641,48 +641,5 @@ namespace SME.SGP.Dados.Repositorios
                 }, splitOn: "id");
         }
 
-        public async Task<IEnumerable<GraficoTotalDiariosEDevolutivasPorDreDTO>> ObterQuantidadeTotalDeDiariosPendentesPorDre(int anoLetivo, string ano)
-        {
-            var filtroAno = !string.IsNullOrEmpty(ano) ? "and t.ano = @ano" : "";
-
-            var query = $@"select * from (
-                    select dre.abreviacao as Dre
-	                    , dre.abreviacao as Grupo
-	                    , dre.dre_id as DreId
-	                    , count(a.id) as Quantidade
-	                    , 'Quantidade de Diarios de Bordos Pendentes' as Descricao
-                      from aula a
-                      left join diario_bordo db on db.aula_id = a.id and not db.excluido 
-                     inner join turma t on t.turma_id = a.turma_id 
-                     inner join ue on ue.id = t.ue_id 
-                     inner join dre on dre.id = ue.dre_id 
-                     where not a.excluido 
-                       and a.data_aula < NOW()
-                       and db.id is null
-                       and t.ano_letivo = @anoLetivo
-                       {filtroAno}
-                    group by dre.abreviacao, dre.dre_id
-   
-                    union all
-
-                    select dre.abreviacao as Dre
-	                    , dre.abreviacao as Grupo
-	                    , dre.dre_id as DreId
-	                    , count(a.id) as Quantidade
-	                    , 'Quantidade de Diarios de Bordos Preenchidos' as Descricao
-                      from aula a
-                     inner join diario_bordo db on db.aula_id = a.id and not db.excluido 
-                     inner join turma t on t.turma_id = a.turma_id 
-                     inner join ue on ue.id = t.ue_id 
-                     inner join dre on dre.id = ue.dre_id 
-                     where not a.excluido 
-                       and a.data_aula < NOW()
-                       and t.ano_letivo = @anoLetivo
-                       {filtroAno}
-                    group by dre.abreviacao, dre.dre_id) t
-                    order by DreId";
-
-            return await database.Conexao.QueryAsync<GraficoTotalDiariosEDevolutivasPorDreDTO>(query, new { anoLetivo });
-        }
     }
 }

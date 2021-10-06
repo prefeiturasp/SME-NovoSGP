@@ -142,6 +142,8 @@ namespace SME.SGP.Dominio
         AprovacaoAlteracaoNotaConselho = 79,
         AprovacaoAlteracaoParecerConclusivo = 80,
 
+        ExecucaoConsolidacaoDiariosBordo = 81,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
