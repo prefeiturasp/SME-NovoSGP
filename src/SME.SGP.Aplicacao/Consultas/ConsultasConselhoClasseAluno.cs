@@ -496,24 +496,25 @@ namespace SME.SGP.Aplicacao
         {
             // Busca nota do conselho de classe consultado
             var notaComponente = notasConselhoClasseAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo);
+            var notaComponenteId = notaComponente?.Id;
             if (notaComponente == null || !notaComponente.NotaConceito.HasValue)
             {
-                // Sugere nota final do fechamento
-                var notaComponenteComConselhoNota = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre && c.ConselhoClasseNotaId > 0);
-                if (notaComponenteComConselhoNota != null) notaComponente = notaComponenteComConselhoNota;
-                else
-                    notaComponente = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre);
+                var notaComponenteFechamento = 
+                    notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre && c.ConselhoClasseNotaId > 0)
+                    ?? notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre);
+                
+                notaComponente = notaComponenteFechamento;
             }
 
             var notaPosConselho = new NotaPosConselhoDto()
             {
-                Id = notaComponente?.Id,
+                Id = notaComponenteId,
                 Nota = notaComponente?.NotaConceito,
                 PodeEditar = componenteLancaNota
             };
 
-            if(notaComponente != null && notaComponente.Id > 0) 
-                await VerificaNotaEmAprovacao(notaComponente.Id, notaPosConselho);
+            if(notaComponente != null && notaComponenteId.HasValue)
+                await VerificaNotaEmAprovacao(notaComponenteId.Value, notaPosConselho);
 
             return notaPosConselho;
         }
