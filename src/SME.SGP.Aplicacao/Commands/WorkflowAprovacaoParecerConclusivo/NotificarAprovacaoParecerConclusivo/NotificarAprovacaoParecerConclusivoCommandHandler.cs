@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var nomeAluno = $"{aluno.Nome} ({aluno.CodigoAluno})";
             var data = $"{request.ParecerEmAprovacao.CriadoEm:dd/MM/yyyy} às {request.ParecerEmAprovacao.CriadoEm:HH:mm}";
 
-            var parecerAnterior = request.ParecerEmAprovacao.ConselhoClasseAluno.ConselhoClasseParecer?.Nome ?? "Nenhum";
+            var parecerAnterior = request.ParecerEmAprovacao.ConselhoClasseAluno.ConselhoClasseParecer?.Nome ?? "(Nenhum)";
             var parecerNovo = request.ParecerEmAprovacao.ConselhoClasseParecer?.Nome;
 
             var titulo = $"Alteração de parecer conclusivo - Turma {turma.Nome} ({turma.AnoLetivo})";
