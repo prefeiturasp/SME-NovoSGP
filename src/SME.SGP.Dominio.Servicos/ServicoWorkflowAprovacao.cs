@@ -518,7 +518,7 @@ namespace SME.SGP.Dominio.Servicos
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
             var usuarioRf = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.AlteradoRF;
             var periodoEscolar = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar;
-            var notaConceitoTitulo = notasEmAprovacao.First().ConceitoId.HasValue ? "conceito" : "nota";
+            var notaConceitoTitulo = notasEmAprovacao.First().ConceitoId.HasValue ? "conceito(s)" : "nota(s)";
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(usuarioRf, "");
             var componenteCurricularNome = await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(notasEmAprovacao.First().FechamentoNota.DisciplinaId));
 
@@ -531,7 +531,7 @@ namespace SME.SGP.Dominio.Servicos
                     Ano = DateTime.Today.Year,
                     Categoria = NotificacaoCategoria.Aviso,
                     DreId = turma.Ue.Dre.CodigoDre,
-                    Titulo = $"Alteração em {notaConceitoTitulo} final - Turma {turma.Nome} ({turma.AnoLetivo})",
+                    Titulo = $"Alteração em {notaConceitoTitulo} final - {componenteCurricularNome} - Turma {turma.Nome} ({turma.AnoLetivo})",
                     Tipo = NotificacaoTipo.Notas,
                     Codigo = codigoDaNotificacao,
                     Mensagem = MontaMensagemAprovacaoNotaFechamento(turma, usuario, periodoEscolar.Bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa, componenteCurricularNome)
