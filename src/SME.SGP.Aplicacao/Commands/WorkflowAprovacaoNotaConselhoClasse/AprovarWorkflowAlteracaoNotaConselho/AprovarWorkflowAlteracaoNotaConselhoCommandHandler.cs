@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                                                                           "",
                                                                           notaAnterior,
                                                                           conceitoAnterior));
-            await GerarParecerConclusivo(notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno);
+            await GerarParecerConclusivo(notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno, notaEmAprovacao.UsuarioSolicitanteId);
         }
 
         private async Task ExcluirWorkFlow(WFAprovacaoNotaConselho notaEmAprovacao)
@@ -56,9 +56,9 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new SalvarConselhoClasseNotaCommand(notaConselhoClasse));
         }
 
-        private async Task GerarParecerConclusivo(ConselhoClasseAluno conselhoClasseAluno)
+        private async Task GerarParecerConclusivo(ConselhoClasseAluno conselhoClasseAluno, long usuarioSolicitanteId)
         {
-            await mediator.Send(new GerarParecerConclusivoAlunoCommand(conselhoClasseAluno));
+            await mediator.Send(new GerarParecerConclusivoAlunoCommand(conselhoClasseAluno, usuarioSolicitanteId));
         }
 
         private async Task<WFAprovacaoNotaConselho> ObterNotaConselhoEmAprovacao(long workFlowId)

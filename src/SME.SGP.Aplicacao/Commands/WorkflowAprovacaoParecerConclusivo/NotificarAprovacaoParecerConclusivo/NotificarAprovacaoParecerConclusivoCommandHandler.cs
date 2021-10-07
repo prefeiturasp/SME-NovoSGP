@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao
             var aluno = await ObterAluno(request.ParecerEmAprovacao.ConselhoClasseAluno.AlunoCodigo, turma.AnoLetivo);
             var nomeAluno = $"{aluno.Nome} ({aluno.CodigoAluno})";
             var data = $"{request.ParecerEmAprovacao.CriadoEm:dd/MM/yyyy} às {request.ParecerEmAprovacao.CriadoEm:HH:mm}";
+            var usuarioSolicitante = await mediator.Send(new ObterUsuarioPorIdQuery(request.ParecerEmAprovacao.UsuarioSolicitanteId));
 
             var parecerAnterior = request.ParecerEmAprovacao.ConselhoClasseAluno.ConselhoClasseParecer?.Nome ?? "(Nenhum)";
             var parecerNovo = request.ParecerEmAprovacao.ConselhoClasseParecer?.Nome;
@@ -36,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new NotificarUsuarioCommand(titulo,
                                                             descricao,
-                                                            request.CriadorRf,
+                                                            usuarioSolicitante.CodigoRf,
                                                             NotificacaoCategoria.Aviso,
                                                             NotificacaoTipo.Fechamento,
                                                             turma.Ue.Dre.CodigoDre,
