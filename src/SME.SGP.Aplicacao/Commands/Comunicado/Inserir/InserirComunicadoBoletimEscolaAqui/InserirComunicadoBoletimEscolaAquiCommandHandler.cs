@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                     <p>O boletim do ano de {anoLetivo} do estudante {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
                     <p>OBSERVA&Ccedil;&Atilde;O: O Download deve ser realizado em at&eacute; 24 horas, ap&oacute;s&nbsp; este prazo o arquivo ser&aacute; 
                     exclu&iacute;do e caso necessite voc&ecirc; dever solicitar um novo PDF de boletim.</p>
-                    <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/pdf/{CodigoArquivo.ToString()} target='_blank'>Boletim {anoLetivo}</a></strong></p>";
+                    <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/pdf/Boletim.pdf/{CodigoArquivo.ToString()}' target='_blank'>Boletim {anoLetivo}</a></strong></p>";
         }
     }
 }
