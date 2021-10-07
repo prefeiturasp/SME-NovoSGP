@@ -53,6 +53,7 @@ namespace SME.SGP.Aplicacao
 
                 var codigoAluno = repositorioConselhoClasseAluno.ObterPorId(request.NotasEmAprovacao.ConselhoClasseNota.ConselhoClasseAlunoId);
                 var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == codigoAluno.AlunoCodigo);
+                var componenteCurricular = await ObterComponente(request.NotasEmAprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
 
                 repositorioNotificacao.Salvar(new Notificacao()
                 {
@@ -61,7 +62,7 @@ namespace SME.SGP.Aplicacao
                     Ano = DateTime.Today.Year,
                     Categoria = NotificacaoCategoria.Aviso,
                     DreId = turma.Ue.Dre.CodigoDre,
-                    Titulo = $"Alteração em {notaConceitoTitulo} pós-conselho - {aluno.NomeAluno} ({aluno.CodigoAluno}) - {turma.Nome} ({turma.AnoLetivo})",
+                    Titulo = $"Alteração em {notaConceitoTitulo} pós-conselho - {aluno.NomeAluno} ({aluno.CodigoAluno}) - {componenteCurricular} - {turma.Nome} ({turma.AnoLetivo})",
                     Tipo = NotificacaoTipo.Notas,
                     Codigo = request.CodigoDaNotificacao ?? 0,
                     Mensagem = await MontaMensagemAprovacaoNotaPosConselho(turma,
@@ -71,7 +72,8 @@ namespace SME.SGP.Aplicacao
                                                                            request.Justificativa,
                                                                            bimestre,
                                                                            request.NotaAnterior,
-                                                                           request.ConceitoAnterior)
+                                                                           request.ConceitoAnterior,
+                                                                           componenteCurricular)
                 });
             }
         }
@@ -83,12 +85,12 @@ namespace SME.SGP.Aplicacao
                                                                          string justificativa,
                                                                          int bimestre,
                                                                          double? notaAnterior,
-                                                                         long? conceitoAnterior)
+                                                                         long? conceitoAnterior,
+                                                                         string componenteCurricular)
         {
             var notaConceito = notaEmAprovacao.ConceitoId.HasValue ? "O conceito" : "A nota";
             var aprovadaRecusada = aprovado ? "aprovada" : "recusada";
             var motivo = aprovado ? "" : $"Motivo: {justificativa}.";
-            var componenteCurricular = await ObterComponente(notaEmAprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
             var bimestreFormatado = bimestre == 0 ? "bimestre final" : $"{bimestre}º bimestre";
 
             var mensagem = new StringBuilder($@"<p>{notaConceito} pós-conselho do {bimestreFormatado} do componente curricular {componenteCurricular}  
