@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class GerarWFAprovacaoParecerConclusivoCommand : IRequest
     {
-        public GerarWFAprovacaoParecerConclusivoCommand(long conselhoClasseAlunoId, Turma turma, string alunoCodigo, long parecerConclusivoId, string parecerAnterior, string parecerNovo)
+        public GerarWFAprovacaoParecerConclusivoCommand(long conselhoClasseAlunoId, Turma turma, string alunoCodigo, long parecerConclusivoId, string parecerAnterior, string parecerNovo, long usuarioSolicitanteId)
         {
             ConselhoClasseAlunoId = conselhoClasseAlunoId;
             Turma = turma;
@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao
             ParecerConclusivoId = parecerConclusivoId;
             ParecerAnterior = parecerAnterior;
             ParecerNovo = parecerNovo;
+            UsuarioSolicitanteId = usuarioSolicitanteId;
         }
 
         public long ConselhoClasseAlunoId { get; }
@@ -22,6 +23,7 @@ namespace SME.SGP.Aplicacao
         public long ParecerConclusivoId { get; }
         public string ParecerAnterior { get; }
         public string ParecerNovo { get; }
+        public long UsuarioSolicitanteId { get; }
     }
 
     public class GerarWFAprovacaoParecerConclusivoCommandValidator : AbstractValidator<GerarWFAprovacaoParecerConclusivoCommand>
@@ -30,7 +32,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.ConselhoClasseAlunoId)
                 .NotEmpty()
-                .WithMessage("O identificador do conselho de classe do aluno deve ser informado para geração do workflow de aprovação do parecer conclusivo");
+                .WithMessage("O conselho de classe do aluno deve ser informado para geração do workflow de aprovação do parecer conclusivo");
 
             RuleFor(a => a.Turma)
                 .NotEmpty()
@@ -38,7 +40,11 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(a => a.ParecerConclusivoId)
                 .NotEmpty()
-                .WithMessage("O identificador do parecer conclusivo do aluno deve ser informada para geração de seu workflow de aprovação");
+                .WithMessage("O parecer conclusivo do aluno deve ser informada para geração de seu workflow de aprovação");
+
+            RuleFor(a => a.UsuarioSolicitanteId)
+                .NotEmpty()
+                .WithMessage("O usuário solicitante do parecer conclusivo do aluno deve ser informada para geração de seu workflow de aprovação");
         }
     }
 }

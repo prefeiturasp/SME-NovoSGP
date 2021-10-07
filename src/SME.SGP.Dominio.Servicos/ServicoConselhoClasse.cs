@@ -510,9 +510,10 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
+            var solicitanteId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
             var conselhoClasseAluno = await ObterConselhoClasseAluno(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
 
-            return await mediator.Send(new GerarParecerConclusivoAlunoCommand(conselhoClasseAluno));
+            return await mediator.Send(new GerarParecerConclusivoAlunoCommand(conselhoClasseAluno, solicitanteId));
         }
 
         private async Task<ConselhoClasseAluno> ObterConselhoClasseAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)

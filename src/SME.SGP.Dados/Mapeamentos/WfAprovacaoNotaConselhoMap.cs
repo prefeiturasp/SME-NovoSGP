@@ -11,6 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.WfAprovacaoId).ToColumn("wf_aprovacao_id");
             Map(c => c.ConselhoClasseNotaId).ToColumn("conselho_classe_nota_id");
             Map(c => c.ConceitoId).ToColumn("conceito_id");
+            Map(c => c.UsuarioSolicitanteId).ToColumn("usuario_solicitante_id");
         }
     }
 }
