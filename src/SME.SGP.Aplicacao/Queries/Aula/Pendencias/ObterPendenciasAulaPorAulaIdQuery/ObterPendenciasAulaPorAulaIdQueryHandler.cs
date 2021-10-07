@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public async Task<long[]> Handle(ObterPendenciasAulaPorAulaIdQuery request, CancellationToken cancellationToken)
         {
             var pendencias = await repositorioPendenciaAula.PossuiPendenciasPorAulaId(request.AulaId, request.EhModalidadeInfantil);
-            if (pendencias == null || !request.TemAtividadeAvaliativa)
+            if (pendencias == null)
                 return null;
 
             pendencias = new PendenciaAulaDto
