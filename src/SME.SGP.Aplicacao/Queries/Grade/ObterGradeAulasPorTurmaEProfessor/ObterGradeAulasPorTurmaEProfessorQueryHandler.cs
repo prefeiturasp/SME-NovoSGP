@@ -52,8 +52,8 @@ namespace SME.SGP.Aplicacao
                 request.EhGestor = usuario.EhGestorEscolar();
             }
 
-            var horascadastradas = await ObtenhaHorasCadastradas(request.ComponenteCurricular, semana, request.DataAula, request.CodigoRf, turma, request.EhRegencia, request.EhGestor);
-            var aulasRestantes = horasGrade - horascadastradas;
+            var horasCadastradas = await ObtenhaHorasCadastradas(request.ComponenteCurricular, semana, request.DataAula, request.CodigoRf, turma, request.EhRegencia, request.EhGestor);
+            var aulasRestantes = horasCadastradas > horasGrade ? 0 : (horasGrade - horasCadastradas);
 
             return new GradeComponenteTurmaAulasDto
             {
