@@ -81,6 +81,9 @@ namespace SME.SGP.Aplicacao
         }
         private string FormatarMensagem(string urlNotificacao, int anoLetivo, Guid CodigoArquivo, string nomeAluno)
         {
+         
+            
+            
             return $@"<h3><strong>Boletim {anoLetivo} dispon&iacute;vel para download</strong></h3>
                     <p>O boletim do ano de {anoLetivo} do estudante {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
                     <p>OBSERVA&Ccedil;&Atilde;O: O Download deve ser realizado em at&eacute; 24 horas, ap&oacute;s&nbsp; este prazo o arquivo ser&aacute; 
