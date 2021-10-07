@@ -154,7 +154,11 @@ namespace SME.SGP.Aplicacao
                 List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim));
+                if(!turmasCodigos.Any())
+                    turmasCodigos = new string[1] { turma.CodigoTurma };
                 conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
+                if(conselhosClassesIds != null && !conselhosClassesIds.Any())
+                    conselhosClassesIds = new long[1] { conselhoClasseId };
             }
             else
             {
@@ -289,12 +293,17 @@ namespace SME.SGP.Aplicacao
                 gruposMatrizesNotas.Add(conselhoClasseAlunoNotas);
             }
 
-            var conselhoClasseAluno = await ObterPorConselhoClasseAsync(conselhoClasseId, alunoCodigo);
-            retorno.TemConselhoClasseAluno = conselhoClasseAluno != null;
+            retorno.TemConselhoClasseAluno = conselhoClasseId > 0 ? await VerificaSePossuiConselhoClasseAlunoAsync(conselhoClasseId, alunoCodigo) : false;
             retorno.PodeEditarNota = await VerificaSePodeEditarNota(alunoCodigo, turma, periodoEscolar);
             retorno.NotasConceitos = gruposMatrizesNotas;
 
             return retorno;
+        }
+
+        private async Task<bool> VerificaSePossuiConselhoClasseAlunoAsync(long conselhoClasseId, string alunoCodigo)
+        {
+            var conselhoClasseAlunoId = await mediator.Send(new ObterConselhoClasseAlunoIdQuery(conselhoClasseId, alunoCodigo));
+            return conselhoClasseAlunoId > 0;
         }
 
         private bool VerificarSePossuiRegistroFrequencia(string alunoCodigo, string turmaCodigo, long codigoComponenteCurricular, PeriodoEscolar periodoEscolar, IEnumerable<FrequenciaAluno> frequenciasAlunoParaTratar, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia)
