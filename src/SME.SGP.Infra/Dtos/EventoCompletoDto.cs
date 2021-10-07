@@ -19,5 +19,6 @@ namespace SME.SGP.Infra
         public EntidadeStatus Status { get; set; }
 
         public int[] Bimestre { get; set; }
+        public string DescricaoDreUe { get; set; }
     }
 }

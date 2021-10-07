@@ -1,9 +1,6 @@
-﻿using System.Threading.Tasks;
-
-namespace SME.SGP.Aplicacao
+﻿namespace SME.SGP.Aplicacao
 {
-    public interface IExecutarSyncGeralGoogleClassroomUseCase
+    public interface IExecutarSyncGeralGoogleClassroomUseCase : IRabbitUseCase
     {
-        Task<bool> Executar();
     }
 }

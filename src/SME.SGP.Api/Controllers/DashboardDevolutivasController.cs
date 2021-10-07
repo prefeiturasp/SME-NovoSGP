@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,7 +18,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoDevolutivasEstimadasEConfirmadasDto>), 200)]
-        //[Permissao(Permissao.DF_C, Policy = "Bearer")] Será feito em uma task específica
+        [Permissao(Permissao.DD_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterDevolutivasEstimadasEConfirmadas([FromQuery] FiltroGraficoDevolutivasEstimadasEConfirmadasDto filtro,
             [FromServices] IObterDevolutivasEstimadasEConfirmadasUseCase useCase)
         {
@@ -27,9 +29,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteDto>), 200)]
-        //[Permissao(Permissao.DF_C, Policy = "Bearer")] Será feito em uma task específica
+        [Permissao(Permissao.DD_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterGraficoDiariosDeBordoComDevolutivaEDevolutivaPendente([FromQuery] FiltroGraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteDto filtro,
             [FromServices] IObterGraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpGet("devolutivas/dre")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoBaseDto>), 200)]
+        [Permissao(Permissao.DD_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterGraficoDevolutivasPorDre([FromQuery] FiltroTotalDevolutivasPorDreDto filtro,
+            [FromServices] IObterGraficoTotalDevolutivasPorDreUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
         }
@@ -38,7 +51,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoDiariosDeBordoComESemReflexoesEReplanejamentosDto>), 200)]
-        //[Permissao(Permissao.DF_C, Policy = "Bearer")] Será feito em uma task específica
+        [Permissao(Permissao.DD_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterGraficoDiariosDeBordoComDevolutivaEDevolutivaPendente([FromQuery] FiltroGraficoDiariosDeBordoComESemReflexoesEReplanejamentosDto filtro,
             [FromServices] IObterDiariosDeBordoComESemReflexoesEReplanejamentosUseCase useCase)
         {
@@ -49,7 +62,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.DF_C, Policy = "Bearer")] Será feito em uma task específica
+        [Permissao(Permissao.DD_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterUltimaConsolidacao([FromQuery] int anoLetivo, [FromServices] IObterUltimaConsolidacaoDevolutivaUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo));

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -30,7 +29,7 @@ namespace SME.SGP.Aplicacao.Interfaces
 
             itinerancia.AnoLetivo = dto.AnoLetivo;
             itinerancia.DataVisita = dto.DataVisita;
-            itinerancia.DataRetornoVerificacao = dto.DataRetornoVerificacao;            
+            itinerancia.DataRetornoVerificacao = dto.DataRetornoVerificacao;
             itinerancia.EventoId = dto.EventoId;
             itinerancia.DreId = dto.DreId;
             itinerancia.UeId = dto.UeId;
@@ -81,10 +80,10 @@ namespace SME.SGP.Aplicacao.Interfaces
         private async Task SalvarEventosItinerancia(ItineranciaDto dto)
         {
             var ue = await mediator.Send(new ObterUePorIdQuery(dto.UeId));
-            if (ue == null )
+            if (ue == null)
                 throw new NegocioException("Não foi possível localizar um Unidade Escolar!");
 
-                await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.Dre.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, ObterObjetivos(dto.ObjetivosVisita)));
+            await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.Dre.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, ObterObjetivos(dto.ObjetivosVisita)));
         }
 
         private IEnumerable<ItineranciaObjetivoDescricaoDto> ObterObjetivos(IEnumerable<ItineranciaObjetivoDto> objetivosVisita)
@@ -102,15 +101,13 @@ namespace SME.SGP.Aplicacao.Interfaces
 
         private async Task EnviarNotificacao(Itinerancia itinerancia, ItineranciaDto dto)
         {
-            SentrySdk.AddBreadcrumb($"Mensagem RotaNotificacaoRegistroItineranciaInseridoUseCase", "Rabbit - RotaNotificacaoRegistroItineranciaInseridoUseCase");
-
             var verificaWorkflow = await mediator.Send(new ObterWorkflowItineranciaPorItineranciaIdQuery(itinerancia.Id));
             WorkflowAprovacao workflow = null;
 
             if (verificaWorkflow != null)
                 workflow = await mediator.Send(new ObterWorkflowPorIdQuery(verificaWorkflow.WfAprovacaoId));
 
-            if(workflow == null || workflow.Niveis.Any(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado))
+            if (workflow == null || workflow.Niveis.Any(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado))
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoRegistroItineranciaInseridoUseCase,
                     new NotificacaoSalvarItineranciaDto
                     {

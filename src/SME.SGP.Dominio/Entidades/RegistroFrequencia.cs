@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio
             AulaId = aula.Id;
         }
 
-        protected RegistroFrequencia()
+        public RegistroFrequencia()
         {
         }
 

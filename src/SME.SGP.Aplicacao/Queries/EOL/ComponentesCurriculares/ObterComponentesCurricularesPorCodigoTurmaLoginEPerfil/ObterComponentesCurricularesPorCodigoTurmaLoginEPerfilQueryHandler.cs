@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -13,9 +13,12 @@ namespace SME.SGP.Aplicacao
     public class ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQueryHandler : IRequestHandler<ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        public ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQueryHandler(IHttpClientFactory httpClientFactory)
+        private readonly IMediator mediator;
+
+        public ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery request, CancellationToken cancellationToken)
         {
@@ -31,15 +34,15 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - HttpCode {(int)resposta.StatusCode}";
-                    SentrySdk.AddBreadcrumb(erro);
+                    string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - HttpCode {(int)resposta.StatusCode} - erro: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
+                    await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, string.Empty));
                     throw new NegocioException(erro);
                 }
             }
             catch (Exception e)
             {
-                SentrySdk.CaptureMessage($"Erro ao buscar componentes curriculares no EOL - Turma:{request.CodigoTurma}, Login:{request.Login}, Perfil:{request.Perfil} - Erro:{e.Message}");
-                SentrySdk.CaptureException(e);
+                string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - erro: {e.Message}";
+                await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, string.Empty));
                 throw e;
             }
         }

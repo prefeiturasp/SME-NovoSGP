@@ -59,14 +59,14 @@ namespace SME.SGP.Dominio
         ControleGrade = 18,
 
         [Display(Name = "relatorios/notificacoes", ShortName = "Notificacoes", Description = "Relatório de Notificações")]
-        Notificacoes = 19,        
+        Notificacoes = 19,
 
         [Display(Name = "relatorios/usuarios", ShortName = "Usuarios", Description = "Relatório de Usuários")]
         Usuarios = 20,
 
         [Display(Name = "relatorios/atribuicoes-cj", ShortName = "Atribuição CJ", Description = "Relatório de Atribuições de CJ")]
         AtribuicaoCJ = 22,
-        
+
         [Display(Name = "relatorios/graficopap", ShortName = "GraficoPAP", Description = "Relatório de acompanhamento PAP - Gráficos")]
         GraficoPAP = 23,
 
@@ -99,8 +99,11 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/acompanhamento-fechamento", ShortName = "AcompanhamentoFechamento", Description = "Relatório do Acompanhamento de Fechamento")]
         AcompanhamentoFechamento = 33,
-        
+
         [Display(Name = "relatorios/conselhoclasseatabimestral", ShortName = "AtaBimestral", Description = "Relatório de Ata Bimestral")]
-        AtaBimestral = 34
+        AtaBimestral = 34,
+
+        [Display(Name = "relatorios/boletimescolardetalhadoescolaaqui", ShortName = "BoletimEscolarDetalhadoEscolaAqui", Description = "Boletim escolar detalhado")]
+        BoletimDetalhadoApp = 35,
     }
 }

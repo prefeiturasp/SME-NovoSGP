@@ -17,7 +17,7 @@ namespace SME.SGP.Infra
         public DateTime DataSituacao { get; set; }
         public DateTime DataMatricula { get; set; }
         public string EscolaTransferencia { get; set; }
-        public string NomeAluno { get => Maioridade && !string.IsNullOrWhiteSpace(NomeSocialAluno) ? NomeSocialAluno : nomeAluno; set { nomeAluno = value; } }
+        public string NomeAluno { get => string.IsNullOrWhiteSpace(NomeSocialAluno) ? nomeAluno : NomeSocialAluno; set { nomeAluno = value; } }
         public string NomeSocialAluno { get; set; }
         public int NumeroAlunoChamada { get; set; }
         public char? ParecerConclusivo { get; set; }

@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                     unitOfWork.IniciarTransacao();
 
                     foreach (var comunicado in comunicados)
-                    {                        
+                    {
                         await mediator.Send(new ExcluirTodosAlunosComunicadoCommand(comunicado.Id));
 
                         await mediator.Send(new ExcluirTodasTurmasComunicadoCommand(comunicado.Id));
@@ -66,15 +66,17 @@ namespace SME.SGP.Aplicacao
 
                     await mediator.Send(new ExcluirNotificacaoEscolaAquiCommand(request.Ids));
 
-                    unitOfWork.PersistirTransacao();                    
+                    unitOfWork.PersistirTransacao();
                 }
-                catch(Exception ex)
+                catch (Exception)
                 {
                     unitOfWork.Rollback();
                     throw;
                 }
             else
-                SentrySdk.CaptureMessage(erros.ToString());
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao excluir comunicados", LogNivel.Negocio, LogContexto.Comunicado, erros.ToString()));
+            }
 
             return true;
         }
