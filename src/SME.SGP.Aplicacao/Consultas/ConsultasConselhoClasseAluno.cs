@@ -649,5 +649,29 @@ namespace SME.SGP.Aplicacao
 
             return periodoEscolarUltimoBimestre;
         }
+
+        public async Task<ParecerConclusivoDto> ObterParecerConclusivoAlunoTurma(string codigoTurma, string alunoCodigo)
+        {
+            ParecerConclusivoDto parecerConclusivoDto;
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
+            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFiltrosAsync(codigoTurma, alunoCodigo, 0, true);
+            if (conselhoClasseAluno is null)
+                return new ParecerConclusivoDto();
+
+            if (!turma.EhAnoAnterior() && !conselhoClasseAluno.ConselhoClasseParecerId.HasValue)
+                parecerConclusivoDto = await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseAluno.ConselhoClasseId, conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, alunoCodigo);
+            else
+                parecerConclusivoDto = new ParecerConclusivoDto()
+                {
+                    Id = conselhoClasseAluno?.ConselhoClasseParecerId ?? 0,
+                    Nome = conselhoClasseAluno?.ConselhoClasseParecer?.Nome,
+                    EmAprovacao = false
+                };
+
+            await VerificaEmAprovacaoParecerConclusivo(conselhoClasseAluno?.Id, parecerConclusivoDto);
+
+            return parecerConclusivoDto;
+
+        }
     }
 }
