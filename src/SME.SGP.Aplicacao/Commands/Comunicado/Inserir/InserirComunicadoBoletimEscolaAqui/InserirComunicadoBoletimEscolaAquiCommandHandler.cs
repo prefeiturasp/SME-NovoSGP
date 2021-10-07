@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
             comunicado.Titulo = $"Boletim disponível para download";
             comunicado.AnoLetivo = request.AnoLetivo;
             comunicado.AlunoEspecificado = request.AlunoEspecificado;
-            comunicado.Modalidades = new int[request.Modalidade];
+            comunicado.Modalidades = new int[] { request.Modalidade };
             comunicado.TipoComunicado = TipoComunicado.MENSAGEM_AUTOMATICA;
             comunicado.Semestre = request.Semestre;
             comunicado.AdicionarTurma(request.Turma);
