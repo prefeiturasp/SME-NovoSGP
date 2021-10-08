@@ -14,7 +14,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(FiltroRelatorioAcompanhamentoFechamentoDto filtro)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            filtro.Usuario = usuarioLogado;
+            filtro.UsuarioNome = usuarioLogado.Nome;
+            filtro.UsuarioRF = usuarioLogado.CodigoRf;
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AcompanhamentoFechamento, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosAcompanhamentoFechamento));
         }
