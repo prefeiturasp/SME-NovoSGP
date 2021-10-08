@@ -251,7 +251,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil)
         {
-
             var sql = ehInfantil ? $@"select 1
                         from aula
                         inner join turma on aula.turma_id = turma.turma_id
@@ -270,7 +269,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        and aula.id = ANY(@aulas)
                             and aula.data_aula::date < @hoje
                             and rf.id is null 
-                            and cc.permite_registro_frequencia = true";
+                            and cc.permite_registro_frequencia";
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
         }
