@@ -235,6 +235,8 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.PlanoAulaDaAulaExcluir, new ComandoRabbit("Executar exclusão de plano de aula por aula id", typeof(IExcluirPlanoAulaPorAulaIdUseCase)));
             comandos.Add(RotasRabbitSgp.AnotacoesFrequenciaDaAulaExcluir, new ComandoRabbit("Executar exclusão de anotações de frequência por aula id", typeof(IExcluirAnotacoesFrequenciaPorAulaIdUseCase)));
             comandos.Add(RotasRabbitSgp.DiarioBordoDaAulaExcluir, new ComandoRabbit("Executar exclusão de diario de bordo por aula id", typeof(IExcluirDiarioBordoPorAulaIdUseCase)));
+
+            comandos.Add(RotasRabbitSgp.VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes, new ComandoRabbit("Efetua a varredura em busca de fechamentos em processamento pendentes", typeof(IVarreduraFechamentosEmProcessamentoPendentesUseCase)));
         }
 
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -20,8 +21,10 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> AtualizarSituacaoFechamento(long fechamentoTurmaDisciplinaId, int situacaoFechamento);
         Task<IEnumerable<int>> ObterDisciplinaIdsPorTurmaIdBimestre(long turmaId, int bimestre);
         Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamento(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);
-        Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamentoPorEstudante(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);
-        
+        Task<IEnumerable<FechamentoSituacaoQuantidadeDto>> ObterSituacaoProcessoFechamentoPorEstudante(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);        
         Task<IEnumerable<FechamentoPendenciaQuantidadeDto>> ObterSituacaoPendenteFechamento(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);
+        Task<IEnumerable<long>> ObterFechamentosTurmaDisciplinaEmDuplicidade(DateTime dataInicio);
+        Task<IEnumerable<(long fechamentoTurmaDisciplinaId, int bimestre, string codigoRf)>> ObterFechamentosTurmaDisciplinaEmProcessamentoComTempoExpirado(DateTime dataInicio, int tempoConsideradoExpiracaoMinutos);
+        Task<bool> ExcluirLogicamenteFechamentosTurmaDisciplina(long[] idsFechamentoTurmaDisciplina);
     }
 }
