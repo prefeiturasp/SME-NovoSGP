@@ -1,18 +1,16 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class AlterarAulaUseCase : AbstractUseCase, IAlterarAulaUseCase
     {
-        public AlterarAulaUseCase(IMediator mediator): base(mediator)
+        public AlterarAulaUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -54,8 +52,7 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.AddBreadcrumb("Alteração de aulas recorrentes", "RabbitMQ");
-                    SentrySdk.CaptureException(ex);
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro em alteração de aulas recorrentes", LogNivel.Critico, LogContexto.Aula, ex.Message));                    
                 }
                 return new RetornoBaseDto("Ocorreu um erro ao solicitar a alteração de aulas recorrentes, por favor tente novamente.");
             }

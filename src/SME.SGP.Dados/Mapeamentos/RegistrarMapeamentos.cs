@@ -94,7 +94,9 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConselhoClasseMap());
                config.AddMap(new ConselhoClasseAlunoMap());
                config.AddMap(new ConselhoClasseNotaMap());
-               config.AddMap(new WfAprovacaoNotaFechamentoMap());               
+               config.AddMap(new WfAprovacaoNotaFechamentoMap());
+               config.AddMap(new WfAprovacaoNotaConselhoMap());
+               config.AddMap(new WFAprovacaoParecerConclusivoMap());
                config.AddMap(new ComunicadoMap());
                config.AddMap(new ComunicadoAlunoMap());
                config.AddMap(new ComunicadoTurmaMap());               
@@ -189,6 +191,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ComunicadoTipoEscolaMap());
                config.AddMap(new ComunicadoAnoEscolarMap());               
                config.AddMap(new ConsolidacaoAcompanhamentoAprendizagemAlunoMap());
+               config.AddMap(new ConsolidacaoDiariosBordoMap());
                config.AddMap(new AvisoMap());
 
                config.ForDommel();

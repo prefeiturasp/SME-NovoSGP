@@ -16,11 +16,13 @@ namespace SME.SGP.Aplicacao
     public class PublicarFilaSgpCommandHandler : IRequestHandler<PublicarFilaSgpCommand, bool>
     {
         private readonly IConfiguration configuration;
+        private readonly IServicoTelemetria servicoTelemetria;
         private readonly IAsyncPolicy policy;
 
-        public PublicarFilaSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry)
+        public PublicarFilaSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry, IServicoTelemetria servicoTelemetria)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
             this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
         }
 
@@ -39,7 +41,9 @@ namespace SME.SGP.Aplicacao
             });
             var body = Encoding.UTF8.GetBytes(mensagem);
 
-            await policy.ExecuteAsync(() => PublicarMensagem(command.Rota, body));
+            servicoTelemetria.Registrar(() => 
+                    policy.ExecuteAsync(() => PublicarMensagem(command.Rota, body)), 
+                            "RabbitMQ", "PublicarFilaSgp", command.Rota);
 
             return true;
         }

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -26,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             if (filtro == null)
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do conselho de clase da turma -> aluno. O id da turma bimestre aluno não foram informados", Sentry.Protocol.SentryLevel.Error);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do conselho de clase da turma -> aluno. O id da turma bimestre aluno não foram informados", LogNivel.Critico, LogContexto.ConselhoClasse));                
                 return false;
             }
 
@@ -69,10 +68,12 @@ namespace SME.SGP.Aplicacao
                     turmasCodigos = new string[1] { turma.CodigoTurma };
                 }
 
+                var componentesComNotaFechamentoOuConselho = await mediator.Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo));
                 var componentesDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
-                var componentesDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesDaTurmaEol.Select(x => Convert.ToInt64(x.Codigo)).Distinct().ToArray()));
 
-                var possuiComponentesSemNotaConceito = componentesDaTurma.Select(a => a.CodigoComponenteCurricular).Except(componentesDoAluno).Any();
+
+
+                var possuiComponentesSemNotaConceito = componentesDaTurmaEol.Where(x => x.LancaNota == true).Select(x => x.Codigo).ToArray().Except(componentesComNotaFechamentoOuConselho.Select(x => x.Codigo).ToArray()).Any();
 
                 if (possuiComponentesSemNotaConceito)
                     statusNovo = SituacaoConselhoClasse.EmAndamento;

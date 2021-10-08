@@ -16,32 +16,25 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
-        private readonly IRepositorioConselhoClasseParecerConclusivo repositorioParecer;
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioDre repositorioDre;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo;
         private readonly IMediator mediator;
         private readonly IConsultasConselhoClasseNota consultasConselhoClasseNota;
 
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                      IRepositorioFechamentoTurma repositorioFechamentoTurma,
-                                     IRepositorioConselhoClasseParecerConclusivo repositorioParecer,
-                                     IRepositorioTipoCalendario repositorioTipoCalendario,
                                      IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                      IRepositorioUe repositorioUe,
                                      IRepositorioDre repositorioDre,
-                                     IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                      IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                      IConsultasConselhoClasse consultasConselhoClasse,
-                                     IConsultasDisciplina consultasDisciplina,
                                      IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                      IUnitOfWork unitOfWork,
-                                     IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo,
                                      IMediator mediator,
                                      IConsultasConselhoClasseNota consultasConselhoClasseNota)
 
@@ -49,7 +42,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
-            this.repositorioParecer = repositorioParecer ?? throw new ArgumentNullException(nameof(repositorioParecer));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
@@ -57,7 +49,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.servicoCalculoParecerConclusivo = servicoCalculoParecerConclusivo ?? throw new ArgumentNullException(nameof(servicoCalculoParecerConclusivo));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.consultasConselhoClasseNota = consultasConselhoClasseNota ?? throw new ArgumentNullException(nameof(consultasConselhoClasseNota));
         }
@@ -104,6 +95,225 @@ namespace SME.SGP.Dominio.Servicos
                     periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
             }
 
+            await GravarFechamentoTurma(fechamentoTurma, fechamentoTurmaDisciplina, turma, periodoEscolar);
+
+            return await GravarConselhoClasse(fechamentoTurma, conselhoClasseId, alunoCodigo, turma, conselhoClasseNotaDto, periodoEscolar?.Bimestre);
+        }
+
+        private async Task<ConselhoClasseNotaRetornoDto> GravarConselhoClasse(FechamentoTurma fechamentoTurma, long conselhoClasseId, string alunoCodigo, Turma turma, ConselhoClasseNotaDto conselhoClasseNotaDto, int? bimestre)
+        {
+            var conselhoClasseNota = new ConselhoClasseNota();
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            ConselhoClasseNotaRetornoDto conselhoClasseNotaRetorno = null;
+            conselhoClasseNotaRetorno = conselhoClasseId == 0 ?
+                await InserirConselhoClasseNota(fechamentoTurma, alunoCodigo, turma, conselhoClasseNotaDto, bimestre, usuarioLogado) :
+                await AlterarConselhoClasse(conselhoClasseId, fechamentoTurma.Id, alunoCodigo, turma, conselhoClasseNotaDto, bimestre, usuarioLogado) ;
+
+            // TODO Verificar se o fechamentoTurma.Turma carregou UE
+            if (await VerificaNotasTodosComponentesCurriculares(alunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
+                await VerificaRecomendacoesAluno(conselhoClasseNotaRetorno.ConselhoClasseAlunoId);
+
+            await mediator.Send(new PublicaFilaAtualizacaoSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId, usuarioLogado));
+
+            return conselhoClasseNotaRetorno;
+        }
+
+        private async Task<ConselhoClasseNotaRetornoDto> AlterarConselhoClasse(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, Turma turma, ConselhoClasseNotaDto conselhoClasseNotaDto, int? bimestre, Usuario usuarioLogado)
+        {
+            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
+            AuditoriaDto auditoria = null;
+            long conselhoClasseAlunoId = 0;
+            bool enviarAprovacao = false;
+
+            unitOfWork.IniciarTransacao();
+            try
+            {
+                conselhoClasseAlunoId = conselhoClasseAluno != null ?
+                    conselhoClasseAluno.Id : 
+                    await SalvarConselhoClasseAlunoResumido(conselhoClasseId, alunoCodigo);
+
+                await mediator.Send(new InserirTurmasComplementaresCommand(turma.Id, conselhoClasseAlunoId, alunoCodigo));
+
+                var conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
+
+                double? notaAnterior = null;
+                long? conceitoIdAnterior = null;
+
+                if (conselhoClasseNota == null)
+                {
+                    conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
+                }
+                else
+                {
+                    notaAnterior = conselhoClasseNota.Nota;
+                    conceitoIdAnterior = conselhoClasseNota.ConceitoId;
+
+                    conselhoClasseNota.Justificativa = conselhoClasseNotaDto.Justificativa;
+                    if (conselhoClasseNotaDto.Nota.HasValue)
+                    {
+                        // Gera histórico de alteração
+                        if (conselhoClasseNota.Nota != null && conselhoClasseNota.Nota != conselhoClasseNotaDto.Nota.Value)
+                            await mediator.Send(new SalvarHistoricoNotaConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.Nota.Value, conselhoClasseNotaDto.Nota.Value));
+
+                        conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;
+                    }
+                    else conselhoClasseNota.Nota = null;
+
+                    if (conselhoClasseNotaDto.Conceito.HasValue)
+                    {
+                        // Gera histórico de alteração
+                        if (conselhoClasseNota.ConceitoId != conselhoClasseNotaDto.Conceito.Value)
+                            await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, conselhoClasseNotaDto.Conceito.Value));
+
+                        conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
+                    }
+                }
+
+                if (turma.AnoLetivo == 2020)
+                    ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
+
+                enviarAprovacao = await EnviarParaAprovacao(turma, usuarioLogado);
+                if (enviarAprovacao)
+                    await GerarWFAprovacao(conselhoClasseNota, turma, bimestre, usuarioLogado, alunoCodigo, notaAnterior, conceitoIdAnterior);
+                else
+                    await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
+                unitOfWork.PersistirTransacao();
+
+                auditoria = (AuditoriaDto)conselhoClasseNota;
+            }
+            catch (Exception e)
+            {
+                unitOfWork.Rollback();
+                throw e;
+            }
+
+            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, bimestre ?? 0);
+            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
+
+            var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()
+            {
+                ConselhoClasseId = conselhoClasseId,
+                FechamentoTurmaId = fechamentoTurmaId,
+                Auditoria = auditoria,
+                ConselhoClasseAlunoId = conselhoClasseAlunoId,
+                EmAprovacao = enviarAprovacao
+            };
+
+            return conselhoClasseNotaRetorno;
+        }
+
+        private async Task<ConselhoClasseNotaRetornoDto> InserirConselhoClasseNota(FechamentoTurma fechamentoTurma, string alunoCodigo, Turma turma, ConselhoClasseNotaDto conselhoClasseNotaDto, int? bimestre, Usuario usuarioLogado)
+        {
+            AuditoriaDto auditoria = null;
+            long conselhoClasseId = 0;
+            var conselhoClasse = new ConselhoClasse();
+            long conselhoClasseAlunoId = 0;
+            conselhoClasse.FechamentoTurmaId = fechamentoTurma.Id;
+            bool enviarAprovacao = false;
+
+            unitOfWork.IniciarTransacao();
+            try
+            {
+                await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
+
+                conselhoClasseId = conselhoClasse.Id;
+
+                conselhoClasseAlunoId = await SalvarConselhoClasseAlunoResumido(conselhoClasse.Id, alunoCodigo);
+
+                await mediator.Send(new InserirTurmasComplementaresCommand(turma.Id, conselhoClasseAlunoId, alunoCodigo));
+
+                var conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
+
+                if (fechamentoTurma.Turma.AnoLetivo == 2020)
+                    ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
+                enviarAprovacao = await EnviarParaAprovacao(fechamentoTurma.Turma, usuarioLogado);
+                if (enviarAprovacao)
+                    await GerarWFAprovacao(conselhoClasseNota, turma, bimestre, usuarioLogado, alunoCodigo, null, null);
+                else
+                    await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
+                unitOfWork.PersistirTransacao();
+
+                auditoria = (AuditoriaDto)conselhoClasseNota;
+            }
+            catch (Exception e)
+            {
+                unitOfWork.Rollback();
+                throw e;
+            }
+
+            var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()
+            {
+                ConselhoClasseId = conselhoClasseId,
+                FechamentoTurmaId = fechamentoTurma.Id,
+                Auditoria = auditoria,
+                ConselhoClasseAlunoId = conselhoClasseAlunoId,
+                EmAprovacao = enviarAprovacao
+            };
+            return conselhoClasseNotaRetorno;
+        }
+
+        private async Task<bool> EnviarParaAprovacao(Turma turma, Usuario usuarioLogado)
+        {
+            return turma.AnoLetivo < DateTime.Today.Year
+                && !usuarioLogado.EhGestorEscolar()
+                && await ParametroAprovacaoAtivo(turma.AnoLetivo);
+        }
+
+        private async Task<bool> ParametroAprovacaoAtivo(int anoLetivo)
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaConselho, anoLetivo));
+            if (parametro == null)
+                throw new NegocioException($"Não foi possível localizar o parametro 'AprovacaoAlteracaoNotaConselho' para o ano {anoLetivo}");
+
+            return parametro.Ativo;
+        }
+
+        private async Task GerarWFAprovacao(ConselhoClasseNota conselhoClasseNota, Turma turma, int? bimestre, Usuario usuarioLogado, string alunoCodigo, double? notaAnterior, long? conceitoIdAnterior)
+        {
+            double? notaAtual = conselhoClasseNota.Nota;
+            long? conceitoIdAtual = conselhoClasseNota.ConceitoId;
+
+            if(conselhoClasseNota.Id == 0)
+            {
+                conselhoClasseNota.Nota = null;
+                conselhoClasseNota.ConceitoId = null;
+
+                await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
+            }
+
+            await mediator.Send(new GerarWFAprovacaoNotaConselhoClasseCommand(conselhoClasseNota.Id,
+                                                                              conselhoClasseNota.ComponenteCurricularCodigo,
+                                                                              notaAtual,
+                                                                              conceitoIdAtual,
+                                                                              turma,
+                                                                              bimestre,
+                                                                              usuarioLogado,
+                                                                              alunoCodigo,
+                                                                              notaAnterior,
+                                                                              conceitoIdAnterior));
+        }
+
+        private async Task GravarFechamentoTurma(FechamentoTurma fechamentoTurma, FechamentoTurmaDisciplina fechamentoTurmaDisciplina, Turma turma, PeriodoEscolar periodoEscolar)
+        {
+            if (fechamentoTurma.PeriodoEscolarId.HasValue)
+            {
+                // Fechamento Bimestral
+                if (!await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(fechamentoTurma.Turma, DateTime.Today, fechamentoTurma.PeriodoEscolar.Bimestre))
+                    throw new NegocioException($"Turma {fechamentoTurma.Turma.Nome} não esta em período de fechamento para o {fechamentoTurma.PeriodoEscolar.Bimestre}º Bimestre!");
+            }
+            else
+            {
+                // Fechamento Final
+                if (fechamentoTurma.Turma.AnoLetivo != 2020 && !fechamentoTurma.Turma.Historica)
+                {
+                    var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
+                    if (!validacaoConselhoFinal.Item2 && fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year)
+                        throw new NegocioException($"Para salvar a nota final você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                }
+            }
             var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, fechamentoTurma.PeriodoEscolarId != null ? periodoEscolar.Bimestre : 0);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
 
@@ -116,22 +326,6 @@ namespace SME.SGP.Dominio.Servicos
                     fechamentoTurmaDisciplina.FechamentoTurmaId = fechamentoTurma.Id;
                     await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
                 }
-                if (fechamentoTurma.PeriodoEscolarId.HasValue)
-                {
-                    // Fechamento Bimestral
-                    if (!await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(fechamentoTurma.Turma, DateTime.Today, fechamentoTurma.PeriodoEscolar.Bimestre))
-                        throw new NegocioException($"Turma {fechamentoTurma.Turma.Nome} não esta em período de fechamento para o {fechamentoTurma.PeriodoEscolar.Bimestre}º Bimestre!");
-                }
-                else
-                {
-                    // Fechamento Final
-                    if (fechamentoTurma.Turma.AnoLetivo != 2020 && !fechamentoTurma.Turma.Historica)
-                    {
-                        var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
-                        if (!validacaoConselhoFinal.Item2 && fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year)
-                            throw new NegocioException($"Para salvar a nota final você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
-                    }
-                }
                 unitOfWork.PersistirTransacao();
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null));
@@ -141,104 +335,6 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
-
-            long conselhoClasseAlunoId = 0;
-            var conselhoClasseNota = new ConselhoClasseNota();
-
-            try
-            {
-                if (conselhoClasseId == 0)
-                {
-
-                    var conselhoClasse = new ConselhoClasse();
-                    conselhoClasse.FechamentoTurmaId = fechamentoTurma.Id;
-
-                    unitOfWork.IniciarTransacao();
-                    await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
-
-                    conselhoClasseId = conselhoClasse.Id;
-
-                    conselhoClasseAlunoId = await SalvarConselhoClasseAlunoResumido(conselhoClasse.Id, alunoCodigo);
-
-                    await mediator.Send(new InserirTurmasComplementaresCommand(turma.Id, conselhoClasseAlunoId, alunoCodigo));
-
-                    conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
-
-                    if (fechamentoTurma.Turma.AnoLetivo == 2020)
-                        ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
-
-                    await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
-                    unitOfWork.PersistirTransacao();
-                }
-                else
-                {
-                    var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
-                    unitOfWork.IniciarTransacao();
-
-                    conselhoClasseAlunoId = conselhoClasseAluno != null ? conselhoClasseAluno.Id : await SalvarConselhoClasseAlunoResumido(conselhoClasseId, alunoCodigo);
-
-                    await mediator.Send(new InserirTurmasComplementaresCommand(turma.Id, conselhoClasseAlunoId, alunoCodigo));
-
-                    conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
-
-                    if (conselhoClasseNota == null)
-                    {
-                        conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
-                    }
-                    else
-                    {
-                        conselhoClasseNota.Justificativa = conselhoClasseNotaDto.Justificativa;
-                        if (conselhoClasseNotaDto.Nota.HasValue)
-                        {
-                            // Gera histórico de alteração
-                            if (conselhoClasseNota.Nota != null && conselhoClasseNota.Nota != conselhoClasseNotaDto.Nota.Value)
-                                await mediator.Send(new SalvarHistoricoNotaConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.Nota.Value, conselhoClasseNotaDto.Nota.Value));
-
-                            conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;
-                        }
-                        else conselhoClasseNota.Nota = null;
-
-                        if (conselhoClasseNotaDto.Conceito.HasValue)
-                        {
-                            // Gera histórico de alteração
-                            if (conselhoClasseNota.ConceitoId != conselhoClasseNotaDto.Conceito.Value)
-                                await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId.Value, conselhoClasseNotaDto.Conceito.Value));
-
-                            conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
-                        }
-                    }
-
-                    if (fechamentoTurma.Turma.AnoLetivo == 2020)
-                        ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
-
-                    await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
-
-                    unitOfWork.PersistirTransacao();
-
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
-                }
-            }
-            catch (Exception e)
-            {
-                unitOfWork.Rollback();
-                throw e;
-            }
-
-            // TODO Verificar se o fechamentoTurma.Turma carregou UE
-            if (await VerificaNotasTodosComponentesCurriculares(alunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
-                await VerificaRecomendacoesAluno(conselhoClasseAlunoId);
-
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            await mediator.Send(new PublicaFilaAtualizacaoSituacaoConselhoClasseCommand(conselhoClasseId, usuarioLogado));
-
-            var auditoria = (AuditoriaDto)conselhoClasseNota;
-            var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()
-            {
-                ConselhoClasseId = conselhoClasseId,
-                FechamentoTurmaId = fechamentoTurma.Id,
-                Auditoria = auditoria
-            };
-            return conselhoClasseNotaRetorno;
         }
 
         private async Task VerificaRecomendacoesAluno(long conselhoClasseAlunoId)
@@ -376,8 +472,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 foreach (var conselhosClassesId in conselhosClassesIds)
                 {
-                    var notasParaAdicionar = await consultasConselhoClasseNota
-                        .ObterNotasAlunoAsync(conselhosClassesId, alunoCodigo);
+                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, alunoCodigo));
 
                     notasParaVerificar.AddRange(notasParaAdicionar);
                 }
@@ -387,8 +482,7 @@ namespace SME.SGP.Dominio.Servicos
                 notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)));
             else
             {
-                var todasAsNotas = await consultasConselhoClasseNota
-                    .ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigos);
+                var todasAsNotas = await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, alunoCodigo));
 
                 if (todasAsNotas != null && todasAsNotas.Any())
                     notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
@@ -424,38 +518,10 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
+            var solicitanteId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
             var conselhoClasseAluno = await ObterConselhoClasseAluno(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
-            var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
 
-            // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
-            if (!await VerificaNotasTodosComponentesCurriculares(alunoCodigo, turma, null))
-                return new ParecerConclusivoDto();
-
-            var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
-
-            var parecerConclusivo = await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma);
-            conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
-            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
-
-            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar != null ?
-                   conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre : 0);
-            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
-
-            return new ParecerConclusivoDto()
-            {
-                Id = parecerConclusivo.Id,
-                Nome = parecerConclusivo.Nome
-            };
-        }
-
-        private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(long turmaId)
-        {
-            var pareceresConclusivos = await repositorioParecer.ObterListaPorTurmaIdAsync(turmaId, DateTime.Today);
-            if (pareceresConclusivos == null || !pareceresConclusivos.Any())
-                throw new NegocioException("Não foram encontrados pareceres conclusivos para a turma!");
-
-            return pareceresConclusivos;
+            return await mediator.Send(new GerarParecerConclusivoAlunoCommand(conselhoClasseAluno, solicitanteId));
         }
 
         private async Task<ConselhoClasseAluno> ObterConselhoClasseAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)

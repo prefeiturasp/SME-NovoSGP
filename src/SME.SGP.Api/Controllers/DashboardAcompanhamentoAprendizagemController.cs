@@ -34,5 +34,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+        [HttpGet("acompanhamento-aluno-dre")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoBaseDto>), 200)]
+        [Permissao(Permissao.DAA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterDashAcompanhamentoPorDre([FromQuery] FiltroDashboardAcompanhamentoAprendizagemPorDreDto filtro, [FromServices] IObterDashboardAcompanhamentoAprendizagemPorDreUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }

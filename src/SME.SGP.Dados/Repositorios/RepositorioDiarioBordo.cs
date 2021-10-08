@@ -640,5 +640,6 @@ namespace SME.SGP.Dados.Repositorios
                     datasConsideradas
                 }, splitOn: "id");
         }
+
     }
 }

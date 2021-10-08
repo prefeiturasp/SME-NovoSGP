@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
@@ -27,7 +26,6 @@ namespace SME.SGP.Aplicacao
             }
             catch (System.Exception ex)
             {
-                SentrySdk.CaptureException(ex);
                 throw ex;
             }
         }

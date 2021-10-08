@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             var anosLetivosParaConsolidar = new List<int>();
             for (var ano = 2014; ano < DateTime.Now.Year; ano++)
             {
-                if (!await mediator.Send(new ExisteConsolidacaoMatriculaTurmaPorAnoQuery(ano)) 
+                if (!await mediator.Send(new ExisteConsolidacaoMatriculaTurmaPorAnoQuery(ano))
                     && await mediator.Send(new ObterQuantidadeUesPorAnoLetivoQuery(ano)) > 0)
                 {
                     await AtualizarDataExecucao(ano);
@@ -47,8 +47,10 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.CaptureException(ex);
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Carregar Dres Consolidacao Matricula UseCase", LogNivel.Critico, LogContexto.ConsolidacaoMatricula, ex.Message));                    
                 }
+                
+
             }
             return true;
         }

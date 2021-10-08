@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,8 +57,8 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.CaptureException(ex);
-                }            
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do usuário.", LogNivel.Negocio, LogContexto.Usuario, ex.Message));
+                }
             }
 
             if (funcionariosId.Any())

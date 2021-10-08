@@ -1,5 +1,8 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Polly;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System;
@@ -15,10 +18,11 @@ namespace SME.SGP.Aplicacao
     public class CriarNotificacaoEscolaAquiCommandHandler : IRequestHandler<CriarNotificacaoEscolaAquiCommand, bool>
     {
         private readonly IHttpClientFactory httpClientFactory;
-
-        public CriarNotificacaoEscolaAquiCommandHandler(IHttpClientFactory httpClientFactory)
+        private readonly IConfiguration configuration;
+        public CriarNotificacaoEscolaAquiCommandHandler(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration)); ;
         }
 
         public async Task<bool> Handle(CriarNotificacaoEscolaAquiCommand request, CancellationToken cancellationToken)
@@ -27,6 +31,7 @@ namespace SME.SGP.Aplicacao
 
             MapearParaEntidadeServico(comunicadoServico, request.Comunicado);
             var httpClient = httpClientFactory.CreateClient("servicoAcompanhamentoEscolar");
+            
             var parametros = JsonConvert.SerializeObject(comunicadoServico);
 
             var resposta = await httpClient.PostAsync("v1/notificacao", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
@@ -37,7 +42,6 @@ namespace SME.SGP.Aplicacao
                 throw new Exception($"Não foi possivel criar a notificação para o comunucado de id : {request.Comunicado.Id}");
 
         }
-
         private void MapearParaEntidadeServico(ComunicadoInserirAeDto comunicadoServico, Comunicado comunicado)
         {
             comunicadoServico.Id = comunicado.Id;
@@ -51,7 +55,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.CriadoEm = comunicado.CriadoEm;
             comunicadoServico.CriadoPor = comunicado.CriadoPor;
             comunicadoServico.CriadoRF = comunicado.CriadoRF;
-            comunicadoServico.Alunos = comunicado.Alunos.Select(x => x.AlunoCodigo);
+            comunicadoServico.Alunos = comunicado?.Alunos?.Select(x => x.AlunoCodigo);
             comunicadoServico.AnoLetivo = comunicado.AnoLetivo;
             comunicadoServico.CodigoDre = comunicado.CodigoDre;
             comunicadoServico.CodigoUe = comunicado.CodigoUe;
@@ -59,8 +63,9 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.TipoComunicado = comunicado.TipoComunicado;
             comunicadoServico.Semestre = comunicado.Semestre;
             comunicadoServico.SeriesResumidas = comunicado.SeriesResumidas;
-            comunicadoServico.Modalidades = string.Join(",", comunicado.Modalidades.Select(x => x).ToArray());
-            comunicadoServico.TiposEscolas = string.Join(",", comunicado.TiposEscolas.Select(x => x).ToArray());
+            comunicadoServico.Modalidades = string.Join(",", comunicado?.Modalidades?.Select(x => x).ToArray());
+            if (comunicado.TiposEscolas != null)
+                comunicadoServico.TiposEscolas = string.Join(",", comunicado.TiposEscolas.Select(x => x).ToArray());
         }
     }
 }
