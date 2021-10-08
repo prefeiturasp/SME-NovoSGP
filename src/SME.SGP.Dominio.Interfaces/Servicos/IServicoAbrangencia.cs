@@ -26,5 +26,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool UeEstaNaAbrangecia(string login, Guid perfilId, string codigoDre, string codigoUE);
         Task<bool> SincronizarAbrangenciaHistorica(int anoLetivo, string professorRf);
+        Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false);
     }
 }
