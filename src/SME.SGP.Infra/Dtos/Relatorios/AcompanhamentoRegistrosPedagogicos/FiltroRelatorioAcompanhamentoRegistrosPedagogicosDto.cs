@@ -9,7 +9,7 @@ namespace SME.SGP.Infra
     {
         public FiltroRelatorioAcompanhamentoRegistrosPedagogicosDto()
         {
-            Turmas = new List<long>();
+            Turmas = new List<string>();
             Bimestres = new List<int>();
         }
         public int AnoLetivo { get; set; }
@@ -17,7 +17,7 @@ namespace SME.SGP.Infra
         public string UeCodigo { get; set; }
         public Modalidade Modalidade { get; set; }
         public int Semestre { get; set; }
-        public List<long> Turmas { get; set; }
+        public List<string> Turmas { get; set; }
         public long[] ComponentesCurriculares { get; set; }
         public List<int> Bimestres { get; set; }
         public string ProfessorCodigo { get; set; }
