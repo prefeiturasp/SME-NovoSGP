@@ -182,7 +182,7 @@ namespace SME.SGP.Aplicacao
                 return $"{evento.Dre.Abreviacao.Replace("-", ":")}";
             }
 
-            return "Dre: Todas";
+            return "DRE: Todas";
         }
         
         private string MontarDescricaoUe(Evento evento)

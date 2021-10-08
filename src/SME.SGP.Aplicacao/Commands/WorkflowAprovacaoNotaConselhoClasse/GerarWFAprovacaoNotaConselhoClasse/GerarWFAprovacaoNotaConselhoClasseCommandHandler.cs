@@ -34,6 +34,7 @@ namespace SME.SGP.Aplicacao
                 Nota = request.Nota,
                 ConceitoId = request.ConceitoId,
                 WfAprovacaoId = wfAprovacaoId,
+                UsuarioSolicitanteId = request.UsuarioLogado.Id
             });
         }
 

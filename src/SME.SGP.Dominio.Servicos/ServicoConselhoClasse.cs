@@ -124,6 +124,7 @@ namespace SME.SGP.Dominio.Servicos
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
             AuditoriaDto auditoria = null;
             long conselhoClasseAlunoId = 0;
+            bool enviarAprovacao = false;
 
             unitOfWork.IniciarTransacao();
             try
@@ -172,7 +173,8 @@ namespace SME.SGP.Dominio.Servicos
                 if (turma.AnoLetivo == 2020)
                     ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
 
-                if (await EnviarParaAprovacao(turma, usuarioLogado))
+                enviarAprovacao = await EnviarParaAprovacao(turma, usuarioLogado);
+                if (enviarAprovacao)
                     await GerarWFAprovacao(conselhoClasseNota, turma, bimestre, usuarioLogado, alunoCodigo, notaAnterior, conceitoIdAnterior);
                 else
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
@@ -196,7 +198,8 @@ namespace SME.SGP.Dominio.Servicos
                 ConselhoClasseId = conselhoClasseId,
                 FechamentoTurmaId = fechamentoTurmaId,
                 Auditoria = auditoria,
-                ConselhoClasseAlunoId = conselhoClasseAlunoId
+                ConselhoClasseAlunoId = conselhoClasseAlunoId,
+                EmAprovacao = enviarAprovacao
             };
 
             return conselhoClasseNotaRetorno;
@@ -209,6 +212,7 @@ namespace SME.SGP.Dominio.Servicos
             var conselhoClasse = new ConselhoClasse();
             long conselhoClasseAlunoId = 0;
             conselhoClasse.FechamentoTurmaId = fechamentoTurma.Id;
+            bool enviarAprovacao = false;
 
             unitOfWork.IniciarTransacao();
             try
@@ -225,8 +229,8 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (fechamentoTurma.Turma.AnoLetivo == 2020)
                     ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
-
-                if (await EnviarParaAprovacao(fechamentoTurma.Turma, usuarioLogado))
+                enviarAprovacao = await EnviarParaAprovacao(fechamentoTurma.Turma, usuarioLogado);
+                if (enviarAprovacao)
                     await GerarWFAprovacao(conselhoClasseNota, turma, bimestre, usuarioLogado, alunoCodigo, null, null);
                 else
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
@@ -245,7 +249,8 @@ namespace SME.SGP.Dominio.Servicos
                 ConselhoClasseId = conselhoClasseId,
                 FechamentoTurmaId = fechamentoTurma.Id,
                 Auditoria = auditoria,
-                ConselhoClasseAlunoId = conselhoClasseAlunoId
+                ConselhoClasseAlunoId = conselhoClasseAlunoId,
+                EmAprovacao = enviarAprovacao
             };
             return conselhoClasseNotaRetorno;
         }
@@ -299,12 +304,15 @@ namespace SME.SGP.Dominio.Servicos
                 if (!await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(fechamentoTurma.Turma, DateTime.Today, fechamentoTurma.PeriodoEscolar.Bimestre))
                     throw new NegocioException($"Turma {fechamentoTurma.Turma.Nome} não esta em período de fechamento para o {fechamentoTurma.PeriodoEscolar.Bimestre}º Bimestre!");
             }
-            // Fechamento Final
-            if (fechamentoTurma.Turma.AnoLetivo != 2020 && !fechamentoTurma.Turma.Historica)
+            else
             {
-                var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
-                if (!validacaoConselhoFinal.Item2 && fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year)
-                    throw new NegocioException($"Para salvar a nota final você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                // Fechamento Final
+                if (fechamentoTurma.Turma.AnoLetivo != 2020 && !fechamentoTurma.Turma.Historica)
+                {
+                    var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
+                    if (!validacaoConselhoFinal.Item2 && fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year)
+                        throw new NegocioException($"Para salvar a nota final você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                }
             }
             var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, fechamentoTurma.PeriodoEscolarId != null ? periodoEscolar.Bimestre : 0);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
@@ -510,9 +518,10 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
+            var solicitanteId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
             var conselhoClasseAluno = await ObterConselhoClasseAluno(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
 
-            return await mediator.Send(new GerarParecerConclusivoAlunoCommand(conselhoClasseAluno));
+            return await mediator.Send(new GerarParecerConclusivoAlunoCommand(conselhoClasseAluno, solicitanteId));
         }
 
         private async Task<ConselhoClasseAluno> ObterConselhoClasseAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)

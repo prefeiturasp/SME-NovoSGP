@@ -312,7 +312,9 @@ namespace SME.SGP.Dominio.Servicos
 
                 await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId, periodoEscolar.Id, turmaFechamento.Id, usuarioLogado));
 
-                return (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
+                var auditoria = (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
+                auditoria.EmAprovacao = notasEnvioWfAprovacao.Any();
+                return auditoria;
             }
             catch (Exception e)
             {
@@ -392,6 +394,17 @@ namespace SME.SGP.Dominio.Servicos
                     var notaFechamento = fechamentoAluno.FechamentoNotas.FirstOrDefault(x => x.DisciplinaId == fechamentoNotaDto.DisciplinaId);
                     if (notaFechamento != null)
                     {
+                        if (!notaFechamento.ConceitoId.HasValue)
+                        {
+                            if (fechamentoNotaDto.Nota != notaFechamento.Nota)
+                                await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota != null ? notaFechamento.Nota.Value : (double?)null, fechamentoNotaDto.Nota != null ? fechamentoNotaDto.Nota.Value : (double?)null, notaFechamento.Id));
+                        }
+                        else
+                        {
+                            if (fechamentoNotaDto.ConceitoId != notaFechamento.ConceitoId)
+                                await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaFechamento.ConceitoId != null ? notaFechamento.ConceitoId.Value : (long?)null, fechamentoNotaDto.ConceitoId != null ? fechamentoNotaDto.ConceitoId.Value : (long?)null, notaFechamento.Id));
+                        }
+
                         if (EnviarWfAprovacao(usuarioLogado) && parametroAlteracaoNotaFechamento.Ativo)
                         {
                             fechamentoNotaDto.Id = notaFechamento.Id;
@@ -404,17 +417,6 @@ namespace SME.SGP.Dominio.Servicos
                         }
                         else
                         {
-                            if (!notaFechamento.ConceitoId.HasValue)
-                            {
-                                if (fechamentoNotaDto.Nota != notaFechamento.Nota)
-                                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota != null ? notaFechamento.Nota.Value : (double?)null, fechamentoNotaDto.Nota != null ? fechamentoNotaDto.Nota.Value : (double?)null, notaFechamento.Id));
-                            }
-                            else
-                            {
-                                if (fechamentoNotaDto.ConceitoId != notaFechamento.ConceitoId)
-                                    await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaFechamento.ConceitoId != null ? notaFechamento.ConceitoId.Value : (long?)null, fechamentoNotaDto.ConceitoId != null ? fechamentoNotaDto.ConceitoId.Value : (long?)null, notaFechamento.Id));
-                            }
-
                             notaFechamento.Nota = fechamentoNotaDto.Nota;
                             notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
                             notaFechamento.SinteseId = fechamentoNotaDto.SinteseId;
@@ -468,6 +470,7 @@ namespace SME.SGP.Dominio.Servicos
                 var idWorkflow = await comandosWorkflowAprovacao.Salvar(wfAprovacaoNota);
                 foreach (var notaFechamento in notasEnvioWfAprovacao)
                 {
+                    await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoPorNotaCommand(notaFechamento.Id));
                     await repositorioWfAprovacaoNotaFechamento.SalvarAsync(new WfAprovacaoNotaFechamento()
                     {
                         WfAprovacaoId = idWorkflow,
@@ -590,8 +593,8 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (!notaAprovacao.ConceitoId.HasValue)
                 {
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior.Value)}</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.Nota.Value)}</td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior)}</td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.Nota)}</td>");
                 }
                 else
                 {

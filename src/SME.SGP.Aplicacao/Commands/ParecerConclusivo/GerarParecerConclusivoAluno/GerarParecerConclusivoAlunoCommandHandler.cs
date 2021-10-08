@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             var parecerConclusivo = await mediator.Send(new ObterParecerConclusivoAlunoQuery(conselhoClasseAluno.AlunoCodigo, turma.CodigoTurma, pareceresDaTurma));
 
             if (await EnviarParaAprovacao(turma))
-                await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma);
+                await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
             else
             {
                 conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task GerarWFAprovacao(ConselhoClasseAluno conselhoClasseAluno, long parecerConclusivoId, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
+        private async Task GerarWFAprovacao(ConselhoClasseAluno conselhoClasseAluno, long parecerConclusivoId, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma, long usuarioSolicitanteId)
         {
             if (parecerConclusivoId == conselhoClasseAluno.ConselhoClasseParecerId)
                 return;
@@ -66,7 +66,8 @@ namespace SME.SGP.Aplicacao
                                                                              conselhoClasseAluno.AlunoCodigo,
                                                                              parecerConclusivoId,
                                                                              parecerAnterior,
-                                                                             parecerNovo));
+                                                                             parecerNovo,
+                                                                             usuarioSolicitanteId));
         }
 
         private async Task<bool> EnviarParaAprovacao(Turma turma)

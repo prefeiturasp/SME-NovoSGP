@@ -18,10 +18,10 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ExcluirWfAprovacaoNotaConselhoPorNotaIdCommand request, CancellationToken cancellationToken)
         {
-            var wfAprovacaoNota = await repositorioWFAprovacaoNotaConselho.ObterWorkflowAprovacaoNota(request.ConselhoClasseNotaId);
-            if (wfAprovacaoNota != null)
+            var wfAprovacaoNotas = await repositorioWFAprovacaoNotaConselho.ObterWorkflowAprovacaoNota(request.ConselhoClasseNotaId);
+            foreach(var wfAprovacaoNota in wfAprovacaoNotas)
             {
-                await mediator.Send(new ExcluirWfAprovacaoNotaConselhoClasseCommand(wfAprovacaoNota.ConselhoClasseNotaId));
+                await mediator.Send(new ExcluirWfAprovacaoNotaConselhoClasseCommand(wfAprovacaoNota.Id));
                 await mediator.Send(new ExcluirWorkflowCommand(wfAprovacaoNota.WfAprovacaoId));
             }
         }

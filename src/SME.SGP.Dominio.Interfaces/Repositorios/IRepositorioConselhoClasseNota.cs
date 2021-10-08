@@ -17,5 +17,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<int> ObterBimestreEmAprovacaoWf(long workFlowId);
         Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoWf(long workFlowId);
         Task<double> VerificaNotaConselhoEmAprovacao(long conselhoClasseNotaId);
+        Task Excluir(long id);
     }
 }

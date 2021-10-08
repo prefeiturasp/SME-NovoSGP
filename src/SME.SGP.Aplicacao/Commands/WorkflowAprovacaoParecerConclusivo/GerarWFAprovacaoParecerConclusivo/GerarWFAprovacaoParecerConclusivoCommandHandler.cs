@@ -29,7 +29,8 @@ namespace SME.SGP.Aplicacao
             {
                 ConselhoClasseAlunoId = request.ConselhoClasseAlunoId,
                 WfAprovacaoId = wfAprovacaoId,
-                ConselhoClasseParecerId = request.ParecerConclusivoId
+                ConselhoClasseParecerId = request.ParecerConclusivoId,
+                UsuarioSolicitanteId = request.UsuarioSolicitanteId
             });
         }
 
@@ -47,8 +48,10 @@ namespace SME.SGP.Aplicacao
             var data = $"{DateTime.Today:dd/MM/yyyy} às {DateTime.Now:HH:mm}";
             var aluno = await ObterAluno(request.AlunoCodigo, request.Turma.AnoLetivo);
 
+            var parecerAnterior = request.ParecerAnterior ?? "(Nenhum)";
+
             var titulo = $"Alteração de parecer conclusivo - Turma {request.Turma.Nome} ({request.Turma.AnoLetivo})";
-            var descricao = $"O parecer conclusivo do estudante {aluno.Nome} ({aluno.CodigoAluno}) da turma {turma} foi alterada pelo Professor {professor}) em {data} de '{request.ParecerAnterior}' para '{request.ParecerNovo}'.<br/>";
+            var descricao = $"O parecer conclusivo do estudante {aluno.Nome} ({aluno.CodigoAluno}) da turma {turma} foi alterada pelo Professor {professor}) em {data} de '{parecerAnterior}' para '{request.ParecerNovo}'.<br/>";
             descricao += "Você precisa aceitar esta notificação para que a alteração seja considerada válida.";
 
             return await mediator.Send(new EnviarNotificacaoCommand(titulo,

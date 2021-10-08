@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -56,11 +57,11 @@ namespace SME.SGP.Dados
                 .FirstOrDefault();
         }
 
-        public async Task<WFAprovacaoNotaConselho> ObterWorkflowAprovacaoNota(long conselhoClasseNotaId)
+        public async Task<IEnumerable<WFAprovacaoNotaConselho>> ObterWorkflowAprovacaoNota(long conselhoClasseNotaId)
         {
             var query = @"select * from wf_aprovacao_nota_conselho where conselho_classe_nota_id = @conselhoClasseNotaId";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<WFAprovacaoNotaConselho>(query, new { conselhoClasseNotaId });
+            return await database.Conexao.QueryAsync<WFAprovacaoNotaConselho>(query, new { conselhoClasseNotaId });
         }
 
         public async Task Salvar(WFAprovacaoNotaConselho entidade)

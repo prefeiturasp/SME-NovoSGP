@@ -39,7 +39,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public void VerficaSeExisteFeriadosMoveisEInclui(int ano)
         {
-            var feriadosMoveis = repositorioFeriadoCalendario.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto()
+            var feriadosMoveis = repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto()
             {
                 Tipo = TipoFeriadoCalendario.Movel,
                 Ano = ano

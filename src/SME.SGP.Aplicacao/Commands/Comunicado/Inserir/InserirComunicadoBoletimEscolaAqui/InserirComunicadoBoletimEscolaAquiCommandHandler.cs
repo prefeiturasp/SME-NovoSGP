@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
             comunicado.Titulo = $"Boletim disponível para download";
             comunicado.AnoLetivo = request.AnoLetivo;
             comunicado.AlunoEspecificado = request.AlunoEspecificado;
-            comunicado.Modalidades = new int[request.Modalidade];
+            comunicado.Modalidades = new int[] { request.Modalidade };
             comunicado.TipoComunicado = TipoComunicado.MENSAGEM_AUTOMATICA;
             comunicado.Semestre = request.Semestre;
             comunicado.AdicionarTurma(request.Turma);
@@ -81,11 +81,14 @@ namespace SME.SGP.Aplicacao
         }
         private string FormatarMensagem(string urlNotificacao, int anoLetivo, Guid CodigoArquivo, string nomeAluno)
         {
+         
+            
+            
             return $@"<h3><strong>Boletim {anoLetivo} dispon&iacute;vel para download</strong></h3>
                     <p>O boletim do ano de {anoLetivo} do estudante {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
                     <p>OBSERVA&Ccedil;&Atilde;O: O Download deve ser realizado em at&eacute; 24 horas, ap&oacute;s&nbsp; este prazo o arquivo ser&aacute; 
                     exclu&iacute;do e caso necessite voc&ecirc; dever solicitar um novo PDF de boletim.</p>
-                    <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/pdf/{CodigoArquivo.ToString()} target='_blank'>Boletim {anoLetivo}</a></strong></p>";
+                    <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/pdf/Boletim.pdf/{CodigoArquivo.ToString()}' target='_blank'>Boletim {anoLetivo}</a></strong></p>";
         }
     }
 }

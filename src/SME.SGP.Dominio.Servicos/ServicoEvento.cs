@@ -169,7 +169,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task IncluiBimestresDoEventoLiberacaoDeBoletim(Evento evento, int[] bimestres, bool ehAlteracao)
         {
-            if (ehAlteracao == false)
+            if (!ehAlteracao)
                 await ValidaSeExisteOutroEventoLiberacaoDeBoletimNaMesmaDataEMesmoTipoCalendario(evento);
 
             var bimestresDoTipoCalendarioJaCadastrados = await repositorioEventoBimestre.ObterBimestresPorTipoCalendarioDeOutrosEventos(evento.TipoCalendarioId, evento.Id);
@@ -203,7 +203,7 @@ namespace SME.SGP.Dominio.Servicos
             await IncluiBimestresNoEventoDeLiberacaoDeBoletim(evento, bimestres);
         }
 
-        private static void VerificaSeOsBimestresJaExistemParaOCalendarioDoEvento(int[] bimestres, int[] bimestresDoTipoCalendarioJaCadastrados)
+        private void VerificaSeOsBimestresJaExistemParaOCalendarioDoEvento(int[] bimestres, int[] bimestresDoTipoCalendarioJaCadastrados)
         {
             List<string> BimestreDoEventoqueJaEstaCadastrado = ComparaListaDeBimestresERetornaOsQueJaEstaoCadastrados(bimestres, bimestresDoTipoCalendarioJaCadastrados);
 
@@ -218,7 +218,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private static List<string> ComparaListaDeBimestresERetornaOsQueJaEstaoCadastrados(int[] bimestres, int[] bimestresDoTipoCalendarioJaCadastrados)
+        private List<string> ComparaListaDeBimestresERetornaOsQueJaEstaoCadastrados(int[] bimestres, int[] bimestresDoTipoCalendarioJaCadastrados)
         {
             List<string> BimestreDoEventoqueJaEstaCadastrado = new List<string>();
 
@@ -266,11 +266,12 @@ namespace SME.SGP.Dominio.Servicos
 
         public void SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
         {
-            var feriados = ObterEValidarFeriados();
+            var feriados = ObterEValidarFeriados(tipoCalendario.AnoLetivo);
 
             var tipoEventoFeriado = ObterEValidarTipoEventoFeriado();
 
-            var eventos = feriados.Select(x => MapearEntidade(tipoCalendario, x, tipoEventoFeriado));
+            var eventos = feriados
+                .Select(x => MapearEntidade(tipoCalendario, x, tipoEventoFeriado));
 
             var feriadosErro = new List<long>();
 
@@ -427,7 +428,7 @@ namespace SME.SGP.Dominio.Servicos
             servicoNotificacao.Salvar(notificacao);
         }
 
-        private Evento MapearEntidade(TipoCalendario tipoCalendario, FeriadoCalendario x, Entidades.EventoTipo tipoEventoFeriado)
+        private Evento MapearEntidade(TipoCalendario tipoCalendario, FeriadoCalendario x, EventoTipo tipoEventoFeriado)
         {
             return new Evento
             {
@@ -446,16 +447,27 @@ namespace SME.SGP.Dominio.Servicos
             };
         }
 
-        private IEnumerable<FeriadoCalendario> ObterEValidarFeriados()
+        private IEnumerable<FeriadoCalendario> ObterEValidarFeriados(int anoReferencia)
         {
-            var feriadosMoveis = repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year, Tipo = TipoFeriadoCalendario.Movel }).Result;
-            var feriadosFixos = repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Tipo = TipoFeriadoCalendario.Fixo }).Result;
+            var feriadosMoveis = repositorioFeriadoCalendario
+                .ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto 
+                { 
+                    Ano = anoReferencia, 
+                    Tipo = TipoFeriadoCalendario.Movel 
+                }).Result;
+            
+            var feriadosFixos = repositorioFeriadoCalendario
+                .ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto 
+                { 
+                    Tipo = TipoFeriadoCalendario.Fixo
+                }).Result;
 
             var feriados = feriadosFixos?.ToList();
             feriados?.AddRange(feriadosMoveis);
 
             if (feriados == null || !feriados.Any())
                 throw new NegocioException("Nenhum feriado foi encontrado");
+
             return feriados;
         }
 

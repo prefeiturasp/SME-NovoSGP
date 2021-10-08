@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select cca.*, cc.* from fechamento_turma ft");
+            query.AppendLine("select cca.*, cc.*, ccp.* from fechamento_turma ft");
             query.AppendLine("inner");
             query.AppendLine("join conselho_classe cc");
             query.AppendLine("on cc.fechamento_turma_id = ft.id");
@@ -59,6 +59,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner");
             query.AppendLine("join turma t");
             query.AppendLine("on t.id = ft.turma_id");
+            query.AppendLine(" left join conselho_classe_parecer ccp on ccp.id = cca.conselho_classe_parecer_id");
 
             if (!EhFinal)
             {
@@ -74,10 +75,11 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine("and p.bimestre = @bimestre");
 
-            return (await database.Conexao.QueryAsync<ConselhoClasseAluno, ConselhoClasse, ConselhoClasseAluno>(query.ToString()
-                , (conselhoClasseAluno, conselhoClasse) =>
+            return (await database.Conexao.QueryAsync<ConselhoClasseAluno, ConselhoClasse, ConselhoClasseParecerConclusivo, ConselhoClasseAluno>(query.ToString()
+                , (conselhoClasseAluno, conselhoClasse, conselhoClasseParecer) =>
                 {
                     conselhoClasseAluno.ConselhoClasse = conselhoClasse;
+                    conselhoClasseAluno.ConselhoClasseParecer = conselhoClasseParecer;
                     return conselhoClasseAluno;
                 }
                 , new { codigoTurma, codigoAluno, bimestre })).FirstOrDefault();
@@ -173,6 +175,15 @@ namespace SME.SGP.Dados.Repositorios
 
 
             return await database.Conexao.QueryAsync<long>(query.ToString(), new { alunoCodigo, turmaId, bimestre });
+        }
+        public async Task<long> ObterConselhoClasseAlunoIdAsync(long conselhoClasseId, string alunoCodigo)
+        {
+            var query = @"select id 
+                            from conselho_classe_aluno 
+                            where conselho_classe_id = @conselhoClasseId 
+                              and aluno_codigo = @alunoCodigo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { conselhoClasseId, alunoCodigo });
         }
     }
 }
