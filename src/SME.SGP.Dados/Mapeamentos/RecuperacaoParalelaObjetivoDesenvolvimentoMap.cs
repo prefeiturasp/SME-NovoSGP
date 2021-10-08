@@ -7,6 +7,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public RecuperacaoParalelaObjetivoDesenvolvimentoMap()
         {
             ToTable("recuperacao_paralela_objetivo_desenvolvimento");
+            Map(c => c.Descricao).ToColumn("descricao");
         }
     }
 }

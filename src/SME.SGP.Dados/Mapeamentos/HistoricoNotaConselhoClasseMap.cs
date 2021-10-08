@@ -8,8 +8,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public HistoricoNotaConselhoClasseMap()
         {
             ToTable("historico_nota_conselho_classe");
-            Map(e => e.HistoricoNotaId).ToColumn("historico_nota_id");
-            Map(e => e.ConselhoClasseNotaId).ToColumn("conselho_classe_nota_id");
+            Map(c => c.Id).ToColumn("id");
+            Map(c => c.HistoricoNotaId).ToColumn("historico_nota_id");
+            Map(c => c.ConselhoClasseNotaId).ToColumn("conselho_classe_nota_id");
         }
     }
 }

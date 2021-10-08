@@ -9,8 +9,11 @@ namespace SME.SGP.Dados.Mapeamentos
         public PendenciaRegistroIndividualAlunoMap()
         {
             ToTable("pendencia_registro_individual_aluno");
-            Map(x => x.CodigoAluno).ToColumn("codigo_aluno");
-            Map(x => x.PendenciaRegistroIndividualId).ToColumn("pendencia_registro_individual_id");
+
+            Map(c => c.Id).ToColumn("id");
+            Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
+            Map(c => c.PendenciaRegistroIndividualId).ToColumn("pendencia_registro_individual_id");
+            Map(c => c.Situacao).ToColumn("situacao");
         }
     }
 }

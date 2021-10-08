@@ -8,8 +8,9 @@ namespace SME.SGP.Dados
         public FechamentoReaberturaNotificacaoMap()
         {
             ToTable("fechamento_reabertura_notificacao");
-            Map(a => a.FechamentoReaberturaId).ToColumn("fechamento_reabertura_id");
-            Map(a => a.NotificacaoId).ToColumn("notificacao_id");
+            Map(c => c.FechamentoReaberturaId).ToColumn("fechamento_reabertura_id");
+            Map(c => c.Id).ToColumn("id");
+            Map(c => c.NotificacaoId).ToColumn("notificacao_id");
         }
     }
 }

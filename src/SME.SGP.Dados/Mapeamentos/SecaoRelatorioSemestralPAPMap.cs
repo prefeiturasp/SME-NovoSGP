@@ -8,8 +8,13 @@ namespace SME.SGP.Dados.Mapeamentos
         public SecaoRelatorioSemestralPAPMap()
         {
             ToTable("secao_relatorio_semestral_pap");
+            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Nome).ToColumn("nome");
+            Map(c => c.Descricao).ToColumn("descricao");
+            Map(c => c.Obrigatorio).ToColumn("obrigatorio");
             Map(c => c.InicioVigencia).ToColumn("inicio_vigencia");
             Map(c => c.FimVigencia).ToColumn("fim_vigencia");
+            Map(c => c.Ordem).ToColumn("ordem");
         }
     }
 }

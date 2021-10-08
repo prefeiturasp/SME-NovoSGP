@@ -9,6 +9,8 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("prioridade_perfil");
             Map(c => c.CodigoPerfil).ToColumn("codigo_perfil");
             Map(c => c.NomePerfil).ToColumn("nome_perfil");
+            Map(c => c.Ordem).ToColumn("ordem");
+            Map(c => c.Tipo).ToColumn("tipo");
         }
     }
 }

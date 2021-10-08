@@ -9,7 +9,9 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("anotacao_frequencia_aluno");
             Map(c => c.MotivoAusenciaId).ToColumn("motivo_ausencia_id");
             Map(c => c.AulaId).ToColumn("aula_id");
+            Map(c => c.Anotacao).ToColumn("anotacao");
             Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

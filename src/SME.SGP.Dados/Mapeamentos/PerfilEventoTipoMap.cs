@@ -10,8 +10,9 @@ namespace SME.SGP.Dados
         public PerfilEventoTipoMap()
         {
             ToTable("perfil_tipo_evento");
-            Map(a => a.EventoTipoId).ToColumn("evento_tipo_id");
-            Map(a => a.CodigoPerfil).ToColumn("codigo_perfil");
+            Map(c => c.EventoTipoId).ToColumn("evento_tipo_id");
+            Map(c => c.CodigoPerfil).ToColumn("codigo_perfil");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

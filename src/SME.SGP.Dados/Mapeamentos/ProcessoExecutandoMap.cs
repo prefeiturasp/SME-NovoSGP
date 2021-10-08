@@ -11,9 +11,11 @@ namespace SME.SGP.Dados
         public ProcessoExecutandoMap()
         {
             ToTable("processo_executando");
+            Map(c => c.Id).ToColumn("id");
             Map(c => c.TipoProcesso).ToColumn("tipo_processo");
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.DisciplinaId).ToColumn("disciplina_id");
+            Map(c => c.Bimestre).ToColumn("bimestre");
             Map(c => c.AulaId).ToColumn("aula_id");
             Map(c => c.CriadoEm).ToColumn("criado_em");
         }

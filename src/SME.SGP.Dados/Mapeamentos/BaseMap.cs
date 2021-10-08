@@ -7,6 +7,7 @@ namespace SME.SGP.Dados
     {
         public BaseMap()
         {
+            Map(c => c.Id).ToColumn("id");
             Map(c => c.CriadoEm).ToColumn("criado_em");
             Map(c => c.CriadoPor).ToColumn("criado_por");
             Map(c => c.AlteradoEm).ToColumn("alterado_em");

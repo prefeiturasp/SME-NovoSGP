@@ -7,6 +7,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public CicloMap()
         {
             ToTable("tipo_ciclo");
+            Map(c => c.Descricao).ToColumn("descricao");
         }
     }
 }

@@ -9,8 +9,8 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("ocorrencia_aluno");
             Map(c => c.Id).ToColumn("id");
-            Map(x => x.CodigoAluno).ToColumn("codigo_aluno");
-            Map(x => x.OcorrenciaId).ToColumn("ocorrencia_id");
+            Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
+            Map(c => c.OcorrenciaId).ToColumn("ocorrencia_id");
         }
     }
 }

@@ -10,7 +10,9 @@ namespace SME.SGP.Dados
         public PlanoAEEReestruturacaoMap()
         {
             ToTable("plano_aee_reestruturacao");
-            Map(a => a.PlanoAEEVersaoId).ToColumn("plano_aee_versao_id");
+            Map(c => c.PlanoAEEVersaoId).ToColumn("plano_aee_versao_id");
+            Map(c => c.Semestre).ToColumn("semestre");
+            Map(c => c.Descricao).ToColumn("descricao");
         }
     }
 }

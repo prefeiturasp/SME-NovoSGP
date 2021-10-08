@@ -8,12 +8,12 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("relatorio_correlacao");
             Map(c => c.Id).ToColumn("id");
-            Map(c => c.Codigo).ToColumn("codigo");
-            Map(c => c.TipoRelatorio).ToColumn("tipo_relatorio");
-            Map(c => c.UsuarioSolicitanteId).ToColumn("usuario_solicitante_id");
             Map(c => c.Formato).ToColumn("tipo_formato");
             Map(c => c.UsuarioSolicitante).Ignore();
             Map(c => c.CorrelacaoJasper).Ignore();
+            Map(c => c.Codigo).ToColumn("codigo");
+            Map(c => c.TipoRelatorio).ToColumn("tipo_relatorio");
+            Map(c => c.UsuarioSolicitanteId).ToColumn("usuario_solicitante_id");
         }
     }
 }

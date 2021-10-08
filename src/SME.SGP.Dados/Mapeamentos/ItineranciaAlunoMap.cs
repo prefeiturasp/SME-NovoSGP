@@ -10,6 +10,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
             Map(c => c.ItineranciaId).ToColumn("itinerancia_id");
             Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

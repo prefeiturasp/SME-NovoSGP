@@ -11,9 +11,11 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("evento_matricula");
             Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
+            Map(c => c.Tipo).ToColumn("tipo");
             Map(c => c.DataEvento).ToColumn("data_evento");
             Map(c => c.NomeEscola).ToColumn("nome_escola");
             Map(c => c.NomeTurma).ToColumn("nome_turma");
+
         }
     }
 }

@@ -7,8 +7,8 @@ namespace SME.SGP.Dados.Mapeamentos
         public AulaPrevistaBimestreMap()
         {
             ToTable("aula_prevista_bimestre");
-            Map(c => c.Previstas).ToColumn("aulas_previstas");
             Map(c => c.AulaPrevistaId).ToColumn("aula_prevista_id");
+            Map(c => c.Previstas).ToColumn("previstas");
             Map(c => c.Bimestre).ToColumn("bimestre");
         }
     }

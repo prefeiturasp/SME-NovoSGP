@@ -8,10 +8,10 @@ namespace SME.SGP.Dados
         {
             ToTable("registro_frequencia_aluno");
             Map(a => a.Id).ToColumn("id");
-            Map(a => a.CodigoAluno).ToColumn("codigo_aluno");
-            Map(a => a.NumeroAula).ToColumn("numero_aula");
-            Map(a => a.RegistroFrequenciaId).ToColumn("registro_frequencia_id");
-            Map(a => a.Valor).ToColumn("valor");
+            Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
+            Map(c => c.NumeroAula).ToColumn("numero_aula");
+            Map(c => c.Valor).ToColumn("valor");
+            Map(c => c.RegistroFrequenciaId).ToColumn("registro_frequencia_id");
         }
     }
 }

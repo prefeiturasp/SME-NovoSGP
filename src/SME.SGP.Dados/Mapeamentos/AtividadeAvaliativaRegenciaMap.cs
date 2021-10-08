@@ -7,9 +7,11 @@ namespace SME.SGP.Dados.Mapeamentos
         public AtividadeAvaliativaRegenciaMap()
         {
             ToTable("atividade_avaliativa_regencia");
-            Map(t => t.AtividadeAvaliativaId).ToColumn("atividade_avaliativa_id");
-            Map(t => t.DisciplinaContidaRegenciaId).ToColumn("disciplina_contida_regencia_id");
-            Map(t => t.DisciplinaContidaRegenciaNome).Ignore();
+            Map(c => c.AtividadeAvaliativaId).ToColumn("atividade_avaliativa_id");
+            Map(c => c.DisciplinaContidaRegenciaId).ToColumn("disciplina_contida_regencia_id");
+            Map(c => c.DisciplinaContidaRegenciaNome).Ignore();
+            Map(c => c.Excluido).ToColumn("excluido");
+
         }
     }
 }

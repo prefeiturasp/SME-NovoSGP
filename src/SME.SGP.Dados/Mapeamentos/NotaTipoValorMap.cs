@@ -7,9 +7,11 @@ namespace SME.SGP.Dados.Mapeamentos
         public NotaTipoValorMap()
         {
             ToTable("notas_tipo_valor");
-            Map(n => n.TipoNota).ToColumn("tipo_nota");
-            Map(n => n.InicioVigencia).ToColumn("inicio_vigencia");
-            Map(n => n.FimVigencia).ToColumn("fim_vigencia");
+            Map(c => c.Ativo).ToColumn("ativo");
+            Map(c => c.Descricao).ToColumn("descricao");
+            Map(c => c.FimVigencia).ToColumn("fim_vigencia");
+            Map(c => c.InicioVigencia).ToColumn("inicio_vigencia");
+            Map(c => c.TipoNota).ToColumn("tipo_nota");
         }
     }
 }

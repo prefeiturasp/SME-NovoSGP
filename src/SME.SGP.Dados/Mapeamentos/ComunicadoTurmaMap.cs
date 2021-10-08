@@ -11,9 +11,9 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("comunicado_turma");
             Map(x => x.Id).ToColumn("id");
-            Map(x => x.CodigoTurma).ToColumn("turma_codigo");
-            Map(x => x.ComunicadoId).ToColumn("comunicado_id");
-            Map(x => x.Excluido).ToColumn("excluido");
+            Map(c => c.CodigoTurma).ToColumn("turma_codigo");
+            Map(c => c.ComunicadoId).ToColumn("comunicado_id");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

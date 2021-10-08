@@ -7,6 +7,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public MatrizSaberMap()
         {
             ToTable("matriz_saber");
+            Map(c => c.Descricao).ToColumn("descricao");
         }
     }
 }

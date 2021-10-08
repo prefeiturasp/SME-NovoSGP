@@ -11,6 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public NotificacaoCompensacaoAusenciaMap()
         {
             ToTable("notificacao_compensacao_ausencia");
+            Map(c => c.Id).ToColumn("id");
             Map(c => c.NotificacaoId).ToColumn("notificacao_id");
             Map(c => c.CompensacaoAusenciaId).ToColumn("compensacao_ausencia_id");
         }

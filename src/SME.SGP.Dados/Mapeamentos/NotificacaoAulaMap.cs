@@ -11,8 +11,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public NotificacaoAulaMap()
         {
             ToTable("notificacao_aula");
-            Map(a => a.NotificacaoId).ToColumn("notificacao_id");
-            Map(a => a.AulaId).ToColumn("aula_id");
+            Map(c => c.Id).ToColumn("id");
+            Map(c => c.NotificacaoId).ToColumn("notificacao_id");
+            Map(c => c.AulaId).ToColumn("aula_id");
         }
     }
 }

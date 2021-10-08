@@ -7,8 +7,8 @@ namespace SME.SGP.Dados.Mapeamentos
         public OcorrenciaTipoMap()
         {
             ToTable("ocorrencia_tipo");
-            Map(x => x.Descricao).ToColumn("descricao");
-            Map(x => x.Excluido).ToColumn("excluido");
+            Map(c => c.Descricao).ToColumn("descricao");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

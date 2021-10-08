@@ -7,10 +7,10 @@ namespace SME.SGP.Dados.Mapeamentos
         public GradeFiltroMap()
         {
             ToTable("grade_filtro");
-            Map(a => a.GradeId).ToColumn("grade_id");
-            Map(a => a.TipoEscola).ToColumn("tipo_escola");
-            Map(a => a.Modalidade).ToColumn("modalidade");
-            Map(a => a.DuracaoTurno).ToColumn("duracao_turno");
+            Map(c => c.GradeId).ToColumn("grade_id");
+            Map(c => c.TipoEscola).ToColumn("tipo_escola");
+            Map(c => c.Modalidade).ToColumn("modalidade");
+            Map(c => c.DuracaoTurno).ToColumn("duracao_turno");
         }
     }
 }

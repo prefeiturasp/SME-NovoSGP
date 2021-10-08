@@ -7,9 +7,10 @@ namespace SME.SGP.Dados.Mapeamentos
         public AlunoFotoMap()
         {
             ToTable("aluno_foto");
-            Map(a => a.MiniaturaId).ToColumn("miniatura_id");
-            Map(a => a.ArquivoId).ToColumn("arquivo_id");
-            Map(a => a.AlunoCodigo).ToColumn("aluno_codigo");
+            Map(c => c.ArquivoId).ToColumn("arquivo_id");
+            Map(c => c.MiniaturaId).ToColumn("miniatura_id");
+            Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

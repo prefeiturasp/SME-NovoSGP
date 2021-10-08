@@ -11,11 +11,12 @@ namespace SME.SGP.Dados.Mapeamentos
         public PendenciaProfessorMap()
         {
             ToTable("pendencia_professor");
-            Map(a => a.PendenciaId).ToColumn("pendencia_id");
-            Map(a => a.ComponenteCurricularId).ToColumn("componente_curricular_id");
-            Map(a => a.TurmaId).ToColumn("turma_id");
-            Map(a => a.PeriodoEscolarId).ToColumn("periodo_escolar_id");
-            Map(a => a.ProfessorRf).ToColumn("professor_rf");
+            Map(c => c.Id).ToColumn("id");
+            Map(c => c.PendenciaId).ToColumn("pendencia_id");
+            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.PeriodoEscolarId).ToColumn("periodo_escolar_id");
+            Map(c => c.ProfessorRf).ToColumn("professor_rf");
         }
     }
 }

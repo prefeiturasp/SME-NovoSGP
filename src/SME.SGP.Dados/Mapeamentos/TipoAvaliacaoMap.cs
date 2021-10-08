@@ -7,11 +7,12 @@ namespace SME.SGP.Dados.Mapeamentos
         public TipoAvaliacaoMap()
         {
             ToTable("tipo_avaliacao");
-            Map(t => t.Nome).ToColumn("nome");
-            Map(t => t.Descricao).ToColumn("descricao");
-            Map(t => t.Excluido).ToColumn("excluido");
-            Map(t => t.Situacao).ToColumn("situacao");
-            Map(t => t.AvaliacoesNecessariasPorBimestre).ToColumn("avaliacoes_necessarias_bimestre");
+            Map(c => c.AvaliacoesNecessariasPorBimestre).ToColumn("avaliacoes_necessarias_bimestre");
+            Map(c => c.Descricao).ToColumn("descricao");
+            Map(c => c.Excluido).ToColumn("excluido");
+            Map(c => c.Nome).ToColumn("nome");
+            Map(c => c.Situacao).ToColumn("situacao");
+            Map(c => c.Codigo).ToColumn("codigo");
         }
     }
 }

@@ -7,12 +7,13 @@ namespace SME.SGP.Dados.Mapeamentos
         public NotaConceitoMap()
         {
             ToTable("notas_conceito");
-            Map(n => n.AtividadeAvaliativaID).ToColumn("atividade_avaliativa");
-            Map(n => n.AlunoId).ToColumn("aluno_id");
-            Map(n => n.TipoNota).ToColumn("tipo_nota");
-            Map(n => n.DisciplinaId).ToColumn("disciplina_id");
-            Map(n => n.ConceitoId).ToColumn("conceito");
-            Map(n => n.StatusGsa).ToColumn("status_gsa");
+            Map(c => c.AlunoId).ToColumn("aluno_id");
+            Map(c => c.AtividadeAvaliativaID).ToColumn("atividade_avaliativa");
+            Map(c => c.ConceitoId).ToColumn("conceito");
+            Map(c => c.DisciplinaId).ToColumn("disciplina_id");
+            Map(c => c.Nota).ToColumn("nota");
+            Map(c => c.TipoNota).ToColumn("tipo_nota");
+            Map(c => c.StatusGsa).ToColumn("status_gsa");
         }
     }
 }

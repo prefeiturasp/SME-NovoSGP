@@ -7,7 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public RegistroFrequenciaMap()
         {
             ToTable("registro_frequencia");
-            Map(e => e.AulaId).ToColumn("aula_id");
+            Map(c => c.AulaId).ToColumn("aula_id");
+            Map(c => c.Migrado).ToColumn("migrado");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

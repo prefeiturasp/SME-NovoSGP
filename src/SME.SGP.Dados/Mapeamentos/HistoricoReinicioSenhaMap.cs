@@ -10,9 +10,9 @@ namespace SME.SGP.Dados
         public HistoricoReinicioSenhaMap()
         {
             ToTable("historico_reinicio_senha");
-            Map(a => a.UsuarioRf).ToColumn("usuario_rf");
-            Map(a => a.DreCodigo).ToColumn("dre_codigo");
-            Map(a => a.UeCodigo).ToColumn("ue_codigo");
+            Map(c => c.UsuarioRf).ToColumn("usuario_rf");
+            Map(c => c.DreCodigo).ToColumn("dre_codigo");
+            Map(c => c.UeCodigo).ToColumn("ue_codigo");
         }
     }
 }

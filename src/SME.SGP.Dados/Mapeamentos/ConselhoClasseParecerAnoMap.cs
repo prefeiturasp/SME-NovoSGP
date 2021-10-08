@@ -10,11 +10,11 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConselhoClasseParecerAnoMap()
         {
             ToTable("conselho_classe_parecer_ano");
-            Map(x => x.ParecerId).ToColumn("parecer_id");
-            Map(x => x.AnoTurma).ToColumn("ano_turma");
-            Map(x => x.Modalidade).ToColumn("modalidade");
-            Map(x => x.InicioVigencia).ToColumn("inicio_vigencia");
-            Map(x => x.FimVigencia).ToColumn("fim_vigencia");
+            Map(c => c.ParecerId).ToColumn("parecer_id");
+            Map(c => c.AnoTurma).ToColumn("ano_turma");
+            Map(c => c.Modalidade).ToColumn("modalidade");
+            Map(c => c.InicioVigencia).ToColumn("inicio_vigencia");
+            Map(c => c.FimVigencia).ToColumn("fim_vigencia");
         }
     }
 }

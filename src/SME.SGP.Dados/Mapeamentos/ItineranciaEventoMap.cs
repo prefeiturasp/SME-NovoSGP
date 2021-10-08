@@ -7,8 +7,9 @@ namespace SME.SGP.Dados
         public ItineranciaEventoMap()
         {
             ToTable("itinerancia_evento");
-            Map(a => a.ItineranciaId).ToColumn("itinerancia_id");
-            Map(a => a.EventoId).ToColumn("evento_id");
+            Map(c => c.ItineranciaId).ToColumn("itinerancia_id");
+            Map(c => c.EventoId).ToColumn("evento_id");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

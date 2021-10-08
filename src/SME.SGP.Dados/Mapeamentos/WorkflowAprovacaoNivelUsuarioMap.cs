@@ -8,10 +8,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public WorkflowAprovacaoNivelUsuarioMap()
         {
             ToTable("wf_aprovacao_nivel_usuario");
-
             Map(c => c.Usuario).Ignore();
             Map(c => c.WorkflowAprovacaoNivel).Ignore();
-
+            Map(c => c.Id).ToColumn("id");
             Map(c => c.UsuarioId).ToColumn("usuario_id");
             Map(c => c.WorkflowAprovacaoNivelId).ToColumn("wf_aprovacao_nivel_id");
         }
