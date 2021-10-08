@@ -75,7 +75,8 @@ namespace SME.SGP.Aplicacao
                 DateTime dataSituacao = DateTime.Parse(aluno.DataSituacao.ToString("dd/MM/yyyy"));
                 if (
                         (aluno.EstaInativo(aula.DataAula) && (dataSituacao < periodoEscolar.PeriodoInicio || dataSituacao < aula.DataAula)) ||
-                        (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aula.DataAula < aluno.DataMatricula && aula.DataAula < dataSituacao)
+                        (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aula.DataAula < aluno.DataMatricula && aula.DataAula < dataSituacao) ||
+                        (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo && (aula.DataAula > dataSituacao || aula.DataAula < aluno.DataMatricula))
                    )
                     continue;
 
