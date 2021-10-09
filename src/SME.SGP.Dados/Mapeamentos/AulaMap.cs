@@ -26,6 +26,13 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.WorkflowAprovacaoId).ToColumn("wf_aprovacao_id");
+            Map(c => c.EhAEE).Ignore();
+            Map(c => c.EhAEEContraturno).Ignore();
+            Map(c => c.EhAulaCompartilhada).Ignore();
+            Map(c => c.EhRecuperacaoParalela).Ignore();
+            Map(c => c.EhTecnologiaAprendizagem).Ignore();
+            Map(c => c.EhDataSelecionadaFutura).Ignore();
+            Map(c => c.PermiteSubstituicaoFrequencia).Ignore();
         }
     }
 }

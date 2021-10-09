@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("pendencia_registro_individual_aluno");
 
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
             Map(c => c.PendenciaRegistroIndividualId).ToColumn("pendencia_registro_individual_id");
             Map(c => c.Situacao).ToColumn("situacao");

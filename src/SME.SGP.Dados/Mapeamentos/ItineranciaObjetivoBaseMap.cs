@@ -8,7 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public ItineranciaObjetivoBaseMap()
         {
             ToTable("itinerancia_objetivo_base");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.Nome).ToColumn("nome");
             Map(c => c.TemDescricao).ToColumn("tem_descricao");
             Map(c => c.Ordem).ToColumn("ordem");

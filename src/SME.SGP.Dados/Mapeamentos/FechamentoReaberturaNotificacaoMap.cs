@@ -9,7 +9,7 @@ namespace SME.SGP.Dados
         {
             ToTable("fechamento_reabertura_notificacao");
             Map(c => c.FechamentoReaberturaId).ToColumn("fechamento_reabertura_id");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.NotificacaoId).ToColumn("notificacao_id");
         }
     }

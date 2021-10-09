@@ -8,7 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public OcorrenciaAlunoMap()
         {
             ToTable("ocorrencia_aluno");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
             Map(c => c.OcorrenciaId).ToColumn("ocorrencia_id");
         }

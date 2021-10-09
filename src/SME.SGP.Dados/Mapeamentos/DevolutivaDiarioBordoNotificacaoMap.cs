@@ -8,7 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public DevolutivaDiarioBordoNotificacaoMap()
         {
             ToTable("devolutiva_diario_bordo_notificacao");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.DevolutivaId).ToColumn("devolutiva_id");
             Map(c => c.NotificacaoId).ToColumn("notificacao_id");
         }

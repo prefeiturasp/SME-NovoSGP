@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RecuperacaoParalelaPeriodoObjetivoRespostaMap : DommelEntityMap<RecuperacaoParalelaPeriodoObjetivoResposta>
+    public class RecuperacaoParalelaPeriodoObjetivoRespostaMap : BaseMap<RecuperacaoParalelaPeriodoObjetivoResposta>
     {
         public RecuperacaoParalelaPeriodoObjetivoRespostaMap()
         {

@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="1.60.6" />
-    <PackageReference Include="Dapper.FluentMap.Dommel" Version="1.7.1" />
-    <PackageReference Include="Dommel" Version="1.11.0" />
+    <PackageReference Include="Dapper" Version="2.0.90" />
+    <PackageReference Include="Dapper.FluentMap.Dommel" Version="2.0.0" />
+    <PackageReference Include="Dommel" Version="2.3.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("historico_nota_fechamento");
             Map(c => c.HistoricoNotaId).ToColumn("historico_nota_id");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.FechamentoNotaId).ToColumn("fechamento_nota_id");
             Map(c => c.WorkFlowId).ToColumn("wf_aprovacao_id");
         }

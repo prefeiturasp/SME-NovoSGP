@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public NotificacaoAulaMap()
         {
             ToTable("notificacao_aula");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.NotificacaoId).ToColumn("notificacao_id");
             Map(c => c.AulaId).ToColumn("aula_id");
         }

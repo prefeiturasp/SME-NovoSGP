@@ -20,7 +20,10 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.Usuario).Ignore();
             Map(c => c.UsuarioId).ToColumn("usuario_id");
+            Map(c => c.DeveAprovar).Ignore();
             Map(c => c.WorkflowAprovacaoNivel).Ignore();
+            Map(c => c.DeveMarcarComoLido).Ignore();
+            Map(c => c.PodeRemover).Ignore();
         }
     }
 }

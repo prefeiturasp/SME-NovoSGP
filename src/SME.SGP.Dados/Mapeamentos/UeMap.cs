@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.CodigoUe).ToColumn("ue_id");
             Map(c => c.DataAtualizacao).ToColumn("data_atualizacao");
             Map(c => c.DreId).ToColumn("dre_id");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.Nome).ToColumn("nome");
             Map(c => c.TipoEscola).ToColumn("tipo_escola");
         }

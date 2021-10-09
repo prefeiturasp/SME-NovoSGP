@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public NotificacaoCartaIntencoesObservacaoMap()
         {
             ToTable("carta_intencoes_observacao_notificacao");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.NotificacaoId).ToColumn("notificacao_id");
             Map(c => c.CartaIntencoesObservacaoId).ToColumn("observacao_id");
         }

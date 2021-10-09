@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public FrequenciaPreDefinidaMap()
         {
             ToTable("frequencia_pre_definida");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
             Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");

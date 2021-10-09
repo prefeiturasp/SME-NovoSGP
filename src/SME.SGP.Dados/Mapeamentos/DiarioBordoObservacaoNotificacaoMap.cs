@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public DiarioBordoObservacaoNotificacaoMap()
         {
             ToTable("diario_bordo_observacao_notificacao");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.IdObservacao).ToColumn("observacao_id");
             Map(c => c.IdNotificacao).ToColumn("notificacao_id");
         }

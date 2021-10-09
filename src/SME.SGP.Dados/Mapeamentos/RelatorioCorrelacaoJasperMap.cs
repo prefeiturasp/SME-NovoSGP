@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("relatorio_correlacao_jasper");
             Map(c => c.RelatorioCorrelacao).Ignore();
             Map(c => c.ExportId).ToColumn("export_id");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.JSessionId).ToColumn("jsession_id");
             Map(c => c.RelatorioCorrelacaoId).ToColumn("relatorio_correlacao_id");
             Map(c => c.RequestId).ToColumn("request_id");

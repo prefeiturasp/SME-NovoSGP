@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.CodigoTurma).ToColumn("codigo_turma");
             Map(c => c.TipoTurma).ToColumn("tipo_turma");
             Map(c => c.DataAtualizacao).ToColumn("data_atualizacao");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.ModalidadeCodigo).ToColumn("modalidade_codigo");
             Map(c => c.Nome).ToColumn("nome");
             Map(c => c.QuantidadeDuracaoAula).ToColumn("qt_duracao_aula");
