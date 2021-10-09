@@ -7,7 +7,6 @@ namespace SME.SGP.Dados
         public RegistroFrequenciaAlunoMap()
         {
             ToTable("registro_frequencia_aluno");
-            Map(a => a.Id).ToColumn("id");
             Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
             Map(c => c.NumeroAula).ToColumn("numero_aula");
             Map(c => c.Valor).ToColumn("valor");

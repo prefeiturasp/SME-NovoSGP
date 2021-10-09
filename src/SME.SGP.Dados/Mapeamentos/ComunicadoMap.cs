@@ -7,7 +7,6 @@ namespace SME.SGP.Dados.Mapeamentos
         public ComunicadoMap()
         {
             ToTable("comunicado");
-            Map(c => c.Id).ToColumn("id");
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
             Map(c => c.CodigoDre).ToColumn("codigo_dre");
             Map(c => c.CodigoUe).ToColumn("codigo_ue");

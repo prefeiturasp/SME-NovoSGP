@@ -7,7 +7,6 @@ namespace SME.SGP.Dados.Mapeamentos
         public RelatorioCorrelacaoMap()
         {
             ToTable("relatorio_correlacao");
-            Map(c => c.Id).ToColumn("id");
             Map(c => c.Formato).ToColumn("tipo_formato");
             Map(c => c.UsuarioSolicitante).Ignore();
             Map(c => c.CorrelacaoJasper).Ignore();
