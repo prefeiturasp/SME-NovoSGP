@@ -25,7 +25,7 @@ where pc.id = tpr.id;
 drop table IF EXISTS tmp_anotacao_frequencia_aluno_replace_img;
 
 select tabela.id,
-       regexp_replace(tabela.anotacao, '/Arquivos/Editor/', concat('/arquivos/editor/frequencia/',
+       regexp_replace(tabela.anotacao, '/Arquivos/Editor/', concat('/arquivos/editor/aluno/frequencia/',
                                                                    EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                                    '/',
                                                                    EXTRACT(MONTH FROM tabela.CRIADO_EM),
