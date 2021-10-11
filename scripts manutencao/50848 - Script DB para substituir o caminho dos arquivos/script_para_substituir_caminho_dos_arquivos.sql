@@ -4,7 +4,7 @@ drop table IF EXISTS tmp_plano_ciclo;
 
 select tabela.id,
        regexp_replace(tabela.descricao, '/Arquivos/Editor/',
-                      concat('/arquivos/editor/acompanhemento/aluno/',
+                      concat('/arquivos/editor/placo/clico/',
                              EXTRACT(YEAR FROM tabela.CRIADO_EM),
                              '/',
                              EXTRACT(MONTH FROM tabela.CRIADO_EM),
@@ -25,7 +25,7 @@ where pc.id = tpr.id;
 drop table IF EXISTS tmp_anotacao_frequencia_aluno_replace_img;
 
 select tabela.id,
-       regexp_replace(tabela.anotacao, '/Arquivos/Editor/', concat('/arquivos/editor/frequencia/aluno/',
+       regexp_replace(tabela.anotacao, '/Arquivos/Editor/', concat('/arquivos/editor/frequencia/',
                                                                    EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                                    '/',
                                                                    EXTRACT(MONTH FROM tabela.CRIADO_EM),
@@ -152,7 +152,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS tmp_plano_anual_territorio_saber_desenvolvimento_replace_img;
 
 select tabela.id,
-       regexp_replace(desenvolvimento, '/Arquivos/Editor/', concat('/arquivos/editor/territorio/saber/',
+       regexp_replace(desenvolvimento, '/Arquivos/Editor/', concat('/arquivos/editor/planejamento/anual/territorio_saber/',
                                                                    EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                                    '/',
                                                                    EXTRACT(MONTH FROM tabela.CRIADO_EM),
@@ -172,7 +172,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS tmp_plano_anual_territorio_saber_reflexao_replace_img;
 
 select tabela.id,
-       regexp_replace(reflexao, '/Arquivos/Editor/', concat('/arquivos/editor/territorio/saber/',
+       regexp_replace(reflexao, '/Arquivos/Editor/', concat('/arquivos/editor/planejamento/anual/territorio_saber/',
                                                             EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                             '/',
                                                             EXTRACT(MONTH FROM tabela.CRIADO_EM),
@@ -278,7 +278,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS tmp_conselho_classe_aluno_anotacoes_pedagogicas_replace_img;
 
 select tabela.id,
-       regexp_replace(anotacoes_pedagogicas, '/Arquivos/Editor/', concat('/arquivos/editor/conselho/classe/',
+       regexp_replace(anotacoes_pedagogicas, '/Arquivos/Editor/', concat('/arquivos/editor/conselho_classe/',
                                                                          EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                                          '/',
                                                                          EXTRACT(MONTH FROM tabela.CRIADO_EM),
@@ -300,7 +300,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS tmp_ocorrencia_replace_img;
 
 select tabela.id,
-       regexp_replace(descricao, '/Arquivos/Editor/', concat('/arquivos/editor/ocorrencia/',
+       regexp_replace(descricao, '/Arquivos/Editor/', concat('/arquivos/editor/aluno/ocorrencia/',
                                                              EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                              '/',
                                                              EXTRACT(MONTH FROM tabela.CRIADO_EM),
@@ -321,7 +321,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS tmp_relatorio_semestral_pap_aluno_secao_replace_img;
 
 select tabela.id,
-       regexp_replace(tabela.valor, '/Arquivos/Editor/', concat('/arquivos/editor/relatorio/semestral/pap/',
+       regexp_replace(tabela.valor, '/Arquivos/Editor/', concat('/arquivos/editor/relatorio/semestral_pap/',
                                                                 EXTRACT(YEAR FROM a.CRIADO_EM),
                                                                 '/',
                                                                 EXTRACT(MONTH FROM a.CRIADO_EM),
@@ -350,7 +350,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS tmp_plano_aula_descricao_replace_img;
 
 select tabela.id,
-       regexp_replace(descricao, '/Arquivos/Editor/', concat('/arquivos/editor/plano/aula/',
+       regexp_replace(descricao, '/Arquivos/Editor/', concat('/arquivos/editor/planejamento/aula/descricao/',
                                                              EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                              '/',
                                                              EXTRACT(MONTH FROM tabela.CRIADO_EM),
@@ -370,7 +370,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS tmp_plano_aula_desenvolvimento_aula_replace_img;
 
 select tabela.id,
-       regexp_replace(desenvolvimento_aula, '/Arquivos/Editor/', concat('/arquivos/editor/plano/aula/',
+       regexp_replace(desenvolvimento_aula, '/Arquivos/Editor/', concat('/arquivos/editor/plano/aula/desenvolvimento/',
                                                                         EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                                         '/',
                                                                         EXTRACT(MONTH FROM tabela.CRIADO_EM),
@@ -391,7 +391,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS tmp_plano_aula_recuperacao_aula_replace_img;
 
 select tabela.id,
-       regexp_replace(recuperacao_aula, '/Arquivos/Editor/', concat('/arquivos/editor/plano/aula/',
+       regexp_replace(recuperacao_aula, '/Arquivos/Editor/', concat('/arquivos/editor/planejamento/aula/recuperacao/',
                                                                     EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                                     '/',
                                                                     EXTRACT(MONTH FROM tabela.CRIADO_EM),
@@ -412,7 +412,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS tmp_plano_aula_licao_casa_replace_img;
 
 select tabela.id,
-       regexp_replace(licao_casa, '/Arquivos/Editor/', concat('/arquivos/editor/plano/aula/',
+       regexp_replace(licao_casa, '/Arquivos/Editor/', concat('/arquivos/editor/planejamento/aula/licao_casa/',
                                                               EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                               '/',
                                                               EXTRACT(MONTH FROM tabela.CRIADO_EM),
@@ -434,7 +434,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS tmp_anotacao_aluno_fechamento_replace_img;
 
 select tabela.id,
-       regexp_replace(anotacao, '/Arquivos/Editor/', concat('/arquivos/editor/anotacao/aluno/fechamento',
+       regexp_replace(anotacao, '/Arquivos/Editor/', concat('/arquivos/editor/fechamento/aluno/anotacao/',
                                                             EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                             '/',
                                                             EXTRACT(MONTH FROM tabela.CRIADO_EM),
@@ -457,7 +457,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS TMP_ACOMPANHAMENTO_ALUNO_SEMESTRE_PERCURSO_INDIVIDUAL_REPLACE_IMG;
 
 select tabela.id,
-       regexp_replace(tabela.PERCURSO_INDIVIDUAL, '/Arquivos/Editor/', concat('/arquivos/editor/acompanhemento/aluno/',
+       regexp_replace(tabela.PERCURSO_INDIVIDUAL, '/Arquivos/Editor/', concat('/arquivos/editor/aluno/acompanhamento/',
                                                                               EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                                               '/',
                                                                               EXTRACT(MONTH FROM tabela.CRIADO_EM),
@@ -477,7 +477,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS TMP_ACOMPANHAMENTO_ALUNO_SEMESTRE_OBSERVACOES_REPLACE_IMG;
 
 select tabela.id,
-       regexp_replace(tabela.observacoes, '/Arquivos/Editor/', concat('/arquivos/editor/acompanhemento/aluno/',
+       regexp_replace(tabela.observacoes, '/Arquivos/Editor/', concat('/arquivos/editor/aluno/acompanhamento/',
                                                                       EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                                       '/',
                                                                       EXTRACT(MONTH FROM tabela.CRIADO_EM),
