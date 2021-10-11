@@ -4,7 +4,7 @@ drop table IF EXISTS tmp_plano_ciclo;
 
 select tabela.id,
        regexp_replace(tabela.descricao, '/Arquivos/Editor/',
-                      concat('/arquivos/editor/placo/clico/',
+                      concat('/arquivos/editor/placo/ciclo/',
                              EXTRACT(YEAR FROM tabela.CRIADO_EM),
                              '/',
                              EXTRACT(MONTH FROM tabela.CRIADO_EM),
