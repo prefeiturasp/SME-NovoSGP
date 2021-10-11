@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using System.Collections;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -21,7 +22,11 @@ namespace SME.SGP.Aplicacao
 
         private void DeletarArquivo(IEnumerable diferente)
         {
-
+            foreach (var item in diferente)
+            {
+                File.Delete(item.ToString());
+            }
+            
         }
     }
 }
