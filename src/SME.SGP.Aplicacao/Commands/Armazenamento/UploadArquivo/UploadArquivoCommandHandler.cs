@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterCaminhoArquivo(TipoArquivo tipo)
         {
-            var caminho = Path.Combine(ObterCaminhoArquivos(), tipo.ToString(),"Temp");
+            var caminho = Path.Combine(ObterCaminhoArquivos(), tipo.ToString());
             return VerificaCaminhoExiste(caminho);
         }
 
