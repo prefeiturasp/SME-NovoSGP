@@ -213,7 +213,7 @@ where pc.id = tmp.id;
 drop table IF EXISTS tmp_registro_poa_replace_img;
 
 select tabela.id,
-       regexp_replace(descricao, '/Arquivos/Editor/', concat('/arquivos/editor/regsitro/poa/',
+       regexp_replace(descricao, '/Arquivos/Editor/', concat('/arquivos/editor/registro/poa/',
                                                              EXTRACT(YEAR FROM tabela.CRIADO_EM),
                                                              '/',
                                                              EXTRACT(MONTH FROM tabela.CRIADO_EM),
