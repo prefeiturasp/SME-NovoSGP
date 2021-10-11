@@ -49,8 +49,8 @@ namespace SME.SGP.Aplicacao
                 };
             }
 
-            var moverArquivo = mediator.Send(new MoverArquivoPastaDestinoCommand(TipoArquivo.Editor, conselhoClasseAlunoDto.AnotacoesPedagogicas));
-            var deletarArquivosNaoUsados = mediator.Send(new DeletarArquivoPastaTempCommand(conselhoClasseAluno.AnotacoesPedagogicas, conselhoClasseAlunoDto.AnotacoesPedagogicas));
+            var moverArquivo = mediator.Send(new MoverArquivoPastaDestinoCommand(TipoArquivo.ConselhoClasse, conselhoClasseAlunoDto.AnotacoesPedagogicas));
+            var deletarArquivosNaoUsados = mediator.Send(new DeletarArquivoPastaTempCommand(conselhoClasseAluno.AnotacoesPedagogicas, conselhoClasseAlunoDto.AnotacoesPedagogicas,TipoArquivo.ConselhoClasse.Name()));
 
             conselhoClasseAluno.AnotacoesPedagogicas = conselhoClasseAlunoDto.AnotacoesPedagogicas;
             conselhoClasseAluno.RecomendacoesAluno = conselhoClasseAlunoDto.RecomendacaoAluno;

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Infra;
 using System.Collections;
 using System.IO;
 using System.Linq;
@@ -17,14 +18,16 @@ namespace SME.SGP.Aplicacao
             var atual = regex.Matches(request.ArquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
             var novo = regex.Matches(request.ArquivoNovo).Cast<Match>().Select(c => c.Value).ToList();
             var diferente = atual.Except(novo);
+            DeletarArquivo(diferente,request.Caminho);
             return true;
         }
 
-        private void DeletarArquivo(IEnumerable diferente)
+        private void DeletarArquivo(IEnumerable diferente,string caminho)
         {
             foreach (var item in diferente)
             {
-                File.Delete(item.ToString());
+                var path = Path.Combine(UtilArquivo.ObterDiretorioBase(),caminho,item.ToString());
+                File.Delete(path);
             }
             
         }

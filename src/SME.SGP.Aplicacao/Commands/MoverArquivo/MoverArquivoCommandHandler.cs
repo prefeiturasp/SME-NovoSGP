@@ -14,14 +14,20 @@ namespace SME.SGP.Aplicacao
         }
 
         public Task<bool> Handle(MoverArquivoCommand request, CancellationToken cancellationToken)
-        {            
+        {
             var caminhoBase = UtilArquivo.ObterDiretorioBase();
             var nomeArquivo = Path.GetFileName(request.Nome);
-            var caminhoArquivoTemp = Path.Combine($"{caminhoBase}/{TipoArquivo.Temp.Description()}/", nomeArquivo);
-            var caminhoArquivoFuncionalidade = Path.Combine($"{caminhoBase}/{request.Tipo.Description()}/{nomeArquivo}");
+            var caminhoArquivoTemp = Path.Combine(caminhoBase,TipoArquivo.Temp.Name());
+            var caminhoArquivoFuncionalidade = Path.Combine(caminhoBase,request.Tipo.Name());
+            MoverAquivo(caminhoArquivoTemp, caminhoArquivoFuncionalidade, nomeArquivo);
 
-            File.Move(caminhoArquivoTemp, caminhoArquivoFuncionalidade);
             return Task.FromResult(true);
         }
-    }    
+        private void MoverAquivo(string caminhoArquivoTemp, string caminhoArquivoFuncionalidade,string nomeArquivo)
+        {
+            if (!Directory.Exists(caminhoArquivoFuncionalidade))
+                Directory.CreateDirectory(caminhoArquivoFuncionalidade);
+            File.Move(Path.Combine(caminhoArquivoTemp,nomeArquivo), Path.Combine(caminhoArquivoFuncionalidade, nomeArquivo));
+        }
+    }
 }
