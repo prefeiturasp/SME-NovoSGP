@@ -1,0 +1,22 @@
+﻿using MediatR;
+using SME.SGP.Dominio;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
+namespace SME.SGP.Aplicacao
+{
+    public class MoverArquivoPastaDestinoCommandHendler : IRequestHandler<MoverArquivoPastaDestinoCommand, bool>
+    {
+        
+        public async Task<bool> Handle(MoverArquivoPastaDestinoCommand request, CancellationToken cancellationToken)
+        {
+            var expressao = @"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+";
+            var regex = new Regex(expressao);
+            var matches = regex.Matches(request.TextoEditor).Cast<Match>().Select(c => c.Value).ToList();
+
+            return true;
+
+        }
+    }
+}
