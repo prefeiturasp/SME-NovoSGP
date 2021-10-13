@@ -4,7 +4,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class MoverArquivoCommand : IRequest<bool>
+    public class MoverArquivoCommand : IRequest<string>
     {
         public MoverArquivoCommand(string nome, TipoArquivo tipo)
         {
