@@ -47,7 +47,7 @@ namespace SME.SGP.Dominio
         [Display(Name ="fechamento/aluno/anotacao")]
         FechamentoAnotacao = 14,
 
-        [Display(Name ="acompanhamento/aluno")]
+        [Display(Name = "aluno/acompanhamento")]
         AcompanhamentoAluno = 15,
 
         [Display(Name ="diario/bordo")]

@@ -18,18 +18,19 @@ namespace SME.SGP.Aplicacao
             var atual = regex.Matches(request.ArquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
             var novo = regex.Matches(request.ArquivoNovo).Cast<Match>().Select(c => c.Value).ToList();
             var diferente = atual.Except(novo);
-            DeletarArquivo(diferente,request.Caminho);
+            DeletarArquivo(diferente, request.Caminho);
             return true;
         }
 
-        private void DeletarArquivo(IEnumerable diferente,string caminho)
+        private void DeletarArquivo(IEnumerable diferente, string caminho)
         {
             foreach (var item in diferente)
             {
-                var path = Path.Combine(UtilArquivo.ObterDiretorioBase(),caminho,item.ToString());
-                File.Delete(path);
+                var path = Path.Combine(UtilArquivo.ObterDiretorioBase(), caminho, item.ToString());
+                if (File.Exists(path))
+                    File.Delete(path);
             }
-            
+
         }
     }
 }

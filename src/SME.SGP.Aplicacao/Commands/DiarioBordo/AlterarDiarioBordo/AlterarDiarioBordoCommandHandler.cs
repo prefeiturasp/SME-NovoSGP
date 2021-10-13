@@ -53,13 +53,25 @@ namespace SME.SGP.Aplicacao
             if (diarioBordo == null)
                 throw new NegocioException($"Diário de Bordo para a aula {request.AulaId} não encontrado!");
 
+            MoverRemoverExcluidos(request, diarioBordo);
             MapearAlteracoes(diarioBordo, request);
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
 
             return (AuditoriaDto)diarioBordo;
         }
-
+        private void MoverRemoverExcluidos(AlterarDiarioBordoCommand diario, DiarioBordo diarioBordo)
+        {
+            if (!string.IsNullOrEmpty(diario.Planejamento))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.DiarioBordo, diarioBordo.Planejamento, diario.Planejamento));
+                diario.Planejamento = moverArquivo.Result;
+            }
+            if (!string.IsNullOrEmpty(diarioBordo.Planejamento))
+            {
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(diarioBordo.Planejamento, diario.Planejamento, TipoArquivo.DiarioBordo.Name()));
+            }
+        }
         private void MapearAlteracoes(DiarioBordo entidade, AlterarDiarioBordoCommand request)
         {
             entidade.Planejamento = request.Planejamento;

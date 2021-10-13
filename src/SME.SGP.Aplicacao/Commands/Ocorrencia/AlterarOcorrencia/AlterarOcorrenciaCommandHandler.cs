@@ -63,7 +63,6 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
-
         private void MapearAlteracoes(Ocorrencia entidade, AlterarOcorrenciaCommand request, OcorrenciaTipo ocorrenciaTipo)
         {
             entidade.DataOcorrencia = request.DataOcorrencia;

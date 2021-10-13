@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -11,10 +12,12 @@ namespace SME.SGP.Aplicacao
     public class ComandosFechamentoAluno: IComandosFechamentoAluno
     {
         private readonly IRepositorioFechamentoAluno repositorio;
+        private readonly IMediator mediator;
 
-        public ComandosFechamentoAluno(IRepositorioFechamentoAluno repositorio)
+        public ComandosFechamentoAluno(IRepositorioFechamentoAluno repositorio, IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<AuditoriaPersistenciaDto> SalvarAnotacaoAluno(AnotacaoAlunoDto anotacaoAluno)
@@ -32,6 +35,7 @@ namespace SME.SGP.Aplicacao
         private async Task<FechamentoAluno> MapearParaEntidade(AnotacaoAlunoDto anotacaoAluno)
         {
             var anotacao = await repositorio.ObterFechamentoAluno(anotacaoAluno.FechamentoId, anotacaoAluno.CodigoAluno);
+            MoverRemoverExcluidos(anotacaoAluno, anotacao);
             if (anotacao == null)
                 anotacao = new FechamentoAluno()
                 {
@@ -43,6 +47,18 @@ namespace SME.SGP.Aplicacao
                 anotacao.Anotacao = anotacaoAluno.Anotacao;
 
             return anotacao;
+        }
+        private void MoverRemoverExcluidos(AnotacaoAlunoDto anotacaoAluno, FechamentoAluno anotacao)
+        {
+            if (!string.IsNullOrEmpty(anotacaoAluno.Anotacao))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FechamentoAnotacao, anotacao.Anotacao, anotacaoAluno.Anotacao));
+                anotacaoAluno.Anotacao = moverArquivo.Result;
+            }
+            if (!string.IsNullOrEmpty(anotacao.Anotacao))
+            {
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(anotacao.Anotacao, anotacaoAluno.Anotacao, TipoArquivo.FechamentoAnotacao.Name()));
+            }
         }
     }
 }
