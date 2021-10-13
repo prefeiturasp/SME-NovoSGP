@@ -193,6 +193,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConsolidacaoAcompanhamentoAprendizagemAlunoMap());
                config.AddMap(new ConsolidacaoDiariosBordoMap());
                config.AddMap(new AvisoMap());
+               config.AddMap(new ConsolidacaoRegistrosPedagogicosMap());
 
                config.ForDommel();
            });
