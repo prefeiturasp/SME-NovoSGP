@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<string> Handle(MoverArquivosTemporariosCommand request, CancellationToken cancellationToken)
         {
+            var enderecoFuncionalidade = string.Empty;
             var expressao = @"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+";
             var regex = new Regex(expressao);
             var novo = regex.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
@@ -26,10 +27,10 @@ namespace SME.SGP.Aplicacao
             
             foreach (var item in diferenca)
             {
-               await mediator.Send(new MoverArquivoCommand(item, request.TipoArquivo));
+                enderecoFuncionalidade = await mediator.Send(new MoverArquivoCommand(item, request.TipoArquivo));
             }
 
-            return request.TextoEditorNovo.Replace("/Temp/", $"/{request.TipoArquivo.ObterNome()}/");
+            return request.TextoEditorNovo.Replace("/Temp/", enderecoFuncionalidade);
 
         }
     }

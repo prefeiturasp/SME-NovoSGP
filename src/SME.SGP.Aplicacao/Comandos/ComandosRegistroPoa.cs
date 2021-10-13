@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -8,10 +9,12 @@ namespace SME.SGP.Aplicacao
     public class ComandosRegistroPoa : IComandosRegistroPoa
     {
         private readonly IRepositorioRegistroPoa repositorioRegistroPoa;
+        private readonly IMediator mediator;
 
-        public ComandosRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa)
+        public ComandosRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa, IMediator mediator)
         {
             this.repositorioRegistroPoa = repositorioRegistroPoa ?? throw new System.ArgumentNullException(nameof(repositorioRegistroPoa));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public void Atualizar(RegistroPoaDto registroPoaDto)
@@ -48,16 +51,28 @@ namespace SME.SGP.Aplicacao
 
             if (entidade == null || entidade.Excluido)
                 throw new NegocioException("Registro para atualização não encontrado na base de dados");
-
+            MoverRemoverExcluidos(registroPoaDto, entidade);
             entidade.Titulo = registroPoaDto.Titulo;
             entidade.Descricao = registroPoaDto.Descricao;
             entidade.Bimestre = registroPoaDto.Bimestre;
 
             return entidade;
         }
-
+        private void MoverRemoverExcluidos(RegistroPoaDto registroPoaDto, RegistroPoa entidade)
+        {
+            if (!string.IsNullOrEmpty(registroPoaDto.Descricao))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroPOA, entidade.Descricao, registroPoaDto.Descricao));
+                registroPoaDto.Descricao = moverArquivo.Result;
+            }
+            if (!string.IsNullOrEmpty(entidade.Descricao))
+            {
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(entidade.Descricao, registroPoaDto.Descricao, TipoArquivo.RegistroPOA.Name()));
+            }
+        }
         private RegistroPoa MapearParaEntidade(RegistroPoaDto registroPoaDto)
         {
+            MoverRemoverExcluidos(registroPoaDto, new RegistroPoa() {Descricao = string.Empty });
             return new RegistroPoa
             {
                 Descricao = registroPoaDto.Descricao,

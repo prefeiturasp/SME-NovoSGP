@@ -23,18 +23,31 @@ namespace SME.SGP.Aplicacao
         private async Task<AcompanhamentoTurma> MapearAcompanhamentoTurma(AcompanhamentoTurmaDto dto)
         {
             var acompanhamentoTurma = dto.AcompanhamentoTurmaId > 0 ?
-                await AtualizaApanhadoTurma(dto.AcompanhamentoTurmaId, dto.ApanhadoGeral) :
+                await AtualizaApanhadoTurma(dto) :
                 await GerarAcompanhamentoTurma(dto);
 
             return acompanhamentoTurma;
         }
 
-        private async Task<AcompanhamentoTurma> AtualizaApanhadoTurma(long acompanhamentoTurmaId, string apanhadoGeral)
+        private async Task<AcompanhamentoTurma> AtualizaApanhadoTurma(AcompanhamentoTurmaDto dto)
         {
-            var acompanhamento = await ObterAcompanhamentoTurmaPorId(acompanhamentoTurmaId);
-            acompanhamento.ApanhadoGeral = apanhadoGeral;
-
+            var acompanhamento = await ObterAcompanhamentoTurmaPorId(dto.AcompanhamentoTurmaId);
+            MoverRemoverExcluidos(dto, acompanhamento);
+            acompanhamento.ApanhadoGeral = dto.ApanhadoGeral;
             return await mediator.Send(new SalvarAcompanhamentoTurmaCommand(acompanhamento));
+        }
+
+        private void MoverRemoverExcluidos(AcompanhamentoTurmaDto dto, AcompanhamentoTurma acompanhamento)
+        {
+            if (!string.IsNullOrEmpty(dto.ApanhadoGeral))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.AcompanhamentoAluno, acompanhamento.ApanhadoGeral, dto.ApanhadoGeral));
+                dto.ApanhadoGeral = moverArquivo.Result;
+            }
+            if (!string.IsNullOrEmpty(acompanhamento.ApanhadoGeral))
+            {
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(acompanhamento.ApanhadoGeral, dto.ApanhadoGeral, TipoArquivo.AcompanhamentoAluno.Name()));
+            }
         }
 
         private async Task<AcompanhamentoTurma> ObterAcompanhamentoTurmaPorId(long acompanhamentoTurmaId)
@@ -46,6 +59,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 
+            MoverRemoverExcluidos(dto, new AcompanhamentoTurma() { ApanhadoGeral = string.Empty });
             return await mediator.Send(new GerarAcompanhamentoTurmaCommand(turma.Id, dto.Semestre, dto.ApanhadoGeral));
         }
     }
