@@ -4,18 +4,20 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class MoverArquivoPastaDestinoCommand : IRequest<bool>
+    public class MoverArquivosTemporariosCommand : IRequest<string>
     {
-        public MoverArquivoPastaDestinoCommand(TipoArquivo tipoArquivo, string textoEditor)
+        public MoverArquivosTemporariosCommand(TipoArquivo tipoArquivo, string textoEditorAtual,string textoEditorNovo)
         {
             TipoArquivo = tipoArquivo;
-            TextoEditor = textoEditor;
+            TextoEditorAtual = textoEditorAtual;
+            TextoEditorNovo = textoEditorNovo;
         }
 
         public TipoArquivo TipoArquivo { get; set; }
-        public string TextoEditor { get; set; }
+        public string TextoEditorAtual { get; set; }
+        public string TextoEditorNovo { get; set; }
 
-        public class MoverArquivoPastaDestinoCommandValidator : AbstractValidator<MoverArquivoPastaDestinoCommand>
+        public class MoverArquivoPastaDestinoCommandValidator : AbstractValidator<MoverArquivosTemporariosCommand>
         {
             public MoverArquivoPastaDestinoCommandValidator()
             {
@@ -23,9 +25,10 @@ namespace SME.SGP.Aplicacao
                     .NotEmpty()
                     .WithMessage("O registro Tipo Arquivo  deve ser informado");
 
-                RuleFor(a => a.TextoEditor)
+                RuleFor(a => a.TextoEditorNovo)
                     .NotEmpty()
                     .WithMessage("O registro Texto Editor  deve ser informado");
+
             }
         }
     }
