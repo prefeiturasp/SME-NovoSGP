@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasConselhoClasseAluno consultasConselhoClasseAluno;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IServicoConselhoClasse servicoConselhoClasse;
-        private readonly IMediator  mediator;
+        private readonly IMediator mediator;
 
         public ComandosConselhoClasseAluno(IConsultasConselhoClasseAluno consultasConselhoClasseAluno,
                                            IConsultasConselhoClasse consultasConselhoClasse,
@@ -49,12 +49,19 @@ namespace SME.SGP.Aplicacao
                 };
             }
 
-            var moverArquivo = mediator.Send(new MoverArquivoPastaDestinoCommand(TipoArquivo.ConselhoClasse, conselhoClasseAlunoDto.AnotacoesPedagogicas));
-            var deletarArquivosNaoUsados = mediator.Send(new DeletarArquivoPastaTempCommand(conselhoClasseAluno.AnotacoesPedagogicas, conselhoClasseAlunoDto.AnotacoesPedagogicas,TipoArquivo.ConselhoClasse.Name()));
-
+            if (!string.IsNullOrEmpty(conselhoClasseAlunoDto.AnotacoesPedagogicas))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.ConselhoClasse, conselhoClasseAluno.AnotacoesPedagogicas, conselhoClasseAlunoDto.AnotacoesPedagogicas));
+                conselhoClasseAlunoDto.AnotacoesPedagogicas = moverArquivo.Result;
+            }
+            if (!string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas))
+            {
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(conselhoClasseAluno.AnotacoesPedagogicas, conselhoClasseAlunoDto.AnotacoesPedagogicas, TipoArquivo.ConselhoClasse.Name()));
+            }
             conselhoClasseAluno.AnotacoesPedagogicas = conselhoClasseAlunoDto.AnotacoesPedagogicas;
             conselhoClasseAluno.RecomendacoesAluno = conselhoClasseAlunoDto.RecomendacaoAluno;
             conselhoClasseAluno.RecomendacoesFamilia = conselhoClasseAlunoDto.RecomendacaoFamilia;
+
 
             return conselhoClasseAluno;
         }

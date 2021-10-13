@@ -4,9 +4,9 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class DeletarArquivoPastaTempCommand : IRequest<bool>
+    public class RemoverArquivosExcluidosCommand : IRequest<bool>
     {
-        public DeletarArquivoPastaTempCommand(string arquivoAtual, string arquivoNovo, string caminho)
+        public RemoverArquivosExcluidosCommand(string arquivoAtual, string arquivoNovo, string caminho)
         {
             ArquivoAtual = arquivoAtual;
             ArquivoNovo = arquivoNovo;
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         public string ArquivoNovo { get; set; }
         public string Caminho { get; set; }
     }
-    public class DeletarArquivoPastaTempCommandValidator : AbstractValidator<DeletarArquivoPastaTempCommand>
+    public class DeletarArquivoPastaTempCommandValidator : AbstractValidator<RemoverArquivosExcluidosCommand>
     {
         public DeletarArquivoPastaTempCommandValidator()
         {
