@@ -70,14 +70,8 @@ namespace SME.SGP.Aplicacao
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, aula.DisciplinaId, periodoEscolar.Id));
             foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
             {
-                // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
-                // se a matrícula foi ativada após a data da aula
-                DateTime dataSituacao = DateTime.Parse(aluno.DataSituacao.ToString("dd/MM/yyyy"));
-                if (
-                        (aluno.EstaInativo(aula.DataAula) && (dataSituacao < periodoEscolar.PeriodoInicio || dataSituacao < aula.DataAula)) ||
-                        (!aluno.Inativo && aula.DataAula < aluno.DataMatricula && aula.DataAula < dataSituacao) ||
-                        (aluno.Inativo && (aula.DataAula > dataSituacao || aula.DataAula < aluno.DataMatricula))
-                   )
+
+                if (NaoExibirAlunoFrequencia(aluno, aula, periodoEscolar))
                     continue;
 
                 var tipoFrequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(turma.Id, long.Parse(aula.DisciplinaId), aluno.CodigoAluno));
@@ -210,6 +204,15 @@ namespace SME.SGP.Aplicacao
                 Desabilitado = !aula.PermiteRegistroFrequencia(turma)
             };
             return registroFrequenciaDto;
+        }
+
+        private bool NaoExibirAlunoFrequencia(AlunoPorTurmaResposta aluno, Aula aula, PeriodoEscolar periodoEscolar)
+        {
+            DateTime dataSituacao = DateTime.Parse(aluno.DataSituacao.ToString("dd/MM/yyyy"));
+            DateTime dataMatricula = DateTime.Parse(aluno.DataMatricula.ToString("dd/MM/yyyy"));
+            return (aluno.EstaInativo(aula.DataAula) && (dataSituacao < periodoEscolar.PeriodoInicio || dataSituacao < aula.DataAula)) ||
+                   (!aluno.Inativo && aula.DataAula < dataMatricula) ||
+                   (aluno.Inativo && !(aula.DataAula >= dataMatricula && aula.DataAula <= dataSituacao));
         }
     }
 }
