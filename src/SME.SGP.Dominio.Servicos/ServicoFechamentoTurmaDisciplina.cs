@@ -166,7 +166,7 @@ namespace SME.SGP.Dominio.Servicos
                 registraFrequencia));
         }
 
-        public async Task Reprocessar(long fechamentoTurmaDisciplinaId)
+        public async Task Reprocessar(long fechamentoTurmaDisciplinaId, Usuario usuario = null)
         {
             var fechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina.ObterPorId(fechamentoTurmaDisciplinaId);
             if (fechamentoTurmaDisciplina == null)
@@ -188,7 +188,7 @@ namespace SME.SGP.Dominio.Servicos
             fechamentoTurmaDisciplina.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
             repositorioFechamentoTurmaDisciplina.Salvar(fechamentoTurmaDisciplina);
 
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            var usuarioLogado = usuario ?? await servicoUsuario.ObterUsuarioLogado();
             await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
                                             turma.CodigoTurma,
                                             turma.Nome,

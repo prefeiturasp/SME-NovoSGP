@@ -202,6 +202,18 @@ namespace SME.SGP.Aplicacao.Servicos
             }
         }
 
+        public async Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false)
+        {
+            var ue = repositorioUe
+                .ObterPorId(ueId);
+
+            if (ue == null)
+                throw new NegocioException("UE não localizada.");
+
+            return await repositorioAbrangencia
+                .ObterLoginsAbrangenciaUePorPerfil(ueId, perfil, historica);
+        }
+
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
         {
             try
