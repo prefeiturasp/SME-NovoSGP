@@ -32,7 +32,7 @@ namespace SME.SGP.Api.Controllers
                 var file = files.FirstOrDefault();
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
-                        $"https://{Request.Host}{Request.PathBase}/Arquivos/", 
+                        $"https://{Request.Host}{Request.PathBase}/Arquivos/Temp/", 
                         Dominio.TipoArquivo.Temp));
             }
                 

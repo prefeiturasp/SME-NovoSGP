@@ -1,76 +1,77 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dominio
 {
     public enum TipoArquivo
     {
-        [Description("documentos")]
+        [Display(Name ="documentos")]
         Geral = 1,
 
-        [Description("temp")] 
+        [Display(Name ="temp")] 
         Temp = 2,
 
-        [Description("encaminhamento/aee")]
-        EncaminhamentoAEE = 3, //não localizado
+        [Display(Name ="encaminhamento/aee")]
+        EncaminhamentoAEE = 3,
 
-        [Description("foto/aluno")] //não encontrei
+        [Display(Name ="foto/aluno")]
         FotoAluno = 4,
 
-        [Description("aluno/frequencia")]
+        [Display(Name ="aluno/frequencia")]
         FrequenciaAnotacaoEstudante = 5,   
 
-        [Description("planejamento/anual/territorio_saber")]
+        [Display(Name ="planejamento/anual/territorio_saber")]
         TerritorioSaber = 6,
 
-        [Description("conselho_classe")]
+        [Display(Name = "conselho_classe")]
         ConselhoClasse = 7,
 
-        [Description("aluno/ocorrencia")]
+        [Display(Name ="aluno/ocorrencia")]
         Ocorrencia = 8,
 
-        [Description("semestral_pap")]
+        [Display(Name ="semestral_pap")]
         RelatorioSemestralPAP = 9,
 
-        [Description("planejamento/aula/descricao")]
+        [Display(Name ="planejamento/aula/descricao")]
         PlanoAula = 10,
 
-        [Description("planejamento/aula/desenvolvimento")]
-        PlanoAulaDesenvolvimento = 11, //dentro do Plano Aula
+        [Display(Name ="planejamento/aula/desenvolvimento")]
+        PlanoAulaDesenvolvimento = 11, 
 
-        [Description("planejamento/aula/recuperacao")]
-        PlanoAulaRecuperacao = 12, //dentro do Plano Aula
+        [Display(Name ="planejamento/aula/recuperacao")]
+        PlanoAulaRecuperacao = 12,
 
-        [Description("planejamento/aula/licao_casa")]
-        PlanoAulaLicaoCasa = 13, //dentro do Plano Aula
+        [Display(Name ="planejamento/aula/licao_casa")]
+        PlanoAulaLicaoCasa = 13,
 
-        [Description("fechamento/aluno/anotacao")]
+        [Display(Name ="fechamento/aluno/anotacao")]
         FechamentoAnotacao = 14,
 
-        [Description("acompanhamento/aluno")]
+        [Display(Name ="acompanhamento/aluno")]
         AcompanhamentoAluno = 15,
 
-        [Description("diario/bordo")]
+        [Display(Name ="diario/bordo")]
         DiarioBordo = 16,
 
-        [Description("devolutiva")]
+        [Display(Name ="devolutiva")]
         Devolutiva = 17,
 
-        [Description("compensacao/ausencia")]
+        [Display(Name ="compensacao/ausencia")]
         CompensacaoAusencia = 18,
 
-        [Description("registro/individual")]
+        [Display(Name ="registro/individual")]
         RegistroIndividual = 19,
 
-        [Description("plano/ciclo")]
+        [Display(Name ="plano/ciclo")]
         PlanoCiclo = 20,
 
-        [Description("planejamento/anual")] 
+        [Display(Name ="planejamento/anual")] 
         PlanejamentoAnual = 21,
 
-        [Description("carta/intencoes")]
+        [Display(Name ="carta/intencoes")]
         CartaIntencoes = 22,
 
-        [Description("registro/poa")]
+        [Display(Name ="registro/poa")]
         RegistroPOA = 23,        
     }
 }
