@@ -151,6 +151,11 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id }));
         }
 
+        public async Task<bool> LancaNota(long id)
+        {
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>("select permite_lancamento_nota from componente_curricular where id = @id", new { id });
+        }
+
         public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, long turmaId, int bimestre, string codigoAluno)
         {
             var query = @"	                        
@@ -227,20 +232,8 @@ namespace SME.SGP.Dados.Repositorios
                            and t.ano_letivo = @anoLetivo
                            and ft.turma_id = @turmaId ) x   ";
 
-            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { bimestre , anoLetivo, turmaId, codigoAluno, }));
-        }
-
-        public async Task<bool> LancaNota(long id)
-        {
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>("select permite_lancamento_nota from componente_curricular where id = @id", new { id });
-        }
-
-        public async Task<string> ObterDescricaoPorId(long id)
-        {
-            var query = @"select coalesce(descricao_sgp, descricao) from componente_curricular cc where id = @id";
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
+            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { bimestre, anoLetivo, turmaId, codigoAluno, }));
         }
     }
-
 }
+

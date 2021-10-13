@@ -56,22 +56,20 @@ namespace SME.SGP.Aplicacao
                 }
 
 
-                string[] turmasCodigos;
+                var turmasCodigos = new string[] { };
                 if (turma.DeveVerificarRegraRegulares())
                 {
                     List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
                     turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                     turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, filtro.AlunoCodigo, turmasCodigosParaConsulta));
                 }
-                else
-                {
+                if (turmasCodigos.Length == 0)
                     turmasCodigos = new string[1] { turma.CodigoTurma };
-                }
+
+
 
                 var componentesComNotaFechamentoOuConselho = await mediator.Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo));
                 var componentesDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
-
-
 
                 var possuiComponentesSemNotaConceito = componentesDaTurmaEol.Where(x => x.LancaNota == true).Select(x => x.Codigo).ToArray().Except(componentesComNotaFechamentoOuConselho.Select(x => x.Codigo).ToArray()).Any();
 
