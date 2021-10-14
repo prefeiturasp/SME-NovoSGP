@@ -337,12 +337,12 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<int>(query, new { login, perfil, consideraHistorico, anoLetivo, modalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradasArray })).AsList();
         }
 
-        public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0)
+        public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0, string dreCodigo = null, string ueCodigo = null)
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-            var parametros = new { login, perfil, consideraHistorico, modalidade, anoLetivo };
+            var parametros = new { login, perfil, consideraHistorico, modalidade, anoLetivo, dreCodigo, ueCodigo };
 
-            return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_semestres(@login, @perfil, @consideraHistorico, @modalidade, @anoLetivo)
+            return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_semestres(@login, @perfil, @consideraHistorico, @modalidade, @anoLetivo, @dreCodigo, @ueCodigo)
                                                              order by 1", parametros)).AsList();
         }
 
