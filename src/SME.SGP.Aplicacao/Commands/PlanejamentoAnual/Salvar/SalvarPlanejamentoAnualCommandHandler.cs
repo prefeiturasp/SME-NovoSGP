@@ -133,6 +133,7 @@ namespace SME.SGP.Aplicacao
                                 auditoria.Componentes.Add(new PlanejamentoAnualComponenteDto
                                 {
                                     Auditoria = (AuditoriaDto)planejamentoAnualComponente,
+                                    Descricao = planejamentoAnualComponente.Descricao,
                                     ComponenteCurricularId = componente.ComponenteCurricularId,
                                 });
 

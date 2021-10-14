@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<AuditoriaRelatorioSemestralAlunoDto> Salvar(string alunoCodigo, string turmaCodigo, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto)
+        public async Task<RelatorioSemestralPAPAluno> Salvar(string alunoCodigo, string turmaCodigo, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto)
         {
             var turma = await ObterTurma(turmaCodigo);
             await ValidarPersistenciaTurmaSemestre(turma, semestre);
@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return MapearParaAuditorio(relatorioSemestralAluno);
+            return relatorioSemestralAluno;
         }
         private void MoverRemoverExcluidos(string secaoNovo, string secaoAtual)
         {
