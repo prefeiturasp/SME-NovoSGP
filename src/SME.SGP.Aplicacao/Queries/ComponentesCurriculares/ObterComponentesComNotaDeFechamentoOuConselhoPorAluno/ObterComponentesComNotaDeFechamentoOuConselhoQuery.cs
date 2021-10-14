@@ -43,4 +43,3 @@ namespace SME.SGP.Aplicacao
         }
     }
 }
-

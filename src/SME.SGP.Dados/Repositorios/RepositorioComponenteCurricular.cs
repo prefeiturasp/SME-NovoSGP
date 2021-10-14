@@ -235,6 +235,8 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>("select permite_lancamento_nota from componente_curricular where id = @id", new { id });
         }
 
+
+
         public async Task<string> ObterDescricaoPorId(long id)
         {
             var query = @"select coalesce(descricao_sgp, descricao) from componente_curricular cc where id = @id";
@@ -242,5 +244,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
         }
     }
-
+    
 }
+
