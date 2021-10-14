@@ -35,14 +35,27 @@ namespace SME.SGP.Aplicacao
             var registroIndividual = await repositorioRegistroIndividual.ObterPorIdAsync(request.Id);
             if (registroIndividual == null)
                 throw new NegocioException($"Registro individual {request.Id} não encontrado!");
-
+           
+            var regristroAtual = registroIndividual.Registro;
             MapearAlteracoes(registroIndividual, request);
-
+            MoverRemoverExcluidos(request, regristroAtual);
+            registroIndividual.Registro = request.Registro;
             await repositorioRegistroIndividual.SalvarAsync(registroIndividual);
 
             return (AuditoriaDto)registroIndividual;
         }
-
+        private void MoverRemoverExcluidos(AlterarRegistroIndividualCommand novo, string atual)
+        {
+            if (!string.IsNullOrEmpty(novo.Registro))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroIndividual, atual, novo.Registro));
+                novo.Registro = moverArquivo.Result;
+            }
+            if (!string.IsNullOrEmpty(atual))
+            {
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo.Registro, TipoArquivo.RegistroIndividual.Name()));
+            }
+        }
         private void MapearAlteracoes(RegistroIndividual entidade, AlterarRegistroIndividualCommand request)
         {
             entidade.AlunoCodigo = request.AlunoCodigo;

@@ -39,13 +39,20 @@ namespace SME.SGP.Aplicacao
             if (registroExistente != null)
                 throw new NegocioException("Já existe um registro para o aluno da turma nessa data!");
 
+            MoverArquivos(request);
             var registroIndividual = MapearParaEntidade(request);
-
             await repositorioRegistroIndividual.SalvarAsync(registroIndividual);
 
             return (AuditoriaDto)registroIndividual;
         }
-
+        private void MoverArquivos(InserirRegistroIndividualCommand novo)
+        {
+            if (!string.IsNullOrEmpty(novo.Registro))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroIndividual, string.Empty, novo.Registro));
+                novo.Registro = moverArquivo.Result;
+            }
+        }
         private RegistroIndividual MapearParaEntidade(InserirRegistroIndividualCommand request)
             => new RegistroIndividual()
             {
