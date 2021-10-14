@@ -18,11 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PlanoAulaDto> Executar(PlanoAulaDto planoAulaDto)
         {
-            unitOfWork.IniciarTransacao();
-            var planoaula = await mediator.Send(new SalvarPlanoAulaCommand(planoAulaDto));
-            unitOfWork.PersistirTransacao();
-
-            return planoaula;
+            return await mediator.Send(new SalvarPlanoAulaCommand(planoAulaDto));
         }
     }
 }
