@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,6 +40,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
+                unitOfWork.IniciarTransacao();
                 var planoAulaDto = request.PlanoAula;
                 var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
@@ -60,6 +62,18 @@ namespace SME.SGP.Aplicacao
                     await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
 
                 PlanoAula planoAula = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(planoAulaDto.AulaId));
+                var planoAulaResumidoDto = new PlanoAulaResumidoDto()
+                {
+                    DescricaoNovo = request.PlanoAula.Descricao,
+                    DesenvolvimentoAulaNovo = request.PlanoAula.DesenvolvimentoAula,
+                    RecuperacaoAulaNovo = request.PlanoAula.RecuperacaoAula,
+                    LicaoCasaNovo = request.PlanoAula.LicaoCasa,
+
+                    DescricaoAtual = planoAula.Descricao,
+                    DesenvolvimentoAulaAtual = planoAula.DesenvolvimentoAula,
+                    LicaoCasaAtual = planoAula.LicaoCasa,
+                    RecuperacaoAulaAtual = planoAula.RecuperacaoAula
+                };
                 planoAula = MapearParaDominio(planoAulaDto, planoAula);
 
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
@@ -103,8 +117,18 @@ namespace SME.SGP.Aplicacao
                     {
                         await repositorioObjetivosAula.SalvarAsync(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagem.Id, objetivoAprendizagem.ComponenteCurricularId));
                     }
+                unitOfWork.PersistirTransacao();
 
-                return new PlanoAulaDto();
+                MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual,TipoArquivo.PlanoAula);
+                MoverRemoverExcluidos(planoAulaResumidoDto.DesenvolvimentoAulaNovo, planoAulaResumidoDto.DesenvolvimentoAulaAtual,TipoArquivo.PlanoAulaDesenvolvimento);
+                MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual,TipoArquivo.PlanoAulaRecuperacao);
+                MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
+
+                planoAulaDto.Descricao = planoAula.Descricao;
+                planoAulaDto.DesenvolvimentoAula = planoAula.DesenvolvimentoAula;
+                planoAulaDto.RecuperacaoAula = planoAula.RecuperacaoAula;
+                planoAulaDto.LicaoCasa = planoAula.LicaoCasa;
+                return planoAulaDto;
             }
             catch (Exception ex)
             {
@@ -119,14 +143,24 @@ namespace SME.SGP.Aplicacao
                 planoAula = new PlanoAula();
 
             planoAula.AulaId = planoDto.AulaId;
-            planoAula.Descricao = planoDto.Descricao;
-            planoAula.DesenvolvimentoAula = planoDto.DesenvolvimentoAula;
-            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula;
-            planoAula.LicaoCasa = planoDto.LicaoCasa;
+            planoAula.Descricao = planoDto.Descricao.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.PlanoAula.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAula.DesenvolvimentoAula = planoDto.DesenvolvimentoAula.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.PlanoAulaDesenvolvimento.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.PlanoAulaRecuperacao.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAula.LicaoCasa = planoDto.LicaoCasa.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.PlanoAulaLicaoCasa.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
 
             return planoAula;
         }
-
+        private void MoverRemoverExcluidos(string novo, string atual, TipoArquivo tipo)
+        {
+            if (!string.IsNullOrEmpty(novo))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(tipo, atual, novo));
+            }
+            if (!string.IsNullOrEmpty(atual))
+            {
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
+            }
+        }
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
             if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
