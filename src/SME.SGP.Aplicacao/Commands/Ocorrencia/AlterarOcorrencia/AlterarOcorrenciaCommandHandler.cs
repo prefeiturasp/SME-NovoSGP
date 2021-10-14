@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,14 +16,16 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo;
         private readonly IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
 
         public AlterarOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia, IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo,
-            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IUnitOfWork unitOfWork)
+            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IUnitOfWork unitOfWork, IMediator mediator)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
             this.repositorioOcorrenciaTipo = repositorioOcorrenciaTipo ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaTipo)); ;
             this.repositorioOcorrenciaAluno = repositorioOcorrenciaAluno ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaAluno)); ;
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork)); ;
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<AuditoriaDto> Handle(AlterarOcorrenciaCommand request, CancellationToken cancellationToken)
@@ -39,6 +42,7 @@ namespace SME.SGP.Aplicacao
                     if (ocorrenciaTipo is null)
                         throw new NegocioException("O tipo da ocorrência informado não foi encontrado.");
 
+                    var descricaoAtual = ocorrencia.Descricao;
                     MapearAlteracoes(ocorrencia, request, ocorrenciaTipo);
                     await repositorioOcorrencia.SalvarAsync(ocorrencia);
 
@@ -54,6 +58,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     unitOfWork.PersistirTransacao();
+                    MoverRemoverExcluidos(request.Descricao, descricaoAtual);
                     return (AuditoriaDto)ocorrencia;
                 }
                 catch
@@ -63,13 +68,23 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
-
+        private void MoverRemoverExcluidos(string novo, string atual)
+        {
+            if (!string.IsNullOrEmpty(novo))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, atual, novo));
+            }
+            if (!string.IsNullOrEmpty(atual))
+            {
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.Ocorrencia.Name()));
+            }
+        }
         private void MapearAlteracoes(Ocorrencia entidade, AlterarOcorrenciaCommand request, OcorrenciaTipo ocorrenciaTipo)
         {
             entidade.DataOcorrencia = request.DataOcorrencia;
             entidade.SetHoraOcorrencia(request.HoraOcorrencia);
             entidade.Titulo = request.Titulo;
-            entidade.Descricao = request.Descricao;
+            entidade.Descricao = request.Descricao.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.Ocorrencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
             entidade.SetOcorrenciaTipo(ocorrenciaTipo);
         }
     }
