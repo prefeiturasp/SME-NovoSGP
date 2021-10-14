@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosRelatorioSemestralPAPAluno
     {
-        Task<RelatorioSemestralPAPAluno> Salvar(string alunoCodigo, string turmaCodigo, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto);
+        Task<AuditoriaRelatorioSemestralAlunoDto> Salvar(string alunoCodigo, string turmaCodigo, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto);
     }
 }
