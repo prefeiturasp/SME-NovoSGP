@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarRegistroIndividualCommandHandler : IRequestHandler<AlterarRegistroIndividualCommand, AuditoriaDto>
+    public class AlterarRegistroIndividualCommandHandler : IRequestHandler<AlterarRegistroIndividualCommand, RegistroIndividual>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioRegistroIndividual repositorioRegistroIndividual;
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioRegistroIndividual = repositorioRegistroIndividual ?? throw new ArgumentNullException(nameof(repositorioRegistroIndividual));
         }
 
-        public async Task<AuditoriaDto> Handle(AlterarRegistroIndividualCommand request, CancellationToken cancellationToken)
+        public async Task<RegistroIndividual> Handle(AlterarRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
 
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             registroIndividual.Registro = request.Registro;
             await repositorioRegistroIndividual.SalvarAsync(registroIndividual);
 
-            return (AuditoriaDto)registroIndividual;
+            return registroIndividual;
         }
         private void MoverRemoverExcluidos(AlterarRegistroIndividualCommand novo, string atual)
         {

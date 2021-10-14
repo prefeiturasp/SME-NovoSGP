@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPlanoAulaCommandHandler : AbstractUseCase, IRequestHandler<SalvarPlanoAulaCommand, AuditoriaDto>
+    public class SalvarPlanoAulaCommandHandler : AbstractUseCase, IRequestHandler<SalvarPlanoAulaCommand, PlanoAulaDto>
     {
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public async Task<AuditoriaDto> Handle(SalvarPlanoAulaCommand request, CancellationToken cancellationToken)
+        public async Task<PlanoAulaDto> Handle(SalvarPlanoAulaCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
                         await repositorioObjetivosAula.SalvarAsync(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagem.Id, objetivoAprendizagem.ComponenteCurricularId));
                     }
 
-                return (AuditoriaDto)planoAula;
+                return new PlanoAulaDto();
             }
             catch (Exception ex)
             {

@@ -71,11 +71,11 @@ namespace SME.SGP.Aplicacao
         {
             if (!string.IsNullOrEmpty(novo))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanejamentoAnual, atual, novo));
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.TerritorioSaber, atual, novo));
             }
             if (!string.IsNullOrEmpty(atual))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.PlanejamentoAnual.Name()));
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.TerritorioSaber.Name()));
             }
         }
         private void Validar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto)
