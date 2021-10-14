@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                     Modalidade = encaminhamento.FirstOrDefault().Modalidade,
                     Quantidade = encaminhamento.Sum(a => a.Quantidade),
                     AnoTurma = encaminhamento.FirstOrDefault().AnoTurma,
-                    Descricao = encaminhamento.FirstOrDefault().AnoTurma > 0 ? $"{encaminhamento.FirstOrDefault().Modalidade.ShortName()} - {encaminhamento.FirstOrDefault().AnoTurma}" : encaminhamento.FirstOrDefault().Modalidade.ShortName(),
+                    Descricao = encaminhamento.FirstOrDefault().AnoTurma != "0" ? $"{encaminhamento.FirstOrDefault().Modalidade.ShortName()} - {encaminhamento.FirstOrDefault().AnoTurma}" : encaminhamento.FirstOrDefault().Modalidade.ShortName(),
                 });
             }
 
