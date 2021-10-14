@@ -187,6 +187,8 @@
         public const string PlanoAulaDaAulaExcluir = "sgp.plano.aula.excluir";
         public const string AnotacoesFrequenciaDaAulaExcluir = "sgp.anotacoes.frequencia.aula.excluir";
         public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";
+
+        public const string VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes = "sgp.fechamento.turma.disciplina.processamento.varredura";
         public const string NotificacaoFrequencia = "sgp.notificacoes.frequencia";
         public const string ExecutarTipoCalendario = "sgp.executar.tipo.calendario";
         public const string ExecutarGravarRecorrencia = "sgp.executar.gravar.recorrencia";

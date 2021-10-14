@@ -27,8 +27,8 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task Reprocessar(long fechamentoId)
-            => await servicoFechamentoTurmaDisciplina.Reprocessar(fechamentoId);
+        public async Task Reprocessar(long fechamentoId, Usuario usuario = null)
+            => await servicoFechamentoTurmaDisciplina.Reprocessar(fechamentoId, usuario);
 
         public async Task<IEnumerable<AuditoriaPersistenciaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma, bool componenteSemNota = false)
         {

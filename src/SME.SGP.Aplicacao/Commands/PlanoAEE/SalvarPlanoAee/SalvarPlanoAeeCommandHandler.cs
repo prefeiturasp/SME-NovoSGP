@@ -48,6 +48,12 @@ namespace SME.SGP.Aplicacao.Commands
                     if (plano?.Situacao == SituacaoPlanoAEE.Devolvido)
                         plano.Situacao = SituacaoPlanoAEE.ParecerCP;
 
+                    if (plano?.Situacao == SituacaoPlanoAEE.Expirado)
+                    {
+                        await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
+                        plano.Situacao = SituacaoPlanoAEE.Validado;
+                    }
+
                     planoId = await repositorioPlanoAEE.SalvarAsync(plano);
 
                     if (planoId > 0 && ultimaVersaoPlanoAee > 1)
@@ -67,8 +73,6 @@ namespace SME.SGP.Aplicacao.Commands
                         }
                     }
 
-                    if (request.PlanoAEEDto.Situacao == SituacaoPlanoAEE.Expirado)
-                        await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
 
                     if (await ParametroGeracaoPendenciaAtivo())
                         await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoId));
