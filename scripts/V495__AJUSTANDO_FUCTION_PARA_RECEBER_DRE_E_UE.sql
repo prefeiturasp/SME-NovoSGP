@@ -46,5 +46,3 @@ where a.login = p_login
   and (p_dre_id is null or (p_dre_id is not null and act.dre_codigo = p_dre_id));
 $$;
 
-alter function f_abrangencia_semestres(varchar, uuid, boolean, integer, integer, varchar, varchar) owner to postgres;
-
