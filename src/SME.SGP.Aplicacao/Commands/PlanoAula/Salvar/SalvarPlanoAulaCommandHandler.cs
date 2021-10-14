@@ -74,12 +74,6 @@ namespace SME.SGP.Aplicacao
                     LicaoCasaAtual = planoAula.LicaoCasa,
                     RecuperacaoAulaAtual = planoAula.RecuperacaoAula
                 };
-                //planoAula = MapearParaDominio(planoAulaDto, planoAula);
-                
-                //planoAulaResumidoDto.DescricaoAtual = planoAula.Descricao;
-                //planoAulaResumidoDto.DesenvolvimentoAulaAtual = planoAula.DesenvolvimentoAula;
-                //planoAulaResumidoDto.RecuperacaoAulaAtual = planoAula.RecuperacaoAula;
-                //planoAulaResumidoDto.LicaoCasaAtual = planoAula.LicaoCasa;
                 planoAula = MapearParaDominio(planoAulaDto, planoAula);
 
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
