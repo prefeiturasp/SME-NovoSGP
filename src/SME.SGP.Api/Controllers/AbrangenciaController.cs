@@ -136,9 +136,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterSemestres([FromQuery] Modalidade modalidade, [FromQuery] int anoLetivo = 0)
+        public async Task<IActionResult> ObterSemestres([FromQuery] FiltroSemestreDto filtroSemestreDto)
         {
-            var retorno = await consultasAbrangencia.ObterSemestres(modalidade, ConsideraHistorico, anoLetivo);
+            var retorno = await consultasAbrangencia.ObterSemestres(filtroSemestreDto.Modalidade, ConsideraHistorico, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo);
 
             if (!retorno.Any())
                 return NoContent();
