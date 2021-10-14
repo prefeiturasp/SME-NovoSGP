@@ -22,4 +22,17 @@ namespace SME.SGP.Infra
 
         public bool ConsideraHistorico { get; set; }
     }
+
+    public class PlanoAulaResumidoDto
+    {
+        public string DescricaoAtual { get; set; }
+        public string DesenvolvimentoAulaAtual { get; set; }
+        public string RecuperacaoAulaAtual { get; set; }
+        public string LicaoCasaAtual { get; set; }
+
+        public string DescricaoNovo { get; set; }
+        public string DesenvolvimentoAulaNovo { get; set; }
+        public string RecuperacaoAulaNovo { get; set; }
+        public string LicaoCasaNovo { get; set; }
+    }
 }
