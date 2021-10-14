@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -16,6 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IComandosRelatorioSemestralPAPAlunoSecao comandosRelatorioSemestralAlunoSecao;
         private readonly IConsultasTurma consultasTurma;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
 
         public ComandosRelatorioSemestralPAPAluno(IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno,
                                                IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
@@ -23,7 +27,7 @@ namespace SME.SGP.Aplicacao
                                                IConsultasRelatorioSemestralTurmaPAP consultasRelatorioSemestral,
                                                IComandosRelatorioSemestralPAPAlunoSecao comandosRelatorioSemestralAlunoSecao,
                                                IConsultasTurma consultasTurma,
-                                               IUnitOfWork unitOfWork)
+                                               IUnitOfWork unitOfWork, IMediator mediator)
         {
             this.repositorioRelatorioSemestralAluno = repositorioRelatorioSemestralAluno ?? throw new ArgumentNullException(nameof(repositorioRelatorioSemestralAluno));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
@@ -32,6 +36,7 @@ namespace SME.SGP.Aplicacao
             this.comandosRelatorioSemestralAlunoSecao = comandosRelatorioSemestralAlunoSecao ?? throw new ArgumentNullException(nameof(comandosRelatorioSemestralAlunoSecao));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<AuditoriaRelatorioSemestralAlunoDto> Salvar(string alunoCodigo, string turmaCodigo, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto)
@@ -56,15 +61,16 @@ namespace SME.SGP.Aplicacao
 
                     // Relatorio Semestral Aluno
                     await repositorioRelatorioSemestralAluno.SalvarAsync(relatorioSemestralAluno);
-
+                    var listaSecaoDto = new List<RelatorioSemestralAlunoSecaoResumidaDto>();
                     foreach (var secaoRelatorio in relatorioSemestralAlunoDto.Secoes)
                     {
                         var secaoRelatorioAluno = relatorioSemestralAluno.Secoes.FirstOrDefault(c => c.SecaoRelatorioSemestralPAPId == secaoRelatorio.Id);
                         if (secaoRelatorioAluno != null)
                         {
                             secaoRelatorioAluno.RelatorioSemestralPAPAlunoId = relatorioSemestralAluno.Id;
+                            listaSecaoDto.Add(new RelatorioSemestralAlunoSecaoResumidaDto() { SecaoAtual = secaoRelatorioAluno.Valor,SecaoNovo = secaoRelatorio.Valor });
+                            secaoRelatorio.Valor = secaoRelatorio.Valor.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.RelatorioSemestralPAP.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
                             secaoRelatorioAluno.Valor = secaoRelatorio.Valor;
-
                             if (!string.IsNullOrEmpty(secaoRelatorioAluno.Valor))
                                 // Relatorio Semestral Aluno x Secao
                                 await comandosRelatorioSemestralAlunoSecao.SalvarAsync(secaoRelatorioAluno);
@@ -77,14 +83,18 @@ namespace SME.SGP.Aplicacao
                             {
                                 RelatorioSemestralPAPAlunoId = relatorioSemestralAlunoDto.RelatorioSemestralAlunoId,
                                 SecaoRelatorioSemestralPAPId = secaoRelatorio.Id,
-                                Valor = secaoRelatorio.Valor
-                            };
+                                Valor = secaoRelatorio.Valor.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.RelatorioSemestralPAP.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/")
+                        };
 
                             await comandosRelatorioSemestralAlunoSecao.SalvarAsync(secaoRelatorioAluno);
                         }
                     }
 
                     unitOfWork.PersistirTransacao();
+                    foreach (var secao in listaSecaoDto)
+                    {
+                        MoverRemoverExcluidos(secao.SecaoNovo, secao.SecaoAtual);
+                    }
                 }
                 catch (Exception)
                 {
@@ -95,7 +105,17 @@ namespace SME.SGP.Aplicacao
 
             return MapearParaAuditorio(relatorioSemestralAluno);
         }
-
+        private void MoverRemoverExcluidos(string secaoNovo, string secaoAtual)
+        {
+            if (!string.IsNullOrEmpty(secaoNovo))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RelatorioSemestralPAP, secaoAtual, secaoNovo));
+            }
+            if (!string.IsNullOrEmpty(secaoAtual))
+            {
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(secaoAtual, secaoNovo, TipoArquivo.RelatorioSemestralPAP.Name()));
+            }
+        }
         private async Task ValidarPersistenciaTurmaSemestre(Turma turma, int semestre)
         {
             var bimestre = await ObterBimestreAtual(turma);

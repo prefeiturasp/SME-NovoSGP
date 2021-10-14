@@ -1,8 +1,10 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,14 +15,16 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanoAnualTerritorioSaber repositorioPlanoAnualTerritorioSaber;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
 
         public ComandosPlanoAnualTerritorioSaber(IRepositorioPlanoAnualTerritorioSaber repositorioPlanoAnualTerritorioSaber,
                                   IUnitOfWork unitOfWork,
-                                  IServicoUsuario servicoUsuario)
+                                  IServicoUsuario servicoUsuario, IMediator mediator)
         {
             this.repositorioPlanoAnualTerritorioSaber = repositorioPlanoAnualTerritorioSaber ?? throw new ArgumentNullException(nameof(repositorioPlanoAnualTerritorioSaber));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<EntidadeBase>> Salvar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto)
@@ -30,7 +34,7 @@ namespace SME.SGP.Aplicacao
             var listaAuditoria = new List<EntidadeBase>();
 
             unitOfWork.IniciarTransacao();
-
+            var listaDescricao = new List<PlanoAnualTerritorioSaberResumidoDto>();
             var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
             if (string.IsNullOrWhiteSpace(usuarioAtual.CodigoRf))
             {
@@ -44,6 +48,11 @@ namespace SME.SGP.Aplicacao
                     if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString(), DateTime.Now).Result)
                         throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
                 }
+                listaDescricao.Add(new PlanoAnualTerritorioSaberResumidoDto() { DesenvolvimentoNovo = bimestrePlanoAnual.Desenvolvimento,
+                                                                                DesenvolvimentoAtual = planoAnualTerritorioSaber.Desenvolvimento,
+                                                                                ReflexaoAtual = planoAnualTerritorioSaber.Reflexao,
+                                                                                ReflexaoNovo = bimestrePlanoAnual.Reflexao});
+
                 planoAnualTerritorioSaber = MapearParaDominio(planoAnualTerritorioSaberDto, planoAnualTerritorioSaber, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Desenvolvimento, bimestrePlanoAnual.Reflexao);
                 repositorioPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaber);
 
@@ -51,10 +60,24 @@ namespace SME.SGP.Aplicacao
             }
 
             unitOfWork.PersistirTransacao();
-
+            foreach (var item in listaDescricao)
+            {
+                MoverRemoverExcluidos(item.DesenvolvimentoNovo, item.DesenvolvimentoAtual);
+                MoverRemoverExcluidos(item.ReflexaoNovo, item.ReflexaoAtual);
+            }
             return listaAuditoria;
         }
-
+        private void MoverRemoverExcluidos(string novo, string atual)
+        {
+            if (!string.IsNullOrEmpty(novo))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanejamentoAnual, atual, novo));
+            }
+            if (!string.IsNullOrEmpty(atual))
+            {
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.PlanejamentoAnual.Name()));
+            }
+        }
         private void Validar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto)
         {
             var bimestresDescricaoVazia = planoAnualTerritorioSaberDto.Bimestres.Where(b =>
@@ -81,8 +104,8 @@ namespace SME.SGP.Aplicacao
             }
             planoAnualTerritorioSaber.Ano = planoAnualTerritorioSaberDto.AnoLetivo.Value;
             planoAnualTerritorioSaber.Bimestre = bimestre;
-            planoAnualTerritorioSaber.Reflexao = reflexao ?? string.Empty;
-            planoAnualTerritorioSaber.Desenvolvimento = desenvolvimento ?? string.Empty;
+            planoAnualTerritorioSaber.Reflexao = reflexao.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.TerritorioSaber.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/") ?? string.Empty;
+            planoAnualTerritorioSaber.Desenvolvimento = desenvolvimento.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.TerritorioSaber.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/") ?? string.Empty;
             planoAnualTerritorioSaber.EscolaId = planoAnualTerritorioSaberDto.EscolaId;
             planoAnualTerritorioSaber.TurmaId = planoAnualTerritorioSaberDto.TurmaId.Value;
             planoAnualTerritorioSaber.TerritorioExperienciaId = planoAnualTerritorioSaberDto.TerritorioExperienciaId;
