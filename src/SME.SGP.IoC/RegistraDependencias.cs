@@ -1012,7 +1012,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarDiariosBordoPorUeTratarUseCase, ConsolidarDiariosBordoPorUeTratarUseCase>();
 
             // Consolidação de Registros Pedagógicos
-            services.TryAddScoped<IConsolidarRegistrosPedagogicosUseCase, IConsolidarRegistrosPedagogicosUseCase>();
+            services.TryAddScoped<IConsolidarRegistrosPedagogicosUseCase, ConsolidarRegistrosPedagogicosUseCase>();
+            services.TryAddScoped<IConsolidarRegistrosPedagogicosPorUeTratarUseCase, ConsolidarRegistrosPedagogicosPorUeTratarUseCase>();
 
             // Dashboard Registro Individual
             services.TryAddScoped<IObterQuantidadeRegistrosIndividuaisPorAnoTurmaUseCase, ObterQuantidadeRegistrosIndividuaisPorAnoTurmaUseCase>();

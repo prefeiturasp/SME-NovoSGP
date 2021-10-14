@@ -195,6 +195,8 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.ConsolidarDiariosBordoCarregar, new ComandoRabbit("Carregar UEs para consolidação de Diarios de Bordo", typeof(IConsolidarDiariosBordoCarregarUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarDiariosBordoPorUeTratar, new ComandoRabbit("Tratar consolidação de diarios de bordo por UE", typeof(IConsolidarDiariosBordoPorUeTratarUseCase)));
 
+            comandos.Add(RotasRabbitSgp.ConsolidarRegistrosPedagogicosPorUeTratar, new ComandoRabbit("Tratar consolidação de registros pedagógicos por UE", typeof(IConsolidarRegistrosPedagogicosPorUeTratarUseCase)));
+
             comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasSync, new ComandoRabbit("Inicia rotina de cálculo de frequência da turma", typeof(IConciliacaoFrequenciaTurmasSyncUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaRabbitDeadletterSync, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSgpSyncUseCase)));
