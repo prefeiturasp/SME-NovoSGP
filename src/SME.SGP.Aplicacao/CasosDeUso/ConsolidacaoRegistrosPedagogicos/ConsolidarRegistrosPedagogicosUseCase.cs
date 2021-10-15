@@ -10,11 +10,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsolidarRegistrosPedagogicosUseCase : AbstractUseCase, IConsolidarRegistrosPedagogicosUseCase
     {
-        private ParametrosSistema parametroConsolidacao;
         public ConsolidarRegistrosPedagogicosUseCase(IMediator mediator) : base(mediator)
         {
         }
-        public async Task<bool> Executar() //(MensagemRabbit mensagem)
+        public async Task<bool> Executar()//(MensagemRabbit mensagem)
         {
             var anosComParametroAtivo = await VerificaAnosAtivosRegistrosPedagogicos();
             if(anosComParametroAtivo.Count > 0)

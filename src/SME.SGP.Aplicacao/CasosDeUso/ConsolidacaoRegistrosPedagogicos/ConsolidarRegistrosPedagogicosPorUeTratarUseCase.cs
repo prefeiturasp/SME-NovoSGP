@@ -21,11 +21,14 @@ namespace SME.SGP.Aplicacao
 
             var consolidacoes = await mediator.Send(new ObterConsolidacaoRegistrosPedagogicosQuery(filtro.UeId, filtro.AnoLetivo));
 
-            var consolidacaoCompleta = await AtribuiProfessorEConsolida(consolidacoes);
-
-            foreach(var consolidacao in consolidacaoCompleta)
+            if (consolidacoes.Any())
             {
-                await mediator.Send(new SalvarConsolidacaoRegistrosPedagogicosCommand(consolidacao));
+                var consolidacaoCompleta = await AtribuiProfessorEConsolida(consolidacoes);
+
+                foreach (var consolidacao in consolidacaoCompleta)
+                {
+                    await mediator.Send(new SalvarConsolidacaoRegistrosPedagogicosCommand(consolidacao));
+                }
             }
 
             return true;
@@ -35,43 +38,44 @@ namespace SME.SGP.Aplicacao
         {
             string codigoTurma = string.Empty;
             var listaConsolidados = new List<ConsolidacaoRegistrosPedagogicos>();
-            var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(consolidacoes.FirstOrDefault().TurmaCodigo));
 
-            foreach (var consolidacao in consolidacoes)
+            foreach (var consolidacaoAgrupado in consolidacoes.GroupBy(c => c.TurmaId))
             {
-                if (!codigoTurma.Equals(consolidacao.TurmaCodigo))
-                {
-                    codigoTurma = consolidacao.TurmaCodigo;
-                    professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(codigoTurma));
-                }
-                else
-                {
-                    var dadosProfessorDisciplina = professoresDaTurma.Where(p => p.DisciplinaId == consolidacao.ComponenteCurricularId)
-                                                .Select(pt => new ProfessorTitularDisciplinaDto()
-                                                {
-                                                    RFProfessor = pt.ProfessorRf,
-                                                    NomeProfessor = pt.ProfessorNome
-                                                }).FirstOrDefault();
+                var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(consolidacaoAgrupado.FirstOrDefault().TurmaCodigo));
 
-                    listaConsolidados.Add(new ConsolidacaoRegistrosPedagogicos()
+                if (professoresDaTurma.Any())
+                {
+                    foreach (var consolidacao in consolidacaoAgrupado)
                     {
-                        TurmaId = consolidacao.TurmaId,
-                        PeriodoEscolarId = consolidacao.PeriodoEscolarId,
-                        AnoLetivo = consolidacao.AnoLetivo,
-                        ComponenteId = consolidacao.ComponenteCurricularId,
-                        QuantidadeAulas = consolidacao.QuantidadeAulas,
-                        FrequenciasPendentes = consolidacao.FrequenciasPendentes,
-                        DataUltimaFrequencia = consolidacao.DataUltimaFrequencia,
-                        DataUltimoPlanoAula = consolidacao.DataUltimoPlanoAula,
-                        DataUltimoDiarioBordo = consolidacao.DataUltimoDiarioBordo,
-                        DiarioBordoPendentes = consolidacao.DiarioBordoPendentes,
-                        PlanoAulaPendentes = consolidacao.PlanoAulaPendentes,
-                        NomeProfessor = dadosProfessorDisciplina.NomeProfessor,
-                        RFProfessor = dadosProfessorDisciplina.RFProfessor
-                    });
-                }
-            }
+                        var dadosProfessorDisciplina = professoresDaTurma.Where(p => p.DisciplinaId == consolidacao.ComponenteCurricularId)
+                                                    .Select(pt => new ProfessorTitularDisciplinaDto()
+                                                    {
+                                                        RFProfessor = pt.ProfessorRf,
+                                                        NomeProfessor = pt.ProfessorNome
+                                                    }).FirstOrDefault();
 
+
+
+                        listaConsolidados.Add(new ConsolidacaoRegistrosPedagogicos()
+                        {
+                            TurmaId = consolidacao.TurmaId,
+                            PeriodoEscolarId = consolidacao.PeriodoEscolarId,
+                            AnoLetivo = consolidacao.AnoLetivo,
+                            ComponenteId = consolidacao.ComponenteCurricularId,
+                            QuantidadeAulas = consolidacao.QuantidadeAulas,
+                            FrequenciasPendentes = consolidacao.FrequenciasPendentes,
+                            DataUltimaFrequencia = consolidacao.DataUltimaFrequencia,
+                            DataUltimoPlanoAula = consolidacao.DataUltimoPlanoAula,
+                            DataUltimoDiarioBordo = consolidacao.DataUltimoDiarioBordo,
+                            DiarioBordoPendentes = consolidacao.DiarioBordoPendentes,
+                            PlanoAulaPendentes = consolidacao.PlanoAulaPendentes,
+                            NomeProfessor = dadosProfessorDisciplina != null ? dadosProfessorDisciplina.NomeProfessor : "",
+                            RFProfessor = dadosProfessorDisciplina != null ? dadosProfessorDisciplina.RFProfessor : ""
+                        });
+                    }
+                }
+
+            }
             return listaConsolidados;
         }
 

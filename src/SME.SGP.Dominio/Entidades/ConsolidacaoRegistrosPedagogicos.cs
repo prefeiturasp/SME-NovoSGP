@@ -7,11 +7,8 @@ namespace SME.SGP.Dominio
     public class ConsolidacaoRegistrosPedagogicos
     {
         public long Id { get; set; }
-        public Turma Turma { get; set; }
         public long TurmaId { get; set; }
-        public ComponenteCurricular ComponenteCurricular { get; set; }
         public long ComponenteId { get; set; }
-        public PeriodoEscolar PeriodoEscolar { get; set; }
         public long PeriodoEscolarId { get; set; }
         public int AnoLetivo { get; set; }
         public string NomeProfessor { get; set; }

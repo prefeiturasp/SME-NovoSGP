@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/relatorios")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class RelatorioController : ControllerBase
     {
         [HttpGet("{codigoCorrelacao}")]
@@ -229,6 +229,5 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioRegistrosPedagogicos.Executar());
         }
-
     }
 }

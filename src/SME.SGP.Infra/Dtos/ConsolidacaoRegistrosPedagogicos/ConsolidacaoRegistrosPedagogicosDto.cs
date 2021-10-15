@@ -20,5 +20,28 @@ namespace SME.SGP.Infra
         public int PlanoAulaPendentes { get; set; }
         public string NomeProfessor { get; set; }
         public string RFProfessor { get; set; }
+
+        public ConsolidacaoRegistrosPedagogicosDto()
+        {
+
+        }
+
+        public ConsolidacaoRegistrosPedagogicosDto(long periodoEscolarId, long turmaId, string turmaCodigo, int anoLetivo, long componenteCurricularId, int quantidadeAulas, int frequenciasPendentes, DateTime dataUltimaFrequencia, DateTime dataUltimoPlanoAula, DateTime dataUltimoDiarioBordo, int diarioBordoPendentes, int planoAulaPendentes, string nomeProfessor, string rFProfessor)
+        {
+            PeriodoEscolarId = periodoEscolarId;
+            TurmaId = turmaId;
+            TurmaCodigo = turmaCodigo;
+            AnoLetivo = anoLetivo;
+            ComponenteCurricularId = componenteCurricularId;
+            QuantidadeAulas = quantidadeAulas;
+            FrequenciasPendentes = frequenciasPendentes;
+            DataUltimaFrequencia = dataUltimaFrequencia;
+            DataUltimoPlanoAula = dataUltimoPlanoAula;
+            DataUltimoDiarioBordo = dataUltimoDiarioBordo;
+            DiarioBordoPendentes = diarioBordoPendentes;
+            PlanoAulaPendentes = planoAulaPendentes;
+            NomeProfessor = nomeProfessor;
+            RFProfessor = rFProfessor;
+        }
     }
 }
