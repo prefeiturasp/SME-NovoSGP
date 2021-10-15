@@ -333,12 +333,6 @@ namespace SME.SGP.Dominio
 
             foreach (var notaConceito in notasConceitos)
             {
-                if (notaConceito.Id > 0)
-                {
-                    if(!usuario.EhGestorEscolar())
-                        notaConceito.Validar(professorRf);
-                }
-
                 var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(notaConceito.AlunoId));
 
                 if (aluno == null)
@@ -426,7 +420,9 @@ namespace SME.SGP.Dominio
             if (usuario == null)
                 usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
+            var podePersistir = await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula);
+
+            if (!usuario.EhProfessorCj() && !podePersistir)
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
         }
     }
