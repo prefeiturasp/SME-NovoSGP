@@ -266,7 +266,7 @@ namespace SME.SGP.Dados.Repositorios
                                                     fn.fechamento_aluno_id = fa.id
                                                     and not fn.excluido
 				                                inner join conceito_valores cv on fn.conceito_id = cv.id
-                                                where t.ano_letivo = @anoLetivo ");            
+                                                where t.ano_letivo = @anoLetivo ");
 
             if (ueId > 0)
                 query.Append(" and ue.id = @ueId ");
@@ -314,7 +314,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                            inner join conselho_classe_nota ccn on
 		                                            ccn.conselho_classe_aluno_id = cca.id
 	                                            inner join conceito_valores cv on ccn.conceito_id = cv.id
-	                                            where t.ano_letivo = @anoLetivo ");            
+	                                            where t.ano_letivo = @anoLetivo ");
 
             if (ueId > 0)
                 query.Append(" and ue.id = @ueId ");
@@ -333,6 +333,29 @@ namespace SME.SGP.Dados.Repositorios
 
             query.Append(";");
             return query.ToString();
+        }
+
+
+        public async Task<IEnumerable<objConsolidacaoConselhoAluno>> ObterAlunosReprocessamentoConsolidacaoConselho(int dreId)
+        {
+            var query = new StringBuilder(@" select t.id as turmaId, pe.bimestre, cca.aluno_codigo as alunoCodigo   from conselho_classe_aluno cca
+                          inner join conselho_classe cc on cc.id = cca.conselho_classe_id
+                          inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id
+                          inner join turma t on t.id = ft.turma_id
+                          inner join ue ue on ue.id = t.ue_id 
+                          inner join dre dre on dre.id = ue.dre_id 
+                          inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                          inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id
+                          where  t.ano_letivo = 2021
+                          and dre.id = @dreId 
+                            and   pe.bimestre in (1,2,3)
+                          and tc.id in (24,25,26,27)");
+
+            var parametros = new
+            {
+                dreId
+            };
+            return await database.Conexao.QueryAsync<objConsolidacaoConselhoAluno>(query.ToString(), parametros);
         }
     }
 }
