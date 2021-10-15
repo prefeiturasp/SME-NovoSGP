@@ -56,8 +56,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhado, filtroRelatorioBoletimDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhado));
             else
             {
-                var rotaBoletim = string.IsNullOrEmpty(filtroRelatorioBoletimDto.TurmaCodigo) ?
-                    RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimUe :
+                var rotaBoletim = !string.IsNullOrEmpty(filtroRelatorioBoletimDto.TurmaCodigo) ?
+                    RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimTurma :
                     RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletim;
 
                 retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, filtroRelatorioBoletimDto, usuarioLogado, rotaBoletim));
