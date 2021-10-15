@@ -162,7 +162,7 @@ namespace SME.SGP.Aplicacao
             }
             planoAnual.Ano = planoAnualDto.AnoLetivo.Value;
             planoAnual.Bimestre = bimestre;
-            planoAnual.Descricao = descricao.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.PlanejamentoAnual.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAnual.Descricao = descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanejamentoAnual.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
             planoAnual.EscolaId = planoAnualDto.EscolaId;
             planoAnual.TurmaId = planoAnualDto.TurmaId.Value;
             planoAnual.ComponenteCurricularEolId = planoAnualDto.ComponenteCurricularEolId;

@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                     var ocorrencia = new Ocorrencia(request.DataOcorrencia, 
                                                     request.HoraOcorrencia,
                                                     request.Titulo, 
-                                                    request.Descricao.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.Ocorrencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/"),
+                                                    request.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.Ocorrencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/"),
                                                     ocorrenciaTipo,
                                                     turma);
                     ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);

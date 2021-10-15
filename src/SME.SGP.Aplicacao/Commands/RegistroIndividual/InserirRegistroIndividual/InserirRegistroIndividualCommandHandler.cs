@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirRegistroIndividualCommandHandler : IRequestHandler<InserirRegistroIndividualCommand, AuditoriaDto>
+    public class InserirRegistroIndividualCommandHandler : IRequestHandler<InserirRegistroIndividualCommand, RegistroIndividual>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioRegistroIndividual repositorioRegistroIndividual;
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioRegistroIndividual = repositorioRegistroIndividual ?? throw new ArgumentNullException(nameof(repositorioRegistroIndividual));
         }
 
-        public async Task<AuditoriaDto> Handle(InserirRegistroIndividualCommand request, CancellationToken cancellationToken)
+        public async Task<RegistroIndividual> Handle(InserirRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
 
@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
             var registroIndividual = MapearParaEntidade(request);
             await repositorioRegistroIndividual.SalvarAsync(registroIndividual);
 
-            return (AuditoriaDto)registroIndividual;
+            return registroIndividual;
         }
         private void MoverArquivos(InserirRegistroIndividualCommand novo)
         {

@@ -143,10 +143,10 @@ namespace SME.SGP.Aplicacao
                 planoAula = new PlanoAula();
 
             planoAula.AulaId = planoDto.AulaId;
-            planoAula.Descricao = planoDto.Descricao.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.PlanoAula.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
-            planoAula.DesenvolvimentoAula = planoDto.DesenvolvimentoAula.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.PlanoAulaDesenvolvimento.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
-            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.PlanoAulaRecuperacao.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
-            planoAula.LicaoCasa = planoDto.LicaoCasa.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.PlanoAulaLicaoCasa.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAula.Descricao = planoDto.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAula.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAula.DesenvolvimentoAula = planoDto.DesenvolvimentoAula.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAulaDesenvolvimento.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAulaRecuperacao.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAula.LicaoCasa = planoDto.LicaoCasa.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAulaLicaoCasa.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
 
             return planoAula;
         }

@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RegistroIndividual> Handle(AlterarRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
+
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
 
             if (turma == null)
@@ -35,7 +36,7 @@ namespace SME.SGP.Aplicacao
             var registroIndividual = await repositorioRegistroIndividual.ObterPorIdAsync(request.Id);
             if (registroIndividual == null)
                 throw new NegocioException($"Registro individual {request.Id} não encontrado!");
-           
+
             var regristroAtual = registroIndividual.Registro;
             MapearAlteracoes(registroIndividual, request);
             MoverRemoverExcluidos(request, regristroAtual);

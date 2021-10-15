@@ -49,8 +49,8 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
                 }
                 listaDescricao.Add(new PlanoAnualTerritorioSaberResumidoDto() { DesenvolvimentoNovo = bimestrePlanoAnual.Desenvolvimento,
-                                                                                DesenvolvimentoAtual = planoAnualTerritorioSaber.Desenvolvimento,
-                                                                                ReflexaoAtual = planoAnualTerritorioSaber.Reflexao,
+                                                                                DesenvolvimentoAtual = planoAnualTerritorioSaber!= null ? planoAnualTerritorioSaber.Desenvolvimento : string.Empty,
+                                                                                ReflexaoAtual = planoAnualTerritorioSaber != null ? planoAnualTerritorioSaber.Reflexao : string.Empty,
                                                                                 ReflexaoNovo = bimestrePlanoAnual.Reflexao});
 
                 planoAnualTerritorioSaber = MapearParaDominio(planoAnualTerritorioSaberDto, planoAnualTerritorioSaber, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Desenvolvimento, bimestrePlanoAnual.Reflexao);
@@ -104,8 +104,8 @@ namespace SME.SGP.Aplicacao
             }
             planoAnualTerritorioSaber.Ano = planoAnualTerritorioSaberDto.AnoLetivo.Value;
             planoAnualTerritorioSaber.Bimestre = bimestre;
-            planoAnualTerritorioSaber.Reflexao = reflexao.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.TerritorioSaber.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/") ?? string.Empty;
-            planoAnualTerritorioSaber.Desenvolvimento = desenvolvimento.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.TerritorioSaber.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/") ?? string.Empty;
+            planoAnualTerritorioSaber.Reflexao = reflexao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.TerritorioSaber.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/") ?? string.Empty;
+            planoAnualTerritorioSaber.Desenvolvimento = desenvolvimento.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.TerritorioSaber.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/") ?? string.Empty;
             planoAnualTerritorioSaber.EscolaId = planoAnualTerritorioSaberDto.EscolaId;
             planoAnualTerritorioSaber.TurmaId = planoAnualTerritorioSaberDto.TurmaId.Value;
             planoAnualTerritorioSaber.TerritorioExperienciaId = planoAnualTerritorioSaberDto.TerritorioExperienciaId;

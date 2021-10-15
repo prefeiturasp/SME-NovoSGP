@@ -121,7 +121,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Os objetivos de desenvolvimento sustentável devem conter ao menos 1 elemento.");
                 }
             }
-            planoCiclo.Descricao = planoCicloDto.Descricao.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.PlanoCiclo.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoCiclo.Descricao = planoCicloDto.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoCiclo.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
             planoCiclo.CicloId = planoCicloDto.CicloId;
             planoCiclo.Ano = planoCicloDto.Ano;
             planoCiclo.EscolaId = planoCicloDto.EscolaId;
