@@ -46,18 +46,9 @@ namespace SME.SGP.Dados
                             , a.disciplina_id as ComponenteCurricularId
                             , count(a.id) as QuantidadeAulas
                             , count(a.id) filter (where rf.id is null) as FrequenciasPendentes
-                            , case 
-                              when max(rf.criado_em) is null 
-                              then null 
-                              else max(rf.criado_em) end as DataUltimaFrequencia
-                            , case 
-                              when max(pa.criado_em) is null 
-                              then null 
-                              else max(pa.criado_em) end as DataUltimoPlanoAula
-                            , case 
-                              when max(db.criado_em) is null
-                              then null 
-                              else max(db.criado_em) end as DataUltimoDiarioBordo
+                            , max(rf.criado_em) as DataUltimaFrequencia
+                            , max(pa.criado_em) as DataUltimoPlanoAula
+                            , max(db.criado_em) as DataUltimoDiarioBordo
                             , case 
                               when max(pa.criado_em) is not null or disciplina_id != '512' then 0
                               else count(a.id) filter (where db.id is null)
@@ -75,8 +66,8 @@ namespace SME.SGP.Dados
 	                         left join plano_aula pa on pa.aula_id  = a.id and not pa.excluido 
                          where not a.excluido 
                            and a.data_aula < NOW()
-                           and t.ue_id = 1
-                           and t.ano_letivo = 2020
+                           and t.ue_id = @ueId
+                           and t.ano_letivo = @anoLetivo
                         group by pe.id, pe.bimestre, t.id, a.disciplina_id, db.criado_em, pa.criado_em";
 
             return await database.Conexao.QueryAsync<ConsolidacaoRegistrosPedagogicosDto>(query, new { ueId, anoLetivo });
