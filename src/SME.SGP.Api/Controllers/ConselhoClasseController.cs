@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System.Collections.Generic;
@@ -131,5 +132,17 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterBimestresComConselhoClasseTurma(long turmaId, [FromServices] IObterBimestresComConselhoClasseTurmaUseCase obterBimestresComConselhoClasseTurmaUseCase)
          => Ok(await obterBimestresComConselhoClasseTurmaUseCase.Executar(turmaId));
+
+        [HttpGet("ReprocessarSituacaoConselhoClasseAluno")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(IEnumerable<BimestreComConselhoClasseTurmaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ReprocessarSituacaoConselhoClasseAluno(int dreId, [FromServices] IServicoConselhoClasse servicoConselhoClasse)
+        {
+            var totalAjustados = await servicoConselhoClasse.ConsolidaConselhoClasse(dreId);
+
+            return Ok(totalAjustados);
+        }
     }
 }
