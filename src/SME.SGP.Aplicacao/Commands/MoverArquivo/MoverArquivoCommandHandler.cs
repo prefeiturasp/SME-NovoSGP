@@ -26,30 +26,22 @@ namespace SME.SGP.Aplicacao
             var caminhoArquivoTemp = Path.Combine(caminhoBase, TipoArquivo.Editor.Name());
             var caminhoArquivoFuncionalidade = Path.Combine(caminhoBase, request.Tipo.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString());
             MoverAquivo(caminhoArquivoTemp, caminhoArquivoFuncionalidade, nomeArquivo);
-            await AlterarTipoArquivo(request.Tipo,request.Nome);
+            await AlterarTipoArquivo(request.Tipo, request.Nome);
 
-            return  await Task.FromResult($"/{Path.Combine(request.Tipo.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            return await Task.FromResult($"/{Path.Combine(request.Tipo.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
         }
 
         private async Task AlterarTipoArquivo(TipoArquivo tipo, string nomeArquivo)
         {
-            try
+            var arquivo = await repositorioArquivo.ObterPorCodigo(new Guid(nomeArquivo.Split('.').FirstOrDefault()));
+            if (arquivo != null)
             {
-                var arquivo = await repositorioArquivo.ObterPorCodigo(new Guid(nomeArquivo.Split('.').FirstOrDefault()));
-                if (arquivo != null)
-                {
-                    arquivo.Tipo = tipo;
-                    await repositorioArquivo.SalvarAsync(arquivo);
-                }
-            }
-            catch (Exception ex)
-            {
-
-                throw;
+                arquivo.Tipo = tipo;
+                await repositorioArquivo.SalvarAsync(arquivo);
             }
         }
 
-        private void MoverAquivo(string caminhoArquivoTemp, string caminhoArquivoFuncionalidade,string nomeArquivo)
+        private void MoverAquivo(string caminhoArquivoTemp, string caminhoArquivoFuncionalidade, string nomeArquivo)
         {
             if (!Directory.Exists(caminhoArquivoFuncionalidade))
                 Directory.CreateDirectory(caminhoArquivoFuncionalidade);
