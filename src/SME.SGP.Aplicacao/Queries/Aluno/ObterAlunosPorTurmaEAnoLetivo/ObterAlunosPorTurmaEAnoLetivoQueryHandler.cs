@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (alunos == null || !alunos.Any())
                 throw new NegocioException($"Não foi encontrado alunos para a turma {request.CodigoTurma}");
 
-            return alunos.Where(x => x.DeveMostrarNaChamada(DateTime.Now)).OrderBy(x => x.NumeroAlunoChamada);
+            return alunos.OrderBy(x => x.NumeroAlunoChamada);
         }
     }
 }
