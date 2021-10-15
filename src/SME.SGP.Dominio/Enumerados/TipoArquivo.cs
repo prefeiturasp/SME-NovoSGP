@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio
         Geral = 1,
 
         [Display(Name ="temp")] 
-        Temp = 2,
+        Editor = 2,
 
         [Display(Name ="encaminhamento/aee")]
         EncaminhamentoAEE = 3,
