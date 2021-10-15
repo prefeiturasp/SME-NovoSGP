@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -295,7 +296,7 @@ namespace SME.SGP.Dominio.Servicos
             compensacao.DisciplinaId = compensacaoDto.DisciplinaId;
             compensacao.Bimestre = compensacaoDto.Bimestre;
             compensacao.Nome = compensacaoDto.Atividade;
-            compensacao.Descricao = compensacaoDto.Descricao;
+            compensacao.Descricao = compensacaoDto.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.CompensacaoAusencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
 
             return compensacao;
         }

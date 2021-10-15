@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
                         {
                             secaoRelatorioAluno.RelatorioSemestralPAPAlunoId = relatorioSemestralAluno.Id;
                             listaSecaoDto.Add(new RelatorioSemestralAlunoSecaoResumidaDto() { SecaoAtual = secaoRelatorioAluno.Valor,SecaoNovo = secaoRelatorio.Valor });
-                            secaoRelatorio.Valor = secaoRelatorio.Valor.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.RelatorioSemestralPAP.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+                            secaoRelatorio.Valor = secaoRelatorio.Valor.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.RelatorioSemestralPAP.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
                             secaoRelatorioAluno.Valor = secaoRelatorio.Valor;
                             if (!string.IsNullOrEmpty(secaoRelatorioAluno.Valor))
                                 // Relatorio Semestral Aluno x Secao
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 RelatorioSemestralPAPAlunoId = relatorioSemestralAlunoDto.RelatorioSemestralAlunoId,
                                 SecaoRelatorioSemestralPAPId = secaoRelatorio.Id,
-                                Valor = secaoRelatorio.Valor.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.RelatorioSemestralPAP.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/")
+                                Valor = secaoRelatorio.Valor.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.RelatorioSemestralPAP.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/")
                         };
 
                             await comandosRelatorioSemestralAlunoSecao.SalvarAsync(secaoRelatorioAluno);

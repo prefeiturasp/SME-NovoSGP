@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
                                     };
                                 }
                                 listaDescricao.Add(new PlanejamentoAnualComponenteResumidoDto() { DescricaoNovo = componente.Descricao,DescricaoAtual = planejamentoAnualComponente.Descricao });
-                                planejamentoAnualComponente.Descricao = componente.Descricao = componente.Descricao.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.PlanejamentoAnual.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/"); ;
+                                planejamentoAnualComponente.Descricao = componente.Descricao = componente.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanejamentoAnual.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/"); ;
                                 await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
                                 auditoria.Componentes.Add(new PlanejamentoAnualComponenteDto
                                 {

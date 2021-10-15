@@ -7,7 +7,7 @@ namespace SME.SGP.Infra
     {
         public static string ObterDiretorioBase()
         {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arquivos");
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ArquivoContants.PastaAquivos);
         }
     }
 }

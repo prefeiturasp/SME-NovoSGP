@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
             entidade.DataOcorrencia = request.DataOcorrencia;
             entidade.SetHoraOcorrencia(request.HoraOcorrencia);
             entidade.Titulo = request.Titulo;
-            entidade.Descricao = request.Descricao.Replace("/Temp/", $"/{Path.Combine(TipoArquivo.Ocorrencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            entidade.Descricao = request.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.Ocorrencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
             entidade.SetOcorrenciaTipo(ocorrenciaTipo);
         }
     }

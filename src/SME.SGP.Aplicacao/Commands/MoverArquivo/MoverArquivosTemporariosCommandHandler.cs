@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System;
 using System.Collections.Generic;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -30,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 enderecoFuncionalidade = await mediator.Send(new MoverArquivoCommand(item, request.TipoArquivo));
             }
 
-            return request.TextoEditorNovo.Replace("/Temp/", enderecoFuncionalidade);
+            return request.TextoEditorNovo.Replace(ArquivoContants.PastaTemporaria, enderecoFuncionalidade);
 
         }
     }

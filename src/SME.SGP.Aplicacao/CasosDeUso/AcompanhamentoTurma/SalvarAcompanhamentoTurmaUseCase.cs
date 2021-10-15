@@ -13,11 +13,11 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<AuditoriaDto> Executar(AcompanhamentoTurmaDto dto)
+        public async Task<AcompanhamentoTurma> Executar(AcompanhamentoTurmaDto dto)
         {
             var acompanhamentoTurma = await MapearAcompanhamentoTurma(dto);
 
-            return (AuditoriaDto)acompanhamentoTurma;
+            return acompanhamentoTurma;
         }
 
         private async Task<AcompanhamentoTurma> MapearAcompanhamentoTurma(AcompanhamentoTurmaDto dto)
