@@ -73,12 +73,17 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> PodeEditarParecerCP(PlanoAEE planoAEE, Usuario usuario, Turma turma)
             => SituacaoPermiteEdicaoCP(planoAEE.Situacao) &&
-                (usuario.EhGestorEscolar() ?
-                await UsuarioGestorDoPlano(usuario, turma) :
-                false);
+              (usuario.EhGestorEscolar() &&
+               await UsuarioGestorDoPlano(usuario, turma));
 
         private bool SituacaoPermiteEdicaoCP(SituacaoPlanoAEE situacao)
-            => new SituacaoPlanoAEE[] { SituacaoPlanoAEE.ParecerCP, SituacaoPlanoAEE.AtribuicaoPAAI, SituacaoPlanoAEE.ParecerPAAI }.Contains(situacao);
+            => new SituacaoPlanoAEE[] 
+            { 
+                SituacaoPlanoAEE.ParecerCP,
+                SituacaoPlanoAEE.AtribuicaoPAAI,
+                SituacaoPlanoAEE.ParecerPAAI,
+                SituacaoPlanoAEE.Devolvido
+            }.Contains(situacao);
 
         private async Task<bool> UsuarioGestorDoPlano(Usuario usuario, Turma turma)
             => await mediator.Send(new EhGestorDaEscolaQuery(usuario.CodigoRf, turma.Ue.CodigoUe, usuario.PerfilAtual));

@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDadosDashboardFrequenciaPorAnoTurmaQueryHandler : IRequestHandler<ObterDadosDashboardFrequenciaPorAnoTurmaQuery, IEnumerable<FrequenciaAlunoDashboardDto>>
     {
-        private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioDashBoardFrequencia repositorioFrequencia;
 
-        public ObterDadosDashboardFrequenciaPorAnoTurmaQueryHandler(IRepositorioFrequencia repositorioFrequencia)
+        public ObterDadosDashboardFrequenciaPorAnoTurmaQueryHandler(IRepositorioDashBoardFrequencia repositorioFrequencia)
         {
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
         }

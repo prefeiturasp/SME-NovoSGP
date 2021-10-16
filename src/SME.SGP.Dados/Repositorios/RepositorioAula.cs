@@ -827,7 +827,7 @@ namespace SME.SGP.Dados.Repositorios
             return modalidade == (int)Modalidade.EducacaoInfantil;
         }
 
-        public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId)
+        public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId, string criadoPor = null)
         {
             var query = @"select a.* 
                             from aula a
@@ -836,9 +836,22 @@ namespace SME.SGP.Dados.Repositorios
                           where a.tipo_calendario_id = @tipoCalendarioId and 
                                 a.turma_id = @turmaId and 
                                 not a.excluido and
-                                extract(year from a.data_aula) = t.ano_letivo
-                          order by a.data_aula";
-            return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId });
+                                extract(year from a.data_aula) = t.ano_letivo";
+
+            var criadoRf = new string[] { criadoPor };
+
+            if (!string.IsNullOrWhiteSpace(criadoPor))
+            {
+                if (criadoPor.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase))
+                    criadoRf = criadoRf.Concat(new string[] { "0" }).ToArray();
+
+                query += @" and a.criado_por = @criadoPor 
+                            and a.criado_rf = any(@criadoRf) ";
+            }
+
+            query += " order by a.data_aula;";
+
+            return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId, criadoPor, criadoRf });
         }
 
         public async Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasParaPendenciasAulaDiasNaoLetivos(long tipoCalendarioId, TipoEscola[] tiposEscola)
@@ -1017,7 +1030,9 @@ namespace SME.SGP.Dados.Repositorios
                              where t.turma_id = @codigoTurma and
 	                               a.tipo_calendario_id = @tipoCalendarioId and
 	                               a.excluido and
-	                               not db.excluido;";
+	                               not db.excluido and
+                                   a.criado_por = 'Sistema' and
+                                   a.criado_rf = 'Sistema';";
 
             return (await database.Conexao.QueryAsync<Aula>(sqlQuery, new { codigoTurma, tipoCalendarioId }));
         }

@@ -172,6 +172,7 @@ namespace SME.SGP.IoC
         {
             services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
             services.TryAddScoped<ISgpContext, SgpContext>();
+            services.TryAddScoped<ISgpContextConsultas, SgpContextConsultas>();
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
         }
 
@@ -388,6 +389,7 @@ namespace SME.SGP.IoC
             // Frequência 
             services.TryAddScoped<IRepositorioFrequenciaPreDefinida, RepositorioFrequenciaPreDefinida>();
             services.TryAddScoped<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
+            services.TryAddScoped<IRepositorioDashBoardFrequencia, RepositorioDashBoardFrequencia>();
 
             //Evento Bimestre
             services.TryAddScoped<IRepositorioEventoBimestre, RepositorioEventoBimestre>();
@@ -601,6 +603,8 @@ namespace SME.SGP.IoC
 
             // Fechamento
             services.TryAddScoped<IGerarPendenciasFechamentoUseCase, GerarPendenciasFechamentoUseCase>();
+            services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
+            services.TryAddScoped<IVarreduraFechamentosEmProcessamentoPendentesUseCase, VarreduraFechamentosEmProcessamentoPendentesUseCase>();
 
             //Notificacao Devolutivoa
             services.TryAddScoped<ISalvarNotificacaoDevolutivaUseCase, SalvarNotificacaoDevolutivaUseCase>();
@@ -703,6 +707,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConciliacaoFrequenciaTurmasCronUseCase, ConciliacaoFrequenciaTurmasCronUseCase>();
             services.TryAddScoped<IConciliacaoFrequenciaTurmasSyncUseCase, ConciliacaoFrequenciaTurmasSyncUseCase>();
             services.TryAddScoped<IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase, ValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase>();
+            services.TryAddScoped<IExecutaConsolidacaoFrequenciaPorAnoUseCase, ExecutaConsolidacaoFrequenciaPorAnoUseCase>();
 
             // Notificações
 

@@ -77,8 +77,8 @@ namespace SME.SGP.Background
             Cliente.ExecutarPeriodicamente<IExecutarConsolidacaoMatriculaTurmasUseCase>(c => c.Executar(), Cron.Daily(10));
 
             // Removido até melhoria de performance prevista
-            //Cliente.ExecutarPeriodicamente<IExecutarConsolidacaoFrequenciaTurmaSyncUseCase>(c => c.Executar(), Cron.Daily(6));
-  
+            Cliente.ExecutarPeriodicamente<IExecutarConsolidacaoFrequenciaTurmaSyncUseCase>(c => c.Executar(), Cron.Daily(6));
+
             Cliente.ExecutarPeriodicamente<IConciliacaoFrequenciaTurmasCronUseCase>(c => c.Executar(), Cron.Weekly(System.DayOfWeek.Saturday, 23));           
           
             Cliente.ExecutarPeriodicamente<IExecutarSincronizacaoDevolutivasPorTurmaInfantilSyncUseCase>(c => c.Executar(), Cron.Daily(9));
@@ -86,8 +86,8 @@ namespace SME.SGP.Background
             Cliente.ExecutarPeriodicamente<IExecutarSincronizacaoAulasRegenciaAutomaticasUseCase>(c => c.Executar(), Cron.Daily(9));
 
             //De 10 em 10 minutos
-            Cliente.ExecutarPeriodicamente<IRabbitDeadletterSgpSyncUseCase>(c => c.Executar(), Cron.MinuteInterval(10));
-            Cliente.ExecutarPeriodicamente<IRabbitDeadletterSrSyncUseCase>(c => c.Executar(), Cron.MinuteInterval(10));
+            //Cliente.ExecutarPeriodicamente<IRabbitDeadletterSgpSyncUseCase>(c => c.Executar(), Cron.MinuteInterval(10));
+            //Cliente.ExecutarPeriodicamente<IRabbitDeadletterSrSyncUseCase>(c => c.Executar(), Cron.MinuteInterval(10));
 
             Cliente.ExecutarPeriodicamente<IExecutarSincronizacaoMediaRegistrosIndividuaisSyncUseCase>(c => c.Executar(), Cron.Daily(9));
             
@@ -97,6 +97,8 @@ namespace SME.SGP.Background
             Cliente.ExecutarPeriodicamente<IRotasAgendamentoSyncUseCase>(c => c.Executar(), Cron.Daily(10));
 
             Cliente.ExecutarPeriodicamente<IExecutarSyncSerapEstudantesProvasUseCase>(c => c.Executar(), Cron.Daily(1));
+
+            Cliente.ExecutarPeriodicamente<IExecutarVarreduraFechamentosEmProcessamentoPendentes>(c => c.Executar(), Cron.HourInterval(6));
         }
     }
 }
