@@ -34,12 +34,14 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
                 foreach (var alunoEOL in alunosEOL.OrderBy(a => a.NomeAluno))
                 {
                     var turmaAluno = turmas != null && turmas.Any() ? turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()) : null;
+                    var turmaAlunoDescricao = turmaAluno == null ? string.Empty : $"- {turmaAluno.Nome}";
+
                     var alunoSimples = new AlunoSimplesDto()
                     {
                         Codigo = alunoEOL.CodigoAluno,
-                        Nome = alunoEOL.NomeAluno,
+                        Nome = $"{alunoEOL.NomeAluno} {turmaAlunoDescricao}",
                         CodigoTurma = alunoEOL.CodigoTurma.ToString(),
-                        TurmaId = turmaAluno!=null ? turmaAluno.Id : 0,
+                        TurmaId = turmaAluno != null ? turmaAluno.Id : 0,
                         NomeComModalidadeTurma = turmas != null && turmas.Any() ?
                         $"{alunoEOL.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()))}" : ""
                     };
