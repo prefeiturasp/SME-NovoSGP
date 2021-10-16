@@ -165,6 +165,10 @@ namespace SME.SGP.Aplicacao
                 turmasCodigos = new string[1] { turma.CodigoTurma };
                 conselhosClassesIds = new long[1] { conselhoClasseId };
             }
+            
+            var turmasComMatriculasValidas = await ObterTurmasComMatriculasValidas(alunoCodigo, turmasCodigos, periodoEscolar);
+            if (turmasComMatriculasValidas.Any())
+                turmasCodigos = turmasComMatriculasValidas.ToArray();            
 
             var notasConselhoClasseAluno = new List<NotaConceitoBimestreComponenteDto>();
 
@@ -298,6 +302,21 @@ namespace SME.SGP.Aplicacao
             retorno.NotasConceitos = gruposMatrizesNotas;
 
             return retorno;
+        }
+
+        private async Task<List<string>> ObterTurmasComMatriculasValidas(string alunoCodigo, string[] turmasCodigos, PeriodoEscolar periodoEscolar)
+        {
+            var turmasCodigosComMatriculasValidas = new List<string>();
+            foreach (string codTurma in turmasCodigos)
+            {
+                var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, alunoCodigo));
+                if (matriculasAluno != null || matriculasAluno.Any())
+                {
+                    if (matriculasAluno.Any(m => m.PossuiSituacaoAtiva() || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= periodoEscolar.PeriodoInicio && m.DataSituacao <= periodoEscolar.PeriodoFim)))
+                        turmasCodigosComMatriculasValidas.Add(codTurma);
+                }
+            }
+            return turmasCodigosComMatriculasValidas;
         }
 
         private async Task<bool> VerificaSePossuiConselhoClasseAlunoAsync(long conselhoClasseId, string alunoCodigo)

@@ -9,6 +9,7 @@ namespace SME.SGP.Aplicacao
     {
         Task<IEnumerable<AuditoriaPersistenciaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma, bool componenteSemNota = false);
         Task Reprocessar(long fechamentoId, Usuario usuario = null);
+        void Reprocessar(IEnumerable<long> fechamentoId, Usuario usuario = null);
         Task ProcessarPendentes(int anoLetivo);
     }
 }
