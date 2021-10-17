@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Dommel;
 using SME.SGP.Infra;
-using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;

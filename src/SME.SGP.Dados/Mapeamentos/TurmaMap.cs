@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Extinta).Ignore();
             Map(c => c.Ano).ToColumn("ano");
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.CodigoTurma).ToColumn("codigo_turma");
+            Map(c => c.CodigoTurma).ToColumn("turma_id");
             Map(c => c.TipoTurma).ToColumn("tipo_turma");
             Map(c => c.DataAtualizacao).ToColumn("data_atualizacao");
             Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
