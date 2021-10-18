@@ -4,6 +4,7 @@
     {
         public const string RotaRelatoriosSolicitados = "sr.relatorios.solicitados";
         public const string RotaRelatoriosSolicitadosBoletim = "sr.relatorios.solicitados.boletim";
+        public const string RotaRelatoriosSolicitadosBoletimTurma = "sr.relatorios.solicitados.boletim.turma";
         public const string RotaRelatoriosSolicitadosBoletimDetalhado = "sr.relatorios.solicitados.boletimdetalhado";
         public const string RotaRelatoriosSolicitadosPlanoDeAula = "sr.relatorios.solicitados.planodeaula";
         public const string RotaRelatoriosSolicitadosRegistroIndividual = "sr.relatorios.solicitados.registroindividual";
