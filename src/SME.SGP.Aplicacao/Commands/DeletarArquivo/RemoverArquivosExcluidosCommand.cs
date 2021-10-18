@@ -27,7 +27,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.ArquivoNovo)
             .NotEmpty()
             .WithMessage("O registro Arquivo Novo  deve ser informado");
-
         }
     }
 }

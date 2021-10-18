@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var item in diferente)
             {
-                var path = Path.Combine(UtilArquivo.ObterDiretorioBase(), caminho,item.ToString());
+                var path = Path.Combine(UtilArquivo.ObterDiretorioBase(),caminho,item.ToString());
                 if (File.Exists(path))
                     File.Delete(path);
             }
