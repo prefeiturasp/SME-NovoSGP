@@ -7,7 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         void AlterarPeriodosComHierarquiaInferior(PeriodoFechamento fechamento);
 
-        Task<FechamentoDto> ObterPorTipoCalendarioSme(long tipoCalendarioIde);
+        Task<FechamentoDto> ObterPorTipoCalendarioSme(long tipoCalendarioId);
 
         Task Salvar(FechamentoDto fechamentoDto);
     }
