@@ -315,7 +315,7 @@ namespace SME.SGP.Dominio.Servicos
             return (AuditoriaDto)conselhoClasse;
         }
 
-        public async Task<AuditoriaConselhoClasseAlunoDto> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
+        public async Task<ConselhoClasseAluno> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
         {
             var fechamentoTurma = await mediator
                 .Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, conselhoClasseAluno.AlunoCodigo));
@@ -336,7 +336,7 @@ namespace SME.SGP.Dominio.Servicos
 
             await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, conselhoClasseAluno.AlunoCodigo));
 
-            return (AuditoriaConselhoClasseAlunoDto)conselhoClasseAluno;
+            return conselhoClasseAluno;
         }
 
         public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)

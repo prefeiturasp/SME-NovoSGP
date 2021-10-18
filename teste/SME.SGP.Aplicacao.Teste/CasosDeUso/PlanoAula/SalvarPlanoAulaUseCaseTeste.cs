@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Deve_Adicionar_Novo_Plano_Aula()
         {
             //Arrange
-            mediator.Setup(a => a.Send(It.IsAny<SalvarPlanoAulaCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new AuditoriaDto());
+            mediator.Setup(a => a.Send(It.IsAny<SalvarPlanoAulaCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new PlanoAulaDto());
 
             //Act
             var dto = new PlanoAulaDto();
