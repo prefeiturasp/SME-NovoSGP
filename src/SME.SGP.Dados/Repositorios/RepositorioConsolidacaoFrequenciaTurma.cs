@@ -1,7 +1,9 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -150,6 +152,42 @@ namespace SME.SGP.Dados.Repositorios
             return await database
                 .Conexao
                 .QueryAsync<GraficoAusenciasComJustificativaDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre });
+        }
+
+        public async Task<long> InserirConsolidacaoDashBoard(ConsolidacaoDashBoardFrequencia consolidacao)
+        {
+            return (long)(await database.Conexao.InsertAsync(consolidacao));
+        }
+        public async Task ExcluirConsolidacaoDashBoard(int anoLetivo, long turmaId, DateTime dataAula, DateTime? dataInicioSemanda, DateTime? dataFinalSemena, int? mes, TipoPeriodoDashboardFrequencia tipoPeriodo)
+        {
+            var query = new StringBuilder(@"delete 
+                                              from consolidado_dashboard_frequencia
+                                             where turma_id = @turmaId
+                                               and tipo = @tipoPeriodo
+                                               and ano_letivo = @anoLetivo ");
+
+            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Diario)
+                query.AppendLine("and data_aula::date = @dataAula::date ");
+
+            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Semanal)
+                query.AppendLine(@"and data_inicio::date = @dataInicioSemanda::date
+                                   and data_fim::date = @dataFinalSemena::date ");
+
+            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Mensal)
+                query.AppendLine("and mes = @mes ");
+
+            var parametros = new
+            {
+                anoLetivo,
+                turmaId,
+                dataAula,
+                dataInicioSemanda,
+                dataFinalSemena,
+                mes,
+                tipoPeriodo
+            };
+
+            await database.Conexao.ExecuteScalarAsync(query.ToString(), parametros);
         }
     }
 }
