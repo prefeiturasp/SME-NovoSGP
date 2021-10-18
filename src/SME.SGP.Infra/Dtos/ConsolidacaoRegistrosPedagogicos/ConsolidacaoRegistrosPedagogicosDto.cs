@@ -13,9 +13,9 @@ namespace SME.SGP.Infra
         public long ComponenteCurricularId { get; set; }
         public int QuantidadeAulas { get; set; }
         public int FrequenciasPendentes { get; set; }
-        public DateTime DataUltimaFrequencia { get; set; }
-        public DateTime DataUltimoPlanoAula { get; set; }
-        public DateTime DataUltimoDiarioBordo { get; set; }
+        public DateTime? DataUltimaFrequencia { get; set; }
+        public DateTime? DataUltimoPlanoAula { get; set; }
+        public DateTime? DataUltimoDiarioBordo { get; set; }
         public int DiarioBordoPendentes { get; set; }
         public int PlanoAulaPendentes { get; set; }
         public string NomeProfessor { get; set; }
@@ -26,7 +26,7 @@ namespace SME.SGP.Infra
 
         }
 
-        public ConsolidacaoRegistrosPedagogicosDto(long periodoEscolarId, long turmaId, string turmaCodigo, int anoLetivo, long componenteCurricularId, int quantidadeAulas, int frequenciasPendentes, DateTime dataUltimaFrequencia, DateTime dataUltimoPlanoAula, DateTime dataUltimoDiarioBordo, int diarioBordoPendentes, int planoAulaPendentes, string nomeProfessor, string rFProfessor)
+        public ConsolidacaoRegistrosPedagogicosDto(long periodoEscolarId, long turmaId, string turmaCodigo, int anoLetivo, long componenteCurricularId, int quantidadeAulas, int frequenciasPendentes, DateTime? dataUltimaFrequencia, DateTime? dataUltimoPlanoAula, DateTime? dataUltimoDiarioBordo, int diarioBordoPendentes, int planoAulaPendentes, string nomeProfessor, string rFProfessor)
         {
             PeriodoEscolarId = periodoEscolarId;
             TurmaId = turmaId;
