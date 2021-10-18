@@ -36,7 +36,6 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
         public async Task<IActionResult> SalvarRecomendacoesAlunoFamilia(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto, [FromServices] IComandosConselhoClasseAluno comandosConselhoClasseAluno)
         {
-            var retorno = string.Empty;
             return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto)); 
         }
 
