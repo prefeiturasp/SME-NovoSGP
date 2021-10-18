@@ -15,9 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             var expressao = @"[0-9]{4}\\[0-9]{2}\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+";
             var regex = new Regex(expressao);
-            var regexCaminhoAtual = new Regex(expressao);
             var atual = regex.Matches(request.ArquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
-            var caminhoAtual = regexCaminhoAtual.Matches(request.ArquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
             var novo = regex.Matches(request.ArquivoNovo).Cast<Match>().Select(c => c.Value).ToList();
             var diferente = atual.Except(novo);
             DeletarArquivo(diferente, request.Caminho);
