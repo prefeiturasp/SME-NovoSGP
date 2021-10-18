@@ -89,17 +89,12 @@ namespace SME.SGP.Aplicacao
             if (turma.Ue.Dre == null)
                 turma.Ue.AdicionarDre(repositorioDre.ObterPorId(turma.Ue.DreId));
 
-            return await repositorioEventoFechamento.UeEmFechamento(dataReferencia, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, tipoCalendario.Id, bimestre);
+            return await repositorioEventoFechamento.SmeEmFechamento(dataReferencia, tipoCalendario.Id, bimestre);
         }
 
         private async Task<bool> UeEmReaberturaDeFechamento(TipoCalendario tipoCalendario, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
         {
-            var reaberturaPeriodo = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(
-                                                            bimestre,
-                                                            dataReferencia,
-                                                            tipoCalendario.Id,
-                                                            dreCodigo,
-                                                            ueCodigo);
+            var reaberturaPeriodo = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(bimestre,dataReferencia,tipoCalendario.Id);
             return reaberturaPeriodo != null;
         }
     }
