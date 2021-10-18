@@ -305,6 +305,7 @@ namespace SME.SGP.Dominio.Servicos
             var compensacoesExcluir = new List<CompensacaoAusencia>();
             var compensacoesAlunosExcluir = new List<CompensacaoAusenciaAluno>();
             var compensacoesDisciplinasExcluir = new List<CompensacaoAusenciaDisciplinaRegencia>();
+            var listaCompensacaoDescricao = new List<string>();
 
             List<long> idsComErroAoExcluir = new List<long>();
 
@@ -312,6 +313,7 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var compensacaoId in compensacoesIds)
             {
                 var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
+                listaCompensacaoDescricao.Add(compensacao.Descricao);
                 compensacao.Excluir();
                 compensacoesExcluir.Add(compensacao);
 
@@ -367,7 +369,10 @@ namespace SME.SGP.Dominio.Servicos
                     unitOfWork.Rollback();
                 }
             }
-
+            foreach (var item in listaCompensacaoDescricao)
+            {
+                await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(item,TipoArquivo.CompensacaoAusencia.Name()));
+            }
             if (idsComErroAoExcluir.Any())
                 throw new NegocioException($"Não foi possível excluir as compensações de ids {string.Join(",", idsComErroAoExcluir)}");
         }
