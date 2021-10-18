@@ -6,16 +6,18 @@ namespace SME.SGP.Aplicacao
 {
     public class RemoverArquivosExcluidosCommand : IRequest<bool>
     {
-        public RemoverArquivosExcluidosCommand(string arquivoAtual, string arquivoNovo, string caminho)
+        public RemoverArquivosExcluidosCommand(string arquivoAtual, string arquivoNovo, string caminho, string caminhoArquivoExistente = "")
         {
             ArquivoAtual = arquivoAtual;
             ArquivoNovo = arquivoNovo;
             Caminho = caminho;
+            CaminhoArquivoExistente = caminhoArquivoExistente;
         }
 
         public string ArquivoAtual { get; set; }
         public string ArquivoNovo { get; set; }
         public string Caminho { get; set; }
+        public string CaminhoArquivoExistente { get; set; }
     }
     public class DeletarArquivoPastaTempCommandValidator : AbstractValidator<RemoverArquivosExcluidosCommand>
     {
@@ -27,6 +29,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.ArquivoNovo)
             .NotEmpty()
             .WithMessage("O registro Arquivo Novo  deve ser informado");
+            //RuleFor(a => a.CaminhoArquivoExistente)
+            //    .NotEmpty()
+            //    .WithMessage("O registro Arquivo Novo  deve ser informado");
+
         }
     }
 }
