@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             var caminhoBase = UtilArquivo.ObterDiretorioBase();
             var nomeArquivo = Path.GetFileName(request.Nome);
             var caminhoArquivoTemp = Path.Combine(caminhoBase, TipoArquivo.Editor.Name());
-            var caminhoArquivoFuncionalidade = Path.Combine(caminhoBase, request.Tipo.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString());
+            var caminhoArquivoFuncionalidade = Path.Combine(caminhoBase, request.Tipo.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString().PadLeft(2, '0'));
             MoverAquivo(caminhoArquivoTemp, caminhoArquivoFuncionalidade, nomeArquivo);
             await AlterarTipoArquivo(request.Tipo, request.Nome);
 
