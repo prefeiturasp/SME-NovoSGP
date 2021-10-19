@@ -43,8 +43,8 @@ namespace SME.SGP.Aplicacao
             if (consolidacao == null)
                 return false;
 
-            //if (consolidacao.Presentes == 0 && consolidacao.Ausentes == 0 && consolidacao.Remotos == 0)
-            //    return false;
+            if (consolidacao.Presentes == 0 && consolidacao.Ausentes == 0 && consolidacao.Remotos == 0)
+                return false;
 
             await mediator.Send(new ExcluirConsolidacaoDashBoardFrequenciaPorDataETipoCommand(anoLetivo,
                                                                                               turma.Id,
