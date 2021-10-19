@@ -21,7 +21,9 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(a => a.DataUltimoDiarioBordo).ToColumn("data_ultimo_diariobordo");
             Map(a => a.DataUltimoPlanoAula).ToColumn("data_ultimo_planoaula");
             Map(a => a.DiarioBordoPendentes).ToColumn("diario_bordo_pendentes");
-            Map(a => a.PlanoAulaPendentes).ToColumn("planos_aulas_pendentes");
+            Map(a => a.PlanoAulaPendentes).ToColumn("planos_aula_pendentes");
+            Map(a => a.PeriodoEscolarId).ToColumn("periodo_escolar_id");
+            Map(a => a.QuantidadeAulas).ToColumn("quantidade_aulas");
         }
     }
 }

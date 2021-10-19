@@ -475,7 +475,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             else
             {
                 _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
-                                
+
                 return null;
             }
         }
@@ -905,7 +905,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - URL: {httpClient.BaseAddress}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;                
+                _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - URL: {httpClient.BaseAddress}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
                 throw new NegocioException($"Erro ao obter os códigos de DREs no EOL. URL base: {httpClient.BaseAddress}");
             }
         }
