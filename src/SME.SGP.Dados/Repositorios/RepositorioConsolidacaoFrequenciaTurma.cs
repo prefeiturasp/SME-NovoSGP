@@ -170,8 +170,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and data_aula::date = @dataAula::date ");
 
             if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine(@"and data_inicio::date = @dataInicioSemanda::date
-                                   and data_fim::date = @dataFinalSemena::date ");
+                query.AppendLine(@"and data_inicio_semana::date = @dataInicioSemanda::date
+                                   and data_fim_semana::date = @dataFinalSemena::date ");
 
             if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Mensal)
                 query.AppendLine("and mes = @mes ");

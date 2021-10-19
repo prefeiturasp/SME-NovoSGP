@@ -12,11 +12,12 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.TurmaNome).ToColumn("turma_nome");
             Map(c => c.TurmaAno).ToColumn("turma_ano");
             Map(c => c.DataAula).ToColumn("data_aula");
-            Map(c => c.DataInicio).ToColumn("data_inicio");
-            Map(c => c.DataFim).ToColumn("data_fim");
+            Map(c => c.DataInicio).ToColumn("data_inicio_semana");
+            Map(c => c.DataFim).ToColumn("data_fim_semana");
             Map(c => c.ModalidadeCodigo).ToColumn("modalidade_codigo");
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
             Map(c => c.DreId).ToColumn("dre_id");
+            Map(c => c.DreCodigo).ToColumn("dre_codigo");
             Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.DreAbreviacao).ToColumn("dre_abreviacao");
             Map(c => c.QuantidadePresencas).ToColumn("quantidade_presencas");

@@ -1346,5 +1346,18 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<TurmaAlunoBimestreFechamentoDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre, bimestre });
         }
+
+        public async Task<IEnumerable<long>> ObterTurmasIdsPorUeEAnoLetivo(int anoLetivo, string ueCodigo)
+        {
+            var query = new StringBuilder(@"select t.id 
+                                              from turma t
+                                             inner join ue u on u.id = t.ue_id 
+                                             where t.ano_letivo = @anoLetivo
+                                               and u.ue_id = @ueCodigo
+                                               and not t.historica ");            
+
+            return await contexto.Conexao.QueryAsync<long>(query.ToString(), new { anoLetivo, ueCodigo });
+
+        }
     }
 }

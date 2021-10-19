@@ -83,7 +83,8 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = dataAula.Year,
                 TurmaId = turma.Id,
                 TurmaNome = turma.NomeComModalidade(),
-                TurmaAno = turma.Ano,
+                TurmaAno = turma.AnoComModalidade(),
+                semestre = turma.Semestre,
                 DataAula = dataAula,
                 DataInicio = dataInicio,
                 DataFim = dataFim,
@@ -91,13 +92,17 @@ namespace SME.SGP.Aplicacao
                 ModalidadeCodigo = (int)turma.ModalidadeCodigo,
                 Tipo = tipoPeriodo,
                 DreId = turma.Ue.DreId,
+                DreCodigo = turma.Ue.Dre.CodigoDre,
                 UeId = turma.UeId,
-                DreAbreviacao = turma.Ue.Dre.Abreviacao,
+                DreAbreviacao = AbreviacaoDreFormatado(turma.Ue.Dre.Abreviacao),
                 QuantidadePresencas = dados.Presentes,
                 QuantidadeRemotos = dados.Remotos,
                 QuantidadeAusentes = dados.Ausentes,
                 CriadoEm = DateTime.Now
             };
         }
+        private static string AbreviacaoDreFormatado(string abreviacaoDre)
+           => abreviacaoDre.Replace(DashboardConstants.PrefixoDreParaSerRemovido, string.Empty).Trim();        
     }
+        
 }

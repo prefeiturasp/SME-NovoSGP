@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Authorize("Bearer")]
+   // [Authorize("Bearer")]
     [Route("api/v1/dashboard/frequencias")]
     public class DashboardFrequenciaController : Controller
     {
@@ -101,6 +101,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterSemanasFiltro(int anoLetivo, [FromServices] IObterFiltroSemanaUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo));
+        }
+
+        [HttpPost("consolidar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> ConsolidarFrequenciasParaDashBorad([FromQuery] FiltroConsolicacaoGeralDashBoardFrequenciaDto filtro, [FromServices] IExecutaConsolidacaoDashBoardFrequenciaUseCase useCase)
+        {
+            await useCase.Executar(filtro);
+            return Ok();
         }
     }
 }

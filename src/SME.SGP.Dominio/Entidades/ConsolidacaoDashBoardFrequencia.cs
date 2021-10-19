@@ -8,6 +8,7 @@ namespace SME.SGP.Dominio
         public long TurmaId { get; set; }
         public string TurmaNome { get; set; }
         public string TurmaAno { get; set; }
+        public int semestre { get; set; }
         public DateTime DataAula { get; set; }
         public DateTime? DataInicio { get; set; }
         public DateTime? DataFim { get; set; }
@@ -16,6 +17,7 @@ namespace SME.SGP.Dominio
         public int Tipo { get; set; }
         public int AnoLetivo { get; set; }
         public long DreId { get; set; }
+        public string DreCodigo { get; set; }
         public long UeId { get; set; }
         public string DreAbreviacao { get; set; }
         public int QuantidadePresencas { get; set; }
