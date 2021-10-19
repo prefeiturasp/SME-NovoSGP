@@ -638,8 +638,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (!string.IsNullOrEmpty(professorRf))
                 url.Append($"?codigoRf={professorRf}");
 
-            try
-            {
                 var resposta = await httpClient.GetAsync(url.ToString());
 
                 if (!resposta.IsSuccessStatusCode)
@@ -650,13 +648,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<ProfessorTitularDisciplinaEol>>(json);
-            }
-            catch(Exception ex)
-            {
-                var a = ex;
-                return null;
-            }
-           
         }
 
         public async Task<UsuarioResumoCoreDto> ObterResumoCore(string login)
