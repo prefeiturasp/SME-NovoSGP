@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ComandosFechamentoAluno: IComandosFechamentoAluno
+    public class ComandosFechamentoAluno : IComandosFechamentoAluno
     {
         private readonly IRepositorioFechamentoAluno repositorio;
         private readonly IMediator mediator;
@@ -50,14 +50,15 @@ namespace SME.SGP.Aplicacao
         }
         private void MoverRemoverExcluidos(AnotacaoAlunoDto anotacaoAluno, FechamentoAluno anotacao)
         {
-            if (!string.IsNullOrEmpty(anotacaoAluno.Anotacao))
+            if (!string.IsNullOrEmpty(anotacaoAluno?.Anotacao))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FechamentoAnotacao, anotacao.Anotacao, anotacaoAluno.Anotacao));
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FechamentoAnotacao, anotacao!=null? anotacao.Anotacao:string.Empty, anotacaoAluno.Anotacao));
                 anotacaoAluno.Anotacao = moverArquivo.Result;
             }
-            if (!string.IsNullOrEmpty(anotacao.Anotacao))
+            if (!string.IsNullOrEmpty(anotacao?.Anotacao))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(anotacao.Anotacao, anotacaoAluno.Anotacao, TipoArquivo.FechamentoAnotacao.Name()));
+                var aquivoNovo = anotacaoAluno?.Anotacao !=null ? anotacaoAluno.Anotacao : string.Empty;
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(arquivoAtual: anotacao.Anotacao, arquivoNovo: aquivoNovo,caminho:TipoArquivo.FechamentoAnotacao.Name()));
             }
         }
     }
