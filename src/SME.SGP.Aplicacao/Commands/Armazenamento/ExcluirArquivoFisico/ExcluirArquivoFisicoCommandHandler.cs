@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,6 +28,6 @@ namespace SME.SGP.Aplicacao
         }
 
         private string ObterCaminhoArquivos(TipoArquivo tipo)
-            => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arquivos", tipo.ToString());
+            => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arquivos", tipo.Name());
     }
 }

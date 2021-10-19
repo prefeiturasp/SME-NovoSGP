@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -30,7 +31,7 @@ namespace SME.SGP.Aplicacao
             repositorioRegistroPoa.Salvar(MapearParaEntidade(registroPoaDto));
         }
 
-        public void Excluir(long id)
+        public async Task Excluir(long id)
         {
             if (id <= 0)
                 throw new NegocioException("O id informado para edição tem que ser maior que 0");
@@ -43,6 +44,10 @@ namespace SME.SGP.Aplicacao
             entidadeBanco.Excluido = true;
 
             repositorioRegistroPoa.Salvar(entidadeBanco);
+            if (entidadeBanco?.Descricao != null)
+            {
+                await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(entidadeBanco.Descricao, TipoArquivo.RegistroPOA.Name()));
+            }
         }
 
         private RegistroPoa MapearParaAtualizacao(RegistroPoaDto registroPoaDto)
