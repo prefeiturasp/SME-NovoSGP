@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-   // [Authorize("Bearer")]
+    [Authorize("Bearer")]
     [Route("api/v1/dashboard/frequencias")]
     public class DashboardFrequenciaController : Controller
     {

@@ -30,10 +30,7 @@ namespace SME.SGP.Aplicacao
                                                                                                               datafim,
                                                                                                               mes,
                                                                                                               tipoPeriodoDashboard,
-                                                                                                              visaoDre));
-
-            //if ((!string.IsNullOrEmpty(anoTurma) && anoTurma != "-99") && dadosFrequenciaAlunos != null)
-            //    dadosFrequenciaAlunos = dadosFrequenciaAlunos.Where(a => a.Ano == anoTurma).ToList();
+                                                                                                              visaoDre));            
 
             if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any())
                 return null;
