@@ -1,4 +1,4 @@
-﻿-- plano ciclo
+-- plano ciclo
 
 drop table IF EXISTS tmp_plano_ciclo;
 
@@ -18,7 +18,6 @@ update plano_ciclo pc
 set descricao = tpr.nova_descricao
 from tmp_plano_ciclo tpr
 where pc.id = tpr.id;
-
 
 -- Frequência/Anotações do estudante
 
@@ -452,6 +451,26 @@ where pc.id = tmp.id;
 
 -- Relatório de acompanhamento da aprendizagem
 
+--atualizar path PERCURSO COLETIVO
+
+drop table IF EXISTS TMP_ACOMPANHAMENTO_TURMA_REPLACE_IMG;
+
+select tabela.id,
+       regexp_replace(tabela.apanhado_geral, '/Arquivos/Editor/', concat('/Arquivos/aluno/acompanhamento/',
+                                                                              EXTRACT(YEAR FROM tabela.CRIADO_EM),
+                                                                              '/',
+                                                                              EXTRACT(MONTH FROM tabela.CRIADO_EM),
+                                                                              '/'
+           ), 'gi') as nova_descricao
+into TMP_ACOMPANHAMENTO_TURMA_REPLACE_IMG
+from ACOMPANHAMENTO_TURMA tabela
+where apanhado_geral like any (array ['%<img%','%<video%']);
+
+update ACOMPANHAMENTO_TURMA pc
+set apanhado_geral = tmp.nova_descricao
+from TMP_ACOMPANHAMENTO_TURMA_REPLACE_IMG tmp
+where pc.id = tmp.id;
+
 
 --atualizar path PERCURSO INDIVIDUAL
 
@@ -470,7 +489,7 @@ where PERCURSO_INDIVIDUAL like any (array ['%<img%','%<video%']);
 
 update ACOMPANHAMENTO_ALUNO_SEMESTRE pc
 set PERCURSO_INDIVIDUAL = tmp.nova_descricao
-from tmp_anotacao_frequencia_aluno_replace_img tmp
+from TMP_ACOMPANHAMENTO_ALUNO_SEMESTRE_PERCURSO_INDIVIDUAL_REPLACE_IMG tmp
 where pc.id = tmp.id;
 
 --atualizar path observaçoes 
@@ -490,10 +509,5 @@ where tabela.observacoes like any (array ['%<img%','%<video%']);
 
 update ACOMPANHAMENTO_ALUNO_SEMESTRE pc
 set observacoes = tmp.nova_descricao
-from tmp_anotacao_frequencia_aluno_replace_img tmp
+from TMP_ACOMPANHAMENTO_ALUNO_SEMESTRE_OBSERVACOES_REPLACE_IMG tmp
 where pc.id = tmp.id;
-
-
-
-
-
