@@ -183,5 +183,9 @@
         public const string AnotacoesFrequenciaDaAulaExcluir = "sgp.anotacoes.frequencia.aula.excluir";
         public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";
         public const string RotaConsolidacaoDashBoardFrequencia = "sgp.consolidacao.frequencia.dashboard";
+
+        public const string RotaConsolidacaoDiariaDashBoardFrequencia = "sgp.consolidacao.diaria.frequencia.dashboard";
+        public const string RotaConsolidacaoSemanalDashBoardFrequencia = "sgp.consolidacao.semanal.frequencia.dashboard";
+        public const string RotaConsolidacaoMensalDashBoardFrequencia = "sgp.consolidacao.mensal.frequencia.dashboard";
     }
 }

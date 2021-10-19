@@ -167,11 +167,11 @@ namespace SME.SGP.Dados.Repositorios
                                                and ano_letivo = @anoLetivo ");
 
             if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine("and data_aula::date = @dataAula::date ");
+                query.AppendLine("and data_aula::date = @dataAula ");
 
             if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine(@"and data_inicio::date = @dataInicioSemanda::date
-                                   and data_fim::date = @dataFinalSemena::date ");
+                query.AppendLine(@"and data_inicio_semana::date = @dataInicioSemanda
+                                   and data_fim_semana::date = @dataFinalSemena ");
 
             if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Mensal)
                 query.AppendLine("and mes = @mes ");
