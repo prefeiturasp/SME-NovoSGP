@@ -16,7 +16,7 @@ namespace SME.SGP.Infra
         public string UeCodigo { get; set; }
         public Modalidade Modalidade { get; set; }
         public int Semestre { get; set; }
-        public long[] TurmasId { get; set; }
+        public List<string> TurmasCodigo { get; set; }
         public long[] ComponentesCurriculares { get; set; }
         public List<int> Bimestres { get; set; }
         public string ProfessorCodigo { get; set; }
