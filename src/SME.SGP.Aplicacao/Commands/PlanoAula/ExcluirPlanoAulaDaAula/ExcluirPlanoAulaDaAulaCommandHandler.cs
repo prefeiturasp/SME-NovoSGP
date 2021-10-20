@@ -23,10 +23,13 @@ namespace SME.SGP.Aplicacao
         {
             var plano = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(request.AulaId));
 
-            MoverRemoverExcluidos(plano.Descricao, TipoArquivo.PlanoAula);
-            MoverRemoverExcluidos(plano.DesenvolvimentoAula,TipoArquivo.PlanoAulaDesenvolvimento);
-            MoverRemoverExcluidos(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
-            MoverRemoverExcluidos(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa);
+            if (plano != null)
+            {
+                MoverRemoverExcluidos(plano.Descricao, TipoArquivo.PlanoAula);
+                MoverRemoverExcluidos(plano.DesenvolvimentoAula, TipoArquivo.PlanoAulaDesenvolvimento);
+                MoverRemoverExcluidos(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
+                MoverRemoverExcluidos(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa); 
+            }
 
             await repositorioPlanoAula.ExcluirPlanoDaAula(request.AulaId);
             return true;
