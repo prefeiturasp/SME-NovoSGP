@@ -31,8 +31,8 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var arquivo = $@"{UtilArquivo.ObterDiretorioBase()}/{caminho}{item.ToString()}";
-                    var alterarBarras = arquivo.Replace(@"\", @"/");
+                    var arquivo = $@"{UtilArquivo.ObterDiretorioBase()}\{caminho}{item.ToString()}";
+                    var alterarBarras = arquivo.Replace(@"\", @"///");
                     if (File.Exists(alterarBarras))
                         File.Delete(alterarBarras);
                     else
