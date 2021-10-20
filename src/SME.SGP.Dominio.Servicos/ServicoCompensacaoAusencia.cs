@@ -76,12 +76,12 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            if(!usuario.EhGestorEscolar())
+            if (!usuario.EhGestorEscolar())
                 await ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario, periodo.PeriodoFim);
 
             // Valida mesma compensação no ano
             var compensacaoExistente = await repositorioCompensacaoAusencia.ObterPorAnoTurmaENome(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id);
-            var descricaoAtual = compensacaoExistente !=null ?compensacaoExistente.Descricao :string.Empty;
+            var descricaoAtual = compensacaoExistente != null ? compensacaoExistente.Descricao : string.Empty;
             if (compensacaoExistente != null)
             {
                 throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.");
@@ -108,7 +108,7 @@ namespace SME.SGP.Dominio.Servicos
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds);
                 codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo);
                 unitOfWork.PersistirTransacao();
-                MoverRemoverExcluidos(compensacaoDto.Descricao,descricaoAtual);
+                MoverRemoverExcluidos(compensacaoDto.Descricao, descricaoAtual);
             }
             catch (Exception)
             {
@@ -370,9 +370,12 @@ namespace SME.SGP.Dominio.Servicos
                     unitOfWork.Rollback();
                 }
             }
-            foreach (var item in listaCompensacaoDescricao)
+            if (listaCompensacaoDescricao != null && listaCompensacaoDescricao.Any())
             {
-                await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(item,TipoArquivo.CompensacaoAusencia.Name()));
+                foreach (var item in listaCompensacaoDescricao)
+                {
+                    await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(item, TipoArquivo.CompensacaoAusencia.Name()));
+                }
             }
             if (idsComErroAoExcluir.Any())
                 throw new NegocioException($"Não foi possível excluir as compensações de ids {string.Join(",", idsComErroAoExcluir)}");
