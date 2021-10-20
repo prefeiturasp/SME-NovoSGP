@@ -25,20 +25,20 @@ namespace SME.SGP.Aplicacao
 
             if (plano != null)
             {
-                MoverRemoverExcluidos(plano.Descricao, TipoArquivo.PlanoAula);
-                MoverRemoverExcluidos(plano.DesenvolvimentoAula, TipoArquivo.PlanoAulaDesenvolvimento);
-                MoverRemoverExcluidos(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
-                MoverRemoverExcluidos(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa); 
+                await MoverRemoverExcluidos(plano.Descricao, TipoArquivo.PlanoAula);
+                await MoverRemoverExcluidos(plano.DesenvolvimentoAula, TipoArquivo.PlanoAulaDesenvolvimento);
+                await MoverRemoverExcluidos(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
+                await MoverRemoverExcluidos(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa); 
             }
 
             await repositorioPlanoAula.ExcluirPlanoDaAula(request.AulaId);
             return true;
         }
-        private void MoverRemoverExcluidos(string mensagem,TipoArquivo tipo)
+        private async Task MoverRemoverExcluidos(string mensagem,TipoArquivo tipo)
         {
             if (!string.IsNullOrEmpty(mensagem))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(mensagem, string.Empty, tipo.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(mensagem, string.Empty, tipo.Name()));
             }
         }
     }

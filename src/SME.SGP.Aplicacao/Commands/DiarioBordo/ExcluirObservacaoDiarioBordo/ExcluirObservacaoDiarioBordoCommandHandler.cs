@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var entedidade = await mediator.Send(new ObterDiarioDeBordoPorIdQuery(request.DiarioBordoId));
             if(entedidade?.Planejamento != null)
             {
-                ExcluirArquivos(entedidade.Planejamento);
+                 await ExcluirArquivos(entedidade.Planejamento);
             }
             await repositorioDiarioBordoObservacao.ExcluirObservacoesPorDiarioBordoId(request.DiarioBordoId, request.UsuarioId);
 
@@ -34,11 +34,11 @@ namespace SME.SGP.Aplicacao
 
             return true;
         }
-        private void ExcluirArquivos(string planejamento)
+        private async Task ExcluirArquivos(string planejamento)
         {
             if (!string.IsNullOrEmpty(planejamento))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(planejamento, string.Empty, TipoArquivo.DiarioBordo.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(planejamento, string.Empty, TipoArquivo.DiarioBordo.Name()));
             }
         }
     }

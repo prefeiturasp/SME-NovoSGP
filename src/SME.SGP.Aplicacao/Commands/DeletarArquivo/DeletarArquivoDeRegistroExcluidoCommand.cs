@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("O registro Arquivo Atual deve ser informado");
             RuleFor(a => a.Caminho)
                 .NotEmpty()
-                .WithMessage("O Caminho deve ser informado");
+                .WithMessage("O Caminho do arquivo deve ser informado para exclusão");
         }
     }
 }

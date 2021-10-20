@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
 
             return anotacao;
         }
-        private void MoverRemoverExcluidos(AnotacaoAlunoDto anotacaoAluno, FechamentoAluno anotacao)
+        private async Task MoverRemoverExcluidos(AnotacaoAlunoDto anotacaoAluno, FechamentoAluno anotacao)
         {
             if (!string.IsNullOrEmpty(anotacaoAluno?.Anotacao))
             {
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(anotacao?.Anotacao))
             {
                 var aquivoNovo = anotacaoAluno?.Anotacao !=null ? anotacaoAluno.Anotacao : string.Empty;
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(arquivoAtual: anotacao.Anotacao, arquivoNovo: aquivoNovo,caminho:TipoArquivo.FechamentoAnotacao.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(arquivoAtual: anotacao.Anotacao, arquivoNovo: aquivoNovo,caminho:TipoArquivo.FechamentoAnotacao.Name()));
             }
         }
     }
