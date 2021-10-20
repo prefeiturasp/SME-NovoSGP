@@ -22,12 +22,24 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirObservacaoDiarioBordoCommand request, CancellationToken cancellationToken)
         {
+            var entedidade = await mediator.Send(new ObterDiarioDeBordoPorIdQuery(request.DiarioBordoId));
+            if(entedidade?.Planejamento != null)
+            {
+                 await ExcluirArquivos(entedidade.Planejamento);
+            }
             await repositorioDiarioBordoObservacao.ExcluirObservacoesPorDiarioBordoId(request.DiarioBordoId, request.UsuarioId);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoDiarioBordo,
                       new ExcluirNotificacaoDiarioBordoDto(request.DiarioBordoId), Guid.NewGuid(), null));
 
             return true;
+        }
+        private async Task ExcluirArquivos(string planejamento)
+        {
+            if (!string.IsNullOrEmpty(planejamento))
+            {
+                await mediator.Send(new RemoverArquivosExcluidosCommand(planejamento, string.Empty, TipoArquivo.DiarioBordo.Name()));
+            }
         }
     }
 }

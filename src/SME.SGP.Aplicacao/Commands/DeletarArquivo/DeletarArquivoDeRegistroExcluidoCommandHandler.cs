@@ -7,24 +7,22 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
 {
-    public class RemoverArquivosExcluidosCommandHandler : IRequestHandler<RemoverArquivosExcluidosCommand, bool>
+    public class DeletarArquivoDeRegistroExcluidoCommandHandler : IRequestHandler<DeletarArquivoDeRegistroExcluidoCommand, bool>
     {
-        public async Task<bool> Handle(RemoverArquivosExcluidosCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(DeletarArquivoDeRegistroExcluidoCommand request, CancellationToken cancellationToken)
         {
             var expressao = @"\\[0-9]{4}\\[0-9]{2}\\[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+";
             var regex = new Regex(expressao);
             var atual = regex.Matches(request.ArquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
-            var novo = regex.Matches(request.ArquivoNovo).Cast<Match>().Select(c => c.Value).ToList();
-            var diferente = atual.Except(novo);
-            DeletarArquivo(diferente, request.Caminho);
+            DeletarArquivo(atual, request.Caminho);
             return true;
         }
 
-        private void DeletarArquivo(IEnumerable diferente, string caminho)
+        private void DeletarArquivo(IEnumerable arquivos, string caminho)
         {
-            foreach (var item in diferente)
+            foreach (var item in arquivos)
             {
                 var arquivo = $@"{UtilArquivo.ObterDiretorioBase()}\{caminho}{item.ToString()}";
                 if (File.Exists(arquivo))
