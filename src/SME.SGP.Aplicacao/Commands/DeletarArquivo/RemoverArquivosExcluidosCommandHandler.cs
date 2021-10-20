@@ -36,11 +36,16 @@ namespace SME.SGP.Aplicacao
                     if (File.Exists(alterarBarras))
                         File.Delete(alterarBarras);
                     else
-                        SentrySdk.CaptureMessage($"Arquivo Informado para exclusão não existe no caminho {alterarBarras} ");
+                    {
+                        var mensagem = $"Arquivo Informado para exclusão não existe no caminho {alterarBarras} ";
+                        SentrySdk.CaptureMessage(mensagem,Sentry.Protocol.SentryLevel.Error);
+                    }
+                       
                 }
                 catch (Exception ex)
                 {
                     SentrySdk.CaptureMessage($"Falha ao deletar o arquivo {ex.Message} ");
+                    SentrySdk.CaptureException(ex);
                 }
             }
 
