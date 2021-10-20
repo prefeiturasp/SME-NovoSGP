@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.Background.Core.Exceptions;
 using SME.SGP.Infra;
 using System.Collections;
 using System.IO;
@@ -28,9 +29,12 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var item in diferente)
             {
-                var arquivo = $@"{UtilArquivo.ObterDiretorioBase()}\{caminho}{item.ToString()}";
-                if (File.Exists(arquivo))
-                    File.Delete(arquivo);
+                var arquivo = $@"{UtilArquivo.ObterDiretorioBase()}/{caminho}{item.ToString()}";
+                var alterarBarras = arquivo.Replace(@"\", @"/");
+                if (File.Exists(alterarBarras))
+                    File.Delete(alterarBarras);
+                else
+                    throw new ErroInternoException("Arquivo Informado para exclusão não existe");
             }
 
         }
