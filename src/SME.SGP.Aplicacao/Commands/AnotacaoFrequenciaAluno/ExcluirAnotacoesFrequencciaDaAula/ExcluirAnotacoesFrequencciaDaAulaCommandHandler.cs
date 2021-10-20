@@ -24,17 +24,17 @@ namespace SME.SGP.Aplicacao
             var frequencia = await repositorioAnotacaoFrequenciaAluno.ObterPorAlunoId(request.AulaId);
             foreach (var item in frequencia)
             {
-                ExcluirArquivo(item.Anotacao);
+                await ExcluirArquivo(item.Anotacao);
             }
             return await repositorioAnotacaoFrequenciaAluno.ExcluirAnotacoesDaAula(request.AulaId);
         }
 
 
-        private void ExcluirArquivo(string anotacao)
+        private async Task ExcluirArquivo(string anotacao)
         {
             if (!string.IsNullOrEmpty(anotacao))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(anotacao, string.Empty, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(anotacao, string.Empty, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
             }
         }
     }
