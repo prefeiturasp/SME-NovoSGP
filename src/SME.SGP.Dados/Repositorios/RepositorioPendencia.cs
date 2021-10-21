@@ -43,8 +43,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, Paginacao paginacao)
         {
-            try
-            {
             var query = @"from pendencia p
                           inner join pendencia_usuario pu on pu.pendencia_id = p.id
                          where not p.excluido 
@@ -79,12 +77,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return retornoPaginado;
 
-            }
-            catch (Exception exx)
-            {
-
-                throw exx;
-            }
         }
 
         public async Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)
