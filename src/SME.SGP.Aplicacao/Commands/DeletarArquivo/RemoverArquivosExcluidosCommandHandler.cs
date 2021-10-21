@@ -37,18 +37,21 @@ namespace SME.SGP.Aplicacao
                     {
                         File.SetAttributes(alterarBarras, FileAttributes.Normal);
                         File.Delete(alterarBarras);
+                        Console.Write($"ERRODELETAR - Arquivo deletado do caminho {alterarBarras} ");
                         var mensagem = $"Arquivo deletado do caminho {alterarBarras} ";
                         SentrySdk.CaptureMessage(mensagem, Sentry.Protocol.SentryLevel.Error);
                     }
                     else
                     {
-                        var mensagem = $"Arquivo Informado para exclusão não existe no caminho {alterarBarras} ";
+                        var mensagem = $"ERRODELETAR - Arquivo Informado para exclusão não existe no caminho {alterarBarras} ";
+                        Console.Write(mensagem);
                         SentrySdk.CaptureMessage(mensagem, Sentry.Protocol.SentryLevel.Error);
                     }
 
                 }
                 catch (Exception ex)
                 {
+                    Console.Write($"ERRODELETAR - Falha ao deletar {ex.Message} ");
                     SentrySdk.CaptureMessage($"Falha ao deletar o arquivo {ex.Message} ");
                     SentrySdk.CaptureException(ex);
                 }
