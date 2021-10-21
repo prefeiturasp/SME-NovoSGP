@@ -37,6 +37,8 @@ namespace SME.SGP.Aplicacao
                     {
                         File.SetAttributes(alterarBarras, FileAttributes.Normal);
                         File.Delete(alterarBarras);
+                        var mensagem = $"Arquivo deletado do caminho {alterarBarras} ";
+                        SentrySdk.CaptureMessage(mensagem, Sentry.Protocol.SentryLevel.Error);
                     }
                     else
                     {
