@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -76,6 +77,9 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId));
 
             await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
+                        
+            foreach (var tipo in Enum.GetValues(typeof(TipoPeriodoDashboardFrequencia)))
+                await mediator.Send(new IncluirFilaConsolidarDashBoardFrequenciaCommand(turma.Id, aula.DataAula, (TipoPeriodoDashboardFrequencia)tipo));            
 
             return (AuditoriaDto)registroFrequencia;
 

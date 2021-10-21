@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
@@ -18,11 +19,30 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar()
         {
-            foreach (var fila in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>())
-            {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaRabbitDeadletterTratar, fila, Guid.NewGuid(), null, false));
-            }
+            var parametrosSistema = await mediator.Send(
+                new ObterParametroSistemaPorTipoEAnoQuery(
+                    TipoParametroSistema.ProcessarDeadletter,
+                    DateTime.Now.Year
+                )
+            );
 
+            var processarDeadletter = parametrosSistema != null && Convert.ToBoolean(parametrosSistema.Valor); 
+            
+            if (processarDeadletter)
+            {
+                foreach (var fila in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>())
+                {
+                    await mediator.Send(new PublicarFilaSgpCommand(
+                            RotasRabbitSgp.RotaRabbitDeadletterTratar,
+                            fila,
+                            Guid.NewGuid(),
+                            null,
+                            false
+                        )
+                    );
+                }    
+            }
+            
             return true;
         }
     }

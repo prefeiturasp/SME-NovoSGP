@@ -193,30 +193,36 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder(@"select * from (
-                                                            select
-                                                            x.TurmaAnoNome,
-                                                            x.Bimestre,
-                                                            x.ComponenteCurricularCodigo,
-                                                            x.ConselhoClasseNotaId,
-                                                            x.ConceitoId,
-                                                            x.Nota,
-                                                            x.AlunoCodigo,
-                                                            x.Conceito,
-                                                            row_number() over(partition by x.TurmaAnoNome, x.ComponenteCurricularCodigo, x.AlunoCodigo
-                                                            order by x.Prioridade) as linha
-                                                            from
-                                                            (");
+            var query = new StringBuilder(@"CREATE TEMPORARY TABLE temp_dados
+                                            (
+                                                turmaanonome varchar(200),
+                                                bimestre int8,
+                                                componentecurricularcodigo int8,
+                                                conselhoclassenotaid varchar(10),
+                                                conceitoid int8,
+                                                nota int8,
+                                                alunocodigo varchar(10),
+                                                conceito varchar(10),
+                                                prioridade int8
+                                            ); ");
 
             query.AppendLine(MontarQueryNotasFinasFechamentoQuantidade(ueId, anoLetivo, dreId, modalidade, semestre, bimestre));
-
-            query.AppendLine(" union all ");
-
             query.AppendLine(MontarQueryNotasFinasConselhoClasseQuantidade(ueId, anoLetivo, dreId, modalidade, semestre, bimestre));
 
-            query.AppendLine(@" ) x 
-                                 ) a
-                                where a.linha = 1 ");
+            query.AppendLine(@" select
+                                x.TurmaAnoNome,
+                                x.Bimestre,
+                                x.ComponenteCurricularCodigo,
+                                x.ConselhoClasseNotaId,
+                                x.ConceitoId,
+                                x.Nota,
+                                x.AlunoCodigo,
+                                x.Conceito,
+                                row_number() over(partition by x.TurmaAnoNome, x.ComponenteCurricularCodigo, x.AlunoCodigo
+                                order by x.Prioridade) as linha
+                                from temp_dados x; ");
+
+            query.AppendLine(@" drop table temp_dados; ");
 
             var parametros = new
             {
@@ -232,7 +238,8 @@ namespace SME.SGP.Dados.Repositorios
 
         private string MontarQueryNotasFinasFechamentoQuantidade(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder(@" select t.nome as TurmaAnoNome, 
+            var query = new StringBuilder(@"    insert into temp_dados
+                                                select t.nome as TurmaAnoNome, 
 				                                     pe.bimestre, 
                                                     fn.disciplina_id as ComponenteCurricularCodigo, 
                                                     null as ConselhoClasseNotaId, 
@@ -276,12 +283,14 @@ namespace SME.SGP.Dados.Repositorios
             if (semestre > 0)
                 query.Append(" and t.semestre = @semestre ");
 
+            query.Append(";");
             return query.ToString();
         }
 
         private string MontarQueryNotasFinasConselhoClasseQuantidade(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder(@" select t.nome as TurmaAnoNome, 
+            var query = new StringBuilder(@"    insert into temp_dados
+                                                select t.nome as TurmaAnoNome, 
                                                     pe.bimestre, 
 		                                            ccn.componente_curricular_codigo as ComponenteCurricularCodigo, 
 		                                            ccn.id as ConselhoClasseNotaId, 
@@ -322,6 +331,7 @@ namespace SME.SGP.Dados.Repositorios
             if (semestre > 0)
                 query.Append(" and t.semestre = @semestre ");
 
+            query.Append(";");
             return query.ToString();
         }
 
