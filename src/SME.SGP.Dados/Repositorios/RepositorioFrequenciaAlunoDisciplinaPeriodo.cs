@@ -525,6 +525,22 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoTurma, componenteCurricularId, periodoEscolarId });
         }
 
+        public async Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(string codigoTurma, string componenteCurricularId, long[] periodosEscolaresIds)
+        {
+            const string sql = @"select distinct(1)
+                                   from registro_frequencia_aluno rfa
+                                  inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
+                                  inner join aula a on a.id = rf.aula_id 
+                                  inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
+                                  inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
+                                  where pe.id = ANY(@periodosEscolaresIds)
+                                    and a.turma_id = @codigoTurma
+                                    and a.disciplina_id = @componenteCurricularId
+                                    and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoTurma, componenteCurricularId, periodosEscolaresIds });
+        }
+
         private String BuildQueryObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId,
             string turmaId)
         {
