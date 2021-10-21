@@ -53,23 +53,33 @@ namespace SME.SGP.Aplicacao
             if (diarioBordo == null)
                 throw new NegocioException($"Diário de Bordo para a aula {request.AulaId} não encontrado!");
 
-            MoverRemoverExcluidos(request, diarioBordo);
+            await MoverRemoverExcluidos(request, diarioBordo);
             MapearAlteracoes(diarioBordo, request);
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
 
             return (AuditoriaDto)diarioBordo;
         }
-        private void MoverRemoverExcluidos(AlterarDiarioBordoCommand diario, DiarioBordo diarioBordo)
+        private async Task MoverRemoverExcluidos(AlterarDiarioBordoCommand diario, DiarioBordo diarioBordo)
         {
             if (!string.IsNullOrEmpty(diario.Planejamento))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.DiarioBordo, diarioBordo.Planejamento, diario.Planejamento));
-                diario.Planejamento = moverArquivo.Result;
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.DiarioBordo, diarioBordo.Planejamento, diario.Planejamento));
+                diario.Planejamento = moverArquivo;
             }
             if (!string.IsNullOrEmpty(diarioBordo.Planejamento))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(diarioBordo.Planejamento, diario.Planejamento, TipoArquivo.DiarioBordo.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(diarioBordo.Planejamento, diario.Planejamento, TipoArquivo.DiarioBordo.Name()));
+            }
+
+            if (!string.IsNullOrEmpty(diario.ReflexoesReplanejamento))
+            {
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.DiarioBordo, diarioBordo.ReflexoesReplanejamento, diario.ReflexoesReplanejamento));
+                diario.ReflexoesReplanejamento = moverArquivo;
+            }
+            if (!string.IsNullOrEmpty(diarioBordo.ReflexoesReplanejamento))
+            {
+                await mediator.Send(new RemoverArquivosExcluidosCommand(diarioBordo.ReflexoesReplanejamento, diario.ReflexoesReplanejamento, TipoArquivo.DiarioBordo.Name()));
             }
         }
         private void MapearAlteracoes(DiarioBordo entidade, AlterarDiarioBordoCommand request)

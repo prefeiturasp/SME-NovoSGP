@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            MoverRemoverExcluidos(request);
+            await MoverRemoverExcluidos(request);
             var diarioBordo = MapearParaEntidade(request);
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
@@ -56,12 +56,17 @@ namespace SME.SGP.Aplicacao
             return (AuditoriaDto)diarioBordo;
         }
 
-        private void MoverRemoverExcluidos(InserirDiarioBordoCommand diario)
+        private async Task MoverRemoverExcluidos(InserirDiarioBordoCommand diario)
         {
             if (!string.IsNullOrEmpty(diario.Planejamento))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.DiarioBordo, string.Empty, diario.Planejamento));
-                diario.Planejamento = moverArquivo.Result;
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.DiarioBordo, string.Empty, diario.Planejamento));
+                diario.Planejamento = moverArquivo;
+            }
+            if (!string.IsNullOrEmpty(diario.ReflexoesReplanejamento))
+            {
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.DiarioBordo, string.Empty, diario.ReflexoesReplanejamento));
+                diario.ReflexoesReplanejamento = moverArquivo;
             }
         }
         private DiarioBordo MapearParaEntidade(InserirDiarioBordoCommand request)
