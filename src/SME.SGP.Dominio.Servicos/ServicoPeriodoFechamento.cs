@@ -212,8 +212,6 @@ namespace SME.SGP.Dominio.Servicos
             var id = repositorioPeriodoFechamento.Salvar(fechamento);
             repositorioPeriodoFechamento.SalvarBimestres(fechamento.FechamentosBimestre, id);
             unitOfWork.PersistirTransacao();
-
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AlterarPeriodosComHierarquiaInferiorFechamento, fechamento, Guid.NewGuid(), null));
             CriarEventoFechamento(fechamento);
         }
 
