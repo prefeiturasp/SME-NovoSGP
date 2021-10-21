@@ -34,13 +34,16 @@ namespace SME.SGP.Aplicacao
                     var arquivo = $@"{UtilArquivo.ObterDiretorioBase()}\{caminho}{item.ToString()}";
                     var alterarBarras = arquivo.Replace(@"\", @"///");
                     if (File.Exists(alterarBarras))
+                    {
+                        File.SetAttributes(alterarBarras, FileAttributes.Normal);
                         File.Delete(alterarBarras);
+                    }
                     else
                     {
                         var mensagem = $"Arquivo Informado para exclusão não existe no caminho {alterarBarras} ";
-                        SentrySdk.CaptureMessage(mensagem,Sentry.Protocol.SentryLevel.Error);
+                        SentrySdk.CaptureMessage(mensagem, Sentry.Protocol.SentryLevel.Error);
                     }
-                       
+
                 }
                 catch (Exception ex)
                 {
