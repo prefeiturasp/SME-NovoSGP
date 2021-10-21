@@ -13,7 +13,6 @@ namespace SME.SGP.Aplicacao
     {
         public async Task<bool> Handle(RemoverArquivosExcluidosCommand request, CancellationToken cancellationToken)
         {
-            Console.WriteLine($" ------------- REMOVER_ARQUIVO ------------- Remover arquivos do servidor: {request.ArquivoAtual} ");
             var expressao = @"\/[0-9]{4}\/[0-9]{2}\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+";
             var regex = new Regex(expressao);
             var atual = regex.Matches(request.ArquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
