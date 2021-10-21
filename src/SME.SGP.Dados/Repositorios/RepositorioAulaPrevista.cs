@@ -16,7 +16,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select * from aula_prevista ap
                          where ap.tipo_calendario_id = @tipoCalendarioId and ap.turma_id = @turmaId and
-                               ap.disciplina_id = @disciplinaId;";
+                               ap.disciplina_id = @disciplinaId and 
+                               not ap.excluido;";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AulaPrevista>(query, new { tipoCalendarioId, turmaId, disciplinaId });
         }
