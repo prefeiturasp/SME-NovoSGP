@@ -206,25 +206,13 @@ namespace SME.SGP.Dominio.Servicos
         public async Task Salvar(FechamentoDto fechamentoDto)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-
             var fechamento = MapearParaDominio(fechamentoDto);
-            var ehSme = usuarioLogado.EhPerfilSME();
 
             unitOfWork.IniciarTransacao();
             var id = repositorioPeriodoFechamento.Salvar(fechamento);
             repositorioPeriodoFechamento.SalvarBimestres(fechamento.FechamentosBimestre, id);
             unitOfWork.PersistirTransacao();
-
-            await ExecutaAlterarPeriodosComHierarquiaInferior(fechamentoDto, fechamento, ehSme);
             CriarEventoFechamento(fechamento);
-        }
-
-        private async Task ExecutaAlterarPeriodosComHierarquiaInferior(FechamentoDto fechamentoDto, PeriodoFechamento fechamento, bool ehSme)
-        {
-            if ((ehSme && !fechamento.DreId.HasValue) || (fechamento.DreId.HasValue && !fechamento.UeId.HasValue) && fechamentoDto.ConfirmouAlteracaoHierarquica)
-            {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AlterarPeriodosComHierarquiaInferiorFechamento, fechamento, Guid.NewGuid(), null));
-            }
         }
 
         private static Notificacao MontaNotificacao(string nomeEntidade, string tipoEntidade, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, string codigoUe, string codigoDre)
