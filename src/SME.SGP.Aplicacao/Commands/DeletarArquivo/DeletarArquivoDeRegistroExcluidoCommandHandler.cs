@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Infra;
+using System;
 using System.Collections;
 using System.IO;
 using System.Linq;
@@ -25,9 +27,26 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
         {
             foreach (var item in arquivos)
             {
-                var arquivo = $@"{UtilArquivo.ObterDiretorioBase()}\{caminho}{item.ToString()}";
-                if (File.Exists(arquivo))
-                    File.Delete(arquivo);
+                try
+                {
+                    var arquivo = $@"{UtilArquivo.ObterDiretorioBase()}\{caminho}{item.ToString()}";
+                    var alterarBarras = arquivo.Replace(@"\", @"///");
+                    if (File.Exists(alterarBarras))
+                    {
+                        File.SetAttributes(alterarBarras, FileAttributes.Normal);
+                        File.Delete(alterarBarras);
+                    }
+                    else
+                    {
+                        var mensagem = $"Arquivo Informado para exclusão não existe no caminho {alterarBarras} ";
+                        SentrySdk.CaptureMessage(mensagem, Sentry.Protocol.SentryLevel.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SentrySdk.CaptureMessage($"Falha ao deletar o arquivo {ex.Message} ");
+                    SentrySdk.CaptureException(ex);
+                }
             }
 
         }
