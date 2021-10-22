@@ -32,21 +32,21 @@ namespace SME.SGP.Aplicacao
         private async Task<AcompanhamentoTurma> AtualizaApanhadoTurma(AcompanhamentoTurmaDto dto)
         {
             var acompanhamento = await ObterAcompanhamentoTurmaPorId(dto.AcompanhamentoTurmaId);
-            MoverRemoverExcluidos(dto, acompanhamento);
+            await MoverRemoverExcluidos(dto, acompanhamento);
             acompanhamento.ApanhadoGeral = dto.ApanhadoGeral;
             return await mediator.Send(new SalvarAcompanhamentoTurmaCommand(acompanhamento));
         }
 
-        private void MoverRemoverExcluidos(AcompanhamentoTurmaDto dto, AcompanhamentoTurma acompanhamento)
+        private async Task MoverRemoverExcluidos(AcompanhamentoTurmaDto dto, AcompanhamentoTurma acompanhamento)
         {
             if (!string.IsNullOrEmpty(dto.ApanhadoGeral))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.AcompanhamentoAluno, acompanhamento.ApanhadoGeral, dto.ApanhadoGeral));
-                dto.ApanhadoGeral = moverArquivo.Result;
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.AcompanhamentoAluno, acompanhamento.ApanhadoGeral, dto.ApanhadoGeral));
+                dto.ApanhadoGeral = moverArquivo;
             }
             if (!string.IsNullOrEmpty(acompanhamento.ApanhadoGeral))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(acompanhamento.ApanhadoGeral, dto.ApanhadoGeral, TipoArquivo.AcompanhamentoAluno.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(acompanhamento.ApanhadoGeral, dto.ApanhadoGeral, TipoArquivo.AcompanhamentoAluno.Name()));
             }
         }
 
