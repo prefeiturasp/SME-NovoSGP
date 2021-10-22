@@ -63,22 +63,28 @@ namespace SME.SGP.Aplicacao
                 if (listaPlanoAnual.Count() != periodos.Count())
                 {
                     var periodosFaltantes = periodos.Where(c => !listaPlanoAnual.Any(p => p.Bimestre == c.Bimestre));
-                    var planosFaltantes = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodosFaltantes, dataAtual, bimestresAbertoFechado).ToList();
+                    var planosFaltantes = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodosFaltantes, dataAtual).ToList();
                     planosFaltantes.AddRange(listaPlanoAnual);
                     listaPlanoAnual = planosFaltantes;
                 }
             }
             else
-                listaPlanoAnual = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodos, dataAtual, bimestresAbertoFechado);
+                listaPlanoAnual = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodos, dataAtual);
+
+            listaPlanoAnual.ToList().ForEach(planoAnual =>
+            {
+                planoAnual.PeriodoAberto = bimestresAbertoFechado.FirstOrDefault(f => f.Bimestre == planoAnual.Bimestre).PeriodoAberto;
+            });
+
             return listaPlanoAnual.OrderBy(c => c.Bimestre);
         }
 
-        private IEnumerable<PlanoAnualTerritorioSaberCompletoDto> ObterNovoPlanoAnualTerritorioSaberCompleto(Turma turma, int anoLetivo, string ueId, IEnumerable<PeriodoEscolar> periodos, DateTime dataAtual, List<PeriodoEscolarPorTurmaDto> listaBimestes)
+        private IEnumerable<PlanoAnualTerritorioSaberCompletoDto> ObterNovoPlanoAnualTerritorioSaberCompleto(Turma turma, int anoLetivo, string ueId, IEnumerable<PeriodoEscolar> periodos, DateTime dataAtual)
         {
             var listaPlanoAnual = new List<PlanoAnualTerritorioSaberCompletoDto>();
             foreach (var periodo in periodos)
             {
-                listaPlanoAnual.Add(ObterPlanoAnualPorBimestre(turma.CodigoTurma, anoLetivo, ueId, periodo.Bimestre, listaBimestes.FirstOrDefault(f => f.Bimestre == periodo.Bimestre).PeriodoAberto));
+                listaPlanoAnual.Add(ObterPlanoAnualPorBimestre(turma.CodigoTurma, anoLetivo, ueId, periodo.Bimestre));
             }
             return listaPlanoAnual;
         }
@@ -105,15 +111,14 @@ namespace SME.SGP.Aplicacao
             return periodos;
         }
 
-        private static PlanoAnualTerritorioSaberCompletoDto ObterPlanoAnualPorBimestre(string turmaId, int anoLetivo, string ueId, int bimestre, bool periodoEmAberto)
+        private static PlanoAnualTerritorioSaberCompletoDto ObterPlanoAnualPorBimestre(string turmaId, int anoLetivo, string ueId, int bimestre)
         {
             return new PlanoAnualTerritorioSaberCompletoDto
             {
                 Bimestre = bimestre,
                 EscolaId = ueId,
                 TurmaId = turmaId,
-                AnoLetivo = anoLetivo,
-                PeriodoAberto = periodoEmAberto
+                AnoLetivo = anoLetivo
             };
         }
 
