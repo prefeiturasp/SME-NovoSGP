@@ -35,6 +35,9 @@ namespace SME.SGP.Aplicacao
 
             unitOfWork.IniciarTransacao();
 
+            if (dto.BimestresQuantidade.Count() > 4)
+                throw new NegocioException("O número de bimestres passou do limite padrão. Favor entrar em contato com o suporte.");
+
             foreach (var bimestre in dto.BimestresQuantidade)
             {
                 AulaPrevistaBimestre aulaPrevistaBimestre = aulasPrevistasBimestre.FirstOrDefault(b => b.Bimestre == bimestre.Bimestre);
@@ -70,6 +73,9 @@ namespace SME.SGP.Aplicacao
         private async Task<long> Inserir(AulaPrevistaDto aulaPrevistaDto, AulaPrevista aulaPrevista)
         {
             aulaPrevistaDto.Id = repositorio.Salvar(aulaPrevista);
+
+            if (aulaPrevistaDto.BimestresQuantidade.Count() > 4)
+                throw new NegocioException("O número de bimestres passou do limite padrão. Favor entrar em contato com o suporte.");
 
             if (aulaPrevistaDto.BimestresQuantidade != null)
                 foreach (var bimestreQuantidadeDto in aulaPrevistaDto.BimestresQuantidade)
