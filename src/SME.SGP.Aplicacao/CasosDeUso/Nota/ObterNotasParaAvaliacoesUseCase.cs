@@ -217,16 +217,23 @@ namespace SME.SGP.Aplicacao
                     if (notasConceitoBimestre.Any())
                     {
                         var dadosAuditoriaAlteracaoBimestre = notasConceitoBimestre
-                            .OrderByDescending(nc => nc.AlteradoEm)
-                            .ThenBy(nc => nc.CriadoEm)
-                            .Select(nc => new
-                            {
-                                AlteradoPor = !string.IsNullOrWhiteSpace(nc.AlteradoPor) && !nc.AlteradoRF.Equals(0) ? nc.AlteradoPor : nc.CriadoPor,
-                                AlteradoRf = !string.IsNullOrWhiteSpace(nc.AlteradoRF) && !nc.AlteradoRF.Equals(0) ? nc.AlteradoRF : nc.CriadoRF,
-                                AlteradoEm = nc.AlteradoEm.HasValue && !nc.AlteradoRF.Equals(0) ? nc.AlteradoEm.Value : nc.CriadoEm,
-                            }).First();
+                            .Where(o => o.AlteradoEm.HasValue)
+                            .ToList();
 
-                        retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {(dadosAuditoriaAlteracaoBimestre.AlteradoPor)}({dadosAuditoriaAlteracaoBimestre.AlteradoRf}) em {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("dd/MM/yyyy")}, às {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("HH:mm")}.";
+                        if (dadosAuditoriaAlteracaoBimestre.Any())
+                        {
+                            var ultimoDadoDeAuditoria = dadosAuditoriaAlteracaoBimestre
+                                                                .OrderByDescending(nc => nc.AlteradoEm)
+                                                                .Select(nc => new
+                                                                {
+                                                                    AlteradoPor = nc.AlteradoRF.Equals(0) ? nc.CriadoPor : nc.AlteradoPor,
+                                                                    AlteradoRf = nc.AlteradoRF.Equals(0) ? nc.CriadoRF : nc.AlteradoRF,
+                                                                    AlteradoEm = nc.AlteradoRF.Equals(0) ? nc.CriadoEm : nc.AlteradoEm.Value,
+                                                                })
+                                                                .First();
+
+                            retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {(ultimoDadoDeAuditoria.AlteradoPor)}({ultimoDadoDeAuditoria.AlteradoRf}) em {ultimoDadoDeAuditoria.AlteradoEm.ToString("dd/MM/yyyy")}, às {ultimoDadoDeAuditoria.AlteradoEm.ToString("HH:mm")}.";
+                        }
                     }
 
 
