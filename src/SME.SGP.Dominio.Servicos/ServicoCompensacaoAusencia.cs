@@ -81,7 +81,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // Valida mesma compensação no ano
             var compensacaoExistente = await repositorioCompensacaoAusencia.ObterPorAnoTurmaENome(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id);
-            var descricaoAtual = compensacaoExistente != null ? compensacaoExistente.Descricao : string.Empty;
+            
             if (compensacaoExistente != null)
             {
                 throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.");
@@ -94,6 +94,8 @@ namespace SME.SGP.Dominio.Servicos
 
             // Carrega dasdos da disciplina no EOL
             await ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds, compensacaoBanco.Migrado);
+
+            var descricaoAtual = compensacaoBanco != null ? compensacaoBanco.Descricao : string.Empty;
 
             // Persiste os dados
             var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco);
@@ -108,7 +110,7 @@ namespace SME.SGP.Dominio.Servicos
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds);
                 codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo);
                 unitOfWork.PersistirTransacao();
-                MoverRemoverExcluidos(compensacaoDto.Descricao, descricaoAtual);
+                await MoverRemoverExcluidos(compensacaoDto.Descricao, descricaoAtual);
             }
             catch (Exception)
             {
@@ -123,15 +125,15 @@ namespace SME.SGP.Dominio.Servicos
 
             Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarCompensacaoAusencia(compensacao.Id));
         }
-        private void MoverRemoverExcluidos(string novo, string atual)
+        private async Task MoverRemoverExcluidos(string novo, string atual)
         {
             if (!string.IsNullOrEmpty(novo))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.CompensacaoAusencia, atual, novo));
+                await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.CompensacaoAusencia, atual, novo));
             }
             if (!string.IsNullOrEmpty(atual))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.CompensacaoAusencia.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.CompensacaoAusencia.Name()));
             }
         }
         private async Task ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool registroMigrado)
