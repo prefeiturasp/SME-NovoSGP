@@ -13,6 +13,7 @@ namespace SME.SGP.Dominio
         public int AnoLetivo { get; set; }
         public string NomeProfessor { get; set; }
         public string RFProfessor { get; set; }
+        public bool CJ { get; set; }
         public int QuantidadeAulas { get; set; }
         public int FrequenciasPendentes { get; set; }
         public DateTime? DataUltimaFrequencia { get; set; }

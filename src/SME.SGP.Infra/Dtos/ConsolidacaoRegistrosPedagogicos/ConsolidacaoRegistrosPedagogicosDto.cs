@@ -20,13 +20,15 @@ namespace SME.SGP.Infra
         public int PlanoAulaPendentes { get; set; }
         public string NomeProfessor { get; set; }
         public string RFProfessor { get; set; }
+        public int ModalidadeCodigo { get; set; }
+        public bool CJ { get; set; }
 
         public ConsolidacaoRegistrosPedagogicosDto()
         {
 
         }
 
-        public ConsolidacaoRegistrosPedagogicosDto(long periodoEscolarId, long turmaId, string turmaCodigo, int anoLetivo, long componenteCurricularId, int quantidadeAulas, int frequenciasPendentes, DateTime? dataUltimaFrequencia, DateTime? dataUltimoPlanoAula, DateTime? dataUltimoDiarioBordo, int diarioBordoPendentes, int planoAulaPendentes, string nomeProfessor, string rFProfessor)
+        public ConsolidacaoRegistrosPedagogicosDto(long periodoEscolarId, long turmaId, string turmaCodigo, int anoLetivo, long componenteCurricularId, int quantidadeAulas, int frequenciasPendentes, DateTime? dataUltimaFrequencia, DateTime? dataUltimoPlanoAula, DateTime? dataUltimoDiarioBordo, int diarioBordoPendentes, int planoAulaPendentes, string nomeProfessor, string rFProfessor, int modalidadeCodigo)
         {
             PeriodoEscolarId = periodoEscolarId;
             TurmaId = turmaId;
@@ -42,6 +44,7 @@ namespace SME.SGP.Infra
             PlanoAulaPendentes = planoAulaPendentes;
             NomeProfessor = nomeProfessor;
             RFProfessor = rFProfessor;
+            ModalidadeCodigo = modalidadeCodigo;
         }
     }
 }

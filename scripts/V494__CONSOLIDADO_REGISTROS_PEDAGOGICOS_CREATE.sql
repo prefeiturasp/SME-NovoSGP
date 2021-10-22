@@ -33,6 +33,7 @@ CREATE TABLE public.consolidacao_registros_pedagogicos (
     data_ultimo_planoaula timestamp NULL, 
     diario_bordo_pendentes int4 DEFAULT 0,
     planos_aula_pendentes int4 DEFAULT 0,
+    cj bool
 
 	CONSTRAINT consolidacao_registros_pedagogicos_pk PRIMARY KEY (id)
 );
