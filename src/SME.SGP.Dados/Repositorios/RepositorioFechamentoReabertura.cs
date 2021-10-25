@@ -23,6 +23,11 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute("DELETE FROM FECHAMENTO_REABERTURA_BIMESTRE FRB WHERE FRB.FECHAMENTO_REABERTURA_ID = @id", new { id });
         }
 
+        public void ExcluirBimestre(long fechamentoReaberturaId, long bimestreId)
+        {
+            database.Conexao.Execute("DELETE FROM FECHAMENTO_REABERTURA_BIMESTRE FRB WHERE FRB.FECHAMENTO_REABERTURA_ID = @fechamentoReaberturaId AND FRB.BIMESTRE = @bimestreId", new { fechamentoReaberturaId, bimestreId });
+        }
+
         public async Task ExcluirVinculoDeNotificacoesAsync(long fechamentoReaberturaId)
         {
             await database.Conexao.ExecuteAsync("DELETE FROM FECHAMENTO_REABERTURA_NOTIFICACAO WHERE FECHAMENTO_REABERTURA_ID = @fechamentoReaberturaId", new { fechamentoReaberturaId });
@@ -81,7 +86,7 @@ namespace SME.SGP.Dados.Repositorios
             if (paginacao.QuantidadeRegistros != 0)
                 query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
 
-            await database.Conexao.QueryAsync<FechamentoReabertura, Ue, Dre, Usuario, TipoCalendario, FechamentoReabertura>(query.ToString(), (fechamento, ue, dre, aprovador,tipoCalendario) =>
+            await database.Conexao.QueryAsync<FechamentoReabertura, Ue, Dre, TipoCalendario, Usuario, FechamentoReabertura>(query.ToString(), (fechamento, ue, dre,tipoCalendario, aprovador) =>
             {
                 FechamentoReabertura fechamentoReabertura;
                 if (!lookup.TryGetValue(fechamento.Id, out fechamentoReabertura))
@@ -91,8 +96,8 @@ namespace SME.SGP.Dados.Repositorios
                 }
                 fechamentoReabertura.AtualizarDre(dre);
                 fechamentoReabertura.AtualizarUe(ue);
-                fechamentoReabertura.AtualizarAprovador(aprovador);
                 fechamentoReabertura.AtualizarTipoCalendario(tipoCalendario);
+                fechamentoReabertura.AtualizarAprovador(aprovador);
                 return fechamentoReabertura;
             }, new
             {
@@ -135,7 +140,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, FechamentoReabertura>();
 
-            database.Conexao.Query<FechamentoReabertura, FechamentoReaberturaBimestre, Ue, Dre, Usuario, TipoCalendario, FechamentoReabertura>(query.ToString(), (fechamento, bimestre, ue, dre, aprovador, tipoCalendario) =>
+            database.Conexao.Query<FechamentoReabertura, FechamentoReaberturaBimestre, Ue, Dre, TipoCalendario, Usuario, FechamentoReabertura>(query.ToString(), (fechamento, bimestre, ue, dre, tipoCalendario, aprovador) =>
            {
                FechamentoReabertura fechamentoReabertura;
                if (!lookup.TryGetValue(fechamento.Id, out fechamentoReabertura))
@@ -144,9 +149,9 @@ namespace SME.SGP.Dados.Repositorios
                    lookup.Add(fechamento.Id, fechamentoReabertura);
                }
                fechamentoReabertura.AtualizarDre(dre);
-               fechamentoReabertura.AtualizarUe(ue);
-               fechamentoReabertura.AtualizarAprovador(aprovador);
+               fechamentoReabertura.AtualizarUe(ue);               
                fechamentoReabertura.AtualizarTipoCalendario(tipoCalendario);
+               fechamentoReabertura.AtualizarAprovador(aprovador);
                fechamentoReabertura.Adicionar(bimestre);
                return fechamentoReabertura;
            }, new
@@ -289,7 +294,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("on fr.ue_id = ue.id");
             query.AppendLine("left join dre");
             query.AppendLine("on fr.dre_id = dre.id");
-            query.AppendLine("left usuario u on fr.aprovador_id = u.id");
+            query.AppendLine("left join usuario u on fr.aprovador_id = u.id");
             MontaQueryListarWhere(query, tipoCalendarioId, 0, 0, 0, dreCodigo, ueCodigo, aprovadorCodigo);
         }
 

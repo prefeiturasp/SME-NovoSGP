@@ -9,6 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<FechamentoReabertura> ObterPorDataTurmaCalendarioAsync(long ueId, DateTime dataReferencia, long tipoCalendarioId);
         void ExcluirBimestres(long id);
+        void ExcluirBimestre(long fechamentoReaberturaId, long bimestreId);
 
         Task ExcluirVinculoDeNotificacoesAsync(long fechamentoReaberturaId);
 

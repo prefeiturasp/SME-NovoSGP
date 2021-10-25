@@ -86,13 +86,8 @@ namespace SME.SGP.Dominio
             if (aprovador != null)
             {
                 this.Aprovador = aprovador;
-                this.UeId = aprovador.Id;
+                this.AprovadorId = aprovador.Id;
             }
-        }
-
-        public bool DeveCriarEventos()
-        {
-            return EhParaUe() && Status == EntidadeStatus.Aprovado;
         }
 
         public bool EhParaDre()
