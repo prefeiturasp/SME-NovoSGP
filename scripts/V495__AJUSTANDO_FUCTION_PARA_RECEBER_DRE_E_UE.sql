@@ -1,11 +1,7 @@
-﻿create or replace function f_abrangencia_semestres(p_login character varying, p_perfil_id uuid, p_historico boolean,
-                                                   p_modalidade_codigo integer DEFAULT 0,
-                                                   p_ano_letivo integer DEFAULT 0,
-                                                   p_dre_id character varying DEFAULT NULL::character varying,
-                                                   p_ue_id character varying DEFAULT NULL::character varying) returns SETOF integer
-    language sql
-as
-$$
+﻿CREATE OR REPLACE FUNCTION public.f_abrangencia_semestres(p_login character varying, p_perfil_id uuid, p_historico boolean, p_modalidade_codigo integer DEFAULT 0, p_ano_letivo integer DEFAULT 0, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying)
+ RETURNS SETOF integer
+ LANGUAGE sql
+AS $function$
 select distinct act.turma_semestre
 from v_abrangencia_nivel_dre a
          inner join v_abrangencia_cadeia_turmas act
@@ -44,5 +40,5 @@ where a.login = p_login
   and (p_ano_letivo = 0 or (p_ano_letivo <> 0 and act.turma_ano_letivo = p_ano_letivo))
   and (p_ue_id is null or (p_ue_id is not null and act.ue_codigo = p_ue_id))
   and (p_dre_id is null or (p_dre_id is not null and act.dre_codigo = p_dre_id));
-$$;
-
+$function$
+;
