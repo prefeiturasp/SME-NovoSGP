@@ -57,6 +57,8 @@ namespace SME.SGP.Dados
                               when max(db.criado_em) is not null or disciplina_id = '512' then 0
                               else count(a.id) filter (where pa.id is null)
                               end as PlanoAulaPendentes
+                            , a.professor_rf as RFProfessor
+                            , t.modalidade_codigo as ModalidadeCodigo
                           from aula a
                           	 left join diario_bordo db on db.aula_id = a.id and not db.excluido 
 	                         inner join turma t on t.turma_id = a.turma_id 
@@ -68,7 +70,7 @@ namespace SME.SGP.Dados
                            and a.data_aula < NOW()
                            and t.ue_id = @ueId
                            and t.ano_letivo = @anoLetivo
-                        group by pe.id, pe.bimestre, t.id, a.disciplina_id, db.criado_em, pa.criado_em";
+                        group by pe.id, pe.bimestre, t.id, a.disciplina_id, db.criado_em, pa.criado_em, a.professor_rf, t.modalidade_codigo";
 
             return await database.Conexao.QueryAsync<ConsolidacaoRegistrosPedagogicosDto>(query, new { ueId, anoLetivo });
         }

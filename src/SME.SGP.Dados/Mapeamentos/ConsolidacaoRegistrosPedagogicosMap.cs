@@ -24,6 +24,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(a => a.PlanoAulaPendentes).ToColumn("planos_aula_pendentes");
             Map(a => a.PeriodoEscolarId).ToColumn("periodo_escolar_id");
             Map(a => a.QuantidadeAulas).ToColumn("quantidade_aulas");
+            Map(a => a.CJ).ToColumn("cj");
         }
     }
 }
