@@ -202,19 +202,27 @@ namespace SME.SGP.Dados.Repositorios
         {
             var bimetreQuery = "(select pe.bimestre from periodo_escolar pe inner join tipo_calendario tc on tc.id  = pe.tipo_calendario_id and tc.id = fr.tipo_calendario_id order by pe.bimestre  desc limit 1)";
             var bimestreWhere = $"and frb.bimestre = {(bimestre > 0 ? " @bimestre" : bimetreQuery)}";
+            var incluirJoinUe = string.Empty;
+            var incluirUeWhere = "and fr.ue_id is null";
+
+            if (!string.IsNullOrEmpty(ueCodigo))
+            {
+                incluirJoinUe = "inner join ue on ue.id = fr.ue_id";
+                incluirUeWhere = "and ue.ue_id = @ueCodigo";
+            }
 
             var query = $@"select fr.* 
                           from fechamento_reabertura_bimestre frb
                          inner join fechamento_reabertura fr on fr.id = frb.fechamento_reabertura_id
                          inner join dre on dre.id = fr.dre_id
-                         inner join ue on ue.id = fr.ue_id
+                         {incluirJoinUe}
                          where not fr.excluido 
                           {bimestreWhere}
                            and TO_DATE(fr.inicio::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
                            and TO_DATE(fr.fim::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
                            and fr.tipo_calendario_id = @tipoCalendarioId
                            and dre.dre_id = @dreCodigo
-                           and ue.ue_id = @ueCodigo
+                           {incluirUeWhere}
                            and fr.status = 1 ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoReabertura>(query, new
