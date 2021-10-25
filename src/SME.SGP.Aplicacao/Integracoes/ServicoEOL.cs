@@ -475,7 +475,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             else
             {
                 _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
-                                
+
                 return null;
             }
         }
@@ -639,7 +639,6 @@ namespace SME.SGP.Aplicacao.Integracoes
                 url.Append($"?codigoRf={professorRf}");
 
             var resposta = await httpClient.GetAsync(url.ToString());
-
             if (!resposta.IsSuccessStatusCode)
                 return null;
 
@@ -648,6 +647,24 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorTitularDisciplinaEol>>(json);
+        }
+
+        public async Task<string> ObterNomeProfessorPeloRF(string rfProfessor)
+        {
+            StringBuilder url = new StringBuilder();
+
+            url.Append($"professores/{rfProfessor}");
+
+            var resposta = await httpClient.GetAsync(url.ToString());
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return null;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<string>(json);
         }
 
         public async Task<UsuarioResumoCoreDto> ObterResumoCore(string login)
@@ -905,7 +922,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - URL: {httpClient.BaseAddress}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;                
+                _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - URL: {httpClient.BaseAddress}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
                 throw new NegocioException($"Erro ao obter os códigos de DREs no EOL. URL base: {httpClient.BaseAddress}");
             }
         }

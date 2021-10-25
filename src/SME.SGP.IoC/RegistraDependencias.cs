@@ -409,6 +409,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterOrdenacaoAreasConhecimentoUseCase, ObterOrdenacaoAreasConhecimentoUseCase>();
             services.TryAddScoped<IMapearAreasDoConhecimentoUseCase, MapearAreasDoConhecimentoUseCase>();
             services.TryAddScoped<IObterComponentesDasAreasDeConhecimentoUseCase, ObterComponentesDasAreasDeConhecimentoUseCase>();
+
+            // Consolidacao de Registros Pedagogicos
+            services.TryAddScoped<IRepositorioConsolidacaoRegistrosPedagogicos, RepositorioConsolidacaoRegistrosPedagogicos>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -1008,6 +1011,11 @@ namespace SME.SGP.IoC
             // Consolidação de Diarios de Bordo
             services.TryAddScoped<IConsolidarDiariosBordoCarregarUseCase, ConsolidarDiariosBordoCarregarUseCase>();
             services.TryAddScoped<IConsolidarDiariosBordoPorUeTratarUseCase, ConsolidarDiariosBordoPorUeTratarUseCase>();
+
+            // Consolidação de Registros Pedagógicos
+            services.TryAddScoped<IConsolidarRegistrosPedagogicosUseCase, ConsolidarRegistrosPedagogicosUseCase>();
+            services.TryAddScoped<IConsolidarRegistrosPedagogicosPorUeTratarUseCase, ConsolidarRegistrosPedagogicosPorUeTratarUseCase>();
+            services.TryAddScoped<IRelatorioAcompanhamentoRegistrosPedagogicosUseCase, RelatorioAcompanhamentoRegistrosPedagogicosUseCase>();
 
             // Dashboard Registro Individual
             services.TryAddScoped<IObterQuantidadeRegistrosIndividuaisPorAnoTurmaUseCase, ObterQuantidadeRegistrosIndividuaisPorAnoTurmaUseCase>();
