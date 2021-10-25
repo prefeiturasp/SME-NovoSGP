@@ -12,7 +12,7 @@ where a.login = p_login
   and (p_modalidade_codigo = 0 or (p_modalidade_codigo <> 0 and act.modalidade_codigo = p_modalidade_codigo))
   and (p_ano_letivo = 0 or (p_ano_letivo <> 0 and act.turma_ano_letivo = p_ano_letivo))
   and (p_dre_id is null or (p_dre_id is not null and act.dre_codigo = p_dre_id))
-
+  and (p_ue_id is null or (p_ue_id is not null and act.ue_codigo = p_ue_id))
 union
 
 select distinct act.turma_semestre
