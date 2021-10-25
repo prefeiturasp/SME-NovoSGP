@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoReaberturaBimestre = repositorioFechamentoReaberturaBimestre ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReaberturaBimestre));
         }
 
-        public async Task<PaginacaoResultadoDto<FechamentoReaberturaListagemDto>> Listar(long tipoCalendarioId, string dreCodigo, string ueCodigo)
+        public async Task<PaginacaoResultadoDto<FechamentoReaberturaListagemDto>> Listar(long tipoCalendarioId, string dreCodigo, string ueCodigo, string aprovadorCodigo)
         {
-            var listaEntidades = await repositorioFechamentoReabertura.ListarPaginado(tipoCalendarioId, dreCodigo, ueCodigo, Paginacao);
+            var listaEntidades = await repositorioFechamentoReabertura.ListarPaginado(tipoCalendarioId, dreCodigo, ueCodigo, Paginacao, aprovadorCodigo);
 
             foreach(FechamentoReabertura fechamentoReabertura in listaEntidades.Items)
             {

@@ -42,7 +42,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<string> AlterarAsync(FechamentoReabertura fechamentoReabertura, DateTime dataInicialAnterior, DateTime dataFimAnterior, bool confirmacacaoAlteracaoHierarquica)
         {
-            var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null);
+            var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null, null);
 
             var fechamentoReaberturasParaVerificar = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id);
             var fechamentoReaberturasParaAtualizar = fechamentoReaberturasParaVerificar.Where(a => fechamentoReabertura.Inicio > a.Inicio || a.Fim > fechamentoReabertura.Fim);
@@ -81,14 +81,14 @@ namespace SME.SGP.Dominio.Servicos
             {
                 if (fechamentoReabertura.EhParaSme())
                 {
-                    var fechamentosSME = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, null, null, null);
+                    var fechamentosSME = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, null, null, null, null);
 
                     if (fechamentosSME.Any(f => f.EhParaDre() || f.EhParaUe()))
                         return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}, existem fechamentos para DRE/UE relacionados a essa SME";
                 }
                 else if (fechamentoReabertura.EhParaDre())
                 {
-                    var fechamentosDre = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, fechamentoReabertura.DreId, null, null);
+                    var fechamentosDre = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, fechamentoReabertura.DreId, null, null, null);
 
                     if (fechamentosDre.Any(f => f.EhParaUe()))
                         return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}, existem fechamentos para UE relacionados a essa DRE";
@@ -103,7 +103,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else
                 {
-                    var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null);
+                    var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null, null);
                     var fechamentoReaberturasParaExcluir = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id && fechamentoReabertura.Inicio >= a.Inicio || a.Fim >= fechamentoReabertura.Fim);
 
                     if (fechamentoReaberturasParaExcluir != null && fechamentoReaberturasParaExcluir.Any())
@@ -131,7 +131,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<string> SalvarAsync(FechamentoReabertura fechamentoReabertura)
         {
-            var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null);
+            var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null, null);
 
             var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
             fechamentoReabertura.PodeSalvar(fechamentoReaberturas, usuarioAtual);
