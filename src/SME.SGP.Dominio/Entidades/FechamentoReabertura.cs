@@ -30,6 +30,8 @@ namespace SME.SGP.Dominio
         public WorkflowAprovacao WorkflowAprovacao { get; set; }
         public long? WorkflowAprovacaoId { get; set; }
         private List<FechamentoReaberturaBimestre> bimestres { get; set; }
+        public Usuario Aprovador { get; set; }
+        public long? AprovadorId { get; set; }
 
         public void Adicionar(FechamentoReaberturaBimestre bimestre)
         {
@@ -76,6 +78,15 @@ namespace SME.SGP.Dominio
             {
                 this.Ue = ue;
                 this.UeId = ue.Id;
+            }
+        }
+
+        public void AtualizarAprovador(Usuario aprovador)
+        {
+            if (aprovador != null)
+            {
+                this.Aprovador = aprovador;
+                this.UeId = aprovador.Id;
             }
         }
 

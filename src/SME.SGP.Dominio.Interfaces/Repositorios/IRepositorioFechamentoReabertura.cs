@@ -12,9 +12,9 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task ExcluirVinculoDeNotificacoesAsync(long fechamentoReaberturaId);
 
-        Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId, long[] ids);
+        Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId, long? aprovadorId, long[] ids);
 
-        Task<PaginacaoResultadoDto<FechamentoReabertura>> ListarPaginado(long tipoCalendarioId, string dreCodigo, string ueCodigo, Paginacao paginacao);
+        Task<PaginacaoResultadoDto<FechamentoReabertura>> ListarPaginado(long tipoCalendarioId, string dreCodigo, string ueCodigo, Paginacao paginacao, string aprovadorCodigo);
 
         FechamentoReabertura ObterCompleto(long idFechamentoReabertura = 0, long workflowId = 0);
 
