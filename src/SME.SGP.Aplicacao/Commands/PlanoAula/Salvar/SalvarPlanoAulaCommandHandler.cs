@@ -69,10 +69,10 @@ namespace SME.SGP.Aplicacao
                     RecuperacaoAulaNovo = request.PlanoAula.RecuperacaoAula,
                     LicaoCasaNovo = request.PlanoAula.LicaoCasa,
 
-                    DescricaoAtual = planoAula.Descricao,
-                    DesenvolvimentoAulaAtual = planoAula.DesenvolvimentoAula,
-                    LicaoCasaAtual = planoAula.LicaoCasa,
-                    RecuperacaoAulaAtual = planoAula.RecuperacaoAula
+                    DescricaoAtual = planoAula?.Descricao ?? string.Empty,
+                    DesenvolvimentoAulaAtual = planoAula?.DesenvolvimentoAula ?? string.Empty,
+                    LicaoCasaAtual = planoAula?.LicaoCasa ?? string.Empty,
+                    RecuperacaoAulaAtual = planoAula?.RecuperacaoAula ?? string.Empty
                 };
                 planoAula = MapearParaDominio(planoAulaDto, planoAula);
 
