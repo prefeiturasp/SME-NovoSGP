@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IConsolidarRegistrosPedagogicosUseCase : IRequest //: IRabbitUseCase
-    {
-        Task<bool> Executar();
+    public interface IConsolidarRegistrosPedagogicosUseCase : IRabbitUseCase
+    { 
     }
 }
