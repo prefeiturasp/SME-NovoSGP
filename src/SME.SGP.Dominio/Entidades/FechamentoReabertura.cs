@@ -147,7 +147,6 @@ namespace SME.SGP.Dominio
                     throw new NegocioException("Perfil Dre deverá somente cadastrar reabertura de fechamento para Dres e Ues.");
             }
 
-            VerificaFechamentosHierarquicos(fechamentosCadastrados);
             VerificaFechamentosNoMesmoPeriodo(fechamentosCadastrados);
         }
 
@@ -169,33 +168,6 @@ namespace SME.SGP.Dominio
         {
             return datasDosFechamentosSME.Any(a => (Inicio.Date >= a.Item1.Date && Inicio.Date <= a.Item2.Date) &&
                     (Fim.Date > a.Item1.Date && Fim.Date <= a.Item2.Date));
-        }
-
-        private void VerificaFechamentosHierarquicos(IEnumerable<FechamentoReabertura> fechamentosCadastrados)
-        {
-            if (EhParaDre())
-            {
-                var fechamentosSME = fechamentosCadastrados.Where(a => a.EhParaSme()).ToList();
-                if (fechamentosSME is null || !fechamentosSME.Any())
-                    throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME.");
-
-                if (!PodePersistirNesteNasDatas(fechamentosSME.Select(a => { return (a.Inicio.Date, a.Fim.Date); })))
-                    throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME para este período.");
-            }
-            else if (EhParaUe())
-            {
-                var fechamentos = fechamentosCadastrados.Where(a => a.EhParaDre() && a.DreId == DreId).ToList();
-
-                if (fechamentos is null || !fechamentos.Any())
-                {
-                    fechamentos = fechamentosCadastrados.Where(a => a.EhParaSme()).ToList();
-                    if (fechamentos is null && !fechamentos.Any())
-                        throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME ou pela Dre.");
-                }
-
-                if (!PodePersistirNesteNasDatas(fechamentos.Select(a => { return (a.Inicio.Date, a.Fim.Date); })))
-                    throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME ou pela Dre.");
-            }
         }
 
         private void VerificaFechamentosNoMesmoPeriodo(IEnumerable<FechamentoReabertura> fechamentosCadastrados)
