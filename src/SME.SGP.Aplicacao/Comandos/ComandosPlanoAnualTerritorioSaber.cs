@@ -62,20 +62,20 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
             foreach (var item in listaDescricao)
             {
-                MoverRemoverExcluidos(item.DesenvolvimentoNovo, item.DesenvolvimentoAtual);
-                MoverRemoverExcluidos(item.ReflexaoNovo, item.ReflexaoAtual);
+                await MoverRemoverExcluidos(item.DesenvolvimentoNovo, item.DesenvolvimentoAtual);
+                await MoverRemoverExcluidos(item.ReflexaoNovo, item.ReflexaoAtual);
             }
             return listaAuditoria;
         }
-        private void MoverRemoverExcluidos(string novo, string atual)
+        private async Task MoverRemoverExcluidos(string novo, string atual)
         {
             if (!string.IsNullOrEmpty(novo))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.TerritorioSaber, atual, novo));
+                await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.TerritorioSaber, atual, novo));
             }
             if (!string.IsNullOrEmpty(atual))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.TerritorioSaber.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.TerritorioSaber.Name()));
             }
         }
         private void Validar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto)
