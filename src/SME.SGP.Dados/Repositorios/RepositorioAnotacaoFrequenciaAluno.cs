@@ -35,9 +35,9 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AnotacaoFrequenciaAluno>(query, new { codigoAluno, aulaId });
         }
-        public async Task<IEnumerable<AnotacaoFrequenciaAluno>> ObterPorAlunoId(long aulaId)
+        public async Task<IEnumerable<AnotacaoFrequenciaAluno>> ObterPorAulaIdRegistroExcluido(long aulaId)
         {
-            var query = "select * from anotacao_frequencia_aluno where not excluido and aula_id = @aulaId";
+            var query = "select * from anotacao_frequencia_aluno where aula_id = @aulaId";
 
             return await database.Conexao.QueryAsync<AnotacaoFrequenciaAluno>(query, new {aulaId });
         }

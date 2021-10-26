@@ -37,6 +37,13 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAula>(query, new { aulaId });
         }
 
+        public async Task<PlanoAula> ObterPlanoAulaPorAulaRegistroExcluido(long aulaId)
+        {
+            var query = "select * from plano_aula where aula_id = @aulaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAula>(query, new { aulaId });
+        }
+
         public async Task<PlanoAula> ObterPlanoAulaPorDataDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
             var query = @"select pa.*

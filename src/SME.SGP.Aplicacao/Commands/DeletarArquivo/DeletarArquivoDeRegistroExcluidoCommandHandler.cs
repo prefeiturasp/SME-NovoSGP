@@ -13,9 +13,10 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
     {
         public async Task<bool> Handle(DeletarArquivoDeRegistroExcluidoCommand request, CancellationToken cancellationToken)
         {
-            var expressao = @"\\[0-9]{4}\\[0-9]{2}\\[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+";
+            var arquivoAtual = request.ArquivoAtual.Replace(@"\", @"/");
+            var expressao = @"\/[0-9]{4}\/[0-9]{2}\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+";
             var regex = new Regex(expressao);
-            var atual = regex.Matches(request.ArquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
+            var atual = regex.Matches(arquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
             DeletarArquivo(atual, request.Caminho);
             return true;
         }
