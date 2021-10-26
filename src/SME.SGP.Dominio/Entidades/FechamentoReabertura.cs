@@ -30,6 +30,8 @@ namespace SME.SGP.Dominio
         public WorkflowAprovacao WorkflowAprovacao { get; set; }
         public long? WorkflowAprovacaoId { get; set; }
         private List<FechamentoReaberturaBimestre> bimestres { get; set; }
+        public Usuario Aprovador { get; set; }
+        public long? AprovadorId { get; set; }
 
         public void Adicionar(FechamentoReaberturaBimestre bimestre)
         {
@@ -79,9 +81,13 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public bool DeveCriarEventos()
+        public void AtualizarAprovador(Usuario aprovador)
         {
-            return EhParaUe() && Status == EntidadeStatus.Aprovado;
+            if (aprovador != null)
+            {
+                this.Aprovador = aprovador;
+                this.AprovadorId = aprovador.Id;
+            }
         }
 
         public bool EhParaDre()

@@ -18,6 +18,9 @@ namespace SME.SGP.Dados.Mapeamentos
 
             Map(a => a.WorkflowAprovacao).Ignore();
             Map(a => a.WorkflowAprovacaoId).ToColumn("wf_aprovacao_id");
+
+            Map(a => a.Aprovador).Ignore();
+            Map(a => a.AprovadorId).ToColumn("aprovador_id");
         }
     }
 }
