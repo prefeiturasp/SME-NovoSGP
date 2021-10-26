@@ -55,6 +55,11 @@ namespace SME.SGP.Infra
                         SituacaoMatriculaAluno.SemContinuidade
     };
 
+        public bool PossuiSituacaoAtiva()
+        {
+            return SituacoesAtiva.Contains(CodigoSituacaoMatricula);
+        }
+
         public bool DeveMostrarNaChamada(DateTime dataAula)
         {
             return EstaAtivo(dataAula) || NumeroAlunoChamada > 0;
