@@ -19,11 +19,17 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IRepositorioPlanoAula repositorioPlanoAula;
+        private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
+        private readonly IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno;
 
         public ExcluirAulaRecorrenteCommandHandler(IMediator mediator,
                                                    IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
                                                    IServicoNotificacao servicoNotificacao,
+                                                   IRepositorioPlanoAula repositorioPlanoAula,
+                                                   IRepositorioDiarioBordo repositorioDiarioBordo,
+                                                   IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno,
                                                    IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -31,6 +37,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
+            this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
+            this.repositorioAnotacaoFrequenciaAluno = repositorioAnotacaoFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFrequenciaAluno));
         }
 
         public async Task<bool> Handle(ExcluirAulaRecorrenteCommand request, CancellationToken cancellationToken)
@@ -61,10 +70,47 @@ namespace SME.SGP.Aplicacao
             {
                 await RemoverAulasEmManutencao(listaProcessos.Select(p => p.Id).ToArray());
             }
-
+            await ExcluirArquivoAnotacaoFrequencia(request.AulaId);
+            await ExcluirArquivosPlanoAula(request.AulaId);
+            await RemoverArquivosDiarioBordo(request.AulaId);
             return true;
         }
+        private async Task ExcluirArquivosPlanoAula(long aulaId)
+        {
+            var plano = await repositorioPlanoAula.ObterPlanoAulaPorAulaRegistroExcluido(aulaId);
 
+            if (plano != null)
+            {
+                await ExcluirArquivo(plano.Descricao, TipoArquivo.PlanoAula);
+                await ExcluirArquivo(plano.DesenvolvimentoAula, TipoArquivo.PlanoAulaDesenvolvimento);
+                await ExcluirArquivo(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
+                await ExcluirArquivo(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa); 
+            }
+        }
+
+        private async Task RemoverArquivosDiarioBordo(long aulaId)
+        {
+            var diarioDeBordo = await repositorioDiarioBordo.ObterPorAulaIdRegistroExcluido(aulaId);
+            if(diarioDeBordo?.Planejamento != null)
+            {
+                await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
+            }
+        }
+        private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)
+        {
+            var anotacaoFrequencia = await repositorioAnotacaoFrequenciaAluno.ObterPorAulaIdRegistroExcluido(aulaId);
+            foreach (var item in anotacaoFrequencia)
+            {
+                await ExcluirArquivo(item.Anotacao,TipoArquivo.FrequenciaAnotacaoEstudante);
+            }
+        }
+        private async Task ExcluirArquivo(string mensagem,TipoArquivo tipo)
+        {
+            if (!string.IsNullOrEmpty(mensagem))
+            {
+                await mediator.Send(new RemoverArquivosExcluidosCommand(mensagem, string.Empty, tipo.Name()));
+            }
+        }
         private async Task<(DateTime dataAula, bool sucesso, string mensagem, bool existeFrequente, bool existePlanoAula)> TratarExclusaoAula(Aula aula, Usuario usuario)
         {
             try
