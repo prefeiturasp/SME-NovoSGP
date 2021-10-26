@@ -98,12 +98,6 @@ namespace SME.SGP.Aplicacao
             {
                 await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
                 await ExcluirArquivo(diarioDeBordo.ReflexoesReplanejamento,TipoArquivo.DiarioBordo);
-                var devolutivaId = diarioDeBordo?.DevolutivaId != null ? diarioDeBordo.DevolutivaId : 0;
-                var devolutiva = await repositorioDevolutiva.ObterPorIdRegistroExcluido(devolutivaId);
-                if (devolutiva != null)
-                {
-                    await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(devolutiva.Descricao, TipoArquivo.Devolutiva.Name()));
-                }
             }
         }
         private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)
