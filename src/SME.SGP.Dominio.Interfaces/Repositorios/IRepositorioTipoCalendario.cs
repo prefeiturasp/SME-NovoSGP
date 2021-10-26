@@ -36,5 +36,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, int modalidadeTipoCalendarioId, int semestre = 0);
         Task<long> ObterTipoCalendarioIdPorAnoLetivoModalidadeEDataReferencia(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendarioId, DateTime dataReferencia);
         Task<int> ObterAnoLetivoUltimoTipoCalendarioPorDataReferencia(int anoReferencia, ModalidadeTipoCalendario modalidadeTipoCalendario);
+        Task<IEnumerable<GestoresDreUePorTipoModalidadeCalendarioDto>> ObterGestoresUePorTipoCalendarioModalidade(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendarioId);
     }
 }
