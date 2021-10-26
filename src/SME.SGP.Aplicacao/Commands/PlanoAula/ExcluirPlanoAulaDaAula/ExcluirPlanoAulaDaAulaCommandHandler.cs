@@ -21,25 +21,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirPlanoAulaDaAulaCommand request, CancellationToken cancellationToken)
         {
-            var plano = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(request.AulaId));
-
-            if (plano != null)
-            {
-                await MoverRemoverExcluidos(plano.Descricao, TipoArquivo.PlanoAula);
-                await MoverRemoverExcluidos(plano.DesenvolvimentoAula, TipoArquivo.PlanoAulaDesenvolvimento);
-                await MoverRemoverExcluidos(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
-                await MoverRemoverExcluidos(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa); 
-            }
-
             await repositorioPlanoAula.ExcluirPlanoDaAula(request.AulaId);
             return true;
-        }
-        private async Task MoverRemoverExcluidos(string mensagem,TipoArquivo tipo)
-        {
-            if (!string.IsNullOrEmpty(mensagem))
-            {
-                await mediator.Send(new RemoverArquivosExcluidosCommand(mensagem, string.Empty, tipo.Name()));
-            }
         }
     }
 }
