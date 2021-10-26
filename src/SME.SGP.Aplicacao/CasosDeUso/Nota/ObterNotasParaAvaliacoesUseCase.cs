@@ -16,12 +16,15 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEol servicoEOL;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
-        public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL)
+
+        public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL, IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.consultasDisciplina = consultasDisciplina;
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
         }
 
         public async Task<NotasConceitosRetornoDto> Executar(ListaNotasConceitosConsultaRefatoradaDto filtro)
@@ -338,7 +341,7 @@ namespace SME.SGP.Aplicacao
                 .Count(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id);
 
             //REFATORAR -> Obtendo turma Full por causa dessa função
-            bimestreParaAdicionar.PodeLancarNotaFinal = await VerificaPeriodoFechamentoEmAberto(turmaCompleta, filtro.Bimestre);
+            bimestreParaAdicionar.PodeLancarNotaFinal = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turmaCompleta, DateTime.Now, filtro.Bimestre);
 
             // Valida Avaliações Bimestrais
             await ValidaMinimoAvaliacoesBimestrais(componenteReferencia, disciplinasRegencia, tipoAvaliacaoBimestral, bimestreParaAdicionar, atividadesAvaliativaEBimestres, filtro.Bimestre);
