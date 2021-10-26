@@ -25,6 +25,15 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QueryFirstOrDefaultAsync<DiarioBordo>(sql, parametros);
         }
 
+        public async Task<DiarioBordo> ObterPorAulaIdRegistroExcluido(long aulaId)
+        {
+	        var sql = @"select * from diario_bordo where aula_id = @aulaId";
+
+	        var parametros = new { aulaId = aulaId };
+
+	        return await database.QueryFirstOrDefaultAsync<DiarioBordo>(sql, parametros);
+        }
+
         public async Task<bool> ExisteDiarioParaAula(long aulaId)
         {
             var query = "select 1 from diario_bordo where aula_id = @aulaId";
