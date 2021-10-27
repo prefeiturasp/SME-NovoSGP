@@ -299,7 +299,6 @@ namespace SME.SGP.Dominio.Servicos
 
             fechamentoReabertura.AprovarWorkFlow();
 
-
             CriarEventoFechamentoReabertura(fechamentoReabertura);
 
             repositorioFechamentoReabertura.Salvar(fechamentoReabertura);

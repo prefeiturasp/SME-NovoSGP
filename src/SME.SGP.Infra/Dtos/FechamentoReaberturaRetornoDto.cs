@@ -12,5 +12,7 @@ namespace SME.SGP.Infra
         public string DreCodigo { get; set; }
         public long TipoCalendarioId { get; set; }
         public string UeCodigo { get; set; }
+        public string AprovadoPor { get; set; }
+        public DateTime? AprovadoEm { get; set; }
     }
 }

@@ -32,6 +32,7 @@ namespace SME.SGP.Dominio
         private List<FechamentoReaberturaBimestre> bimestres { get; set; }
         public Usuario Aprovador { get; set; }
         public long? AprovadorId { get; set; }
+        public DateTime? AprovadoEm { get; set; }
 
         public void Adicionar(FechamentoReaberturaBimestre bimestre)
         {
@@ -51,7 +52,10 @@ namespace SME.SGP.Dominio
         public void AprovarWorkFlow()
         {
             if (Status == EntidadeStatus.AguardandoAprovacao)
+            {
                 Status = EntidadeStatus.Aprovado;
+                AprovadoEm = DateTime.Now;
+            }                
         }
 
         public void AtualizarDre(Dre dre)
@@ -142,17 +146,9 @@ namespace SME.SGP.Dominio
             if (Inicio > Fim)
                 throw new NegocioException("A data início não pode ser maior que a data fim.");
 
-            if (usuario.EhPerfilUE())
-            {
-                if (!EhParaUe())
-                    throw new NegocioException("Perfil Ue deverá somente cadastrar reabertura de fechamento para Ues.");
-            }
-            else if (usuario.EhPerfilDRE())
-            {
-                if (EhParaSme())
-                    throw new NegocioException("Perfil Dre deverá somente cadastrar reabertura de fechamento para Dres e Ues.");
-            }
-
+            if (usuario.EhPerfilDRE() && VerificaAnoAtual())
+                throw new NegocioException("Somente SME pode cadastrar reabertura no ano atual.");
+                        
             VerificaFechamentosNoMesmoPeriodo(fechamentosCadastrados);
         }
 
@@ -164,10 +160,14 @@ namespace SME.SGP.Dominio
 
         public void VerificaStatus()
         {
-            if (EhParaUe() && TipoCalendario.AnoLetivo < DateTime.Today.Year)
+            if (EhParaUe() && !VerificaAnoAtual())
             {
                 Status = EntidadeStatus.AguardandoAprovacao;
             }
+        }
+        public bool VerificaAnoAtual()
+        {
+            return TipoCalendario.AnoLetivo == DateTime.Today.Year;
         }
 
         private bool PodePersistirNesteNasDatas(IEnumerable<(DateTime, DateTime)> datasDosFechamentosSME)
