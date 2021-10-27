@@ -21,9 +21,10 @@ namespace SME.SGP.Aplicacao
             var caminhoBase = ObterCaminhoArquivos(request.Tipo);
             var extencao = Path.GetExtension(request.Nome);
             var nomeArquivo = $"{request.Codigo}{extencao}";
-            var caminhoArquivo = Path.Combine($"{caminhoBase}", nomeArquivo).Replace(@"\", @"//");
-
-            File.Delete(caminhoArquivo);
+            var caminhoArquivo = $"{caminhoBase}//{nomeArquivo}".Replace(@"\", @"//");
+            
+            if (File.Exists(caminhoArquivo))
+                File.Delete(caminhoArquivo);
             return Task.FromResult(true);
         }
 
