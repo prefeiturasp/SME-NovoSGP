@@ -40,27 +40,22 @@ namespace SME.SGP.Aplicacao
 
             var periodoEmAberto = await repositorioPeriodoEscolar.PeriodoEmAbertoAsync(tipoCalendarioId, request.DataReferencia, request.Bimestre, request.EhAnoLetivo);
 
-            return periodoEmAberto || await TurmaEmPeriodoDeFechamento(request.Turma, tipoCalendarioId, request.DataReferencia, request.Bimestre);
+            return periodoEmAberto || await TurmaEmPeriodoDeFechamento(tipoCalendarioId, request.DataReferencia, request.Bimestre);
         }
 
-        private async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, long tipoCalendarioId, DateTime dataReferencia, int bimestre)
+        private async Task<bool> TurmaEmPeriodoDeFechamento(long tipoCalendarioId, DateTime dataReferencia, int bimestre)
         {
-            var ueEmFechamento = await UeEmFechamento(turma, tipoCalendarioId, bimestre, dataReferencia);
+            var smeEmFechamento = await SmeEmFechamento(tipoCalendarioId, bimestre, dataReferencia);
 
-            return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendarioId, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestre, dataReferencia);
+            return smeEmFechamento || await SmeEmReaberturaDeFechamento(tipoCalendarioId, bimestre, dataReferencia);
         }
 
-        private async Task<bool> UeEmFechamento(Turma turma, long tipoCalendarioId, int bimestre, DateTime dataReferencia)
-            => await repositorioEventoFechamento.UeEmFechamento(dataReferencia, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, tipoCalendarioId, bimestre);
+        private async Task<bool> SmeEmFechamento(long tipoCalendarioId, int bimestre, DateTime dataReferencia)
+            => await repositorioEventoFechamento.SmeEmFechamento(dataReferencia, tipoCalendarioId, bimestre);
 
-        private async Task<bool> UeEmReaberturaDeFechamento(long tipoCalendarioId, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
+        private async Task<bool> SmeEmReaberturaDeFechamento(long tipoCalendarioId, int bimestre, DateTime dataReferencia)
         {
-            var reaberturaPeriodo = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(
-                                                            bimestre,
-                                                            dataReferencia,
-                                                            tipoCalendarioId,
-                                                            dreCodigo,
-                                                            ueCodigo);
+            var reaberturaPeriodo = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(bimestre,dataReferencia,tipoCalendarioId);
             return reaberturaPeriodo != null;
         }
     }

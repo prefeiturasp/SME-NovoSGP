@@ -28,15 +28,24 @@ namespace SME.SGP.Aplicacao
         {
             var periodosIniciando = await mediator.Send(new ObterPeriodosFechamentoBimestrePorDataInicioQuery(modalidade, DateTime.Now.Date.AddDays(diasInicio)));
             var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoBimestrePorDataFinalQuery(modalidade, DateTime.Now.Date.AddDays(diasFim)));
+            var ues = await mediator.Send(new ObterUesComDrePorModalidadeTurmasQuery(modalidade.ObterModalidades(), DateTime.Now.Year));
 
             foreach (var periodoIniciando in periodosIniciando)
             {
-                await mediator.Send(new ExecutaNotificacaoPeriodoFechamentoIniciandoCommand(periodoIniciando, modalidade));
+                foreach (var ue in ues)
+                {
+                    periodoIniciando.PeriodoFechamento.Ue = ue;
+                    await mediator.Send(new ExecutaNotificacaoPeriodoFechamentoIniciandoCommand(periodoIniciando, modalidade));
+                }
             }
 
             foreach (var periodoEncerrando in periodosEncerrando)
             {
-                await mediator.Send(new ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand(periodoEncerrando, modalidade));
+                foreach (var ue in ues)
+                {
+                    periodoEncerrando.PeriodoFechamento.Ue = ue;
+                    await mediator.Send(new ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand(periodoEncerrando, modalidade));
+                }
             }
         }
     }

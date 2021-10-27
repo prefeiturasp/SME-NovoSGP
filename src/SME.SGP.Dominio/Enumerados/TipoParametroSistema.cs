@@ -143,6 +143,7 @@ namespace SME.SGP.Dominio
         AprovacaoAlteracaoParecerConclusivo = 80,
 
         ExecucaoConsolidacaoDiariosBordo = 81,
+        ExecucaoConsolidacaoRegistrosPedagogicos = 82,
 
         //Sistema
         HabilitarServicosEmBackground = 100

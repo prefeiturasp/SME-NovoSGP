@@ -105,5 +105,9 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/boletimescolardetalhadoescolaaqui", ShortName = "BoletimEscolarDetalhadoEscolaAqui", Description = "Boletim escolar detalhado")]
         BoletimDetalhadoApp = 35,
+
+        [Display(Name = "relatorios/acompanhamento-registrospedagogicos", ShortName = "AcompanhamentoRegistrosPedagogicos", Description = "Relatório do Acompanhamento de Registros Pedagógicos")]
+        AcompanhamentoRegistrosPedagogicos = 36,
+
     }
 }
