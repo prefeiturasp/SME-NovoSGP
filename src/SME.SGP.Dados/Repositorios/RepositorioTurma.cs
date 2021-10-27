@@ -1023,7 +1023,7 @@ namespace SME.SGP.Dados.Repositorios
                 queryPeriodoEJA = $"and exists(select 0 from periodo_escolar p where p.tipo_calendario_id = tc.id and {periodoReferencia})";
                 query.AppendLine(queryPeriodoEJA);
 
-                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
+                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
             }
 
             query.AppendLine(@" and t.modalidade_codigo = @modalidade
