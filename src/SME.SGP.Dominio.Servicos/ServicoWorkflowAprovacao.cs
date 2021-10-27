@@ -639,34 +639,29 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
             repositorioWorkflowAprovacaoNivelNotificacao.Salvar(new WorkflowAprovacaoNivelNotificacao() { NotificacaoId = notificacao.Id, WorkflowAprovacaoNivelId = nivelId });
         }
 
-        private void NotificarAdminSgpUeFechamentoReaberturaReprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, string motivo, long nivelId)
+        private void NotificarCriadorFechamentoReaberturaReprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, string motivo, long nivelId)
         {
-            var adminsSgpUe = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Ue.CodigoUe).Result;
-            if (adminsSgpUe != null && adminsSgpUe.Any())
+            string criadorRF = fechamentoReabertura.CriadoRF;
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(criadorRF);
+            bool isAnoAnterior = fechamentoReabertura.TipoCalendario.AnoLetivo < DateTime.Now.Year;
+            var notificacao = new Notificacao()
             {
-                foreach (var adminSgpUe in adminsSgpUe)
-                {
-                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
-                    var notificacao = new Notificacao()
-                    {
-                        UeId = fechamentoReabertura.Ue.CodigoUe,
-                        UsuarioId = usuario.Id,
-                        Ano = fechamentoReabertura.CriadoEm.Year,
-                        Categoria = NotificacaoCategoria.Aviso,
-                        DreId = fechamentoReabertura.Dre.CodigoDre,
-                        Titulo = "Cadastro de período de reabertura de fechamento - ano anterior",
-                        Tipo = NotificacaoTipo.Calendario,
-                        Codigo = codigoDaNotificacao,
-                        Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi reprovado pela supervisão escolar. Motivo: {motivo} <br/>
+                UeId = fechamentoReabertura.Ue.CodigoUe,
+                UsuarioId = usuario.Id,
+                Ano = fechamentoReabertura.CriadoEm.Year,
+                Categoria = NotificacaoCategoria.Aviso,
+                DreId = fechamentoReabertura.Dre.CodigoDre,
+                Titulo = isAnoAnterior ? "Cadastro de período de reabertura de fechamento - ano anterior" : "Cadastro de período de reabertura de fechamento",
+                Tipo = NotificacaoTipo.Calendario,
+                Codigo = codigoDaNotificacao,
+                Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi reprovado pela supervisão escolar. Motivo: {motivo} <br/>
                                   Descrição: { fechamentoReabertura.Descricao} < br />
                                   Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} < br />
                                   Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} < br />
                                   Bimestres: { fechamentoReabertura.ObterBimestresNumeral()}"
-                    };
-                    repositorioNotificacao.Salvar(notificacao);
-                    repositorioWorkflowAprovacaoNivelNotificacao.Salvar(new WorkflowAprovacaoNivelNotificacao() { NotificacaoId = notificacao.Id, WorkflowAprovacaoNivelId = nivelId });
-                }
-            }
+            };
+            repositorioNotificacao.Salvar(notificacao);
+            repositorioWorkflowAprovacaoNivelNotificacao.Salvar(new WorkflowAprovacaoNivelNotificacao() { NotificacaoId = notificacao.Id, WorkflowAprovacaoNivelId = nivelId });
         }
 
         private async Task NotificarAulaReposicaoQueFoiReprovada(Aula aula, long codigoDaNotificacao, string motivo)
@@ -984,8 +979,7 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
 
             repositorioFechamentoReabertura.Salvar(fechamentoReabertura);
 
-            NotificarAdminSgpUeFechamentoReaberturaReprovado(fechamentoReabertura, codigoDaNotificacao, motivo, nivelId);
-            NotificarDiretorUeFechamentoReaberturaReprovado(fechamentoReabertura, codigoDaNotificacao, motivo, nivelId);
+            NotificarCriadorFechamentoReaberturaReprovado(fechamentoReabertura, codigoDaNotificacao, motivo, nivelId);
         }
 
         private async Task TrataReprovacaoReposicaoAula(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
