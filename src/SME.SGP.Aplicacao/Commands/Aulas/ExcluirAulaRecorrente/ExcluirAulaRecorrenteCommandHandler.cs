@@ -97,7 +97,10 @@ namespace SME.SGP.Aplicacao
             if(diarioDeBordo?.Planejamento != null)
             {
                 await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
-                await ExcluirArquivo(diarioDeBordo.ReflexoesReplanejamento,TipoArquivo.DiarioBordo);
+            }
+            if (diarioDeBordo?.ReflexoesReplanejamento != null)
+            {
+                await ExcluirArquivo(diarioDeBordo.ReflexoesReplanejamento, TipoArquivo.DiarioBordo);
             }
         }
         private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)
