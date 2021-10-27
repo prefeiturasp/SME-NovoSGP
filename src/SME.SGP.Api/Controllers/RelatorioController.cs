@@ -221,5 +221,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioRegistrosPedagogicos.Executar(filtro));
         }
+
+
+        [HttpPost("acompanhamento-frequencia")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ImprimirAcompanhamentoFrequencia(FiltroAcompanhamentoFrequenciaDto filtro,[FromServices] IRelatorioAcompanhamentoDeFrequênciaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
