@@ -88,9 +88,6 @@ namespace SME.SGP.Dominio.Servicos
                 await NotificarCadastroFechamentoReabertura(fechamentoReabertura);
             }
 
-            //Notificações e WF
-            //await NotificarSobreAlteracaoNoFechamentoReabertura(fechamentoReabertura);
-
             unitOfWork.PersistirTransacao();
 
             return mensagemRetorno;
@@ -232,6 +229,10 @@ namespace SME.SGP.Dominio.Servicos
             if (fechamentoReabertura.EhParaSme()) //todas as DRE's e UE's
             {
                 var verificarUesTipoCalendario = await mediator.Send(new ObterGestoresDreUePorTipoCalendarioModalidadeQuery(fechamentoReabertura.TipoCalendario.Modalidade, fechamentoReabertura.TipoCalendario.AnoLetivo));
+                var dicDRE = new Dictionary<string, List<string>>();
+
+                var queryNumericRange = verificarUesTipoCalendario.GroupBy(d => d.Dre).ToDictionary(group => group.Key, group => group.ToList().Select(s=> s.Ue));
+
 
                 foreach (var valores in verificarUesTipoCalendario)
                 {
@@ -257,7 +258,7 @@ namespace SME.SGP.Dominio.Servicos
                         }
                     }
 
-                    var diretores = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.Diretor);
+                    var diretores = servicoEOL.ObterFuncionariosPorCargoUe(valores.Ue, (long)Cargo.Diretor);
                     if (diretores != null && diretores.Any())
                     {
                         foreach (var diretor in diretores)
@@ -269,7 +270,7 @@ namespace SME.SGP.Dominio.Servicos
                             await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
                         }
                     }
-                    var ads = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.AD);
+                    var ads = servicoEOL.ObterFuncionariosPorCargoUe(valores.Ue, (long)Cargo.AD);
                     if (ads != null && ads.Any())
                     {
                         foreach (var ad in ads)
@@ -281,8 +282,8 @@ namespace SME.SGP.Dominio.Servicos
                             await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
                         }
                     }
-                    var cps = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.CP);
-                    if (ads != null && ads.Any())
+                    var cps = servicoEOL.ObterFuncionariosPorCargoUe(valores.Ue, (long)Cargo.CP);
+                    if (cps != null && cps.Any())
                     {
                         foreach (var cp in cps)
                         {
@@ -333,7 +334,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
                 }
                 var cps = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.CP);
-                if (ads != null && ads.Any())
+                if (cps != null && cps.Any())
                 {
                     foreach (var cp in cps)
                     {
