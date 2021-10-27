@@ -40,7 +40,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PFR_C, Policy = "Bearer")]
         public async Task<IActionResult> Listar([FromServices] IConsultasFechamentoReabertura consultasFechamentoReabertura, [FromQuery]FechamentoReaberturaFiltroDto fechamentoReaberturaFiltroDto)
         {
-            return Ok(await consultasFechamentoReabertura.Listar(fechamentoReaberturaFiltroDto.TipoCalendarioId, fechamentoReaberturaFiltroDto.DreCodigo, fechamentoReaberturaFiltroDto.UeCodigo, fechamentoReaberturaFiltroDto.AprovadorCodigo));
+            return Ok(await consultasFechamentoReabertura.Listar(fechamentoReaberturaFiltroDto.TipoCalendarioId, fechamentoReaberturaFiltroDto.DreCodigo, fechamentoReaberturaFiltroDto.UeCodigo));
         }
 
         [HttpGet("{id}")]

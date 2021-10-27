@@ -33,12 +33,12 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync("DELETE FROM FECHAMENTO_REABERTURA_NOTIFICACAO WHERE FECHAMENTO_REABERTURA_ID = @fechamentoReaberturaId", new { fechamentoReaberturaId });
         }
 
-        public async Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId, long? aprovadorId, long[] ids = null)
+        public async Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId, long[] ids = null)
         {
             var query = new StringBuilder();
             MontaQueryCabecalhoCompleto(query);
             MontaQueryFromCompleto(query);
-            MontaQueryListarWhere(query, tipoCalendarioId, dreId, ueId, aprovadorId, ids: ids);
+            MontaQueryListarWhere(query, tipoCalendarioId, dreId, ueId, ids: ids);
 
             var lookup = new Dictionary<long, FechamentoReabertura>();
 
@@ -61,14 +61,13 @@ namespace SME.SGP.Dados.Repositorios
                 tipoCalendarioId,
                 dreId,
                 ueId,
-                ids,
-                aprovadorId
+                ids
             });
 
             return lookup.Values;
         }
 
-        public async Task<PaginacaoResultadoDto<FechamentoReabertura>> ListarPaginado(long tipoCalendarioId, string dreCodigo, string ueCodigo, Paginacao paginacao, string aprovadorCodigo)
+        public async Task<PaginacaoResultadoDto<FechamentoReabertura>> ListarPaginado(long tipoCalendarioId, string dreCodigo, string ueCodigo, Paginacao paginacao)
         {
             StringBuilder query = new StringBuilder();
 
@@ -77,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
 
             MontaQueryCabecalhoSemBimestres(query);
             MontaQueryFromSemBimestres(query);
-            MontaQueryListarWherePaginado(query, tipoCalendarioId, dreCodigo, ueCodigo, aprovadorCodigo);
+            MontaQueryListarWherePaginado(query, tipoCalendarioId, dreCodigo, ueCodigo);
 
             var retornoPaginado = new PaginacaoResultadoDto<FechamentoReabertura>();
 
@@ -103,21 +102,19 @@ namespace SME.SGP.Dados.Repositorios
             {
                 tipoCalendarioId,
                 dreCodigo,
-                ueCodigo,
-                aprovadorCodigo
+                ueCodigo
             });
 
             retornoPaginado.Items = lookup.Values;
 
             query = new StringBuilder();
-            MontaQueryListarCount(query, tipoCalendarioId, dreCodigo, ueCodigo, aprovadorCodigo);
+            MontaQueryListarCount(query, tipoCalendarioId, dreCodigo, ueCodigo);
 
             retornoPaginado.TotalRegistros = (await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new
             {
                 tipoCalendarioId,
                 dreCodigo,
-                ueCodigo,
-                aprovadorCodigo
+                ueCodigo
             }));
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
@@ -300,7 +297,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("left join usuario u on fr.aprovador_id = u.id");
         }
 
-        private void MontaQueryListarCount(StringBuilder query, long tipoCalendarioId, string dreCodigo, string ueCodigo, string aprovadorCodigo)
+        private void MontaQueryListarCount(StringBuilder query, long tipoCalendarioId, string dreCodigo, string ueCodigo)
         {
             query.AppendLine("select count(fr.*)");
             query.AppendLine("from fechamento_reabertura fr");
@@ -311,10 +308,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("left join dre");
             query.AppendLine("on fr.dre_id = dre.id");
             query.AppendLine("left join usuario u on fr.aprovador_id = u.id");
-            MontaQueryListarWhere(query, tipoCalendarioId, 0, 0, 0, dreCodigo, ueCodigo, aprovadorCodigo);
+            MontaQueryListarWhere(query, tipoCalendarioId, 0, 0, dreCodigo, ueCodigo);
         }
 
-        private void MontaQueryListarWhere(StringBuilder query, long tipoCalendarioId, long? dreId, long? ueId, long? aprovadorId, string dreCodigo = "", string ueCodigo = "", string aprovadorCodigo = "", long[] ids = null)
+        private void MontaQueryListarWhere(StringBuilder query, long tipoCalendarioId, long? dreId, long? ueId, string dreCodigo = "", string ueCodigo = "", long[] ids = null)
         {
             query.AppendLine("where fr.excluido = false and fr.status <> 3");
 
@@ -329,21 +326,19 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(dreCodigo))
                 query.AppendLine("and dre.dre_id = @dreCodigo");
+            else
+                query.AppendLine("and fr.dre_id is null");
 
             if (!string.IsNullOrEmpty(ueCodigo))
                 query.AppendLine("and ue.ue_id = @ueCodigo");
+            else
+                query.AppendLine("and fr.ue_id is null");
 
             if (ids != null && ids.Any())
                 query.AppendLine("and fr.id = ANY(@ids)");
-
-            if (aprovadorId.HasValue && aprovadorId.Value > 0)
-                query.AppendLine("and fr.aprovador_id = @aprovadorId");
-
-            if (!string.IsNullOrEmpty(aprovadorCodigo))
-                query.AppendLine("and u.rf_codigo = @aprovadorCodigo");
         }
 
-        private void MontaQueryListarWherePaginado(StringBuilder query, long tipoCalendarioId, string dreCodigo = "", string ueCodigo = "", string aprovadorCodigo = "")
+        private void MontaQueryListarWherePaginado(StringBuilder query, long tipoCalendarioId, string dreCodigo = "", string ueCodigo = "")
         {
             query.AppendLine("where fr.excluido = false and fr.status <> 3");
 
@@ -359,11 +354,6 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and ue.ue_id = @ueCodigo");
             else
                 query.AppendLine("and fr.ue_id is null");
-
-            if (!string.IsNullOrEmpty(aprovadorCodigo))
-                query.AppendLine("and u.rf_codigo = @aprovadorCodigo");
-            else
-                query.AppendLine("and fr.aprovador_id is null");
         }
 
         public async Task<FechamentoReabertura> ObterPorDataTurmaCalendarioAsync(long ueId, DateTime dataReferencia, long tipoCalendarioId)
