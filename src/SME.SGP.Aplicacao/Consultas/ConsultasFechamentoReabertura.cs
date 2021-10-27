@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoReaberturaBimestre = repositorioFechamentoReaberturaBimestre ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReaberturaBimestre));
         }
 
-        public async Task<PaginacaoResultadoDto<FechamentoReaberturaListagemDto>> Listar(long tipoCalendarioId, string dreCodigo, string ueCodigo, string aprovadorCodigo)
+        public async Task<PaginacaoResultadoDto<FechamentoReaberturaListagemDto>> Listar(long tipoCalendarioId, string dreCodigo, string ueCodigo)
         {
-            var listaEntidades = await repositorioFechamentoReabertura.ListarPaginado(tipoCalendarioId, dreCodigo, ueCodigo, Paginacao, aprovadorCodigo);
+            var listaEntidades = await repositorioFechamentoReabertura.ListarPaginado(tipoCalendarioId, dreCodigo, ueCodigo, Paginacao);
 
             foreach(FechamentoReabertura fechamentoReabertura in listaEntidades.Items)
             {
@@ -97,7 +97,9 @@ namespace SME.SGP.Aplicacao
                 CriadoPor = fechamentoReabertura.CriadoPor,
                 AlteradoPor = fechamentoReabertura.AlteradoPor,
                 AlteradoRF = fechamentoReabertura.AlteradoRF,
-                CriadoRF = fechamentoReabertura.CriadoRF
+                CriadoRF = fechamentoReabertura.CriadoRF,
+                AprovadoPor = fechamentoReabertura.Aprovador != null ? string.Format("{0} ({1})", fechamentoReabertura.Aprovador.Nome, fechamentoReabertura.Aprovador.CodigoRf) : string.Empty,
+                AprovadoEm = fechamentoReabertura.AprovadoEm.HasValue ? fechamentoReabertura.AprovadoEm.Value : null
             };
         }
     }
