@@ -283,7 +283,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        tc.ano_letivo = @anoLetivo
 	                        and tc.modalidade = @modalidadeTipoCalendarioId
 	                        and not tc.excluido ";
-            var dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
+            var dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
 
             if (modalidadeTipoCalendarioId == (int)Modalidade.EJA.ObterModalidadeTipoCalendario() && semestre > 0)
             {
