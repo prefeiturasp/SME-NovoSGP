@@ -19,7 +19,9 @@ namespace SME.SGP.Aplicacao
     public class ExcluirReferenciaArquivoAeePorArquivoIdCommandValidator : AbstractValidator<ExcluirReferenciaArquivoAeePorArquivoIdCommand>
     {
 
-        //
+        /// <summary>
+        /// /
+        /// </summary>
 
         public ExcluirReferenciaArquivoAeePorArquivoIdCommandValidator()
         {
