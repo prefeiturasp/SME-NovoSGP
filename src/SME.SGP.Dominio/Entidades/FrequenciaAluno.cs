@@ -7,16 +7,18 @@ namespace SME.SGP.Dominio
     public class FrequenciaAluno : EntidadeBase
     {
         public FrequenciaAluno(string codigoAluno,
-                 string turmaId,
-                 string disciplinaId,
-                 long? periodoEscolarId,
-                 DateTime periodoInicio,
-                 DateTime periodoFim,
-                 int bimestre,
-                 int totalAusencias,
-                 int totalAulas,
-                 int totalCompensacoes,
-                 TipoFrequenciaAluno tipo)
+            string turmaId,
+            string disciplinaId,
+            long? periodoEscolarId,
+            DateTime periodoInicio,
+            DateTime periodoFim,
+            int bimestre,
+            int totalAusencias,
+            int totalAulas,
+            int totalCompensacoes,
+            TipoFrequenciaAluno tipo,
+            int totalRemotos,
+            int totalPresencas)
         {
             PercentuaisFrequenciaPorBimestre = new HashSet<(int, double)>();
             Bimestre = bimestre;
@@ -30,6 +32,8 @@ namespace SME.SGP.Dominio
             TotalCompensacoes = totalCompensacoes;
             Tipo = tipo;
             TotalAusencias = totalAusencias;
+            TotalRemotos = totalRemotos;
+            TotalPresencas = totalPresencas;
         }
 
         public FrequenciaAluno()
@@ -40,19 +44,25 @@ namespace SME.SGP.Dominio
         public int Bimestre { get; set; }
         public string CodigoAluno { get; set; }
         public string DisciplinaId { get; set; }
-        public int NumeroFaltasNaoCompensadas { get => TotalAusencias - TotalCompensacoes; }
+
+        public int NumeroFaltasNaoCompensadas
+        {
+            get => TotalAusencias - TotalCompensacoes;
+        }
+
         public double PercentualFrequencia
         {
             get
-            {                
+            {
                 if (TotalAulas == 0)
                     return 0;
 
-                var porcentagem = 100 - ((double)NumeroFaltasNaoCompensadas / TotalAulas) * 100;
+                var porcentagem = 100 - ((double) NumeroFaltasNaoCompensadas / TotalAulas) * 100;
 
                 return Math.Round(porcentagem > 100 ? 100 : porcentagem, 2);
             }
         }
+
         public long? PeriodoEscolarId { get; set; }
         public DateTime PeriodoFim { get; set; }
         public DateTime PeriodoInicio { get; set; }
@@ -60,6 +70,8 @@ namespace SME.SGP.Dominio
         public int TotalAulas { get; set; }
         public int TotalAusencias { get; set; }
         public int TotalCompensacoes { get; set; }
+        public int TotalPresencas { get; set; }
+        public int TotalRemotos { get; set; }
         public string TurmaId { get; set; }
 
         /// <summary>
@@ -74,11 +86,15 @@ namespace SME.SGP.Dominio
         {
             get
             {
-                return PercentuaisFrequenciaPorBimestre.Any() ? Math.Round(PercentuaisFrequenciaPorBimestre.Sum(p => p.Item2) / PercentuaisFrequenciaPorBimestre.Count, 2) : 100;
+                return PercentuaisFrequenciaPorBimestre.Any()
+                    ? Math.Round(
+                        PercentuaisFrequenciaPorBimestre.Sum(p => p.Item2) / PercentuaisFrequenciaPorBimestre.Count, 2)
+                    : 100;
             }
         }
 
-        public FrequenciaAluno DefinirFrequencia(int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipoFrequencia)
+        public FrequenciaAluno DefinirFrequencia(int totalAusencias, int totalAulas, int totalCompensacoes,
+            TipoFrequenciaAluno tipoFrequencia)
         {
             Tipo = tipoFrequencia;
             TotalAusencias = totalAusencias;
