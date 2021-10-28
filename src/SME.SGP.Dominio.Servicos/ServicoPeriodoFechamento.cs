@@ -369,8 +369,8 @@ namespace SME.SGP.Dominio.Servicos
             {
                 listaFechamentoBimestre.Add(new FechamentoBimestreDto
                 {
-                    FinalDoFechamento = fechamentoBimestre.FinalDoFechamento,
-                    InicioDoFechamento = fechamentoBimestre.InicioDoFechamento,
+                    FinalDoFechamento = null,
+                    InicioDoFechamento = null,
                     Bimestre = fechamentoBimestre.PeriodoEscolar.Bimestre,
                     Id = fechamentoBimestre.Id,
                     PeriodoEscolarId = fechamentoBimestre.PeriodoEscolarId
