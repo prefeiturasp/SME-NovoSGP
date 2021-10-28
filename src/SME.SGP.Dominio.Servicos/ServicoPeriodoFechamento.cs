@@ -168,7 +168,7 @@ namespace SME.SGP.Dominio.Servicos
                 foreach (var periodo in periodoEscolar)
                 {
                     periodo.AdicionarTipoCalendario(tipoCalendario);
-                    fechamentoSME.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamentoSME.Id, periodo, periodo.PeriodoInicio, periodo.PeriodoFim));
+                    fechamentoSME.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamentoSME.Id, periodo, null, null));
                 }
             }            
 
@@ -369,8 +369,8 @@ namespace SME.SGP.Dominio.Servicos
             {
                 listaFechamentoBimestre.Add(new FechamentoBimestreDto
                 {
-                    FinalDoFechamento = null,
-                    InicioDoFechamento = null,
+                    FinalDoFechamento = fechamentoBimestre.FinalDoFechamento != DateTime.MinValue ? fechamentoBimestre.FinalDoFechamento : (DateTime?)null,
+                    InicioDoFechamento = fechamentoBimestre.InicioDoFechamento != DateTime.MinValue ? fechamentoBimestre.InicioDoFechamento : (DateTime?)null,
                     Bimestre = fechamentoBimestre.PeriodoEscolar.Bimestre,
                     Id = fechamentoBimestre.Id,
                     PeriodoEscolarId = fechamentoBimestre.PeriodoEscolarId
