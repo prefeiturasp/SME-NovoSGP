@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Fechamento;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -191,7 +192,8 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
             {
-                await NotificarCadastroFechamentoReabertura(fechamentoReabertura);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura), new System.Guid(), null));
+                await NotificarCadastroFechamentoReabertura(fechamentoReabertura); // jogar esse método em um useCase
             }
 
             unitOfWork.PersistirTransacao();
