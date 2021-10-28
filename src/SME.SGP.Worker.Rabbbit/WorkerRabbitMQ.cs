@@ -76,6 +76,12 @@ namespace SME.SGP.Worker.RabbitMQ
                     {
                         { "x-dead-letter-exchange", exchangeDeadLetter }
                     };
+
+                //if(fila.Equals("sgp.fechamento.reabertura.notificacaosme"))
+                //{
+                //    args.Add("x-queue-mode", "lazy");
+                //}
+
                 canalRabbit.QueueDeclare(fila, true, false, false, args);
                 canalRabbit.QueueBind(fila, exchange, fila, null);
 
@@ -207,7 +213,9 @@ namespace SME.SGP.Worker.RabbitMQ
 
             comandos.Add(RotasRabbitSgp.RotaNotificacaoAlunosFaltosos, new ComandoRabbit("Conciliação de frequência da turma buscar", typeof(INotificarAlunosFaltososUseCase)));
 
-            comandos.Add(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new ComandoRabbit("Notificação de Reabertura de Fechamento", typeof())); //Colocar UseCase
+            comandos.Add(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new ComandoRabbit("Notificação de Reabertura de Fechamento", typeof(INotificarFechamentoReaberturaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaSME, new ComandoRabbit("Notificação de Reabertura de Fechamento SME", typeof(INotificarFechamentoReaberturaSMEUseCase)));
+
 
             comandos.Add(RotasRabbitSgp.SincronizarDadosFrequenciaMigracao, new ComandoRabbit("Sincronizar - migração dados frequencia aulas", typeof(IExecutarSincronizacaoDadosFrequenciaUseCase)));
             comandos.Add(RotasRabbitSgp.SincronizarDadosTurmasFrequenciaMigracao, new ComandoRabbit("Sincronizar - migração dados frequencia aulas", typeof(IExecutarSincronizacaoDadosTurmasFrequenciaUseCase)));

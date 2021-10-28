@@ -4,7 +4,6 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Fechamento;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -86,7 +85,7 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
             {
-                await NotificarCadastroFechamentoReabertura(fechamentoReabertura);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura), new System.Guid(), null));
             }
 
             unitOfWork.PersistirTransacao();
@@ -193,14 +192,12 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura), new System.Guid(), null));
-                await NotificarCadastroFechamentoReabertura(fechamentoReabertura); // jogar esse método em um useCase
             }
 
             unitOfWork.PersistirTransacao();
 
             return mensagemRetorno;
         }
-
         
         private async Task ExcluirVinculosAysnc(FechamentoReabertura fechamentoReaberturaParaExcluir)
         {
@@ -224,171 +221,6 @@ namespace SME.SGP.Dominio.Servicos
                     await servicoEvento.Excluir(eventoParaExcluir);
                 }
             }
-        }
-
-        private async Task NotificarCadastroFechamentoReabertura(FechamentoReabertura fechamentoReabertura)
-        {
-            if (fechamentoReabertura.EhParaSme()) //todas as DRE's e UE's
-            {
-                var verificarUesTipoCalendario = await mediator.Send(new ObterGestoresDreUePorTipoCalendarioModalidadeQuery(fechamentoReabertura.TipoCalendario.Modalidade, fechamentoReabertura.TipoCalendario.AnoLetivo));
-                var dicDRE = new Dictionary<string, List<string>>();
-
-                var queryNumericRange = verificarUesTipoCalendario.GroupBy(d => d.Dre).ToDictionary(group => group.Key, group => group.ToList().Select(s=> s.Ue));
-
-
-                foreach (var valores in verificarUesTipoCalendario)
-                {
-                    var adminsSgpUe = servicoEOL.ObterAdministradoresSGP(valores.Ue).Result;
-                    if (adminsSgpUe != null && adminsSgpUe.Any())
-                    {
-                        foreach (var adminSgpUe in adminsSgpUe)
-                        {
-                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
-                            var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id, valores.Ue, valores.Dre);
-                            await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                        }
-                    }
-
-                    var adminsSgpDre = servicoEOL.ObterAdministradoresSGP(valores.Dre).Result;
-                    if (adminsSgpDre != null && adminsSgpDre.Any())
-                    {
-                        foreach (var adminSgpUe in adminsSgpDre)
-                        {
-                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
-                            var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id, valores.Ue, valores.Dre);
-                            await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                        }
-                    }
-
-                    var diretores = servicoEOL.ObterFuncionariosPorCargoUe(valores.Ue, (long)Cargo.Diretor);
-                    if (diretores != null && diretores.Any())
-                    {
-                        foreach (var diretor in diretores)
-                        {
-                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
-
-                            var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id, valores.Ue, valores.Dre);
-
-                            await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                        }
-                    }
-                    var ads = servicoEOL.ObterFuncionariosPorCargoUe(valores.Ue, (long)Cargo.AD);
-                    if (ads != null && ads.Any())
-                    {
-                        foreach (var ad in ads)
-                        {
-                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(ad.CodigoRf);
-
-                            var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id, valores.Ue, valores.Dre);
-
-                            await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                        }
-                    }
-                    var cps = servicoEOL.ObterFuncionariosPorCargoUe(valores.Ue, (long)Cargo.CP);
-                    if (cps != null && cps.Any())
-                    {
-                        foreach (var cp in cps)
-                        {
-                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cp.CodigoRf);
-
-                            var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id, valores.Ue, valores.Dre);
-
-                            await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                        }
-                    }
-                }
-            }
-            else if (fechamentoReabertura.EhParaUe())
-            {
-                var adminsSgpUe = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Ue.CodigoUe).Result;
-                if (adminsSgpUe != null && adminsSgpUe.Any())
-                {
-                    foreach (var adminSgpUe in adminsSgpUe)
-                    {
-                        var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
-                        var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id, null, null);
-                        await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                    }
-                }
-
-                var diretores = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.Diretor);
-                if (diretores != null && diretores.Any())
-                {
-                    foreach (var diretor in diretores)
-                    {
-                        var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
-
-                        var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id, null, null);
-
-                        await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                    }
-                }
-                var ads = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.AD);
-                if (ads != null && ads.Any())
-                {
-                    foreach (var ad in ads)
-                    {
-                        var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(ad.CodigoRf);
-
-                        var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id, null, null);
-
-                        await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                    }
-                }
-                var cps = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.CP);
-                if (cps != null && cps.Any())
-                {
-                    foreach (var cp in cps)
-                    {
-                        var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cp.CodigoRf);
-
-                        var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id,null,null);
-
-                        await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                    }
-                }
-            }
-        }
-
-        private Notificacao CriaNotificacaoCadastro(FechamentoReabertura fechamentoReabertura, long usuarioId, string dreCodigo, string ueCodigo)
-        {
-            string descricaoDreUe = string.Empty;
-
-            if(dreCodigo == null && ueCodigo == null)
-            {
-                dreCodigo = fechamentoReabertura.Dre.CodigoDre;
-                ueCodigo = fechamentoReabertura.Ue.CodigoUe;
-            }
-
-            if (fechamentoReabertura.Ue == null && fechamentoReabertura.Dre == null)
-                descricaoDreUe = "todas as DREs/UEs";
-            else
-            {
-                descricaoDreUe = $"a {fechamentoReabertura.Ue.Nome} (DRE {fechamentoReabertura.Dre.Abreviacao})";
-            }
-
-            string notificacaoMensagem = $@"Foi cadastrado um novo período de reabertura de fechamento de bimestre para o tipo de calendário <b>{fechamentoReabertura.TipoCalendario.Nome}</b> do ano de {fechamentoReabertura.TipoCalendario.AnoLetivo}. Para que o período seja considerado válido é necessário que você aceite esta notificação. <br/>
-                                           Descrição: Um novo periodo de reabertura foi cadastrado para {descricaoDreUe} <br/>
-                                           Tipo de calendário: {fechamentoReabertura.TipoCalendario.Nome} <br/>
-                                           Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
-                                           Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
-                                           Bimestres: {fechamentoReabertura.ObterBimestresNumeral()}";
-
-            var notificacao = new Notificacao()
-            {
-                UeId = ueCodigo,
-                Ano = fechamentoReabertura.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = dreCodigo,
-                Titulo = $"Período de reabertura - {fechamentoReabertura.TipoCalendario.Nome}",
-                Tipo = NotificacaoTipo.Calendario,
-                UsuarioId = usuarioId,
-                Mensagem = notificacaoMensagem
-            };
-
-            servicoNotificacao.Salvar(notificacao);
-
-            return notificacao;
         }
 
         private async Task<long> PersistirWorkflowFechamentoReabertura(FechamentoReabertura fechamentoReabertura)

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SME.SGP.Infra.Dtos.Fechamento
+namespace SME.SGP.Infra
 {
     public class FiltroFechamentoReaberturaNotificacaoDto
     {
