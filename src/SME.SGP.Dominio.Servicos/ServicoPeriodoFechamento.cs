@@ -148,10 +148,8 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<FechamentoDto> ObterPorTipoCalendarioSme(long tipoCalendarioId)
         {
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-
             var fechamentoSME = repositorioPeriodoFechamento.ObterPorFiltros(tipoCalendarioId, null);
-                        
+
             if (fechamentoSME == null)
             {
                 LimparCamposNaoUtilizadosRegistroPai(fechamentoSME);
@@ -161,30 +159,18 @@ namespace SME.SGP.Dominio.Servicos
                 if (tipoCalendario == null)
                     throw new NegocioException("Tipo de calendário não encontrado.");
 
-                var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
-                if (periodoEscolar == null || !periodoEscolar.Any())
+                var periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
+                if (periodosEscolares == null || !periodosEscolares.Any())
                     throw new NegocioException("Período escolar não encontrado.");
 
-                foreach (var periodo in periodoEscolar)
+                foreach (var periodo in periodosEscolares)
                 {
                     periodo.AdicionarTipoCalendario(tipoCalendario);
                     fechamentoSME.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamentoSME.Id, periodo, null, null));
                 }
             }            
 
-            var fechamentoDto = MapearParaDto(fechamentoSME);
-
-            foreach (var bimestreSME in fechamentoSME.FechamentosBimestre)
-            {
-                var bimestreSmeDto = fechamentoDto.FechamentosBimestres.FirstOrDefault(c => c.Bimestre == bimestreSME.PeriodoEscolar.Bimestre);
-                if (bimestreSmeDto != null)
-                {
-                    bimestreSmeDto.PeriodoEscolar = bimestreSME.PeriodoEscolar;
-                    bimestreSmeDto.InicioMinimo = new DateTime(bimestreSME.InicioDoFechamento.Year, 01, 01);
-                    bimestreSmeDto.FinalMaximo = new DateTime(bimestreSME.InicioDoFechamento.Year, 12, 31);
-                }
-            }
-            return fechamentoDto;
+            return MapearParaDto(fechamentoSME);
         }
 
 
@@ -369,12 +355,15 @@ namespace SME.SGP.Dominio.Servicos
             {
                 listaFechamentoBimestre.Add(new FechamentoBimestreDto
                 {
-                    FinalDoFechamento = fechamentoBimestre.FinalDoFechamento != DateTime.MinValue ? fechamentoBimestre.FinalDoFechamento : (DateTime?)null,
                     InicioDoFechamento = fechamentoBimestre.InicioDoFechamento != DateTime.MinValue ? fechamentoBimestre.InicioDoFechamento : (DateTime?)null,
+                    FinalDoFechamento = fechamentoBimestre.FinalDoFechamento != DateTime.MinValue ? fechamentoBimestre.FinalDoFechamento : (DateTime?)null,
                     Bimestre = fechamentoBimestre.PeriodoEscolar.Bimestre,
                     Id = fechamentoBimestre.Id,
-                    PeriodoEscolarId = fechamentoBimestre.PeriodoEscolarId
-                });
+                    PeriodoEscolarId = fechamentoBimestre.PeriodoEscolarId,
+                    PeriodoEscolar = fechamentoBimestre.PeriodoEscolar,
+                    InicioMinimo = new DateTime(fechamentoBimestre.PeriodoEscolar.PeriodoInicio.Year, 01, 01),
+                    FinalMaximo = new DateTime(fechamentoBimestre.PeriodoEscolar.PeriodoInicio.Year, 12, 31)
+            });
             }
             return listaFechamentoBimestre;
         }
