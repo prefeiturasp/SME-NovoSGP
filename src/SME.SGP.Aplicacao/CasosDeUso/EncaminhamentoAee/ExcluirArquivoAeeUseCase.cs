@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("O arquivo informado não foi encontrado");
 
             await mediator.Send(new ExcluirReferenciaArquivoAeePorArquivoIdCommand(entidadeArquivo.Id));
+            //Teste
             await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(entidadeArquivo.Id));
             await mediator.Send(new ExcluirArquivoFisicoCommand(entidadeArquivo.Codigo, entidadeArquivo.Tipo, entidadeArquivo.Nome));
 
