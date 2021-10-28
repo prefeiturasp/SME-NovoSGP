@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             {
                 var consolidacaoCompleta = await AtribuiProfessorEConsolida(consolidacoes);
 
-                foreach (var consolidacao in consolidacaoCompleta)
+                foreach (var consolidacao in consolidacaoCompleta.Distinct())
                 {
                     await mediator.Send(new SalvarConsolidacaoRegistrosPedagogicosCommand(consolidacao));
                 }
@@ -45,19 +45,22 @@ namespace SME.SGP.Aplicacao
 
                 if (professoresDaTurma.Any())
                 {
-                    foreach (var consolidacao in consolidacaoAgrupado)
+                    var bimestres = consolidacaoAgrupado.Select(c => c.PeriodoEscolarId).Distinct(); 
+
+                    foreach (var bimestre in bimestres)
                     {
                         foreach (var professor in professoresDaTurma.GroupBy(pt => pt.DisciplinaId))
                         {
                             var dadosProfessor = professor.FirstOrDefault();
-                            bool possuiConsolidacaoParaADisciplina = consolidacaoAgrupado.Any(p => p.ComponenteCurricularId == dadosProfessor.DisciplinaId);
+                            bool possuiConsolidacaoParaADisciplina = consolidacaoAgrupado.Any(p => p.ComponenteCurricularId == dadosProfessor.DisciplinaId && p.PeriodoEscolarId == bimestre);
 
                             if (possuiConsolidacaoParaADisciplina)
                             {
-
                                 string nomeProfessor = string.Empty;
                                 string rfProfessor = string.Empty;
                                 bool possui2Professores = false;
+
+                                var consolidacao = consolidacaoAgrupado.Where(c => c.ComponenteCurricularId == dadosProfessor.DisciplinaId && c.PeriodoEscolarId == bimestre).FirstOrDefault();
 
                                 var dadosProfessorTitularDisciplina = professoresDaTurma.Where(p => p.DisciplinaId == consolidacao.ComponenteCurricularId)
                                                             .Select(pt => new ProfessorTitularDisciplinaDto()
@@ -147,31 +150,29 @@ namespace SME.SGP.Aplicacao
                             {
                                 var dadosConsolidadosTurma = consolidacaoAgrupado.FirstOrDefault();
 
-                                foreach (var p in professor)
+                                var consolidacaoZerada = new ConsolidacaoRegistrosPedagogicos()
                                 {
-                                    var consolidacaoZerada = new ConsolidacaoRegistrosPedagogicos()
-                                    {
-                                        TurmaId = dadosConsolidadosTurma.TurmaId,
-                                        PeriodoEscolarId = dadosConsolidadosTurma.PeriodoEscolarId,
-                                        AnoLetivo = dadosConsolidadosTurma.AnoLetivo,
-                                        ComponenteId = p.DisciplinaId,
-                                        QuantidadeAulas = 0,
-                                        FrequenciasPendentes = 0,
-                                        DataUltimaFrequencia = null,
-                                        DataUltimoPlanoAula = null,
-                                        DataUltimoDiarioBordo = null,
-                                        DiarioBordoPendentes = 0,
-                                        PlanoAulaPendentes = 0,
-                                        NomeProfessor = p.ProfessorNome,
-                                        RFProfessor = p.ProfessorRf,
-                                        CJ = false
-                                    };
-                                    listaConsolidados.Add(consolidacaoZerada);
-                                }
+                                    TurmaId = dadosConsolidadosTurma.TurmaId,
+                                    PeriodoEscolarId = bimestre,
+                                    AnoLetivo = dadosConsolidadosTurma.AnoLetivo,
+                                    ComponenteId = dadosProfessor.DisciplinaId,
+                                    QuantidadeAulas = 0,
+                                    FrequenciasPendentes = 0,
+                                    DataUltimaFrequencia = null,
+                                    DataUltimoPlanoAula = null,
+                                    DataUltimoDiarioBordo = null,
+                                    DiarioBordoPendentes = 0,
+                                    PlanoAulaPendentes = 0,
+                                    NomeProfessor = dadosProfessor.ProfessorNome,
+                                    RFProfessor = dadosProfessor.ProfessorRf,
+                                    CJ = false
+                                };
+                                listaConsolidados.Add(consolidacaoZerada);
                             }
 
                         }
                     }
+
                 }
 
             }
@@ -204,7 +205,7 @@ namespace SME.SGP.Aplicacao
                 consolidacao.CJ = false;
                 return nomeProfessor;
             }
-            
+
         }
 
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ProfessoresTitularesTurma(string codigoTurma)
