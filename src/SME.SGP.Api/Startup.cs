@@ -84,7 +84,7 @@ namespace SME.SGP.Api
 
             if (_env.EnvironmentName != "teste-integrado")
             {
-                var diretorio = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Arquivos/Editor");
+                var diretorio = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Arquivos");
                 if (!Directory.Exists(diretorio))
                     Directory.CreateDirectory(diretorio);
 
