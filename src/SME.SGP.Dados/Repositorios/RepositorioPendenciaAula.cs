@@ -345,8 +345,7 @@ namespace SME.SGP.Dados.Repositorios
                             where
 	                            not aula.excluido
 	                            and aula.id = @aula
-                                and aula.data_aula::date < @hoje
-                                and (rf.id is null or tr.id is null) " :
+                                and aula.data_aula::date < @hoje " :
 
                                 $@"select
 	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
@@ -365,7 +364,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            not aula.excluido
 	                            and aula.id = @aula
                                 and aula.data_aula::date < @hoje
-                                and rf.id is null";
+                                ";
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }
