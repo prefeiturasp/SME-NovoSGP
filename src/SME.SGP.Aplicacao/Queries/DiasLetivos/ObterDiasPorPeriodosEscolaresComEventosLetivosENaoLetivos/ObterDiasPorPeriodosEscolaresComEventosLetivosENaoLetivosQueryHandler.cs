@@ -31,6 +31,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var diaAtual in periodoEscolar.ObterIntervaloDatas())
                 {
+
                     var diaLetivoDto = new DiaLetivoDto()
                     {
                         Data = diaAtual,
@@ -84,7 +85,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 Data = diaAtual,
                                 PossuiEvento = true,
-                                EhLetivo = !diaAtual.FimDeSemana() && elue.EhEventoLetivo(),
+                                EhLetivo = EventoEhLevito(diaAtual, elue),
                                 Motivo = elue.Nome,
                                 UesIds = new List<string>() { elue.UeId }
                             });
@@ -93,12 +94,18 @@ namespace SME.SGP.Aplicacao
                         if (request.DesconsiderarCriacaoDiaLetivoProximasUes)
                             continue;
                     }
+
                     diaLetivoDto.EhLetivo = !diaAtual.FimDeSemana();
                     datasDosPeriodosEscolares.Add(diaLetivoDto);
                 }
             }
 
             return datasDosPeriodosEscolares;
+        }
+
+        private bool EventoEhLevito(DateTime data, Evento evento)
+        {
+            return (!data.FimDeSemana() && evento.EhEventoLetivo()) || (data.FimDeSemana() && (evento.EhEventoLetivo() || (EventoTipoEnum)evento.TipoEventoId == EventoTipoEnum.ReposicaoAula));
         }
     }
 }
