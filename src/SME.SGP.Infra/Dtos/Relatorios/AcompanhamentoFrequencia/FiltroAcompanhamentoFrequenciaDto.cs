@@ -8,7 +8,6 @@ namespace SME.SGP.Infra
         {
             CodigoCriancasSelecionadas = new List<int>();
         }
-        public bool TodasCrianca { get; set; }
         public List<int> CodigoCriancasSelecionadas { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }

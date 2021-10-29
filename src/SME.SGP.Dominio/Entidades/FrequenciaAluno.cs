@@ -17,8 +17,8 @@ namespace SME.SGP.Dominio
             int totalAulas,
             int totalCompensacoes,
             TipoFrequenciaAluno tipo,
-            int totalRemotos,
-            int totalPresencas)
+            int totalRemotos = 0,
+            int totalPresencas = 0)
         {
             PercentuaisFrequenciaPorBimestre = new HashSet<(int, double)>();
             Bimestre = bimestre;
