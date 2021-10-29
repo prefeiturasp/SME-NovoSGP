@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var valores in agrupamentoUeporDre)
                     {
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaSME, new FiltroNotificacaoFechamentoReaberturaSMEDto(valores.Key, valores.Value, filtro.FechamentoReabertura), new System.Guid(), null));
+                       await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaSME, new FiltroNotificacaoFechamentoReaberturaSMEDto(valores.Key, valores.Value, filtro.FechamentoReabertura), new System.Guid(), filtro.Usuario));
                     }
                 }
                 else if (filtro.FechamentoReabertura.EhParaUe())

@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
 
                             await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
                         }
-                    }    
+                    }
                 }
                 return true;
             }

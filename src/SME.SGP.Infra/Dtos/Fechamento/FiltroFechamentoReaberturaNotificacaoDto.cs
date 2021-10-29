@@ -7,11 +7,13 @@ namespace SME.SGP.Infra
 {
     public class FiltroFechamentoReaberturaNotificacaoDto
     {
-        public FiltroFechamentoReaberturaNotificacaoDto(FechamentoReabertura fechamentoReabertura)
+        public FiltroFechamentoReaberturaNotificacaoDto(FechamentoReabertura fechamentoReabertura, Usuario usuario)
         {
             FechamentoReabertura = fechamentoReabertura;
+            Usuario = usuario;
         }
 
-        public FechamentoReabertura FechamentoReabertura{ get; set; }
+        public FechamentoReabertura FechamentoReabertura { get; set; }
+        public Usuario Usuario { get; set; }
     }
 }

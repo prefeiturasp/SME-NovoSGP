@@ -85,7 +85,10 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura), new System.Guid(), null));
+                //Evitar referência ciclica - {"Self referencing loop detected for property 'FechamentoAbertura' with type 'SME.SGP.Dominio.FechamentoReabertura'. Path 'Mensagem.FechamentoReabertura.Bimestres[0]'."}
+                //fechamentoReabertura.Bimestres.ToList().ForEach(f => f.FechamentoAbertura = null);
+                //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaSME, new FiltroNotificacaoFechamentoReaberturaSMEDto("1", new List<string> { "2" }, fechamentoReabertura), new System.Guid(), usuarioAtual));
+                //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
             }
 
             unitOfWork.PersistirTransacao();
@@ -191,7 +194,9 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura), new System.Guid(), null));
+                //Evitar referência ciclica - {"Self referencing loop detected for property 'FechamentoAbertura' with type 'SME.SGP.Dominio.FechamentoReabertura'. Path 'Mensagem.FechamentoReabertura.Bimestres[0]'."}
+                //fechamentoReabertura.Bimestres.ToList().ForEach(f => f.FechamentoAbertura = null);                
+                //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
             }
 
             unitOfWork.PersistirTransacao();
