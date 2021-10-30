@@ -106,7 +106,8 @@ namespace SME.SGP.Aplicacao
 
         private Notificacao CriaNotificacaoCadastro(FechamentoReabertura fechamentoReabertura, long usuarioId, string dreCodigo, string ueCodigo)
         {
-            string descricaoDreUe = string.Empty;
+            var tituloNotificacao = $"Período de reabertura - {fechamentoReabertura.TipoCalendario.Nome}";
+            string descricaoBase, descricaoDreUe;
 
             if (dreCodigo == null && ueCodigo == null)
             {
@@ -118,11 +119,12 @@ namespace SME.SGP.Aplicacao
                 descricaoDreUe = "todas as DREs/UEs";
             else
             {
-                descricaoDreUe = $"a {fechamentoReabertura.Ue.Nome} (DRE {fechamentoReabertura.Dre.Abreviacao})";
+                descricaoBase = $"{fechamentoReabertura.Ue.Nome} (DRE {fechamentoReabertura.Dre.Abreviacao})";
+                descricaoDreUe = $"a {descricaoBase})";
+                tituloNotificacao += $" - {descricaoBase}";
             }
 
-            string notificacaoMensagem = $@"Foi cadastrado um novo período de reabertura de fechamento de bimestre para o tipo de calendário <b>{fechamentoReabertura.TipoCalendario.Nome}</b> do ano de {fechamentoReabertura.TipoCalendario.AnoLetivo}. Para que o período seja considerado válido é necessário que você aceite esta notificação. <br/>
-                                           Descrição: Um novo periodo de reabertura foi cadastrado para {descricaoDreUe} <br/>
+            string notificacaoMensagem = $@"Um novo periodo de reabertura foi cadastrado para {descricaoDreUe} <br/>
                                            Tipo de calendário: {fechamentoReabertura.TipoCalendario.Nome} <br/>
                                            Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
                                            Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
@@ -134,7 +136,7 @@ namespace SME.SGP.Aplicacao
                 Ano = fechamentoReabertura.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
                 DreId = dreCodigo,
-                Titulo = $"Período de reabertura - {fechamentoReabertura.TipoCalendario.Nome}",
+                Titulo = tituloNotificacao,
                 Tipo = NotificacaoTipo.Calendario,
                 UsuarioId = usuarioId,
                 Mensagem = notificacaoMensagem
