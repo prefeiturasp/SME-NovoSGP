@@ -610,6 +610,11 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
             services.TryAddScoped<IVarreduraFechamentosEmProcessamentoPendentesUseCase, VarreduraFechamentosEmProcessamentoPendentesUseCase>();
 
+            //Fechamento Reabertura
+            services.TryAddScoped<INotificacaoPeriodoFechamentoReaberturaIniciando, NotificacaoPeriodoFechamentoReaberturaIniciandoUseCase>();
+            services.TryAddScoped<INotificacaoPeriodoFechamentoReaberturaEncerrando, NotificacaoPeriodoFechamentoReaberturaEncerrandoUseCase>();
+
+
             //Notificacao Devolutivoa
             services.TryAddScoped<ISalvarNotificacaoDevolutivaUseCase, SalvarNotificacaoDevolutivaUseCase>();
             services.TryAddScoped<IExcluirNotificacaoDevolutivaUseCase, ExcluirNotificacaoDevolutivaUseCase>();

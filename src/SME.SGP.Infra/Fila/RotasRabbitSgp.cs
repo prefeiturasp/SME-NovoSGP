@@ -215,6 +215,9 @@
         public const string TratarNotificacoesNiveisCargos = "sgp.tratar.notificacoes.niveis.cargos";
         public const string PendenciasGerais = "sgp.pendencias.gerais";
 
+        public const string NotificacaoPeriodoFechamentoReaberturaIniciando = "sgp.periodo.fechamento.reabertura.iniciando";
+        public const string NotificacaoPeriodoFechamentoReaberturaEncerrando = "sgp.periodo.fechamento.reabertura.encerrando";
+
         public const string RotaLogs = "ApplicationLog";
     }
 }
