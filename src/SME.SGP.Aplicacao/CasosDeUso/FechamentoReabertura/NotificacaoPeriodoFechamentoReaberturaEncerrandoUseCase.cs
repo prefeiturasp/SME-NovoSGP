@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             await mediator.Send(mensagemRabbit.ObterObjetoMensagem<ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand>());
-            return false;
+            return true;
         }
     }
 }
