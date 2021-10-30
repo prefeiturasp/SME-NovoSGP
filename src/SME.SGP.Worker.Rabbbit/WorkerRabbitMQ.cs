@@ -267,6 +267,10 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.SyncSerapEstudantesProvas, new ComandoRabbit("Sicronizar provas dos estantes serap ", typeof(IExecutarSyncSerapEstudantesProvasUseCase)));
             comandos.Add(RotasRabbitSgp.TratarNotificacoesNiveisCargos, new ComandoRabbit("Tratar notificações", typeof(ITrataNotificacoesNiveisCargosUseCase)));
             comandos.Add(RotasRabbitSgp.PendenciasGerais, new ComandoRabbit("Pendencias gerais", typeof(IPendenciasGeraisUseCase)));
+
+            //Fechamento Reabertura
+            comandos.Add(RotasRabbitSgp.NotificacaoPeriodoFechamentoReaberturaIniciando, new ComandoRabbit("Executar notificação de período de Fechamento Reabertura iniciando", typeof(INotificacaoPeriodoFechamentoReaberturaIniciando)));
+            comandos.Add(RotasRabbitSgp.NotificacaoPeriodoFechamentoReaberturaEncerrando, new ComandoRabbit("Executar notificação de período de Fechamento Reabertura encerrando", typeof(INotificacaoPeriodoFechamentoReaberturaEncerrando)));
         }
 
 
