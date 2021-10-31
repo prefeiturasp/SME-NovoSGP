@@ -43,108 +43,20 @@ namespace SME.SGP.Aplicacao
                     var agrupamentoUeporDre = verificarUesTipoCalendario.GroupBy(d => d.Dre).ToDictionary(group => group.Key, group => group.ToList().Select(s => s.Ue));
 
                     foreach (var valores in agrupamentoUeporDre)
-                    {
                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaSME, new FiltroNotificacaoFechamentoReaberturaSMEDto(valores.Key, valores.Value, filtro.FechamentoReabertura), new System.Guid(), filtro.Usuario));
-                    }
                 }
                 else if (filtro.FechamentoReabertura.EhParaUe())
                 {
                     var fechamentoReabertura = filtro.FechamentoReabertura;
+                    var ues = new List<string>() { fechamentoReabertura.Ue.CodigoUe };
 
-                    var adminsSgpUe = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Ue.CodigoUe).Result;
-                    if (adminsSgpUe != null && adminsSgpUe.Any())
-                    {
-                        foreach (var adminSgpUe in adminsSgpUe)
-                        {
-                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
-                            var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id, null, null);
-                            await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                        }
-                    }
-
-                    var diretores = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.Diretor);
-                    if (diretores != null && diretores.Any())
-                    {
-                        foreach (var diretor in diretores)
-                        {
-                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
-
-                            var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id, null, null);
-
-                            await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                        }
-                    }
-                    var ads = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.AD);
-                    if (ads != null && ads.Any())
-                    {
-                        foreach (var ad in ads)
-                        {
-                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(ad.CodigoRf);
-
-                            var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id, null, null);
-
-                            await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                        }
-                    }
-                    var cps = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.CP);
-                    if (cps != null && cps.Any())
-                    {
-                        foreach (var cp in cps)
-                        {
-                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cp.CodigoRf);
-
-                            var notificacao = CriaNotificacaoCadastro(fechamentoReabertura, usuario.Id, null, null);
-
-                            await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
-                        }
-                    }
+                    await mediator.Send(new ExecutaNotificacaoFechamentoReaberturaCommand(fechamentoReabertura, ues, null));
                 }
 
                 return true;
             }
         }
 
-        private Notificacao CriaNotificacaoCadastro(FechamentoReabertura fechamentoReabertura, long usuarioId, string dreCodigo, string ueCodigo)
-        {
-            var tituloNotificacao = $"Período de reabertura - {fechamentoReabertura.TipoCalendario.Nome}";
-            string descricaoBase, descricaoDreUe;
-
-            if (dreCodigo == null && ueCodigo == null)
-            {
-                dreCodigo = fechamentoReabertura.Dre.CodigoDre;
-                ueCodigo = fechamentoReabertura.Ue.CodigoUe;
-            }
-
-            if (fechamentoReabertura.Ue == null && fechamentoReabertura.Dre == null)
-                descricaoDreUe = "todas as DREs/UEs";
-            else
-            {
-                descricaoBase = $"{fechamentoReabertura.Ue.Nome} (DRE {fechamentoReabertura.Dre.Abreviacao})";
-                descricaoDreUe = $"a {descricaoBase})";
-                tituloNotificacao += $" - {descricaoBase}";
-            }
-
-            string notificacaoMensagem = $@"Um novo periodo de reabertura foi cadastrado para {descricaoDreUe} <br/>
-                                           Tipo de calendário: {fechamentoReabertura.TipoCalendario.Nome} <br/>
-                                           Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
-                                           Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
-                                           Bimestres: {fechamentoReabertura.ObterBimestresNumeral()}";
-
-            var notificacao = new Notificacao()
-            {
-                UeId = ueCodigo,
-                Ano = fechamentoReabertura.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = dreCodigo,
-                Titulo = tituloNotificacao,
-                Tipo = NotificacaoTipo.Calendario,
-                UsuarioId = usuarioId,
-                Mensagem = notificacaoMensagem
-            };
-
-            servicoNotificacao.Salvar(notificacao);
-
-            return notificacao;
-        }
+        
     }
 }

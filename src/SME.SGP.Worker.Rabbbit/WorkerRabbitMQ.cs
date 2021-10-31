@@ -77,11 +77,6 @@ namespace SME.SGP.Worker.RabbitMQ
                         { "x-dead-letter-exchange", exchangeDeadLetter }
                     };
 
-                //if(fila.Equals("sgp.fechamento.reabertura.notificacaosme"))
-                //{
-                //    args.Add("x-queue-mode", "lazy");
-                //}
-
                 canalRabbit.QueueDeclare(fila, true, false, false, args);
                 canalRabbit.QueueBind(fila, exchange, fila, null);
 

@@ -61,18 +61,23 @@ namespace SME.SGP.Dominio.Servicos
 
             var excluirBimestres = fechamentoReabertura.Bimestres.Select(s => s.Bimestre).Except(bimestresPropostos).ToList();
             foreach (var excluirBimestreId in excluirBimestres)
+            {
                 repositorioFechamentoReabertura.ExcluirBimestre(fechamentoReabertura.Id, excluirBimestreId);
+                fechamentoReabertura.SobrescreverBimestres(fechamentoReabertura.Bimestres.Where(x => x.Bimestre != excluirBimestreId));
+            }
 
             var adicionarBimestres = bimestresPropostos.Except(fechamentoReabertura.Bimestres.Select(s => s.Bimestre)).ToList();
             foreach (var adicionarBimestreId in adicionarBimestres)
             {
-                await repositorioFechamentoReabertura.SalvarBimestreAsync(new FechamentoReaberturaBimestre
+                var novoBimestre = new FechamentoReaberturaBimestre
                 {
                     FechamentoAberturaId = fechamentoReaberturaId,
                     CriadoPor = usuarioAtual.Nome,
                     CriadoRF = usuarioAtual.CodigoRf,
                     Bimestre = adicionarBimestreId,
-                });
+                };
+                await repositorioFechamentoReabertura.SalvarBimestreAsync(novoBimestre);
+                fechamentoReabertura.Adicionar(novoBimestre);
             }
 
             var mensagemRetorno = "Reabertura de Fechamento alterado com sucesso.";
@@ -85,7 +90,6 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
             {
-                //Evitar referência ciclica - {"Self referencing loop detected for property 'FechamentoAbertura' with type 'SME.SGP.Dominio.FechamentoReabertura'. Path 'Mensagem.FechamentoReabertura.Bimestres[0]'."}
                 fechamentoReabertura.Bimestres.ToList().ForEach(f => f.FechamentoAbertura = null);
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
             }
@@ -193,7 +197,6 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
             {
-                //Evitar referência ciclica - {"Self referencing loop detected for property 'FechamentoAbertura' with type 'SME.SGP.Dominio.FechamentoReabertura'. Path 'Mensagem.FechamentoReabertura.Bimestres[0]'."}
                 fechamentoReabertura.Bimestres.ToList().ForEach(f => f.FechamentoAbertura = null);
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
             }
