@@ -48,6 +48,10 @@ namespace SME.SGP.Dominio
         {
             bimestres.AddRange(listaBimestres);
         }
+        public void SobrescreverBimestres(IEnumerable<FechamentoReaberturaBimestre> listaBimestres)
+        {
+            bimestres = listaBimestres.ToList();
+        }
 
         public void AprovarWorkFlow()
         {
