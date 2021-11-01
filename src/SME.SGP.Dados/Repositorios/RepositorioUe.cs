@@ -265,6 +265,27 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
+        public async Task<IEnumerable<Ue>> ObterUEsComDREsPorModalidadeTipoCalendarioQuery(int[] modalidades, int anoLetivo = 0)
+        {
+            var query = @"select distinct ue.*, dre.*
+                          from turma t
+                         inner join ue on ue.id = t.ue_id
+                         inner join dre on dre.id = ue.dre_id
+                         where t.modalidade_codigo = ANY(@modalidades) ";
+
+            if (anoLetivo > 0)
+                query += "and ano_letivo = @anoLetivo";
+
+            return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.Dre = dre;
+
+                return ue;
+            }, new { modalidades, anoLetivo });
+
+        }
+        
+
         public async Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade modalidade)
         {
             var query = @"select ue.*, dre.* 

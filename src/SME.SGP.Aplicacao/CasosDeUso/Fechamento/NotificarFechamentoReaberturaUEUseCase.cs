@@ -10,18 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class NotificarFechamentoReaberturaUEUseCase : AbstractUseCase, INotificarFechamentoReaberturaUEUseCase
     {
-        private readonly IServicoEol servicoEOL;
-        private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IServicoNotificacao servicoNotificacao;
-        public NotificarFechamentoReaberturaUEUseCase(IMediator mediator, IServicoUsuario servicoUsuario,
-                                                    IServicoEol servicoEOL, IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IServicoNotificacao servicoNotificacao) : base(mediator)
-        {
-            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-        }
+        public NotificarFechamentoReaberturaUEUseCase(IMediator mediator) : base(mediator)
+        {}
+
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroNotificacaoFechamentoReaberturaUEDto>();

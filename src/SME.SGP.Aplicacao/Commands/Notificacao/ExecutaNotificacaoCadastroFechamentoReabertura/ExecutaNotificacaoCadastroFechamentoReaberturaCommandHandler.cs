@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
         private Notificacao CriaNotificacaoCadastro(FechamentoReabertura fechamentoReabertura, long usuarioId, string dreCodigo, string ueCodigo)
         {
             var tituloNotificacao = $"Período de reabertura - {fechamentoReabertura.TipoCalendario.Nome}";
-
+            
             if (dreCodigo == null && ueCodigo == null)
             {
                 dreCodigo = fechamentoReabertura.Dre.CodigoDre;
@@ -55,8 +55,9 @@ namespace SME.SGP.Aplicacao
                 descricaoDreUe = "todas as DREs/UEs";
             else
             {
-                descricaoDreUe = $"a {fechamentoReabertura.Ue.Nome} (DRE {fechamentoReabertura.Dre.Abreviacao})";
-                tituloNotificacao += $" - (DRE {fechamentoReabertura.Dre.Abreviacao})";
+                var descricaoBase = $"{fechamentoReabertura.Ue.Nome} (DRE {fechamentoReabertura.Dre.Abreviacao})";
+                descricaoDreUe = $"a {descricaoBase})";
+                tituloNotificacao += $" - {descricaoBase}";
             }
 
             string notificacaoMensagem = $@"Um novo período de reabertura foi cadastrado para {descricaoDreUe} <br/>

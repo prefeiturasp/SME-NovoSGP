@@ -15,16 +15,9 @@ namespace SME.SGP.Aplicacao
     public class NotificarFechamentoReaberturaDREUseCase : AbstractUseCase, INotificarFechamentoReaberturaDREUseCase
     {
         private readonly IServicoEol servicoEOL;
-        private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IServicoNotificacao servicoNotificacao;
-        public NotificarFechamentoReaberturaDREUseCase(IMediator mediator, IServicoUsuario servicoUsuario,
-                                                    IServicoEol servicoEOL, IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IServicoNotificacao servicoNotificacao) : base(mediator)
+        public NotificarFechamentoReaberturaDREUseCase(IServicoEol servicoEOL, IMediator mediator) : base(mediator)
         {
-            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
         }
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
