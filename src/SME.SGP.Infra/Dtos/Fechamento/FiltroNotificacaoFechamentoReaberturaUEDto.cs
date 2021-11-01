@@ -5,17 +5,17 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class FiltroNotificacaoFechamentoReaberturaSMEDto
+    public class FiltroNotificacaoFechamentoReaberturaUEDto
     {
-        public FiltroNotificacaoFechamentoReaberturaSMEDto(string dre, IEnumerable<string> ues, FechamentoReabertura fechamentoReabertura)
+        public FiltroNotificacaoFechamentoReaberturaUEDto(string dre, string ue, FechamentoReabertura fechamentoReabertura)
         {
             Dre = dre;
-            Ues = ues;
+            Ue = ue;
             FechamentoReabertura = fechamentoReabertura;
         }
 
         public string Dre { get; set; }
-        public IEnumerable<string> Ues { get; set; }
+        public string Ue { get; set; }
         public FechamentoReabertura FechamentoReabertura{ get; set; }
     }
 }

@@ -209,7 +209,8 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaNotificacaoAlunosFaltosos, new ComandoRabbit("Conciliação de frequência da turma buscar", typeof(INotificarAlunosFaltososUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new ComandoRabbit("Notificação de Reabertura de Fechamento", typeof(INotificarFechamentoReaberturaUseCase)));
-            comandos.Add(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaSME, new ComandoRabbit("Notificação de Reabertura de Fechamento SME", typeof(INotificarFechamentoReaberturaSMEUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaDRE, new ComandoRabbit("Notificação de Reabertura de Fechamento DRE", typeof(INotificarFechamentoReaberturaDREUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaUE, new ComandoRabbit("Notificação de Reabertura de Fechamento UE", typeof(INotificarFechamentoReaberturaUEUseCase)));
 
 
             comandos.Add(RotasRabbitSgp.SincronizarDadosFrequenciaMigracao, new ComandoRabbit("Sincronizar - migração dados frequencia aulas", typeof(IExecutarSincronizacaoDadosFrequenciaUseCase)));

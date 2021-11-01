@@ -1,24 +1,20 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarFechamentoReaberturaSMEUseCase : AbstractUseCase, INotificarFechamentoReaberturaSMEUseCase
+    public class NotificarFechamentoReaberturaUEUseCase : AbstractUseCase, INotificarFechamentoReaberturaUEUseCase
     {
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IServicoNotificacao servicoNotificacao;
-        public NotificarFechamentoReaberturaSMEUseCase(IMediator mediator, IServicoUsuario servicoUsuario,
+        public NotificarFechamentoReaberturaUEUseCase(IMediator mediator, IServicoUsuario servicoUsuario,
                                                     IServicoEol servicoEOL, IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IServicoNotificacao servicoNotificacao) : base(mediator)
         {
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
@@ -28,7 +24,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var filtro = mensagem.ObterObjetoMensagem<FiltroNotificacaoFechamentoReaberturaSMEDto>();
+            var filtro = mensagem.ObterObjetoMensagem<FiltroNotificacaoFechamentoReaberturaUEDto>();
 
             if (filtro == null)
             {
@@ -37,7 +33,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                await mediator.Send(new ExecutaNotificacaoFechamentoReaberturaCommand(filtro.FechamentoReabertura, filtro.Ues, filtro.Dre));                
+                await mediator.Send(new ExecutaNotificacaoFechamentoReaberturaCommand(filtro.FechamentoReabertura, filtro.Ue, filtro.Dre));
                 return true;
             }
         }

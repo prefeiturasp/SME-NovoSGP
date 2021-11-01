@@ -679,7 +679,8 @@ namespace SME.SGP.IoC
 
             //FechamentoReabertura
             services.TryAddScoped<INotificarFechamentoReaberturaUseCase, NotificarFechamentoReaberturaUseCase>();
-            services.TryAddScoped<INotificarFechamentoReaberturaSMEUseCase, NotificarFechamentoReaberturaSMEUseCase>();
+            services.TryAddScoped<INotificarFechamentoReaberturaDREUseCase, NotificarFechamentoReaberturaDREUseCase>();
+            services.TryAddScoped<INotificarFechamentoReaberturaUEUseCase, NotificarFechamentoReaberturaUEUseCase>();
 
             // Funcionario
             services.TryAddScoped<IPesquisaFuncionariosPorDreUeUseCase, PesquisaFuncionariosPorDreUeUseCase>();

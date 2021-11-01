@@ -106,7 +106,8 @@
         public const string RotaNotificacaoAlunosFaltosos = "sgp.aulas.alunos.faltosos.notificar";
 
         public const string RotaNotificacaoFechamentoReabertura = "sgp.fechamento.reabertura.notificacao";
-        public const string RotaNotificacaoFechamentoReaberturaSME = "sgp.fechamento.reabertura.notificacaosme";
+        public const string RotaNotificacaoFechamentoReaberturaDRE = "sgp.fechamento.reabertura.notificacao.dre";
+        public const string RotaNotificacaoFechamentoReaberturaUE = "sgp.fechamento.reabertura.notificacao.ue";
 
         public const string RotaNotificacaoAulasPrevistasSync = "sgp.aulas.previstas.notificacao.sync";
         public const string RotaNotificacaoAulasPrevistas = "sgp.aulas.previstas.notificacao";
