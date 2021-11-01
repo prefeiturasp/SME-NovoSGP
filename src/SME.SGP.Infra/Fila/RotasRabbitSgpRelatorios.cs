@@ -35,5 +35,6 @@
         public const string RotaRelatoriosSolicitadosAtaFinalResultados = "sr.relatorios.solicitados.atafinalresultados";
         public const string RotaRelatoriosSolicitadosHistoricoEscolar = "sr.relatorios.solicitados.historicoescolar";
         public const string RotaRelatoriosSolicitadosAtaBimestral = "sr.relatorios.solicitados.atabimestralresultados";
+        public const string RotaRelatoriosSolicitadosAcompanhamentoRegistrosPedagogicos = "sr.relatorios.solicitados.acompanhamentoregistrospedagogicos";
     }
 }

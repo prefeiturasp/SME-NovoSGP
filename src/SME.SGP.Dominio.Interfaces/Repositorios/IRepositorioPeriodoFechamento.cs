@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<bool> ExistePeriodoPorUeDataBimestre(long ueId, DateTime dataReferencia, int bimestre);
 
-        PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? dreId, long? ueId, long? turmaId);
+        PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId);
 
         void SalvarBimestres(IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, long fechamentoId);
 

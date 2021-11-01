@@ -21,5 +21,6 @@ namespace SME.SGP.Infra
 
         public long TerritorioExperienciaId { get; set; }
         public string TurmaId { get; set; }
+        public bool PeriodoAberto { get; set; }
     }
 }

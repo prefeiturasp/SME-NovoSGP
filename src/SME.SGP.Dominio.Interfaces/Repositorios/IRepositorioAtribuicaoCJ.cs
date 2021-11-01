@@ -13,5 +13,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> PossuiAtribuicaoPorDreUeETurma(string turmaId, string dreCodigo, string ueCodigo, string professorRf);
         Task<IEnumerable<int>> ObterAnosDisponiveis(string professorRF, bool consideraHistorico);
         Task<bool> RemoverRegistros(string dreCodigo, string ueCodigo, string turmaCodigo, string professorRf, long disciplinaId = 0);
+        Task<bool> PossuiAtribuicaoPorTurmaRFAnoLetivo(string turmaCodigo, string rfProfessor, long disciplinaId);
     }
 }
