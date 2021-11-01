@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 Data = diaAtual,
                                 PossuiEvento = true,
-                                EhLetivo = EventoEhLevito(diaAtual, elue),
+                                EhLetivo = EventoEhLetivo(diaAtual, elue),
                                 Motivo = elue.Nome,
                                 UesIds = new List<string>() { elue.UeId }
                             });
@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
             return datasDosPeriodosEscolares;
         }
 
-        private bool EventoEhLevito(DateTime data, Evento evento)
+        private bool EventoEhLetivo(DateTime data, Evento evento)
         {
             return (!data.FimDeSemana() && evento.EhEventoLetivo()) || (data.FimDeSemana() && (evento.EhEventoLetivo() || (EventoTipoEnum)evento.TipoEventoId == EventoTipoEnum.ReposicaoAula));
         }
