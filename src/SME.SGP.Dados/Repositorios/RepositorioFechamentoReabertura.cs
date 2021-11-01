@@ -214,7 +214,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<FechamentoReabertura> ObterReaberturaFechamentoBimestrePorDataReferencia(int bimestre, DateTime dataReferencia, long tipoCalendarioId, string dreCodigo, string ueCodigo)
+        public async Task<FechamentoReabertura> ObterReaberturaFechamentoBimestrePorDataReferencia(int bimestre, DateTime dataReferencia, long tipoCalendarioId)
         {
             var bimetreQuery = "(select pe.bimestre from periodo_escolar pe inner join tipo_calendario tc on tc.id  = pe.tipo_calendario_id and tc.id = fr.tipo_calendario_id order by pe.bimestre  desc limit 1)";
             var bimestreWhere = $"and frb.bimestre = {(bimestre > 0 ? " @bimestre" : bimetreQuery)}";
@@ -245,9 +245,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 bimestre,
                 dataReferencia = dataReferencia.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
-                tipoCalendarioId,
-                dreCodigo,
-                ueCodigo
+                tipoCalendarioId
             });
         }
 

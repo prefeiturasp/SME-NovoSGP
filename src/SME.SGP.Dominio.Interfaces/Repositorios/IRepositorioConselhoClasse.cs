@@ -16,5 +16,15 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> AtualizarSituacao(long conselhoClasseId, SituacaoConselhoClasse situacaoConselhoClasse);
         Task<SituacaoConselhoClasse> ObterSituacaoConselhoClasse(long turmaId, long periodoEscolarId);
         Task<IEnumerable<ConselhoClasseSituacaoQuantidadeDto>> ObterConselhoClasseSituacao(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre);
+        Task<IEnumerable<objConsolidacaoConselhoAluno>> ObterAlunosReprocessamentoConsolidacaoConselho(int dreId);
+    }
+
+    public struct objConsolidacaoConselhoAluno
+    {
+        public long turmaId { get; set; }
+        public int bimestre { get; set; }
+        public string alunoCodigo { get; set; }
+        public string erro { get; set; }
+
     }
 }

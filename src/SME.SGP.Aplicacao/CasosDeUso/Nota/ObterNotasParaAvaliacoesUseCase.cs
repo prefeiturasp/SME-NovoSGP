@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -15,12 +16,14 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEol servicoEOL;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
-        public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL)
+        public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL, IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.consultasDisciplina = consultasDisciplina;
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
         }
 
         public async Task<NotasConceitosRetornoDto> Executar(ListaNotasConceitosConsultaRefatoradaDto filtro)
@@ -217,16 +220,23 @@ namespace SME.SGP.Aplicacao
                     if (notasConceitoBimestre.Any())
                     {
                         var dadosAuditoriaAlteracaoBimestre = notasConceitoBimestre
-                            .OrderByDescending(nc => nc.AlteradoEm)
-                            .ThenBy(nc => nc.CriadoEm)
-                            .Select(nc => new
-                            {
-                                AlteradoPor = !string.IsNullOrWhiteSpace(nc.AlteradoPor) && !nc.AlteradoRF.Equals(0) ? nc.AlteradoPor : nc.CriadoPor,
-                                AlteradoRf = !string.IsNullOrWhiteSpace(nc.AlteradoRF) && !nc.AlteradoRF.Equals(0) ? nc.AlteradoRF : nc.CriadoRF,
-                                AlteradoEm = nc.AlteradoEm.HasValue && !nc.AlteradoRF.Equals(0) ? nc.AlteradoEm.Value : nc.CriadoEm,
-                            }).First();
+                            .Where(o => o.AlteradoEm.HasValue)
+                            .ToList();
 
-                        retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {(dadosAuditoriaAlteracaoBimestre.AlteradoPor)}({dadosAuditoriaAlteracaoBimestre.AlteradoRf}) em {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("dd/MM/yyyy")}, às {dadosAuditoriaAlteracaoBimestre.AlteradoEm.ToString("HH:mm")}.";
+                        if (dadosAuditoriaAlteracaoBimestre.Any())
+                        {
+                            var ultimoDadoDeAuditoria = dadosAuditoriaAlteracaoBimestre
+                                                                .OrderByDescending(nc => nc.AlteradoEm)
+                                                                .Select(nc => new
+                                                                {
+                                                                    AlteradoPor = nc.AlteradoRF.Equals(0) ? nc.CriadoPor : nc.AlteradoPor,
+                                                                    AlteradoRf = nc.AlteradoRF.Equals(0) ? nc.CriadoRF : nc.AlteradoRF,
+                                                                    AlteradoEm = nc.AlteradoRF.Equals(0) ? nc.CriadoEm : nc.AlteradoEm.Value,
+                                                                })
+                                                                .First();
+
+                            retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {(ultimoDadoDeAuditoria.AlteradoPor)}({ultimoDadoDeAuditoria.AlteradoRf}) em {ultimoDadoDeAuditoria.AlteradoEm.ToString("dd/MM/yyyy")}, às {ultimoDadoDeAuditoria.AlteradoEm.ToString("HH:mm")}.";
+                        }
                     }
 
 
@@ -315,7 +325,17 @@ namespace SME.SGP.Aplicacao
                 {
                     var atividadeDisciplinas = await ObterDisciplinasAtividadeAvaliativa(avaliacao.Id, avaliacao.EhRegencia);
                     var idsDisciplinas = atividadeDisciplinas?.Select(a => long.Parse(a.DisciplinaId)).ToArray();
-                    var disciplinas = await ObterDisciplinasPorIds(idsDisciplinas);
+                    IEnumerable<DisciplinaDto> disciplinas;
+                    if (idsDisciplinas != null && idsDisciplinas.Any())
+                        disciplinas = await ObterDisciplinasPorIds(idsDisciplinas);
+                    else
+                    {
+                        disciplinas = await consultasDisciplina
+                            .ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(componenteReferencia.CodigoComponenteCurricular, 
+                                                                                            turmaCompleta.CodigoTurma, 
+                                                                                            turmaCompleta.TipoTurma == TipoTurma.Programa, 
+                                                                                            componenteReferencia.Regencia);
+                    }
                     var nomesDisciplinas = disciplinas?.Select(d => d.Nome).ToArray();
                     avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
                 }
@@ -331,7 +351,7 @@ namespace SME.SGP.Aplicacao
                 .Count(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id);
 
             //REFATORAR -> Obtendo turma Full por causa dessa função
-            bimestreParaAdicionar.PodeLancarNotaFinal = await VerificaPeriodoFechamentoEmAberto(turmaCompleta, filtro.Bimestre);
+            bimestreParaAdicionar.PodeLancarNotaFinal = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turmaCompleta, DateTime.Now, filtro.Bimestre);
 
             // Valida Avaliações Bimestrais
             await ValidaMinimoAvaliacoesBimestrais(componenteReferencia, disciplinasRegencia, tipoAvaliacaoBimestral, bimestreParaAdicionar, atividadesAvaliativaEBimestres, filtro.Bimestre);

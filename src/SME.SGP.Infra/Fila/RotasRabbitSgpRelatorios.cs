@@ -4,6 +4,7 @@
     {
         public const string RotaRelatoriosSolicitados = "sr.relatorios.solicitados";
         public const string RotaRelatoriosSolicitadosBoletim = "sr.relatorios.solicitados.boletim";
+        public const string RotaRelatoriosSolicitadosBoletimTurma = "sr.relatorios.solicitados.boletim.turma";
         public const string RotaRelatoriosSolicitadosBoletimEscolaAqui = "sr.relatorios.app.solicitados.boletim";
         public const string RotaRelatoriosSolicitadosBoletimDetalhado = "sr.relatorios.solicitados.boletimdetalhado";
         public const string RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui = "sr.relatorios.app.solicitados.boletimdetalhado";
@@ -34,5 +35,6 @@
         public const string RotaRelatoriosSolicitadosAtaFinalResultados = "sr.relatorios.solicitados.atafinalresultados";
         public const string RotaRelatoriosSolicitadosHistoricoEscolar = "sr.relatorios.solicitados.historicoescolar";
         public const string RotaRelatoriosSolicitadosAtaBimestral = "sr.relatorios.solicitados.atabimestralresultados";
+        public const string RotaRelatoriosSolicitadosAcompanhamentoRegistrosPedagogicos = "sr.relatorios.solicitados.acompanhamentoregistrospedagogicos";
     }
 }
