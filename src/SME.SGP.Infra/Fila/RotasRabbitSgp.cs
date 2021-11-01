@@ -181,6 +181,7 @@
         public const string RotaRelatoriosComErroAtaFinalResultados = "sgp.relatorios.erro.notificar.atafinalresultados";
         public const string RotaRelatoriosComErroHistoricoEscolar = "sgp.relatorios.erro.notificar.historicoescolar";
         public const string RotaRelatoriosComErroAtaBimestral = "sgp.relatorios.erro.notificar.atabimestralresultados";
+        public const string RotaRelatoriosComErroRelatorioAcompanhamentoRegistrosPedagogicos = "sgp.relatorios.erro.notificar.relatorioacompanhamentoregistrospedagogicos";
 
         public const string RotaRabbitSRDeadletterTratar = "sgp.sr.rabbit.deadletter.tratar";
         public const string RotaRabbitSRDeadletterSync = "sgp.sr.rabbit.deadletter.sync";
