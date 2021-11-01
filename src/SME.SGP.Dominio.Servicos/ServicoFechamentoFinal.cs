@@ -140,7 +140,8 @@ namespace SME.SGP.Dominio.Servicos
             var professorRf = servicoUsuario.ObterRf();
             var professorPodePersistirTurma = await servicoEOL.ProfessorPodePersistirTurma(professorRf, turma.CodigoTurma, diaAtual);
             if (!professorPodePersistirTurma)
-                throw new NegocioException("Você não pode executar alterações nesta turma.");
+                return;
+                //throw new NegocioException("Você não pode executar alterações nesta turma.");
         }
     }
 }
