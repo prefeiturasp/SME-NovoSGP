@@ -299,34 +299,9 @@ namespace SME.SGP.Dominio.Servicos
 
             fechamentoReabertura.AprovarWorkFlow();
 
-            CriarEventoFechamentoReabertura(fechamentoReabertura);
-
             repositorioFechamentoReabertura.Salvar(fechamentoReabertura);
 
             NotificarCriadorFechamentoReaberturaAprovado(fechamentoReabertura, codigoDaNotificacao, nivelId);
-        }
-
-        private void CriarEventoFechamentoReabertura(FechamentoReabertura fechamentoReabertura)
-        {
-            var tipoEvento = repositorioEventoTipo.ObterTipoEventoPorTipo(TipoEvento.FechamentoBimestre);
-            if (tipoEvento == null)
-                throw new NegocioException($"Não foi possível localizar o tipo de evento {TipoEvento.FechamentoBimestre.ObterAtributo<DisplayAttribute>().Name}.");
-
-            var evento = new Evento()
-            {
-                DataFim = fechamentoReabertura.Fim,
-                DataInicio = fechamentoReabertura.Inicio,
-                Descricao = fechamentoReabertura.Descricao,
-                Nome = $"Reabertura de fechamento de bimestre - {fechamentoReabertura.TipoCalendario.Nome} - {fechamentoReabertura.TipoCalendario.AnoLetivo}.",
-                TipoCalendarioId = fechamentoReabertura.TipoCalendario.Id,
-                DreId = fechamentoReabertura.Dre.CodigoDre,
-                UeId = fechamentoReabertura.Ue.CodigoUe,
-                Status = EntidadeStatus.Aprovado,
-                TipoEventoId = tipoEvento.Id,
-                Migrado = false,
-                Letivo = EventoLetivo.Sim,
-            };
-            repositorioEvento.Salvar(evento);
         }
 
         private async Task AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
