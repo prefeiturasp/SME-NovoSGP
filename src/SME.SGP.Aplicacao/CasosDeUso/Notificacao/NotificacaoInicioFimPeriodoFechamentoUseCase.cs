@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var ue in ues)
                 {
                     periodoIniciando.PeriodoFechamento.Ue = ue;
-                    await mediator.Send(new ExecutaNotificacaoPeriodoFechamentoIniciandoCommand(periodoIniciando, modalidade));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoInicioPeriodoFechamentoUE, new FiltroFechamentoPeriodoAberturaDto(periodoIniciando, modalidade), new Guid(), null));
                 }
             }
 
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var ue in ues)
                 {
                     periodoEncerrando.PeriodoFechamento.Ue = ue;
-                    await mediator.Send(new ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand(periodoEncerrando, modalidade));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFimPeriodoFechamentoUE, new FiltroFechamentoPeriodoAberturaDto(periodoEncerrando, modalidade), new Guid(), null));
                 }
             }
         }

@@ -727,6 +727,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificacaoAndamentoFechamentoUseCase, NotificacaoAndamentoFechamentoUseCase>();
             services.TryAddScoped<INotificacaoUeFechamentosInsuficientesUseCase, NotificacaoUeFechamentosInsuficientesUseCase>();
             services.TryAddScoped<INotificacaoInicioFimPeriodoFechamentoUseCase, NotificacaoInicioFimPeriodoFechamentoUseCase>();
+            services.TryAddScoped<INotificacaoInicioPeriodoFechamentoUEUseCase, NotificacaoInicioPeriodoFechamentoUEUseCase>();
+            services.TryAddScoped<INotificacaoFimPeriodoFechamentoUEUseCase, NotificacaoFimPeriodoFechamentoUEUseCase>();
 
 
             //Notificação Resultado Insatisfatorio 

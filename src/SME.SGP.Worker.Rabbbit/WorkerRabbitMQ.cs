@@ -133,6 +133,8 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaGeracaoPendenciasFechamento, new ComandoRabbit("Executa inclusão de fila de Geração de Pendências do Fechamento", typeof(IGerarPendenciasFechamentoUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaNotificacaoInicioFimPeriodoFechamento, new ComandoRabbit("Executa notificação sobre o início e fim do Periodo de fechamento", typeof(INotificacaoInicioFimPeriodoFechamentoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaNotificacaoInicioPeriodoFechamentoUE, new ComandoRabbit("Executa notificação sobre o início do Periodo de fechamento por UE", typeof(INotificacaoInicioPeriodoFechamentoUEUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaNotificacaoFimPeriodoFechamentoUE, new ComandoRabbit("Executa notificação sobre o fim do Periodo de fechamento por UE", typeof(INotificacaoFimPeriodoFechamentoUEUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoFrequenciaUe, new ComandoRabbit("Notificar frequências dos alunos no bimestre para UE", typeof(INotificacaoFrequenciaUeUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaTrataNotificacoesNiveis, new ComandoRabbit("Trata Níveis e Cargos das notificações aguardando ação", typeof(ITrataNotificacoesNiveisCargosUseCase)));

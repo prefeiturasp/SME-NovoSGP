@@ -41,6 +41,8 @@
         public const string RotaNotificacaoAndamentoFechamento = "sgp.fechamento.andamento.notificar";
 
         public const string RotaNotificacaoInicioFimPeriodoFechamento = "sgp.fechamento.iniciofim.periodo.notificar";
+        public const string RotaNotificacaoInicioPeriodoFechamentoUE = "sgp.fechamento.inicio.periodo.notificar.ue";
+        public const string RotaNotificacaoFimPeriodoFechamentoUE = "sgp.fechamento.fim.periodo.notificar.ue";
         public const string RotaGeracaoPendenciasFechamento = "sgp.fechamento.pendencias.gerar";
                
         public const string RotaNotificacaoResultadoInsatisfatorio = "sgp.notificacao.nova.resultado.insatisfatorio";
@@ -217,6 +219,7 @@
 
         public const string NotificacaoPeriodoFechamentoReaberturaIniciando = "sgp.periodo.fechamento.reabertura.iniciando";
         public const string NotificacaoPeriodoFechamentoReaberturaEncerrando = "sgp.periodo.fechamento.reabertura.encerrando";
+        public const string NotificacaoPeriodoFechamentoReaberturaUE = "sgp.periodo.fechamento.reabertura.ue";
 
         public const string RotaLogs = "ApplicationLog";
     }
