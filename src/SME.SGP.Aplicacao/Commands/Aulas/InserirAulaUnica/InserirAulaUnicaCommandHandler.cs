@@ -153,8 +153,8 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         private async Task ValidarComponentesDoProfessor(InserirAulaUnicaCommand inserirAulaUnicaCommand, Usuario usuarioLogado)
         {
             var resultadoValidacao = await mediator.Send(new ValidarComponentesDoProfessorCommand(usuarioLogado, inserirAulaUnicaCommand.CodigoTurma, inserirAulaUnicaCommand.CodigoComponenteCurricular, inserirAulaUnicaCommand.DataAula));
-            if (!resultadoValidacao.resultado)
-                throw new NegocioException(resultadoValidacao.mensagem);
+            //if (!resultadoValidacao.resultado)
+            //    throw new NegocioException(resultadoValidacao.mensagem);
         }
 
         private async Task<long> PersistirWorkflowReposicaoAula(InserirAulaUnicaCommand command, Turma turma, Aula aula, Usuario usuarioLogado)

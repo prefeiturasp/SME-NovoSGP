@@ -88,15 +88,15 @@ namespace SME.SGP.Aplicacao
             var componentes = await mediator.Send(obterComponentesQuery);
             if (componentes == null || componentes.All(c => c.Codigo != aulaRecorrente.ComponenteCurricularId))
             {
-                throw new NegocioException(MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA);
+                //throw new NegocioException(MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA);
             }
 
             var obterUsuarioQuery = new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(
                 aulaRecorrente.ComponenteCurricularId,
                 aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, usuarioLogado);
             var usuarioPodePersistirTurmaNaData = await mediator.Send(obterUsuarioQuery);
-            if (!usuarioPodePersistirTurmaNaData)
-                throw new NegocioException(MSG_NAO_PODE_ALTERAR_NESTA_TURMA);
+            //if (!usuarioPodePersistirTurmaNaData)
+            //    throw new NegocioException(MSG_NAO_PODE_ALTERAR_NESTA_TURMA);
 
             return atribuicao;
         }
