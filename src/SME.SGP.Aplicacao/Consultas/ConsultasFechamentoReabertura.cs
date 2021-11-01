@@ -97,7 +97,9 @@ namespace SME.SGP.Aplicacao
                 CriadoPor = fechamentoReabertura.CriadoPor,
                 AlteradoPor = fechamentoReabertura.AlteradoPor,
                 AlteradoRF = fechamentoReabertura.AlteradoRF,
-                CriadoRF = fechamentoReabertura.CriadoRF
+                CriadoRF = fechamentoReabertura.CriadoRF,
+                AprovadoPor = fechamentoReabertura.Aprovador != null ? string.Format("{0} ({1})", fechamentoReabertura.Aprovador.Nome, fechamentoReabertura.Aprovador.CodigoRf) : string.Empty,
+                AprovadoEm = fechamentoReabertura.AprovadoEm.HasValue ? fechamentoReabertura.AprovadoEm.Value : null
             };
         }
     }
