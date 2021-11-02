@@ -107,14 +107,14 @@ namespace SME.SGP.Dominio.Servicos
             {
                 if (fechamentoReabertura.EhParaSme())
                 {
-                    var fechamentosSME = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, null, null, null);
+                    var fechamentosSME = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null);
 
                     if (fechamentosSME.Any(f => f.EhParaDre() || f.EhParaUe()))
                         return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}, existem fechamentos para DRE/UE relacionados a essa SME";
                 }
                 else if (fechamentoReabertura.EhParaDre())
                 {
-                    var fechamentosDre = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, fechamentoReabertura.DreId, null, null);
+                    var fechamentosDre = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, fechamentoReabertura.DreId, null, null);
 
                     if (fechamentosDre.Any(f => f.EhParaUe()))
                         return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}, existem fechamentos para UE relacionados a essa DRE";
