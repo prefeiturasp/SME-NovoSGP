@@ -562,8 +562,7 @@ namespace SME.SGP.Dominio.Servicos
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj() && !await VerificarAtribuicao(codigoRf, turmaId, data, periodoFechamento))
-                return;
-                //throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
 
         private async Task<bool> VerificarAtribuicao(string codigoRf, string turmaId, DateTime data, PeriodoDto periodoFechamento)
