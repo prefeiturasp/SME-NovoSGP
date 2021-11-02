@@ -32,10 +32,10 @@ namespace SME.SGP.Aplicacao
                 return JsonConvert.DeserializeObject<List<PodePersistirNaDataRetornoEolDto>>(json);
             }
             else
-            {
-                string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - HttpCode {(int)resposta.StatusCode} - {string.Join("-", request.DateTimes)}";
+            {                
+                var erro = $"Não foi possível validar datas para a atribuição do professor no EOL - HttpCode {(int)resposta.StatusCode} - {string.Join("-", request.DateTimes)}";
 
-                SentrySdk.AddBreadcrumb(erro);
+                SentrySdk.CaptureMessage(resposta.RequestMessage.ToString());
                 throw new NegocioException(erro);
             }
         }

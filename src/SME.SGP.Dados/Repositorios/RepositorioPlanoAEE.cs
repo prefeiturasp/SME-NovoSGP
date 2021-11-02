@@ -1,6 +1,7 @@
 using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -118,10 +119,14 @@ namespace SME.SGP.Dados.Repositorios
                                         from plano_aee pa
                                         inner join turma tu on tu.id = pa.turma_id 
                                         where pa.aluno_codigo = @codigoEstudante 
-                                        and pa.situacao = 1
+                                        and not pa.situacao = any(@situacoesDesconsideradas)
                                         limit 1";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new { codigoEstudante });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new
+            {
+                codigoEstudante,
+                situacoesDesconsideradas = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamento }
+            });
         }
 
         public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudanteEAno(string codigoEstudante, int ano)
@@ -314,7 +319,7 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.Append(" inner join turma t on pa.turma_id = t.id ");
             sql.Append(" inner join ue on t.ue_id = ue.id ");
-                       
+
 
             var where = new StringBuilder(@" where t.ano_letivo = @ano and pa.situacao in (1,2,8)");
 
@@ -347,7 +352,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.Append(" inner join questao q on paq.questao_id = q.id ");
             sql.Append(" inner join plano_aee_resposta par on paq.id = par.plano_questao_id  ");
             sql.Append(" inner join opcao_resposta or2 on par.resposta_id = or2.id ");
-            
+
             var where = new StringBuilder(@" where t.ano_letivo = @ano and q.ordem in (7,8)");
 
             if (dreId > 0)
