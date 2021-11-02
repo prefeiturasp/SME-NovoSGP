@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,21 +9,21 @@ namespace SME.SGP.Aplicacao
 {
     public class RemoverConsolidacoesRegistrosPedagogicosCommand : IRequest
     {
-        public RemoverConsolidacoesRegistrosPedagogicosCommand(int anoLetivo)
+        public RemoverConsolidacoesRegistrosPedagogicosCommand(ConsolidacaoRegistrosPedagogicos consolidacao)
         {
-            AnoLetivo = anoLetivo;
+            ConsolidacaoRegistrosPedagogicos = consolidacao;
         }
+        public ConsolidacaoRegistrosPedagogicos ConsolidacaoRegistrosPedagogicos { get; set; }
 
-        public int AnoLetivo { get; }
     }
 
     public class RemoverConsolidacoesRegistrosPedagogicosCommandValidator : AbstractValidator<RemoverConsolidacoesRegistrosPedagogicosCommand>
     {
         public RemoverConsolidacoesRegistrosPedagogicosCommandValidator()
         {
-            RuleFor(a => a.AnoLetivo)
+            RuleFor(a => a.ConsolidacaoRegistrosPedagogicos)
                 .NotEmpty()
-                .WithMessage("O ano letivo deve ser informado para exclusão das consolidações de registros pedagogicos");
+                .WithMessage("Os dados da consolidação devem ser informados para o registro.");
         }
     }
 }

@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(RemoverConsolidacoesRegistrosPedagogicosCommand request, CancellationToken cancellationToken)
         {
-            await repositorio.ExcluirPorAno(request.AnoLetivo);
+            await repositorio.Excluir(request.ConsolidacaoRegistrosPedagogicos);
         }
     }
 }
