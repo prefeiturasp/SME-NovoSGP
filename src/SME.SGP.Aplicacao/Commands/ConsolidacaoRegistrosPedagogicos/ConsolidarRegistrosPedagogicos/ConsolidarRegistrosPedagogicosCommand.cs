@@ -1,15 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarConsolidacaoRegistrosPedagogicosCommand : IRequest
+    public class ConsolidarRegistrosPedagogicosCommand : IRequest
     {
-        public SalvarConsolidacaoRegistrosPedagogicosCommand(ConsolidacaoRegistrosPedagogicos consolidacao)
+        public ConsolidarRegistrosPedagogicosCommand(ConsolidacaoRegistrosPedagogicos consolidacao)
         {
             ConsolidacaoRegistrosPedagogicos = consolidacao;
         }
@@ -17,9 +14,9 @@ namespace SME.SGP.Aplicacao
 
     }
 
-    public class SalvarConsolidacaoRegistrosPedagogicosCommandValidator : AbstractValidator<SalvarConsolidacaoRegistrosPedagogicosCommand>
+    public class ConsolidarRegistrosPedagogicosCommandValidator : AbstractValidator<ConsolidarRegistrosPedagogicosCommand>
     {
-        public SalvarConsolidacaoRegistrosPedagogicosCommandValidator()
+        public ConsolidarRegistrosPedagogicosCommandValidator()
         {
             RuleFor(a => a.ConsolidacaoRegistrosPedagogicos)
                 .NotEmpty()

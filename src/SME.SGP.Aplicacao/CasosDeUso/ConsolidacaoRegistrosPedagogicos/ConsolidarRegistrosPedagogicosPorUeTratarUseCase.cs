@@ -1,10 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -26,11 +24,8 @@ namespace SME.SGP.Aplicacao
                 var consolidacaoCompleta = await AtribuiProfessorEConsolida(consolidacoes);
 
                 foreach (var consolidacao in consolidacaoCompleta.Distinct())
-                {
-                    await mediator.Send(new SalvarConsolidacaoRegistrosPedagogicosCommand(consolidacao));
-                }
+                    await mediator.Send(new ConsolidarRegistrosPedagogicosCommand(consolidacao));                
             }
-
             return true;
         }
 
@@ -45,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
                 if (professoresDaTurma.Any())
                 {
-                    var bimestres = consolidacaoAgrupado.Select(c => c.PeriodoEscolarId).Distinct(); 
+                    var bimestres = consolidacaoAgrupado.Select(c => c.PeriodoEscolarId).Distinct();
 
                     foreach (var bimestre in bimestres)
                     {
