@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RelatorioAcompanhamentoAprendizagemUseCase : AbstractUseCase, IRelatorioAcompanhamentoAprendizagemUseCase
+    public class RelatorioAcompanhamentoAprendizagemUseCase : AbstractUseCase,
+        IRelatorioAcompanhamentoAprendizagemUseCase
     {
         public RelatorioAcompanhamentoAprendizagemUseCase(IMediator mediator) : base(mediator)
         {
@@ -15,7 +16,9 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AcompanhamentoAprendizagem, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRelatorioAcompanhamentoAprendizagem));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AcompanhamentoAprendizagem, filtro,
+                usuarioLogado, formato: TipoFormatoRelatorio.Html,
+                rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRelatorioAcompanhamentoAprendizagem));
         }
     }
 }
