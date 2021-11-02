@@ -62,7 +62,6 @@ namespace SME.SGP.Aplicacao
             foreach(var ano in anosParaConsolidar)
             {
                 var dados = await BuscarDadosParametroConsolidacao(ano);
-                await LimparConsolidacoes(ano);
 
                 var ues = await mediator.Send(new ObterTodasUesIdsQuery());
                 foreach (var ue in ues)
@@ -70,11 +69,6 @@ namespace SME.SGP.Aplicacao
 
                 await AtualizarDataExecucao(dados);
             }
-        }
-
-        private async Task LimparConsolidacoes(int anoLetivo)
-        {
-            await mediator.Send(new RemoverConsolidacoesRegistrosPedagogicosCommand(anoLetivo));
         }
 
         private async Task AtualizarDataExecucao(ParametrosSistema parametroConsolidacao)

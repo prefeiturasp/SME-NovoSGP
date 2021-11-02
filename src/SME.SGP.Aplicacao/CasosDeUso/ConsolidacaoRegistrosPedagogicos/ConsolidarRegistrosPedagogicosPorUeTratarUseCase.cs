@@ -26,9 +26,7 @@ namespace SME.SGP.Aplicacao
                 var consolidacaoCompleta = await AtribuiProfessorEConsolida(consolidacoes);
 
                 foreach (var consolidacao in consolidacaoCompleta)
-                {
                     await mediator.Send(new SalvarConsolidacaoRegistrosPedagogicosCommand(consolidacao));
-                }
             }
 
             return true;
