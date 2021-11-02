@@ -43,7 +43,16 @@ namespace SME.SGP.Dados
                             and ano_letivo = @anoLetivo 
                             and rf_professor = @rfProfessor";
 
-            await database.Conexao.ExecuteScalarAsync(query, new { consolidacao.TurmaId, consolidacao.ComponenteId, consolidacao.AnoLetivo, consolidacao.RFProfessor });
+            var parametros = new
+            {
+                consolidacao.TurmaId,
+                consolidacao.ComponenteCurricularId,
+                consolidacao.PeriodoEscolarId,
+                consolidacao.AnoLetivo,
+                consolidacao.RFProfessor
+            };
+
+            await database.Conexao.ExecuteScalarAsync(query, parametros);
         }
 
 
