@@ -245,7 +245,9 @@ namespace SME.SGP.Dados.Repositorios
             {
                 bimestre,
                 dataReferencia = dataReferencia.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
-                tipoCalendarioId
+                tipoCalendarioId,
+                dreCodigo,
+                ueCodigo
             });
         }
 
