@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
         {
             if (!usuario.PodeRegistrarFrequencia(aula))
             {
-                //throw new NegocioException("Não é possível registrar a frequência pois esse componente curricular não permite substituição.");
+                throw new NegocioException("Não é possível registrar a frequência pois esse componente curricular não permite substituição.");
             }
         }
 
@@ -94,8 +94,8 @@ namespace SME.SGP.Aplicacao
         {
             var podePersistirTurma = await mediator.Send(new VerificaPodePersistirTurmaDisciplinaQuery(usuario, turmaId, disciplinaId, dataAula.Local()));
 
-            //if (!usuario.EhProfessorCj() && !podePersistirTurma)
-            //    throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+            if (!usuario.EhProfessorCj() && !podePersistirTurma)
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
         }
     }
 }
