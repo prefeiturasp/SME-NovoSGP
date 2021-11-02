@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio
     {
         public long Id { get; set; }
         public long TurmaId { get; set; }
-        public long ComponenteId { get; set; }
+        public long ComponenteCurricularId { get; set; }
         public long PeriodoEscolarId { get; set; }
         public int AnoLetivo { get; set; }
         public string NomeProfessor { get; set; }
