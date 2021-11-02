@@ -28,7 +28,6 @@ namespace SME.SGP.Aplicacao
                 foreach (var consolidacao in consolidacaoCompleta.Distinct())
                 {
                     await mediator.Send(new SalvarConsolidacaoRegistrosPedagogicosCommand(consolidacao));
-                }
             }
 
             return true;

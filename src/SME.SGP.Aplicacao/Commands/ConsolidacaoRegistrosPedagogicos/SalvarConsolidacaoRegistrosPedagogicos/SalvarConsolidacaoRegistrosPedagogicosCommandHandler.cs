@@ -18,6 +18,9 @@ namespace SME.SGP.Aplicacao
         }
 
         protected override async Task Handle(SalvarConsolidacaoRegistrosPedagogicosCommand request, CancellationToken cancellationToken)
-        =>  await repositorio.Inserir(request.ConsolidacaoRegistrosPedagogicos);  
+        {
+            await repositorio.Excluir(request.ConsolidacaoRegistrosPedagogicos);
+            await repositorio.Inserir(request.ConsolidacaoRegistrosPedagogicos);                        
+        }        
     }
 }
