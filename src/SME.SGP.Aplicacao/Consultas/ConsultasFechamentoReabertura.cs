@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
 
         private FechamentoReaberturaRetornoDto TransformaEntidadeEmDto(FechamentoReabertura fechamentoReabertura)
         {
-            return new FechamentoReaberturaRetornoDto()
+            var fechamentoReaberturaRetornoDto = new FechamentoReaberturaRetornoDto()
             {
                 Bimestres = fechamentoReabertura.ObterBimestresSelecionados(),
                 DataInicio = fechamentoReabertura.Inicio,
@@ -99,8 +99,12 @@ namespace SME.SGP.Aplicacao
                 AlteradoRF = fechamentoReabertura.AlteradoRF,
                 CriadoRF = fechamentoReabertura.CriadoRF,
                 AprovadoPor = fechamentoReabertura.Aprovador != null ? string.Format("{0} ({1})", fechamentoReabertura.Aprovador.Nome, fechamentoReabertura.Aprovador.CodigoRf) : string.Empty,
-                AprovadoEm = fechamentoReabertura.AprovadoEm.HasValue ? fechamentoReabertura.AprovadoEm.Value : null
             };
+
+            if (fechamentoReabertura.AprovadoEm.HasValue)
+                fechamentoReaberturaRetornoDto.AprovadoEm = fechamentoReabertura.AprovadoEm.Value;
+
+            return fechamentoReaberturaRetornoDto;
         }
     }
 }
