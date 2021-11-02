@@ -70,26 +70,36 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> TurmaEmPeriodoDeFechamentoAula(Turma turma, DateTime dataReferencia, int bimestre = 0, int bimestreAlteracao = 0)
         {
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
-            var ueEmFechamento = await SmeEmFechamento(turma, tipoCalendario, bimestre, dataReferencia);
-            return ueEmFechamento || await SmeEmReaberturaDeFechamento(tipoCalendario, bimestreAlteracao, dataReferencia);
+            var ueEmFechamento = await UeEmFechamento(turma, tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestre, dataReferencia);
+            return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestreAlteracao, dataReferencia);
         }
 
         public async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0)
         {
-            var ueEmFechamento = await SmeEmFechamento(turma, tipoCalendario, bimestre, dataReferencia);
+            var ueEmFechamento = await UeEmFechamento(turma, tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestre, dataReferencia);
 
-            bool retorno = ueEmFechamento || await SmeEmReaberturaDeFechamento(tipoCalendario, bimestre, dataReferencia);
+            bool retorno = ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestre, dataReferencia);
             return retorno;
         }
 
-        private async Task<bool> SmeEmFechamento(Turma turma, TipoCalendario tipoCalendario, int bimestre, DateTime dataReferencia)
+        private async Task<bool> UeEmFechamento(Turma turma, TipoCalendario tipoCalendario, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
         {
-            return await repositorioEventoFechamento.SmeEmFechamento(dataReferencia, tipoCalendario.Id, bimestre);
+            if (turma.Ue == null)
+                turma.AdicionarUe(repositorioUe.ObterPorId(turma.UeId));
+            if (turma.Ue.Dre == null)
+                turma.Ue.AdicionarDre(repositorioDre.ObterPorId(turma.Ue.DreId));
+
+            return await repositorioEventoFechamento.UeEmFechamento(dataReferencia, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, tipoCalendario.Id, bimestre);
         }
 
-        private async Task<bool> SmeEmReaberturaDeFechamento(TipoCalendario tipoCalendario, int bimestre, DateTime dataReferencia)
+        private async Task<bool> UeEmReaberturaDeFechamento(TipoCalendario tipoCalendario, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
         {
-            var reaberturaPeriodo = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(bimestre,dataReferencia,tipoCalendario.Id);
+            var reaberturaPeriodo = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(
+                                                            bimestre,
+                                                            dataReferencia,
+                                                            tipoCalendario.Id,
+                                                            dreCodigo,
+                                                            ueCodigo);
             return reaberturaPeriodo != null;
         }
     }
