@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -25,7 +26,11 @@ namespace SME.SGP.Aplicacao
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoDevolutiva,
                       new ExcluirNotificacaoDevolutivaDto(request.DevolutivaId), Guid.NewGuid(), null));
-
+            var devolutiva = repositorioDevolutiva.ObterPorId(request.DevolutivaId);
+            if (devolutiva != null)
+            {
+                await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(devolutiva.Descricao, TipoArquivo.Devolutiva.Name()));
+            }
             await repositorioDevolutiva.RemoverLogico(request.DevolutivaId);
 
             return true;

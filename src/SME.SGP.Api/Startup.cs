@@ -91,7 +91,7 @@ namespace SME.SGP.Api
                 app.UseStaticFiles(new StaticFileOptions()
                 {
                     FileProvider = new PhysicalFileProvider(diretorio),
-                    RequestPath = new PathString("/arquivos/editor"),
+                    RequestPath = new PathString("/arquivos"),
                     ServeUnknownFileTypes = true
                 });
             }

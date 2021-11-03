@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             await ValidarBimestreEmAberto(turma, bimestre);
 
             IEnumerable<long> idsDiarios = dados.Select(x => x.Item1);
-
+            MoverRemoverExcluidos(param);
             AuditoriaDto auditoria = await mediator.Send(new InserirDevolutivaCommand(param.CodigoComponenteCurricular, idsDiarios, inicioEfetivo, fimEfetivo, param.Descricao, turma.Id));
 
             bool diariosAtualizados = await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
@@ -41,7 +41,14 @@ namespace SME.SGP.Aplicacao
 
             return auditoria;
         }
-
+        private void MoverRemoverExcluidos(InserirDevolutivaDto devolutiva)
+        {
+            if (!string.IsNullOrEmpty(devolutiva.Descricao))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Devolutiva, string.Empty, devolutiva.Descricao));
+                devolutiva.Descricao = moverArquivo.Result;
+            }
+        }
         private async Task ValidarDevolutivaNoPeriodo(string turmaCodigo, long codigoComponenteCurricular, DateTime periodoInicio, DateTime periodoFim)
         {
             var devolutivasIds = await mediator.Send(new ObterDevolutivaPorTurmaComponenteNoPeriodoQuery(turmaCodigo, codigoComponenteCurricular, periodoInicio.Date, periodoFim.Date));
