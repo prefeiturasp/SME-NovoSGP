@@ -1,9 +1,11 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,6 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
 
         public ComandosPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                   IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano,
@@ -29,7 +32,7 @@ namespace SME.SGP.Aplicacao
                                   IConsultasTurma consultasTurma,
                                   IConsultasPlanoAnual consultasPlanoAnual,
                                   IUnitOfWork unitOfWork,
-                                  IServicoUsuario servicoUsuario)
+                                  IServicoUsuario servicoUsuario, IMediator mediator)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanoAnual));
             this.repositorioObjetivoAprendizagemPlano = repositorioObjetivoAprendizagemPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagemPlano));
@@ -40,6 +43,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPlanoAnual = consultasPlanoAnual ?? throw new ArgumentNullException(nameof(consultasProfessor));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public void Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
@@ -91,6 +95,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Turma não esta em período aberto");
 
             unitOfWork.IniciarTransacao();
+ 
             foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
             {
                 PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
@@ -157,7 +162,7 @@ namespace SME.SGP.Aplicacao
             }
             planoAnual.Ano = planoAnualDto.AnoLetivo.Value;
             planoAnual.Bimestre = bimestre;
-            planoAnual.Descricao = descricao;
+            planoAnual.Descricao = descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanejamentoAnual.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
             planoAnual.EscolaId = planoAnualDto.EscolaId;
             planoAnual.TurmaId = planoAnualDto.TurmaId.Value;
             planoAnual.ComponenteCurricularEolId = planoAnualDto.ComponenteCurricularEolId;
