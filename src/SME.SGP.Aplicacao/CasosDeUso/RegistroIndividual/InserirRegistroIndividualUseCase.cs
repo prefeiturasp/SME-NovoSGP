@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Sentry;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<AuditoriaDto> Executar(InserirRegistroIndividualDto dto)
+        public async Task<RegistroIndividual> Executar(InserirRegistroIndividualDto dto)
         {
             var auditoria = await mediator.Send(new InserirRegistroIndividualCommand(dto.TurmaId, dto.AlunoCodigo, dto.ComponenteCurricularId, dto.Data, dto.Registro));
             await PublicarAtualizacaoPendenciaRegistroIndividualAsync(dto.TurmaId, dto.AlunoCodigo, dto.Data);

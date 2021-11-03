@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,13 +21,13 @@ namespace SME.SGP.Aplicacao
             var caminhoBase = ObterCaminhoArquivos(request.Tipo);
             var extencao = Path.GetExtension(request.Nome);
             var nomeArquivo = $"{request.Codigo}{extencao}";
-            var caminhoArquivo = Path.Combine($"{caminhoBase}", nomeArquivo);
+            var caminhoArquivo = Path.Combine($"{caminhoBase}", nomeArquivo).Replace(@"\", @"//");
 
             File.Delete(caminhoArquivo);
             return Task.FromResult(true);
         }
 
         private string ObterCaminhoArquivos(TipoArquivo tipo)
-            => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arquivos", tipo.ToString());
+            => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arquivos", tipo.Name());
     }
 }
