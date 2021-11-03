@@ -7,13 +7,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUEsComDREsPorModalidadeTipoCalendarioQuery : IRequest<IEnumerable<Ue>>
     {
-        public ObterUEsComDREsPorModalidadeTipoCalendarioQuery(ModalidadeTipoCalendario modalidadeTipoCalendario, int anoLetivo)
+        public ObterUEsComDREsPorModalidadeTipoCalendarioQuery(int[] modalidades, int anoLetivo)
         {
-            ModalidadeTipoCalendario = modalidadeTipoCalendario;
+            Modalidades = modalidades;
             AnoLetivo = anoLetivo;
         }
 
-        public ModalidadeTipoCalendario ModalidadeTipoCalendario { get; set; }
+        public int[] Modalidades { get; set; }
         public int AnoLetivo { get; set; }
     }
 
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
     {
         public ObterUEsComDREsPorModalidadeTipoCalendarioQueryValidator()
         {
-            RuleFor(c => c.ModalidadeTipoCalendario)
+            RuleFor(c => c.Modalidades)
             .NotEmpty()
             .WithMessage("A modalidade do tipo de calendario deve ser informada para consulta das UEs.");
 

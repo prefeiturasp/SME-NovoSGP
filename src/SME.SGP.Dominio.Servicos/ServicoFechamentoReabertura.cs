@@ -89,14 +89,28 @@ namespace SME.SGP.Dominio.Servicos
                 mensagemRetorno = "Reabertura de Fechamento alterado e será válido após aprovação.";
             }
             else
-            {
-                fechamentoReabertura.Bimestres.ToList().ForEach(f => f.FechamentoAbertura = null);
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
-            }
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
 
             unitOfWork.PersistirTransacao();
 
             return mensagemRetorno;
+        }
+
+        private FiltroFechamentoReaberturaNotificacaoDto MapearFechamentoReaberturaNotificacao(FechamentoReabertura fechamentoReabertura, Usuario usuario)
+        {
+            return new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura.Dre != null ? fechamentoReabertura.Dre.CodigoDre : string.Empty,
+                                                                fechamentoReabertura.Ue != null ? fechamentoReabertura.Ue.CodigoUe : string.Empty,
+                                                                fechamentoReabertura.Id,
+                                                                usuario.CodigoRf,
+                                                                fechamentoReabertura.TipoCalendario.Nome,
+                                                                fechamentoReabertura.Dre != null ? fechamentoReabertura.Ue.Nome : string.Empty,
+                                                                fechamentoReabertura.Dre != null ? fechamentoReabertura.Dre.Abreviacao : string.Empty,
+                                                                fechamentoReabertura.Inicio,
+                                                                fechamentoReabertura.Fim,
+                                                                fechamentoReabertura.ObterBimestresNumeral().ToString(),
+                                                                fechamentoReabertura.EhParaUe(),
+                                                                fechamentoReabertura.TipoCalendario.AnoLetivo,
+                                                                fechamentoReabertura.TipoCalendario.Modalidade.ObterModalidadesTurma().Cast<int>().ToArray());
         }
 
         public async Task<string> ExcluirAsync(FechamentoReabertura fechamentoReabertura)
@@ -198,7 +212,7 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 fechamentoReabertura.Bimestres.ToList().ForEach(f => f.FechamentoAbertura = null);
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
             }
 
             unitOfWork.PersistirTransacao();

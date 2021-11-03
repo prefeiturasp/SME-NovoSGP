@@ -26,34 +26,48 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExecutaNotificacaoFechamentoReaberturaCommand request, CancellationToken cancellationToken)
         {
-            var dreCodigo = request.DreCodigo;
-            var ue = request.Ue;
             var fechamentoReabertura = request.FechamentoReabertura;
 
-            var adminsSgpUe = await servicoEOL.ObterAdministradoresSGP(ue);
+            var adminsSgpUe = await servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.UeCodigo);
             if (adminsSgpUe != null && adminsSgpUe.Any())
             {
                 foreach (var adminSgpUe in adminsSgpUe)
-                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura, dreCodigo, ue, adminSgpUe));
+                {
+                    fechamentoReabertura.CodigoRf = adminSgpUe;
+                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura));
+                }
+                    
             }
 
-            var diretores = servicoEOL.ObterFuncionariosPorCargoUe(ue, (long)Cargo.Diretor);
+            var diretores = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.UeCodigo, (long)Cargo.Diretor);
             if (diretores != null && diretores.Any())
             {
                 foreach (var diretor in diretores)
-                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura, dreCodigo, ue, diretor.CodigoRf));                
+                {
+                    fechamentoReabertura.CodigoRf = diretor.CodigoRf;
+                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura));
+                }
+                    
             }
-            var ads = servicoEOL.ObterFuncionariosPorCargoUe(ue, (long)Cargo.AD);
+            var ads = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.UeCodigo, (long)Cargo.AD);
             if (ads != null && ads.Any())
             {
                 foreach (var ad in ads)
-                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura, dreCodigo, ue, ad.CodigoRf));
+                {
+                    fechamentoReabertura.CodigoRf = ad.CodigoRf;
+                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura));
+                }
+                    
             }
-            var cps = servicoEOL.ObterFuncionariosPorCargoUe(ue, (long)Cargo.CP);
+            var cps = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.UeCodigo, (long)Cargo.CP);
             if (cps != null && cps.Any())
             {
                 foreach (var cp in cps)
-                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura, dreCodigo, ue, cp.CodigoRf));
+                {
+                    fechamentoReabertura.CodigoRf = cp.CodigoRf;
+                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura));
+                }
+                    
             }
             return true;
         }

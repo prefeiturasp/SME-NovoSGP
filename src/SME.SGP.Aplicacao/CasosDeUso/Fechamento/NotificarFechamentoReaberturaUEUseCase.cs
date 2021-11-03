@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                await mediator.Send(new ExecutaNotificacaoFechamentoReaberturaCommand(filtro.FechamentoReabertura, filtro.Ue, filtro.Dre));
+                await mediator.Send(new ExecutaNotificacaoFechamentoReaberturaCommand(filtro.FechamentoReabertura));
                 return true;
             }
         }
