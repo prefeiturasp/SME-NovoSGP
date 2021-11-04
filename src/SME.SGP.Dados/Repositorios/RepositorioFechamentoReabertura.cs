@@ -33,6 +33,10 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync("DELETE FROM FECHAMENTO_REABERTURA_NOTIFICACAO WHERE FECHAMENTO_REABERTURA_ID = @fechamentoReaberturaId", new { fechamentoReaberturaId });
         }
 
+        public async Task<IEnumerable<FechamentoReabertura>> ObterPorIds(long[] ids = null)
+        {
+            return await database.Conexao.QueryAsync<FechamentoReabertura>("select * from fechamento_reabertura where id = ANY(@ids)", new { ids });
+        }
         public async Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId, long[] ids = null)
         {
             var query = new StringBuilder();
