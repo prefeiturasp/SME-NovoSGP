@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
@@ -10,14 +11,18 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<int> Executar(int ano)
+        public async Task<ParametroQuantidadeUploadImagemDto> Executar(int ano)
         {
-            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.QuantidadeImagensPercursoTurma, ano));
+            var parametroQuantidadeImagemPercursoColetivo = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.QuantidadeImagensPercursoTurma, ano));
+            var parametroQuantidadeImagemPercursoIndividual = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.QuantidadeImagensPercursoIndividualCrianca, ano));
 
-            if (!string.IsNullOrEmpty(parametro?.Valor))
-                return int.Parse(parametro.Valor);
+            var parametroQuantidadeUploadImagem = new ParametroQuantidadeUploadImagemDto();
+            
+            parametroQuantidadeUploadImagem.AdicionarValorQuantidadeImagemPercursoColetivo(parametroQuantidadeImagemPercursoColetivo?.Valor);
+            parametroQuantidadeUploadImagem.AdicionarValorQuantidadeImagemPercursoIndividual(parametroQuantidadeImagemPercursoIndividual?.Valor);
+        
 
-            return 0;
+            return parametroQuantidadeUploadImagem;
         }
     }
 }
