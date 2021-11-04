@@ -194,6 +194,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConsolidacaoDiariosBordoMap());
                config.AddMap(new AvisoMap());
                config.AddMap(new ConsolidacaoRegistrosPedagogicosMap());
+               config.AddMap(new PendenciaPerfilMap());
+               config.AddMap(new PendenciaPerfilUsuarioMap());
 
                config.ForDommel();
            });
