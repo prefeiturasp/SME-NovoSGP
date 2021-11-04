@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IRelatorioAcompanhamentoDeFrequênciaUseCase : IUseCase<FiltroAcompanhamentoFrequenciaDto, bool>
+    public interface IRelatorioAcompanhamentoDeFrequênciaUseCase : IUseCase<FiltroAcompanhamentoFrequenciaJustificativaDto, bool>
     {
     }
 }

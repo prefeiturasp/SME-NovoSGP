@@ -158,6 +158,7 @@
         public const string RotaRelatoriosComErroRegistroIndividual = "sgp.relatorios.erro.notificar.registroindividual";
         public const string RotaRelatoriosComErroConselhoDeClasse = "sgp.relatorios.erro.notificar.conselhodeclasse";
         public const string RotaRelatoriosComErroRelatorioAcompanhamentoAprendizagem = "sgp.relatorios.erro.notificar.relatorioacompanhamentoaprendizagem";
+        public const string RotaRelatoriosComErroAcompanhamentoFrequencia = "sgp.relatorios.errno.notificar.acompanhamentofrequencia";
         public const string RotaRelatoriosComErroCalendarioEscolar = "sgp.relatorios.erro.notificar.calendárioescolar";
         public const string RotaRelatoriosComErroRegistroItinerancia = "sgp.relatorios.erro.notificar.registroitinerancia";
         public const string RotaRelatoriosComErroPendencias = "sgp.relatorios.erro.notificar.pendencias";

@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public async Task<bool> Executar(FiltroAcompanhamentoFrequenciaDto filtro)
+        public async Task<bool> Executar(FiltroAcompanhamentoFrequenciaJustificativaDto filtro)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             filtro.UsuarioNome = usuarioLogado.Nome;
