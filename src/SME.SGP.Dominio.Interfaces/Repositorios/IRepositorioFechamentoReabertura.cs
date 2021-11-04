@@ -21,8 +21,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<FechamentoReaberturaNotificacao>> ObterNotificacoes(long id);
 
-        Task<FechamentoReabertura> ObterPorTurma(long turmaId);
-
         Task SalvarBimestreAsync(FechamentoReaberturaBimestre fechamentoReabertura);
 
         Task SalvarNotificacaoAsync(FechamentoReaberturaNotificacao fechamentoReaberturaNotificacao);

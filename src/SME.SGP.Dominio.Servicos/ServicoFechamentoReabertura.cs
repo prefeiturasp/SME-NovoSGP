@@ -119,39 +119,20 @@ namespace SME.SGP.Dominio.Servicos
 
             try
             {
-                if (fechamentoReabertura.EhParaSme())
-                {
-                    var fechamentosSME = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, null, null, null);
-
-                    if (fechamentosSME.Any(f => f.EhParaDre() || f.EhParaUe()))
-                        return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}, existem fechamentos para DRE/UE relacionados a essa SME";
-                }
-                else if (fechamentoReabertura.EhParaDre())
-                {
-                    var fechamentosDre = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendario.Id, fechamentoReabertura.DreId, null, null);
-
-                    if (fechamentosDre.Any(f => f.EhParaUe()))
-                        return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}, existem fechamentos para UE relacionados a essa DRE";
-                }
-
                 fechamentoReabertura.Excluir();
                 await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
 
                 if (fechamentoReabertura.EhParaUe())
-                {
                     await ExcluirVinculosAysnc(fechamentoReabertura);
-                }
                 else
                 {
-                    var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null);
+                    var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, fechamentoReabertura.DreId, fechamentoReabertura.UeId, null);
                     var fechamentoReaberturasParaExcluir = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id && fechamentoReabertura.Inicio >= a.Inicio || a.Fim >= fechamentoReabertura.Fim);
 
                     if (fechamentoReaberturasParaExcluir != null && fechamentoReaberturasParaExcluir.Any())
                     {
                         foreach (var fechamentoReaberturaParaExcluir in fechamentoReaberturasParaExcluir)
-                        {
                             await ExcluirVinculosAysnc(fechamentoReaberturaParaExcluir);
-                        }
                     }
                 }
             }
@@ -223,24 +204,13 @@ namespace SME.SGP.Dominio.Servicos
         private async Task ExcluirVinculosAysnc(FechamentoReabertura fechamentoReaberturaParaExcluir)
         {
             if (fechamentoReaberturaParaExcluir.WorkflowAprovacaoId.HasValue)
-            {
                 await comandosWorkflowAprovacao.ExcluirAsync(fechamentoReaberturaParaExcluir.WorkflowAprovacaoId.Value);
-            }
 
             var notificacoesParaExcluir = await repositorioFechamentoReabertura.ObterNotificacoes(fechamentoReaberturaParaExcluir.Id);
             if (notificacoesParaExcluir != null && notificacoesParaExcluir.Any())
             {
                 await repositorioFechamentoReabertura.ExcluirVinculoDeNotificacoesAsync(fechamentoReaberturaParaExcluir.Id);
                 await servicoNotificacao.ExcluirFisicamenteAsync(notificacoesParaExcluir.Select(a => a.NotificacaoId).ToArray());
-            }
-            if (fechamentoReaberturaParaExcluir.EhParaUe())
-            {
-                var eventosParaExcluir = await repositorioEvento.EventosNosDiasETipo(fechamentoReaberturaParaExcluir.Inicio, fechamentoReaberturaParaExcluir.Fim, TipoEvento.FechamentoBimestre, fechamentoReaberturaParaExcluir.TipoCalendarioId, fechamentoReaberturaParaExcluir.Ue.CodigoUe, fechamentoReaberturaParaExcluir.Dre.CodigoDre, false);
-                if (eventosParaExcluir != null && eventosParaExcluir.Any())
-                {
-                    var eventoParaExcluir = eventosParaExcluir.FirstOrDefault();
-                    await servicoEvento.Excluir(eventoParaExcluir);
-                }
             }
         }
 

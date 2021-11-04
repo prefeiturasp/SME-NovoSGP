@@ -128,7 +128,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { codigoTurma, modalidade = (int)modalidade, dataReferencia });
         }
 
-        public async Task<int> ObterBimestreAtualPorTurmaIdAsync(long turmaId, ModalidadeTipoCalendario modalidade, DateTime dataReferencia)
+        public async Task<int> ObterBimestreAtualPorTurmaIdAsync(long turmaId, ModalidadeTipoCalendario modalidade, DateTime dataReferencia)                     
         {
             var query = new StringBuilder(@"select pe.bimestre
                                               from periodo_escolar pe
@@ -312,14 +312,12 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query, new { anoLetivo, modalidade = (int)modalidade, dataAtual });
         }
 
-        public async Task<int> ObterBimestreAtualComAberturaPorTurmaAsync(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, long ueId, DateTime dataReferencia)
+        public async Task<int> ObterBimestreAtualComAberturaPorAnoModalidade(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario,DateTime dataReferencia)
         {
             var query = @"select
 	                        pe.bimestre 
                         from
 	                        periodo_fechamento pf
-                        inner join ue u on
-	                        pf.ue_id = u.id
                         inner join periodo_fechamento_bimestre pfb on
 	                        pfb.periodo_fechamento_id = pf.id
                         inner join periodo_escolar pe on
@@ -328,12 +326,11 @@ namespace SME.SGP.Dados.Repositorios
 	                        pe.tipo_calendario_id = tc.id
                         where
 	                        tc.modalidade = @modalidadeTipoCalendario
-	                        and u.id = @ueId
 	                        and tc.ano_letivo = @anoLetivo
 	                        and not excluido
 	                        and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento ";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { anoLetivo, modalidadeTipoCalendario, dataReferencia, ueId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { anoLetivo, modalidadeTipoCalendario, dataReferencia });
         }
 
         public async Task<IEnumerable<PeriodoEscolarModalidadeDto>> ObterPeriodosPassadosNoAno(DateTime data)

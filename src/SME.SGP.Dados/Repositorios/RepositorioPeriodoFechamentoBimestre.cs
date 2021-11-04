@@ -82,15 +82,18 @@ namespace SME.SGP.Dados.Repositorios
                 }, new { modalidade = (int)modalidadeTipoCalendario, dataInicio, bimestre, dreId, ueId })).FirstOrDefault();
         }
 
-        public async Task<bool> ExistePeriodoFechamentoPorUePeriodoEscolar(long ueId, long periodoEscolarId)
+        public async Task<bool> ExistePeriodoFechamentoPorDataPeriodoEscolar(long periodoEscolarId, DateTime dataReferencia)
         {
             var query = @"select 1
                           from periodo_fechamento p 
                          inner join periodo_fechamento_bimestre b on b.periodo_fechamento_id = p.Id
-                        where p.ue_id = @ueId
-                          and b.periodo_escolar_id = @periodoEscolarId";
+                        where b.periodo_escolar_id = @periodoEscolarId 
+                            and TO_DATE(fr.inicio::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
+                            and TO_DATE(fr.fim::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
+                            and fr.status = 1 
+                        ";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ueId, periodoEscolarId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { periodoEscolarId, dataReferencia });
         }
     }
 }
