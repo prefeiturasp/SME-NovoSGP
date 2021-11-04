@@ -34,6 +34,27 @@ namespace SME.SGP.Dados
             await database.Conexao.ExecuteScalarAsync(query, new { anoLetivo });
         }
 
+        public async Task Excluir(ConsolidacaoRegistrosPedagogicos consolidacao)
+        {
+            var query = @"delete from consolidacao_registros_pedagogicos 
+                          where turma_id = @turmaId 
+                            and componente_curricular_id = @componenteCurricularId 
+                            and periodo_escolar_id = @periodoEscolarId 
+                            and ano_letivo = @anoLetivo 
+                            and rf_professor = @rfProfessor";
+
+            var parametros = new
+            {
+                consolidacao.TurmaId,
+                consolidacao.ComponenteCurricularId,
+                consolidacao.PeriodoEscolarId,
+                consolidacao.AnoLetivo,
+                consolidacao.RFProfessor
+            };
+
+            await database.Conexao.ExecuteScalarAsync(query, parametros);
+        }
+
 
         public async Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> GerarRegistrosPedagogicos(long ueId, int anoLetivo)
         {
