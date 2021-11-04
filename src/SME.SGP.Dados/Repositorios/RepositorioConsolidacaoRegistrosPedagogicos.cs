@@ -84,13 +84,14 @@ namespace SME.SGP.Dados
                           	 left join diario_bordo db on db.aula_id = a.id and not db.excluido 
 	                         inner join turma t on t.turma_id = a.turma_id 
 	                         inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id 
-	                         			and a.data_aula between pe.periodo_inicio and pe.periodo_fim
+	                         inner join periodo_fechamento_bimestre pfb on pfb.periodo_escolar_id = pe.id 
+	                         			and a.data_aula between pfb.inicio_fechamento and pfb.final_fechamento
 	                         left join registro_frequencia rf on rf.aula_id = a.id and not rf.excluido 
-	                         left join plano_aula pa on pa.aula_id  = a.id and not pa.excluido 
+	                         left join plano_aula pa on pa.aula_id = a.id and not pa.excluido 
                          where not a.excluido 
                            and t.ue_id = @ueId
                            and t.ano_letivo = @anoLetivo
-                        group by pe.id, pe.bimestre, t.id, a.disciplina_id, db.criado_em, pa.criado_em, a.professor_rf, t.modalidade_codigo";
+                        group by pe.id, pe.bimestre, t.id, a.disciplina_id, a.professor_rf, t.modalidade_codigo";
 
             return await database.Conexao.QueryAsync<ConsolidacaoRegistrosPedagogicosDto>(query, new { ueId, anoLetivo });
         }
