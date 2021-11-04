@@ -38,6 +38,9 @@ namespace SME.SGP.Aplicacao
             var contadorAulasCriadas = 0;
             var contadorAulasExcluidas = 0;
 
+            string codigoDisciplina = "512";
+            string criadoPor = "Sistema";
+
             var idsAulasAExcluir = new List<long>();
             var timerGeral = Stopwatch.StartNew();
 
@@ -47,7 +50,7 @@ namespace SME.SGP.Aplicacao
                 var diasNaoLetivos = DeterminaDiasNaoLetivos(diasParaCriarAula, turma);
                 var diasLetivos = DeterminaDiasLetivos(diasParaCriarAula, diasNaoLetivos.Select(dnl => dnl.Data).Distinct(), turma);
 
-                var aulas = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId, "Sistema")))?.ToList();
+                var aulas = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId, criadoPor)))?.ToList();
 
                 aulas.AddRange(await mediator.Send(new ObterAulasExcluidasComDiarioDeBordoAtivosQuery(turma.CodigoTurma, tipoCalendarioId)));
 
@@ -57,7 +60,7 @@ namespace SME.SGP.Aplicacao
                         .Where(c => !turma.DataInicio.HasValue || c.Data.Date >= turma.DataInicio)?.ToList();
 
                     diariosBordoComAulaExcluida.AddRange(await mediator
-                            .Send(new RecuperarDiarioBordoComAulasExcluidasQuery(turma.CodigoTurma, "512", tipoCalendarioId, periodoTurmaConsiderado.Select(p => p.Data).ToArray())));
+                            .Send(new RecuperarDiarioBordoComAulasExcluidasQuery(turma.CodigoTurma, codigoDisciplina, tipoCalendarioId, periodoTurmaConsiderado.Select(p => p.Data).ToArray())));
 
                     var aulasCriacao = from ac in ObterAulasParaCriacao(tipoCalendarioId, periodoTurmaConsiderado, diasLetivos, diasNaoLetivos, turma)
                                        where !diariosBordoComAulaExcluida.Select(db => db.Aula.DataAula).Contains(ac.DataAula)
@@ -76,7 +79,7 @@ namespace SME.SGP.Aplicacao
                     if (diasSemAula != null && diasSemAula.Any())
                     {
                         diariosBordoComAulaExcluida.AddRange(await mediator
-                            .Send(new RecuperarDiarioBordoComAulasExcluidasQuery(turma.CodigoTurma, "512", tipoCalendarioId, diasSemAula.Select(d => d.Data).ToArray())));
+                            .Send(new RecuperarDiarioBordoComAulasExcluidasQuery(turma.CodigoTurma, codigoDisciplina, tipoCalendarioId, diasSemAula.Select(d => d.Data).ToArray())));
                     }
 
                     var diasCriacaoAula = (from d in diasSemAula
