@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IConsultasConselhoClasseAluno consultasConselhoClasseAluno;
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IMediator mediator;
 
         public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
@@ -36,6 +37,7 @@ namespace SME.SGP.Aplicacao
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.consultasConselhoClasseAluno = consultasConselhoClasseAluno ?? throw new ArgumentNullException(nameof(consultasConselhoClasseAluno));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
         public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int? bimestre, bool consideraHistorico = false)
@@ -79,7 +81,18 @@ namespace SME.SGP.Aplicacao
                 turmasCodigos = new string[] { turma.CodigoTurma };
             }
 
-            var turmasComMatriculasValidas = await consultasConselhoClasseAluno.ObterTurmasComMatriculasValidas(alunoCodigo, turmasCodigos, periodoEscolar);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+            if (tipoCalendario == null) throw new NegocioException("Tipo de calendário não encontrado");
+
+            var periodosLetivos = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendario.Id));
+
+            if (periodosLetivos == null || !periodosLetivos.Any())
+                throw new NegocioException("Não foram encontrados períodos escolares do tipo de calendário.");
+
+            var periodoInicio = periodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
+            var periodoFim = periodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
+
+            var turmasComMatriculasValidas = await consultasConselhoClasseAluno.ObterTurmasComMatriculasValidas(alunoCodigo, turmasCodigos, periodoInicio, periodoFim);
             if (turmasComMatriculasValidas.Any())
                 turmasCodigos = turmasComMatriculasValidas.ToArray();
 
