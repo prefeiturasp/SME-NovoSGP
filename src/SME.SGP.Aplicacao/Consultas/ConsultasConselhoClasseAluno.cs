@@ -168,7 +168,7 @@ namespace SME.SGP.Aplicacao
             
             var turmasComMatriculasValidas = await ObterTurmasComMatriculasValidas(alunoCodigo, turmasCodigos, periodoEscolar);
             if (turmasComMatriculasValidas.Any())
-                turmasCodigos = turmasComMatriculasValidas.ToArray();            
+                turmasCodigos = turmasComMatriculasValidas.ToArray();
 
             var notasConselhoClasseAluno = new List<NotaConceitoBimestreComponenteDto>();
 
@@ -298,13 +298,13 @@ namespace SME.SGP.Aplicacao
             }
 
             retorno.TemConselhoClasseAluno = conselhoClasseId > 0 ? await VerificaSePossuiConselhoClasseAlunoAsync(conselhoClasseId, alunoCodigo) : false;
-            retorno.PodeEditarNota = await VerificaSePodeEditarNota(alunoCodigo, turma, periodoEscolar);
+            retorno.PodeEditarNota = turmasComMatriculasValidas.Any() ? await VerificaSePodeEditarNota(alunoCodigo, turma, periodoEscolar) : false;
             retorno.NotasConceitos = gruposMatrizesNotas;
 
             return retorno;
         }
 
-        private async Task<List<string>> ObterTurmasComMatriculasValidas(string alunoCodigo, string[] turmasCodigos, PeriodoEscolar periodoEscolar)
+        public async Task<List<string>> ObterTurmasComMatriculasValidas(string alunoCodigo, string[] turmasCodigos, PeriodoEscolar periodoEscolar)
         {
             var turmasCodigosComMatriculasValidas = new List<string>();
             foreach (string codTurma in turmasCodigos)
@@ -312,7 +312,7 @@ namespace SME.SGP.Aplicacao
                 var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, alunoCodigo));
                 if (matriculasAluno != null || matriculasAluno.Any())
                 {
-                    if (matriculasAluno.Any(m => m.PossuiSituacaoAtiva() || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= periodoEscolar.PeriodoInicio && m.DataSituacao <= periodoEscolar.PeriodoFim)))
+                    if ((matriculasAluno != null || matriculasAluno.Any()) && matriculasAluno.Any(m => m.PossuiSituacaoAtiva() || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= periodoEscolar.PeriodoInicio && m.DataSituacao <= periodoEscolar.PeriodoFim)))
                         turmasCodigosComMatriculasValidas.Add(codTurma);
                 }
             }
