@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -302,6 +303,31 @@ namespace SME.SGP.Dominio.Servicos
             repositorioFechamentoReabertura.Salvar(fechamentoReabertura);
 
             NotificarCriadorFechamentoReaberturaAprovado(fechamentoReabertura, codigoDaNotificacao, nivelId);
+
+            NotificarFechamentoReaberturaUEUseCase(fechamentoReabertura);
+        }
+
+        private void NotificarFechamentoReaberturaUEUseCase(FechamentoReabertura fechamentoReabertura)
+        {
+            var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
+            mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual)), new Guid(), null));
+        }
+
+        private FiltroFechamentoReaberturaNotificacaoDto MapearFechamentoReaberturaNotificacao(FechamentoReabertura fechamentoReabertura, Usuario usuario)
+        {
+            return new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura.Dre != null ? fechamentoReabertura.Dre.CodigoDre : string.Empty,
+                                                                fechamentoReabertura.Ue != null ? fechamentoReabertura.Ue.CodigoUe : string.Empty,
+                                                                fechamentoReabertura.Id,
+                                                                usuario.CodigoRf,
+                                                                fechamentoReabertura.TipoCalendario.Nome,
+                                                                fechamentoReabertura.Dre != null ? fechamentoReabertura.Ue.Nome : string.Empty,
+                                                                fechamentoReabertura.Dre != null ? fechamentoReabertura.Dre.Abreviacao : string.Empty,
+                                                                fechamentoReabertura.Inicio,
+                                                                fechamentoReabertura.Fim,
+                                                                fechamentoReabertura.ObterBimestresNumeral().ToString(),
+                                                                fechamentoReabertura.EhParaUe(),
+                                                                fechamentoReabertura.TipoCalendario.AnoLetivo,
+                                                                fechamentoReabertura.TipoCalendario.Modalidade.ObterModalidadesTurma().Cast<int>().ToArray());
         }
 
         private async Task AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)

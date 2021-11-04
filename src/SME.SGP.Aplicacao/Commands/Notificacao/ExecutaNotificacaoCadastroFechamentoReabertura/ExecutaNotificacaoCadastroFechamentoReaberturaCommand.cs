@@ -1,22 +1,16 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
     public class ExecutaNotificacaoCadastroFechamentoReaberturaCommand : IRequest<bool>
     {
-        public ExecutaNotificacaoCadastroFechamentoReaberturaCommand(FechamentoReabertura fechamentoReabertura, string dreCodigo, string ueCodigo, string adminsSgpDre)
+        public ExecutaNotificacaoCadastroFechamentoReaberturaCommand(FiltroFechamentoReaberturaNotificacaoDto fechamentoReabertura)
         {
             FechamentoReabertura = fechamentoReabertura;
-            DreCodigo = dreCodigo;
-            UeCodigo = ueCodigo;
-            CodigoRf = adminsSgpDre;
         }
 
-        public FechamentoReabertura FechamentoReabertura { get; set; }
-        public string DreCodigo { get; set; }
-        public string CodigoRf { get; set; }
-        public string UeCodigo { get; set; }
-
+        public FiltroFechamentoReaberturaNotificacaoDto FechamentoReabertura { get; set; }
     }
 }

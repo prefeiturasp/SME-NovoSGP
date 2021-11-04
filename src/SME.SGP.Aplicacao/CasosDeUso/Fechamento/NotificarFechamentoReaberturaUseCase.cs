@@ -27,18 +27,15 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
-            if (filtro.FechamentoReabertura.EhParaUe())
-            {
-                var fechamentoReabertura = filtro.FechamentoReabertura;
-                await mediator.Send(new ExecutaNotificacaoFechamentoReaberturaCommand(fechamentoReabertura, fechamentoReabertura.Ue.CodigoUe, null));
-            }
+            if (filtro.EhParaUe)
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(filtro), new Guid(), null));
             else
             {
-                var verificarUesTipoCalendario = await mediator.Send(new ObterUEsComDREsPorModalidadeTipoCalendarioQuery(filtro.FechamentoReabertura.TipoCalendario.Modalidade, filtro.FechamentoReabertura.TipoCalendario.AnoLetivo));
+                var verificarUesTipoCalendario = await mediator.Send(new ObterUEsComDREsPorModalidadeTipoCalendarioQuery(filtro.Modalidades, filtro.AnoLetivo));
                 var agrupamentoUeporDre = verificarUesTipoCalendario.GroupBy(d => d.Dre.CodigoDre).ToDictionary(group => group.Key, group => group.ToList().Select(s => s.CodigoUe));
 
                 foreach (var valores in agrupamentoUeporDre)
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaDRE, new FiltroNotificacaoFechamentoReaberturaDREDto(valores.Key, valores.Value, filtro.FechamentoReabertura), new System.Guid(), filtro.Usuario));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaDRE, new FiltroNotificacaoFechamentoReaberturaDREDto(valores.Key, valores.Value, filtro), new Guid(), null));
             }
 
             return true;

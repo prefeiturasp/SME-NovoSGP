@@ -9,6 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PeriodoFechamentoBimestre>> ObterBimestreParaAlteracaoHierarquicaAsync(long periodoEscolarId, long? dreId, DateTime inicioDoFechamento, DateTime finalDoFechamento);
         Task<long> SalvarAsync(PeriodoFechamentoBimestre entidade);
         Task<PeriodoFechamentoBimestre> ObterPeridoFechamentoBimestrePorDreUeEData(ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataInicio, int bimestre, long? dreId, long? ueId);
-        Task<bool> ExistePeriodoFechamentoPorUePeriodoEscolar(long ueId, long periodoEscolarId);
+        Task<bool> ExistePeriodoFechamentoPorDataPeriodoEscolar(long periodoEscolarId, DateTime dataReferencia);
     }
 }

@@ -22,10 +22,11 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(NotificarPeriodoFechamentoUeCommand request, CancellationToken cancellationToken)
         {
             var ues = await ObterUEsPorModalidade(request.ModalidadeTipoCalendario);
+            var existeAbertura = await ExistePeriodoFechamentoCadastrado(request.PeriodoFechamentoBimestre, DateTime.Now);
 
             foreach (var ue in ues)
             {
-                if (!await ExistePeriodoFechamentoCadastrado(ue, request.PeriodoFechamentoBimestre))
+                if (existeAbertura)
                 {
                     try
                     {
@@ -74,8 +75,8 @@ namespace SME.SGP.Aplicacao
         private Cargo[] ObterCargosGestaoEscola()
             => new[] { Cargo.CP, Cargo.AD, Cargo.Diretor };
 
-        private async Task<bool> ExistePeriodoFechamentoCadastrado(Ue ue, PeriodoFechamentoBimestre periodoFechamentoBimestre)
-            => await mediator.Send(new ExistePeriodoFechmantoPorUePeriodoEscolarQuery(ue.Id, periodoFechamentoBimestre.PeriodoEscolarId));
+        private async Task<bool> ExistePeriodoFechamentoCadastrado(PeriodoFechamentoBimestre periodoFechamentoBimestre, DateTime dataReferencia)
+            => await mediator.Send(new ExistePeriodoFechmantoPorUePeriodoEscolarQuery(periodoFechamentoBimestre.PeriodoEscolarId, dataReferencia));
 
         private async Task<IEnumerable<Ue>> ObterUEsPorModalidade(ModalidadeTipoCalendario modalidadeTipoCalendario)
             => await mediator.Send(new ObterUEsPorModalidadeCalendarioQuery(modalidadeTipoCalendario));

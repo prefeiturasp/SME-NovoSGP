@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<TurmaEComponenteDto>> Handle(ObterTurmaEComponenteSemAvaliacaoNoPeriodoPorUeQuery request, CancellationToken cancellationToken)
-            => await repositorioAtividadeAvaliativa.ObterTurmaEComponenteSemAvaliacaoNoPeriodo(request.UeId, request.TipoCalendarioId, request.DataInicio, request.DataFim);
+            => await repositorioAtividadeAvaliativa.ObterTurmaEComponenteSemAvaliacaoNoPeriodo(request.TipoCalendarioId, request.DataInicio, request.DataFim);
     }
 }
