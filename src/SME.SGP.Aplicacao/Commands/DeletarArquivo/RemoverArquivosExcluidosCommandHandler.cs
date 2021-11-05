@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using SME.Background.Core.Exceptions;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections;
 using System.IO;

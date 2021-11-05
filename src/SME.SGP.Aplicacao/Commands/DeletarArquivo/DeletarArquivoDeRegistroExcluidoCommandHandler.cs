@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
 using System;
 using System.Collections;
@@ -39,13 +38,11 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
                     else
                     {
                         var mensagem = $"Arquivo Informado para exclusão não existe no caminho {alterarBarras} ";
-                        SentrySdk.CaptureMessage(mensagem, Sentry.Protocol.SentryLevel.Error);
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
-                    SentrySdk.CaptureMessage($"Falha ao deletar o arquivo {ex.Message} ");
-                    SentrySdk.CaptureException(ex);
+                    throw;
                 }
             }
 
