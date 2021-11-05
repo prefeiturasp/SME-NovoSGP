@@ -426,7 +426,7 @@ namespace SME.SGP.Dominio.Servicos
             return componentesTurma;
         }
 
-        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
+        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, bool consideraHistorico = false)
         {
             var conselhoClasseAluno = await ObterConselhoClasseAluno(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
@@ -437,7 +437,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
 
-            var parecerConclusivo = await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma);
+            var parecerConclusivo = await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma, consideraHistorico);
             conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
