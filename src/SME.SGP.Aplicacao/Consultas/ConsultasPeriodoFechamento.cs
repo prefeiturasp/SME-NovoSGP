@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(Turma turma, int bimestre, long? periodoEscolarId)
-            => await repositorioPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma.Ue.Id, turma.Ue.DreId, turma.AnoLetivo, bimestre, periodoEscolarId);
+            => await repositorioPeriodoFechamento.ObterPeriodoFechamentoTurma(turma.AnoLetivo, bimestre, periodoEscolarId);
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosComFechamentoEmAberto(long ueId)
             => await repositorioEventoFechamento.ObterPeriodosFechamentoEmAberto(ueId, DateTime.Now.Date);
