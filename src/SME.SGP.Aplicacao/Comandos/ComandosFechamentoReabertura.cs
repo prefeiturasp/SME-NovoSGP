@@ -42,23 +42,19 @@ namespace SME.SGP.Aplicacao
         {
             var Mensagens = new List<string>();
 
-            //var fechamentos = await repositorioFechamentoReabertura.ObterPorIds(ids);
-            //if (fechamentos == null || !fechamentos.Any())
-            //    throw new NegocioException("Não foram localizados fechamento(s) válido(s) para exclusão.");
-            //else
-            //{
-            //    foreach (var fechamento in fechamentos)
-            //    {
-            //        var mensagem = await servicoFechamentoReabertura.ExcluirAsync(fechamento);
-            //        if (!string.IsNullOrEmpty(mensagem))
-            //            Mensagens.Add(mensagem);
-            //    }
-            //}
+            var fechamentos = await repositorioFechamentoReabertura.ObterPorIds(ids);
+            if (fechamentos == null || !fechamentos.Any())
+                throw new NegocioException("Não foram localizados fechamento(s) válido(s) para exclusão.");
+            else
+            {
+                foreach (var fechamento in fechamentos)
+                {
+                    var mensagem = await servicoFechamentoReabertura.ExcluirAsync(fechamento);
+                    if (!string.IsNullOrEmpty(mensagem))
+                        Mensagens.Add(mensagem);
+                }
+            }
 
-            Mensagens.Add("Exclusão efetuada com sucesso.");
-            Mensagens.Add("Não foi possível excluir o fechamento de reabertura de código 12.");
-            Mensagens.Add("Não foi possível excluir o fechamento de reabertura de código 13.");
-            Mensagens.Add("Não foi possível excluir o fechamento de reabertura de código 14.");
             return string.Join(" <br />", Mensagens);
         }
 
