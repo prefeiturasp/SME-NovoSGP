@@ -66,7 +66,7 @@ namespace SME.SGP.Dominio.Servicos
         private ConselhoClasseParecerConclusivo ObterParecerValidacao(bool retornoValidacao)
             => pareceresDoServico.FirstOrDefault(c => c.Aprovado == retornoValidacao);
 
-        public async Task<ConselhoClasseParecerConclusivo> Calcular(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
+        public async Task<ConselhoClasseParecerConclusivo> Calcular(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma, bool consideraHistorico = false)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
@@ -74,14 +74,15 @@ namespace SME.SGP.Dominio.Servicos
 
             if (turma.DeveVerificarRegraRegulares())
             {
-                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
+                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };                
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico));
             }
             else
             {
                 turmasCodigos = new string[1] { turma.CodigoTurma };
             }
+
             // Frequencia
             Filtrar(pareceresDaTurma.Where(c => c.Frequencia), "Frequência");
             if (!await ValidarParecerPorFrequencia(alunoCodigo, turma, turmasCodigos))
