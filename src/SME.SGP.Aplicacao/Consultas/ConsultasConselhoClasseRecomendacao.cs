@@ -170,7 +170,8 @@ namespace SME.SGP.Aplicacao
             consultasConselhoClasseRecomendacaoConsultaDto.Auditoria = auditoria;
             consultasConselhoClasseRecomendacaoConsultaDto.RecomendacaoAluno = recomendacaoAluno.ToString();
             consultasConselhoClasseRecomendacaoConsultaDto.RecomendacaoFamilia = recomendacaoFamilia.ToString();
-            consultasConselhoClasseRecomendacaoConsultaDto.SomenteLeitura = !emFechamento || !turmasComMatriculasValidas.Any();
+            consultasConselhoClasseRecomendacaoConsultaDto.SomenteLeitura = !emFechamento;
+            consultasConselhoClasseRecomendacaoConsultaDto.MatriculaAtiva = turmasComMatriculasValidas.Any();
 
             return consultasConselhoClasseRecomendacaoConsultaDto;
         }
