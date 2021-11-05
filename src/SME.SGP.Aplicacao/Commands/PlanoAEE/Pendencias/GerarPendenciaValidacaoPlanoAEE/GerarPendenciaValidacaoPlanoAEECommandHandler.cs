@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new GerarPendenciaPlanoAEECommand(planoAEE.Id, usuarios, titulo, descricao));
 
-            return false;
+            return true;
         }
         private async Task<List<string>> ObterFuncionarios(string codigoUe)
         {

@@ -1112,7 +1112,8 @@ namespace SME.SGP.Dados.Repositorios
                             e.ue_id,
                             e.dre_id,
                             e.nome,
-                            e.feriado_id                       
+                            e.feriado_id,
+                            e.tipo_evento_id TipoEventoId
                         from
 	                        evento e
                                 inner join tipo_calendario tc

@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +9,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosConselhoClasseAluno
     {
-        Task<AuditoriaConselhoClasseAlunoDto> SalvarAsync(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto);
+        Task<ConselhoClasseAluno> SalvarAsync(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto);
         Task<ParecerConclusivoDto> GerarParecerConclusivoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo);
     }
 }
