@@ -1,15 +1,10 @@
 ﻿using MediatR;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Sentry;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,9 +42,9 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureException(ex);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do calendário da UE.", LogNivel.Negocio, LogContexto.Aula, ex.Message));
                 return false;
-            }        
+            }
         }
 
         private async Task VerificaPendenciasAulaDiasNaoLetivos(long tipoCalendarioId, ModalidadeTipoCalendario modalidadeCalendario, int anoAtual)
@@ -101,8 +96,9 @@ namespace SME.SGP.Aplicacao
                     }
                     catch (Exception ex)
                     {
-                        SentrySdk.CaptureException(ex);
-                    }                }
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do calendário da UE.", LogNivel.Negocio, LogContexto.Aula, ex.Message));
+                    }
+                }
             }
         }
 

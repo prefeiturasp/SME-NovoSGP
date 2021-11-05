@@ -1,6 +1,5 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
-using Sentry;
 using System;
 using System.Collections.Generic;
 
@@ -17,24 +16,18 @@ namespace SME.SGP.Infra
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
-            sentryDSN = configuration.GetSection("Sentry:DSN").Value;
+
             this.insightsClient = insightsClient ?? throw new ArgumentNullException(nameof(insightsClient));
         }
 
         public void Registrar(string mensagem)
         {
-            using (SentrySdk.Init(sentryDSN))
-            {
-                SentrySdk.CaptureMessage(mensagem);
-            }
+
         }
 
         public void Registrar(Exception ex)
         {
-            using (SentrySdk.Init(sentryDSN))
-            {
-                SentrySdk.CaptureException(ex);
-            }
+
         }
 
         public void RegistrarAppInsights(string evento, string mensagem)

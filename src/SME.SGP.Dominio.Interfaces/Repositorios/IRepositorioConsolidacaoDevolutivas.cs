@@ -12,5 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task LimparConsolidacaoDevolutivasPorAno(int anoLetivo);
         Task<bool> ExisteConsolidacaoDevolutivaTurmaPorAno(int ano);
+        Task<IEnumerable<GraficoBaseDto>> ObterTotalDevolutivasPorDre(int anoLetivo, string ano);
     }
 }

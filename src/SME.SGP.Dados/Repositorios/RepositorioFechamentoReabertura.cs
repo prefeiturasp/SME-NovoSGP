@@ -198,7 +198,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<FechamentoReabertura> ObterReaberturaFechamentoBimestrePorDataReferencia(int bimestre, DateTime dataReferencia, long tipoCalendarioId, string dreCodigo, string ueCodigo)
+        public async Task<FechamentoReabertura> ObterReaberturaFechamentoBimestrePorDataReferencia(int bimestre, DateTime dataReferencia, long tipoCalendarioId)
         {
             var bimetreQuery = "(select pe.bimestre from periodo_escolar pe inner join tipo_calendario tc on tc.id  = pe.tipo_calendario_id and tc.id = fr.tipo_calendario_id order by pe.bimestre  desc limit 1)";
             var bimestreWhere = $"and frb.bimestre = {(bimestre > 0 ? " @bimestre" : bimetreQuery)}";
@@ -206,24 +206,20 @@ namespace SME.SGP.Dados.Repositorios
             var query = $@"select fr.* 
                           from fechamento_reabertura_bimestre frb
                          inner join fechamento_reabertura fr on fr.id = frb.fechamento_reabertura_id
-                         inner join dre on dre.id = fr.dre_id
-                         inner join ue on ue.id = fr.ue_id
                          where not fr.excluido 
                           {bimestreWhere}
                            and TO_DATE(fr.inicio::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
                            and TO_DATE(fr.fim::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
                            and fr.tipo_calendario_id = @tipoCalendarioId
-                           and dre.dre_id = @dreCodigo
-                           and ue.ue_id = @ueCodigo
+                           and fr.dre_id is null
+                           and fr.ue_id is null
                            and fr.status = 1 ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoReabertura>(query, new
             {
                 bimestre,
                 dataReferencia = dataReferencia.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
-                tipoCalendarioId,
-                dreCodigo,
-                ueCodigo
+                tipoCalendarioId
             });
         }
 

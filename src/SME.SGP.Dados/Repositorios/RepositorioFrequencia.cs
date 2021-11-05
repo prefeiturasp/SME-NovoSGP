@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -150,17 +149,9 @@ namespace SME.SGP.Dados.Repositorios
 	                        and a.turma_id = @turmaId
 	                        and a.disciplina_id = @disciplinaId";
 
-            IEnumerable<AulasPorTurmaDisciplinaDto> lista = new List<AulasPorTurmaDisciplinaDto>();
-            try
-            {
-                lista = database.Conexao.Query<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId, tipoNotificacao });
-            }
-            catch (Exception ex)
-            {
-                SentrySdk.CaptureEvent(new SentryEvent(ex));
-                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"ObterAulasSemRegistroFrequencia - {turmaId} - {disciplinaId}")));
-            }
-            return lista;
+
+            return database.Conexao.Query<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId, tipoNotificacao });
+
         }
 
         public async Task<IEnumerable<AusenciaAlunoDto>> ObterAusencias(string turmaCodigo, string disciplinaCodigo, DateTime[] datas, string[] alunoCodigos)

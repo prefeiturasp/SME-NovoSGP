@@ -87,8 +87,8 @@ namespace SME.SGP.Aplicacao
                                 await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, fechamentoItemDto.Nota.Value, fechamentoNota.Id));
                         }
                         else
-                        if (fechamentoNota.ConceitoId.Value != fechamentoItemDto.ConceitoId.Value)
-                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId.Value, fechamentoItemDto.ConceitoId.Value, fechamentoNota.Id));
+                        if (fechamentoNota.ConceitoId != fechamentoItemDto.ConceitoId)
+                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, fechamentoItemDto.ConceitoId, fechamentoNota.Id));
                     }
 
                     MapearParaEntidade(fechamentoNota, fechamentoItemDto, fechamentoAluno);

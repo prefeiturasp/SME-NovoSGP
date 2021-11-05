@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterFrequenciaAluno(IEnumerable<FrequenciaAlunoSimplificadoDto> frequenciaAlunos, string codigoAluno, int numeroAula, TipoFrequencia tipoFrequenciaPreDefinida)
         {
-            var tipoFrequencia = frequenciaAlunos.FirstOrDefault(a => a.NumeroAula == numeroAula && a.CodigoAluno == codigoAluno)?.TipoFrequencia;
+            var tipoFrequencia = frequenciaAlunos.FirstOrDefault(a => a.NumeroAula == numeroAula && a.CodigoAluno == codigoAluno && a.TipoFrequencia > 0)?.TipoFrequencia;
             if (tipoFrequencia.HasValue)
                 return tipoFrequencia.ShortName();
             return tipoFrequenciaPreDefinida.ShortName();

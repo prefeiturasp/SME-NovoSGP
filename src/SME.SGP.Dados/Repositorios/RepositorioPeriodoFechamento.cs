@@ -89,9 +89,9 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { ueId, dreId, anoLetivo, bimestre, periodoEscolarId });
         }
 
-        public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? dreId, long? ueId, long? turmaId)
+        public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId)
         {
-            var query = new StringBuilder("select f.*,fb.*,p.*, t.*, d.*,u.*");
+            var query = new StringBuilder("select f.*,fb.*,p.*, t.*");
             query.AppendLine("from");
             query.AppendLine("periodo_fechamento f");
             query.AppendLine("inner join periodo_fechamento_bimestre fb on");
@@ -100,8 +100,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("fb.periodo_escolar_id = p.id");
             query.AppendLine("inner join tipo_calendario t on");
             query.AppendLine("p.tipo_calendario_id = t.id");
-            query.AppendLine("left join dre d on f.dre_id = d.id");
-            query.AppendLine("left join ue u on f.ue_id = u.id");
             if (turmaId.HasValue)
                 query.AppendLine("join turma tu on tu.ue_id = u.id");
             query.AppendLine("where 1=1");
@@ -109,20 +107,15 @@ namespace SME.SGP.Dados.Repositorios
             if (tipoCalendarioId.HasValue)
                 query.AppendLine("and p.tipo_calendario_id = @tipoCalendarioId");
 
-            if (dreId.HasValue)
-                query.AppendLine("and f.dre_id = @dreId");
-            else query.AppendLine("and f.dre_id is null");
-
-            if (ueId.HasValue)
-                query.AppendLine("and f.ue_id = @ueId");
-            else query.AppendLine("and f.ue_id is null");
+            query.AppendLine("and f.dre_id is null");
+            query.AppendLine("and f.ue_id is null");
 
             if (turmaId.HasValue)
                 query.AppendLine("and tu.id = @turmaId");
 
             var lookup = new Dictionary<long, PeriodoFechamento>();
 
-            var lista = database.Conexao.Query<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, Dre, Ue, PeriodoFechamento>(query.ToString(), (fechamento, fechamentoBimestre, periodoEscolar, tipoCalendario, dre, ue) =>
+            var lista = database.Conexao.Query<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, PeriodoFechamento>(query.ToString(), (fechamento, fechamentoBimestre, periodoEscolar, tipoCalendario) =>
                {
                    PeriodoFechamento periodoFechamento;
                    if (!lookup.TryGetValue(fechamento.Id, out periodoFechamento))
@@ -134,14 +127,10 @@ namespace SME.SGP.Dados.Repositorios
                    periodoEscolar.AdicionarTipoCalendario(tipoCalendario);
                    fechamentoBimestre.AdicionarPeriodoEscolar(periodoEscolar);
                    periodoFechamento.AdicionarFechamentoBimestre(fechamentoBimestre);
-                   periodoFechamento.AdicionarDre(dre);
-                   periodoFechamento.AdicionarUe(ue);
                    return periodoFechamento;
                }, new
                {
                    tipoCalendarioId,
-                   dreId,
-                   ueId,
                    turmaId
                });
             return lookup.Values.FirstOrDefault();
@@ -215,21 +204,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PeriodoFechamentoBimestre>> ObterPeriodosFechamentoBimestrePorDataFinal(int modalidade, DateTime dataEncerramento)
         {
-            var query = @"select pf.*, ue.*, dre.*, pfb.*, pe.*
+            var query = @"select pf.*, pfb.*, pe.*
                           from periodo_fechamento pf
-                         inner join ue on ue.id = pf.ue_id
-                         inner join dre on dre.id = ue.dre_id
                          inner join periodo_fechamento_bimestre pfb on pfb.periodo_fechamento_id = pf.id
                          inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
                          inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id
                          where pfb.final_fechamento = @dataEncerramento
                            and tc.modalidade = @modalidade";
 
-            return await database.Conexao.QueryAsync<PeriodoFechamento, Ue, Dre, PeriodoFechamentoBimestre, PeriodoEscolar, PeriodoFechamentoBimestre>(query,
-                (periodoFechamento, ue, dre, periodoFechamentoBimestre, periodoEscolar) =>
+            return await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, PeriodoFechamentoBimestre>(query,
+                (periodoFechamento, periodoFechamentoBimestre, periodoEscolar) =>
                 {
-                    ue.AdicionarDre(dre);
-                    periodoFechamento.Ue = ue;
                     periodoFechamentoBimestre.PeriodoFechamento = periodoFechamento;
                     periodoFechamentoBimestre.PeriodoEscolar = periodoEscolar;
 
@@ -239,22 +224,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PeriodoFechamentoBimestre>> ObterPeriodosFechamentoBimestrePorDataInicio(int modalidade, DateTime dataAbertura)
         {
-            var query = @"select pf.*, ue.*, dre.*, pfb.*, pe.*
-                          from periodo_fechamento pf
-                         inner join ue on ue.id = pf.ue_id
-                         inner join dre on dre.id = ue.dre_id
+            var query = @"select pf.*,pfb.*, pe.*
+                          from periodo_fechamento pf                         
                          inner join periodo_fechamento_bimestre pfb on pfb.periodo_fechamento_id = pf.id
                          inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
                          inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id
                          where pfb.inicio_fechamento = @dataAbertura
                            and tc.modalidade = @modalidade";
 
-            return await database.Conexao.QueryAsync<PeriodoFechamento, Ue, Dre, PeriodoFechamentoBimestre, PeriodoEscolar, PeriodoFechamentoBimestre>(query,
-                (periodoFechamento, ue, dre, periodoFechamentoBimestre, periodoEscolar) =>
+            return await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, PeriodoFechamentoBimestre>(query,
+                (periodoFechamento,periodoFechamentoBimestre, periodoEscolar) =>
                 {
-                    ue.AdicionarDre(dre);
-                    periodoFechamento.Dre = dre;
-                    periodoFechamento.Ue = ue;
                     periodoFechamentoBimestre.PeriodoFechamento = periodoFechamento;
                     periodoFechamentoBimestre.PeriodoEscolar = periodoEscolar;
 

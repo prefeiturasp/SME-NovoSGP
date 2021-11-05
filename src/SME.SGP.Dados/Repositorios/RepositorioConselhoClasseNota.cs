@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Text;
+using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -215,6 +216,59 @@ namespace SME.SGP.Dados.Repositorios
                 ) x ";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, ueCodigo, turmaCodigo, bimestres });
+        }
+
+        public async Task<double> VerificaNotaConselhoEmAprovacao(long conselhoClasseNotaId)
+        {
+            var query = $@"select coalesce(coalesce(wf.nota, wf.conceito_id),-1) from wf_aprovacao_nota_conselho wf 
+                                where wf.conselho_classe_nota_id = @conselhoClasseNotaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<double>(query, new {conselhoClasseNotaId});
+
+        }
+
+        public async Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoWf(long workFlowId)
+        {
+            var query = @"select w.*, n.*, cca.*, cc.*, ft.*
+                            from wf_aprovacao_nota_conselho w
+                          inner join conselho_classe_nota n on n.id = w.conselho_classe_nota_id 
+                          inner join conselho_classe_aluno cca on cca.id = n.conselho_classe_aluno_id
+                          inner join conselho_classe cc on cc.id = cca.conselho_classe_id
+                          inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id
+                          where w.wf_aprovacao_id = @workFlowId";
+
+            return (await database.Conexao.QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, ConselhoClasseAluno, ConselhoClasse, FechamentoTurma, WFAprovacaoNotaConselho>(query
+                , (wfAprovacaoNota, conselhoNota, conselhoClasseAluno, conselhoClasse, fechamentoTurma) =>
+                {
+                    conselhoClasse.FechamentoTurma = fechamentoTurma;
+                    conselhoClasseAluno.ConselhoClasse = conselhoClasse;
+                    conselhoNota.ConselhoClasseAluno = conselhoClasseAluno;
+                    wfAprovacaoNota.ConselhoClasseNota = conselhoNota;
+                    return wfAprovacaoNota;
+                }
+                , new { workFlowId })).FirstOrDefault();
+        }
+
+        public async Task<int> ObterBimestreEmAprovacaoWf(long workFlowId)
+        {
+            var query = @"select coalesce(pe.bimestre,0)
+                            from wf_aprovacao_nota_conselho w
+                          inner join conselho_classe_nota n on n.id = w.conselho_classe_nota_id 
+                          inner join conselho_classe_aluno a on a.id = n.conselho_classe_aluno_id
+                          inner join conselho_classe cc on cc.id = a.conselho_classe_id 
+                          inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id 
+                          left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
+                          where w.wf_aprovacao_id = @workFlowId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query
+                , new { workFlowId });
+        }
+
+        public async Task Excluir(long id)
+        {
+            var query = @"delete from conselho_classe_nota where id = @id";
+
+            await database.Conexao.ExecuteScalarAsync(query, new { id });
         }
     }
 }

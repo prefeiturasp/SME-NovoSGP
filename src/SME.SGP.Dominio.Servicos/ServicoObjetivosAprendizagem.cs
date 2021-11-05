@@ -1,6 +1,8 @@
-﻿using Sentry;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
@@ -11,6 +13,7 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoObjetivosAprendizagem : IServicoObjetivosAprendizagem
     {
         private readonly IRepositorioCache repositorioCache;
+        private readonly IMediator mediator;
         private readonly IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IServicoJurema servicoJurema;
@@ -18,12 +21,14 @@ namespace SME.SGP.Dominio.Servicos
         public ServicoObjetivosAprendizagem(IServicoJurema servicoJurema,
                                             IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
-                                            IRepositorioCache repositorioCache)
+                                            IRepositorioCache repositorioCache,
+                                            IMediator mediator)
         {
             this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
             this.repositorioObjetivoAprendizagem = repositorioObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagem));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task SincronizarObjetivosComJurema()
@@ -97,7 +102,10 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
             else
-                SentrySdk.CaptureException(new NegocioException("Parâmetro 'DataUltimaAtualizacaoObjetivosJurema' não encontrado na base de dados, os objetivos de aprendizagem não serão atualizados."));
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand("Parâmetro 'DataUltimaAtualizacaoObjetivosJurema' não encontrado na base de dados, os objetivos de aprendizagem não serão atualizados.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
+            }
+                
         }
 
         private static void MapearParaObjetivoDominio(ObjetivoAprendizagemResposta objetivo, ObjetivoAprendizagem objetivoBase)

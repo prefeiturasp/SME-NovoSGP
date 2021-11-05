@@ -41,6 +41,8 @@
         public const string RotaNotificacaoAndamentoFechamento = "sgp.fechamento.andamento.notificar";
 
         public const string RotaNotificacaoInicioFimPeriodoFechamento = "sgp.fechamento.iniciofim.periodo.notificar";
+        public const string RotaNotificacaoInicioPeriodoFechamentoUE = "sgp.fechamento.inicio.periodo.notificar.ue";
+        public const string RotaNotificacaoFimPeriodoFechamentoUE = "sgp.fechamento.fim.periodo.notificar.ue";
         public const string RotaGeracaoPendenciasFechamento = "sgp.fechamento.pendencias.gerar";
                
         public const string RotaNotificacaoResultadoInsatisfatorio = "sgp.notificacao.nova.resultado.insatisfatorio";
@@ -120,6 +122,11 @@
         public const string ConsolidarDevolutivasPorTurma = "sgp.consolidacao.devolutivas.turma";
         public const string ConsolidarDevolutivasPorTurmaInfantil = "sgp.consolidacao.devolutivas.turma.infantil";
 
+        public const string ConsolidarDiariosBordoCarregar = "sgp.consolidacao.diarios.bordo.carregar";
+        public const string ConsolidarDiariosBordoPorUeTratar = "sgp.consolidacao.diarios.bordo.ue.tratar";
+
+        public const string ConsolidarRegistrosPedagogicosPorUeTratar = "sgp.consolidacao.registros.pedagogicos.ue.tratar";
+
         public const string CarregarDadosUeTurmaRegenciaAutomaticamente = "aulas.automaticas.regencia.ue.turma.carregar";
         public const string SincronizarDadosUeTurmaRegenciaAutomaticamente = "aulas.automaticas.regencia.ue.turma.sync";
         public const string SincronizarAulasRegenciaAutomaticamente = "aulas.automaticas.regencia.sync";
@@ -132,6 +139,8 @@
         public const string ConsolidarAcompanhamentoAprendizagemAlunoPorUE = "sgp.sincronizacao.acompanhamento.aprendizado.aluno.ue";
         public const string ConsolidarAcompanhamentoAprendizagemAlunoTratar = "sgp.sincronizacao.acompanhamento.aprendizado.aluno.tratar";
 
+        public const string ConsolidarRegistrosPedagogicos = "sgp.consolidacao.registros.pedagogicos";
+
         public const string RotaMuralAvisosSync = "sgp.mural.avisos.sync";
         public const string RotaAtividadesSync = "sgp.atividade.avaliativa.sync";
         public const string RotaAtividadesNotasSync = "sgp.atividade.avaliativa.notas.sync";
@@ -139,12 +148,14 @@
         public const string RotaAgendamentoTratar = "sgp.agendamento.tratar";
 
         public const string RotaRelatoriosProntos = "sgp.relatorios.prontos.notificar";
+        public const string RotaRelatoriosProntosApp = "sgp.relatorio.app.pronto.notificar";
         public const string RotaRelatorioCorrelacaoCopiar = "sgp.relatorios.correlacao.copiar";
         public const string RotaRelatorioCorrelacaoInserir = "sgp.relatorios.correlacao.inserir";
         
         public const string RotaRelatorioComErro = "sgp.relatorios.erro.notificar";
         public const string RotaRelatoriosComErroBoletim = "sgp.relatorios.erro.notificar.boletim";
         public const string RotaRelatoriosComErroBoletimDetalhado = "sgp.relatorios.erro.notificar.boletimdetalhado";
+        public const string RotaRelatoriosComErroBoletimDetalhadoApp = "sgp.relatorios.app.erro.notificar.boletimdetalhado";
         public const string RotaRelatoriosComErroPlanoDeAula = "sgp.relatorios.erro.notificar.planodeaula";
         public const string RotaRelatoriosComErroRegistroIndividual = "sgp.relatorios.erro.notificar.registroindividual";
         public const string RotaRelatoriosComErroConselhoDeClasse = "sgp.relatorios.erro.notificar.conselhodeclasse";
@@ -172,6 +183,7 @@
         public const string RotaRelatoriosComErroAtaFinalResultados = "sgp.relatorios.erro.notificar.atafinalresultados";
         public const string RotaRelatoriosComErroHistoricoEscolar = "sgp.relatorios.erro.notificar.historicoescolar";
         public const string RotaRelatoriosComErroAtaBimestral = "sgp.relatorios.erro.notificar.atabimestralresultados";
+        public const string RotaRelatoriosComErroRelatorioAcompanhamentoRegistrosPedagogicos = "sgp.relatorios.erro.notificar.relatorioacompanhamentoregistrospedagogicos";
 
         public const string RotaRabbitSRDeadletterTratar = "sgp.sr.rabbit.deadletter.tratar";
         public const string RotaRabbitSRDeadletterSync = "sgp.sr.rabbit.deadletter.sync";
@@ -184,5 +196,32 @@
         public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";
 
         public const string VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes = "sgp.fechamento.turma.disciplina.processamento.varredura";
+        public const string NotificacaoFrequencia = "sgp.notificacoes.frequencia";
+        public const string ExecutarTipoCalendario = "sgp.executar.tipo.calendario";
+        public const string ExecutarGravarRecorrencia = "sgp.executar.gravar.recorrencia";
+        public const string NotificarCompensacaoAusencia = "sgp.notificar.compensacao.ausencia";
+        public const string GerarNotificacaoAlteracaoLimiteDias = "sgp.gerar.notificacao.alteracao.limite.dias";
+        public const string VerificarPendenciasFechamentoTurmaDisciplina = "sgp.verificar.pendencias.fechamento.turma.disciplina";
+        public const string AlterarPeriodosComHierarquiaInferiorFechamento = "sgp.alterar.periodo.hierarquia.inferior.fechamento";
+        public const string AlterarRecorrenciaEventos = "sgp.alterar.recorrencia.eventos";
+        
+
+        public const string NotifificarRegistroFrequencia = "sgp.registro.frequencia.notificacao";
+        public const string SincronizarObjetivosComJurema = "sgp.sincronizar.objetivos.com.jurema";
+        public const string NotificarAlunosFaltososBimestre = "sgp.alunos.faltosos.bimestre.notificacao";
+        public const string NotificacoesNiveisCargos = "sgp.notificacoes.nivel.cargos";
+        public const string SincronizarComponentesCurriculares = "sgp.sincronizar.componentes.curriculares";
+        public const string SincronizarComponentesCurricularesEol = "sgp.sincronizar.componentes.curriculares.eol";
+        public const string SyncGeralGoogleClassroom = "sgp.sync.geral.google.classroom";
+        public const string SyncGsaGoogleClassroom = "sgp.sync.gsa.google.classroom";
+        public const string SyncSerapEstudantesProvas = "sgp.sync.serap.estudantes.provas";
+        public const string TratarNotificacoesNiveisCargos = "sgp.tratar.notificacoes.niveis.cargos";
+        public const string PendenciasGerais = "sgp.pendencias.gerais";
+
+        public const string NotificacaoPeriodoFechamentoReaberturaIniciando = "sgp.periodo.fechamento.reabertura.iniciando";
+        public const string NotificacaoPeriodoFechamentoReaberturaEncerrando = "sgp.periodo.fechamento.reabertura.encerrando";
+        public const string NotificacaoPeriodoFechamentoReaberturaUE = "sgp.periodo.fechamento.reabertura.ue";
+
+        public const string RotaLogs = "ApplicationLog";
     }
 }

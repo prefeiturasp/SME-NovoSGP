@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using Dommel;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -472,7 +471,6 @@ namespace SME.SGP.Dados.Repositorios
             catch (Exception ex)
             {
                 var erro = new Exception("Erro ao atualizar ou excluir turmas extintas", ex);
-                SentrySdk.CaptureException(erro);
                 transacao.Rollback();
             }
         }
@@ -918,8 +916,7 @@ namespace SME.SGP.Dados.Repositorios
             }
             catch (Exception ex)
             {
-                var erro = new Exception("Erro ao atualizar ou excluir turmas extintas", ex);
-                SentrySdk.CaptureException(erro);
+                var erro = new Exception("Erro ao atualizar ou excluir turmas extintas", ex);                
                 transacao.Rollback();
             }
         }
@@ -1292,7 +1289,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.Conexao.QueryAsync<TurmaModalidadeCodigoDto>(query, new { turmasCodigo });
         }
-        
+
         public async Task<IEnumerable<TurmaDTO>> ObterTurmasInfantilPorAno(int anoLetivo, string ueCodigo)
         {
             var query = @"select t.id as turmaId 

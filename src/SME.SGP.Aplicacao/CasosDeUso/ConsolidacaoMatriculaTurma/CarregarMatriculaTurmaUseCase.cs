@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -15,24 +14,13 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            try
-            {
-                var ue = mensagem.ObterObjetoMensagem<FiltroConsolidacaoMatriculaUeDto>();
-                var anoAtual = DateTime.Now.Year;
+            var ue = mensagem.ObterObjetoMensagem<FiltroConsolidacaoMatriculaUeDto>();
+            var anoAtual = DateTime.Now.Year;
 
-                await ConsolidarMatriculasTurmasAnoAtual(anoAtual, ue.UeCodigo);
-                if(ue.AnosAnterioresParaConsolidar.Any()) await ConsolidarFrequenciaTurmasHistorico(ue.AnosAnterioresParaConsolidar, ue.UeCodigo);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                SentrySdk.CaptureException(ex);
-                throw;
-            }
+            await ConsolidarMatriculasTurmasAnoAtual(anoAtual, ue.UeCodigo);
+            if (ue.AnosAnterioresParaConsolidar.Any()) await ConsolidarFrequenciaTurmasHistorico(ue.AnosAnterioresParaConsolidar, ue.UeCodigo);
+            return true;
         }
-
-
-
         private async Task ConsolidarMatriculasTurmasAnoAtual(int anoAtual, string codigoUe)
         {
             var matriculasConsolidadas = await mediator.Send(new ObterMatriculasConsolidacaoPorAnoQuery(anoAtual, codigoUe));
@@ -42,16 +30,9 @@ namespace SME.SGP.Aplicacao
 
                 // Se a turma não existir no SGP não gera consolidação
                 if (turmaId > 0)
-                { 
-                    try
-                    {
-                        matricula.TurmaId = turmaId;
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasSync, matricula, Guid.NewGuid(), null));
-                    }
-                    catch (Exception ex)
-                    {
-                        SentrySdk.CaptureException(ex);
-                    }
+                {
+                    matricula.TurmaId = turmaId;
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasSync, matricula, Guid.NewGuid(), null));
                 }
             }
         }
@@ -70,14 +51,9 @@ namespace SME.SGP.Aplicacao
                     if (turmaId > 0)
                     {
                         matricula.TurmaId = turmaId;
-                        try
-                        {
-                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasSync, matricula, new Guid(), null));
-                        }
-                        catch (Exception ex)
-                        {
-                            SentrySdk.CaptureException(ex);
-                        }
+
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasSync, matricula, new Guid(), null));
+
                     }
                 }
             }
