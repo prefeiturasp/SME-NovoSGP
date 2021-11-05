@@ -40,9 +40,9 @@
         public const string RotaExecutaAtualizacaoSituacaoConselhoClasse = "sgp.conselho.classe.situacao.atualizar";
         public const string RotaNotificacaoAndamentoFechamento = "sgp.fechamento.andamento.notificar";
 
-        public const string RotaNotificacaoInicioFimPeriodoFechamento = "sgp.fechamento.iniciofim.periodo.notificar";
-        public const string RotaNotificacaoInicioPeriodoFechamentoUE = "sgp.fechamento.inicio.periodo.notificar.ue";
-        public const string RotaNotificacaoFimPeriodoFechamentoUE = "sgp.fechamento.fim.periodo.notificar.ue";
+        public const string RotaNotificacaoInicioFimPeriodoFechamento = "sgp.fechamento.abertura.iniciofim.periodo.notificar";
+        public const string RotaNotificacaoInicioPeriodoFechamentoUE = "sgp.fechamento.abertura.inicio.periodo.notificar.ue";
+        public const string RotaNotificacaoFimPeriodoFechamentoUE = "sgp.fechamento.abertura.fim.periodo.notificar.ue";
         public const string RotaGeracaoPendenciasFechamento = "sgp.fechamento.pendencias.gerar";
                
         public const string RotaNotificacaoResultadoInsatisfatorio = "sgp.notificacao.nova.resultado.insatisfatorio";
