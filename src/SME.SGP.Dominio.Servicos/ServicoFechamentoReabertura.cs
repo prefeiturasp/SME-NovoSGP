@@ -135,17 +135,18 @@ namespace SME.SGP.Dominio.Servicos
                             await ExcluirVinculosAysnc(fechamentoReaberturaParaExcluir);
                     }
                 }
+                unitOfWork.PersistirTransacao();
             }
             catch (NegocioException nEx)
             {
+                unitOfWork.Rollback();
                 return nEx.Message;
             }
             catch (Exception)
             {
+                unitOfWork.Rollback();
                 return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}";
             }
-
-            unitOfWork.PersistirTransacao();
 
             return "Exclusão efetuada com sucesso.";
         }
