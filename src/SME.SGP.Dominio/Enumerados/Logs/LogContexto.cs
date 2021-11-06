@@ -26,6 +26,7 @@
         WorkerRabbit = 22,
         ConsolidacaoMatricula = 23,
         ConselhoClasse = 24,
-        Infantil = 25
+        Infantil = 25,
+        Arquivos = 26
     }
 }
