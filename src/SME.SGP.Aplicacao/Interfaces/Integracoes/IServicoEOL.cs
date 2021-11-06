@@ -96,6 +96,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor, bool incluirEmei);
 
         Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo, string professorRf = null);
+        Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesPorTurmas(IEnumerable<string> codigosTurmas);
 
         Task<string> ObterNomeProfessorPeloRF(string rfProfessor);
         Task<UsuarioResumoCoreDto> ObterResumoCore(string login);
