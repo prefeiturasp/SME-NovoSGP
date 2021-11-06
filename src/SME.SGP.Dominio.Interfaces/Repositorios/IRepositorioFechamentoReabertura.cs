@@ -9,6 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<FechamentoReabertura> ObterPorDataTurmaCalendarioAsync(long ueId, DateTime dataReferencia, long tipoCalendarioId);
         void ExcluirBimestres(long id);
+        void ExcluirBimestre(long fechamentoReaberturaId, long bimestreId);
 
         Task ExcluirVinculoDeNotificacoesAsync(long fechamentoReaberturaId);
 
@@ -20,14 +21,13 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<FechamentoReaberturaNotificacao>> ObterNotificacoes(long id);
 
-        Task<FechamentoReabertura> ObterPorTurma(long turmaId);
-
         Task SalvarBimestreAsync(FechamentoReaberturaBimestre fechamentoReabertura);
 
         Task SalvarNotificacaoAsync(FechamentoReaberturaNotificacao fechamentoReaberturaNotificacao);
 
         Task<IEnumerable<FechamentoReabertura>> ObterReaberturaFechamentoBimestre(int bimestre, DateTime dataInicio, DateTime dataFim, long tipoCalendarioId, string dreCodigo, string ueCodigo);
 
-        Task<FechamentoReabertura> ObterReaberturaFechamentoBimestrePorDataReferencia(int bimestre, DateTime dataReferencia, long tipoCalendarioId);
+        Task<FechamentoReabertura> ObterReaberturaFechamentoBimestrePorDataReferencia(int bimestre, DateTime dataReferencia, long tipoCalendarioId, string dreCodigo, string ueCodigo);
+        Task<IEnumerable<FechamentoReabertura>> ObterPorIds(long[] ids);
     }
 }

@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("consolidacao_registros_pedagogicos");
             Map(a => a.TurmaId).ToColumn("turma_id");
             Map(a => a.AnoLetivo).ToColumn("ano_letivo");
-            Map(a => a.ComponenteId).ToColumn("componente_curricular_id");
+            Map(a => a.ComponenteCurricularId).ToColumn("componente_curricular_id");
             Map(a => a.NomeProfessor).ToColumn("nome_professor");
             Map(a => a.RFProfessor).ToColumn("rf_professor");
             Map(a => a.FrequenciasPendentes).ToColumn("frequencias_pendentes");

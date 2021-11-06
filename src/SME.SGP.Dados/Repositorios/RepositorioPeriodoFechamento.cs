@@ -68,7 +68,7 @@ namespace SME.SGP.Dados.Repositorios
             return lookup.Select( a => a.Value).FirstOrDefault();
         }
 
-        public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(long ueId, long dreId, int anoLetivo, int bimestre, long? periodoEscolarId)
+        public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurma(int anoLetivo, int bimestre, long? periodoEscolarId)
         {
             var validacaoBimestre = bimestre == 0 ? "order by pe.bimestre desc limit 1" : "and pe.bimestre = @bimestre";
             var validacaoPeriodo = periodoEscolarId.HasValue ? "and pe.id = @periodoEscolarId" : "";
@@ -78,15 +78,13 @@ namespace SME.SGP.Dados.Repositorios
                          inner join periodo_fechamento_bimestre pfb on pfb.periodo_fechamento_id = pf.id
                          inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
                          inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
-                         where pf.ue_id = @ueId
-                           and pf.dre_id = @dreId 
-                           and tc.ano_letivo  = @anoLetivo
+                         where tc.ano_letivo  = @anoLetivo
                             {validacaoPeriodo} 
                             {validacaoBimestre}";
 
 
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { ueId, dreId, anoLetivo, bimestre, periodoEscolarId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { anoLetivo, bimestre, periodoEscolarId });
         }
 
         public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId)
@@ -101,7 +99,12 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner join tipo_calendario t on");
             query.AppendLine("p.tipo_calendario_id = t.id");
             if (turmaId.HasValue)
-                query.AppendLine("join turma tu on tu.ue_id = u.id");
+                query.AppendLine(@"join turma tu on t.modalidade = (case when tu.modalidade_codigo = 5 then 1
+                                                                         when tu.modalidade_codigo = 6 then 1
+                                                                         when tu.modalidade_codigo = 3 then 2
+                                                                         when tu.modalidade_codigo = 1 then 3
+                                                                    end)");
+           
             query.AppendLine("where 1=1");
 
             if (tipoCalendarioId.HasValue)
@@ -182,19 +185,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PeriodoFechamentoBimestre>> ObterPeriodosFechamentoEscolasPorDataFinal(DateTime dataFinal)
         {
-            var query = @"select pf.*, ue.*, pfb.*, pe.*, tc.*
-                          from periodo_fechamento pf
-                         inner join ue on ue.id = pf.ue_id
+            var query = @"select pf.*, pfb.*, pe.*, tc.*
+                          from periodo_fechamento pf                         
                          inner join periodo_fechamento_bimestre pfb on pfb.periodo_fechamento_id = pf.id
                          inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
                          inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id
                          where pfb.final_fechamento = @dataFinal ";
 
-            return await database.Conexao.QueryAsync<PeriodoFechamento, Ue, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, PeriodoFechamentoBimestre>(query,
-                (periodoFechamento, ue, periodoFechamentoBimestre, periodoEscolar, tipoCalendario) =>
+            return await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, PeriodoFechamentoBimestre>(query,
+                (periodoFechamento, periodoFechamentoBimestre, periodoEscolar, tipoCalendario) =>
                 {
                     periodoEscolar.TipoCalendario = tipoCalendario;
-                    periodoFechamento.Ue = ue;
                     periodoFechamentoBimestre.PeriodoFechamento = periodoFechamento;
                     periodoFechamentoBimestre.PeriodoEscolar = periodoEscolar;
 
