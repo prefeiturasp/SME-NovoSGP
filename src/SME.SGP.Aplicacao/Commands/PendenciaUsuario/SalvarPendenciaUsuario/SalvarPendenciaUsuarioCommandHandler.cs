@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 {
                     PendenciaId = request.PendenciaId,
                     Cargo = request.PerfilCodigo,
-                    Nivel = 1
+                    Nivel = request.Nivel
                 });
 
                 //cria command de vinculo da pendência com usuário
