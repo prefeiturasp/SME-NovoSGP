@@ -32,8 +32,7 @@ namespace SME.SGP.Aplicacao
                     if (periodoEncerrando.PeriodoEscolar.TipoCalendario.Modalidade == ModalidadeTipoCalendario.Infantil)
                         continue;
 
-                    var turmasSemAvaliacao = await mediator.Send(new ObterTurmaEComponenteSemAvaliacaoNoPeriodoPorUeQuery(periodoEncerrando.PeriodoFechamento.UeId.Value,
-                                                                                                                 periodoEncerrando.PeriodoEscolar.TipoCalendarioId,
+                    var turmasSemAvaliacao = await mediator.Send(new ObterTurmaEComponenteSemAvaliacaoNoPeriodoPorUeQuery(periodoEncerrando.PeriodoEscolar.TipoCalendarioId,
                                                                                                                  periodoEncerrando.PeriodoEscolar.PeriodoInicio,
                                                                                                                  periodoEncerrando.PeriodoEscolar.PeriodoFim));
 

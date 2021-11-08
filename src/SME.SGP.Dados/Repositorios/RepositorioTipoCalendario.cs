@@ -335,5 +335,22 @@ namespace SME.SGP.Dados.Repositorios
                     modalidadeTipoCalendario
                 });
         }
+
+        public async Task<IEnumerable<GestoresDreUePorTipoModalidadeCalendarioDto>> ObterGestoresUePorTipoCalendarioModalidade(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendarioId)
+        {
+            var query = @"select distinct ue.ue_id as Ue, dre.dre_id as Dre from tipo_calendario tc 
+                                inner join turma t on t.modalidade_codigo = tc.modalidade
+                                inner join ue ue on ue.id = t.ue_id 
+                                inner join dre dre on dre.id = ue.dre_id
+                                where tc.modalidade = @modalidadeTipoCalendarioId and tc.ano_letivo = @anoLetivo and tc.excluido = false";
+
+            var parametros = new
+            {
+                anoLetivo,
+                modalidadeTipoCalendarioId,
+            };
+
+            return await database.Conexao.QueryAsync<GestoresDreUePorTipoModalidadeCalendarioDto>(query, parametros);
+        }
     }
 }

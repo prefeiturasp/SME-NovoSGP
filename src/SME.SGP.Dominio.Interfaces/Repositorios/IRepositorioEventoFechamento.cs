@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
         EventoFechamento ObterPorIdFechamento(long fechamentoId);
         Task<bool> SmeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, int bimestre = 0);
         Task<IEnumerable<PeriodoEscolar>> ObterPeriodosFechamentoEmAberto(long ueId, DateTime dataReferencia);
+        Task<bool> UeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, int bimestre = 0);
     }
 }

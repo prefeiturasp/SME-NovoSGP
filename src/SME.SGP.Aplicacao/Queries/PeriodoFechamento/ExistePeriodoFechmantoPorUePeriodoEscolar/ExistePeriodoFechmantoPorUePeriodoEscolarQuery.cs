@@ -8,13 +8,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ExistePeriodoFechmantoPorUePeriodoEscolarQuery : IRequest<bool>
     {
-        public ExistePeriodoFechmantoPorUePeriodoEscolarQuery(long ueId, long periodoEscolarId)
+        public ExistePeriodoFechmantoPorUePeriodoEscolarQuery(long periodoEscolarId, DateTime dataReferencia)
         {
-            UeId = ueId;
+            DataReferencia = dataReferencia;
             PeriodoEscolarId = periodoEscolarId;
         }
 
-        public long UeId { get; set; }
+        public DateTime DataReferencia { get; set; }
         public long PeriodoEscolarId { get; set; }
     }
 
@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
     {
         public ExistePeriodoFechmantoPorUePeriodoEscolarQueryValidator()
         {
-            RuleFor(c => c.UeId)
+            RuleFor(c => c.DataReferencia)
                .NotEmpty()
-               .WithMessage("O id da UE deve ser informado para consulta de existencia de periodo de fechamento.");
+               .WithMessage("A data de referência deve ser informado para consulta de existencia de periodo de fechamento.");
 
             RuleFor(c => c.PeriodoEscolarId)
                .NotEmpty()
