@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(SalvarPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
-            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Descricao, request.Instrucao));
+            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Ue.Id, request.Descricao, request.Instrucao));
 
             await mediator.Send(new RelacionaPendenciaUsuarioCommand(ObterPerfisParaPendencia(request.TipoPendencia), request.Ue.CodigoUe, pendenciaId, 0));
 

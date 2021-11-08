@@ -26,6 +26,7 @@ namespace SME.SGP.Dominio
         public string Instrucao { get; set; }
         public bool Excluido { get; set; }
         public string DescricaoHtml { get; set; }
+        public long? UeId { get; set; }
 
         public bool EhPendenciaFechamento()
             => new TipoPendencia[] {
