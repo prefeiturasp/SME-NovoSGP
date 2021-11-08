@@ -228,9 +228,14 @@ namespace SME.SGP.Dominio.Servicos
                 throw e;
             }
 
+
+            var conselhoClasseDoAluno = await repositorioConselhoClasseAluno.ObterPorIdAsync(conselhoClasseAlunoId);
+
             // TODO Verificar se o fechamentoTurma.Turma carregou UE
             if (await VerificaNotasTodosComponentesCurriculares(alunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
-                await VerificaRecomendacoesAluno(conselhoClasseAlunoId);
+                await VerificaRecomendacoesAluno(conselhoClasseDoAluno);
+
+            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseDoAluno);
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             await mediator.Send(new PublicaFilaAtualizacaoSituacaoConselhoClasseCommand(conselhoClasseId, usuarioLogado));
@@ -245,9 +250,9 @@ namespace SME.SGP.Dominio.Servicos
             return conselhoClasseNotaRetorno;
         }
 
-        private async Task VerificaRecomendacoesAluno(long conselhoClasseAlunoId)
+        private async Task<ConselhoClasseAluno> VerificaRecomendacoesAluno(ConselhoClasseAluno conselhoClasseAluno)
         {
-            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorIdAsync(conselhoClasseAlunoId);
+            
 
             if (string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
             {
@@ -255,9 +260,11 @@ namespace SME.SGP.Dominio.Servicos
 
                 conselhoClasseAluno.RecomendacoesAluno = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) ? recomendacoes.recomendacoesAluno : conselhoClasseAluno.RecomendacoesAluno;
                 conselhoClasseAluno.RecomendacoesFamilia = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia) ? recomendacoes.recomendacoesFamilia : conselhoClasseAluno.RecomendacoesFamilia;
-
-                await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
+                
             }
+            return conselhoClasseAluno;
+
+
         }
 
         private async Task<long> SalvarConselhoClasseAlunoResumido(long conselhoClasseId, string alunoCodigo)
