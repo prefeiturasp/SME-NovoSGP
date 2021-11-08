@@ -426,7 +426,7 @@ namespace SME.SGP.Dominio.Servicos
             return componentesTurma;
         }
 
-        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
+        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, bool consideraHistorico = false)
         {
             var conselhoClasseAluno = await ObterConselhoClasseAluno(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
@@ -437,7 +437,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
 
-            var parecerConclusivo = await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma);
+            var parecerConclusivo = await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma, consideraHistorico);
             conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
@@ -503,7 +503,8 @@ namespace SME.SGP.Dominio.Servicos
             int erros = 0;
             var retorno = new Dictionary<string, int>();
 
-            var listaConselhoAlunoReprocessar = await repositorioConselhoClasse.ObterAlunosReprocessamentoConsolidacaoConselho(dreId);
+            var listaConselhoAlunoReprocessar = await repositorioConselhoClasse
+                .ObterAlunosReprocessamentoConsolidacaoConselho(dreId);
 
             var listaErros = new List<objConsolidacaoConselhoAluno>();
             foreach (var conselhoAluno in listaConselhoAlunoReprocessar)
@@ -512,7 +513,8 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     SituacaoConselhoClasse statusNovo = SituacaoConselhoClasse.NaoIniciado;
 
-                    var consolidadoTurmaAluno = repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(conselhoAluno.turmaId, conselhoAluno.bimestre, conselhoAluno.alunoCodigo).Result;
+                    var consolidadoTurmaAluno = repositorioConselhoClasseConsolidado
+                        .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(conselhoAluno.turmaId, conselhoAluno.bimestre, conselhoAluno.alunoCodigo).Result;
 
                     if (consolidadoTurmaAluno == null)
                     {
@@ -523,42 +525,55 @@ namespace SME.SGP.Dominio.Servicos
                         consolidadoTurmaAluno.Status = statusNovo;
                     }
 
-                    var componentesDoAluno = mediator.Send(new ObterComponentesParaFechamentoAcompanhamentoCCAlunoQuery(conselhoAluno.alunoCodigo, conselhoAluno.bimestre, conselhoAluno.turmaId)).Result;
-                    if (componentesDoAluno != null && componentesDoAluno.Any())
+                    var turma = await mediator
+                        .Send(new ObterTurmaPorIdQuery(conselhoAluno.turmaId));
+
+                    if (conselhoAluno.bimestre == 0)
                     {
-                        var turma = await mediator.Send(new ObterTurmaPorIdQuery(conselhoAluno.turmaId));
+                        var fechamento = await mediator
+                            .Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = conselhoAluno.turmaId });
 
-                        if (conselhoAluno.bimestre == 0)
-                        {
-                            var fechamento = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = conselhoAluno.turmaId });
-                            var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamento.Id));
-                            var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, conselhoAluno.alunoCodigo));
-                            consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno != null ? conselhoClasseAluno.ConselhoClasseParecerId : null;
-                        }
+                        var conselhoClasse = await mediator
+                            .Send(new ObterConselhoClassePorFechamentoIdQuery(fechamento.Id));
 
+                        var conselhoClasseAluno = await mediator
+                            .Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, conselhoAluno.alunoCodigo));
 
-                        var turmasCodigos = new string[] { };
-                        if (turma.DeveVerificarRegraRegulares())
-                        {
-                            List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
-                            turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                            turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, conselhoAluno.alunoCodigo, turmasCodigosParaConsulta));
-                        }
-                        if (turmasCodigos.Length == 0)
-                        {
-                            turmasCodigos = new string[1] { turma.CodigoTurma };
-                        }
-
-                        var componentesComNotaFechamentoOuConselho = await mediator.Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, conselhoAluno.turmaId, conselhoAluno.bimestre, conselhoAluno.alunoCodigo));
-                        var componentesDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
-
-                        var possuiComponentesSemNotaConceito = componentesDaTurmaEol.Where(x => x.LancaNota == true).Select(x => x.Codigo).ToArray().Except(componentesComNotaFechamentoOuConselho.Select(x => x.Codigo).ToArray()).Any();
-
-                        if (possuiComponentesSemNotaConceito)
-                            statusNovo = SituacaoConselhoClasse.EmAndamento;
-                        else
-                            statusNovo = SituacaoConselhoClasse.Concluido;
+                        consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno != null ? conselhoClasseAluno.ConselhoClasseParecerId : null;
                     }
+
+                    var turmasCodigos = new string[] { };
+                    if (turma.DeveVerificarRegraRegulares())
+                    {
+                        List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
+
+                        turmasCodigosParaConsulta
+                            .AddRange(turma.ObterTiposRegularesDiferentes());
+
+                        turmasCodigos = await mediator
+                            .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, conselhoAluno.alunoCodigo, turmasCodigosParaConsulta));
+                    }
+
+                    if (turmasCodigos.Length == 0)
+                        turmasCodigos = new string[1] { turma.CodigoTurma };
+
+                    var componentesComNotaFechamentoOuConselho = await mediator
+                        .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, conselhoAluno.turmaId, conselhoAluno.bimestre, conselhoAluno.alunoCodigo));
+
+                    var componentesDaTurmaEol = await mediator
+                        .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
+
+                    var possuiComponentesSemNotaConceito = componentesDaTurmaEol
+                        .Where(x => x.LancaNota)
+                        .Select(x => x.Codigo)
+                        .Except(componentesComNotaFechamentoOuConselho
+                        .Select(x => x.Codigo))
+                        .Any();
+
+                    if (possuiComponentesSemNotaConceito)
+                        statusNovo = SituacaoConselhoClasse.EmAndamento;
+                    else
+                        statusNovo = SituacaoConselhoClasse.Concluido;
 
                     if (consolidadoTurmaAluno.ParecerConclusivoId != null)
                         statusNovo = SituacaoConselhoClasse.Concluido;
@@ -567,7 +582,9 @@ namespace SME.SGP.Dominio.Servicos
 
                     consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
 
-                    var rr = repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno).Result;
+                    repositorioConselhoClasseConsolidado
+                        .SalvarAsync(consolidadoTurmaAluno).Wait();
+
                     contador = contador + 1;
                 }
 
