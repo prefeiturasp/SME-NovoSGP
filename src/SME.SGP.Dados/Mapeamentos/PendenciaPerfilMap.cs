@@ -10,8 +10,7 @@ namespace SME.SGP.Dados
         public PendenciaPerfilMap()
         {
             ToTable("pendencia_perfil");
-            Map(c => c.Cargo).ToColumn("cargo");
-            Map(c => c.Nivel).ToColumn("nivel");
+            Map(c => c.PerfilCodigo).ToColumn("perfil_codigo");
             Map(c => c.PendenciaId).ToColumn("pendencia_id");
         }
     }

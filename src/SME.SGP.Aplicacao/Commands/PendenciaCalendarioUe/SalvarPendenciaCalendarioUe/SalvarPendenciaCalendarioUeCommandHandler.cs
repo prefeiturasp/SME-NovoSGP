@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<long> Handle(SalvarPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
             var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Ue.Id, request.Descricao, request.Instrucao));
-
+            var pendenciaPerfilIds = mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfilParaPendencia(request.TipoPendencia)));
             await mediator.Send(new RelacionaPendenciaUsuarioCommand(ObterPerfisParaPendencia(request.TipoPendencia), request.Ue.CodigoUe, pendenciaId, 0));
 
             return await repositorioPendenciaCalendarioUe.SalvarAsync(new Dominio.PendenciaCalendarioUe()
@@ -44,5 +45,19 @@ namespace SME.SGP.Aplicacao
                     return new string[] { };
             }
         }
+
+        public List<int> ObterCodigoPerfilParaPendencia(TipoPendencia tipoPendencia)
+        {
+            switch (tipoPendencia)
+            {
+                case TipoPendencia.CalendarioLetivoInsuficiente:
+                    return new List<int> { (int)PerfilUsuario.PERFIL_CP, (int)PerfilUsuario.PERFIL_AD, (int)PerfilUsuario.PERFIL_DIRETOR, (int)PerfilUsuario.PERFIL_ADMUE };
+                case TipoPendencia.CadastroEventoPendente:
+                    return new List<int> { (int)PerfilUsuario.PERFIL_ADMUE };
+                default:
+                    return null;
+            }
+        }
+
     }
 }
