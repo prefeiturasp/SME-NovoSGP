@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
 
-            var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEDataAulaQuery(aula.TurmaId, aula.DataAula));
+            var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(aula.TurmaId, aula.DataAula));
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
