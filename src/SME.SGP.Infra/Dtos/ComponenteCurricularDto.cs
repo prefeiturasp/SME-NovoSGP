@@ -6,5 +6,6 @@
         public string Descricao { get; set; }
 
         public bool LancaNota { get; set; }
+        public bool Regencia { get; set; }
     }
 }

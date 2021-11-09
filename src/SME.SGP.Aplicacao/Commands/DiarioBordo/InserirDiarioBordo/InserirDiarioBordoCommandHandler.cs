@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao.Integracoes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,12 +16,14 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
+        private readonly IServicoEol servicoEol;
 
         public InserirDiarioBordoCommandHandler(IMediator mediator,
-                                                IRepositorioDiarioBordo repositorioDiarioBordo)
+                                                IRepositorioDiarioBordo repositorioDiarioBordo, IServicoEol servicoEol)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
+            this.servicoEol = servicoEol;
         }
 
         public async Task<AuditoriaDto> Handle(InserirDiarioBordoCommand request, CancellationToken cancellationToken)
@@ -47,6 +50,19 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException($"Você não possui permissão para inserir registro de diário de bordo neste período");
                 }
             }
+            else
+            {
+                var professorPodePersistir =
+                    await mediator.Send(new VerificaPodePersistirTurmaDisciplinaEOLQuery(usuario, turma.CodigoTurma,
+                        aula.DisciplinaId, DateTime.Now));
+            
+                if (!professorPodePersistir)
+                {
+                    throw new NegocioException(
+                        $"Você não possui permissão para inserir registro de diário de bordo neste período");
+                }
+            }
+            
 
             await MoverRemoverExcluidos(request);
             var diarioBordo = MapearParaEntidade(request);
