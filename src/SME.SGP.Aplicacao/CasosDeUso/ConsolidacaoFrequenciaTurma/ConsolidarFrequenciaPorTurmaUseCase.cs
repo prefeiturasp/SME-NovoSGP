@@ -16,9 +16,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
+            var filtro = new FiltroConsolidacaoFrequenciaTurma();
             try
             {
-                var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
+                filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
 
                 var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(filtro.TurmaCodigo));
 
@@ -28,9 +29,11 @@ namespace SME.SGP.Aplicacao
             }
             catch (System.Exception ex)
             {
+                string msgErro = $"ConsolidarFrequenciaPorTurma - TurmaCodigo:{filtro?.TurmaCodigo} - Erro:{ex.Message}";
+                SentrySdk.AddBreadcrumb(msgErro);
                 SentrySdk.CaptureException(ex);
                 throw;
-            }        
+            }
         }
 
         private async Task ConsolidarFrequenciaAlunos(long turmaId, string turmaCodigo, double percentualFrequenciaMinimo, IEnumerable<AlunoPorTurmaResposta> alunos)
