@@ -32,23 +32,23 @@ namespace SME.SGP.Aplicacao
                     {
                         case "Professor":
                             funcionariosIdTemp.Add(request.ProfessorId.Value);
-                            AtribuirFuncionarioPerfil(funcionariosIdTemp, (int)PerfilUsuario.PERFIL_PROFESSOR, listaFuncionarioPerfilAtribuido);
+                            AtribuirFuncionarioPerfil(funcionariosIdTemp, (int)PerfilUsuario.PROFESSOR, listaFuncionarioPerfilAtribuido);
                             break;
                         case "CP":
                             var funcionariosIdCP = await mediator.Send(new ObterFuncionariosIdPorCodigoUeECargoQuery(request.CodigoUe, Cargo.CP));
-                            AtribuirFuncionarioPerfil(funcionariosIdCP, (int) PerfilUsuario.PERFIL_CP, listaFuncionarioPerfilAtribuido);
+                            AtribuirFuncionarioPerfil(funcionariosIdCP, (int) PerfilUsuario.CP, listaFuncionarioPerfilAtribuido);
                             break;
                         case "AD":
                             var funcionarioAD = await mediator.Send(new ObterFuncionariosIdPorCodigoUeECargoQuery(request.CodigoUe, Cargo.AD));
-                            AtribuirFuncionarioPerfil(funcionarioAD, (int)PerfilUsuario.PERFIL_AD, listaFuncionarioPerfilAtribuido);
+                            AtribuirFuncionarioPerfil(funcionarioAD, (int)PerfilUsuario.AD, listaFuncionarioPerfilAtribuido);
                             break;
                         case "Diretor":
                             var funcionarioDiretor = await mediator.Send(new ObterFuncionariosIdPorCodigoUeECargoQuery(request.CodigoUe, Cargo.Diretor));
-                            AtribuirFuncionarioPerfil(funcionarioDiretor, (int)PerfilUsuario.PERFIL_DIRETOR, listaFuncionarioPerfilAtribuido);
+                            AtribuirFuncionarioPerfil(funcionarioDiretor, (int)PerfilUsuario.DIRETOR, listaFuncionarioPerfilAtribuido);
                             break;
                         case "ADM UE":
                             var funcionarioADMUE = await ObterAdministradoresPorUE(request.CodigoUe);
-                            AtribuirFuncionarioPerfil(funcionarioADMUE, (int)PerfilUsuario.PERFIL_ADMDRE, listaFuncionarioPerfilAtribuido);
+                            AtribuirFuncionarioPerfil(funcionarioADMUE, (int)PerfilUsuario.ADMDRE, listaFuncionarioPerfilAtribuido);
                             break;
                         default:
                             break;
@@ -69,33 +69,33 @@ namespace SME.SGP.Aplicacao
                     {
                         switch (valores.Value)
                         {
-                            case (int)PerfilUsuario.PERFIL_ADMUE:
+                            case (int)PerfilUsuario.ADMUE:
                                 nivel = 1;
                                 break;
 
-                            case (int)PerfilUsuario.PERFIL_DIRETOR:
-                                if (!listaFuncionarioPerfilAtribuido.Any(l => l.Value.Equals((int) PerfilUsuario.PERFIL_ADMUE)))
+                            case (int)PerfilUsuario.DIRETOR:
+                                if (!listaFuncionarioPerfilAtribuido.Any(l => l.Value.Equals((int) PerfilUsuario.ADMUE)))
                                     nivel = 1;             
                                 else
                                     nivel = 2;
                                 break;
 
-                            case (int)PerfilUsuario.PERFIL_AD:
-                                if (!listaFuncionarioPerfilAtribuido.Any(l => l.Value.Equals((int)PerfilUsuario.PERFIL_DIRETOR)))
+                            case (int)PerfilUsuario.AD:
+                                if (!listaFuncionarioPerfilAtribuido.Any(l => l.Value.Equals((int)PerfilUsuario.DIRETOR)))
                                     nivel = 2;
                                 else
                                     nivel = 3;
                                 break;
 
-                            case (int)PerfilUsuario.PERFIL_CP:
-                                if (!listaFuncionarioPerfilAtribuido.Any(l => l.Value.Equals((int)PerfilUsuario.PERFIL_AD)))
+                            case (int)PerfilUsuario.CP:
+                                if (!listaFuncionarioPerfilAtribuido.Any(l => l.Value.Equals((int)PerfilUsuario.AD)))
                                     nivel = 3;
                                 else
                                     nivel = 4;
                                 break;
 
-                            case (int)PerfilUsuario.PERFIL_PROFESSOR:
-                                if (!listaFuncionarioPerfilAtribuido.Any(l => l.Value.Equals((int)PerfilUsuario.PERFIL_CP)))
+                            case (int)PerfilUsuario.PROFESSOR:
+                                if (!listaFuncionarioPerfilAtribuido.Any(l => l.Value.Equals((int)PerfilUsuario.CP)))
                                     nivel = 4;
                                 else
                                     nivel = 5;
