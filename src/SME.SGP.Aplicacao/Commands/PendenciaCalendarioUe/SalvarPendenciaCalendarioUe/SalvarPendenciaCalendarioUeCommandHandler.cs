@@ -51,9 +51,9 @@ namespace SME.SGP.Aplicacao
             switch (tipoPendencia)
             {
                 case TipoPendencia.CalendarioLetivoInsuficiente:
-                    return new List<int> { (int)PerfilUsuario.PERFIL_CP, (int)PerfilUsuario.PERFIL_AD, (int)PerfilUsuario.PERFIL_DIRETOR, (int)PerfilUsuario.PERFIL_ADMUE };
+                    return new List<int> { (int)PerfilUsuario.CP, (int)PerfilUsuario.AD, (int)PerfilUsuario.DIRETOR, (int)PerfilUsuario.ADMUE };
                 case TipoPendencia.CadastroEventoPendente:
-                    return new List<int> { (int)PerfilUsuario.PERFIL_ADMUE };
+                    return new List<int> { (int)PerfilUsuario.ADMUE };
                 default:
                     return null;
             }

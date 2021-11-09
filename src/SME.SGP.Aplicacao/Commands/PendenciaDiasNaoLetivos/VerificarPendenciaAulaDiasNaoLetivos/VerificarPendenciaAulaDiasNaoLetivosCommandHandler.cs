@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private List<int> ObterCodigoPerfis()
-                 => new List<int> { (int)PerfilUsuario.PERFIL_PROFESSOR, (int)PerfilUsuario.PERFIL_CP }; 
+                 => new List<int> { (int)PerfilUsuario.PROFESSOR, (int)PerfilUsuario.CP }; 
 
         private string[] ObterPerfisUsuarios()
             => new[] { "Professor", "CP" };
