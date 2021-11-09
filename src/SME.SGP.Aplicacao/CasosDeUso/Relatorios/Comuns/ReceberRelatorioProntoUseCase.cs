@@ -36,8 +36,6 @@ namespace SME.SGP.Aplicacao
 
                 var relatorioCorrelacaoJasper = await mediator.Send(receberRelatorioProntoCommand);
 
-                SentrySdk.AddBreadcrumb("Salvando Correlação Relatório Jasper de retorno", "9 - ReceberRelatorioProntoUseCase");
-
                 relatorioCorrelacao.AdicionarCorrelacaoJasper(relatorioCorrelacaoJasper);
             }
 
