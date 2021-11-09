@@ -35,16 +35,35 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma informada não encontrada");
 
-            if (usuario.EhProfessorCj())
+            var professorPodePersistir =
+                await mediator.Send(new VerificaPodePersistirTurmaDisciplinaEOLQuery(usuario, turma.CodigoTurma,
+                    aula.DisciplinaId, DateTime.Now));
+
+
+            switch (professorPodePersistir)
             {
-                var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, usuario.CodigoRf));
-
-                var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuario.CodigoRf, false, aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
-
-                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
+                case false:
+                    throw new NegocioException(
+                        $"Você não possui permissão para inserir registro de diário de bordo neste período");
+                case true when usuario.EhProfessorCj():
                 {
-                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
-                        throw new NegocioException($"Você não possui permissão para inserir registro de diário de bordo neste período");
+                    var possuiAtribuicaoCJ =
+                        await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre,
+                            turma.Ue.CodigoUe, turma.CodigoTurma, usuario.CodigoRf));
+
+                    var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuario.CodigoRf,
+                        false, aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
+
+                    if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
+                    {
+                        if (!atribuicoesEsporadica.Where(a =>
+                            a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date &&
+                            a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
+                            throw new NegocioException(
+                                $"Você não possui permissão para inserir registro de diário de bordo neste período");
+                    }
+
+                    break;
                 }
             }
 
