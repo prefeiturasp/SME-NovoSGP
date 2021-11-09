@@ -16,14 +16,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
-        private readonly IServicoEol servicoEol;
 
         public InserirDiarioBordoCommandHandler(IMediator mediator,
-                                                IRepositorioDiarioBordo repositorioDiarioBordo, IServicoEol servicoEol)
+                                                IRepositorioDiarioBordo repositorioDiarioBordo)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
-            this.servicoEol = servicoEol;
         }
 
         public async Task<AuditoriaDto> Handle(InserirDiarioBordoCommand request, CancellationToken cancellationToken)
