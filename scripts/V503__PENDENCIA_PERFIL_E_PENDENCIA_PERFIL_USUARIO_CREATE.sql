@@ -1,10 +1,9 @@
-DROP TABLE IF EXISTS public.pendencia_perfil;
 DROP TABLE IF EXISTS public.pendencia_perfil_usuario;
+DROP TABLE IF EXISTS public.pendencia_perfil;
 
 CREATE TABLE public.pendencia_perfil (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
-    cargo int4 NOT NULL,
-    nivel int4 NOT NULL, 
+    perfil_codigo int4 NOT NULL,
     pendencia_id int8 NOT NULL,
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,
@@ -19,6 +18,7 @@ CREATE TABLE public.pendencia_perfil_usuario (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	pendencia_perfil_id int8 NOT NULL,
     usuario_id int8 NOT NULL,
+	perfil_codigo int4 NOT NULL,
 	CONSTRAINT pendencia_perfil_usuario_pk PRIMARY KEY (id)
 );
 

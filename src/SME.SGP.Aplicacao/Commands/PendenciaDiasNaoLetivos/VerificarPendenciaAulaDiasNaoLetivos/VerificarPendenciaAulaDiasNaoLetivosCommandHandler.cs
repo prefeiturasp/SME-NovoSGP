@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -78,7 +79,7 @@ namespace SME.SGP.Aplicacao
                         if (!pendenciaExistente)
                         {
                             pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, 0, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
-
+                            var pendenciaPerfil = mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis())); 
                             var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
                             await mediator.Send(new RelacionaPendenciaUsuarioCommand(ObterPerfisUsuarios(), ue.CodigoUe, pendenciaId, professor.Id));
                         }
@@ -101,6 +102,9 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
+
+        private List<int> ObterCodigoPerfis()
+                 => new List<int> { (int)PerfilUsuario.PERFIL_PROFESSOR, (int)PerfilUsuario.PERFIL_CP }; 
 
         private string[] ObterPerfisUsuarios()
             => new[] { "Professor", "CP" };

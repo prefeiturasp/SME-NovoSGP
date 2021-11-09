@@ -40,8 +40,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioPendenciaPerfil.SalvarAsync(new PendenciaPerfil
                 {
                     PendenciaId = request.PendenciaId,
-                    Cargo = request.PerfilCodigo,
-                    Nivel = request.Nivel
+                    PerfilCodigo = request.PerfilCodigo,
                 });
 
                 //cria command de vinculo da pendência com usuário
