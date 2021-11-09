@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 var consolidacaoCompleta = await AtribuiProfessorEConsolida(consolidacoes);
 
                 foreach (var consolidacao in consolidacaoCompleta.Distinct())
-                    await mediator.Send(new ConsolidarRegistrosPedagogicosCommand(consolidacao));                
+                    await mediator.Send(new ConsolidarRegistrosPedagogicosCommand(consolidacao));
             }
             return true;
         }
@@ -120,11 +120,10 @@ namespace SME.SGP.Aplicacao
                                 }
                                 else
                                 {
-
                                     int quantidadeAulas = consolidacaoInfantil.Sum(ci => ci.QuantidadeAulas);
                                     int frequenciasPendentes = consolidacaoInfantil.Sum(ci => ci.FrequenciasPendentes);
-                                    DateTime? dataUltimaFrequencia = consolidacaoInfantil.Max(ci => ci.DataUltimaFrequencia).Value;
-                                    DateTime? dataUltimoDiarioBordo = consolidacaoInfantil.Max(ci => ci.DataUltimoDiarioBordo).Value;
+                                    DateTime? dataUltimaFrequencia = consolidacaoInfantil.Max(ci => ci.DataUltimaFrequencia);
+                                    DateTime? dataUltimoDiarioBordo = consolidacaoInfantil.Max(ci => ci.DataUltimoDiarioBordo);
                                     int diarioBordoPendentes = consolidacaoInfantil.Sum(ci => ci.DiarioBordoPendentes);
 
                                     for (int i = 0; i < 2; i++)
