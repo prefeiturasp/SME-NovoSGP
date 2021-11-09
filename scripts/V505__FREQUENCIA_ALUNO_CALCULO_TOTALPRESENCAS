@@ -1,4 +1,0 @@
---> Atualizar total de presenças de anos anteriores
-update frequencia_aluno 
-	set total_presencas = (total_aulas - total_ausencias) 
-where EXTRACT(YEAR from periodo_inicio) < 2021;
