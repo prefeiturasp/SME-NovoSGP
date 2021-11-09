@@ -123,8 +123,8 @@ namespace SME.SGP.Aplicacao
 
                                     int quantidadeAulas = consolidacaoInfantil.Sum(ci => ci.QuantidadeAulas);
                                     int frequenciasPendentes = consolidacaoInfantil.Sum(ci => ci.FrequenciasPendentes);
-                                    DateTime? dataUltimaFrequencia = consolidacaoInfantil.Max(ci => ci.DataUltimaFrequencia).HasValue ? consolidacaoInfantil.Max(ci => ci.DataUltimaFrequencia).Value : null;
-                                    DateTime? dataUltimoDiarioBordo = consolidacaoInfantil.Max(ci => ci.DataUltimoDiarioBordo).HasValue ? consolidacaoInfantil.Max(ci => ci.DataUltimoDiarioBordo).Value : null;
+                                    DateTime? dataUltimaFrequencia = consolidacaoInfantil.Max(ci => ci.DataUltimaFrequencia).Value;
+                                    DateTime? dataUltimoDiarioBordo = consolidacaoInfantil.Max(ci => ci.DataUltimoDiarioBordo).Value;
                                     int diarioBordoPendentes = consolidacaoInfantil.Sum(ci => ci.DiarioBordoPendentes);
 
                                     for (int i = 0; i < 2; i++)
