@@ -31,27 +31,12 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var item in diferente)
             {
-                try
-                {
-                    var arquivo = $@"{UtilArquivo.ObterDiretorioBase()}\{caminho}{item.ToString()}";
-                    var alterarBarras = arquivo.Replace(@"\", @"///");
-                    if (File.Exists(alterarBarras))
-                    {
-                        File.SetAttributes(alterarBarras, FileAttributes.Normal);
-                        File.Delete(alterarBarras);
-                    }
-                    else
-                    {
-                        var mensagem = $"Arquivo Informado para exclusão não existe no caminho {alterarBarras} ";
-                        SentrySdk.CaptureMessage(mensagem, Sentry.Protocol.SentryLevel.Error);
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    SentrySdk.CaptureMessage($"Falha ao deletar o arquivo {ex.Message} ");
-                    SentrySdk.CaptureException(ex);
-                }
+                var arquivo = $@"{UtilArquivo.ObterDiretorioBase()}/{caminho}{item.ToString()}";
+                var alterarBarras = arquivo.Replace(@"\", @"/");
+                if (File.Exists(alterarBarras))
+                    File.Delete(alterarBarras);
+                else
+                    throw new ErroInternoException("Arquivo Informado para exclusão não existe");
             }
 
         }
