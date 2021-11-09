@@ -8,26 +8,29 @@ namespace SME.SGP.Aplicacao
 {
     public class GerarPendenciaPlanoAEECommand : IRequest<bool>
     {
-        public GerarPendenciaPlanoAEECommand(long planoAEEId, IEnumerable<long> usuariosIds, string titulo, string descricao)
+        public GerarPendenciaPlanoAEECommand(long planoAEEId, IEnumerable<long> usuariosIds, string titulo, string descricao, int perfil = 0)
         {
             PlanoAEEId = planoAEEId;
             UsuariosIds = usuariosIds;
             Titulo = titulo;
             Descricao = descricao;
+            Perfil = perfil;
         }
 
-        public GerarPendenciaPlanoAEECommand(long planoAEEId, long usuarioId, string titulo, string descricao)
+        public GerarPendenciaPlanoAEECommand(long planoAEEId, long usuarioId, string titulo, string descricao, int perfil = 0)
         {
             PlanoAEEId = planoAEEId;
             UsuariosIds = new List<long>() { usuarioId };
             Titulo = titulo;
             Descricao = descricao;
+            Perfil = perfil;
         }
 
         public long PlanoAEEId { get; }
         public IEnumerable<long> UsuariosIds { get; }
         public string Titulo { get; }
         public string Descricao { get; }
+        public int Perfil { get; set; }
     }
 
     public class GerarPendenciaValidadePlanoAEECommandValidator : AbstractValidator<GerarPendenciaPlanoAEECommand>

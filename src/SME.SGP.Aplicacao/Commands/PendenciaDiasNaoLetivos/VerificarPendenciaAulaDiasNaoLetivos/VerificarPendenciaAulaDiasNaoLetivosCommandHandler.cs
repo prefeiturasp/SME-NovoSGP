@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
                         if (!pendenciaExistente)
                         {
-                            pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
+                            pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, 0, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
 
                             var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
                             await mediator.Send(new RelacionaPendenciaUsuarioCommand(ObterPerfisUsuarios(), ue.CodigoUe, pendenciaId, professor.Id));

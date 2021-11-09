@@ -28,12 +28,12 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, request.Descricao, titulo: request.Titulo));
+                    var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, 0, request.Descricao, titulo: request.Titulo));
 
                     await repositorioPendenciaPlanoAEE.SalvarAsync(new PendenciaPlanoAEE(pendenciaId, request.PlanoAEEId));
 
                     foreach(var usuarioId in request.UsuariosIds)
-                        await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
+                        await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId, request.Perfil));
 
                     unitOfWork.PersistirTransacao();
                 }
