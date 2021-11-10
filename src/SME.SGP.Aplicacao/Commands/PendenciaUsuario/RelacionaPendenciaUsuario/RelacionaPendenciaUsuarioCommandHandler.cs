@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
                         }
                     }
                    
-                    await mediator.Send(new SalvarPendenciaUsuarioCommand(request.PendenciaId, valores.Key, valores.Value, nivel));
+                    await mediator.Send(new SalvarPendenciaUsuarioCommand(request.PendenciaId, valores.Key));
                 }
             }
                 
