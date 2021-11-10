@@ -53,6 +53,7 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
             var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
             var aulas = await mediator.Send(new ObterAulasReduzidaPorTipoCalendarioQuery(tipoCalendarioId, ObterTiposDeEscolasValidos()));
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var diasComEventosNaoLetivos = diasLetivosENaoLetivos.Where(e => e.EhNaoLetivo);
 
@@ -79,11 +80,11 @@ namespace SME.SGP.Aplicacao
                         if (!pendenciaExistente)
                         {
                             pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, 0, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
-                            var pendenciaPerfil = mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis())); 
+                            await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis())); 
                             var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
 
                             await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, professor.Id));
-                            await mediator.Send(new RelacionaPendenciaUsuarioCommand(ObterPerfisUsuarios(), ue.CodigoUe, pendenciaId, professor.Id));
+                            //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ue.Id), Guid.NewGuid(), usuario));
                         }
 
                         foreach (var aula in turmas)
