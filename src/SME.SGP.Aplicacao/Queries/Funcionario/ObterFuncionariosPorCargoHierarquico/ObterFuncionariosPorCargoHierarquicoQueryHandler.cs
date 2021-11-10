@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 if (!cargoProximoNivel.HasValue)
                     return null;
 
-                return await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(request.CodigoUe, cargoProximoNivel.Value, false);
+                return await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(request.CodigoUe, cargoProximoNivel.Value, false));
             }
             else
             {
