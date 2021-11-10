@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             foreach(var perfil in request.PerfisCodigo)
             {
                 var pendencia = new PendenciaPerfil();
-                pendencia.Id = request.PendenciaId;
+                pendencia.PendenciaId = request.PendenciaId;
                 pendencia.PerfilCodigo = perfil;
 
                 await repositorioPendenciaPerfil.SalvarAsync(pendencia);
