@@ -19,6 +19,12 @@ CREATE TABLE public.pendencia_perfil_usuario (
 	pendencia_perfil_id int8 NOT NULL,
     usuario_id int8 NOT NULL,
 	perfil_codigo int4 NOT NULL,
+	criado_em timestamp NOT NULL,
+	criado_por varchar(200) NOT NULL,
+	criado_rf varchar(200) NOT NULL,
+	alterado_em timestamp NULL,
+	alterado_por varchar(200) NULL,
+	alterado_rf varchar(200) NULL,
 	CONSTRAINT pendencia_perfil_usuario_pk PRIMARY KEY (id)
 );
 
