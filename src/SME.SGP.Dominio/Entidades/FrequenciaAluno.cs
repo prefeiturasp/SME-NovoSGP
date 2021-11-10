@@ -17,8 +17,8 @@ namespace SME.SGP.Dominio
             int totalAulas,
             int totalCompensacoes,
             TipoFrequenciaAluno tipo,
-            int totalRemotos = 0,
-            int totalPresencas = 0)
+            int totalRemotos,
+            int totalPresencas)
         {
             PercentuaisFrequenciaPorBimestre = new HashSet<(int, double)>();
             Bimestre = bimestre;
@@ -93,13 +93,16 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public FrequenciaAluno DefinirFrequencia(int totalAusencias, int totalAulas, int totalCompensacoes,
-            TipoFrequenciaAluno tipoFrequencia)
+        public FrequenciaAluno DefinirFrequencia(int totalAusencias, int totalAulas, int totalCompensacoes,TipoFrequenciaAluno tipoFrequencia, int totalRemotos, int totalPresencas)
         {
             Tipo = tipoFrequencia;
             TotalAusencias = totalAusencias;
             TotalCompensacoes = totalCompensacoes;
             TotalAulas = totalAulas;
+            TotalRemotos = totalRemotos;
+            TotalPresencas = totalPresencas;
+            AlteradoEm = DateTime.Now;
+
             return this;
         }
 
