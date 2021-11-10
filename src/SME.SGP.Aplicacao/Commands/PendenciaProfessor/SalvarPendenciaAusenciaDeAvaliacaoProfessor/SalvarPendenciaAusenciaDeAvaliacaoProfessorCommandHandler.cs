@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
         private async Task GerarPendenciaUsuario(long pendenciaId, string professorRf)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professorRf));
-            await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId, (int) PerfilUsuario.PROFESSOR));
+            await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
         }
     }
 }
