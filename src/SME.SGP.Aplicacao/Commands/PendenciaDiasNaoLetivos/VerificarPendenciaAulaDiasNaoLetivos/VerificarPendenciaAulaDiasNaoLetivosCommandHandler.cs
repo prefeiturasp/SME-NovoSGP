@@ -108,9 +108,6 @@ namespace SME.SGP.Aplicacao
         private List<PerfilUsuario> ObterCodigoPerfis()
                  => new List<PerfilUsuario> { PerfilUsuario.CP }; 
 
-        private string[] ObterPerfisUsuarios()
-            => new[] { "Professor", "CP" };
-
         private static TipoEscola[] ObterTiposDeEscolasValidos()
             => new[]
             {
