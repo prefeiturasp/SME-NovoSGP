@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -13,8 +14,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            await mediator.Send(new CalcularFrequenciaGeralCommand(2021));
-            return true;
+            var ano = int.Parse(mensagemRabbit.Mensagem.ToString());
+
+            if (!string.IsNullOrEmpty(mensagemRabbit.Mensagem.ToString()) && ano == DateTime.Now.Year)
+            {
+                await mediator.Send(new CalcularFrequenciaGeralCommand(ano));
+                return true;
+            }
+
+            return false;
         }
     }
 }

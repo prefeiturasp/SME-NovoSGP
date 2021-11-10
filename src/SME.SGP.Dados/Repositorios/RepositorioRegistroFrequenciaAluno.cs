@@ -22,13 +22,13 @@ namespace SME.SGP.Dados
                         select distinct   
                             a.disciplina_id as DisciplinaId,
                             a.turma_id as TurmaId,
-                            a.data_aula as DataAula,
+                            p.periodo_fim as DataAula,
                             rfa.codigo_aluno as AlunoCodigo
                         from
                             registro_frequencia_aluno rfa
-                        inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id
-                        inner join aula a on rf.aula_id = a.id
-                        inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id
+                            join registro_frequencia rf on rfa.registro_frequencia_id = rf.id
+                            join aula a on rf.aula_id = a.id
+                            join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id
                         where
                             not rfa.excluido
                             and not a.excluido
@@ -38,7 +38,7 @@ namespace SME.SGP.Dados
                             and rfa.numero_aula <= a.quantidade
                         order by a.disciplina_id,
 		                         a.turma_id,
-		                         a.data_aula,
+		                         p.periodo_fim,
 		                         rfa.codigo_aluno";
 
             return await database.Conexao.QueryAsync<RegistroFrequenciaGeralPorDisciplinaAlunoTurmaDataDto>(query, new { ano});
