@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,21 +27,18 @@ namespace SME.SGP.Aplicacao
                 {
                     await mediator.Send(new SalvarPendenciaProfessorCommand(request.PendenciaId, request.TurmaId, pendenciaProfessor.componenteCurricularId, pendenciaProfessor.professorRf, request.PeriodoEscolarId));
                 }
-                await GerarPendenciaUsuario(request.PendenciaId, request.UeCodigo);
+                await GerarPendenciaPerfil(request.PendenciaId, request.UeId);
 
                 unitOfWork.PersistirTransacao();
             }
             return true;
         }
 
-        private async Task GerarPendenciaUsuario(long pendenciaId, string codigoUe)
+        private async Task GerarPendenciaPerfil(long pendenciaId, long ueId)
         {
-            var usuariosIds = await mediator.Send(new ObterFuncionariosIdPorCodigoUeECargoQuery(codigoUe, Cargo.CP));
-
-            foreach(var usuarioId in usuariosIds)
-            {
-                await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
-            }
+            await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, new List<PerfilUsuario>() { PerfilUsuario.CP }));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios,
+                                                           new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ueId)));
         }
     }
 }

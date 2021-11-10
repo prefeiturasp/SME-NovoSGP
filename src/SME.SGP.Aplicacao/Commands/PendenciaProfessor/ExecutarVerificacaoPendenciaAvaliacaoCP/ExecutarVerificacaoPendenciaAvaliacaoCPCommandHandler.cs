@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
             if (pendenciaId == 0)
                 pendenciaId = await IncluirPendenciaCP(turma, periodoEscolar.Bimestre);
 
-            await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoCPCommand(pendenciaId, turma.Id, periodoEscolar.Id, turma.Ue.CodigoUe, gerarPendenciasProfessor));
+            await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoCPCommand(pendenciaId, turma.Id, periodoEscolar.Id, turma.UeId, gerarPendenciasProfessor));
         }
 
         private async Task<long> IncluirPendenciaCP(Turma turma, int bimestre)
