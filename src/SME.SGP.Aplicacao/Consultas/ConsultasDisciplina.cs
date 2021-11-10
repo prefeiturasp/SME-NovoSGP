@@ -222,9 +222,9 @@ namespace SME.SGP.Aplicacao
                 return await ObterComponentesCJ(turma.ModalidadeCodigo, turma.CodigoTurma, turma.Ue.CodigoUe, componenteCurricularCodigo, usuario.CodigoRf);
             else
             {
-                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
-                
-                return MapearComponentesComComponentesSgp(componentesCurriculares.Where(x => x.Regencia && regencias.Any(c => c.CodigoComponenteCurricular == x.Codigo)), regencias).OrderBy(c => c.Nome);
+                var componentesCurriculares = await servicoEOL.ObterComponentesRegenciaPorAno(turma.AnoTurmaInteiro);
+
+                return MapearComponentes(componentesCurriculares.Where(x => x.Regencia).OrderBy(c => c.Descricao));
             }
         }
 
