@@ -44,9 +44,11 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, Paginacao paginacao)
         {
             var query = @"from pendencia p
-                          inner join pendencia_usuario pu on pu.pendencia_id = p.id
+                          left join pendencia_perfil pp on pp.pendencia_id = p.id
+                          left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
+                          left join pendencia_usuario pu on pu.pendencia_id = p.id
                          where not p.excluido 
-                           and pu.usuario_id = @usuarioId
+                           and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
                            and p.situacao <> @situacao";
             var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
