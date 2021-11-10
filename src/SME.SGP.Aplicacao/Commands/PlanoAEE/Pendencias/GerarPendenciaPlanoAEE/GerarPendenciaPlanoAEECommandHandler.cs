@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -33,7 +34,10 @@ namespace SME.SGP.Aplicacao
                     await repositorioPendenciaPlanoAEE.SalvarAsync(new PendenciaPlanoAEE(pendenciaId, request.PlanoAEEId));
 
                     if(request.Perfil != null)
+                    {
                         await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, new List<PerfilUsuario> { request.Perfil.Value }));
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, request.UeId), Guid.NewGuid()));
+                    }
 
                     if(request.UsuariosIds != null)
                     {

@@ -6,10 +6,10 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicarFilaSgpCommand : IRequest<bool>
     {
-        public PublicarFilaSgpCommand(string rota, object filtros, Guid codigoCorrelacao, Usuario usuarioLogado = null, bool notificarErroUsuario = false)
+        public PublicarFilaSgpCommand(string rota, object filtros, Guid? codigoCorrelacao = null, Usuario usuarioLogado = null, bool notificarErroUsuario = false)
         {
             Filtros = filtros;
-            CodigoCorrelacao = codigoCorrelacao;
+            CodigoCorrelacao = codigoCorrelacao ?? Guid.NewGuid();
             NotificarErroUsuario = notificarErroUsuario;
             Usuario = usuarioLogado;
             Rota = rota;

@@ -34,19 +34,6 @@ namespace SME.SGP.Aplicacao
             });
         }
 
-        private string[] ObterPerfisParaPendencia(TipoPendencia tipoPendencia)
-        {
-            switch (tipoPendencia)
-            {
-                case TipoPendencia.CalendarioLetivoInsuficiente:
-                    return new string[] { "CP", "AD", "Diretor", "ADM UE" };
-                case TipoPendencia.CadastroEventoPendente:
-                    return new string[] { "ADM UE" };
-                default:
-                    return new string[] { };
-            }
-        }
-
         public List<PerfilUsuario> ObterCodigoPerfilParaPendencia(TipoPendencia tipoPendencia)
         {
             switch (tipoPendencia)

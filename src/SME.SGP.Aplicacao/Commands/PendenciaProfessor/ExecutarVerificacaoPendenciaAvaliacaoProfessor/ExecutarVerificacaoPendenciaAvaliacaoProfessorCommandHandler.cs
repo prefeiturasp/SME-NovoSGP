@@ -42,7 +42,6 @@ namespace SME.SGP.Aplicacao
                                                                                                                             periodoEncerrando.PeriodoEscolar.PeriodoInicio,
                                                                                                                             periodoEncerrando.PeriodoEscolar.PeriodoFim));
 
-
                     // Filtra turmas seriadas 1º ao 9º ano
                     foreach (var turma in turmas.Where(c => Enumerable.Range(1, 9).Select(a => a.ToString()).Contains(c.Ano)))
                     {

@@ -80,10 +80,10 @@ namespace SME.SGP.Aplicacao
                         {
                             pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, 0, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
                             await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis())); 
-                            var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
-
-                            await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, professor.Id));
                             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ue.Id), Guid.NewGuid()));
+
+                            var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
+                            await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, professor.Id));
                         }
 
                         foreach (var aula in turmas)
