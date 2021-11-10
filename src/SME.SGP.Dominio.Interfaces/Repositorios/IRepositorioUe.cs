@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -21,6 +22,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade modalidade);
         Task<IEnumerable<long>> ObterTodosIds();
+        Task<DreUeDto> ObterCodigosDreUePorId(long ueId);
         Task<IEnumerable<string>> ObterCodigosUEs();
         IEnumerable<Ue> ObterTodas();
 

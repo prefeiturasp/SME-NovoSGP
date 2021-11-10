@@ -6,8 +6,20 @@ namespace SME.SGP.Dominio
 {
     public class PendenciaPerfil : EntidadeBase
     {
-        public int PerfilCodigo { get; set; }
+        public PendenciaPerfil()
+        {
+            PendenciasPerfilUsuarios = new List<PendenciaPerfilUsuario>();
+        }
+
+        public PerfilUsuario PerfilCodigo { get; set; }
         public long PendenciaId { get; set; }
-        public Pendencia Pendencia { get; set; }       
+        public Pendencia Pendencia { get; set; }
+
+        public List<PendenciaPerfilUsuario> PendenciasPerfilUsuarios { get; set; }
+
+        public void AdicionaPendenciaPerfilUsuario(PendenciaPerfilUsuario pendenciaPerfilUsuario)
+        {
+            PendenciasPerfilUsuarios.Add(pendenciaPerfilUsuario);
+        }
     }
 }
