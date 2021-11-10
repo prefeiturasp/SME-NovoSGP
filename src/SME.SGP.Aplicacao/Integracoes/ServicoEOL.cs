@@ -321,13 +321,13 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil)
         {
             var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}";
-            return await ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(url);
+            return await ObterComponentesCurriculares(url);
         }
 
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil)
         {
             var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}/planejamento";
-            return await ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(url);
+           return await ObterComponentesCurriculares(url);
         }
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo)
@@ -363,6 +363,13 @@ namespace SME.SGP.Aplicacao.Integracoes
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas";
 
             return await ObterDisciplinas(url, "ObterDisciplinasPorCodigoTurmaLoginEPerfil");
+        }
+
+
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesRegenciaPorAno(int anoTurma)
+        {
+            var url = $"componentes-curriculares/anos/{anoTurma}/regencia";
+            return await ObterComponentesCurriculares(url);
         }
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids)
@@ -906,7 +913,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
         }
 
-        private async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string url)
+        private async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurriculares(string url)
         {
             var resposta = await httpClient.GetAsync(url);
 
