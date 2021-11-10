@@ -18,21 +18,36 @@ namespace SME.SGP.Aplicacao
         private readonly IConfiguration configuration;
         private readonly IServicoTelemetria servicoTelemetria;
         private readonly IAsyncPolicy policy;
+        private readonly IMediator mediator;
 
-        public PublicarFilaSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry, IServicoTelemetria servicoTelemetria)
+        public PublicarFilaSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry, IServicoTelemetria servicoTelemetria, IMediator mediator)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
             this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
         {
+            string usuarioLogadoNomeCompleto = command.Usuario?.Nome;
+            string usuarioLogadoRf = command.Usuario?.CodigoRf;
+            Guid? perfilUsuario = command.Usuario?.PerfilAtual;
+
+            if(command.Usuario == null)
+            {
+                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+                usuarioLogadoNomeCompleto = usuario.Nome;
+                usuarioLogadoRf = usuario.CodigoRf;
+                perfilUsuario = usuario.PerfilAtual;
+            }
+
             var request = new MensagemRabbit(command.Filtros,
                                              command.CodigoCorrelacao,
-                                             command.UsuarioLogadoNomeCompleto,
-                                             command.UsuarioLogadoRF,
-                                             command.PerfilUsuario,
+                                             usuarioLogadoNomeCompleto,
+                                             usuarioLogadoRf,
+                                             perfilUsuario,
                                              command.NotificarErroUsuario);
 
             var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings

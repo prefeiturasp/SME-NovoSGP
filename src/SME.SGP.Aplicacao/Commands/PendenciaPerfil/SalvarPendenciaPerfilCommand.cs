@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPendenciaPerfilCommand : IRequest<List<long>>
+    public class SalvarPendenciaPerfilCommand : IRequest
     {
         public SalvarPendenciaPerfilCommand(long pendenciaId, List<PerfilUsuario> perfisCodigo)
         {

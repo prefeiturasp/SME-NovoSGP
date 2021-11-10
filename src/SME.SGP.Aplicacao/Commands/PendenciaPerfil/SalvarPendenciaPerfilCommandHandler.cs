@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPendenciaPerfilCommandHandler : IRequestHandler<SalvarPendenciaPerfilCommand, List<long>>
+    public class SalvarPendenciaPerfilCommandHandler : AsyncRequestHandler<SalvarPendenciaPerfilCommand>
     {
         private readonly IRepositorioPendenciaPerfil repositorioPendenciaPerfil;
 
@@ -17,18 +17,16 @@ namespace SME.SGP.Aplicacao
             this.repositorioPendenciaPerfil = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
         }
 
-        public async Task<List<long>> Handle(SalvarPendenciaPerfilCommand request, CancellationToken cancellationToken)
+        protected override async Task Handle(SalvarPendenciaPerfilCommand request, CancellationToken cancellationToken)
         {
-            var listaIdsPerfilUsuario = new List<long>();
             foreach(var perfil in request.PerfisCodigo)
             {
                 var pendencia = new PendenciaPerfil();
                 pendencia.Id = request.PendenciaId;
                 pendencia.PerfilCodigo = perfil;
 
-                listaIdsPerfilUsuario.Add(await repositorioPendenciaPerfil.SalvarAsync(pendencia));
+                await repositorioPendenciaPerfil.SalvarAsync(pendencia);
             }
-           return listaIdsPerfilUsuario;
         }
     }
 }

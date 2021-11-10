@@ -79,9 +79,11 @@ namespace SME.SGP.Aplicacao
                         if (!pendenciaExistente)
                         {
                             pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, 0, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
-                            var pendenciaPerfil = mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis())); 
+                            await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis())); 
                             var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
-                            await mediator.Send(new RelacionaPendenciaUsuarioCommand(ObterPerfisUsuarios(), ue.CodigoUe, pendenciaId, professor.Id));
+
+                            await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, professor.Id));
+                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ue.Id), Guid.NewGuid()));
                         }
 
                         foreach (var aula in turmas)
@@ -103,8 +105,8 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private List<int> ObterCodigoPerfis()
-                 => new List<int> { (int)PerfilUsuario.PROFESSOR, (int)PerfilUsuario.CP }; 
+        private List<PerfilUsuario> ObterCodigoPerfis()
+                 => new List<PerfilUsuario> { PerfilUsuario.CP }; 
 
         private string[] ObterPerfisUsuarios()
             => new[] { "Professor", "CP" };

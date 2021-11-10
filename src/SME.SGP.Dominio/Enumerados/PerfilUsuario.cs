@@ -48,5 +48,7 @@ namespace SME.SGP.Dominio
         COMUNICADOS_UE = 21,
         [Display(Name = "4fe1e074-37d6-e911-abd6-f81654fe895d")]
         SUPERVISOR_TECNICO = 22,
+        [Display(Name = "4ae1e074-37d6-e911-abd6-f81654fe895d")]
+        PAAI = 23,
     }
 }

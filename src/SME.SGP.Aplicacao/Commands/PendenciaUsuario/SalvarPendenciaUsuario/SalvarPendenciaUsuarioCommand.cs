@@ -7,18 +7,14 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaUsuarioCommand : IRequest<bool>
     {
-        public SalvarPendenciaUsuarioCommand(long pendenciaId, long? usuarioId, int perfil = 0, int nivel = 0)
+        public SalvarPendenciaUsuarioCommand(long pendenciaId, long usuarioId)
         {
             PendenciaId = pendenciaId;
             UsuarioId = usuarioId;
-            PerfilCodigo = perfil;
-            Nivel = nivel;
         }
 
         public long PendenciaId { get; set; }
-        public long? UsuarioId { get; set; }
-        public int PerfilCodigo { get; set; }
-        public int Nivel { get; set; }
+        public long UsuarioId { get; set; }
     }
     public class SalvarPendenciaUsuarioCommandValidator : AbstractValidator<SalvarPendenciaUsuarioCommand>
     {
