@@ -20,22 +20,24 @@
         public const string RotaNovaNotificacaoDevolutiva = "sgp.notificacao.nova.devolutiva";
         public const string RotaExcluirNotificacaoDevolutiva = "sgp.notificacao.excluir.devolutiva";
         public const string RotaExcluirNotificacaoDiarioBordo = "sgp.notificacao.excluir.diariobordo";
-        public const string RotaExecutaPendenciasAula = "sgp.pendencias.aulas.executa";
         public const string RotaSincronizaComponetesCurricularesEol = "sgp.componentes.curriculares.eol.sincronizar";
         public const string RotaCalculoFrequenciaPorTurmaComponente = "sgp.frequencia.turma.componente";
-        public const string RotaExecutaVerificacaoPendenciasGerais = "sgp.pendencias.gerais.executa.verificacao";
 
+        public const string RotaExecutaPendenciasAula = "sgp.pendencias.aulas.executa";
+        public const string RotaExecutaVerificacaoPendenciasGerais = "sgp.pendencias.gerais.executa.verificacao";
         public const string RotaExecutaExclusaoPendenciasAula = "sgp.pendencias.gerais.pendencias.aula.excluir";
         public const string RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes = "sgp.pendencias.gerais.pendencias.calendario.excluir";
         public const string RotaExecutaExclusaoPendenciaParametroEvento = "sgp.pendencias.gerais.pendencias.evento.excluir";
-        public const string RotaTrataNotificacoesNiveis = "sgp.notificacao.tratamento.niveiscargos";
-
         public const string RotaExecutaVerificacaoPendenciasProfessor = "sgp.pendencias.professor.executa.verificacao";
-
         public const string RotaExecutaVerificacaoPendenciasAusenciaFechamento = "sgp.pendencias.bimestre.ausencia.fechamento.verificacao";
         public const string RotaExecutaExclusaoPendenciasAusenciaAvaliacao = "sgp.pendencias.professor.avaliacao.excluir";
-
         public const string RotaExecutaExclusaoPendenciasAusenciaFechamento = "sgp.pendencias.bimestre.ausencia.fechamento.excluir";
+        public const string RotaPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual";
+        public const string RotaAtualizarPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual.atualizar";
+
+        public const string RotaTratarAtribuicaoPendenciaUsuarios = "sgp.pendencias.atribuicao.tratar";
+
+        public const string RotaTrataNotificacoesNiveis = "sgp.notificacao.tratamento.niveiscargos";
 
         public const string RotaExecutaAtualizacaoSituacaoConselhoClasse = "sgp.conselho.classe.situacao.atualizar";
         public const string RotaNotificacaoAndamentoFechamento = "sgp.fechamento.andamento.notificar";
@@ -53,9 +55,6 @@
         public const string RotaNotificacaoPeriodoFechamento = "sgp.periodo.fechamento.notificar";
 
         public const string RotaNotificacaoFrequenciaUe = "sgp.frequencia.ue.notificar";
-
-        public const string RotaPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual";
-        public const string RotaAtualizarPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual.atualizar";
 
         public const string RotaValidacaoAusenciaConciliacaoFrequenciaTurma = "sgp.frequencia.turma.conciliacao.validar";        
 
