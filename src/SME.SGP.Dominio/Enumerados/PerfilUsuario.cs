@@ -46,5 +46,7 @@ namespace SME.SGP.Dominio
         POSL = 20,
         [Display(Name = "64e1e074-37d6-e911-abd6-f81654fe895d")]
         COMUNICADOS_UE = 21,
+        [Display(Name = "4fe1e074-37d6-e911-abd6-f81654fe895d")]
+        SUPERVISOR_TECNICO = 22,
     }
 }
