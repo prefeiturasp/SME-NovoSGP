@@ -53,7 +53,6 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
             var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
             var aulas = await mediator.Send(new ObterAulasReduzidaPorTipoCalendarioQuery(tipoCalendarioId, ObterTiposDeEscolasValidos()));
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var diasComEventosNaoLetivos = diasLetivosENaoLetivos.Where(e => e.EhNaoLetivo);
 
@@ -84,7 +83,7 @@ namespace SME.SGP.Aplicacao
                             var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
 
                             await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, professor.Id));
-                            //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ue.Id), Guid.NewGuid(), usuario));
+                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ue.Id), Guid.NewGuid()));
                         }
 
                         foreach (var aula in turmas)
@@ -106,8 +105,8 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private List<int> ObterCodigoPerfis()
-                 => new List<int> { (int)PerfilUsuario.CP }; 
+        private List<PerfilUsuario> ObterCodigoPerfis()
+                 => new List<PerfilUsuario> { PerfilUsuario.CP }; 
 
         private string[] ObterPerfisUsuarios()
             => new[] { "Professor", "CP" };

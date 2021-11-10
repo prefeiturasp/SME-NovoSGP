@@ -9,14 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaPerfilCommand : IRequest
     {
-        public SalvarPendenciaPerfilCommand(long pendenciaId, List<int> perfisCodigo)
+        public SalvarPendenciaPerfilCommand(long pendenciaId, List<PerfilUsuario> perfisCodigo)
         {
             PendenciaId = pendenciaId;
             PerfisCodigo = perfisCodigo;
         }
 
         public long PendenciaId { get; set; }
-        public List<int> PerfisCodigo { get; set; }
+        public List<PerfilUsuario> PerfisCodigo { get; set; }
     }
 
     public class SalvarPendenciaPerfilCommandValidator : AbstractValidator<SalvarPendenciaPerfilCommand>

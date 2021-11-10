@@ -31,11 +31,16 @@ namespace SME.SGP.Aplicacao
                     var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, 0, request.Descricao, titulo: request.Titulo));
 
                     await repositorioPendenciaPlanoAEE.SalvarAsync(new PendenciaPlanoAEE(pendenciaId, request.PlanoAEEId));
-                    await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, new List<int> { request.Perfil }));
 
-                    foreach(var usuarioId in request.UsuariosIds)
-                        await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
+                    if(request.Perfil != null)
+                        await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, new List<PerfilUsuario> { request.Perfil.Value }));
 
+                    if(request.UsuariosIds != null)
+                    {
+                        foreach (var usuarioId in request.UsuariosIds)
+                            await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
+                    }
+        
                     unitOfWork.PersistirTransacao();
                 }
                 catch (Exception e)
