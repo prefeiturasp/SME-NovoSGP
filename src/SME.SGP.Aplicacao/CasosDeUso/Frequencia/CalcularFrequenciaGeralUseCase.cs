@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            int.TryParse(mensagemRabbit.Mensagem.ToString(), out int ano);
+            int.TryParse(mensagemRabbit.Mensagem.ToString(), out int ano); 
 
             if (!string.IsNullOrEmpty(mensagemRabbit.Mensagem.ToString()) && ano == DateTime.Now.Year)
             {
