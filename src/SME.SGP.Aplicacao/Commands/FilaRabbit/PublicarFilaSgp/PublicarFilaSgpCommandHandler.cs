@@ -30,18 +30,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
         {
-            string usuarioLogadoNomeCompleto = command.Usuario?.Nome;
-            string usuarioLogadoRf = command.Usuario?.CodigoRf;
-            Guid? perfilUsuario = command.Usuario?.PerfilAtual;
+            var usuario = command.Usuario ?? await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            if(command.Usuario == null)
-            {
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-                usuarioLogadoNomeCompleto = usuario.Nome;
-                usuarioLogadoRf = usuario.CodigoRf;
-                perfilUsuario = usuario.PerfilAtual;
-            }
+            string usuarioLogadoNomeCompleto = usuario?.Nome;
+            string usuarioLogadoRf = usuario?.CodigoRf;
+            Guid? perfilUsuario = usuario?.PerfilAtual;
 
             var request = new MensagemRabbit(command.Filtros,
                                              command.CodigoCorrelacao,
