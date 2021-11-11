@@ -302,7 +302,7 @@ namespace SME.SGP.Dados.Repositorios
             new { dreCodigo, modalidade }));
         }
 
-        public async Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades)
+        public async Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades, DateTime dataReferencia)
         {
             var query = @" select distinct ue.*, dre.*
                                from ue 
@@ -313,8 +313,10 @@ namespace SME.SGP.Dados.Repositorios
                                 and not exists (select 1
     		                            from periodo_fechamento pf
     		                            inner join periodo_fechamento_bimestre pb on pb.periodo_fechamento_id = pf.id
-    		                            where pf.ue_id = ue.id
-    		                             and pb.periodo_escolar_id = @periodoEscolarId)";
+    		                            where pb.periodo_escolar_id = @periodoEscolarId
+                                            and TO_DATE(pf.inicio::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
+                                            and TO_DATE(pf.fim::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
+                            )";
 
             return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query,
                 (ue, dre) =>
@@ -322,7 +324,7 @@ namespace SME.SGP.Dados.Repositorios
                     ue.AdicionarDre(dre);
 
                     return ue;
-                }, new { periodoEscolarId, ano, modalidades });
+                }, new { periodoEscolarId, ano, modalidades, dataReferencia });
         }
 
         public async Task<int> ObterQuantidadeTurmasSeriadas(long ueId, int ano)

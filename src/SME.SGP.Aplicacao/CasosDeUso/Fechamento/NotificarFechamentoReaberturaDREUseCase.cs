@@ -33,11 +33,19 @@ namespace SME.SGP.Aplicacao
             if (adminsSgpDre != null && adminsSgpDre.Any())
             {
                 foreach (var adminSgpUe in adminsSgpDre)
-                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(filtro.FechamentoReabertura, filtro.Dre, null,adminSgpUe));
+                {
+                    filtro.FechamentoReabertura.CodigoRf = adminSgpUe;
+                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(filtro.FechamentoReabertura));
+                }
+                    
             }
 
             foreach (var ue in filtro.Ues)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(filtro.Dre, ue, filtro.FechamentoReabertura), new Guid(), null));
+            {
+                filtro.FechamentoReabertura.UeCodigo = ue;
+                filtro.FechamentoReabertura.DreCodigo = filtro.Dre;
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(filtro.FechamentoReabertura), new Guid(), null));
+            }                
                     
             return true;
         }

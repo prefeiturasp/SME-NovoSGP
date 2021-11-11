@@ -22,9 +22,7 @@ namespace SME.SGP.Aplicacao.Queries.UE.ObterUEsPorModalidadeCalendario
 
         public async Task<IEnumerable<Ue>> Handle(ObterUEsComDREsPorModalidadeTipoCalendarioQuery request, CancellationToken cancellationToken)
         {
-            var modalidades = request.ModalidadeTipoCalendario.ObterModalidadesTurma();
-
-            return await repositorioUe.ObterUEsComDREsPorModalidadeTipoCalendarioQuery(modalidades.Cast<int>().ToArray(), request.AnoLetivo);
+            return await repositorioUe.ObterUEsComDREsPorModalidadeTipoCalendarioQuery(request.Modalidades, request.AnoLetivo);
         }
     }
 }

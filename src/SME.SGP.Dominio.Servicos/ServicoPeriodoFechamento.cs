@@ -236,6 +236,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 eventoExistente.DataInicio = bimestre.InicioDoFechamento;
                 eventoExistente.DataFim = bimestre.FinalDoFechamento;
+                eventoExistente.Excluido = false;
                 repositorioEvento.Salvar(eventoExistente);
             }
         }

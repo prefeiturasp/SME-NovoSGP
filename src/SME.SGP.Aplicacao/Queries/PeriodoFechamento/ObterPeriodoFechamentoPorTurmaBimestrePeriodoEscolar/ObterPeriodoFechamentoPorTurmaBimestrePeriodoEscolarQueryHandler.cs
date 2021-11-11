@@ -16,10 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<PeriodoFechamentoBimestre> Handle(ObterPeriodoFechamentoPorTurmaBimestrePeriodoEscolarQuery request, CancellationToken cancellationToken)
-            => await repositorioPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync( request.Turma.Ue.Id, 
-                                                                                    request.Turma.Ue.DreId, 
-                                                                                    request.Turma.AnoLetivo, 
-                                                                                    request.Bimestre, 
-                                                                                    request.PeriodoEscolarId);
+            => await repositorioPeriodoFechamento.ObterPeriodoFechamentoTurma(request.Turma.AnoLetivo, request.Bimestre, request.PeriodoEscolarId);
     }
 }

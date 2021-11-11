@@ -33,6 +33,10 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync("DELETE FROM FECHAMENTO_REABERTURA_NOTIFICACAO WHERE FECHAMENTO_REABERTURA_ID = @fechamentoReaberturaId", new { fechamentoReaberturaId });
         }
 
+        public async Task<IEnumerable<FechamentoReabertura>> ObterPorIds(long[] ids = null)
+        {
+            return await database.Conexao.QueryAsync<FechamentoReabertura>("select * from fechamento_reabertura where id = ANY(@ids)", new { ids });
+        }
         public async Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId, long[] ids = null)
         {
             var query = new StringBuilder();
@@ -165,43 +169,24 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FechamentoReaberturaNotificacao>("SELECT * FROM FECHAMENTO_REABERTURA_NOTIFICACAO FRN WHERE FRN.FECHAMENTO_REABERTURA_ID = @Id", new { id });
         }
 
-        public async Task<FechamentoReabertura> ObterPorTurma(long turmaId)
-        {
-            var query = @"select distinct fr.id from fechamento_reabertura fr
-                            inner join ue u
-                            on fr.ue_id = u.id
-                            inner join turma t
-                            on t.ue_id = u.id
-                             where t.id = @turmaId";
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoReabertura>(query, new { turmaId });
-        }
-
         public async Task<IEnumerable<FechamentoReabertura>> ObterReaberturaFechamentoBimestre(int bimestre, DateTime dataInicio, DateTime dataFim, long tipoCalendarioId, string dreCodigo, string ueCodigo)
         {
             var bimetreQuery = "(select pe.bimestre from periodo_escolar pe inner join tipo_calendario tc on tc.id  = pe.tipo_calendario_id and tc.id = fr.tipo_calendario_id order by pe.bimestre  desc limit 1)";
             var bimestreWhere = $"and frb.bimestre = {(bimestre > 0 ? " @bimestre" : bimetreQuery)}";
-            var incluirJoinUe = string.Empty;
-            var incluirUeWhere = "and fr.ue_id is null";
-
-            if (!string.IsNullOrEmpty(ueCodigo))
-            {
-                incluirJoinUe = "inner join ue on ue.id = fr.ue_id";
-                incluirUeWhere = "and ue.ue_id = @ueCodigo";
-            }
 
             var query = $@"select fr.* 
                           from fechamento_reabertura_bimestre frb
-                         inner join fechamento_reabertura fr on fr.id = frb.fechamento_reabertura_id
-                         inner join dre on dre.id = fr.dre_id
-                         {incluirJoinUe}
-                         where not fr.excluido
-                           {bimestreWhere}
-                           and TO_DATE(fr.inicio::TEXT, 'yyyy/mm/dd') = TO_DATE(@dataInicio, 'yyyy/mm/dd')
-                           and TO_DATE(fr.fim::TEXT, 'yyyy/mm/dd') = TO_DATE(@dataFim, 'yyyy/mm/dd')
+                         inner join fechamento_reabertura fr on fr.id = frb.fechamento_reabertura_id    
+                         left join dre on dre.id = fr.dre_id
+                         left join ue on ue.id = fr.ue_id
+                         where not fr.excluido 
+                          {bimestreWhere}
+                           and TO_DATE(fr.inicio::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataInicio, 'yyyy/mm/dd')
+                           and TO_DATE(fr.fim::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataFim, 'yyyy/mm/dd')
                            and fr.tipo_calendario_id = @tipoCalendarioId
-                           and dre.dre_id = @dreCodigo
-                            {incluirUeWhere}";
+                           and (fr.dre_id is null or dre.dre_id = @dreCodigo)
+                           and (fr.ue_id is null or ue.ue_id = @ueCodigo)
+                           and fr.status = 1 ";
 
             return await database.Conexao.QueryAsync<FechamentoReabertura>(query, new
             {
