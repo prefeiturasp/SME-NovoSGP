@@ -47,7 +47,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select ");
-            query.AppendLine("COALESCE(SUM(a.quantidade),0) AS total");
+            query.AppendLine("COALESCE(SUM(a.quantidade),0) AS total, a.disciplina_id as DisciplinaId");
             query.AppendLine("from ");
             query.AppendLine("aula a ");
             query.AppendLine("inner join registro_frequencia rf on ");
@@ -64,6 +64,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.disciplina_id = @disciplinaId ");
 
             query.AppendLine("and a.turma_id = @turmaId ");
+            query.AppendLine("group by a.disciplina_id ");
             return query.ToString();
         }
 
@@ -73,10 +74,10 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
         }
 
-        public async Task<int> ObterTotalAulasPorDisciplinaETurmaAsync(DateTime dataAula, string disciplinaId, string turmaId)
+        public async Task<IEnumerable<DisciplinaTotalDto>> ObterTotalAulasPorDisciplinaETurmaAsync(DateTime dataAula, string disciplinaId, string turmaId)
         {
             String query = BuildQueryObterTotalAulasPorDisciplinaETurma(dataAula, disciplinaId, turmaId);
-            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
+            return await database.Conexao.QueryAsync<DisciplinaTotalDto>(query.ToString(), new { dataAula, disciplinaId, turmaId });
         }
 
         private String BuildQueryObterTotalAusenciasPorAlunoETurma(DateTime dataAula, string codigoAluno,
@@ -132,7 +133,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<AusenciaPorDisciplinaDto>(query.ToString(), new { dataAula, codigoAluno, disciplinaId, turmaId });
         }
 
-        public async Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterTotalAusenciasPorAlunosETurmaAsync(DateTime dataAula, IEnumerable<string> codigoAlunos, string turmaId)
+        public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterTotalAusenciasPorAlunosETurmaAsync(DateTime dataAula, IEnumerable<string> codigoAlunos, string turmaId)
         {
             var query = @"           
                     select
@@ -170,7 +171,7 @@ namespace SME.SGP.Dados.Repositorios
                     ra.codigo_aluno,
                     a.disciplina_id";
 
-            return await database.Conexao.QueryAsync<AusenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmaId });
+            return await database.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmaId });
         }
 
         public async Task SalvarVarios(List<RegistroAusenciaAluno> entidades)
