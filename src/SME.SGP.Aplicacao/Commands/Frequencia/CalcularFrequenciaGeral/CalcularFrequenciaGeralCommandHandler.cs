@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var registroFrequenciaAlunos = (await mediator.Send(new ObterFrequenciaAlunosGeralPorAnoQuery(request.Ano))).ToList();
+                var registroFrequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosGeralPorAnoQuery(request.Ano));
 
                 var alunosEmTurmasDisciplinasData = registroFrequenciaAlunos.GroupBy(g => new { g.DisciplinaId, g.TurmaId, g.DataAula }, (key, group) => 
                 new { key.DisciplinaId, key.TurmaId, key.DataAula, Alunos = group.Select(s=> s.AlunoCodigo).ToList()});                
