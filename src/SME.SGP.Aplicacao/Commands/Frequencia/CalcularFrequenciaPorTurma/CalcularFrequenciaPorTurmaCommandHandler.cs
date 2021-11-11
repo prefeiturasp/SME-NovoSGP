@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Polly;
 using Polly.Registry;
+using Sentry;
 using SME.GoogleClassroom.Infra;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -36,51 +37,71 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(CalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
-            if (request.Alunos == null || !request.Alunos.Any())
+            
+            try
             {
-                var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaId));
-                if (alunosDaTurma == null || !alunosDaTurma.Any())
-                    throw new NegocioException($"Não localizados alunos para turma [{request.TurmaId}] no EOL");
-
-                request.Alunos = alunosDaTurma.Select(a => a.CodigoAluno).Distinct().ToList();
-            }
-
-            var ausenciasDosAlunos = await mediator.Send(new ObterAusenciasAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId));
-
-            var periodosEscolaresParaFiltro = ausenciasDosAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
-
-            var frequenciaDosAlunos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunosAsync(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId);
-
-            var frequenciasParaRemover = new List<FrequenciaAluno>();
-            var frequenciasParaPersistir = new List<FrequenciaAluno>();
-
-            if (ausenciasDosAlunos != null && ausenciasDosAlunos.Any())
-            {
-                //Transformar em uma query única?
-                var totalAulasNaDisciplina = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, request.DisciplinaId, request.TurmaId);
-                var totalAulasDaTurmaGeral = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, string.Empty, request.TurmaId);
-
-                var alunosComAusencias = ausenciasDosAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
-                var bimestresParaFiltro = ausenciasDosAlunos.Select(a => a.Bimestre).Distinct().ToList();
-
-                var totalCompensacoesDisciplinaAlunos = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunosETurmaAsync(bimestresParaFiltro, alunosComAusencias, request.TurmaId);
-
-                foreach (var codigoAluno in alunosComAusencias)
+                if (request.Alunos == null || !request.Alunos.Any())
                 {
-                    var ausenciasDoAluno = ausenciasDosAlunos.Where(a => a.AlunoCodigo == codigoAluno).ToList();
+                    var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaId));
+                    if (alunosDaTurma == null || !alunosDaTurma.Any())
+                        throw new NegocioException($"Não localizados alunos para turma [{request.TurmaId}] no EOL");
 
-                    TrataFrequenciaAlunoComponente(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasNaDisciplina, totalCompensacoesDisciplinaAlunos, codigoAluno, ausenciasDoAluno);
-                    TrataFrequenciaAlunoGlobal(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasDaTurmaGeral, totalCompensacoesDisciplinaAlunos, codigoAluno, ausenciasDoAluno);
+                    request.Alunos = alunosDaTurma.Select(a => a.CodigoAluno).Distinct().ToList();
                 }
+
+                var ausenciasDosAlunos = await mediator.Send(new ObterAusenciasAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId));
+
+                var periodosEscolaresParaFiltro = ausenciasDosAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
+
+                var frequenciaDosAlunos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunosAsync(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId);
+
+                var frequenciasParaRemover = new List<FrequenciaAluno>();
+                var frequenciasParaPersistir = new List<FrequenciaAluno>();
+
+                if (ausenciasDosAlunos != null && ausenciasDosAlunos.Any())
+                {
+                    //Transformar em uma query única?
+                    var totalAulasNaDisciplina = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, request.DisciplinaId, request.TurmaId);
+                    var totalAulasDaTurmaGeral = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, string.Empty, request.TurmaId);
+
+                    var alunosComAusencias = ausenciasDosAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
+                    var bimestresParaFiltro = ausenciasDosAlunos.Select(a => a.Bimestre).Distinct().ToList();
+
+                    var totalCompensacoesDisciplinaAlunos = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunosETurmaAsync(bimestresParaFiltro, alunosComAusencias, request.TurmaId);
+
+                    foreach (var codigoAluno in alunosComAusencias)
+                    {
+                        var ausenciasDoAluno = ausenciasDosAlunos.Where(a => a.AlunoCodigo == codigoAluno).ToList();
+
+                        TrataFrequenciaAlunoComponente(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasNaDisciplina, totalCompensacoesDisciplinaAlunos, codigoAluno, ausenciasDoAluno);
+                        TrataFrequenciaAlunoGlobal(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasDaTurmaGeral, totalCompensacoesDisciplinaAlunos, codigoAluno, ausenciasDoAluno);
+                    }
+                }
+
+                ObterFrequenciasParaExcluirGeral(request, frequenciaDosAlunos, frequenciasParaRemover, frequenciasParaPersistir);
+
+                ObterFrequenciasParaRemoverAlunosSemAusencia(request, ausenciasDosAlunos, frequenciaDosAlunos, frequenciasParaRemover);
+
+                await TrataPersistencia(frequenciasParaRemover, frequenciasParaPersistir);
+
+                return true;
+            }
+            catch (NegocioException ex)
+            {
+                return LogarSentry(request, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return LogarSentry(request, ex.Message);
             }
 
-            ObterFrequenciasParaExcluirGeral(request, frequenciaDosAlunos, frequenciasParaRemover, frequenciasParaPersistir);
+        }
 
-            ObterFrequenciasParaRemoverAlunosSemAusencia(request, ausenciasDosAlunos, frequenciaDosAlunos, frequenciasParaRemover);
-
-            await TrataPersistencia(frequenciasParaRemover, frequenciasParaPersistir);
-
-            return true;
+        private bool LogarSentry(CalcularFrequenciaPorTurmaCommand request, string erro)
+        {
+            string msgErro = $"RotaCalculoFrequenciaPorTurmaComponente - TurmaId:{request.TurmaId}, DisciplinaId:{request.DisciplinaId}, DataAula:{request.DataAula.ToString("dd-mm-yyyy")} - Erro:{erro}";
+            SentrySdk.AddBreadcrumb(msgErro);
+            return false;
         }
 
         private static void ObterFrequenciasParaExcluirGeral(CalcularFrequenciaPorTurmaCommand request, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaRemover, List<FrequenciaAluno> frequenciasParaPersistir)
