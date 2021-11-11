@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -15,9 +14,9 @@ namespace SME.SGP.Infra
         public string Turma { get; set; }
         public string UsuarioBuscaNome { get; set; }
         public string UsuarioBuscaRf { get; set; }
-        public IEnumerable<long> Categorias { get; set; }
-        public IEnumerable<long> Tipos { get; set; }
-        public IEnumerable<long> Situacoes { get; set; }
+        public long[] Categorias { get; set; }
+        public long[] Tipos { get; set; }
+        public long[] Situacoes { get; set; }
         public bool ExibirDescricao { get; set; }
         public bool ExibirNotificacoesExcluidas { get; set; }
 
