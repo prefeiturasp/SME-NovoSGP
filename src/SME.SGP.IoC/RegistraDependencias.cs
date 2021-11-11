@@ -356,6 +356,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaProfessor, RepositorioPendenciaProfessor>();
             services.TryAddScoped<IRepositorioPendenciaRegistroIndividual, RepositorioPendenciaRegistroIndividual>();
             services.TryAddScoped<IRepositorioPendenciaRegistroIndividualAluno, RepositorioPendenciaRegistroIndividualAluno>();
+            services.TryAddScoped<IRepositorioPendenciaPerfil, RepositorioPendenciaPerfil>();
+            services.TryAddScoped<IRepositorioPendenciaPerfilUsuario, RepositorioPendenciaPerfilUsuario>();
 
             // Itinerancia
             services.TryAddScoped<IRepositorioItinerancia, RepositorioItinerancia>();
@@ -753,6 +755,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarExclusaoPendenciasAulaUseCase, ExecutarExclusaoPendenciasAulaUseCase>();
             services.TryAddScoped<IExecutarExclusaoPendenciaDiasLetivosInsuficientes, ExecutarExclusaoPendenciaDiasLetivosInsuficientes>();
             services.TryAddScoped<IExecutarExclusaoPendenciaParametroEvento, ExecutarExclusaoPendenciaParametroEvento>();
+
+            services.TryAddScoped<ITratarAtribuicaoPendenciasUsuariosUseCase, TratarAtribuicaoPendenciasUsuariosUseCase>();
 
             // Pendencias Professor
             services.TryAddScoped<IExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase, ExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase>();

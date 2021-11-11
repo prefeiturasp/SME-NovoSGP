@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -77,10 +78,12 @@ namespace SME.SGP.Aplicacao
 
                         if (!pendenciaExistente)
                         {
-                            pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
+                            pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, 0, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
+                            await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis())); 
+                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ue.Id), Guid.NewGuid()));
 
                             var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
-                            await mediator.Send(new RelacionaPendenciaUsuarioCommand(ObterPerfisUsuarios(), ue.CodigoUe, pendenciaId, professor.Id));
+                            await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, professor.Id));
                         }
 
                         foreach (var aula in turmas)
@@ -102,8 +105,8 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private string[] ObterPerfisUsuarios()
-            => new[] { "Professor", "CP" };
+        private List<PerfilUsuario> ObterCodigoPerfis()
+                 => new List<PerfilUsuario> { PerfilUsuario.CP }; 
 
         private static TipoEscola[] ObterTiposDeEscolasValidos()
             => new[]

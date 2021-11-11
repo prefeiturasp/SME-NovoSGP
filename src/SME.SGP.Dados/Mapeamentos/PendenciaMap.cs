@@ -8,6 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("pendencia");
             Map(c => c.DescricaoHtml).ToColumn("descricao_html");
+            Map(c => c.UeId).ToColumn("ue_id");
         }
     }
 }

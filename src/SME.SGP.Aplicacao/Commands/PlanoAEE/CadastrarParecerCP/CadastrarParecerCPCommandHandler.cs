@@ -56,13 +56,10 @@ namespace SME.SGP.Aplicacao.Commands
             if (turma == null)
                 throw new NegocioException($"Não foi possível localizar a turma [{turmaId}]");
 
-            var usuariosId = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(turma.Ue.Dre.CodigoDre));
-
-            foreach(var usuarioId in usuariosId)
-                await GerarPendenciaCEFAI(usuarioId, plano, turma);
+            await GerarPendenciaCEFAI(plano, turma);
         }
 
-        private async Task GerarPendenciaCEFAI(long usuarioId, PlanoAEE plano, Turma turma)
+        private async Task GerarPendenciaCEFAI(PlanoAEE plano, Turma turma)
         {
             var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
             var hostAplicacao = configuration["UrlFrontEnd"];
@@ -73,7 +70,7 @@ namespace SME.SGP.Aplicacao.Commands
 
                 <br/><br/>A pendência será resolvida automaticamente após este registro.";
 
-            await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, usuarioId, titulo, descricao));
+            await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, null, titulo, descricao, turma.UeId, PerfilUsuario.CEFAI));
         }
 
         private async Task<bool> ParametroGeracaoPendenciaAtivo()

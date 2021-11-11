@@ -18,21 +18,29 @@ namespace SME.SGP.Aplicacao
         private readonly IConfiguration configuration;
         private readonly IServicoTelemetria servicoTelemetria;
         private readonly IAsyncPolicy policy;
+        private readonly IMediator mediator;
 
-        public PublicarFilaSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry, IServicoTelemetria servicoTelemetria)
+        public PublicarFilaSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry, IServicoTelemetria servicoTelemetria, IMediator mediator)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
             this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
         {
+            var usuario = command.Usuario ?? await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            string usuarioLogadoNomeCompleto = usuario?.Nome;
+            string usuarioLogadoRf = usuario?.CodigoRf;
+            Guid? perfilUsuario = usuario?.PerfilAtual;
+
             var request = new MensagemRabbit(command.Filtros,
                                              command.CodigoCorrelacao,
-                                             command.UsuarioLogadoNomeCompleto,
-                                             command.UsuarioLogadoRF,
-                                             command.PerfilUsuario,
+                                             usuarioLogadoNomeCompleto,
+                                             usuarioLogadoRf,
+                                             perfilUsuario,
                                              command.NotificarErroUsuario);
 
             var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
