@@ -36,6 +36,7 @@ namespace SME.SGP.Dados
                             and a.data_aula >= p.periodo_inicio
                             and a.data_aula <= p.periodo_fim                    
                             and rfa.numero_aula <= a.quantidade
+                            and a.turma_id = '2261033' and rfa.codigo_aluno = '4851994' and a.disciplina_id = '138'
                         order by a.disciplina_id,
 		                         a.turma_id,
 		                         p.periodo_fim,

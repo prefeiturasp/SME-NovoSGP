@@ -62,6 +62,7 @@ namespace SME.SGP.Aplicacao
 
                 var alunosComFrequencia = registroFreqAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
                 var bimestresParaFiltro = registroFreqAlunos.Select(a => a.Bimestre).Distinct().ToList();
+                var registroFrequenciaAgregado = ObterRegistroFrequenciaAgregado(registroFreqAlunos);
 
                 var totalCompensacoesDisciplinaAlunos = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunosETurmaAsync(bimestresParaFiltro, alunosComFrequencia, request.TurmaId);
 
@@ -69,8 +70,8 @@ namespace SME.SGP.Aplicacao
                 {
                     var ausenciasDoAluno = alunosComFrequencia.Where(a => a == codigoAluno).ToList();
 
-                    TrataFrequenciaAlunoComponente(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasDaDisciplina, totalCompensacoesDisciplinaAlunos, codigoAluno, registroFreqAlunos);
-                    TrataFrequenciaAlunoGlobal(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasDaTurmaGeral, totalCompensacoesDisciplinaAlunos, codigoAluno, registroFreqAlunos);
+                    TrataFrequenciaAlunoComponente(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasDaDisciplina, totalCompensacoesDisciplinaAlunos, codigoAluno, registroFrequenciaAgregado);
+                    TrataFrequenciaAlunoGlobal(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasDaTurmaGeral, totalCompensacoesDisciplinaAlunos, codigoAluno, registroFrequenciaAgregado);
                 }
             }
 
@@ -81,6 +82,34 @@ namespace SME.SGP.Aplicacao
             await TrataPersistencia(frequenciasParaRemover, frequenciasParaPersistir);
 
             return true;
+        }
+
+        private List<RegistroFrequenciaPorDisciplinaAlunoDto> ObterRegistroFrequenciaAgregado(List<RegistroFrequenciaPorDisciplinaAlunoDto> registroFreqAlunos)
+        {
+            return registroFreqAlunos.GroupBy(g => new { g.PeriodoEscolarId, g.PeriodoInicio, g.PeriodoFim, g.Bimestre, g.AlunoCodigo, g.ComponenteCurricularId }, (key, group) =>
+            new
+            {
+                key.PeriodoEscolarId,
+                key.PeriodoInicio,
+                key.PeriodoFim,
+                key.Bimestre,
+                key.AlunoCodigo,
+                key.ComponenteCurricularId,
+                TotalPresencas = group.Sum(s => s.TotalPresencas),
+                TotalAusencias = group.Sum(s => s.TotalAusencias),
+                TotalRemotos = group.Sum(s => s.TotalRemotos)
+            }).Select(s => new RegistroFrequenciaPorDisciplinaAlunoDto()
+            {
+                PeriodoEscolarId = s.PeriodoEscolarId,
+                PeriodoInicio = s.PeriodoInicio,
+                PeriodoFim = s.PeriodoFim,
+                Bimestre = s.Bimestre,
+                AlunoCodigo = s.AlunoCodigo,
+                ComponenteCurricularId = s.ComponenteCurricularId,
+                TotalPresencas = s.TotalPresencas,
+                TotalAusencias = s.TotalAusencias,
+                TotalRemotos = s.TotalRemotos
+            }).ToList();
         }
 
         private static void ObterFrequenciasParaExcluirGeral(CalcularFrequenciaPorTurmaCommand request, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaRemover, List<FrequenciaAluno> frequenciasParaPersistir)
