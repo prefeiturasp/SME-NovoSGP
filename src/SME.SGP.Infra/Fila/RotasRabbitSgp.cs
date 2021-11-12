@@ -222,6 +222,9 @@
         public const string SyncSerapEstudantesProvas = "sgp.sync.serap.estudantes.provas";
         public const string TratarNotificacoesNiveisCargos = "sgp.tratar.notificacoes.niveis.cargos";
         public const string PendenciasGerais = "sgp.pendencias.gerais";
+        public const string PendenciasGeraisAulas = "sgp.pendencias.gerais.aula";
+        public const string PendenciasGeraisCalendario = "sgp.pendencias.gerais.calendario";
+        public const string PendenciasGeraisEventos = "sgp.pendencias.gerais.evento";
 
         public const string NotificacaoPeriodoFechamentoReaberturaIniciando = "sgp.periodo.fechamento.reabertura.iniciando";
         public const string NotificacaoPeriodoFechamentoReaberturaEncerrando = "sgp.periodo.fechamento.reabertura.encerrando";
