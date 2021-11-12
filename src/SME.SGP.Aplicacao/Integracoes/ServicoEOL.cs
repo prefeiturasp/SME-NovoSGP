@@ -368,7 +368,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesRegenciaPorAno(int anoTurma)
         {
-            var url = $"componentes-curriculares/anos/{anoTurma}/regencia";
+            var url = $"v1/componentes-curriculares/anos/{anoTurma}/regencia";
             return await ObterComponentesCurriculares(url);
         }
 
