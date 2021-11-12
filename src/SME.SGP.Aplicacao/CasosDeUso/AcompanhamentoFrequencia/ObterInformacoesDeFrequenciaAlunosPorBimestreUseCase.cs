@@ -110,7 +110,9 @@ namespace SME.SGP.Aplicacao
                 var compensacoes = frequenciaAlunoRegistrada?.TotalCompensacoes ?? default;
                 var marcador = periodoEscolar != null ? await mediator.Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, periodoEscolar, turma.ModalidadeCodigo)) : null;
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
-                
+                var remotos = frequenciaAlunoRegistrada?.TotalRemotos ?? default;
+                var presencas = frequenciaAlunoRegistrada?.TotalPresencas ?? default;
+
                 var percentualFrequencia = frequenciaAlunoRegistrada == null && turmaPossuiFrequenciaRegistrada
                 ?
                 "100"
@@ -131,7 +133,9 @@ namespace SME.SGP.Aplicacao
                     Nome = aluno.NomeValido(),
                     NumeroChamada = aluno.NumeroAlunoChamada,
                     PossuiJustificativas = ausencias > 0,
-                    EhAtendidoAEE = alunoPossuiPlanoAEE
+                    EhAtendidoAEE = alunoPossuiPlanoAEE,
+                    Remotos = remotos,
+                    Presencas = presencas
                 });
             }
 
