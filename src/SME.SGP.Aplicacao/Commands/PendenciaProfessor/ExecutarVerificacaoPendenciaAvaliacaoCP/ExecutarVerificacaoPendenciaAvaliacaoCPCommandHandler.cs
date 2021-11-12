@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
             var descricao = $"<i>Os componentes curriculares abaixo não possuem nenhuma avaliação cadastrada no {bimestre}º bimestre {escolaUe}</i>";
             var instrucao = "Oriente os professores a cadastrarem as avaliações.";
 
-            return await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AusenciaDeAvaliacaoCP, 0, descricao, instrucao, titulo));
+            return await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AusenciaDeAvaliacaoCP, null, descricao, instrucao, titulo));
         }
 
         private async Task<bool> ExistePendenciaProfessor(long pendenciaId, long turmaId, string componenteCurricularId, string professorRf, long periodoEscolarId)

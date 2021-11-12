@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaCommand : IRequest<long>
     {
-        public SalvarPendenciaCommand(TipoPendencia tipoPendencia, long? ueId = 0, string descricao = "", string instrucao = "", string titulo = "", string descricaoHtml = "")
+        public SalvarPendenciaCommand(TipoPendencia tipoPendencia, long? ueId = null, string descricao = "", string instrucao = "", string titulo = "", string descricaoHtml = "")
         {
             TipoPendencia = tipoPendencia;
             Titulo = titulo;
