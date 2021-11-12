@@ -323,6 +323,7 @@ namespace SME.SGP.IoC
 
             // Mural de Avisos
             services.TryAddScoped<IRepositorioAviso, RepositorioAviso>();
+            services.TryAddScoped<IRepositorioAtividadeInfantil, RepositorioAtividadeInfantil>();
 
             // Encaminhamento AEE
             services.TryAddScoped<IRepositorioSecaoEncaminhamentoAEE, RepositorioSecaoEncaminhamentoAEE>();
