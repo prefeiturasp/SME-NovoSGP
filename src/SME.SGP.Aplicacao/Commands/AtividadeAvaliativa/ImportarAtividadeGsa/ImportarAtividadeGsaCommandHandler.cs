@@ -18,7 +18,6 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(ImportarAtividadeGsaCommand request, CancellationToken cancellationToken)
         {
             await ValidarLancamentoNotaComponente(request.AtividadeGsa.ComponenteCurricularId);
-            await ValidarImportacaoAtividade(request.AtividadeGsa.DataCriacao);
 
             var aula = await mediator.Send(new ObterAulaPorCodigoTurmaComponenteEDataQuery(request.AtividadeGsa.TurmaId, request.AtividadeGsa.ComponenteCurricularId.ToString(), request.AtividadeGsa.DataCriacao));
 
@@ -28,16 +27,43 @@ namespace SME.SGP.Aplicacao
                                                                Guid.NewGuid(),
                                                                null));
             else
-                await mediator.Send(new SalvarAtividadeAvaliativaGsaCommand(aula.DataAula,
-                                                                      request.AtividadeGsa.UsuarioRf,
-                                                                      request.AtividadeGsa.TurmaId,
-                                                                      request.AtividadeGsa.ComponenteCurricularId,
-                                                                      request.AtividadeGsa.Titulo,
-                                                                      request.AtividadeGsa.Descricao,
-                                                                      request.AtividadeGsa.DataCriacao,
-                                                                      request.AtividadeGsa.DataAlteracao,
-                                                                      request.AtividadeGsa.AtividadeClassroomId
-                                                                      ));
+            {
+                if (aula.Modalidade == (int)ModalidadeTipoCalendario.Infantil)
+                    await SalvarAtividadeInfantil(request, aula);
+                else
+                {
+                    await ValidarImportacaoAtividade(request.AtividadeGsa.DataCriacao);
+                    await SalvarAtividadeAvaliativa(request, aula);
+                }
+            }
+        }
+
+        private async Task SalvarAtividadeInfantil(ImportarAtividadeGsaCommand request, DataAulaDto aula)
+        {
+            await mediator.Send(new SalvarAtividadeAvaliativaGsaCommand(aula.DataAula,
+                                                                  request.AtividadeGsa.UsuarioRf,
+                                                                  request.AtividadeGsa.TurmaId,
+                                                                  request.AtividadeGsa.ComponenteCurricularId,
+                                                                  request.AtividadeGsa.Titulo,
+                                                                  request.AtividadeGsa.Descricao,
+                                                                  request.AtividadeGsa.DataCriacao,
+                                                                  request.AtividadeGsa.DataAlteracao,
+                                                                  request.AtividadeGsa.AtividadeClassroomId
+                                                                  ));
+        }
+
+        private async Task SalvarAtividadeAvaliativa(ImportarAtividadeGsaCommand request, DataAulaDto aula)
+        {
+            await mediator.Send(new SalvarAtividadeAvaliativaGsaCommand(aula.DataAula,
+                                                                  request.AtividadeGsa.UsuarioRf,
+                                                                  request.AtividadeGsa.TurmaId,
+                                                                  request.AtividadeGsa.ComponenteCurricularId,
+                                                                  request.AtividadeGsa.Titulo,
+                                                                  request.AtividadeGsa.Descricao,
+                                                                  request.AtividadeGsa.DataCriacao,
+                                                                  request.AtividadeGsa.DataAlteracao,
+                                                                  request.AtividadeGsa.AtividadeClassroomId
+                                                                  ));
         }
 
         private async Task ValidarLancamentoNotaComponente(long componenteCurricularId)
