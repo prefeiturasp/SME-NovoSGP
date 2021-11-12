@@ -224,7 +224,7 @@ namespace SME.SGP.Aplicacao
             {
                 var componentesCurriculares = await servicoEOL.ObterComponentesRegenciaPorAno(turma.AnoTurmaInteiro);
 
-                return MapearComponentes(componentesCurriculares.Where(x => x.Regencia).OrderBy(c => c.Descricao));
+                return MapearComponentes(componentesCurriculares.OrderBy(c => c.Descricao));
             }
         }
 
