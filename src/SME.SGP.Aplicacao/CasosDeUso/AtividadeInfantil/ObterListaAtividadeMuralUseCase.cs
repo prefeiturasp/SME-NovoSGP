@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.AtividadeInfantil
+namespace SME.SGP.Aplicacao
 {
     public class ObterListaAtividadeMuralUseCase : IObterListaAtividadeMuralUseCase
     {
@@ -14,9 +15,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.AtividadeInfantil
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<IEnumerable<object>> BuscarPorAulaId(long aulaId)
+        public async Task<IEnumerable<AtividadeInfantilDto>> BuscarPorAulaId(long aulaId)
         {
-            throw new NotImplementedException();
+            return await mediator.Send(new ObterListaAtividadesMuralPorAulaIdQuery(aulaId));
         }
     }
 }
