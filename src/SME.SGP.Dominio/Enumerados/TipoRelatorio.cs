@@ -109,7 +109,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/acompanhamento-registrospedagogicos", ShortName = "AcompanhamentoRegistrosPedagogicos", Description = "Relatório do Acompanhamento de Registros Pedagógicos")]
         AcompanhamentoRegistrosPedagogicos = 36,
 
-        [Display(Name = "relatorios/acompanhamento-frequencia", ShortName = "AcompanhamentoFrequencia", Description = "Relatório de Acompanhamento de Frequência")]
+        [Display(Name = "relatorios/acompanhamento-frequencia", ShortName = "AcompanhamentoFrequencia", Description = "Relatório de Frequência Individual")]
         AcompanhamentoFrequencia = 37,
 
     }
