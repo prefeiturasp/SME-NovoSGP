@@ -5,15 +5,15 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarAtividadeInfantilGsaNoMuralCommand : IRequest
     {
-        public SalvarAtividadeInfantilGsaNoMuralCommand(long aulaId, string usuarioRf, string titulo, string mensagem, long avisoClassroomId, DateTime dataCriacao, DateTime? dataAlteracao, string email)
+        public SalvarAtividadeInfantilGsaNoMuralCommand(long aulaId, string usuarioRf, string titulo, string descricao, DateTime dataCriacao, DateTime? dataAlteracao, long atividadeClassroomId, string email)
         {
-            AulaId = aulaId;
+            AulaId = aulaId; 
             UsuarioRf = usuarioRf;
             Titulo = titulo;
-            Mensagem = mensagem;
-            AvisoClassroomId = avisoClassroomId;
+            Mensagem = descricao;
             DataCriacao = dataCriacao;
             DataAlteracao = dataAlteracao;
+            AvisoClassroomId = atividadeClassroomId;
             Email = email;
         }
 

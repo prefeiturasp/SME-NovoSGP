@@ -6,6 +6,6 @@ namespace SME.SGP.Infra
     {
         public long AulaId { get; set; }
         public DateTime DataAula { get; set; }
-        public int Modalidade { get; set; }
+        public bool EhModalidadeInfantil { get; set; }
     }
 }

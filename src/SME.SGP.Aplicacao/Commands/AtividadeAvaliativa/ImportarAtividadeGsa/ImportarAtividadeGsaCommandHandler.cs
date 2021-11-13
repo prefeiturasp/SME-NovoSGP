@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                                                                null));
             else
             {
-                if (aula.Modalidade == (int)ModalidadeTipoCalendario.Infantil)
+                if (aula.EhModalidadeInfantil)
                     await SalvarAtividadeInfantil(request, aula);
                 else
                 {
@@ -40,15 +40,14 @@ namespace SME.SGP.Aplicacao
 
         private async Task SalvarAtividadeInfantil(ImportarAtividadeGsaCommand request, DataAulaDto aula)
         {
-            await mediator.Send(new SalvarAtividadeAvaliativaGsaCommand(aula.DataAula,
+            await mediator.Send(new SalvarAtividadeInfantilGsaNoMuralCommand(aula.AulaId,
                                                                   request.AtividadeGsa.UsuarioRf,
-                                                                  request.AtividadeGsa.TurmaId,
-                                                                  request.AtividadeGsa.ComponenteCurricularId,
                                                                   request.AtividadeGsa.Titulo,
                                                                   request.AtividadeGsa.Descricao,
                                                                   request.AtividadeGsa.DataCriacao,
                                                                   request.AtividadeGsa.DataAlteracao,
-                                                                  request.AtividadeGsa.AtividadeClassroomId
+                                                                  request.AtividadeGsa.AtividadeClassroomId,
+                                                                  String.Empty //TODO: No ImportarAtividadeGsaCommand não tem o campo EMAIL - atividaderequest.AtividadeGsa.Email,
                                                                   ));
         }
 

@@ -1051,11 +1051,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select a.id as AulaId,
                                  a.data_aula as DataAula,       
-                                 case when t.modalidade_codigo = 1 then 3 
-                                      when t.modalidade_codigo = 3 then 2
-                                      when t.modalidade_codigo = 5 then 1
-                                      when t.modalidade_codigo = 6 then 1
-                                 end as Modalidade   
+                                 (t.modalidade_codigo = 1) as EhModalidadeInfantil   
                          from aula a
                          join turma t on a.turma_id = t.turma_id 
                          where not a.excluido 

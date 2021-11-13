@@ -8,20 +8,20 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarAtividadeInfantilGsaNoMuralCommandHandler : AsyncRequestHandler<SalvarAtividadeInfantilGsaNoMuralCommand>
     {
-        //private readonly IRepositorioAtividadeInfantil repositorioAtividadeInfantil;
+        private readonly IRepositorioAtividadeInfantil repositorioAtividadeInfantil;
 
-        //public SalvarAtividadeInfantilGsaNoMuralCommandHandler(IRepositorioInfantil repositorioAtividadeInfantil)
-        //{
-        //    this.repositorioAtividadeInfantil = repositorioAtividadeInfantil ?? throw new ArgumentNullException(nameof(repositorioAtividadeInfantil));
-        //}
+        public SalvarAtividadeInfantilGsaNoMuralCommandHandler(IRepositorioAtividadeInfantil repositorioAtividadeInfantil)
+        {
+            this.repositorioAtividadeInfantil = repositorioAtividadeInfantil ?? throw new ArgumentNullException(nameof(repositorioAtividadeInfantil));
+        }
 
         protected override async Task Handle(SalvarAtividadeInfantilGsaNoMuralCommand request, CancellationToken cancellationToken)
         {
-            //var atividadeInfantil = await repositorioAtividadeInfantil.ObterPorClassroomId(request.AvisoClassroomId);
+            var atividadeInfantil = await repositorioAtividadeInfantil.ObterPorAtividadeClassroomId(request.AvisoClassroomId);
 
-            //atividadeInfantil = MapearParaEntidade(request, atividadeInfantil);
+            atividadeInfantil = MapearParaEntidade(request, atividadeInfantil);
 
-            //await repositorioAtividadeInfantil.SalvarAsync(atividadeInfantil);
+            await repositorioAtividadeInfantil.SalvarAsync(atividadeInfantil);
         }
 
         private Dominio.AtividadeInfantil MapearParaEntidade(SalvarAtividadeInfantilGsaNoMuralCommand request, Dominio.AtividadeInfantil atividadeInfantil)
