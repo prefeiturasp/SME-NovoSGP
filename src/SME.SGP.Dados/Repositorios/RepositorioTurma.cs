@@ -591,15 +591,17 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasPorUeModalidadesAno(long ueId, int[] modalidades, int ano)
+        public async Task<IEnumerable<Turma>> ObterTurmasPorUeModalidadesAno(long? ueId, int[] modalidades, int ano)
         {
             var query = @"select turma.*, ue.*, dre.* 
                          from turma
                         inner join ue on ue.id = turma.ue_id
                         inner join dre on dre.id = ue.dre_id
-                        where turma.ue_id = @ueId
-                          and turma.ano_letivo = @ano
+                        where turma.ano_letivo = @ano
                           and turma.modalidade_codigo = any(@modalidades) ";
+
+            if (ueId.HasValue)
+                query += " and turma.ue_id = @ueId";
 
             return await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
