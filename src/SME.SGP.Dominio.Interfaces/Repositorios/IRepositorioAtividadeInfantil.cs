@@ -7,5 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioAtividadeInfantil : IRepositorioBase<AtividadeInfantil>
     {
         Task<IEnumerable<AtividadeInfantilDto>> ObterPorAulaId(long aulaId);
+        Task<AtividadeInfantil> ObterPorAtividadeClassroomId(long atividadeClassroomId);
     }
 }
