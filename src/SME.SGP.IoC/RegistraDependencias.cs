@@ -579,6 +579,9 @@ namespace SME.SGP.IoC
             // Atividades
             services.TryAddScoped<IImportarAtividadesGsaUseCase, ImportarAtividadesGsaUseCase>();
 
+            // Atividade Infantil
+            services.TryAddScoped<IObterAtividadesInfantilUseCase, ObterAtividadesInfantilUseCase>();
+
             // Avisos do Mural Gsa
             services.TryAddScoped<IImportarAvisoDoMuralGsaUseCase, ImportarAvisoDoMuralGsaUseCase>();
             services.TryAddScoped<IObterMuralAvisosUseCase, ObterMuralAvisosUseCase>();

@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarAtividadeInfantilGsaNoMuralCommandHandler : AsyncRequestHandler<SalvarAtividadeInfantilGsaNoMuralCommand>
+    public class SalvarAtividadeInfantilCommandHandler : AsyncRequestHandler<SalvarAtividadeInfantilCommand>
     {
         private readonly IRepositorioAtividadeInfantil repositorioAtividadeInfantil;
 
-        public SalvarAtividadeInfantilGsaNoMuralCommandHandler(IRepositorioAtividadeInfantil repositorioAtividadeInfantil)
+        public SalvarAtividadeInfantilCommandHandler(IRepositorioAtividadeInfantil repositorioAtividadeInfantil)
         {
             this.repositorioAtividadeInfantil = repositorioAtividadeInfantil ?? throw new ArgumentNullException(nameof(repositorioAtividadeInfantil));
         }
 
-        protected override async Task Handle(SalvarAtividadeInfantilGsaNoMuralCommand request, CancellationToken cancellationToken)
+        protected override async Task Handle(SalvarAtividadeInfantilCommand request, CancellationToken cancellationToken)
         {
             var atividadeInfantil = await repositorioAtividadeInfantil.ObterPorAtividadeClassroomId(request.AvisoClassroomId);
 
@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             await repositorioAtividadeInfantil.SalvarAsync(atividadeInfantil);
         }
 
-        private Dominio.AtividadeInfantil MapearParaEntidade(SalvarAtividadeInfantilGsaNoMuralCommand request, Dominio.AtividadeInfantil atividadeInfantil)
+        private Dominio.AtividadeInfantil MapearParaEntidade(SalvarAtividadeInfantilCommand request, Dominio.AtividadeInfantil atividadeInfantil)
         {
             if (atividadeInfantil == null)
                 atividadeInfantil = new Dominio.AtividadeInfantil();

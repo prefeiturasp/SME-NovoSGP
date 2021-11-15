@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/mural/atividade-infantil")]
+    [Route("api/v1/mural/atividades/infantil")]
     [ValidaDto]
     public class AtividadeInfantilController : ControllerBase
     {
-        [HttpGet("obter-lista-atividades-mural")]
+        [HttpGet]
         [ProducesResponseType(typeof(AtividadeInfantilDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PDA_C, Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterListaAtividadesMural([FromQuery] long aulaId, [FromServices] IObterListaAtividadeMuralUseCase useCase)
+        public async Task<IActionResult> ObterAtividadesMural([FromQuery] long aulaId, [FromServices] IObterAtividadesInfantilUseCase useCase)
         {
-            return Ok(await useCase.BuscarPorAulaId(aulaId));
+            return Ok(await useCase.Executar(aulaId));
         }
     }
 }

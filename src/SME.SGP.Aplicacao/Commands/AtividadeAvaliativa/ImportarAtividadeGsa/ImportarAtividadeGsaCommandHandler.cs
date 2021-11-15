@@ -23,9 +23,7 @@ namespace SME.SGP.Aplicacao
 
             if (ReagendarImportacao(aula))
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAgendamento.RotaAtividadesSync,
-                                                               new MensagemAgendamentoSyncDto(RotasRabbitSgp.RotaAtividadesSync, request.AtividadeGsa),
-                                                               Guid.NewGuid(),
-                                                               null));
+                                                               new MensagemAgendamentoSyncDto(RotasRabbitSgp.RotaAtividadesSync, request.AtividadeGsa)));
             else
             {
                 if (aula.EhModalidadeInfantil)
@@ -40,14 +38,14 @@ namespace SME.SGP.Aplicacao
 
         private async Task SalvarAtividadeInfantil(ImportarAtividadeGsaCommand request, DataAulaDto aula)
         {
-            await mediator.Send(new SalvarAtividadeInfantilGsaNoMuralCommand(aula.AulaId,
+            await mediator.Send(new SalvarAtividadeInfantilCommand(aula.AulaId,
                                                                   request.AtividadeGsa.UsuarioRf,
                                                                   request.AtividadeGsa.Titulo,
                                                                   request.AtividadeGsa.Descricao,
                                                                   request.AtividadeGsa.DataCriacao,
                                                                   request.AtividadeGsa.DataAlteracao,
                                                                   request.AtividadeGsa.AtividadeClassroomId,
-                                                                  String.Empty //TODO: No ImportarAtividadeGsaCommand não tem o campo EMAIL - atividaderequest.AtividadeGsa.Email,
+                                                                  request.AtividadeGsa.Email
                                                                   ));
         }
 

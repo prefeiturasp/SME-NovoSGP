@@ -8,10 +8,16 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAtividadeInfantil : RepositorioBase<AtividadeInfantil>, IRepositorioAtividadeInfantil
     {
-        public RepositorioAtividadeInfantil(ISgpContext context) : base(context){}
+        public RepositorioAtividadeInfantil(ISgpContext context) : base(context) {}
         public async Task<IEnumerable<AtividadeInfantilDto>> ObterPorAulaId(long aulaId)
         {
-            var query = @"";
+            var query = @"select id
+                            , titulo
+                            , mensagem
+                            , email 
+                         from atividade_infantil 
+                        where aula_id = @aulaId";
+
             return await database.Conexao.QueryAsync<AtividadeInfantilDto>(query, new { aulaId });
         }
 

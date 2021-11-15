@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS public.atividade_infantil;
 CREATE TABLE public.atividade_infantil (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	aula_id int8 NOT NULL,

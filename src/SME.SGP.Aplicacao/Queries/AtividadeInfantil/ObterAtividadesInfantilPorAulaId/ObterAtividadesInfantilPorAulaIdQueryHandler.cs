@@ -6,16 +6,16 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.AtividadeInfantil.ObterListaAtividadesMural
+namespace SME.SGP.Aplicacao
 {
-    public class ObterListaAtividadesMuralPorAulaIdQueryHandler : IRequestHandler<ObterListaAtividadesMuralPorAulaIdQuery, IEnumerable<AtividadeInfantilDto>>
+    public class ObterAtividadesInfantilPorAulaIdQueryHandler : IRequestHandler<ObterAtividadesInfantilPorAulaIdQuery, IEnumerable<AtividadeInfantilDto>>
     {
         private readonly IRepositorioAtividadeInfantil repositorioAtividadeInfantil;
-        public ObterListaAtividadesMuralPorAulaIdQueryHandler(IRepositorioAtividadeInfantil repositorioAtividadeInfantil)
+        public ObterAtividadesInfantilPorAulaIdQueryHandler(IRepositorioAtividadeInfantil repositorioAtividadeInfantil)
         {
             this.repositorioAtividadeInfantil = repositorioAtividadeInfantil ?? throw new ArgumentNullException(nameof(repositorioAtividadeInfantil));
         }
-        public Task<IEnumerable<AtividadeInfantilDto>> Handle(ObterListaAtividadesMuralPorAulaIdQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<AtividadeInfantilDto>> Handle(ObterAtividadesInfantilPorAulaIdQuery request, CancellationToken cancellationToken)
         {
             return repositorioAtividadeInfantil.ObterPorAulaId(request.AulaId);
         }

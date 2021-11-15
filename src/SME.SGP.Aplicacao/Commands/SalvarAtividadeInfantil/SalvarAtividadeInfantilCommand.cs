@@ -3,9 +3,9 @@ using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarAtividadeInfantilGsaNoMuralCommand : IRequest
+    public class SalvarAtividadeInfantilCommand : IRequest
     {
-        public SalvarAtividadeInfantilGsaNoMuralCommand(long aulaId, string usuarioRf, string titulo, string descricao, DateTime dataCriacao, DateTime? dataAlteracao, long atividadeClassroomId, string email)
+        public SalvarAtividadeInfantilCommand(long aulaId, string usuarioRf, string titulo, string descricao, DateTime dataCriacao, DateTime? dataAlteracao, long atividadeClassroomId, string email)
         {
             AulaId = aulaId; 
             UsuarioRf = usuarioRf;
