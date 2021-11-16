@@ -2,6 +2,7 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -12,7 +13,7 @@ namespace SME.SGP.Api.Controllers
     public class AtividadeInfantilController : ControllerBase
     {
         [HttpGet]
-        [ProducesResponseType(typeof(AtividadeInfantilDto), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AtividadeInfantilDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PDA_C, Permissao.DDB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAtividadesMural([FromQuery] long aulaId, [FromServices] IObterAtividadesInfantilUseCase useCase)
