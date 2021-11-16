@@ -30,6 +30,7 @@ namespace SME.SGP.Aplicacao
                 atividadeInfantil = new Dominio.AtividadeInfantil();
 
             atividadeInfantil.AulaId = request.AulaId;
+            atividadeInfantil.Titulo = request.Titulo;
             atividadeInfantil.Mensagem = request.Mensagem;
             atividadeInfantil.AtividadeClassroomId = request.AvisoClassroomId;
             atividadeInfantil.CriadoRF = request.UsuarioRf;

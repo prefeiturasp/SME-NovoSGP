@@ -24,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<AtividadeInfantil> ObterPorAtividadeClassroomId(long atividadeClassroomId)
         {
-            var query = @"select * from atividade_infantil where aviso_classroom_id = @avisoClassroomId";
+            var query = @"select * from atividade_infantil where atividade_classroom_id = @atividadeClassroomId";
             return await database.Conexao.QueryFirstOrDefaultAsync<AtividadeInfantil>(query, new { atividadeClassroomId });
         }
     }
