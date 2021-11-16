@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ImportarAtividadeGsaCommand request, CancellationToken cancellationToken)
         {
-            await ValidarLancamentoNotaComponente(request.AtividadeGsa.ComponenteCurricularId);
+            await ValidarImportacaoAtividade(request.AtividadeGsa.DataCriacao);
 
             var aula = await mediator.Send(new ObterAulaPorCodigoTurmaComponenteEDataQuery(request.AtividadeGsa.TurmaId, request.AtividadeGsa.ComponenteCurricularId.ToString(), request.AtividadeGsa.DataCriacao));
 
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                     await SalvarAtividadeInfantil(request, aula);
                 else
                 {
-                    await ValidarImportacaoAtividade(request.AtividadeGsa.DataCriacao);
+                    await ValidarLancamentoNotaComponente(request.AtividadeGsa.ComponenteCurricularId);
                     await SalvarAtividadeAvaliativa(request, aula);
                 }
             }
