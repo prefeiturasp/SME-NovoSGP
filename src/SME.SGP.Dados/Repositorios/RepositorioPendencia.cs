@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
                           left join pendencia_usuario pu on pu.pendencia_id = p.id
                          where not p.excluido 
                            and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
-                           and p.situacao <> @situacao";
+                           and p.situacao = @situacao";
             var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
 
@@ -60,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
             var situacao = SituacaoPendencia.Pendente;
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
             var queryTotalRegistros = $"select count(0) {query}";
-            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao = SituacaoPendencia.Resolvida });
+            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao });
 
             var queryPendencias = $@"select p.* {query} {orderBy}
                     offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;";
@@ -70,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
                 usuarioId,
                 qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
                 qtde_registros = paginacao.QuantidadeRegistros,
-                situacao = SituacaoPendencia.Pendente,
+                situacao,
             };
 
             retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendencias, parametros);
