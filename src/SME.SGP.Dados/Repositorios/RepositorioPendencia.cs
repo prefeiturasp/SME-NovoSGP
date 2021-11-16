@@ -57,7 +57,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
             var queryTotalRegistros = $"select count(0) {query}";
-            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId });
+            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao = SituacaoPendencia.Resolvida });
 
             var queryPendencias = $@"select p.* {query} {orderBy}
                     offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;";
