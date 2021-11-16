@@ -5,7 +5,7 @@
         public long AulaId { get; set; }
         public Aula Aula { get; set; }
 
-        public string AtividadeClassroomId { get; set; }
+        public long AtividadeClassroomId { get; set; }
 
         public string Titulo { get; set; }
         public string Mensagem { get; set; }
