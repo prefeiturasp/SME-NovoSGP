@@ -14,12 +14,19 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioAula repositorioAula;
-
+        private readonly IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno;
+        private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
+        private readonly IRepositorioPlanoAula repositorioPlanoAula;
+        
         public ExcluirAulaUnicaCommandHandler(IMediator mediator,
-                                              IRepositorioAula repositorioAula)
+                                              IRepositorioAula repositorioAula,IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno,IRepositorioDiarioBordo repositorioDiarioBordo
+                                              ,IRepositorioPlanoAula repositorioPlanoAula)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
+            this.repositorioAnotacaoFrequenciaAluno = repositorioAnotacaoFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFrequenciaAluno));
+            this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
+            this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
         }
 
         public async Task<RetornoBaseDto> Handle(ExcluirAulaUnicaCommand request, CancellationToken cancellationToken)
@@ -51,12 +58,50 @@ namespace SME.SGP.Aplicacao
             await repositorioAula.SalvarAsync(aula);
 
             await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aula.TurmaId, aula.DisciplinaId, aula.Id));
-
+            await ExcluirArquivoAnotacaoFrequencia(request.AulaId);
+            await ExcluirArquivosPlanoAula(request.AulaId);
+            await RemoverArquivosDiarioBordo(request.AulaId);
             var retorno = new RetornoBaseDto();
             retorno.Mensagens.Add("Aula excluída com sucesso.");
             return retorno;
         }
 
+        private async Task ExcluirArquivosPlanoAula(long aulaId)
+        {
+            var plano = await repositorioPlanoAula.ObterPlanoAulaPorAulaRegistroExcluido(aulaId);
+
+            if (plano != null)
+            {
+                await ExcluirArquivo(plano.Descricao, TipoArquivo.PlanoAula);
+                await ExcluirArquivo(plano.DesenvolvimentoAula, TipoArquivo.PlanoAulaDesenvolvimento);
+                await ExcluirArquivo(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
+                await ExcluirArquivo(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa); 
+            }
+        }
+
+        private async Task RemoverArquivosDiarioBordo(long aulaId)
+        {
+            var diarioDeBordo = await repositorioDiarioBordo.ObterPorAulaIdRegistroExcluido(aulaId);
+            if(diarioDeBordo?.Planejamento != null)
+            {
+                await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
+            }
+        }
+        private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)
+        {
+            var anotacaoFrequencia = await repositorioAnotacaoFrequenciaAluno.ObterPorAulaIdRegistroExcluido(aulaId);
+            foreach (var item in anotacaoFrequencia)
+            {
+                await ExcluirArquivo(item.Anotacao,TipoArquivo.FrequenciaAnotacaoEstudante);
+            }
+        }
+        private async Task ExcluirArquivo(string mensagem,TipoArquivo tipo)
+        {
+            if (!string.IsNullOrEmpty(mensagem))
+            {
+                await mediator.Send(new RemoverArquivosExcluidosCommand(mensagem, string.Empty, tipo.Name()));
+            }
+        }
         private async Task PulicaFilaSgp(string fila, long id, Usuario usuario)
         {
             await mediator.Send(new PublicarFilaSgpCommand(fila, new FiltroIdDto(id), Guid.NewGuid(), usuario));

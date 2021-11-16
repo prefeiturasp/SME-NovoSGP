@@ -16,13 +16,9 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<AuditoriaDto> Executar(PlanoAulaDto planoAulaDto)
+        public async Task<PlanoAulaDto> Executar(PlanoAulaDto planoAulaDto)
         {
-            unitOfWork.IniciarTransacao();
-            var auditoria = await mediator.Send(new SalvarPlanoAulaCommand(planoAulaDto));
-            unitOfWork.PersistirTransacao();
-
-            return auditoria;
+            return await mediator.Send(new SalvarPlanoAulaCommand(planoAulaDto));
         }
     }
 }

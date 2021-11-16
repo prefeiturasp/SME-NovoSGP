@@ -52,9 +52,12 @@ namespace SME.SGP.Dados.Repositorios
                            and p.situacao <> @situacao";
             var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
+
+
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
+            var situacao = SituacaoPendencia.Pendente;
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
             var queryTotalRegistros = $"select count(0) {query}";
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao = SituacaoPendencia.Resolvida });
@@ -67,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
                 usuarioId,
                 qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
                 qtde_registros = paginacao.QuantidadeRegistros,
-                situacao = SituacaoPendencia.Resolvida,
+                situacao = SituacaoPendencia.Pendente,
             };
 
             retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendencias, parametros);
@@ -75,6 +78,7 @@ namespace SME.SGP.Dados.Repositorios
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retornoPaginado;
+
         }
 
         public async Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)

@@ -45,14 +45,17 @@ namespace SME.SGP.Aplicacao.Commands
                 try
                 {
                     // Salva Plano
-                    if (plano?.Situacao == SituacaoPlanoAEE.Devolvido)
+                    if (plano?.Situacao == SituacaoPlanoAEE.Devolvido || 
+                       (plano?.Situacao == SituacaoPlanoAEE.Expirado && plano?.CriadoEm.Date < new DateTime(2021, 9, 16)) ||  /* regra conforme bug 52143 */
+                       (plano?.Situacao == SituacaoPlanoAEE.Expirado && string.IsNullOrWhiteSpace(plano.ParecerCoordenacao)))
+                    {
                         plano.Situacao = SituacaoPlanoAEE.ParecerCP;
-
-                    if (plano?.Situacao == SituacaoPlanoAEE.Expirado)
+                    }
+                    else if (plano?.Situacao == SituacaoPlanoAEE.Expirado)
                     {
                         await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
                         plano.Situacao = SituacaoPlanoAEE.Validado;
-                    }
+                    }                    
 
                     planoId = await repositorioPlanoAEE.SalvarAsync(plano);
 
@@ -68,23 +71,21 @@ namespace SME.SGP.Aplicacao.Commands
                         if (await ValidaPersistenciaResposta(questao.Resposta, questao.QuestaoId))
                         {
                             var planoAEEQuestaoId = await mediator.Send(new SalvarPlanoAEEQuestaoCommand(planoId, questao.QuestaoId, planoAEEVersaoId));
-
                             await mediator.Send(new SalvarPlanoAEERespostaCommand(planoId, planoAEEQuestaoId, questao.Resposta, questao.TipoQuestao));
                         }
                     }
 
-
-                    if (await ParametroGeracaoPendenciaAtivo())
+                    if (await ParametroGeracaoPendenciaAtivo() && plano?.Situacao != SituacaoPlanoAEE.Validado)
                         await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoId));
 
                     unitOfWork.PersistirTransacao();
 
                     return new RetornoPlanoAEEDto(planoId, planoAEEVersaoId);
                 }
-                catch (Exception ex)
+                catch
                 {
                     unitOfWork.Rollback();
-                    throw ex;
+                    throw;
                 }
             }
         }

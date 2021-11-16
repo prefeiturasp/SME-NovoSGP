@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new GerarPendenciaPlanoAEECommand(planoAEE.Id, null, titulo, descricao, turma.UeId, PerfilUsuario.CP));
 
-            return false;
+            return true;
         }
     }
 }

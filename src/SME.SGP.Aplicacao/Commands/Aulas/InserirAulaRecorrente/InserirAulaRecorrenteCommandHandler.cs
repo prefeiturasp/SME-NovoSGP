@@ -328,6 +328,10 @@ namespace SME.SGP.Aplicacao
 
                 return (datasAtribuicaoCJ, mensagensValidacao);
             }
+
+            if(datasValidas == null || !datasValidas.Any())
+                throw new NegocioException("Não foi possível obter datas validas para a atribuição do professor no EOL.");
+
             var datasAtribuicaoEOL = await mediator.Send(new ObterValidacaoPodePersistirTurmaNasDatasQuery(
                 usuario.CodigoRf,
                 turmaCodigo,

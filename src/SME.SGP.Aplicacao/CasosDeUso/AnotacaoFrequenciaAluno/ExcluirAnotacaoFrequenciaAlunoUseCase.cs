@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,7 +25,11 @@ namespace SME.SGP.Aplicacao
             if (!usuario.EhProfessorCj() && !usuario.EhGestorEscolar())
                 await ValidarAtribuicaoUsuario(long.Parse(aula.DisciplinaId), aula.TurmaId, aula.DataAula, usuario);
 
-            await mediator.Send(new ExcluirAnotacaoFrequenciaAlunoCommand(anotacao)); ;
+            await mediator.Send(new ExcluirAnotacaoFrequenciaAlunoCommand(anotacao));
+            if (anotacao?.Anotacao != null)
+            {
+                await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(anotacao.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
+            }
             return true;
         }
 
