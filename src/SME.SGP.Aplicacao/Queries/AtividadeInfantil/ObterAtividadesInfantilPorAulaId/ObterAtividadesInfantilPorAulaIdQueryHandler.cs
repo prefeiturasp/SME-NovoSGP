@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioAtividadeInfantil = repositorioAtividadeInfantil ?? throw new ArgumentNullException(nameof(repositorioAtividadeInfantil));
         }
-        public Task<IEnumerable<AtividadeInfantilDto>> Handle(ObterAtividadesInfantilPorAulaIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<AtividadeInfantilDto>> Handle(ObterAtividadesInfantilPorAulaIdQuery request, CancellationToken cancellationToken)
         {
-            return repositorioAtividadeInfantil.ObterPorAulaId(request.AulaId);
+            return await repositorioAtividadeInfantil.ObterPorAulaId(request.AulaId);
         }
     }
 }
