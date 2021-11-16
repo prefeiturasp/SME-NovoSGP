@@ -15,6 +15,7 @@ namespace SME.SGP.Dados.Repositorios
                             , titulo
                             , mensagem
                             , email 
+                            , criado_em as DataPublicacao
                          from atividade_infantil 
                         where aula_id = @aulaId";
 

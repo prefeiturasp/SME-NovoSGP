@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using System;
+
+namespace SME.SGP.Infra
 {
     public class AtividadeInfantilDto
     {
@@ -6,5 +8,6 @@
         public string Titulo { get; set; }
         public string Mensagem { get; set; }
         public string Email { get; set; }
+        public DateTime DataPublicacao { get; set; }
     }
 }
