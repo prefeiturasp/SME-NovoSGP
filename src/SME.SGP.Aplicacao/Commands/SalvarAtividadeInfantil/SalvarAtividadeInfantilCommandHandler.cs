@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             atividadeInfantil.AulaId = request.AulaId;
             atividadeInfantil.Mensagem = request.Mensagem;
-            atividadeInfantil.AvisoClassroomId = request.AvisoClassroomId;
+            atividadeInfantil.AtividadeClassroomId = request.AvisoClassroomId;
             atividadeInfantil.CriadoRF = request.UsuarioRf;
             atividadeInfantil.CriadoEm = request.DataCriacao;
             atividadeInfantil.AlteradoRF = request.DataAlteracao.HasValue ? request.UsuarioRf : String.Empty;
