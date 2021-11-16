@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarRegistroIndividualCommand : IRequest<AuditoriaDto>
+    public class AlterarRegistroIndividualCommand : IRequest<RegistroIndividual>
     {
         public AlterarRegistroIndividualCommand(long id,long turmaId, long alunoCodigo, long componenteCurricularId, DateTime dataRegistro, string registro)
         {

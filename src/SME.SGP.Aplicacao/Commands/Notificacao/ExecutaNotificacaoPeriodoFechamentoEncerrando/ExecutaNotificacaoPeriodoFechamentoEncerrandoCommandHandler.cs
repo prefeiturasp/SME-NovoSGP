@@ -62,17 +62,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<long>> ObterProfessores(IEnumerable<Turma> turmas)
         {
-
             var listaUsuarios = new List<long>();
-            foreach (var turma in turmas)
-            {
-                var professores = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turma.CodigoTurma));
+            var professores = await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(turmas.Select(a => a.CodigoTurma)));
 
-                foreach (var professor in professores)
-                {
-                    if (professor != "")
-                        listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor)));
-                }
+            foreach (var professor in professores)
+            {
+                if (professor != "")
+                    listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor)));
             }
             return listaUsuarios.Distinct();
         }
