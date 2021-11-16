@@ -323,6 +323,7 @@ namespace SME.SGP.IoC
 
             // Mural de Avisos
             services.TryAddScoped<IRepositorioAviso, RepositorioAviso>();
+            services.TryAddScoped<IRepositorioAtividadeInfantil, RepositorioAtividadeInfantil>();
 
             // Encaminhamento AEE
             services.TryAddScoped<IRepositorioSecaoEncaminhamentoAEE, RepositorioSecaoEncaminhamentoAEE>();
@@ -577,6 +578,9 @@ namespace SME.SGP.IoC
 
             // Atividades
             services.TryAddScoped<IImportarAtividadesGsaUseCase, ImportarAtividadesGsaUseCase>();
+
+            // Atividade Infantil
+            services.TryAddScoped<IObterAtividadesInfantilUseCase, ObterAtividadesInfantilUseCase>();
 
             // Avisos do Mural Gsa
             services.TryAddScoped<IImportarAvisoDoMuralGsaUseCase, ImportarAvisoDoMuralGsaUseCase>();
