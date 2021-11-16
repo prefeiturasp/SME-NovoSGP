@@ -50,9 +50,8 @@ namespace SME.SGP.Aplicacao
                         foreach (var questao in itineranciaDto.Questoes)
                             await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
                     unitOfWork.PersistirTransacao();
-
-                    SentrySdk.AddBreadcrumb($"Mensagem RotaNotificacaoRegistroItineranciaInseridoUseCase", "Rabbit - RotaNotificacaoRegistroItineranciaInseridoUseCase");
-                    await mediator.Send(new AlterarSituacaoItineranciaCommand(itinerancia.Id, Dominio.Enumerados.SituacaoItinerancia.Enviado));
+                    
+                    //await mediator.Send(new AlterarSituacaoItineranciaCommand(itinerancia.Id, Dominio.Enumerados.SituacaoItinerancia.Enviado));
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoRegistroItineranciaInseridoUseCase,
                         new NotificacaoSalvarItineranciaDto
                         {
