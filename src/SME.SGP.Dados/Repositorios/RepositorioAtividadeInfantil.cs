@@ -21,10 +21,10 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AtividadeInfantilDto>(query, new { aulaId });
         }
 
-        public Task<AtividadeInfantil> ObterPorAtividadeClassroomId(long atividadeClassroomId)
+        public async Task<AtividadeInfantil> ObterPorAtividadeClassroomId(long atividadeClassroomId)
         {
             var query = @"select * from atividade_infantil where aviso_classroom_id = @avisoClassroomId";
-            return database.Conexao.QueryFirstOrDefaultAsync<AtividadeInfantil>(query, new { atividadeClassroomId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<AtividadeInfantil>(query, new { atividadeClassroomId });
         }
     }
 }
