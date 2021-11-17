@@ -183,6 +183,8 @@ namespace SME.SGP.Aplicacao
                     TotalAulas = x.Sum(y => y.TotalAulas),
                     TotalAusencias = x.Sum(y => y.TotalAusencias),
                     TotalCompensacoes = x.Sum(y => y.TotalCompensacoes),
+                    TotalPresencas = x.Sum(y => y.TotalPresencas),
+                    TotalRemotos = x.Sum(y => y.TotalRemotos),
                 })
                 .ToList();
         }
