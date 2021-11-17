@@ -41,7 +41,15 @@ namespace SME.SGP.Aplicacao
                         var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesQuery());
                         foreach (var turmaSemAvaliacao in turmasSemAvaliacao.GroupBy(a => (a.TurmaCodigo, a.TurmaId)))
                         {
-                            await IncluirPendenciaCP(turmaSemAvaliacao, componentesCurriculares, periodoEncerrando);
+                            try
+                            {
+                                await IncluirPendenciaCP(turmaSemAvaliacao, componentesCurriculares, periodoEncerrando);
+
+                            }
+                            catch (Exception ex)
+                            {
+                                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na geração de pendência de avaliação da Turma", LogNivel.Negocio, LogContexto.Avaliacao, $"Turma {turmaSemAvaliacao.Key.TurmaCodigo}: {ex.Message}"));
+                            }
                         }
                     }
                 }

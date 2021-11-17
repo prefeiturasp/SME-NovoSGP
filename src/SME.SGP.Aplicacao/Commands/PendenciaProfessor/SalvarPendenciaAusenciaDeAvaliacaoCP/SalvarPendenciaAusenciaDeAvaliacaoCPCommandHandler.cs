@@ -21,16 +21,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(SalvarPendenciaAusenciaDeAvaliacaoCPCommand request, CancellationToken cancellationToken)
         {
-            using (var transacao = unitOfWork.IniciarTransacao())
+            foreach (var pendenciaProfessor in request.PendenciasProfessores)
             {
-                foreach (var pendenciaProfessor in request.PendenciasProfessores)
-                {
-                    await mediator.Send(new SalvarPendenciaProfessorCommand(request.PendenciaId, request.TurmaId, pendenciaProfessor.componenteCurricularId, pendenciaProfessor.professorRf, request.PeriodoEscolarId));
-                }
-                await GerarPendenciaPerfil(request.PendenciaId, request.UeId);
-
-                unitOfWork.PersistirTransacao();
+                await mediator.Send(new SalvarPendenciaProfessorCommand(request.PendenciaId, request.TurmaId, pendenciaProfessor.componenteCurricularId, pendenciaProfessor.professorRf, request.PeriodoEscolarId));
             }
+            await GerarPendenciaPerfil(request.PendenciaId, request.UeId);
+
             return true;
         }
 
