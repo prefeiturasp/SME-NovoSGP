@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 )
             );
 
-            var processarDeadletter = parametrosSistema != null && Convert.ToBoolean(parametrosSistema.Valor); 
+            var processarDeadletter = parametrosSistema != null && Convert.ToBoolean(int.Parse(parametrosSistema?.Valor.Trim() ?? "0"));
             
             if (processarDeadletter)
             {
