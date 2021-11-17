@@ -52,14 +52,16 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var professorPodePersistir =
-                    await mediator.Send(new VerificaPodePersistirTurmaDisciplinaEOLQuery(usuario, turma.CodigoTurma,
-                        aula.DisciplinaId, DateTime.Now));
-            
-                if (!professorPodePersistir)
+                // var professorPodePersistir =
+                //     await mediator.Send(new VerificaPodePersistirTurmaDisciplinaEOLQuery(usuario, turma.CodigoTurma,
+                //         aula.DisciplinaId, DateTime.Now));
+                //
+
+                var professorTurma = await servicoEol.VerificaAtribuicaoProfessorTurma(usuario.CodigoRf, turma.CodigoTurma);
+                if (professorTurma?.DataDisponibilizacao == null || professorTurma.DataDisponibilizacao < DateTime.Now)
                 {
                     throw new NegocioException(
-                        $"Você não possui permissão para inserir registro de diário de bordo neste período");
+                        $"Você não possui permissão para inserir registro de diário de bordo pois não está mais atribuido a truma.");
                 }
             }
             
