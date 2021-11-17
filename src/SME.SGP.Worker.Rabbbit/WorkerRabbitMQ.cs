@@ -268,6 +268,8 @@ namespace SME.SGP.Worker.RabbitMQ
                     }
                     catch (NegocioException nex)
                     {
+                        Console.WriteLine("********************************  Exceção Rabbit nex ******************************************");
+                        Console.WriteLine($"Erros: { nex.Message}");
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {nex.Message}", null, null, null, BreadcrumbLevel.Error);
                         SentrySdk.CaptureException(nex);
@@ -277,6 +279,8 @@ namespace SME.SGP.Worker.RabbitMQ
                     }
                     catch (ValidacaoException vex)
                     {
+                        Console.WriteLine("********************************  Exceção Rabbit vex ******************************************");
+                        Console.WriteLine($"Erros: { vex.Message}");
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}", null, null, null, BreadcrumbLevel.Error);
                         SentrySdk.CaptureException(vex);
@@ -286,6 +290,8 @@ namespace SME.SGP.Worker.RabbitMQ
                     }
                     catch (Exception ex)
                     {
+                        Console.WriteLine("********************************  Exceção Rabbit ex ******************************************");
+                        Console.WriteLine($"Erros: { ex.Message}");
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {ex.Message}", null, null, null, BreadcrumbLevel.Error);
                         SentrySdk.CaptureException(ex);
