@@ -1,14 +1,12 @@
-﻿using MediatR;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Integracoes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,12 +14,14 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
+        private readonly IServicoEol servicoEol;
 
         public InserirDiarioBordoCommandHandler(IMediator mediator,
-                                                IRepositorioDiarioBordo repositorioDiarioBordo)
+                                                IRepositorioDiarioBordo repositorioDiarioBordo, IServicoEol servicoEol)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
+            this.servicoEol = servicoEol;
         }
 
         public async Task<AuditoriaDto> Handle(InserirDiarioBordoCommand request, CancellationToken cancellationToken)
@@ -50,14 +50,11 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var professorPodePersistir =
-                    await mediator.Send(new VerificaPodePersistirTurmaDisciplinaEOLQuery(usuario, turma.CodigoTurma,
-                        aula.DisciplinaId, DateTime.Now));
-            
-                if (!professorPodePersistir)
+                var professorTurma = await servicoEol.VerificaAtribuicaoProfessorTurma(usuario.CodigoRf, turma.CodigoTurma);
+                if (professorTurma?.DataDisponibilizacao == null || professorTurma.DataDisponibilizacao < DateTime.Now)
                 {
                     throw new NegocioException(
-                        $"Você não possui permissão para inserir registro de diário de bordo neste período");
+                        $"Você não possui permissão para inserir registro de diário de bordo pois não está mais atribuido a truma.");
                 }
             }
             
