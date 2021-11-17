@@ -13,5 +13,6 @@ namespace SME.SGP.Infra
         public bool SomenteLeitura { get; set; }
         public AuditoriaDto Auditoria { get; set; }
         public string SituacaoConselho { get; set; }
+        public bool MatriculaAtiva { get; set; }
     }
 }
