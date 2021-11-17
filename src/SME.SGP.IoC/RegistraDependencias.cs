@@ -323,6 +323,7 @@ namespace SME.SGP.IoC
 
             // Mural de Avisos
             services.TryAddScoped<IRepositorioAviso, RepositorioAviso>();
+            services.TryAddScoped<IRepositorioAtividadeInfantil, RepositorioAtividadeInfantil>();
 
             // Encaminhamento AEE
             services.TryAddScoped<IRepositorioSecaoEncaminhamentoAEE, RepositorioSecaoEncaminhamentoAEE>();
@@ -356,6 +357,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaProfessor, RepositorioPendenciaProfessor>();
             services.TryAddScoped<IRepositorioPendenciaRegistroIndividual, RepositorioPendenciaRegistroIndividual>();
             services.TryAddScoped<IRepositorioPendenciaRegistroIndividualAluno, RepositorioPendenciaRegistroIndividualAluno>();
+            services.TryAddScoped<IRepositorioPendenciaPerfil, RepositorioPendenciaPerfil>();
+            services.TryAddScoped<IRepositorioPendenciaPerfilUsuario, RepositorioPendenciaPerfilUsuario>();
 
             // Itinerancia
             services.TryAddScoped<IRepositorioItinerancia, RepositorioItinerancia>();
@@ -576,6 +579,9 @@ namespace SME.SGP.IoC
             // Atividades
             services.TryAddScoped<IImportarAtividadesGsaUseCase, ImportarAtividadesGsaUseCase>();
 
+            // Atividade Infantil
+            services.TryAddScoped<IObterAtividadesInfantilUseCase, ObterAtividadesInfantilUseCase>();
+
             // Avisos do Mural Gsa
             services.TryAddScoped<IImportarAvisoDoMuralGsaUseCase, ImportarAvisoDoMuralGsaUseCase>();
             services.TryAddScoped<IObterMuralAvisosUseCase, ObterMuralAvisosUseCase>();
@@ -604,6 +610,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarFrequenciaTurmasUseCase, ConsolidarFrequenciaTurmasUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaTurmasPorAnoUseCase, ConsolidarFrequenciaTurmasPorAnoUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaPorTurmaUseCase, ConsolidarFrequenciaPorTurmaUseCase>();
+
+            //Calcula Frequencia Geral
+            services.TryAddScoped<ICalcularFrequenciaGeralUseCase, CalcularFrequenciaGeralUseCase>();
 
             // Fechamento
             services.TryAddScoped<IGerarPendenciasFechamentoUseCase, GerarPendenciasFechamentoUseCase>();
@@ -750,9 +759,14 @@ namespace SME.SGP.IoC
             // Pendencias
             services.TryAddScoped<IObterPendenciasUseCase, ObterPendenciasUseCase>();
             services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisUseCase, ExecutaVerificacaoPendenciasGeraisUseCase>();
+            services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisAulaUseCase, ExecutaVerificacaoPendenciasGeraisAulaUseCase>();
+            services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisCalendarioUseCase, ExecutaVerificacaoPendenciasGeraisCalendarioUseCase>();
+            services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisEventosUseCase, ExecutaVerificacaoPendenciasGeraisEventosUseCase>();
             services.TryAddScoped<IExecutarExclusaoPendenciasAulaUseCase, ExecutarExclusaoPendenciasAulaUseCase>();
             services.TryAddScoped<IExecutarExclusaoPendenciaDiasLetivosInsuficientes, ExecutarExclusaoPendenciaDiasLetivosInsuficientes>();
             services.TryAddScoped<IExecutarExclusaoPendenciaParametroEvento, ExecutarExclusaoPendenciaParametroEvento>();
+
+            services.TryAddScoped<ITratarAtribuicaoPendenciasUsuariosUseCase, TratarAtribuicaoPendenciasUsuariosUseCase>();
 
             // Pendencias Professor
             services.TryAddScoped<IExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase, ExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase>();
@@ -1028,6 +1042,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarRegistrosPedagogicosUseCase, ConsolidarRegistrosPedagogicosUseCase>();
             services.TryAddScoped<IConsolidarRegistrosPedagogicosPorUeTratarUseCase, ConsolidarRegistrosPedagogicosPorUeTratarUseCase>();
             services.TryAddScoped<IRelatorioAcompanhamentoRegistrosPedagogicosUseCase, RelatorioAcompanhamentoRegistrosPedagogicosUseCase>();
+
+            //Acompanhamento de Frequencia
+            services.TryAddScoped<IRelatorioAcompanhamentoDeFrequênciaUseCase, RelatorioAcompanhamentoDeFrequênciaUseCase>();
 
             // Dashboard Registro Individual
             services.TryAddScoped<IObterQuantidadeRegistrosIndividuaisPorAnoTurmaUseCase, ObterQuantidadeRegistrosIndividuaisPorAnoTurmaUseCase>();

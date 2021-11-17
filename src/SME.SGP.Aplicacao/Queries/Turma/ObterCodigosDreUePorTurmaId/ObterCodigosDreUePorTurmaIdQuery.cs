@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCodigosDreUePorTurmaIdQuery : IRequest<DreUeDaTurmaDto>
+    public class ObterCodigosDreUePorTurmaIdQuery : IRequest<DreUeDto>
     {
         public ObterCodigosDreUePorTurmaIdQuery(long turmaId)
         {

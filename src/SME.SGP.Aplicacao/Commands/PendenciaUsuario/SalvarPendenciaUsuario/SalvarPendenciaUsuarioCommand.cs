@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Aplicacao
 {
@@ -21,10 +23,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.PendenciaId)
             .NotEmpty()
             .WithMessage("O id da pendencia deve ser informado.");
-
-            RuleFor(c => c.UsuarioId)
-            .NotEmpty()
-            .WithMessage("O id do usuario deve ser informado.");
         }
 
     }

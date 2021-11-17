@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,9 +22,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(SalvarPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
-            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Descricao, request.Instrucao));
-
-            await mediator.Send(new RelacionaPendenciaUsuarioCommand(ObterPerfisParaPendencia(request.TipoPendencia), request.Ue.CodigoUe, pendenciaId, 0));
+            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Ue.Id, request.Descricao, request.Instrucao));
+            await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfilParaPendencia(request.TipoPendencia)));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, request.Ue.Id), Guid.NewGuid()));
 
             return await repositorioPendenciaCalendarioUe.SalvarAsync(new Dominio.PendenciaCalendarioUe()
             {
@@ -32,17 +34,18 @@ namespace SME.SGP.Aplicacao
             });
         }
 
-        private string[] ObterPerfisParaPendencia(TipoPendencia tipoPendencia)
+        public List<PerfilUsuario> ObterCodigoPerfilParaPendencia(TipoPendencia tipoPendencia)
         {
             switch (tipoPendencia)
             {
                 case TipoPendencia.CalendarioLetivoInsuficiente:
-                    return new string[] { "CP", "AD", "Diretor", "ADM UE" };
+                    return new List<PerfilUsuario> { PerfilUsuario.CP, PerfilUsuario.AD, PerfilUsuario.DIRETOR, PerfilUsuario.ADMUE };
                 case TipoPendencia.CadastroEventoPendente:
-                    return new string[] { "ADM UE" };
+                    return new List<PerfilUsuario> {PerfilUsuario.ADMUE };
                 default:
-                    return new string[] { };
+                    return null;
             }
         }
+
     }
 }

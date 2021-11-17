@@ -34,14 +34,13 @@ namespace SME.SGP.Aplicacao
                     if (periodoEncerrando.PeriodoEscolar.TipoCalendario.Modalidade == ModalidadeTipoCalendario.Infantil)
                         continue;
 
-                    var turmas = await mediator.Send(new ObterTurmasPorUeModalidadesAnoQuery(periodoEncerrando.PeriodoFechamento.UeId.Value,
+                    var turmas = await mediator.Send(new ObterTurmasPorUeModalidadesAnoQuery(periodoEncerrando.PeriodoFechamento.UeId,
                                                                                              periodoEncerrando.PeriodoEscolar.TipoCalendario.Modalidade.ObterModalidadesTurma(),
                                                                                              periodoEncerrando.PeriodoEscolar.TipoCalendario.AnoLetivo));
 
-                    var turmasComAvaliacao = await mediator.Send(new ObterQuantidadeAvaliacoesTurmaComponentePorUeNoPeriodoQuery(periodoEncerrando.PeriodoFechamento.UeId.Value,
+                    var turmasComAvaliacao = await mediator.Send(new ObterQuantidadeAvaliacoesTurmaComponentePorUeNoPeriodoQuery(periodoEncerrando.PeriodoFechamento.UeId,
                                                                                                                             periodoEncerrando.PeriodoEscolar.PeriodoInicio,
                                                                                                                             periodoEncerrando.PeriodoEscolar.PeriodoFim));
-
 
                     // Filtra turmas seriadas 1º ao 9º ano
                     foreach (var turma in turmas.Where(c => Enumerable.Range(1, 9).Select(a => a.ToString()).Contains(c.Ano)))

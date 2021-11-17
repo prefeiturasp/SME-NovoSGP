@@ -41,7 +41,15 @@ namespace SME.SGP.Aplicacao
                         var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesQuery());
                         foreach (var turmaSemAvaliacao in turmasSemAvaliacao.GroupBy(a => (a.TurmaCodigo, a.TurmaId)))
                         {
-                            await IncluirPendenciaCP(turmaSemAvaliacao, componentesCurriculares, periodoEncerrando);
+                            try
+                            {
+                                await IncluirPendenciaCP(turmaSemAvaliacao, componentesCurriculares, periodoEncerrando);
+
+                            }
+                            catch (Exception ex)
+                            {
+                                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na geração de pendência de avaliação da Turma", LogNivel.Negocio, LogContexto.Avaliacao, $"Turma {turmaSemAvaliacao.Key.TurmaCodigo}: {ex.Message}"));
+                            }
                         }
                     }
                 }
@@ -80,7 +88,7 @@ namespace SME.SGP.Aplicacao
             if (pendenciaId == 0)
                 pendenciaId = await IncluirPendenciaCP(turma, periodoEscolar.Bimestre);
 
-            await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoCPCommand(pendenciaId, turma.Id, periodoEscolar.Id, turma.Ue.CodigoUe, gerarPendenciasProfessor));
+            await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoCPCommand(pendenciaId, turma.Id, periodoEscolar.Id, turma.UeId, gerarPendenciasProfessor));
         }
 
         private async Task<long> IncluirPendenciaCP(Turma turma, int bimestre)
@@ -91,7 +99,7 @@ namespace SME.SGP.Aplicacao
             var descricao = $"<i>Os componentes curriculares abaixo não possuem nenhuma avaliação cadastrada no {bimestre}º bimestre {escolaUe}</i>";
             var instrucao = "Oriente os professores a cadastrarem as avaliações.";
 
-            return await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AusenciaDeAvaliacaoCP, descricao, instrucao, titulo));
+            return await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AusenciaDeAvaliacaoCP, null, descricao, instrucao, titulo));
         }
 
         private async Task<bool> ExistePendenciaProfessor(long pendenciaId, long turmaId, string componenteCurricularId, string professorRf, long periodoEscolarId)

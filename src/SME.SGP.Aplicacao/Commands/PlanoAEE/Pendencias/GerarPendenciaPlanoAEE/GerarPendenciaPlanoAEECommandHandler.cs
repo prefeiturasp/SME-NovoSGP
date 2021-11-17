@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -28,14 +29,23 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, request.Descricao, titulo: request.Titulo));
+                    var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, null, request.Descricao, titulo: request.Titulo));
 
                     await repositorioPendenciaPlanoAEE.SalvarAsync(new PendenciaPlanoAEE(pendenciaId, request.PlanoAEEId));
 
-                    foreach(var usuarioId in request.UsuariosIds)
-                        await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
+                    if(request.Perfil != null)
+                        await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, new List<PerfilUsuario> { request.Perfil.Value }));
 
+                    if(request.UsuariosIds != null)
+                    {
+                        foreach (var usuarioId in request.UsuariosIds)
+                            await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
+                    }
+        
                     unitOfWork.PersistirTransacao();
+
+                    if (request.Perfil != null)
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, request.UeId), Guid.NewGuid()));
                 }
                 catch (Exception e)
                 {

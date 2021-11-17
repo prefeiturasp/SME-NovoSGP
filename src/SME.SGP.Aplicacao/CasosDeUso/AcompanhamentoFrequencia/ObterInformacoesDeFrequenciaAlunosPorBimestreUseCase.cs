@@ -61,17 +61,12 @@ namespace SME.SGP.Aplicacao
 
             return BimestreFinal == dto.Bimestre
                 ? await ObterFrequenciaAlunosBimestreFinalAsync(turma, alunosValidosComOrdenacao, dto.ComponenteCurricularId, tipoCalendarioId)
-                : await ObterFrequenciaAlunosBimestresRegularesAsync(turma, alunosValidosComOrdenacao, dto.ComponenteCurricularId, tipoCalendarioId, dto.Bimestre);
+                : await ObterFrequenciaAlunosBimestresRegularesAsync(turma, alunosValidosComOrdenacao, dto.ComponenteCurricularId, tipoCalendarioId, dto.Bimestre, periodosEscolares);
         }
 
-        private async Task<FrequenciaAlunosPorBimestreDto> ObterFrequenciaAlunosBimestresRegularesAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunos, long componenteCurricularId, long tipoCalendarioId, int? bimestre)
+        private async Task<FrequenciaAlunosPorBimestreDto> ObterFrequenciaAlunosBimestresRegularesAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunos, long componenteCurricularId, long tipoCalendarioId, int? bimestre, IEnumerable<PeriodoEscolar> periodosEscolares)
         {
-            var periodoEscolar = bimestre is null
-                ? await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turma, DateTime.Now))
-                : await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre.GetValueOrDefault()));
-
-            if (periodoEscolar is null)
-                throw new NegocioException("Não foi possível encontrar o período escolar da turma.");
+            var periodoEscolar = periodosEscolares.FirstOrDefault(w=> w.Bimestre == bimestre.GetValueOrDefault());
 
             var aulasPrevistas = await ObterAulasPrevistasAsync(turma, componenteCurricularId, tipoCalendarioId, periodoEscolar.Bimestre);
             var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.Id, componenteCurricularId, tipoCalendarioId, periodoEscolar.Id));
@@ -110,7 +105,9 @@ namespace SME.SGP.Aplicacao
                 var compensacoes = frequenciaAlunoRegistrada?.TotalCompensacoes ?? default;
                 var marcador = periodoEscolar != null ? await mediator.Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, periodoEscolar, turma.ModalidadeCodigo)) : null;
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
-                
+                var remotos = frequenciaAlunoRegistrada?.TotalRemotos ?? default;
+                var presencas = frequenciaAlunoRegistrada?.TotalPresencas ?? default;
+
                 var percentualFrequencia = frequenciaAlunoRegistrada == null && turmaPossuiFrequenciaRegistrada
                 ?
                 "100"
@@ -131,7 +128,9 @@ namespace SME.SGP.Aplicacao
                     Nome = aluno.NomeValido(),
                     NumeroChamada = aluno.NumeroAlunoChamada,
                     PossuiJustificativas = ausencias > 0,
-                    EhAtendidoAEE = alunoPossuiPlanoAEE
+                    EhAtendidoAEE = alunoPossuiPlanoAEE,
+                    Remotos = remotos,
+                    Presencas = presencas
                 });
             }
 
@@ -184,6 +183,8 @@ namespace SME.SGP.Aplicacao
                     TotalAulas = x.Sum(y => y.TotalAulas),
                     TotalAusencias = x.Sum(y => y.TotalAusencias),
                     TotalCompensacoes = x.Sum(y => y.TotalCompensacoes),
+                    TotalPresencas = x.Sum(y => y.TotalPresencas),
+                    TotalRemotos = x.Sum(y => y.TotalRemotos),
                 })
                 .ToList();
         }

@@ -591,15 +591,17 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasPorUeModalidadesAno(long ueId, int[] modalidades, int ano)
+        public async Task<IEnumerable<Turma>> ObterTurmasPorUeModalidadesAno(long? ueId, int[] modalidades, int ano)
         {
             var query = @"select turma.*, ue.*, dre.* 
                          from turma
                         inner join ue on ue.id = turma.ue_id
                         inner join dre on dre.id = ue.dre_id
-                        where turma.ue_id = @ueId
-                          and turma.ano_letivo = @ano
+                        where turma.ano_letivo = @ano
                           and turma.modalidade_codigo = any(@modalidades) ";
+
+            if (ueId.HasValue)
+                query += " and turma.ue_id = @ueId";
 
             return await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
@@ -625,7 +627,7 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryFirstOrDefaultAsync<Modalidade>(query, new { turmaCodigo });
         }
 
-        public async Task<DreUeDaTurmaDto> ObterCodigosDreUe(string turmaCodigo)
+        public async Task<DreUeDto> ObterCodigosDreUe(string turmaCodigo)
         {
             var query = @"select ue.ue_id as ueCodigo, dre.dre_id as dreCodigo
                           from turma t 
@@ -633,10 +635,10 @@ namespace SME.SGP.Dados.Repositorios
                          inner join dre on dre.id = ue.dre_id 
                          where t.turma_id = @turmaCodigo";
 
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDaTurmaDto>(query, new { turmaCodigo });
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDto>(query, new { turmaCodigo });
         }
 
-        public async Task<DreUeDaTurmaDto> ObterCodigosDreUePorId(long turmaId)
+        public async Task<DreUeDto> ObterCodigosDreUePorId(long turmaId)
         {
             var query = @"select ue.ue_id as ueCodigo, dre.dre_id as dreCodigo
                           from turma t 
@@ -644,7 +646,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join dre on dre.id = ue.dre_id 
                          where t.id = @turmaId";
 
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDaTurmaDto>(query, new { turmaId });
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDto>(query, new { turmaId });
         }
 
         public async Task<Turma> ObterTurmaPorAnoLetivoModalidadeTipoAsync(long ueId, int anoLetivo, TipoTurma turmaTipo)

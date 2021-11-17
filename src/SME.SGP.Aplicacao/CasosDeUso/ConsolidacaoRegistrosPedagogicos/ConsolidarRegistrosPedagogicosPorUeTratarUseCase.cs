@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 var consolidacaoCompleta = await AtribuiProfessorEConsolida(consolidacoes);
 
                 foreach (var consolidacao in consolidacaoCompleta.Distinct())
-                    await mediator.Send(new ConsolidarRegistrosPedagogicosCommand(consolidacao));                
+                    await mediator.Send(new ConsolidarRegistrosPedagogicosCommand(consolidacao));
             }
             return true;
         }
@@ -56,6 +57,7 @@ namespace SME.SGP.Aplicacao
                                 bool possui2Professores = false;
 
                                 var consolidacao = consolidacaoAgrupado.Where(c => c.ComponenteCurricularId == dadosProfessor.DisciplinaId && c.PeriodoEscolarId == bimestre).FirstOrDefault();
+                                var consolidacaoInfantil = consolidacaoAgrupado.Where(c => c.ComponenteCurricularId == dadosProfessor.DisciplinaId && c.PeriodoEscolarId == bimestre);
 
                                 var dadosProfessorTitularDisciplina = professoresDaTurma.Where(p => p.DisciplinaId == consolidacao.ComponenteCurricularId)
                                                             .Select(pt => new ProfessorTitularDisciplinaDto()
@@ -118,6 +120,12 @@ namespace SME.SGP.Aplicacao
                                 }
                                 else
                                 {
+                                    int quantidadeAulas = consolidacaoInfantil.Sum(ci => ci.QuantidadeAulas);
+                                    int frequenciasPendentes = consolidacaoInfantil.Sum(ci => ci.FrequenciasPendentes);
+                                    DateTime? dataUltimaFrequencia = consolidacaoInfantil.Max(ci => ci.DataUltimaFrequencia);
+                                    DateTime? dataUltimoDiarioBordo = consolidacaoInfantil.Max(ci => ci.DataUltimoDiarioBordo);
+                                    int diarioBordoPendentes = consolidacaoInfantil.Sum(ci => ci.DiarioBordoPendentes);
+
                                     for (int i = 0; i < 2; i++)
                                     {
                                         listaConsolidados.Add(new ConsolidacaoRegistrosPedagogicos()
@@ -126,12 +134,12 @@ namespace SME.SGP.Aplicacao
                                             PeriodoEscolarId = consolidacao.PeriodoEscolarId,
                                             AnoLetivo = consolidacao.AnoLetivo,
                                             ComponenteCurricularId = consolidacao.ComponenteCurricularId,
-                                            QuantidadeAulas = consolidacao.QuantidadeAulas,
-                                            FrequenciasPendentes = consolidacao.FrequenciasPendentes,
-                                            DataUltimaFrequencia = consolidacao.DataUltimaFrequencia,
+                                            QuantidadeAulas = quantidadeAulas,
+                                            FrequenciasPendentes = frequenciasPendentes,
+                                            DataUltimaFrequencia = dataUltimaFrequencia,
                                             DataUltimoPlanoAula = consolidacao.DataUltimoPlanoAula,
-                                            DataUltimoDiarioBordo = consolidacao.DataUltimoDiarioBordo,
-                                            DiarioBordoPendentes = consolidacao.DiarioBordoPendentes,
+                                            DataUltimoDiarioBordo = dataUltimoDiarioBordo,
+                                            DiarioBordoPendentes = diarioBordoPendentes,
                                             PlanoAulaPendentes = consolidacao.PlanoAulaPendentes,
                                             NomeProfessor = nomesProfessores[i],
                                             RFProfessor = rfProfessores[i],

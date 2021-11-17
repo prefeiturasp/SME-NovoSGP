@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCodigosDreUePorTurmaIdQueryHandler : IRequestHandler<ObterCodigosDreUePorTurmaIdQuery, DreUeDaTurmaDto>
+    public class ObterCodigosDreUePorTurmaIdQueryHandler : IRequestHandler<ObterCodigosDreUePorTurmaIdQuery, DreUeDto>
     {
         private readonly IRepositorioTurma repositorioTurma;
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
-        public async Task<DreUeDaTurmaDto> Handle(ObterCodigosDreUePorTurmaIdQuery request, CancellationToken cancellationToken)
+        public async Task<DreUeDto> Handle(ObterCodigosDreUePorTurmaIdQuery request, CancellationToken cancellationToken)
             => await repositorioTurma.ObterCodigosDreUePorId(request.TurmaId);
     }
 }

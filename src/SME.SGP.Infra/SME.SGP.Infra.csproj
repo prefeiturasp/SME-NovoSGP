@@ -19,4 +19,8 @@
     <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Dtos\PendenciaPerfil\" />
+  </ItemGroup>
+
 </Project>

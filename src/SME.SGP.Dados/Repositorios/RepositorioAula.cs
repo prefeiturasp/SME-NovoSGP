@@ -1049,15 +1049,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<DataAulaDto> ObterAulaPorCodigoTurmaComponenteEData(string turmaId, string componenteCurricularId, DateTime dataCriacao)
         {
-            var query = @"select id as AulaId
-                            , data_aula as DataAula
-                        from aula 
-                       where not excluido 
-                         and turma_id = @turmaId
-                         and disciplina_id = @componenteCurricularId
-                         and data_aula >= @dataCriacao
-                       order by data_aula
-                       limit 1";
+            var query = @"select a.id as AulaId,
+                                 a.data_aula as DataAula,       
+                                 (t.modalidade_codigo = 1) as EhModalidadeInfantil   
+                         from aula a
+                         join turma t on a.turma_id = t.turma_id 
+                         where not a.excluido 
+                            and t.turma_id = @turmaId
+                            and a.disciplina_id = @componenteCurricularId
+                            and a.data_aula >= @dataCriacao
+                        order by data_aula
+                        limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DataAulaDto>(query, new { turmaId, componenteCurricularId, dataCriacao = dataCriacao.Date });
         }

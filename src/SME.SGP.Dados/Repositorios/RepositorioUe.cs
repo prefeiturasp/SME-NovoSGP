@@ -412,5 +412,16 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.Conexao.QueryAsync<long>(query);
         }
+
+        public async Task<DreUeDto> ObterCodigosDreUePorId(long ueId)
+        {
+            var query = @"select ue.ue_id as UeCodigo
+                                , dre.dre_id as DreCodigo
+                          from ue 
+                        inner join dre on dre.id = ue.dre_id
+                        where ue.id = @ueId";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDto>(query, new { ueId });
+        }
     }
 }

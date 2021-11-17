@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAusenciasAlunosPorAlunosETurmaIdQuery : IRequest<IEnumerable<AusenciaPorDisciplinaAlunoDto>>
+    public class ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery : IRequest<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>>
     {
-        public ObterAusenciasAlunosPorAlunosETurmaIdQuery(DateTime dataAula, IEnumerable<string> alunos, string turmaId)
+        public ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(DateTime dataAula, IEnumerable<string> alunos, string turmaId)
         {
             DataAula = dataAula;
             Alunos = alunos;
@@ -21,9 +21,9 @@ namespace SME.SGP.Aplicacao
         public string TurmaId { get; set; }
     }
 
-    public class ObterAusenciasAlunosPorAlunosETurmaIdQueryValidator : AbstractValidator<ObterAusenciasAlunosPorAlunosETurmaIdQuery>
+    public class ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQueryValidator : AbstractValidator<ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery>
     {
-        public ObterAusenciasAlunosPorAlunosETurmaIdQueryValidator()
+        public ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQueryValidator()
         {
             RuleFor(a => a.DataAula)
                 .NotEmpty()

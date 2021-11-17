@@ -44,9 +44,11 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, Paginacao paginacao)
         {
             var query = @"from pendencia p
-                          inner join pendencia_usuario pu on pu.pendencia_id = p.id
+                          left join pendencia_perfil pp on pp.pendencia_id = p.id
+                          left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
+                          left join pendencia_usuario pu on pu.pendencia_id = p.id
                          where not p.excluido 
-                           and pu.usuario_id = @usuarioId
+                           and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
                            and p.situacao = @situacao";
             var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
@@ -58,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
             var situacao = SituacaoPendencia.Pendente;
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
             var queryTotalRegistros = $"select count(0) {query}";
-            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId , situacao });
+            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao });
 
             var queryPendencias = $@"select p.* {query} {orderBy}
                     offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;";
@@ -68,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
                 usuarioId,
                 qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
                 qtde_registros = paginacao.QuantidadeRegistros,
-                situacao = SituacaoPendencia.Pendente,
+                situacao,
             };
 
             retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendencias, parametros);
