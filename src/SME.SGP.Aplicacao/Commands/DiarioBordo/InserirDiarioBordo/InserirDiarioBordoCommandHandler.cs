@@ -1,14 +1,12 @@
-﻿using MediatR;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Integracoes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -52,11 +50,6 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                // var professorPodePersistir =
-                //     await mediator.Send(new VerificaPodePersistirTurmaDisciplinaEOLQuery(usuario, turma.CodigoTurma,
-                //         aula.DisciplinaId, DateTime.Now));
-                //
-
                 var professorTurma = await servicoEol.VerificaAtribuicaoProfessorTurma(usuario.CodigoRf, turma.CodigoTurma);
                 if (professorTurma?.DataDisponibilizacao == null || professorTurma.DataDisponibilizacao < DateTime.Now)
                 {
