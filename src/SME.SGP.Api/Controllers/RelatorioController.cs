@@ -230,5 +230,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+
+        [HttpPost("impressao-ocorrencias")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ImprimirRelatorioOcorrencias(FiltroImpressaoOcorrenciaDto filtro, [FromServices] IRelatorioOcorrenciasUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }

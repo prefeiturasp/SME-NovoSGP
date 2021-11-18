@@ -112,5 +112,8 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/acompanhamento-frequencia", ShortName = "AcompanhamentoFrequencia", Description = "Relatório de Frequência Individual")]
         AcompanhamentoFrequencia = 37,
 
+        [Display(Name = "relatorios/ocorrencias", ShortName = "RelatorioOcorrencia", Description = "Relatório de ocorrências")]
+        RelatorioOcorrencias = 38,
+
     }
 }
