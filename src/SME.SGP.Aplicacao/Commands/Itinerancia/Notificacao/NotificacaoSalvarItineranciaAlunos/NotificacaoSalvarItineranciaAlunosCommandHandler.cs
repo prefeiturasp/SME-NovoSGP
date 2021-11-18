@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(NotificacaoSalvarItineranciaAlunosCommand request, CancellationToken cancellationToken)
         {
-            var ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(request.UeCodigo));
+            var ue = await mediator.Send(new ObterUeComDrePorIdQuery(request.UeId));
             if (ue == null)
                 throw new NegocioException("Não foi possível encontrar a UE informada");
             await NotificarItinerancia(ue, request.CriadoRF, request.CriadoPor, request.DataVisita, request.Estudantes, request.ItineranciaId);
