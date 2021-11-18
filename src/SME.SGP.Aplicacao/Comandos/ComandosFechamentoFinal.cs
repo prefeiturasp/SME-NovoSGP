@@ -83,8 +83,9 @@ namespace SME.SGP.Aplicacao
                     {
                         if (fechamentoItemDto.Nota.HasValue)
                         {
-                            if (fechamentoNota.Nota.Value != fechamentoItemDto.Nota.Value)
-                                await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, fechamentoItemDto.Nota.Value, fechamentoNota.Id));
+                            if (fechamentoNota.Nota.HasValue)
+                                if (fechamentoNota.Nota.Value != fechamentoItemDto.Nota.Value)
+                                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, fechamentoItemDto.Nota.Value, fechamentoNota.Id));
                         }
                         else
                         if (fechamentoNota.ConceitoId.Value != fechamentoItemDto.ConceitoId.Value)
