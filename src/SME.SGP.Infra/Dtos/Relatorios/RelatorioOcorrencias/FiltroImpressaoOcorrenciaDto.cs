@@ -9,6 +9,6 @@ namespace SME.SGP.Infra
         public string TurmaCodigo { get; set; }
         public string UsuarioNome { get; set; }
         public string UsuarioRf { get; set; }
-        public IEnumerable<long> AlunosCodigo { get; set; }
+        public IEnumerable<string> OcorrenciasCodigo { get; set; }
     }
 }
