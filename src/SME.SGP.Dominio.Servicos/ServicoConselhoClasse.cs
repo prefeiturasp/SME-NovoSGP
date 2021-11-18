@@ -228,6 +228,7 @@ namespace SME.SGP.Dominio.Servicos
                 throw e;
             }
 
+
             var conselhoClasseDoAluno = await repositorioConselhoClasseAluno.ObterPorIdAsync(conselhoClasseAlunoId);
 
             // TODO Verificar se o fechamentoTurma.Turma carregou UE
@@ -251,6 +252,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<ConselhoClasseAluno> VerificaRecomendacoesAluno(ConselhoClasseAluno conselhoClasseAluno)
         {
+            
 
             if (string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
             {
@@ -258,10 +260,11 @@ namespace SME.SGP.Dominio.Servicos
 
                 conselhoClasseAluno.RecomendacoesAluno = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) ? recomendacoes.recomendacoesAluno : conselhoClasseAluno.RecomendacoesAluno;
                 conselhoClasseAluno.RecomendacoesFamilia = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia) ? recomendacoes.recomendacoesFamilia : conselhoClasseAluno.RecomendacoesFamilia;
-
+                
             }
-
             return conselhoClasseAluno;
+
+
         }
 
         private async Task<long> SalvarConselhoClasseAlunoResumido(long conselhoClasseId, string alunoCodigo)
