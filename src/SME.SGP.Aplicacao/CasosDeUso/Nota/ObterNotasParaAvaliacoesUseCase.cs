@@ -129,12 +129,27 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterFechamentosPorTurmaPeriodoCCQuery(filtro.PeriodoEscolarId, filtro.TurmaId, filtro.DisciplinaCodigo));
 
             //Obter alunos ativos
-            var alunosAtivos = from a in alunos
-                               where (a.EstaAtivo(periodoFim) ||
-                                     (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
-                                     a.DataMatricula.Date <= periodoFim.Date
-                               orderby a.NomeValido(), a.NumeroAlunoChamada
-                               select a;
+            IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
+            if (filtro.TurmaHistorico)
+            {
+                 alunosAtivos = from a in alunos
+                                   where (a.EstaAtivo(periodoFim) ||
+                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
+                                         a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido
+                                   orderby a.NomeValido(), a.NumeroAlunoChamada
+                                   select a;
+            }
+            else
+            {
+                 alunosAtivos = from a in alunos
+                                   where (a.EstaAtivo(periodoFim) ||
+                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
+                                         a.DataMatricula.Date <= periodoFim.Date
+                                   orderby a.NomeValido(), a.NumeroAlunoChamada
+                                   select a;
+            }
+
+
 
             var alunosAtivosCodigos = alunosAtivos
                 .Select(a => a.CodigoAluno).Distinct().ToArray();
@@ -358,6 +373,7 @@ namespace SME.SGP.Aplicacao
                 retorno.NotaTipo = tipoNota;
             }
 
+            
             retorno.Bimestres.Add(bimestreParaAdicionar);
 
             return retorno;
