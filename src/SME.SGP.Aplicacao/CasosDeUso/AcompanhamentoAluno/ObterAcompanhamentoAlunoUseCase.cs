@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ParametroQuantidadeFotosAluno(AcompanhamentoAlunoTurmaSemestreDto acompanhamentoAlunoTurmaSemestre, int anoLetivo)
         {
-            var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeFotosAcompanhamentoAluno, anoLetivo));
+            var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeImagensPercursoIndividualCrianca, anoLetivo));
 
             acompanhamentoAlunoTurmaSemestre.QuantidadeFotos = parametroQuantidade == null ? 3 :
                 int.Parse(parametroQuantidade.Valor);

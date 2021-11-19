@@ -2,6 +2,7 @@
 using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,21 +17,27 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
+            var filtro = new FiltroConsolidacaoFrequenciaTurma();
             try
             {
-                var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
+                filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
+                var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
 
-                var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(filtro.TurmaCodigo));
-
-                await ConsolidarFrequenciaAlunos(filtro.TurmaId, filtro.TurmaCodigo, filtro.PercentualFrequenciaMinimo, alunos);
+                if (turma != null)
+                {
+                    var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(filtro.TurmaCodigo));
+                    await ConsolidarFrequenciaAlunos(filtro.TurmaId, filtro.TurmaCodigo, filtro.PercentualFrequenciaMinimo, alunos);
+                }
 
                 return true;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
+                string msgErro = $"ConsolidarFrequenciaPorTurma - TurmaCodigo:{filtro?.TurmaCodigo} - MensagemRabbit: {mensagem.Mensagem} - Erro:{ex.Message}";
+                SentrySdk.AddBreadcrumb(msgErro);
                 SentrySdk.CaptureException(ex);
                 throw;
-            }        
+            }
         }
 
         private async Task ConsolidarFrequenciaAlunos(long turmaId, string turmaCodigo, double percentualFrequenciaMinimo, IEnumerable<AlunoPorTurmaResposta> alunos)
