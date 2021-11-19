@@ -232,7 +232,7 @@ namespace SME.SGP.Api.Controllers
         }
 
 
-        [HttpPost("impressao-ocorrencias")]
+        [HttpPost("ocorrencias")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ImprimirRelatorioOcorrencias(FiltroImpressaoOcorrenciaDto filtro, [FromServices] IRelatorioOcorrenciasUseCase useCase)
