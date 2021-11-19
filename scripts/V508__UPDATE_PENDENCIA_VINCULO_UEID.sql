@@ -18,7 +18,7 @@ select t.ue_id as ueId, p.id as pId from pendencia_plano_aee paee
 inner join pendencia p on p.id = paee.pendencia_id 
 inner join plano_aee pa on pa.id  = paee.plano_aee_id 
 inner join turma t on t.id = pa.turma_id  
-where p.tipo = 18 and UPPER(descricao) like UPPER('%e atribuir um PAAI para que ele registre o parecer%');
+where p.tipo = 18 and UPPER(descricao) like UPPER('%e atribuir um PAAI para que ele registre o parecer%')
 ) x
 where x.pId = pe.id;
 
@@ -30,7 +30,7 @@ select t.ue_id as ueId, p.id as pId from pendencia_encaminhamento_aee pea
 inner join pendencia p on p.id = pea.pendencia_id 
 inner join encaminhamento_aee ea on ea.id  = pea.encaminhamento_aee_id 
 inner join turma t on t.id = ea.turma_id  
-where p.tipo = 18 and UPPER(descricao) like UPPER('%Esta pendência será resolvida automaticamente quando o parecer da coordenação%');
+where p.tipo = 18 and UPPER(descricao) like UPPER('%Esta pendência será resolvida automaticamente quando o parecer da coordenação%')
 ) x
 where x.pId = pe.id;
 
@@ -42,7 +42,7 @@ select t.ue_id as ueId, p.id as pId from pendencia_encaminhamento_aee pea
 inner join pendencia p on p.id = pea.pendencia_id 
 inner join encaminhamento_aee ea on ea.id  = pea.encaminhamento_aee_id 
 inner join turma t on t.id = ea.turma_id 
-where p.tipo = 18 and UPPER(descricao) like UPPER('%Esta pendência será resolvida automaticamente quando o PAAI for atribuído no encaminhamento%');
+where p.tipo = 18 and UPPER(descricao) like UPPER('%Esta pendência será resolvida automaticamente quando o PAAI for atribuído no encaminhamento%')
 ) x
 where x.pId = pe.id;
 
