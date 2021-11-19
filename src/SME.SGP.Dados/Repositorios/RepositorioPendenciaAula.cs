@@ -317,6 +317,8 @@ namespace SME.SGP.Dados.Repositorios
 	                        not a.excluido
 	                        and a.id = @aula
                             and a.data_aula::date < @hoje
+                            and aa.atividade_classroom_id is null
+                            and aa.tipo_avaliacao_id <> 18
 	                        and n.id is null";
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
