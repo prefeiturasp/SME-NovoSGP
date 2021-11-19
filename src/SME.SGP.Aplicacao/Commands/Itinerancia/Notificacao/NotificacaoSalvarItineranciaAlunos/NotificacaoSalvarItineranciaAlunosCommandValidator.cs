@@ -6,9 +6,9 @@ namespace SME.SGP.Aplicacao
     {
         public NotificacaoSalvarItineranciaAlunosCommandValidator()
         {
-            RuleFor(c => c.UeCodigo)
+            RuleFor(c => c.UeId)
                .NotEmpty()
-               .WithMessage("O Código da UE deve ser informado");
+               .WithMessage("O id da UE deve ser informado");
             RuleFor(c => c.CriadoRF)
                .NotEmpty()
                .WithMessage("O RF do Usuário deve ser informado");
