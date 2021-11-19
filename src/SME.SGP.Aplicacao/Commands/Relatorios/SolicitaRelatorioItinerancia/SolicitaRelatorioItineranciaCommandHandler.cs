@@ -19,16 +19,11 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<Guid> Handle(SolicitaRelatorioItineranciaCommand request, CancellationToken cancellationToken)
-        {
-            Console.WriteLine(" ********************************  Inicio Solicitação Relatório Itinerância ****************************************** ");
-            var httpClient = httpClientFactory.CreateClient("servicoServidorRelatorios");
-
-            Console.WriteLine($"Path - {httpClient.BaseAddress.OriginalString} ");
-            Console.WriteLine($"DefaultRequestHeaders - {httpClient.DefaultRequestHeaders.ToString()} ");
+        {            
+            var httpClient = httpClientFactory.CreateClient("servicoServidorRelatorios");            
             var filtro = JsonConvert.SerializeObject(request.Filtro);
             var resposta = await httpClient.PostAsync($"api/v1/relatorios/sincronos/itinerancias", new StringContent(filtro, Encoding.UTF8, "application/json-patch+json"));
-            Console.WriteLine($"Resposta - {resposta.StatusCode} ");
-            Console.WriteLine(" ********************************  Fim Solicitação Relatório Itinerância ****************************************** ");
+            
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
