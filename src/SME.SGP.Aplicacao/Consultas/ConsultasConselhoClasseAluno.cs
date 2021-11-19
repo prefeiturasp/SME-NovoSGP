@@ -26,6 +26,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
         public ConsultasConselhoClasseAluno(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                             IRepositorioTurma repositorioTurma,
@@ -38,6 +39,7 @@ namespace SME.SGP.Aplicacao
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
                                             IConsultasFrequencia consultasFrequencia,
                                             IServicoConselhoClasse servicoConselhoClasse,
+                                            IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                             IMediator mediator)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
@@ -50,6 +52,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.servicoConselhoClasse = servicoConselhoClasse ?? throw new ArgumentNullException(nameof(servicoConselhoClasse));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -349,9 +352,13 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foi possível obter os dados da turma {turma.CodigoTurma}");
 
             var aluno = turmaFechamento.FirstOrDefault(a => a.CodigoAluno == alunoCodigo);
+
             if (aluno == null)
                 throw new NegocioException($"Não foi possível obter os dados do aluno {alunoCodigo}");
-            return aluno.PodeEditarNotaConceitoNoPeriodo(periodoEscolar);
+
+            var periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre, periodoEscolar.Id);
+
+            return aluno.PodeEditarNotaConceitoNoPeriodo(periodoEscolar, periodoFechamentoBimestre);
         }
 
         public async Task<ParecerConclusivoDto> ObterParecerConclusivo(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, bool consideraHistorico = false)
