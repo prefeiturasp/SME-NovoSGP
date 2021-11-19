@@ -10,6 +10,7 @@ using FluentValidation.TestHelper;
 using Xunit;
 using MediatR;
 using System.Threading;
+using SME.SGP.Aplicacao.Integracoes;
 
 namespace SME.SGP.Aplicacao.Teste.Handlers
 {
@@ -18,12 +19,14 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioDiarioBordo> repositorioDiarioBordo;
         private readonly InserirDiarioBordoCommandHandler inserirDiarioBordoCommandHandler;
+        private readonly Mock<IServicoEol> servicoEol;
 
         public InserirDiarioBordoCommandHandlerTeste()
         {
             mediator = new Mock<IMediator>();
             repositorioDiarioBordo = new Mock<IRepositorioDiarioBordo>();
-            inserirDiarioBordoCommandHandler = new InserirDiarioBordoCommandHandler(mediator.Object, repositorioDiarioBordo.Object);
+            servicoEol = new Mock<IServicoEol>();
+            inserirDiarioBordoCommandHandler = new InserirDiarioBordoCommandHandler(mediator.Object, repositorioDiarioBordo.Object, servicoEol.Object);
         }
 
         [Fact]

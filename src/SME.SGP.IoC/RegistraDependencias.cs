@@ -600,6 +600,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarFrequenciaTurmasUseCase, ConsolidarFrequenciaTurmasUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaTurmasPorAnoUseCase, ConsolidarFrequenciaTurmasPorAnoUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaPorTurmaUseCase, ConsolidarFrequenciaPorTurmaUseCase>();
+            services.TryAddScoped<IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase, ConsolidacaoDashBoardFrequenciaPorDataETipoUseCase>();
 
             // Fechamento
             services.TryAddScoped<IGerarPendenciasFechamentoUseCase, GerarPendenciasFechamentoUseCase>();
@@ -708,6 +709,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConciliacaoFrequenciaTurmasSyncUseCase, ConciliacaoFrequenciaTurmasSyncUseCase>();
             services.TryAddScoped<IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase, ValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase>();
             services.TryAddScoped<IExecutaConsolidacaoFrequenciaPorAnoUseCase, ExecutaConsolidacaoFrequenciaPorAnoUseCase>();
+            services.TryAddScoped<IConsolidarFrequenciaPorAnoUeUseCase, ConsolidarFrequenciaPorAnoUeUseCase>();
 
             // Notificações
 
@@ -1086,10 +1088,14 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterFiltroSemanaUseCase, ObterFiltroSemanaUseCase>();
             // Dashboard Frequencia Aluno
             services.TryAddScoped<IObterDadosDashboardFrequenciaPorAnoTurmaUseCase, ObterDadosDashboardFrequenciaPorAnoTurmaUseCase>();
+            services.TryAddScoped<IObterDadosDashboardFrequenciaPorAnoTurmaUseCase, ObterDadosDashboardFrequenciaPorAnoTurmaUseCase>();
 
             //  Dashboard Compensação ausência
             services.TryAddScoped<IObterDadosDashboardTotalAusenciasCompensadasUseCase, ObterDadosDashboardTotalAusenciasCompensadasUseCase>();
-            services.TryAddScoped<IObterDadosDashboardTotalAtividadesCompensacaoUseCase, ObterDadosDashboardTotalAtividadesCompensacaoUseCase>();
+            services.TryAddScoped<IExecutaConsolidacaoDashBoardFrequenciaUseCase, ExecutaConsolidacaoDashBoardFrequenciaUseCase>();
+            services.TryAddScoped<IExecutaConsolidacaoDiariaDashBoardFrequenciaUseCase, ExecutaConsolidacaoDiariaDashBoardFrequenciaUseCase>();
+            services.TryAddScoped<IExecutaConsolidacaoSemanalDashBoardFrequenciaUseCase, ExecutaConsolidacaoSemanalDashBoardFrequenciaUseCase>();
+            services.TryAddScoped<IExecutaConsolidacaoMensalDashBoardFrequenciaUseCase, ExecutaConsolidacaoMensalDashBoardFrequenciaUseCase>();
 
             // Rotas Agendamento Sync
             services.TryAddScoped<IRotasAgendamentoSyncUseCase, RotasAgendamentoSyncUseCase>();

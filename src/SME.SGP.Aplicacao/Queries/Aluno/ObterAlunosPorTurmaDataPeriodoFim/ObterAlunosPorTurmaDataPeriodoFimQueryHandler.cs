@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunoPorTurmaDataPeriodoFim
+namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosPorTurmaDataPeriodoFimQueryHandler : IRequestHandler<ObterAlunosPorTurmaDataPeriodoFimQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
