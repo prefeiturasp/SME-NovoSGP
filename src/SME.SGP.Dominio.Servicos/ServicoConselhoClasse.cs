@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using Sentry;
+using Sentry.Protocol;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -504,119 +506,44 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
         }
 
-        public async Task<RetornoConsolidado> ConsolidaConselhoClasse(int dreId)
+        public async Task ConsolidaConselhoClasse(int dreId)
         {
-            int contador = 0;
-            int erros = 0;
-            var retorno = new Dictionary<string, int>();
-
             var listaConselhoAlunoReprocessar = await repositorioConselhoClasse
                 .ObterAlunosReprocessamentoConsolidacaoConselho(dreId);
 
-            var listaErros = new List<objConsolidacaoConselhoAluno>();
-            foreach (var conselhoAluno in listaConselhoAlunoReprocessar)
-            {
-                try
-                {
-                    SituacaoConselhoClasse statusNovo = SituacaoConselhoClasse.NaoIniciado;
+            var listaAgrupada = listaConselhoAlunoReprocessar
+                .GroupBy(l => new { l.turmaId, l.bimestre })
+                .Select(l => l.Key)
+                .Distinct();
 
-                    var consolidadoTurmaAluno = repositorioConselhoClasseConsolidado
-                        .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(conselhoAluno.turmaId, conselhoAluno.bimestre, conselhoAluno.alunoCodigo).Result;
-
-                    if (consolidadoTurmaAluno == null)
-                    {
-                        consolidadoTurmaAluno = new ConselhoClasseConsolidadoTurmaAluno();
-                        consolidadoTurmaAluno.AlunoCodigo = conselhoAluno.alunoCodigo;
-                        consolidadoTurmaAluno.Bimestre = conselhoAluno.bimestre;
-                        consolidadoTurmaAluno.TurmaId = conselhoAluno.turmaId;
-                        consolidadoTurmaAluno.Status = statusNovo;
-                    }
-
-                    var turma = await mediator
-                        .Send(new ObterTurmaPorIdQuery(conselhoAluno.turmaId));
-
-                    if (conselhoAluno.bimestre == 0)
-                    {
-                        var fechamento = await mediator
-                            .Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = conselhoAluno.turmaId });
-
-                        var conselhoClasse = await mediator
-                            .Send(new ObterConselhoClassePorFechamentoIdQuery(fechamento.Id));
-
-                        var conselhoClasseAluno = await mediator
-                            .Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, conselhoAluno.alunoCodigo));
-
-                        consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno != null ? conselhoClasseAluno.ConselhoClasseParecerId : null;
-                    }
-
-                    var turmasCodigos = new string[] { };
-                    if (turma.DeveVerificarRegraRegulares())
-                    {
-                        List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
-
-                        turmasCodigosParaConsulta
-                            .AddRange(turma.ObterTiposRegularesDiferentes());
-
-                        turmasCodigos = await mediator
-                            .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, conselhoAluno.alunoCodigo, turmasCodigosParaConsulta));
-                    }
-
-                    if (turmasCodigos.Length == 0)
-                        turmasCodigos = new string[1] { turma.CodigoTurma };
-
-                    var componentesComNotaFechamentoOuConselho = await mediator
-                        .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, conselhoAluno.turmaId, conselhoAluno.bimestre, conselhoAluno.alunoCodigo));
-
-                    var componentesDaTurmaEol = await mediator
-                        .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
-
-                    var possuiComponentesSemNotaConceito = componentesDaTurmaEol
-                        .Where(x => x.LancaNota)
-                        .Select(x => x.Codigo)
-                        .Except(componentesComNotaFechamentoOuConselho
-                        .Select(x => x.Codigo))
-                        .Any();
-
-                    if (possuiComponentesSemNotaConceito)
-                        statusNovo = SituacaoConselhoClasse.EmAndamento;
-                    else
-                        statusNovo = SituacaoConselhoClasse.Concluido;
-
-                    if (consolidadoTurmaAluno.ParecerConclusivoId != null)
-                        statusNovo = SituacaoConselhoClasse.Concluido;
-
-                    consolidadoTurmaAluno.Status = statusNovo;
-
-                    consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
-
-                    repositorioConselhoClasseConsolidado
-                        .SalvarAsync(consolidadoTurmaAluno).Wait();
-
-                    contador = contador + 1;
-                }
-
-                catch (Exception ex)
-                {
-                    var objErro = new objConsolidacaoConselhoAluno
-                    {
-                        alunoCodigo = conselhoAluno.alunoCodigo,
-                        bimestre = conselhoAluno.bimestre,
-                        turmaId = conselhoAluno.turmaId,
-                        erro = ex.Message
-                    };
-                    listaErros.Add(objErro);
-                    erros = erros + 1;
-                }
-            }
-            retorno.Add("TotalAlterados", contador);
-            retorno.Add("TotalErros", erros);
-            var objRetorno = new RetornoConsolidado
-            {
-                listaObjErros = listaErros,
-                TotaldeAlterados = retorno
-            };
-            return objRetorno;
+            foreach (var conselhoAluno in listaAgrupada)
+                await PublicarMensagem(conselhoAluno.turmaId, conselhoAluno.bimestre);
         }
 
+        private async Task PublicarMensagem(long turmaId, int bimestre)
+        {
+            try
+            {
+                var consolidacaoTurma =
+                    new ConsolidacaoTurmaDto(turmaId, bimestre);
+
+                var mensagemParaPublicar = JsonConvert
+                    .SerializeObject(consolidacaoTurma);
+
+                var publicarFilaConsolidacaoConselhoClasse = await mediator
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
+
+                if (!publicarFilaConsolidacaoConselhoClasse)
+                {
+                    var mensagem = $"Não foi possível inserir a turma: {turmaId} bimestre: {bimestre} na fila de consolidação do conselho de classe.";
+                    SentrySdk.CaptureMessage(mensagem, SentryLevel.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.AddBreadcrumb($"Não foi possível inserir a turma : {turmaId} bimestre {bimestre} na fila de consolidação do conselho de classe.", "consolidação-conselho-classe-aluno", null, null, BreadcrumbLevel.Error);
+                SentrySdk.CaptureException(ex);
+            }
+        }
     }
 }
