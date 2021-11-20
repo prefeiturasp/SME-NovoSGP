@@ -49,7 +49,8 @@ namespace SME.SGP.Aplicacao
 
             var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendarioId, periodoAtual.PeriodoFim);
 
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaDataPeriodoFimQuery(turma.CodigoTurma, bimestreDoPeriodo.PeriodoFim.Date));
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(turma.CodigoTurma, bimestreDoPeriodo.PeriodoFim.Date));
+
             if (!alunos?.Any() ?? true)
                 throw new NegocioException("Os alunos da turma não foram encontrados.");
 

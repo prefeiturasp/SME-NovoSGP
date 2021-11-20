@@ -11,17 +11,17 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAlunosPorTurmaEDataAulaQueryHandler : IRequestHandler<ObterAlunosPorTurmaEDataAulaQuery, IEnumerable<AlunoPorTurmaResposta>>
+    public class ObterAlunosPorTurmaEDataMatriculaQueryHandler : IRequestHandler<ObterAlunosPorTurmaEDataMatriculaQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        public ObterAlunosPorTurmaEDataAulaQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterAlunosPorTurmaEDataMatriculaQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEDataAulaQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEDataMatriculaQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $"turmas/{request.CodigoTurma}/data-aula-tiks/{request.DataAula.Ticks}";
+            var url = $"turmas/{request.CodigoTurma}/data-matricula-ticks/{request.DataMatricula.Ticks}";
             try
             {
                 var resposta = await httpClient.GetAsync(url);
@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception e)
             {
-                SentrySdk.CaptureMessage($"Não foi possível obter os alunos da turma de data aula no EOL - CódigoTurma:{request.CodigoTurma}, DataAula:{request.DataAula} - Erro:{e.Message}");
+                SentrySdk.CaptureMessage($"Não foi possível obter os alunos da turma de data aula no EOL - CódigoTurma:{request.CodigoTurma}, DataAula:{request.DataMatricula} - Erro:{e.Message}");
                 SentrySdk.CaptureException(e);
                 throw e;
             }
