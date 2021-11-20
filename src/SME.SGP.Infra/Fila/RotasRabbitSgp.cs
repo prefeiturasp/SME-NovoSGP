@@ -36,6 +36,8 @@
         public const string RotaAtualizarPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual.atualizar";
 
         public const string RotaTratarAtribuicaoPendenciaUsuarios = "sgp.pendencias.atribuicao.tratar";
+        public const string RotaRemoverAtribuicaoPendenciaUsuarios = "sgp.pendencias.perfil.usuario.remover.atribuicao";
+        
 
         public const string RotaTrataNotificacoesNiveis = "sgp.notificacao.tratamento.niveiscargos";
 

@@ -1,11 +1,13 @@
 ﻿using SME.SGP.Dominio.Interfaces;
-using System;
+using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio
 {
     public interface IRepositorioPendenciaPerfilUsuario : IRepositorioBase<PendenciaPerfilUsuario>
     {
+        Task<IEnumerable<PendenciaPerfilUsuarioDto>> ObterPorSituacao(int situacaoPendencia);
+        Task<bool> ExcluirAsync(long id);
     }
 }
