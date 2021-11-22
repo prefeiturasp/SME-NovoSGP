@@ -294,6 +294,7 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = aa.id
                                 and aad.disciplina_id = a.disciplina_id
                                 left join notas_conceito n on aa.id = n.atividade_avaliativa
+                                where aa.atividade_classroom_id is null and aa.tipo_avaliacao_id <> 18
                                 group by a.id,aad.atividade_avaliativa_id) a where a.nota_id is null;";
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
