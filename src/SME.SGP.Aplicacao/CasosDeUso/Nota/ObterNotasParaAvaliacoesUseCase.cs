@@ -132,9 +132,9 @@ namespace SME.SGP.Aplicacao
             if (filtro.TurmaHistorico)
             {
                  alunosAtivos = from a in alunos
-                                   where (a.EstaAtivo(periodoFim) ||
-                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
-                                         a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido
+                                   where a.EstaAtivo(periodoFim) ||
+                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date && a.DataSituacao.Date <= periodoFim.Date) &&
+                                          (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido)
                                    orderby a.NomeValido(), a.NumeroAlunoChamada
                                    select a;
             }
