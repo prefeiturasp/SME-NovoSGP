@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             filtro.UsuarioNome = usuarioLogado.Nome;
             filtro.UsuarioRf = usuarioLogado.CodigoRf;
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioOcorrencias, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosImpressaoOcorrencias));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioOcorrencias, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosOcorrencias));
         }
     }
 }
