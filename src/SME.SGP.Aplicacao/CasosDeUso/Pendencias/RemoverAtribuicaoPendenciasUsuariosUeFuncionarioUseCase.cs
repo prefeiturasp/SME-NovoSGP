@@ -12,37 +12,42 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RemoverAtribuicaoPendenciasUsuariosUeUseCase : AbstractUseCase, IRemoverAtribuicaoPendenciasUsuariosUeUseCase
+    public class RemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase : AbstractUseCase, IRemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase
     {
-        public RemoverAtribuicaoPendenciasUsuariosUeUseCase(IMediator mediator) : base(mediator)
+        public RemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase(IMediator mediator) : base(mediator)
         {}
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             try
             {
-                var filtro = mensagem.ObterObjetoMensagem<FiltroRemoverAtribuicaoPendenciaDto>();
+                var filtro = mensagem.ObterObjetoMensagem<FiltroPendenciaPerfilUsuarioCefaiAdmUeDto>();
 
-                var dicUePerfilCodigoFuncionarios = new Dictionary<string, IEnumerable<FuncionarioCargoDTO>>();
-                var lstCefais = new List<long>();
-                var lstAdmUes = new List<long>();
+                var perfilUsuario = (PerfilUsuario)filtro.PendenciaFuncionario.PerfilCodigo;
 
-                var agruparUePerfilCodigo = ObterAgrupamentoUePerfil(filtro.PendenciasFuncionarios);
-
-                await ObterFuncionariosCefaisAdmUes(agruparUePerfilCodigo, dicUePerfilCodigoFuncionarios, lstCefais, lstAdmUes);
-
-                foreach (var pendenciaFuncionario in filtro.PendenciasFuncionarios)
+                switch (perfilUsuario)
                 {
-                    var funcionarioAtual = dicUePerfilCodigoFuncionarios.FirstOrDefault(w => w.Key == $"{pendenciaFuncionario.UeId}_{pendenciaFuncionario.PerfilCodigo}")
-                                                                           .Value
-                                                                           .FirstOrDefault(s => s.FuncionarioRF.Equals(pendenciaFuncionario.CodigoRf));
+                    case PerfilUsuario.CP:
+                    case PerfilUsuario.AD:
+                    case PerfilUsuario.DIRETOR:
 
-                    var ehCefai = lstCefais.Any(usuarioCefai => usuarioCefai != pendenciaFuncionario.UsuarioId);
-                    var ehAdmUe = lstAdmUes.Any(usuarioAdmUe => usuarioAdmUe != pendenciaFuncionario.UsuarioId);
+                        if (filtro.FuncionarioAtual == null || (int)EnumHelper.ObterPerfilPorCargo(filtro.FuncionarioAtual.CargoId) != filtro.PendenciaFuncionario.PerfilCodigo)
+                            await RemoverTratarAtribuicao(filtro.PendenciaFuncionario);
 
-                    var filtroPendenciaPerfilUsuarioCefaiAdmUeDto = new FiltroPendenciaPerfilUsuarioCefaiAdmUeDto(funcionarioAtual, ehCefai, ehAdmUe, pendenciaFuncionario);
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaRemoverAtribuicaoPendenciaUsuariosUeFuncionario, filtroPendenciaPerfilUsuarioCefaiAdmUeDto, Guid.NewGuid(), null));
+                        break;
+
+                    case PerfilUsuario.CEFAI:
+                        if (filtro.EhCefai)
+                            await RemoverTratarAtribuicao(filtro.PendenciaFuncionario);
+                        break;
+
+                    case PerfilUsuario.ADMUE:
+                        if (filtro.EhAdmUe)
+                            await RemoverTratarAtribuicao(filtro.PendenciaFuncionario);
+                        break;
                 }
+                    
+
             }
             catch (Exception ex)
             {
