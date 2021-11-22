@@ -102,7 +102,7 @@ namespace SME.SGP.Dominio
         DiasGeracaoNotificacoesPlanoAEEExpirado = 52,
         DiasParaNotificacarPlanoAEEAberto = 53,
 
-        QuantidadeFotosAcompanhamentoAluno = 54,
+        QuantidadeImagensPercursoIndividualCrianca = 54,
 
         NovosTiposUE = 55,
 
@@ -146,6 +146,7 @@ namespace SME.SGP.Dominio
         ExecucaoConsolidacaoRegistrosPedagogicos = 82,
 
         //Sistema
-        HabilitarServicosEmBackground = 100
+        HabilitarServicosEmBackground = 100,
+        ProcessarDeadletter = 101,
     }
 }

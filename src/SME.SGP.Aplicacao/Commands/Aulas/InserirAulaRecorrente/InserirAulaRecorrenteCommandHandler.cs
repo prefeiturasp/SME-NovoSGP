@@ -124,6 +124,10 @@ namespace SME.SGP.Aplicacao
                 aulaRecorrente.DataAula,
                 aulaRecorrente.RecorrenciaAula);
             var fimRecorrencia = await mediator.Send(obterFimPeriodoQuery);
+
+            if (fimRecorrencia == null || fimRecorrencia == DateTime.MinValue)
+                fimRecorrencia = inicioRecorrencia;
+
             await GerarRecorrenciaParaPeriodos(aulaRecorrente, inicioRecorrencia, fimRecorrencia, usuario, atribuicao);
         }
 
@@ -131,7 +135,13 @@ namespace SME.SGP.Aplicacao
         {
             var diasParaIncluirRecorrencia = ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia);
 
+            if (diasParaIncluirRecorrencia == null || !diasParaIncluirRecorrencia.Any())
+                throw new NegocioException("Não foi possível obter dias para incluir aulas recorrentes.");
+
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aulaRecorrente.CodigoTurma));
+
+            if(turma == null)
+                throw new NegocioException("Não foi possível obter a turma para inclusão de aulas recorrentes.");
 
             var validacaoDatas = await ValidarDatasAula(diasParaIncluirRecorrencia, aulaRecorrente.CodigoTurma, 
                 aulaRecorrente.ComponenteCurricularId, aulaRecorrente.TipoCalendarioId, aulaRecorrente.EhRegencia, 
@@ -217,6 +227,9 @@ namespace SME.SGP.Aplicacao
 
             // Dias Letivos
             var validacaoDiasLetivos = await ValidarDiasLetivos(validacaoGradeCurricular.datasValidas, turma, tipoCalendarioId);
+
+            if (validacaoDiasLetivos.diasLetivos == null || !validacaoDiasLetivos.diasLetivos.Any())
+                throw new NegocioException($"{validacaoDiasLetivos.mensagensValidacao}");
 
             // Atribuição Professor
             var validacaoAtribuicaoProfessor = await ValidarAtribuicaoProfessor(validacaoDiasLetivos.diasLetivos, turmaCodigo, componenteCurricularCodigo, usuario, atribuicao);

@@ -18,14 +18,17 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
+        private readonly IConsultasConselhoClasseAluno consultasConselhoClasseAluno;
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IMediator mediator;
 
         public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
             IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasPeriodoFechamento consultasPeriodoFechamento,
             IConsultasConselhoClasse consultasConselhoClasse, IRepositorioTipoCalendario repositorioTipoCalendario,
             IMediator mediator, IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-            IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado)
+            IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado,
+            IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasFechamentoAluno = consultasFechamentoAluno ?? throw new ArgumentNullException(nameof(consultasFechamentoAluno));
@@ -33,6 +36,8 @@ namespace SME.SGP.Aplicacao
             this.repositorioConselhoClasseConsolidado = repositorioConselhoClasseConsolidado ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.consultasConselhoClasseAluno = consultasConselhoClasseAluno ?? throw new ArgumentNullException(nameof(consultasConselhoClasseAluno));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
         public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int? bimestre, bool consideraHistorico = false)
@@ -61,15 +66,14 @@ namespace SME.SGP.Aplicacao
 
             if (turma.DeveVerificarRegraRegulares())
             {
-                var tipos = new List<TipoTurma>() { turma.TipoTurma };
-
-                tipos.AddRange(turma.ObterTiposRegularesDiferentes());
-
-                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos, consideraHistorico));
-                if (turmasCodigos != null && turmasCodigos.Any())
-                    conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
-                else
-                    conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(new string[] { codigoTurma }, periodoEscolar?.Id));
+                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
+                turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim));
+                if (!turmasCodigos.Any())
+                    turmasCodigos = new string[1] { turma.CodigoTurma };
+                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
+                if (conselhosClassesIds != null && !conselhosClassesIds.Any())
+                    conselhosClassesIds = new long[1] { conselhoClasseId };
             }
             else
             {
@@ -77,6 +81,20 @@ namespace SME.SGP.Aplicacao
                 turmasCodigos = new string[] { turma.CodigoTurma };
             }
 
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+            if (tipoCalendario == null) throw new NegocioException("Tipo de calendário não encontrado");
+
+            var periodosLetivos = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendario.Id));
+
+            if (periodosLetivos == null || !periodosLetivos.Any())
+                throw new NegocioException("Não foram encontrados períodos escolares do tipo de calendário.");
+
+            var periodoInicio = periodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
+            var periodoFim = periodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
+
+            var turmasComMatriculasValidas = await consultasConselhoClasseAluno.ObterTurmasComMatriculasValidas(alunoCodigo, turmasCodigos, periodoInicio, periodoFim);
+            if (turmasComMatriculasValidas.Any())
+                turmasCodigos = turmasComMatriculasValidas.ToArray();
 
             bool emFechamento;
 
@@ -153,6 +171,7 @@ namespace SME.SGP.Aplicacao
             consultasConselhoClasseRecomendacaoConsultaDto.RecomendacaoAluno = recomendacaoAluno.ToString();
             consultasConselhoClasseRecomendacaoConsultaDto.RecomendacaoFamilia = recomendacaoFamilia.ToString();
             consultasConselhoClasseRecomendacaoConsultaDto.SomenteLeitura = !emFechamento;
+            consultasConselhoClasseRecomendacaoConsultaDto.MatriculaAtiva = turmasComMatriculasValidas.Any();
 
             return consultasConselhoClasseRecomendacaoConsultaDto;
         }
