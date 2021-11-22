@@ -66,13 +66,13 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterConselhoClasseTurma(string turmaCodigo, int bimestre, string alunoCodigo, bool ehFinal, bool consideraHistorico, [FromServices] IConsultasConselhoClasse consultasConselhoClasse)
             => Ok(await consultasConselhoClasse.ObterConselhoClasseTurma(turmaCodigo, alunoCodigo, bimestre, ehFinal, consideraHistorico));
 
-        [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/parecer")]
+        [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/parecer/consideraHistorico/{consideraHistorico}")]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, [FromServices] IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
-            => Ok(await consultasConselhoClasseAluno.ObterParecerConclusivo(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma));
+        public async Task<IActionResult> ObterParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, bool consideraHistorico, [FromServices] IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
+            => Ok(await consultasConselhoClasseAluno.ObterParecerConclusivo(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, consideraHistorico));
 
         [HttpGet("turmas/{codigoTurma}/alunos/{alunoCodigo}/parecer")]
         [ProducesResponseType(401)]
@@ -148,9 +148,8 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ReprocessarSituacaoConselhoClasseAluno(int dreId, [FromServices] IServicoConselhoClasse servicoConselhoClasse)
         {
-            var totalAjustados = await servicoConselhoClasse.ConsolidaConselhoClasse(dreId);
-
-            return Ok(totalAjustados);
+            await servicoConselhoClasse.ConsolidaConselhoClasse(dreId);
+            return Ok();
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace SME.SGP.Aplicacao.Interfaces
+﻿using SME.SGP.Infra.Dtos;
+
+namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IObterParametroQuantidadeImagensPercursoColetivoTurmaUseCase : IUseCase<int, int>
+    public interface IObterParametroQuantidadeImagensPercursoColetivoTurmaUseCase : IUseCase<int, ParametroQuantidadeUploadImagemDto>
     {
     }
 }

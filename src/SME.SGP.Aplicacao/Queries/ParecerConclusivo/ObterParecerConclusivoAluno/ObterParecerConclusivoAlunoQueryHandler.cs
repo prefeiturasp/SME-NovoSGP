@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
 
             if (turma.DeveVerificarRegraRegulares())
             {
-                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
+                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };                
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, turmasCodigosParaConsulta));
             }
@@ -68,6 +68,7 @@ namespace SME.SGP.Aplicacao
             {
                 turmasCodigos = new string[1] { turma.CodigoTurma };
             }
+
             // Frequencia
             Filtrar(request.PareceresDaTurma.Where(c => c.Frequencia), "Frequência");
             if (!await ValidarParecerPorFrequencia(request.AlunoCodigo, turma, turmasCodigos))
