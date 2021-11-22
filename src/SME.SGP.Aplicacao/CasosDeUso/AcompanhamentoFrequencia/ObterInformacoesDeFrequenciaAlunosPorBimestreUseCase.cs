@@ -35,10 +35,6 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendarioId == default)
                 throw new NegocioException("O tipo de calendário da turma não foi encontrado.");
 
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
-            if (!alunos?.Any() ?? true)
-                throw new NegocioException("Os alunos da turma não foram encontrados.");
-
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendarioId));
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
@@ -52,10 +48,15 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
 
             var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendarioId, periodoAtual.PeriodoFim);
+
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(turma.CodigoTurma, bimestreDoPeriodo.PeriodoFim.Date));
+
+            if (!alunos?.Any() ?? true)
+                throw new NegocioException("Os alunos da turma não foram encontrados.");
+
             var alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
                                                          a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
-                                                         a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido)) &&
-                                                         a.DataMatricula.Date <= bimestreDoPeriodo.PeriodoFim.Date)
+                                                         a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido)))
                                                    .OrderBy(a => a.NumeroAlunoChamada)
                                                    .ThenBy(a => a.NomeValido());
 

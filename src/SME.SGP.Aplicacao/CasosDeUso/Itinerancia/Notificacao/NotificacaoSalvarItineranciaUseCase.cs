@@ -4,7 +4,6 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,15 +14,14 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(MensagemRabbit param)
+        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var mensagemRabbit = JsonConvert.DeserializeObject<NotificacaoSalvarItineranciaDto>(param.Mensagem.ToString());
+            var notificacao = JsonConvert.DeserializeObject<NotificacaoSalvarItineranciaDto>(mensagemRabbit.Mensagem.ToString());
 
-            var ue = await mediator.Send(new ObterUePorIdQuery(mensagemRabbit.UeId));
-            if (ue == null)
-                throw new NegocioException("Não foi possível localizar um Unidade Escolar!");
+            if (notificacao == null)
+                throw new NegocioException("Não foi possível obter os dados do registro de itinerância, para criar a notificação.");
 
-                await mediator.Send(new NotificacaoSalvarItineranciaAlunosCommand(ue.CodigoUe, mensagemRabbit.CriadoRF, mensagemRabbit.CriadoPor, mensagemRabbit.DataVisita, mensagemRabbit.Estudantes, mensagemRabbit.ItineranciaId));
+            await mediator.Send(new NotificacaoSalvarItineranciaAlunosCommand(notificacao.UeId, notificacao.CriadoRF, notificacao.CriadoPor, notificacao.DataVisita, notificacao.Estudantes, notificacao.ItineranciaId));
 
             return true;
         }
