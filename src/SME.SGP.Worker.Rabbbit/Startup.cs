@@ -187,6 +187,7 @@ namespace SME.SGP.Worker.Rabbbit
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-sr-api-key", configuration.GetSection("ApiKeySr").Value);
             });
 
         }
