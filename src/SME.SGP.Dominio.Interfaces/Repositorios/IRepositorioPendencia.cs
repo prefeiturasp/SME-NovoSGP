@@ -11,5 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, Paginacao paginacao);
         Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId);
         Task AtualizarStatusPendenciasPorIds(long[] ids, SituacaoPendencia situacaoPendencia);
+        Task<IEnumerable<PendenciaPendenteDto>> ObterPendenciasPendentes();
     }
 }
