@@ -46,12 +46,10 @@ namespace SME.SGP.Aplicacao
                             await RemoverTratarAtribuicao(filtro.PendenciaFuncionario);
                         break;
                 }
-                    
-
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na remoção de atribuição de Pendência Perfil Usuário por UE.", LogNivel.Negocio, LogContexto.Pendencia, ex.Message));
+                throw new Exception($"Erro na remoção de atribuição de Pendência Perfil Usuário por UE e Funcionário.");
             }
             return true;
         }

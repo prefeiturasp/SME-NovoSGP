@@ -27,12 +27,11 @@ namespace SME.SGP.Aplicacao
 
                 var pendenciasSemUes = pendenciaFuncionarios.Where(w => !w.UeId.HasValue).Select(s => s.PendenciaId).Distinct();
                 foreach (var pendencia in pendenciasSemUes)
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na remoção de atribuição de Pendência Perfil Usuário.", LogNivel.Negocio, LogContexto.Pendencia, $"Pendência sem UE: {pendencia}"));
-
+                    throw new Exception($"Erro na remoção de atribuição de Pendência Perfil Usuário.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na remoção de atribuição de Pendência Perfil Usuário.", LogNivel.Negocio, LogContexto.Pendencia, ex.Message));
+                throw new Exception($"Erro na remoção de atribuição de Pendência Perfil Usuário.");
             }
             return true;
         }
