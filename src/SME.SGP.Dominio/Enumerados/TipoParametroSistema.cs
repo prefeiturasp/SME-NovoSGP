@@ -143,5 +143,8 @@ namespace SME.SGP.Dominio
         //Sistema
         HabilitarServicosEmBackground = 100,
         ProcessarDeadletter = 101,
+
+        //Compensação Ausência
+        PermiteCompensacaoForaPeriodo = 102
     }
 }
