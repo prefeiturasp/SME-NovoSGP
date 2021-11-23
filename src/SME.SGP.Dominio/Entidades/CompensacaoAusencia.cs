@@ -20,7 +20,6 @@ namespace SME.SGP.Dominio
         public Turma Turma { get; set; }
         public string Nome { get; set; }
         public string Descricao { get; set; }
-        public bool PermiteCompensacaoForaPeriodo { get; set; }
 
         public IEnumerable<CompensacaoAusenciaAluno> Alunos { get; set; }
 
