@@ -137,14 +137,11 @@ namespace SME.SGP.Dominio
 
         AtualizacaoDeAtividadesAvaliativas = 76,
         TipoAtividadeAvaliativaClassroom = 77,
-        
+        PermiteCompensacaoForaPeriodo = 78,
        
         
         //Sistema
         HabilitarServicosEmBackground = 100,
-        ProcessarDeadletter = 101,
-
-        //Compensação Ausência
-        PermiteCompensacaoForaPeriodo = 102
+        ProcessarDeadletter = 101
     }
 }
