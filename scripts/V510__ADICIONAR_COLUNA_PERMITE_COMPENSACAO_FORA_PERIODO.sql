@@ -17,7 +17,7 @@ insert
 	criado_rf,
 	alterado_rf)
 values('PermiteCompensacaoForaPeriodo',
-102,
+78,
 'Permitir Compensação Fora do Período',
 'true',
 2021,
