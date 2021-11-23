@@ -221,8 +221,8 @@ namespace SME.SGP.Aplicacao
             var validacaoAulasExistentes = await ValidarAulaExistenteNaData(diasParaIncluirRecorrencia, turmaCodigo, componenteCurricularCodigo, usuario.EhProfessorCj());
             var datasValidas = validacaoAulasExistentes.datasValidas;
 
-            if(datasValidas == null || datasValidas.Any())
-                throw new NegocioException("Não foi localizar datas válidas para o cadastro de aulas recorrentes.");
+            if(datasValidas == null || !datasValidas.Any())
+                throw new NegocioException("Não foi possível localizar datas válidas para o cadastro de aulas recorrentes.");
 
             // Grade Curricular
             var validacaoGradeCurricular = await ValidarGradeCurricular(datasValidas, turmaCodigo, componenteCurricularCodigo, ehRegencia, quantidade, usuario.CodigoRf);
