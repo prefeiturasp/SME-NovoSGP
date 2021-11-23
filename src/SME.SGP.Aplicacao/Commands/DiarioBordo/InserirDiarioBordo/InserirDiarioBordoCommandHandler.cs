@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
                 if (professorTurma?.DataDisponibilizacao == null || professorTurma.DataDisponibilizacao < DateTime.Now)
                 {
                     throw new NegocioException(
-                        $"Você não possui permissão para inserir registro de diário de bordo pois não está mais atribuído(a) a turma.");
+                        $"Você não possui permissão para inserir registro de diário de bordo, pois não está mais atribuído(a) a turma.");
                 }
             }
             
