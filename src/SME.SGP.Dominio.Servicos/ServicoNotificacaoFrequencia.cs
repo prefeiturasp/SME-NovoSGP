@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;        
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoEol servicoEOL;
@@ -94,7 +94,7 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         public async Task NotificarAlunosFaltosos()
-        {            
+        {
             var dataReferencia = DateTime.Today.AddDays(-1);
 
             var quantidadeDiasCP = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes));
@@ -133,7 +133,7 @@ namespace SME.SGP.Dominio.Servicos
             MeusDadosDto professor = await servicoEOL.ObterMeusDados(compensacao.CriadoRF);
 
             var possuirPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia(), compensacao.Bimestre, true));
-            var parametroAtivo = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo));
+            var parametroAtivo = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo, turma.AnoLetivo));
 
             // Carrega dados dos alunos não notificados
             var alunosTurma = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
@@ -152,63 +152,56 @@ namespace SME.SGP.Dominio.Servicos
 
             repositorioNotificacaoCompensacaoAusencia.Excluir(compensacaoId);
 
-            var gestores = BuscaGestoresUe(ue.CodigoUe);
-            if (gestores != null && gestores.Any())
+            var cargos = new Cargo[] { Cargo.CP };
+            long notificacaoId = 0;
+            if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, parametroAtivo != null ? bool.Parse(parametroAtivo?.Valor) : false))
             {
-                long notificacaoId = 0;
-                if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, bool.Parse(parametroAtivo)))
-                {
-                    foreach (var gestor in gestores)
-                    {
-                        notificacaoId = NotificarCompensacaoExtemporanea(
-                            gestor.Usuario,
-                            professor.Nome,
-                            professor.CodigoRf,
-                            disciplinaEOL,
-                            turma.CodigoTurma,
-                            turma.Nome,
-                            turma.ModalidadeCodigo.ObterAtributo<DisplayAttribute>().ShortName,
-                            ue.CodigoUe,
-                            dre.CodigoDre,
-                            compensacao.Bimestre,
-                            compensacao.Nome,
-                            alunosDto);
-                        repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
-                    }
-                }
-                else
-                {
-                    foreach (var gestor in gestores)
-                    {
-                        notificacaoId = NotificarCompensacaoAusencia(compensacaoId
-                                , gestor.Usuario
-                                , professor.Nome
-                                , professor.CodigoRf
-                                , disciplinaEOL
-                                , turma.CodigoTurma
-                                , turma.Nome
-                                , turma.ModalidadeCodigo.ObterAtributo<DisplayAttribute>().ShortName
-                                , ue.CodigoUe
-                                , ue.Nome
-                                , ue.TipoEscola.ObterAtributo<DisplayAttribute>().ShortName
-                                , dre.CodigoDre
-                                , dre.Nome
-                                , compensacao.Bimestre
-                                , compensacao.Nome
-                                , alunosDto);
 
-                        // Grava vinculo de notificação x compensação
-                        repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
-                    }
-                }
-                // Marca aluno como notificado
-                alunosDto.ForEach(alunoDto =>
-                {
-                    var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == alunoDto.CodigoAluno);
-                    aluno.Notificado = true;
-                    repositorioCompensacaoAusenciaAluno.Salvar(aluno);
-                });
+                notificacaoId = await NotificarCompensacaoExtemporanea(
+                     professor.Nome,
+                     professor.CodigoRf,
+                     disciplinaEOL,
+                     turma.CodigoTurma,
+                     turma.Nome,
+                     turma.ModalidadeCodigo.ObterAtributo<DisplayAttribute>().ShortName,
+                     ue.CodigoUe,
+                     dre.CodigoDre,
+                     compensacao.Bimestre,
+                     compensacao.Nome,
+                     alunosDto, cargos);
+                repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
+
             }
+            else
+            {
+                notificacaoId = await NotificarCompensacaoAusencia(
+                         professor.Nome
+                        , professor.CodigoRf
+                        , disciplinaEOL
+                        , turma.CodigoTurma
+                        , turma.Nome
+                        , turma.ModalidadeCodigo.ObterAtributo<DisplayAttribute>().ShortName
+                        , ue.CodigoUe
+                        , ue.Nome
+                        , ue.TipoEscola.ObterAtributo<DisplayAttribute>().ShortName
+                        , dre.CodigoDre
+                        , dre.Nome
+                        , compensacao.Bimestre
+                        , compensacao.Nome
+                        , alunosDto, cargos);
+
+                // Grava vinculo de notificação x compensação
+                repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
+
+            }
+            // Marca aluno como notificado
+            alunosDto.ForEach(alunoDto =>
+            {
+                var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == alunoDto.CodigoAluno);
+                aluno.Notificado = true;
+                repositorioCompensacaoAusenciaAluno.Salvar(aluno);
+            });
+
         }
 
         public async Task VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId)
@@ -623,9 +616,9 @@ namespace SME.SGP.Dominio.Servicos
             return cargosNotificados;
         }
 
-        private long NotificarCompensacaoAusencia(long compensacaoId, Usuario usuario, string professor, string professorRf, string disciplina,
+        private async Task<long> NotificarCompensacaoAusencia(string professor, string professorRf, string disciplina,
             string codigoTurma, string turma, string modalidade, string codigoUe, string escola, string tipoEscola, string codigoDre, string dre,
-            int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos)
+            int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos, Cargo[] cargos)
         {
             var tituloMensagem = $"Atividade de compensação da turma {turma}";
 
@@ -650,20 +643,7 @@ namespace SME.SGP.Dominio.Servicos
             mensagemUsuario.AppendLine("</table>");
             mensagemUsuario.Append("Para consultar os detalhes desta atividade acesse 'Diário de classe > Compensação de ausência'");
 
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                Tipo = NotificacaoTipo.Frequencia,
-                Titulo = tituloMensagem,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuario.Id,
-                TurmaId = codigoTurma,
-                UeId = codigoUe,
-                DreId = codigoDre,
-            };
-            servicoNotificacao.Salvar(notificacao);
-            return notificacao.Id;
+            return await mediator.Send(new EnviarNotificacaoCommand(tituloMensagem, mensagemUsuario.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Frequencia, cargos, codigoDre, codigoUe, codigoTurma));
         }
 
         private async Task NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
@@ -773,12 +753,14 @@ namespace SME.SGP.Dominio.Servicos
         private bool GerarNotificacaoExtemporanea(bool periodoAberto, bool parametroAtivo)
         {
             bool gerarNotificacao = false;
-            if (!periodoAberto)
-                return gerarNotificacao = false;
+            if (periodoAberto)
+                return false;
             else if (parametroAtivo && !periodoAberto)
-                return gerarNotificacao = true;
+                return true;
+            else if (!parametroAtivo && !periodoAberto)
+                throw new NegocioException("Já existe essa compensação cadastrada para turma no ano letivo.");
             else if (!parametroAtivo)
-                return gerarNotificacao = false;
+                return false;
 
             return gerarNotificacao;
         }
@@ -787,9 +769,9 @@ namespace SME.SGP.Dominio.Servicos
             FiltroFeriadoCalendarioDto filtro = new FiltroFeriadoCalendarioDto();
             filtro.Ano = data.Year;
             var ret = consultasFeriadoCalendario.Listar(filtro).Result;
-            return ret.Any(x => x.DataFeriado == data);            
+            return ret.Any(x => x.DataFeriado == data);
         }
-        private long NotificarCompensacaoExtemporanea(Usuario usuario, string professor, string professorRf, string disciplina, string codigoTurma, string turma, string modalidade, string codigoUe, string codigoDre, int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos)
+        private async Task<long> NotificarCompensacaoExtemporanea(string professor, string professorRf, string disciplina, string codigoTurma, string turma, string modalidade, string codigoUe, string codigoDre, int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos, Cargo[] cargos)
         {
             var tituloMensagem = $"Atividade de compensação de ausência extemporânea - {modalidade}{turma} - {disciplina}";
 
@@ -813,20 +795,8 @@ namespace SME.SGP.Dominio.Servicos
             }
             mensagemUsuario.AppendLine("</table>");
 
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Alerta,
-                Tipo = NotificacaoTipo.Frequencia,
-                Titulo = tituloMensagem,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuario.Id,
-                TurmaId = codigoTurma,
-                UeId = codigoUe,
-                DreId = codigoDre,
-            };
-            servicoNotificacao.Salvar(notificacao);
-            return notificacao.Id;
+            return await mediator.Send(new EnviarNotificacaoCommand(tituloMensagem, mensagemUsuario.ToString(), NotificacaoCategoria.Alerta, NotificacaoTipo.Frequencia, cargos, codigoDre, codigoUe, codigoTurma));
+
         }
 
 
