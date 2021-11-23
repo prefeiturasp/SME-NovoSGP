@@ -34,6 +34,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasFeriadoCalendario consultasFeriadoCalendario;
+        private readonly IMediator mediator;
+
 
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
@@ -52,7 +54,8 @@ namespace SME.SGP.Dominio.Servicos
                                             IServicoUsuario servicoUsuario,
                                             IServicoEol servicoEOL,
                                             IConfiguration configuration,
-                                            IConsultasFeriadoCalendario consultasFeriadoCalendario)
+                                            IConsultasFeriadoCalendario consultasFeriadoCalendario,
+                                            IMediator mediator)
         {
             this.repositorioNotificacaoFrequencia = repositorioNotificacaoFrequencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoFrequencia));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
@@ -72,6 +75,7 @@ namespace SME.SGP.Dominio.Servicos
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasFeriadoCalendario = consultasFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(consultasFeriadoCalendario));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         #region Metodos Publicos
@@ -128,6 +132,9 @@ namespace SME.SGP.Dominio.Servicos
             var disciplinaEOL = await ObterNomeDisciplina(compensacao.DisciplinaId);
             MeusDadosDto professor = await servicoEOL.ObterMeusDados(compensacao.CriadoRF);
 
+            var possuirPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia(), compensacao.Bimestre, true));
+            var parametroAtivo = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo));
+
             // Carrega dados dos alunos não notificados
             var alunosTurma = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
             var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
@@ -148,29 +155,52 @@ namespace SME.SGP.Dominio.Servicos
             var gestores = BuscaGestoresUe(ue.CodigoUe);
             if (gestores != null && gestores.Any())
             {
-                foreach (var gestor in gestores)
+                long notificacaoId = 0;
+                if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, bool.Parse(parametroAtivo)))
                 {
-                    var notificacaoId = NotificarCompensacaoAusencia(compensacaoId
-                            , gestor.Usuario
-                            , professor.Nome
-                            , professor.CodigoRf
-                            , disciplinaEOL
-                            , turma.CodigoTurma
-                            , turma.Nome
-                            , turma.ModalidadeCodigo.ObterAtributo<DisplayAttribute>().ShortName
-                            , ue.CodigoUe
-                            , ue.Nome
-                            , ue.TipoEscola.ObterAtributo<DisplayAttribute>().ShortName
-                            , dre.CodigoDre
-                            , dre.Nome
-                            , compensacao.Bimestre
-                            , compensacao.Nome
-                            , alunosDto);
-
-                    // Grava vinculo de notificação x compensação
-                    repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
+                    foreach (var gestor in gestores)
+                    {
+                        notificacaoId = NotificarCompensacaoExtemporanea(
+                            gestor.Usuario,
+                            professor.Nome,
+                            professor.CodigoRf,
+                            disciplinaEOL,
+                            turma.CodigoTurma,
+                            turma.Nome,
+                            turma.ModalidadeCodigo.ObterAtributo<DisplayAttribute>().ShortName,
+                            ue.CodigoUe,
+                            dre.CodigoDre,
+                            compensacao.Bimestre,
+                            compensacao.Nome,
+                            alunosDto);
+                        repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
+                    }
                 }
+                else
+                {
+                    foreach (var gestor in gestores)
+                    {
+                        notificacaoId = NotificarCompensacaoAusencia(compensacaoId
+                                , gestor.Usuario
+                                , professor.Nome
+                                , professor.CodigoRf
+                                , disciplinaEOL
+                                , turma.CodigoTurma
+                                , turma.Nome
+                                , turma.ModalidadeCodigo.ObterAtributo<DisplayAttribute>().ShortName
+                                , ue.CodigoUe
+                                , ue.Nome
+                                , ue.TipoEscola.ObterAtributo<DisplayAttribute>().ShortName
+                                , dre.CodigoDre
+                                , dre.Nome
+                                , compensacao.Bimestre
+                                , compensacao.Nome
+                                , alunosDto);
 
+                        // Grava vinculo de notificação x compensação
+                        repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
+                    }
+                }
                 // Marca aluno como notificado
                 alunosDto.ForEach(alunoDto =>
                 {
@@ -740,7 +770,18 @@ namespace SME.SGP.Dominio.Servicos
 
             return dataRetorno;
         }
+        private bool GerarNotificacaoExtemporanea(bool periodoAberto, bool parametroAtivo)
+        {
+            bool gerarNotificacao = false;
+            if (!periodoAberto)
+                return gerarNotificacao = false;
+            else if (parametroAtivo && !periodoAberto)
+                return gerarNotificacao = true;
+            else if (!parametroAtivo)
+                return gerarNotificacao = false;
 
+            return gerarNotificacao;
+        }
         private bool Feriado(DateTime data)
         {
             FiltroFeriadoCalendarioDto filtro = new FiltroFeriadoCalendarioDto();
@@ -748,6 +789,46 @@ namespace SME.SGP.Dominio.Servicos
             var ret = consultasFeriadoCalendario.Listar(filtro).Result;
             return ret.Any(x => x.DataFeriado == data);            
         }
+        private long NotificarCompensacaoExtemporanea(Usuario usuario, string professor, string professorRf, string disciplina, string codigoTurma, string turma, string modalidade, string codigoUe, string codigoDre, int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos)
+        {
+            var tituloMensagem = $"Atividade de compensação de ausência extemporânea - {modalidade}{turma} - {disciplina}";
+
+            StringBuilder mensagemUsuario = new StringBuilder();
+            mensagemUsuario.AppendLine($"<p>A atividade de compensação <b>'{atividade}'</b> do componente curricular de <b>{disciplina}</b> foi cadastrada para a turma <b>{turma} {modalidade}</b> no <b>{bimestre}º</b> Bimestre pelo professor <b>{professor} ({professorRf})</b> de forma extemporânea (fora do período escolar).</p>");
+            mensagemUsuario.AppendLine("<p>O(s) seguinte(s) aluno(s) foi(ram) vinculado(s) a atividade:</p>");
+
+            mensagemUsuario.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
+            mensagemUsuario.AppendLine("<tr>");
+            mensagemUsuario.AppendLine("<td style='padding: 5px;'>Nº</td>");
+            mensagemUsuario.AppendLine("<td style='padding: 5px;'>Nome do aluno</td>");
+            mensagemUsuario.AppendLine("<td style='padding: 5px;'>Quantidade de aulas compensadas</td>");
+            mensagemUsuario.AppendLine("</tr>");
+            foreach (var aluno in alunos)
+            {
+                mensagemUsuario.AppendLine("<tr>");
+                mensagemUsuario.Append($"<td style='padding: 5px;'>{aluno.NumeroAluno}</td>");
+                mensagemUsuario.Append($"<td style='padding: 5px;'>{aluno.NomeAluno}</td>");
+                mensagemUsuario.Append($"<td style='text-align: center;'>{aluno.QuantidadeCompensacoes}</td>");
+                mensagemUsuario.AppendLine("</tr>");
+            }
+            mensagemUsuario.AppendLine("</table>");
+
+            var notificacao = new Notificacao()
+            {
+                Ano = DateTime.Now.Year,
+                Categoria = NotificacaoCategoria.Alerta,
+                Tipo = NotificacaoTipo.Frequencia,
+                Titulo = tituloMensagem,
+                Mensagem = mensagemUsuario.ToString(),
+                UsuarioId = usuario.Id,
+                TurmaId = codigoTurma,
+                UeId = codigoUe,
+                DreId = codigoDre,
+            };
+            servicoNotificacao.Salvar(notificacao);
+            return notificacao.Id;
+        }
+
 
         #endregion Metodos Privados
     }
