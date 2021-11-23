@@ -1,6 +1,3 @@
-ALTER TABLE compensacao_ausencia 
-ADD COLUMN Permite_Compensacao_Fora_Periodo bool;
-
 insert
 	into
 	parametros_sistema

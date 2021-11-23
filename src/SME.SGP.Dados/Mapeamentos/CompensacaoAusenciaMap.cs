@@ -10,7 +10,6 @@ namespace SME.SGP.Dados
             Map(c => c.DisciplinaId).ToColumn("disciplina_id");
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.PermiteCompensacaoForaPeriodo).ToColumn("permite_compensacao_fora_periodo");
         }
     }
 }
