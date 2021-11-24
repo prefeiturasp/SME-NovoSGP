@@ -162,7 +162,7 @@ namespace SME.SGP.Dominio.Servicos
                      disciplinaEOL,
                      turma.CodigoTurma,
                      turma.Nome,
-                     turma.ModalidadeCodigo.ObterAtributo<DisplayAttribute>().ShortName,
+                     turma.ModalidadeCodigo.ObterNomeCurto(),
                      ue.CodigoUe,
                      dre.CodigoDre,
                      compensacao.Bimestre,
@@ -177,10 +177,10 @@ namespace SME.SGP.Dominio.Servicos
                         , disciplinaEOL
                         , turma.CodigoTurma
                         , turma.Nome
-                        , turma.ModalidadeCodigo.ObterAtributo<DisplayAttribute>().ShortName
+                        , turma.ModalidadeCodigo.ObterNomeCurto()
                         , ue.CodigoUe
                         , ue.Nome
-                        , ue.TipoEscola.ObterAtributo<DisplayAttribute>().ShortName
+                        , ue.TipoEscola.ObterNomeCurto()
                         , dre.CodigoDre
                         , dre.Nome
                         , compensacao.Bimestre
