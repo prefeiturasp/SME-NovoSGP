@@ -86,8 +86,6 @@ namespace SME.SGP.Aplicacao
 
                                 if (valorPendenciaPerfil > 0 && usuarioId > 0)
                                     await mediator.Send(new SalvarPendenciaPerfilUsuarioCommand(valorPendenciaPerfil, usuarioId, (PerfilUsuario)perfilCodigo));
-
-                                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(valorLista.PendenciaId, ueId), Guid.NewGuid()));
                             }
                         }
                     }
