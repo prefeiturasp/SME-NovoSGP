@@ -126,7 +126,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // Carrega dados da compensacao a notificar
             var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
-            var turma = await repositorioTurma.ObterPorId(compensacao.TurmaId);
+            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(compensacao.TurmaId.ToString());
             var ue = repositorioUe.ObterUEPorTurma(turma.CodigoTurma);
             var dre = repositorioDre.ObterPorId(ue.DreId);
             var disciplinaEOL = await ObterNomeDisciplina(compensacao.DisciplinaId);
