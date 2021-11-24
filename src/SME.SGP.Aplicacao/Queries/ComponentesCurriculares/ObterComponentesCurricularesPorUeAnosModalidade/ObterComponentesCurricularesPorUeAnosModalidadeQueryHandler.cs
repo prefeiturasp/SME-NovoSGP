@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -31,7 +32,8 @@ namespace SME.SGP.Aplicacao
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
+                    var componentes = JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
+                    return componentes.OrderBy(c => c.Descricao);
                 }
                 else throw new NegocioException("Não foi possível obter Componentes Curriculares.");
             }
