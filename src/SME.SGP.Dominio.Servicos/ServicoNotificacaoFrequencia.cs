@@ -153,7 +153,7 @@ namespace SME.SGP.Dominio.Servicos
             repositorioNotificacaoCompensacaoAusencia.Excluir(compensacaoId);
 
             var cargos = new Cargo[] { Cargo.CP };
-            if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, parametroAtivo != null ? bool.Parse(parametroAtivo.Valor) : false))
+            if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, parametroAtivo != null ? parametroAtivo.Ativo : false))
             {
 
                 await NotificarCompensacaoExtemporanea(
