@@ -153,11 +153,10 @@ namespace SME.SGP.Dominio.Servicos
             repositorioNotificacaoCompensacaoAusencia.Excluir(compensacaoId);
 
             var cargos = new Cargo[] { Cargo.CP };
-            long notificacaoId = 0;
-            if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, parametroAtivo != null ? bool.Parse(parametroAtivo?.Valor) : false))
+            if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, parametroAtivo != null ? bool.Parse(parametroAtivo.Valor) : false))
             {
 
-                notificacaoId = await NotificarCompensacaoExtemporanea(
+                await NotificarCompensacaoExtemporanea(
                      professor.Nome,
                      professor.CodigoRf,
                      disciplinaEOL,
@@ -169,12 +168,10 @@ namespace SME.SGP.Dominio.Servicos
                      compensacao.Bimestre,
                      compensacao.Nome,
                      alunosDto, cargos);
-                repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
-
             }
             else
             {
-                notificacaoId = await NotificarCompensacaoAusencia(
+                await NotificarCompensacaoAusencia(
                          professor.Nome
                         , professor.CodigoRf
                         , disciplinaEOL
@@ -189,10 +186,6 @@ namespace SME.SGP.Dominio.Servicos
                         , compensacao.Bimestre
                         , compensacao.Nome
                         , alunosDto, cargos);
-
-                // Grava vinculo de notificação x compensação
-                repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
-
             }
             // Marca aluno como notificado
             alunosDto.ForEach(alunoDto =>
@@ -752,17 +745,16 @@ namespace SME.SGP.Dominio.Servicos
         }
         private bool GerarNotificacaoExtemporanea(bool periodoAberto, bool parametroAtivo)
         {
-            bool gerarNotificacao = false;
             if (periodoAberto)
                 return false;
             else if (parametroAtivo && !periodoAberto)
                 return true;
             else if (!parametroAtivo && !periodoAberto)
-                throw new NegocioException("Já existe essa compensação cadastrada para turma no ano letivo.");
+                throw new NegocioException("Compensação de ausência não permitida, É necessário que o período esteja aberto");
             else if (!parametroAtivo)
                 return false;
 
-            return gerarNotificacao;
+            return false;
         }
         private bool Feriado(DateTime data)
         {
