@@ -5,17 +5,17 @@ namespace SME.SGP.Infra
 {
     public class FiltroPendenciaPerfilUsuarioCefaiAdmUeDto
     {
-        public FiltroPendenciaPerfilUsuarioCefaiAdmUeDto(FuncionarioCargoDTO funcionarioAtual, bool ehCefai, bool ehAdmUe, PendenciaPerfilUsuarioDto pendenciaFuncionario)
+        public FiltroPendenciaPerfilUsuarioCefaiAdmUeDto(FuncionarioCargoDTO funcionarioAtual, bool eraCefai, bool eraAdmUe, PendenciaPerfilUsuarioDto pendenciaFuncionario)
         {
             FuncionarioAtual = funcionarioAtual;
-            EhAdmUe = ehAdmUe;
-            EhCefai = ehCefai;
+            EraAdmUe = eraAdmUe;
+            EraCefai = eraCefai;
             PendenciaFuncionario = pendenciaFuncionario;            
         }
 
         public FuncionarioCargoDTO FuncionarioAtual { get; set; }
-        public bool EhAdmUe { get; set; }
-        public bool EhCefai { get; set; }
+        public bool EraAdmUe { get; set; }
+        public bool EraCefai { get; set; }
         public PendenciaPerfilUsuarioDto PendenciaFuncionario { get; set; }
     }
 }

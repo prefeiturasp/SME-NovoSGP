@@ -37,12 +37,12 @@ namespace SME.SGP.Aplicacao
                         break;
 
                     case PerfilUsuario.CEFAI:
-                        if (filtro.EhCefai)
+                        if (filtro.EraCefai)
                             await RemoverTratarAtribuicao(filtro.PendenciaFuncionario);
                         break;
 
                     case PerfilUsuario.ADMUE:
-                        if (filtro.EhAdmUe)
+                        if (filtro.EraAdmUe)
                             await RemoverTratarAtribuicao(filtro.PendenciaFuncionario);
                         break;
                 }

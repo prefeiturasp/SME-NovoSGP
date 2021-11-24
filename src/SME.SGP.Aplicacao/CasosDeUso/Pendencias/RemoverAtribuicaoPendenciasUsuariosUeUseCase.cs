@@ -33,14 +33,23 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var pendenciaFuncionario in filtro.PendenciasFuncionarios)
                 {
-                    var funcionarioAtual = dicUePerfilCodigoFuncionarios.FirstOrDefault(w => w.Key == $"{pendenciaFuncionario.UeId}_{pendenciaFuncionario.PerfilCodigo}")
-                                                                           .Value
-                                                                           .FirstOrDefault(s => s.FuncionarioRF.Equals(pendenciaFuncionario.CodigoRf));
+                    var validaExistenciaFunc = dicUePerfilCodigoFuncionarios.FirstOrDefault(w => w.Key == $"{pendenciaFuncionario.UeId}_{pendenciaFuncionario.PerfilCodigo}");
+                    bool eraCefai = false;
+                    bool eraAdmUe = false;
 
-                    var ehCefai = lstCefais.Any(usuarioCefai => usuarioCefai != pendenciaFuncionario.UsuarioId);
-                    var ehAdmUe = lstAdmUes.Any(usuarioAdmUe => usuarioAdmUe != pendenciaFuncionario.UsuarioId);
+                    FuncionarioCargoDTO funcionarioAtual = null;
+                    if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CP || pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.AD || pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.DIRETOR)
+                    {
+                        funcionarioAtual = dicUePerfilCodigoFuncionarios.FirstOrDefault(w => w.Key == $"{pendenciaFuncionario.UeId}_{pendenciaFuncionario.PerfilCodigo}")
+                                                                                                   .Value
+                                                                                                   .FirstOrDefault(s => s.FuncionarioRF.Equals(pendenciaFuncionario.CodigoRf));
+                    }
+                    else if(pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CEFAI)   
+                        eraCefai = lstCefais.Any(usuarioCefai => usuarioCefai != pendenciaFuncionario.UsuarioId);
+                    else if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.ADMUE)
+                        eraAdmUe = lstAdmUes.Any(usuarioAdmUe => usuarioAdmUe != pendenciaFuncionario.UsuarioId);
 
-                    var filtroPendenciaPerfilUsuarioCefaiAdmUeDto = new FiltroPendenciaPerfilUsuarioCefaiAdmUeDto(funcionarioAtual, ehCefai, ehAdmUe, pendenciaFuncionario);
+                    var filtroPendenciaPerfilUsuarioCefaiAdmUeDto = new FiltroPendenciaPerfilUsuarioCefaiAdmUeDto(funcionarioAtual, eraCefai, eraAdmUe, pendenciaFuncionario);
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaRemoverAtribuicaoPendenciaUsuariosUeFuncionario, filtroPendenciaPerfilUsuarioCefaiAdmUeDto, Guid.NewGuid(), null));
                 }
             }
