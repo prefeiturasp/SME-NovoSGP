@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio
     {
         Task<IEnumerable<PendenciaPerfilUsuarioDto>> ObterPorSituacao(int situacaoPendencia);
         Task<bool> ExcluirAsync(long id);
+        Task<IEnumerable<long>> VerificaExistencia(long pendenciaPerfilId, long usuarioId);
     }
 }

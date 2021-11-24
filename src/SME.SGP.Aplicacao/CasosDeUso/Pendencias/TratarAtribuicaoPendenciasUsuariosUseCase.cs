@@ -112,7 +112,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task AtribuirPerfilUsuario(long usuarioId, PerfilUsuario perfil, long pendenciaPerfilId)
         {
-            await mediator.Send(new SalvarPendenciaPerfilUsuarioCommand(pendenciaPerfilId, usuarioId, perfil));
+            bool verificaExistenciaPendencia = await mediator.Send(new VerificaExistenciaDePendenciaPerfilUsuarioQuery(pendenciaPerfilId, usuarioId));
+
+            if(!verificaExistenciaPendencia)
+                await mediator.Send(new SalvarPendenciaPerfilUsuarioCommand(pendenciaPerfilId, usuarioId, perfil));
         }
     }
 }
