@@ -31,6 +31,9 @@ namespace SME.SGP.Aplicacao
 
                 await ObterFuncionariosCefaisAdmUes(agruparUePerfilCodigo, dicUePerfilCodigoFuncionarios, lstCefais, lstAdmUes);
 
+                //funciona para criar PendenciaPerfilUsuario para PendenciaPerfil que já tenha atribuição
+                await VerificaPerfisNovosEOL(dicUePerfilCodigoFuncionarios, filtro.PendenciasFuncionarios);
+
                 foreach (var pendenciaFuncionario in filtro.PendenciasFuncionarios)
                 {
                     var validaExistenciaFunc = dicUePerfilCodigoFuncionarios.FirstOrDefault(w => w.Key == $"{pendenciaFuncionario.UeId}_{pendenciaFuncionario.PerfilCodigo}");
@@ -58,6 +61,36 @@ namespace SME.SGP.Aplicacao
                 throw new Exception($"Erro na remoção de atribuição de Pendência Perfil Usuário por UE.");
             }
             return true;
+        }
+
+        private async Task VerificaPerfisNovosEOL(Dictionary<string, IEnumerable<FuncionarioCargoDTO>> dicUePerfilCodigoFuncionarios, IEnumerable<PendenciaPerfilUsuarioDto> filtro)
+        {
+            foreach (var dados in dicUePerfilCodigoFuncionarios) 
+            {
+                foreach (var valorDados in dados.Value) 
+                {
+                    if (!filtro.Any(p => p.CodigoRf.Equals(valorDados.FuncionarioRF)))
+                    {
+                        var itensKey = dados.Key.Split('_');
+                        int perfilCodigo = Convert.ToInt32(itensKey[1]);
+                        long ueId = Convert.ToInt64(itensKey[0]);
+
+                        if (dados.Value.Count() > 1) // existe mais de uma pessoa com o mesmo perfil
+                        {
+                            var listaPendenciasParaOCargo = filtro.Where(pf => pf.PerfilCodigo == perfilCodigo);
+                            foreach (var valorLista in listaPendenciasParaOCargo)
+                            {
+                                var dadospendenciaPerfilId = await mediator.Send(new ObterPendenciaPerfilPorPendenciaIdQuery(valorLista.PendenciaId));
+                                var valorPendenciaPerfil = dadospendenciaPerfilId.Where(p => p.PerfilCodigo == (PerfilUsuario)perfilCodigo).Select(d => d.Id).FirstOrDefault();
+                                var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(valorDados.FuncionarioRF));
+
+                                if (valorPendenciaPerfil > 0 && usuarioId > 0)
+                                    await mediator.Send(new SalvarPendenciaPerfilUsuarioCommand(valorPendenciaPerfil, usuarioId, (PerfilUsuario)perfilCodigo));
+                            }
+                        }
+                    }
+                }
+            }      
         }
 
         private async Task RemoverTratarAtribuicao(PendenciaPerfilUsuarioDto pendenciaFuncionario)
