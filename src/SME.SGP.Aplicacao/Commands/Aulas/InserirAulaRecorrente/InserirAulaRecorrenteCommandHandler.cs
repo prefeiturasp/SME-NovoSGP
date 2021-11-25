@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
 
                 var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuarioLogado.CodigoRf, false, aulaRecorrente.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
 
-                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
+                if (possuiAtribuicaoCJ && (atribuicoesEsporadica != null && atribuicoesEsporadica.Any()))
                 {
                     var verificaAtribuicao = atribuicoesEsporadica.FirstOrDefault(a => a.DataInicio <= aulaRecorrente.DataAula.Date && a.DataFim >= aulaRecorrente.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe);
                     if (verificaAtribuicao == null)
@@ -221,6 +221,14 @@ namespace SME.SGP.Aplicacao
             var validacaoAulasExistentes = await ValidarAulaExistenteNaData(diasParaIncluirRecorrencia, turmaCodigo, componenteCurricularCodigo, usuario.EhProfessorCj());
             var datasValidas = validacaoAulasExistentes.datasValidas;
 
+            if(datasValidas == null || !datasValidas.Any())
+            {
+                var mensagem = validacaoAulasExistentes.mensagensValidacao.Any() ?
+                    string.Join("<br/>", validacaoAulasExistentes.mensagensValidacao) : 
+                    $"{string.Join("<br/>", diasParaIncluirRecorrencia)} Não foi possível validar essas datas para a inclusão de aulas recorrentes.";
+                throw new NegocioException(mensagem);
+            }               
+
             // Grade Curricular
             var validacaoGradeCurricular = await ValidarGradeCurricular(datasValidas, turmaCodigo, componenteCurricularCodigo, ehRegencia, quantidade, usuario.CodigoRf);
 
@@ -228,7 +236,7 @@ namespace SME.SGP.Aplicacao
             var validacaoDiasLetivos = await ValidarDiasLetivos(validacaoGradeCurricular.datasValidas, turma, tipoCalendarioId);
 
             if (validacaoDiasLetivos.diasLetivos == null || !validacaoDiasLetivos.diasLetivos.Any())
-                throw new NegocioException($"{validacaoDiasLetivos.mensagensValidacao}");
+                throw new NegocioException($"{string.Join("<br/>", validacaoDiasLetivos.mensagensValidacao)}");
 
             // Atribuição Professor
             var validacaoAtribuicaoProfessor = await ValidarAtribuicaoProfessor(validacaoDiasLetivos.diasLetivos, turmaCodigo, componenteCurricularCodigo, usuario, atribuicao);

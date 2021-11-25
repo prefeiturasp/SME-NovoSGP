@@ -140,9 +140,8 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ReprocessarSituacaoConselhoClasseAluno(int dreId, [FromServices] IServicoConselhoClasse servicoConselhoClasse)
         {
-            var totalAjustados = await servicoConselhoClasse.ConsolidaConselhoClasse(dreId);
-
-            return Ok(totalAjustados);
+            await servicoConselhoClasse.ConsolidaConselhoClasse(dreId);
+            return Ok();
         }
     }
 }
