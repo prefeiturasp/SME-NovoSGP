@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             {
                 var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, DateTime.Now.Year));
 
-                if (!matriculas.Any(a => a.EstaAtivo(DateTime.Today)))
+                if (matriculas.Any() && !matriculas.Any(a => a.EstaAtivo(DateTime.Today)))
                 {
                     var ultimaMatricula = matriculas.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
                     await EncerrarPlanoAEE(planoAEE, ultimaMatricula?.SituacaoMatricula ?? "Inativo", ultimaMatricula?.DataSituacao ?? DateTime.Now);
