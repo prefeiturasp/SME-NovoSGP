@@ -82,6 +82,7 @@ pipeline {
         	 
       stage('Flyway') {
         agent { label 'master' }
+        when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }
         steps{
           withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
             checkout scm
