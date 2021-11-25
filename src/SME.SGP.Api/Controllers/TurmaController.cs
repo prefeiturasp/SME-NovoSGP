@@ -40,9 +40,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("listagem-turmas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> Listar([FromQuery]FiltroTurmaDto filtroTurmaDto, [FromServices] IConsultasTurma consultasTurma)
+        public async Task<IActionResult> Listar([FromQuery]FiltroTurmaDto filtroTurmaDto, [FromServices] IListarTurmasComComponentesUseCase listarTurmasComComponentesUseCase)
         {
-            return Ok(await consultasTurma.Listar(filtroTurmaDto));
+            return Ok(await listarTurmasComComponentesUseCase.Executar(filtroTurmaDto));
         }
     }
 }
