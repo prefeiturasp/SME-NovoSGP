@@ -98,11 +98,11 @@ namespace SME.SGP.Infra
             return true;
         }
 
-        public bool PodeEditarNotaConceitoNoPeriodo(PeriodoEscolar periodoEscolar, PeriodoFechamentoBimestre periodoFechamentoBimestre)
+        public bool PodeEditarNotaConceitoNoPeriodo(PeriodoEscolar periodoEscolar, PeriodoFechamentoBimestre periodoFechamentoBimestre = null)
         {
             if (!PodeEditarNotaConceito())
             {
-                return DataSituacao >= periodoEscolar?.PeriodoFim || DataSituacao >= periodoFechamentoBimestre?.InicioDoFechamento;
+                return DataSituacao >= periodoEscolar?.PeriodoFim || (periodoFechamentoBimestre != null && DataSituacao >= periodoFechamentoBimestre.InicioDoFechamento);
             }
             return true;
         }

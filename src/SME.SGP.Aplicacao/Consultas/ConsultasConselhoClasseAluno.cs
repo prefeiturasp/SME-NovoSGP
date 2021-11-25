@@ -356,7 +356,10 @@ namespace SME.SGP.Aplicacao
             if (aluno == null)
                 throw new NegocioException($"Não foi possível obter os dados do aluno {alunoCodigo}");
 
-            var periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre, periodoEscolar.Id);
+            PeriodoFechamentoBimestre periodoFechamentoBimestre = null;
+
+            if (periodoEscolar != null)
+                periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre, periodoEscolar.Id);
 
             return aluno.PodeEditarNotaConceitoNoPeriodo(periodoEscolar, periodoFechamentoBimestre);
         }
