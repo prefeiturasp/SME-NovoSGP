@@ -7,7 +7,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -126,11 +125,11 @@ namespace SME.SGP.Dominio.Servicos
 
             // Carrega dados da compensacao a notificar
             var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
-            
+
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(compensacao.TurmaId);
-            
+
             var disciplinaEOL = await ObterNomeDisciplina(compensacao.DisciplinaId);
-            
+
             MeusDadosDto professor = await servicoEOL.ObterMeusDados(compensacao.CriadoRF);
 
             var possuirPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia(), compensacao.Bimestre, true));
@@ -165,7 +164,10 @@ namespace SME.SGP.Dominio.Servicos
                      turma.Nome,
                      turma.ModalidadeCodigo.ObterNomeCurto(),
                      turma.Ue.CodigoUe,
+                     turma.Ue.Nome,
+                     turma.Ue.TipoEscola.ObterNomeCurto(),
                      turma.Ue.Dre.CodigoDre,
+                     turma.Ue.Dre.Nome,
                      compensacao.Bimestre,
                      compensacao.Nome,
                      alunosDto, cargos);
@@ -764,12 +766,12 @@ namespace SME.SGP.Dominio.Servicos
             var ret = consultasFeriadoCalendario.Listar(filtro).Result;
             return ret.Any(x => x.DataFeriado == data);
         }
-        private async Task<long> NotificarCompensacaoExtemporanea(string professor, string professorRf, string disciplina, string codigoTurma, string turma, string modalidade, string codigoUe, string codigoDre, int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos, Cargo[] cargos)
+        private async Task<long> NotificarCompensacaoExtemporanea(string professor, string professorRf, string disciplina, string codigoTurma, string turma, string modalidade, string codigoUe, string escola, string tipoEscola, string codigoDre, string dre, int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos, Cargo[] cargos)
         {
-            var tituloMensagem = $"Atividade de compensação de ausência extemporânea - {modalidade}{turma} - {disciplina}";
+            var tituloMensagem = $"Atividade de compensação de ausência extemporânea - {modalidade}-{turma} - {disciplina}";
 
             StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.AppendLine($"<p>A atividade de compensação <b>'{atividade}'</b> do componente curricular de <b>{disciplina}</b> foi cadastrada para a turma <b>{turma} {modalidade}</b> no <b>{bimestre}º</b> Bimestre pelo professor <b>{professor} ({professorRf})</b> de forma extemporânea (fora do período escolar).</p>");
+            mensagemUsuario.AppendLine($"<p>A atividade de compensação <b>'{atividade}'</b> do componente curricular de <b>{disciplina}</b> foi cadastrada para a turma <b>{turma} {modalidade}</b> da <b>{tipoEscola} {escola} ({dre})</b> no <b>{bimestre}º</b> Bimestre pelo professor <b>{professor} ({professorRf})</b> de forma extemporânea (fora do período escolar).</p>");
             mensagemUsuario.AppendLine("<p>O(s) seguinte(s) aluno(s) foi(ram) vinculado(s) a atividade:</p>");
 
             mensagemUsuario.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
