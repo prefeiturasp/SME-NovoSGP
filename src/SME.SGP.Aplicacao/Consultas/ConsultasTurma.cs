@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasTurma : IConsultasTurma
+    public class ConsultasTurma : ConsultasBase, IConsultasTurma
     {
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
@@ -27,8 +28,9 @@ namespace SME.SGP.Aplicacao
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                 IServicoEol servicoEOL,
                                 IServicoAluno servicoAluno,
-                                IMediator mediator
-            )
+                                IMediator mediator,
+                                IContextoAplicacao contextoAplicacao
+            ) : base(contextoAplicacao)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
@@ -175,6 +177,56 @@ namespace SME.SGP.Aplicacao
                     }
             }
             return TipoResponsavel.Filicacao1.ToString();
+        }
+
+        public async Task<PaginacaoResultadoDto<ListaTurmasComComponenteDto>> Listar(FiltroTurmaDto filtroTurmaDto)
+        {
+            int qtdeRegistros = Paginacao.QuantidadeRegistros;
+            int qtdeRegistrosIgnorados = Paginacao.QuantidadeRegistrosIgnorados;
+            return MapearParaDtoComPaginacao(await servicoEOL.ListagemTurmasComComponente(filtroTurmaDto.UeCodigo, filtroTurmaDto.DreCodigo, 
+                                                                                          filtroTurmaDto.Bimestre.Value, filtroTurmaDto.TurmaCodigo, filtroTurmaDto.AnoLetivo,
+                                                                                          qtdeRegistros, qtdeRegistrosIgnorados));
+        }
+
+        private PaginacaoResultadoDto<ListaTurmasComComponenteDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas)
+        {
+            if (turmasPaginadas == null)
+            {
+                turmasPaginadas = new PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>();
+            }
+            return new PaginacaoResultadoDto<ListaTurmasComComponenteDto>
+            {
+                Items = MapearEventosParaDto(turmasPaginadas.Items),
+                TotalPaginas = turmasPaginadas.TotalPaginas,
+                TotalRegistros = turmasPaginadas.TotalRegistros
+            };
+        }
+
+        private IEnumerable<ListaTurmasComComponenteDto> MapearEventosParaDto(IEnumerable<RetornoConsultaListagemTurmaComponenteDto> items)
+        {
+            return items?.Select(c => MapearParaDto(c));
+        }
+
+        private ListaTurmasComComponenteDto MapearParaDto(RetornoConsultaListagemTurmaComponenteDto turmas)
+        {
+            return turmas == null ? null : new ListaTurmasComComponenteDto
+            {
+                Id = turmas.Id,
+                NomeTurma = $"{turmas.Modalidade} - {turmas.NomeTurma} - {turmas.Ano} - {turmas.NomeComponenteCurricular}",
+                TurmaCodigo = turmas.TurmaCodigo,
+                ComponenteCurricularCodigo = turmas.ComponenteCurricularCodigo,
+                Turno = ObterTipoTurnoTurma(turmas.Turno)
+            };
+        }
+
+        private string ObterTipoTurnoTurma(int tipoTurno)
+        {
+            var nomeTipoTurno = Enum.GetValues(typeof(TipoTurnoEOL))
+                                .Cast<TipoTurnoEOL>()
+                                .Where(d => ((int)d) == tipoTurno)
+                                .Select(d => new { Name = d.Name()})
+                                .FirstOrDefault();
+            return nomeTipoTurno.Name;
         }
     }
 }

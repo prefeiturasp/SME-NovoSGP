@@ -11,7 +11,6 @@ namespace SME.SGP.Aplicacao.Commands
 {
     public class CadastrarParecerCPCommandHandler : IRequestHandler<CadastrarParecerCPCommand, bool>
     {
-
         private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
         private readonly IMediator mediator;
         private readonly IConfiguration configuration;
