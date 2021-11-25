@@ -30,12 +30,12 @@ namespace SME.SGP.Aplicacao
                     case Dominio.PerfilUsuario.AD:
                     case Dominio.PerfilUsuario.DIRETOR:
                         var dreUe = await ObterCodigoDREUE(filtro.UeId);
-                        var funcionarios = await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(dreUe.UeCodigo, ObterCargoPorPerfil(pendenciaPerfil.PerfilCodigo)));
+                        var funcionarios = await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(dreUe.UeCodigo, pendenciaPerfil.PerfilCodigo.ObterCargoPorPerfil()));
 
                         foreach (var funcionario in funcionarios)
                         {
                             var usuarioId = await ObterUsuarioId(funcionario.FuncionarioRF);
-                            await AtribuirPerfilUsuario(usuarioId, ObterPerfilPorCargo(funcionario.CargoId), pendenciaPerfil.Id);
+                            await AtribuirPerfilUsuario(usuarioId, funcionario.CargoId.ObterPerfilPorCargo(), pendenciaPerfil.Id);
                         }
 
                         break;
@@ -107,46 +107,15 @@ namespace SME.SGP.Aplicacao
             return AdministradoresUeId;
         }
 
-        private PerfilUsuario ObterPerfilPorCargo(Cargo cargoId)
-        {
-            switch (cargoId)
-            {
-                case Cargo.CP:
-                    return PerfilUsuario.CP;
-                case Cargo.AD:
-                    return PerfilUsuario.AD;
-                case Cargo.Diretor:
-                    return PerfilUsuario.DIRETOR;
-                case Cargo.Supervisor:
-                    return PerfilUsuario.SUPERVISOR;
-                case Cargo.SupervisorTecnico:
-                    return PerfilUsuario.SUPERVISOR_TECNICO;
-                default:
-                    throw new NegocioException("Cargo não relacionado a um Perfil");
-            }
-        }
-
-        private Cargo ObterCargoPorPerfil(PerfilUsuario perfilCodigo)
-        {
-            switch (perfilCodigo)
-            {
-                case PerfilUsuario.CP:
-                    return Cargo.CP;
-                case PerfilUsuario.AD:
-                    return Cargo.AD;
-                case PerfilUsuario.DIRETOR:
-                    return Cargo.Diretor;
-                default:
-                    throw new NegocioException("Perfil não relacionado com Cargo");
-            }
-        }
-
         private async Task<DreUeDto> ObterCodigoDREUE(long ueId)
             => await mediator.Send(new ObterCodigoUEDREPorIdQuery(ueId));
 
         private async Task AtribuirPerfilUsuario(long usuarioId, PerfilUsuario perfil, long pendenciaPerfilId)
         {
-            await mediator.Send(new SalvarPendenciaPerfilUsuarioCommand(pendenciaPerfilId, usuarioId, perfil));
+            bool verificaExistenciaPendencia = await mediator.Send(new VerificaExistenciaDePendenciaPerfilUsuarioQuery(pendenciaPerfilId, usuarioId));
+
+            if(!verificaExistenciaPendencia)
+                await mediator.Send(new SalvarPendenciaPerfilUsuarioCommand(pendenciaPerfilId, usuarioId, perfil));
         }
     }
 }

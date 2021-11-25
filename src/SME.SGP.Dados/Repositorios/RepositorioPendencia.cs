@@ -96,5 +96,14 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"update pendencia set situacao = @situacaoPendencia where id =ANY(@ids)";
             await database.Conexao.ExecuteAsync(query, new { ids, situacaoPendencia });
         }
+
+        public async Task<IEnumerable<PendenciaPendenteDto>> ObterPendenciasPendentes()
+        {
+            var query = @"select p.id as PendenciaId, p.ue_id as UeId
+                          from pendencia p
+                          where p.situacao = @situacao
+                   and excluido is false";
+            return await database.Conexao.QueryAsync<PendenciaPendenteDto>(query, new { situacao = SituacaoPendencia.Pendente });
+        }
     }
 }
