@@ -32,7 +32,7 @@ pipeline {
         }
       
         stage('Sonar') {
-	       when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch: 'infra/*' } } 
+	       when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch: 'infra/*'; } } 
          steps {
              withSonarQubeEnv('sonarqube-local'){
                sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP"'
