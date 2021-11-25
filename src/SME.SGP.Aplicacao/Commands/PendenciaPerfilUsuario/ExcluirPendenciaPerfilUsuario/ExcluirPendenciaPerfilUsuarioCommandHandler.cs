@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ExcluirPendenciaPerfilUsuarioCommand request, CancellationToken cancellationToken)
         {
-            await repositorio.ExcluirAsync(request.Id);
+            await repositorio.Excluir(request.Id);
         }
     }
 }

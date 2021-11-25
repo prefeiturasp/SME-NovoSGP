@@ -102,10 +102,8 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select p.id as PendenciaId, p.ue_id as UeId
                           from pendencia p
                           where p.situacao = @situacao
-                   and excluido is false
-                   and p.ue_id is not null;";
-            var idsPendenciasPendentes = await database.Conexao.QueryAsync<PendenciaPendenteDto>(query, new { situacao = SituacaoPendencia.Pendente });
-            return idsPendenciasPendentes.AsList().ToArray();
+                   and excluido is false";
+            return await database.Conexao.QueryAsync<PendenciaPendenteDto>(query, new { situacao = SituacaoPendencia.Pendente });
         }
     }
 }

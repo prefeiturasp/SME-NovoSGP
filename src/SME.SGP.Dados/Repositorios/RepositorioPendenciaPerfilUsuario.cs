@@ -12,7 +12,7 @@ namespace SME.SGP.Dados
         public RepositorioPendenciaPerfilUsuario(ISgpContext database) : base(database)
         {}
 
-        public async Task<bool> ExcluirAsync(long id)
+        public async Task<bool> Excluir(long id)
         {
             var query = "delete from pendencia_perfil_usuario where id = @id";
 

@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio
     public interface IRepositorioPendenciaPerfilUsuario : IRepositorioBase<PendenciaPerfilUsuario>
     {
         Task<IEnumerable<PendenciaPerfilUsuarioDto>> ObterPorSituacao(int situacaoPendencia);
-        Task<bool> ExcluirAsync(long id);
+        Task<bool> Excluir(long id);
         Task<IEnumerable<long>> VerificaExistencia(long pendenciaPerfilId, long usuarioId);
     }
 }
