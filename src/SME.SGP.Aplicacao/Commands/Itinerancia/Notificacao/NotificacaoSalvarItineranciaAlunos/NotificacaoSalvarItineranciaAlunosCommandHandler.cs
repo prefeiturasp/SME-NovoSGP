@@ -59,6 +59,9 @@ namespace SME.SGP.Aplicacao
                 UsuarioRF = criadoRF
             }));
 
+            if (codigoCorrelacao == Guid.Empty)
+                throw new NegocioException("Não foi possivel obter o relatório para a notificação do registro de itinerância");
+
             mensagem.AppendLine($"<br/><br/><a href='{urlServidorRelatorios}api/v1/downloads/sgp/pdf/Itiner%C3%A2ncias.pdf/{codigoCorrelacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
 
             var workflowId = await mediator.Send(new EnviarNotificacaoItineranciaCommand(itineranciaId, titulo, mensagem.ToString(), NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.AEE, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
