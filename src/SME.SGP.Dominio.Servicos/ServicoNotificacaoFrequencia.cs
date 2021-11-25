@@ -126,10 +126,11 @@ namespace SME.SGP.Dominio.Servicos
 
             // Carrega dados da compensacao a notificar
             var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
+            
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(compensacao.TurmaId);
-            var ue = repositorioUe.ObterUEPorTurma(turma.CodigoTurma);
-            var dre = repositorioDre.ObterPorId(ue.DreId);
+            
             var disciplinaEOL = await ObterNomeDisciplina(compensacao.DisciplinaId);
+            
             MeusDadosDto professor = await servicoEOL.ObterMeusDados(compensacao.CriadoRF);
 
             var possuirPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia(), compensacao.Bimestre, true));
@@ -163,8 +164,8 @@ namespace SME.SGP.Dominio.Servicos
                      turma.CodigoTurma,
                      turma.Nome,
                      turma.ModalidadeCodigo.ObterNomeCurto(),
-                     ue.CodigoUe,
-                     dre.CodigoDre,
+                     turma.Ue.CodigoUe,
+                     turma.Ue.Dre.CodigoDre,
                      compensacao.Bimestre,
                      compensacao.Nome,
                      alunosDto, cargos);
@@ -178,11 +179,11 @@ namespace SME.SGP.Dominio.Servicos
                         , turma.CodigoTurma
                         , turma.Nome
                         , turma.ModalidadeCodigo.ObterNomeCurto()
-                        , ue.CodigoUe
-                        , ue.Nome
-                        , ue.TipoEscola.ObterNomeCurto()
-                        , dre.CodigoDre
-                        , dre.Nome
+                        , turma.Ue.CodigoUe
+                        , turma.Ue.Nome
+                        , turma.Ue.TipoEscola.ObterNomeCurto()
+                        , turma.Ue.Dre.CodigoDre
+                        , turma.Ue.Dre.Nome
                         , compensacao.Bimestre
                         , compensacao.Nome
                         , alunosDto, cargos);
