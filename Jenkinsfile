@@ -31,16 +31,16 @@ pipeline {
           }
         }
       
-        //stage('AnaliseCodigo') {
-	     //   when { branch 'release' }
-         // steps {
-         //     withSonarQubeEnv('sonarqube-local'){
-         //       sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP-API-EOL"'
-         //       sh 'dotnet build SME.Pedagogico.API.sln'
-         //       sh 'dotnet-sonarscanner'
-         //   }
-         // }
-       // }
+        stage('Sonar') {
+	       when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch: 'infra/*' } } 
+         steps {
+             withSonarQubeEnv('sonarqube-local'){
+               sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP"'
+               sh 'dotnet build SME.SGP.sln'
+               sh 'dotnet-sonarscanner'
+           }
+         }
+       }
 
         stage('Build') {
           when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; } } 
