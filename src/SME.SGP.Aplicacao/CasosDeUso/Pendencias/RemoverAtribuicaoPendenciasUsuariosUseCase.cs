@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var pendencia in pendenciasSemUes)
                     throw new Exception($"Erro na remoção de atribuição de Pendência Perfil Usuário.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new Exception($"Erro na remoção de atribuição de Pendência Perfil Usuário.");
             }

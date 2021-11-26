@@ -13,25 +13,42 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioPendenciaCalendarioUe repositorioPendenciaCalendarioUe;
+        private readonly IUnitOfWork unitOfWork;
 
-        public SalvarPendenciaCalendarioUeCommandHandler(IMediator mediator, IRepositorioPendenciaCalendarioUe repositorioPendenciaCalendarioUe)
+        public SalvarPendenciaCalendarioUeCommandHandler(IMediator mediator, IRepositorioPendenciaCalendarioUe repositorioPendenciaCalendarioUe, IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioPendenciaCalendarioUe = repositorioPendenciaCalendarioUe ?? throw new ArgumentNullException(nameof(repositorioPendenciaCalendarioUe));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<long> Handle(SalvarPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
-            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Ue.Id, request.Descricao, request.Instrucao));
-            await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfilParaPendencia(request.TipoPendencia)));
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, request.Ue.Id), Guid.NewGuid()));
+            long idPendenciaCalendarioUe = 0;
+            long pendenciaId = 0;
 
-            return await repositorioPendenciaCalendarioUe.SalvarAsync(new Dominio.PendenciaCalendarioUe()
+            unitOfWork.IniciarTransacao();
+            try
             {
-                PendenciaId = pendenciaId,
-                UeId = request.Ue.Id,
-                TipoCalendarioId = request.TipoCalendarioId
-            });
+                pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Ue.Id, request.Descricao, request.Instrucao));
+                await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfilParaPendencia(request.TipoPendencia)));
+
+                idPendenciaCalendarioUe = await repositorioPendenciaCalendarioUe.SalvarAsync(new Dominio.PendenciaCalendarioUe()
+                {
+                    PendenciaId = pendenciaId,
+                    UeId = request.Ue.Id,
+                    TipoCalendarioId = request.TipoCalendarioId
+                });
+                unitOfWork.PersistirTransacao();
+            }
+            catch(Exception)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, request.Ue.Id), Guid.NewGuid()));
+            return idPendenciaCalendarioUe;
         }
 
         public List<PerfilUsuario> ObterCodigoPerfilParaPendencia(TipoPendencia tipoPendencia)
