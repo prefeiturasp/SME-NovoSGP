@@ -222,7 +222,12 @@ namespace SME.SGP.Aplicacao
             var datasValidas = validacaoAulasExistentes.datasValidas;
 
             if(datasValidas == null || !datasValidas.Any())
-                throw new NegocioException("Não foi possível localizar datas válidas para o cadastro de aulas recorrentes.");
+            {
+                var mensagem = validacaoAulasExistentes.mensagensValidacao.Any() ?
+                    string.Join("<br/>", validacaoAulasExistentes.mensagensValidacao) : 
+                    $"{string.Join("<br/>", diasParaIncluirRecorrencia)} Não foi possível validar essas datas para a inclusão de aulas recorrentes.";
+                throw new NegocioException(mensagem);
+            }               
 
             // Grade Curricular
             var validacaoGradeCurricular = await ValidarGradeCurricular(datasValidas, turmaCodigo, componenteCurricularCodigo, ehRegencia, quantidade, usuario.CodigoRf);
