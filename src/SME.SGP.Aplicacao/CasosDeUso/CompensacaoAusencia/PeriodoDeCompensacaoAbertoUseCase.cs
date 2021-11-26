@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                                                                                          turma.AnoLetivo));
 
             var periodoEstahAberto = parametroSistema != null && parametroSistema.Ativo
-                                   ? parametroSistema.Ativo && turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year
+                                   ? turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year
                                    : await mediator
                                           .Send(new TurmaEmPeriodoAbertoQuery(turma,
                                                                               DateTimeExtension.HorarioBrasilia(),
