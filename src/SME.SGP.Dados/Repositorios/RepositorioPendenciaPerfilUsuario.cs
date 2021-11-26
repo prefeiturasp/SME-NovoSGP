@@ -31,7 +31,7 @@ namespace SME.SGP.Dados
                                 join pendencia_perfil pp on ppu.pendencia_perfil_id = pp.id 
                                 join pendencia p on p.id = pp.pendencia_id 
                                 join usuario u on u.id = ppu.usuario_id 
-                          where p.situacao = @situacao";
+                          where p.situacao = @situacao and not p.excluido";
 
             return await database.Conexao.QueryAsync<PendenciaPerfilUsuarioDto>(query, new { situacao });
         }
