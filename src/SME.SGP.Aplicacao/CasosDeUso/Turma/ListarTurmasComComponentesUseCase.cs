@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             return MapearParaDtoComPaginacao(await mediator.Send(new ListagemTurmasComComponenteQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.DreCodigo,
                                                                                            filtroTurmaDto.TurmaCodigo, filtroTurmaDto.AnoLetivo,
-                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade)));
+                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade, filtroTurmaDto.Semestre)));
         }
 
         private PaginacaoResultadoDto<ListaTurmasComComponenteDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas)
