@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Sentry;
 using SME.Background.Core.Exceptions;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections;
@@ -34,11 +35,25 @@ namespace SME.SGP.Aplicacao
                 var arquivo = $@"{UtilArquivo.ObterDiretorioBase()}/{caminho}{item.ToString()}";
                 var alterarBarras = arquivo.Replace(@"\", @"/");
                 if (File.Exists(alterarBarras))
-                    File.Delete(alterarBarras);
+                    ExcluirArquivo(alterarBarras);
+                else if (caminho.Equals(TipoArquivo.AcompanhamentoAluno.Name()))
+                {
+                    var caminhoAntigoAcompanhamentoAluno = "aluno/acompanhamento";
+                    arquivo = $@"{UtilArquivo.ObterDiretorioBase()}/{caminhoAntigoAcompanhamentoAluno}{item.ToString()}";
+                    alterarBarras = arquivo.Replace(@"\", @"/");
+                    ExcluirArquivo(alterarBarras);
+                }
                 else
-                    throw new ErroInternoException("Arquivo Informado para exclusão não existe");
+                    throw new Background.Core.Exceptions.ErroInternoException($"Arquivo Informado para exclusão não existe. {alterarBarras}");
             }
+        }
 
+        private void ExcluirArquivo(string caminhoArquivo)
+        {
+            if (File.Exists(caminhoArquivo))
+                File.Delete(caminhoArquivo);
+            else
+                throw new Background.Core.Exceptions.ErroInternoException($"Arquivo Informado para exclusão não existe. {caminhoArquivo}");
         }
     }
 }
