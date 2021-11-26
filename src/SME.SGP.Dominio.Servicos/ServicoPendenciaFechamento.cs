@@ -74,7 +74,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(aula.TurmaId));
 
-                    Usuario professor = BuscaBuscaInformacoesPorProfessorRf(aula.ProfessorRf);
+                    Usuario professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
 
                     mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
                     mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {professor.CodigoRf}</td></tr>");
@@ -96,19 +96,9 @@ namespace SME.SGP.Dominio.Servicos
             var professorTitularPorTurmaEDisciplina = professoresTitularesPorTurma.FirstOrDefault(o => o.DisciplinaId == disciplinaId);
 
             if (professorTitularPorTurmaEDisciplina == null)
-                throw new NegocioException($"Não existe professor titular para está turma/disciplina {turmaCodigo}/{disciplinaId}");
+                throw new NegocioException($"Não existe professor titular para esta turma/disciplina {turmaCodigo}/{disciplinaId}");
 
             return professorTitularPorTurmaEDisciplina;
-        }
-
-        private Usuario BuscaBuscaInformacoesPorProfessorRf(string professorRf)
-        {
-            var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(professorRf);
-
-            if (professor == null)
-                throw new NegocioException($"Professor com RF {professorRf} não encontrado.");
-
-            return professor;
         }
 
         private async Task<DisciplinaDto> BuscaInformacoesDaDisciplina(long disciplinaId)
