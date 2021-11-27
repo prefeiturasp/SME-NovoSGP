@@ -22,7 +22,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemConsolidacaoConselhoClasseAlunoDto>();
+            var filtro = mensagemRabbit
+                .ObterObjetoMensagem<MensagemConsolidacaoConselhoClasseAlunoDto>();
 
             if (filtro == null)
             {
@@ -32,7 +33,8 @@ namespace SME.SGP.Aplicacao
 
             SituacaoConselhoClasse statusNovo = SituacaoConselhoClasse.NaoIniciado;
 
-            var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo);
+            var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado
+                .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo);
 
             if (consolidadoTurmaAluno == null)
             {
@@ -43,7 +45,9 @@ namespace SME.SGP.Aplicacao
                 consolidadoTurmaAluno.Status = statusNovo;
             }
 
-            var componentesDoAluno = await mediator.Send(new ObterComponentesParaFechamentoAcompanhamentoCCAlunoQuery(filtro.AlunoCodigo, filtro.Bimestre, filtro.TurmaId));
+            var componentesDoAluno = await mediator
+                .Send(new ObterComponentesParaFechamentoAcompanhamentoCCAlunoQuery(filtro.AlunoCodigo, filtro.Bimestre, filtro.TurmaId));
+
             if (componentesDoAluno != null && componentesDoAluno.Any())
             {
                 var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
@@ -56,7 +60,6 @@ namespace SME.SGP.Aplicacao
                     consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno != null ? conselhoClasseAluno.ConselhoClasseParecerId : null;
                 }
 
-
                 var turmasCodigos = new string[] { };
                 if (turma.DeveVerificarRegraRegulares())
                 {
@@ -64,15 +67,21 @@ namespace SME.SGP.Aplicacao
                     turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                     turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, filtro.AlunoCodigo, turmasCodigosParaConsulta));
                 }
+
                 if (turmasCodigos.Length == 0)
                     turmasCodigos = new string[1] { turma.CodigoTurma };
 
+                var componentesComNotaFechamentoOuConselho = await mediator
+                    .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo));
 
+                var componentesDaTurmaEol = await mediator
+                    .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
 
-                var componentesComNotaFechamentoOuConselho = await mediator.Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo));
-                var componentesDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
-
-                var possuiComponentesSemNotaConceito = componentesDaTurmaEol.Where(x => x.LancaNota == true).Select(x => x.Codigo).ToArray().Except(componentesComNotaFechamentoOuConselho.Select(x => x.Codigo).ToArray()).Any();
+                var possuiComponentesSemNotaConceito = componentesDaTurmaEol
+                    .Where(ct => ct.LancaNota && !ct.TerritorioSaber)
+                    .Select(ct => ct.Codigo)
+                    .Except(componentesComNotaFechamentoOuConselho.Select(cn => cn.Codigo))
+                    .Any();
 
                 if (possuiComponentesSemNotaConceito)
                     statusNovo = SituacaoConselhoClasse.EmAndamento;
@@ -87,7 +96,8 @@ namespace SME.SGP.Aplicacao
 
             consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
 
-            await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno);
+            await repositorioConselhoClasseConsolidado
+                .SalvarAsync(consolidadoTurmaAluno);
 
             return true;
         }
