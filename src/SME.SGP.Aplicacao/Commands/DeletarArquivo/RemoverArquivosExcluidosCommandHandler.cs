@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                     ExcluirArquivo(alterarBarras);
                 }
                 else
-                    throw new Background.Core.Exceptions.ErroInternoException("Arquivo Informado para exclusão não existe");
+                    throw new NegocioException($"Arquivo Informado para exclusão não existe. {alterarBarras}");
             }
         }
 
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
             if (File.Exists(caminhoArquivo))
                 File.Delete(caminhoArquivo);
             else
-                throw new Background.Core.Exceptions.ErroInternoException("Arquivo Informado para exclusão não existe");
+                throw new NegocioException($"Arquivo Informado para exclusão não existe. {caminhoArquivo}");
         }
     }
 }
