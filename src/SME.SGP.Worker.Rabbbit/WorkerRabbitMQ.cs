@@ -290,11 +290,11 @@ namespace SME.SGP.Worker.RabbitMQ
                     catch (Exception ex)
                     {
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
-                        //SentrySdk.AddBreadcrumb($"Erros: {ex.Message}", null, null, null, BreadcrumbLevel.Error);
-                        //SentrySdk.CaptureException(ex);
-                        //RegistrarSentry(ea, mensagemRabbit, ex);
-                        //if (mensagemRabbit.NotificarErroUsuario)
-                        //    NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
+                        SentrySdk.AddBreadcrumb($"Erros: {ex.Message}", null, null, null, BreadcrumbLevel.Error);
+                        SentrySdk.CaptureException(ex);
+                        RegistrarSentry(ea, mensagemRabbit, ex);
+                        if (mensagemRabbit.NotificarErroUsuario)
+                            NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
                     }
                 }
             }
@@ -378,8 +378,8 @@ namespace SME.SGP.Worker.RabbitMQ
                 }
                 catch (Exception ex)
                 {
-                    //SentrySdk.AddBreadcrumb($"Erro ao tratar mensagem {ea.DeliveryTag}", "erro", null, null, BreadcrumbLevel.Error);
-                    //SentrySdk.CaptureException(ex);
+                    SentrySdk.AddBreadcrumb($"Erro ao tratar mensagem {ea.DeliveryTag}", "erro", null, null, BreadcrumbLevel.Error);
+                    SentrySdk.CaptureException(ex);
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }
             };
