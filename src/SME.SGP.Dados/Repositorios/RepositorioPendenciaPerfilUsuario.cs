@@ -23,7 +23,7 @@ namespace SME.SGP.Dados
         {
             var query = @"select ppu.id,
                                  ppu.usuario_id as UsuarioId, 
-                                 ppu.perfil_codigo as PerfilCodigo,
+                                 pp.perfil_codigo as PerfilCodigo,
                                  p.id as PendenciaId,
                                  p.ue_id as UeId,
                                  u.rf_codigo as CodigoRf
