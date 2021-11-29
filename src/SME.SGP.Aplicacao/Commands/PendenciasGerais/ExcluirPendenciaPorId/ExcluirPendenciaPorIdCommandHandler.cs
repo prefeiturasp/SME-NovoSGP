@@ -23,7 +23,13 @@ namespace SME.SGP.Aplicacao
             pendencia.Excluido = true;
             await repositorioPendencia.SalvarAsync(pendencia);
 
-            await mediator.Send(new ExcluirPendenciasUsuariosPorPendenciaIdCommand(request.PendenciaId));
+            var pendenciaPerfilId = await mediator.Send(new ObterPendenciaPerfilPorPendenciaIdQuery(pendencia.Id)); 
+
+            foreach(var pendencias in pendenciaPerfilId)
+            {
+                await mediator.Send(new ExcluirPendenciasUsuariosPorPendenciaIdCommand(pendencias.Id));
+            }
+
             return true;
         }
     }
