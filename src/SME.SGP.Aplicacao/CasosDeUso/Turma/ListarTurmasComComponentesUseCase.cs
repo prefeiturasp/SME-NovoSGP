@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
             return turmas == null ? null : new ListaTurmasComComponenteDto
             {
                 Id = turmas.Id,
-                NomeTurma = turmas.NomeTurmaFormatado(),//$"{turmas.Modalidade} - {turmas.NomeTurma} - {turmas.Ano} - {turmas.NomeComponenteCurricular}",
+                NomeTurma = turmas.NomeTurmaFormatado(),
                 TurmaCodigo = turmas.TurmaCodigo,
                 ComponenteCurricularCodigo = turmas.ComponenteCurricularCodigo,
                 Turno = ObterTipoTurnoTurma(turmas.Turno)
