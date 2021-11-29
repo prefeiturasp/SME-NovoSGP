@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasTurma : IConsultasTurma
+    public class ConsultasTurma : ConsultasBase, IConsultasTurma
     {
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
@@ -27,8 +28,9 @@ namespace SME.SGP.Aplicacao
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                 IServicoEol servicoEOL,
                                 IServicoAluno servicoAluno,
-                                IMediator mediator
-            )
+                                IMediator mediator,
+                                IContextoAplicacao contextoAplicacao
+            ) : base(contextoAplicacao)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
