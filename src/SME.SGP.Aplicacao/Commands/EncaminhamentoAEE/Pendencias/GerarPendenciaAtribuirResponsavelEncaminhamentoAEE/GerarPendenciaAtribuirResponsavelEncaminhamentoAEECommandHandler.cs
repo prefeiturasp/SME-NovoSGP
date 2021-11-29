@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var existePendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(encaminhamentoAEE.Id));
+                    var existePendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEE.Id));
                     if (existePendencia != null)
                         await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(existePendencia.PendenciaId));
 

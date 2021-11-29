@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             if (ue == null)
                 return false;
 
-            var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(encaminhamentoAEEId));
+            var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEEId));
             if (pendencia != null)
                 await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
 
