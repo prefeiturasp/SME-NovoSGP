@@ -1,8 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -15,11 +11,11 @@ namespace SME.SGP.Infra
         public string Ano { get; set; }
         public string NomeComponenteCurricular { get; set; }
         public long ComponenteCurricularCodigo { get; set; }
-        public int Turno { get; set; }       
+        public int Turno { get; set; }
 
-        public string NomeTurmaFormatado()
+        public string NomeTurmaFormatado(string componenteCurricularNome)
         {
-            return $"{Modalidade.ShortName()} - {NomeTurma} - {Ano} - {NomeComponenteCurricular}";
+            return $"{Modalidade.ShortName()} - {NomeTurma} - {Ano}ºAno - {componenteCurricularNome}";
         }
 
     }

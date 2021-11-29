@@ -5,12 +5,11 @@ using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ListarTurmasComComponentesUseCase : ConsultasBase,  IListarTurmasComComponentesUseCase
+    public class ListarTurmasComComponentesUseCase : ConsultasBase, IListarTurmasComComponentesUseCase
     {
         private readonly IMediator mediator;
 
@@ -24,12 +23,20 @@ namespace SME.SGP.Aplicacao
             int qtdeRegistros = Paginacao.QuantidadeRegistros;
             int qtdeRegistrosIgnorados = Paginacao.QuantidadeRegistrosIgnorados;
 
-            return MapearParaDtoComPaginacao(await mediator.Send(new ListagemTurmasComComponenteQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.DreCodigo,
+            var turmasPaginadas = await mediator.Send(new ListagemTurmasComComponenteQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.DreCodigo,
                                                                                            filtroTurmaDto.TurmaCodigo, filtroTurmaDto.AnoLetivo,
-                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade.Value, filtroTurmaDto.Semestre)));
+                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade.Value, filtroTurmaDto.Semestre));
+                                                                                           
+
+
+            var componentesCodigos = turmasPaginadas.Items.Select(c => c.ComponenteCurricularCodigo).Distinct().ToArray();
+
+            var componentesRetorno = await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(componentesCodigos));
+
+            return MapearParaDtoComPaginacao(turmasPaginadas, componentesRetorno);
         }
 
-        private PaginacaoResultadoDto<ListaTurmasComComponenteDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas)
+        private PaginacaoResultadoDto<ListaTurmasComComponenteDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
         {
             if (turmasPaginadas == null)
             {
@@ -37,23 +44,24 @@ namespace SME.SGP.Aplicacao
             }
             return new PaginacaoResultadoDto<ListaTurmasComComponenteDto>
             {
-                Items = MapearEventosParaDto(turmasPaginadas.Items),
+                Items = MapearEventosParaDto(turmasPaginadas.Items, listaComponentes),
                 TotalPaginas = turmasPaginadas.TotalPaginas,
                 TotalRegistros = turmasPaginadas.TotalRegistros
             };
         }
 
-        private IEnumerable<ListaTurmasComComponenteDto> MapearEventosParaDto(IEnumerable<RetornoConsultaListagemTurmaComponenteDto> items)
+        private IEnumerable<ListaTurmasComComponenteDto> MapearEventosParaDto(IEnumerable<RetornoConsultaListagemTurmaComponenteDto> items, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
         {
-            return items?.Select(c => MapearParaDto(c));
+            return items?.Select(c => MapearParaDto(c, listaComponentes));
         }
 
-        private ListaTurmasComComponenteDto MapearParaDto(RetornoConsultaListagemTurmaComponenteDto turmas)
+        private ListaTurmasComComponenteDto MapearParaDto(RetornoConsultaListagemTurmaComponenteDto turmas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
         {
+            var nomeComponente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo).Descricao;
             return turmas == null ? null : new ListaTurmasComComponenteDto
             {
                 Id = turmas.Id,
-                NomeTurma = turmas.NomeTurmaFormatado(),
+                NomeTurma = turmas.NomeTurmaFormatado(nomeComponente),
                 TurmaCodigo = turmas.TurmaCodigo,
                 ComponenteCurricularCodigo = turmas.ComponenteCurricularCodigo,
                 Turno = ObterTipoTurnoTurma(turmas.Turno)
