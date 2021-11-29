@@ -22,37 +22,39 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var acompanhamentosAlunos = mensagem.ObterObjetoMensagem<IEnumerable<AjusteRotaImagensAcompanhamentoAlunoDto>>();
+            var acompanhamentoAluno = mensagem.ObterObjetoMensagem<FiltroAjusteImagensRAADto>();
+            var imagens = await repositorio.ObterImagensParaAjusteRota(acompanhamentoAluno.Id);
+
             var listaAtualizacao = new List<(long id, string nomeAnterior, string nomeAtual)>();
 
-            foreach (var acompanhamentoAluno in acompanhamentosAlunos)
+            foreach (var imagem in imagens)
             {
                 using (var client = new WebClient())
                 {
                     try
                     {
-                        var arquivo = client.DownloadData(new Uri(acompanhamentoAluno.NomeCompleto));
+                        var arquivo = client.DownloadData(new Uri(imagem.NomeCompleto));
                     }
                     catch (Exception)
                     {
                         try
                         {
-                            var arquivo = client.DownloadData(new Uri(acompanhamentoAluno.NomeCompletoAlternativo));
-                            listaAtualizacao.Add((acompanhamentoAluno.Id, acompanhamentoAluno.NomeCompleto, acompanhamentoAluno.NomeCompletoAlternativo));
+                            var arquivo = client.DownloadData(new Uri(imagem.NomeCompletoAlternativo));
+                            listaAtualizacao.Add((imagem.Id, imagem.NomeCompleto, imagem.NomeCompletoAlternativo));
                         }
                         catch (Exception)
                         {
                             try
                             {
-                                var arquivo = client.DownloadData(new Uri(acompanhamentoAluno.NomeCompletoAlternativo2));
-                                listaAtualizacao.Add((acompanhamentoAluno.Id, acompanhamentoAluno.NomeCompleto, acompanhamentoAluno.NomeCompletoAlternativo2));
+                                var arquivo = client.DownloadData(new Uri(imagem.NomeCompletoAlternativo2));
+                                listaAtualizacao.Add((imagem.Id, imagem.NomeCompleto, imagem.NomeCompletoAlternativo2));
                             }
                             catch (Exception)
                             {
                                 try
                                 {
-                                    var arquivo = client.DownloadData(new Uri(acompanhamentoAluno.NomeCompletoAlternativo3));
-                                    listaAtualizacao.Add((acompanhamentoAluno.Id, acompanhamentoAluno.NomeCompleto, acompanhamentoAluno.NomeCompletoAlternativo3));
+                                    var arquivo = client.DownloadData(new Uri(imagem.NomeCompletoAlternativo3));
+                                    listaAtualizacao.Add((imagem.Id, imagem.NomeCompleto, imagem.NomeCompletoAlternativo3));
                                 }
                                 catch (Exception)
                                 {

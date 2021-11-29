@@ -30,16 +30,31 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { acompanhamentoAlunoSemestreId });
         }
 
-        public async Task<IEnumerable<AjusteRotaImagensAcompanhamentoAlunoDto>> ObterImagensParaAjusteRota()
+        public async Task<IEnumerable<long>> ObterRAAsParaAjusteRota(int pagina, int qtdRegistros = 100)
+        {
+            var query = @"select distinct id
+                         from tmp_acompanhamento_aluno
+                        offset @qtdIgnorados rows fetch next @qtdRegistros rows only;";
+
+            var parametros = new
+            {
+                qtdIgnorados = (pagina-1)*qtdRegistros,
+                qtdRegistros
+            };
+
+            return await database.Conexao.QueryAsync<long>(query, parametros);
+        }
+
+        public async Task<IEnumerable<AjusteRotaImagensAcompanhamentoAlunoDto>> ObterImagensParaAjusteRota(long id)
         {
             var query = @"select id
-                            , NomeCompleto
                             , NomeCompleto
                             , NomeCompletoAlternativo
                             , NomeCompletoAlternativo2
                             , NomeCompletoAlternativo3 
-                         from tmp_acompanhamento_aluno";
-            return await database.Conexao.QueryAsync<AjusteRotaImagensAcompanhamentoAlunoDto>(query);
+                         from tmp_acompanhamento_aluno where id = @id";
+
+            return await database.Conexao.QueryAsync<AjusteRotaImagensAcompanhamentoAlunoDto>(query, new { id });
         }
     }
 }
