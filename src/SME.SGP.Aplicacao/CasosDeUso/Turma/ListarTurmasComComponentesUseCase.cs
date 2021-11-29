@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
 
             var turmasPaginadas = await mediator.Send(new ListagemTurmasComComponenteQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.DreCodigo,
                                                                                            filtroTurmaDto.TurmaCodigo, filtroTurmaDto.AnoLetivo,
-                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade.Value, filtroTurmaDto.Semestre)));
-                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade));
+                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade.Value, filtroTurmaDto.Semestre));
+                                                                                           
 
 
             var componentesCodigos = turmasPaginadas.Items.Select(c => c.ComponenteCurricularCodigo).Distinct().ToArray();
