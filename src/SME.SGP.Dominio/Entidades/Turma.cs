@@ -90,6 +90,9 @@ namespace SME.SGP.Dominio
         public string NomeComModalidade()
                  => $"{ModalidadeCodigo.ObterNomeCurto()}-{Nome}";
 
+        public string AnoComModalidade()
+                 => $"{ModalidadeCodigo.ObterNomeCurto()}-{Ano}";
+
         public bool EhTurmaEdFisicaOuItinerario()
         {
             return TipoTurma.EhUmDosValores(TipoTurma.EdFisica, TipoTurma.Itinerarios2AAno);
