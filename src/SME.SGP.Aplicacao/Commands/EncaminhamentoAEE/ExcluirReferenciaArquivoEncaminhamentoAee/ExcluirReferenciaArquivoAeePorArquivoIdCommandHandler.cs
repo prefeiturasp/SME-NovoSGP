@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioResposta = repositorioResposta ?? throw new ArgumentNullException(nameof(repositorioResposta));
         }
 
+
         public async Task<bool> Handle(ExcluirReferenciaArquivoAeePorArquivoIdCommand request, CancellationToken cancellationToken)
             => await repositorioResposta.RemoverPorArquivoId(request.ArquivoId);
     }

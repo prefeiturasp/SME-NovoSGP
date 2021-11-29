@@ -207,7 +207,7 @@ namespace SME.SGP.Aplicacao
                         CodigoAluno = aluno.CodigoAluno,
                         NumeroChamada = aluno.NumeroAlunoChamada,
                         Nome = aluno.NomeAluno,
-                        Ativo = VerifiqueAlunoAtivo(aluno.CodigoSituacaoMatricula),                        
+                        Ativo = VerifiqueAlunoAtivo(aluno.CodigoSituacaoMatricula),
                         EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
                     };
 
@@ -312,8 +312,8 @@ namespace SME.SGP.Aplicacao
         private bool VerifiqueAlunoAtivo(SituacaoMatriculaAluno codigoSituacaoMatricula)
         {
             return codigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo ||
-                   codigoSituacaoMatricula == SituacaoMatriculaAluno.PendenteRematricula ||
-                   codigoSituacaoMatricula == SituacaoMatriculaAluno.Rematriculado ||
+                   codigoSituacaoMatricula == SituacaoMatriculaAluno.PendenteRematricula || 
+                   codigoSituacaoMatricula == SituacaoMatriculaAluno.Rematriculado || 
                    codigoSituacaoMatricula == SituacaoMatriculaAluno.SemContinuidade;
         }
 
