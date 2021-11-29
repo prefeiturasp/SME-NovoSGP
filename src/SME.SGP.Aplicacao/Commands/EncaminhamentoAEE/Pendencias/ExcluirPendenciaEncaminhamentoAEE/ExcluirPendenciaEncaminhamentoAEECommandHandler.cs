@@ -28,7 +28,12 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     await repositorioPendenciaEncaminhamentoAEE.Excluir(request.PendenciaId);
-                    await mediator.Send(new ExcluirPendenciasUsuariosPorPendenciaIdCommand(request.PendenciaId));
+                    var pendenciaPerfilId = await mediator.Send(new ObterPendenciaPerfilPorPendenciaIdQuery(request.PendenciaId));
+                    foreach(var pendencia in pendenciaPerfilId)
+                    {
+                        await mediator.Send(new ExcluirPendenciasUsuariosPorPendenciaIdCommand(pendencia.Id));
+                    }
+                    
                     await mediator.Send(new ExcluirPendenciaPorIdCommand(request.PendenciaId));
                     unitOfWork.PersistirTransacao();
 

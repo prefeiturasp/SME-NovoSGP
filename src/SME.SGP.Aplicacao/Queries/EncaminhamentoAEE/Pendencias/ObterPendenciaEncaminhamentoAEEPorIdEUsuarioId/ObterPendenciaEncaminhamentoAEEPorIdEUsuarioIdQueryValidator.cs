@@ -9,10 +9,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.EncaminhamentoAEEId)
                .NotEmpty()
                .WithMessage("O Id encaminhamento deve ser informado.");
-
-            RuleFor(c => c.UsuarioId)
-               .NotEmpty()
-               .WithMessage("O Id do usuário deve ser informado.");
         }
     }
 }

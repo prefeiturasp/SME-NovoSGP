@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             var ehCEFAI = await EhCoordenadorCEFAI(usuarioLogado, request.TurmaId);
             if (ehCEFAI)
             {
-                var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(request.EncaminhamentoAEEId, usuarioLogado.Id));
+                var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(request.EncaminhamentoAEEId));
                 if (pendencia != null)
                     await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
 

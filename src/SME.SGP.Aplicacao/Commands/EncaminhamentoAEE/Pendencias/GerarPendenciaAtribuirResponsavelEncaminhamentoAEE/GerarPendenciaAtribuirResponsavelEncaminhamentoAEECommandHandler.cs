@@ -43,13 +43,7 @@ namespace SME.SGP.Aplicacao
 
             if (request.EhCEFAI)
             {
-                var usuariosId = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(turma.Ue.Dre.CodigoDre));
-
-                if (!usuariosId.Any())
-                    return false;
-
-                foreach(var usuarioId in usuariosId)
-                    await EnviarParaCEFAI(usuarioId, turma, encaminhamentoAEE);
+                await EnviarParaCEFAI(turma, encaminhamentoAEE);
 
                 return true;
             }
@@ -78,23 +72,22 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    foreach (var usuario in usuarios)
-                    {
-                        var existePendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(encaminhamentoAEE.Id, usuario));
-                        if (existePendencia != null)
-                            await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(existePendencia.PendenciaId));
+                    var existePendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(encaminhamentoAEE.Id));
+                    if (existePendencia != null)
+                        await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(existePendencia.PendenciaId));
 
-                        var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao,string.Empty,string.Empty,turma.UeId);
-                        pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
+                    var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, string.Empty, string.Empty, turma.UeId);
+                    pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
-                        var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, UsuarioId = usuario };
-                        await repositorioPendenciaUsuario.SalvarAsync(pendenciaUsuario);
+                    await mediator.Send(new SalvarPendenciaPerfilCommand(pendencia.Id, new List<PerfilUsuario> { PerfilUsuario.CP }));
 
-                        var pendenciaEncaminhamento = new PendenciaEncaminhamentoAEE { PendenciaId = pendencia.Id, EncaminhamentoAEEId = encaminhamentoAEE.Id };
-                        await repositorioPendenciaEncaminhamentoAEE.SalvarAsync(pendenciaEncaminhamento);
+                    var pendenciaEncaminhamento = new PendenciaEncaminhamentoAEE { PendenciaId = pendencia.Id, EncaminhamentoAEEId = encaminhamentoAEE.Id };
+                    await repositorioPendenciaEncaminhamentoAEE.SalvarAsync(pendenciaEncaminhamento);
 
-                    }
                     unitOfWork.PersistirTransacao();
+
+                    if (pendencia.Id > 0)
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendencia.Id, turma.UeId), Guid.NewGuid()));
                 }
                 catch (Exception e)
                 {
@@ -105,7 +98,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<bool> EnviarParaCEFAI(long usuarioId, Turma turma, EncaminhamentoAEE encaminhamentoAEE)
+        private async Task<bool> EnviarParaCEFAI(Turma turma, EncaminhamentoAEE encaminhamentoAEE)
         {
             var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
             var hostAplicacao = configuration["UrlFrontEnd"];
@@ -115,14 +108,16 @@ namespace SME.SGP.Aplicacao
             var descricao = $"O encaminhamento {estudanteOuCrianca} {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} está disponível para atribuição de um PAAI. <br/><a href='{hostAplicacao}aee/encaminhamento/editar/{encaminhamentoAEE.Id}'>Clique aqui para acessar o encaminhamento.</a> " +
                 $"<br/><br/>Esta pendência será resolvida automaticamente quando o PAAI for atribuído no encaminhamento.";
 
-            var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao,string.Empty,string.Empty,turma.UeId);
+            var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, string.Empty, string.Empty, turma.UeId);
             pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
-            var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, UsuarioId = usuarioId };
-            await repositorioPendenciaUsuario.SalvarAsync(pendenciaUsuario);
+            await mediator.Send(new SalvarPendenciaPerfilCommand(pendencia.Id, new List<PerfilUsuario> { PerfilUsuario.CEFAI }));
 
             var pendenciaEncaminhamento = new PendenciaEncaminhamentoAEE { PendenciaId = pendencia.Id, EncaminhamentoAEEId = encaminhamentoAEE.Id };
             await repositorioPendenciaEncaminhamentoAEE.SalvarAsync(pendenciaEncaminhamento);
+
+            if (pendencia.Id > 0)
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendencia.Id, turma.UeId), Guid.NewGuid()));
 
             return true;
         }

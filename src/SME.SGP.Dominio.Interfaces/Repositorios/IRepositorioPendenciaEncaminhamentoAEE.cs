@@ -8,6 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PendenciaEncaminhamentoAEE> ObterPorEncaminhamentoAEEId(long encaminhamentoAEEId);
         Task<IEnumerable<PendenciaEncaminhamentoAEE>> ObterPendenciasPorEncaminhamentoAEEId(long encaminhamentoAEEId);
         Task Excluir(long pendenciaId);
-        Task<PendenciaEncaminhamentoAEE> ObterPorEncaminhamentoAEEIdEUsuarioId(long encaminhamentoAEEId, long usuarioId);
+        Task<PendenciaEncaminhamentoAEE> ObterPorEncaminhamentoAEEIdEUsuarioId(long encaminhamentoAEEId);
     }
 }

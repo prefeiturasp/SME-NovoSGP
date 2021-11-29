@@ -33,18 +33,12 @@ namespace SME.SGP.Dados.Repositorios
                                                     where pendencia_id = @pendenciaId", new { pendenciaId });
         }
 
-        public async Task<PendenciaEncaminhamentoAEE> ObterPorEncaminhamentoAEEIdEUsuarioId(long encaminhamentoAEEId, long usuarioId)
+        public async Task<PendenciaEncaminhamentoAEE> ObterPorEncaminhamentoAEEIdEUsuarioId(long encaminhamentoAEEId)
         {
-            var sql = @"select
-                            pea.*
-                        from
-                            pendencia_encaminhamento_aee pea
-                        inner join pendencia_usuario pu on pea.pendencia_id = pu.pendencia_id
-                        where
-                            pea.encaminhamento_aee_id = @encaminhamentoAEEId 
-                            and pu.usuario_id = @usuarioId ";
+            var sql = @"select * from pendencia_encaminhamento_aee pea
+                        where pea.encaminhamento_aee_id = @encaminhamentoAEEId";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<PendenciaEncaminhamentoAEE>(sql, new { encaminhamentoAEEId, usuarioId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PendenciaEncaminhamentoAEE>(sql, new { encaminhamentoAEEId});
         }
     }
 }

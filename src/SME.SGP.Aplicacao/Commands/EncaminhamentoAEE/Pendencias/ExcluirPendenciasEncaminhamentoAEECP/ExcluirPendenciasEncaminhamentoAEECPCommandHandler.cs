@@ -27,19 +27,10 @@ namespace SME.SGP.Aplicacao
             if (ue == null)
                 return false;
 
-            var funcionarios = await ObterFuncionarios(ue.CodigoUe);
+            var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(encaminhamentoAEEId));
+            if (pendencia != null)
+                await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
 
-            if (funcionarios == null)
-                return false;
-
-            var usuarios = await ObterUsuariosId(funcionarios);
-
-            foreach (var usuario in usuarios)
-            {
-                var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(encaminhamentoAEEId, usuario));
-                if (pendencia != null)
-                    await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
-            }
             return true;
         }
 
