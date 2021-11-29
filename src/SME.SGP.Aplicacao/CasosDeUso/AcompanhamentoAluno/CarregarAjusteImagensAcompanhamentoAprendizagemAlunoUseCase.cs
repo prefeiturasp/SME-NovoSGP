@@ -21,13 +21,11 @@ namespace SME.SGP.Aplicacao
         {
             var registrosAjustar = await repositorio.ObterImagensParaAjusteRota();
 
-            Parallel.ForEach(registrosAjustar.GroupBy(a => a.Id),
-                new ParallelOptions { MaxDegreeOfParallelism = 10 },
-                async registroAcompanhamento => 
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AjusteImagesAcompanhamentoAprendizagemAlunoSync,
-                                                                   registroAcompanhamento.AsEnumerable(),
-                                                                   Guid.NewGuid(),
-                                                                   null)));
+            foreach(var registroAcompanhamento in registrosAjustar.GroupBy(a => a.Id)) 
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AjusteImagesAcompanhamentoAprendizagemAlunoSync,
+                                                                registroAcompanhamento.AsEnumerable(),
+                                                                Guid.NewGuid(),
+                                                                null));
 
             return true;
         }
