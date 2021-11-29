@@ -46,7 +46,8 @@ where p.tipo = 18 and UPPER(descricao) like UPPER('%Esta pendência será resolv
 ) x
 where x.pId = pe.id;
 
---Encaminhamento AEE para atribuição de responsável
+
+--Encaminhamento AEE para atribuição de responsável (CEFAI)
 update pendencia pe 
 	set ue_id = x.ueId
 from (
@@ -55,6 +56,18 @@ inner join pendencia p on p.id = pea.pendencia_id
 inner join encaminhamento_aee ea on ea.id  = pea.encaminhamento_aee_id 
 inner join turma t on t.id = ea.turma_id 
 where p.tipo = 18 and UPPER(descricao) like UPPER('%Esta pendência será resolvida automaticamente quando o PAAI for atribuído no encaminhamento%')
+) x
+where x.pId = pe.id;
+
+--Encaminhamento AEE para atribuição de responsável (CP)
+update pendencia pe 
+	set ue_id = x.ueId
+from (
+select t.ue_id as ueId, p.id as pId from pendencia_encaminhamento_aee pea  
+inner join pendencia p on p.id = pea.pendencia_id 
+inner join encaminhamento_aee ea on ea.id  = pea.encaminhamento_aee_id 
+inner join turma t on t.id = ea.turma_id 
+where p.tipo = 18 and UPPER(descricao) like UPPER('%Esta pendência será resolvida automaticamente quando o PAEE for atribuído no encaminhamento%')
 ) x
 where x.pId = pe.id;
 
