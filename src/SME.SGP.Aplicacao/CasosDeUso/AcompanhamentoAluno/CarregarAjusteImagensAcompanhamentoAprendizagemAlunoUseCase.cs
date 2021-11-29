@@ -17,13 +17,23 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<bool> Executar(MensagemRabbit param)
+        public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var registrosAjustar = await repositorio.ObterImagensParaAjusteRota();
+            var filtro = mensagem.ObterObjetoMensagem<FiltroPaginacaoAjusteImagensRAADto>();
+            var pagina = filtro?.Pagina ?? 1;
 
-            foreach(var registroAcompanhamento in registrosAjustar.GroupBy(a => a.Id)) 
+            var registrosAjustar = await repositorio.ObterRAAsParaAjusteRota(pagina);
+            if (!registrosAjustar.Any())
+                return true;
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AjusteImagesAcompanhamentoAprendizagemAlunoCarregar,
+                                                           new FiltroPaginacaoAjusteImagensRAADto(++pagina),
+                                                           Guid.NewGuid(),
+                                                           null));
+
+            foreach (var registroAcompanhamento in registrosAjustar)
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AjusteImagesAcompanhamentoAprendizagemAlunoSync,
-                                                                registroAcompanhamento.AsEnumerable(),
+                                                                new FiltroAjusteImagensRAADto(registroAcompanhamento),
                                                                 Guid.NewGuid(),
                                                                 null));
 
