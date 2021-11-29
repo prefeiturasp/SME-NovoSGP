@@ -33,7 +33,8 @@ namespace SME.SGP.Aplicacao
                     {
                         await mediator.Send(new ExcluirPendenciasUsuariosPorPendenciaIdCommand(pendencia.Id));
                     }
-                    
+
+                    await mediator.Send(new ExcluirPendenciaPerfilCommand(request.PendenciaId));                
                     await mediator.Send(new ExcluirPendenciaPorIdCommand(request.PendenciaId));
                     unitOfWork.PersistirTransacao();
 
