@@ -676,7 +676,7 @@
         [PermissaoMenu(Menu = "Gestão", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/gestao/acompanhamento-registros", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Acompanhamento dos registros")]
         RRP_C = 227,
 
-        [PermissaoMenu(Menu = "Listão", Icone = "fas fa-book-reader", IconeDashBoard = "far fa-check-square", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 8, EhConsulta = true, Url = "/diario-classe/listao")]
+        [PermissaoMenu(Menu = "Listão", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 8, EhConsulta = true, Url = "/diario-classe/listao")]
         L_C = 228,
 
         [PermissaoMenu(Menu = "Listão", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 8, EhInclusao = true, Url = "/diario-classe/listao")]
