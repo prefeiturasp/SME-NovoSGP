@@ -13,7 +13,7 @@ select aas.id, aas.Codigo, aas.link as NomeCompleto
         EXTRACT(YEAR FROM a.CRIADO_EM),'/',
         EXTRACT(MONTH FROM a.CRIADO_EM),'/',
 	 	aas.Nome) as NomeCompletoAlternativo3
---into tmp_acompanhamento_aluno
+into tmp_acompanhamento_aluno
 
   from arquivo a
  inner join (
@@ -28,6 +28,5 @@ select uuid(cast(regexp_matches(cast(regexp_matches(PERCURSO_INDIVIDUAL, 'https:
 	, aas.ID, aas.PERCURSO_INDIVIDUAL, aas.CRIADO_EM
 from ACOMPANHAMENTO_ALUNO_SEMESTRE aas
 where PERCURSO_INDIVIDUAL like '%https://novosgp.sme.prefeitura.sp.gov.br/Arquivos/aluno/acompanhamento/%'
-  and id =106119
 ) aas on aas.codigo = a.codigo
 ;
