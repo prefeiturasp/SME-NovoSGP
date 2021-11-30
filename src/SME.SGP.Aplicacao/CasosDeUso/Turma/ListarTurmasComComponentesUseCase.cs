@@ -24,9 +24,11 @@ namespace SME.SGP.Aplicacao
             int qtdeRegistros = Paginacao.QuantidadeRegistros;
             int qtdeRegistrosIgnorados = Paginacao.QuantidadeRegistrosIgnorados;
 
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
             return MapearParaDtoComPaginacao(await mediator.Send(new ListagemTurmasComComponenteQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.DreCodigo,
                                                                                            filtroTurmaDto.TurmaCodigo, filtroTurmaDto.AnoLetivo,
-                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade.Value, filtroTurmaDto.Semestre)));
+                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade.Value, filtroTurmaDto.Semestre, usuario.EhProfessor(), usuario.CodigoRf)));
         }
 
         private PaginacaoResultadoDto<ListaTurmasComComponenteDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas)
