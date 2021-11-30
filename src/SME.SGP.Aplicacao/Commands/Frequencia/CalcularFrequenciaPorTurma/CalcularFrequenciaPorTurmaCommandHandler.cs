@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
             if (registroFreqAlunos.Any())
             {
                 var aulasNaDisciplina = (await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, request.DisciplinaId, request.TurmaId)).ToList();
-                var totalAulasDaDisciplina = aulasNaDisciplina.Where(w => w.DisciplinaId == int.Parse(request.DisciplinaId)).Sum(s => s.Total);
+                var totalAulasDaDisciplina = aulasNaDisciplina.Where(w => w.DisciplinaId == long.Parse(request.DisciplinaId)).Sum(s => s.Total);
                 var totalAulasDaTurmaGeral = aulasNaDisciplina.Sum(s => s.Total);
 
                 var alunosComFrequencia = registroFreqAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();

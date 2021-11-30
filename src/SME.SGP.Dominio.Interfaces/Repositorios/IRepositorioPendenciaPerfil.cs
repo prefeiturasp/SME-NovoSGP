@@ -7,5 +7,6 @@ namespace SME.SGP.Dominio
     public interface IRepositorioPendenciaPerfil : IRepositorioBase<PendenciaPerfil>
     {
         Task<IEnumerable<PendenciaPerfil>> ObterPorPendenciaId(long pendenciaId);
+        Task<bool> Excluir(long id);
     }
 }

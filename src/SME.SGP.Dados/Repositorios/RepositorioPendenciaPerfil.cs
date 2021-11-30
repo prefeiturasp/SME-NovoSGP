@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dados.Repositorios;
+﻿using Dapper;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -38,6 +39,13 @@ namespace SME.SGP.Dados
                 , new { pendenciaId });
 
             return lookup.Values;
+        }
+
+        public async Task<bool> Excluir(long id)
+        {
+            var query = "delete from pendencia_perfil where pendencia_id  = @id";
+
+            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { id });
         }
     }
 }

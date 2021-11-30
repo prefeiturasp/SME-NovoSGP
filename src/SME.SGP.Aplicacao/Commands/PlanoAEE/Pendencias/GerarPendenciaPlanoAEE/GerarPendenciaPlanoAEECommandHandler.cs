@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, null, request.Descricao, titulo: request.Titulo));
+                    var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, request.UeId, request.Descricao, titulo: request.Titulo));
 
                     await repositorioPendenciaPlanoAEE.SalvarAsync(new PendenciaPlanoAEE(pendenciaId, request.PlanoAEEId));
 

@@ -47,7 +47,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select ");
-            query.AppendLine("COALESCE(SUM(a.quantidade),0) AS total, a.disciplina_id as DisciplinaId");
+            query.AppendLine("COALESCE(SUM(a.quantidade),0) AS total, a.disciplina_id::bigint as DisciplinaId");
             query.AppendLine("from ");
             query.AppendLine("aula a ");
             query.AppendLine("inner join registro_frequencia rf on ");
