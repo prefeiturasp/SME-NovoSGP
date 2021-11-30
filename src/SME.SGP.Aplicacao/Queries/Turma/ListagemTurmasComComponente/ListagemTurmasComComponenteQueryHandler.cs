@@ -23,10 +23,10 @@ namespace SME.SGP.Aplicacao
         {
             var turmas = new PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>();
 
-            var turmaCodigo = request.TurmaCodigo == null ? 0 : long.Parse(request.TurmaCodigo);
+            var turmaCodigo = request.TurmaCodigo == null ? 0 : long.Parse(request.TurmaCodigo);            
 
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"turmas/{request.UeCodigo}/{(int)request.Modalidade}/{request.Bimestre}/{turmaCodigo}/{request.AnoLetivo}/{request.QtdeRegistros}/{request.QtdeRegistrosIgnorados}/listagem-turmas");
+            var resposta = await httpClient.GetAsync($"turmas/{request.UeCodigo}/{(int)request.Modalidade}/{request.Bimestre}/{turmaCodigo}/{request.AnoLetivo}/{request.EhProfessor}/{request.CodigoRf}/{request.QtdeRegistros}/{request.QtdeRegistrosIgnorados}/listagem-turmas");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
