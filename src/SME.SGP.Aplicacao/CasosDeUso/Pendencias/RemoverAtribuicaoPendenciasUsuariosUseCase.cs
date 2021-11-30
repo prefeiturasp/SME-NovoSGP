@@ -25,6 +25,10 @@ namespace SME.SGP.Aplicacao
                 foreach (var ue in pendenciasComUes)
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaRemoverAtribuicaoPendenciaUsuariosUe, MapearFiltroPendenciaPerfilUsuario(pendenciaFuncionarios, ue), Guid.NewGuid(), null));
 
+                var pendenciasSemPendPerfUsuario = await mediator.Send(new ObterPendenciaSemPendenciaPerfilUsuarioQuery());
+                foreach (var pendencia in pendenciasSemPendPerfUsuario)
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendencia.PendenciaId, pendencia.UeId), Guid.NewGuid()));
+
                 var pendenciasSemUes = pendenciaFuncionarios.Where(w => !w.UeId.HasValue).Select(s => s.PendenciaId).Distinct();
                 foreach (var pendencia in pendenciasSemUes)
                     throw new Exception($"Erro na remoção de atribuição de Pendência Perfil Usuário.");

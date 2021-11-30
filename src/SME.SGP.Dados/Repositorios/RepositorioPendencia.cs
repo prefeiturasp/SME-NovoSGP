@@ -105,5 +105,14 @@ namespace SME.SGP.Dados.Repositorios
                    and excluido is false";
             return await database.Conexao.QueryAsync<PendenciaPendenteDto>(query, new { situacao = SituacaoPendencia.Pendente });
         }
+
+        public async Task<IEnumerable<PendenciaPendenteDto>> ObterPendenciasSemPendenciaPerfilUsuario()
+        {
+            var query = @"select distinct pp.pendencia_id as PendenciaId, p.ue_id as UeId from pendencia_perfil pp 
+                            inner join pendencia p on p.id = pp.pendencia_id 
+                            left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
+                            where ppu.id is null and not p.excluido and p.situacao = @situacao and p.ue_id is not null";
+            return await database.Conexao.QueryAsync<PendenciaPendenteDto>(query, new { situacao = SituacaoPendencia.Pendente });
+        }
     }
 }
