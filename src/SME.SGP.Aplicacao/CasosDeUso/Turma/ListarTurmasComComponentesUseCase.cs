@@ -25,11 +25,10 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            return MapearParaDtoComPaginacao(await mediator.Send(new ListagemTurmasComComponenteQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.DreCodigo,
             var turmasPaginadas = await mediator.Send(new ListagemTurmasComComponenteQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.DreCodigo,
                                                                                            filtroTurmaDto.TurmaCodigo, filtroTurmaDto.AnoLetivo,
-                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade.Value, filtroTurmaDto.Semestre, usuario.EhProfessor(), usuario.CodigoRf)));
-                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade.Value, filtroTurmaDto.Semestre));
+                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade.Value, filtroTurmaDto.Semestre, usuario.EhProfessor(), usuario.CodigoRf));
+                                                                                           
                                                                                            
 
 
