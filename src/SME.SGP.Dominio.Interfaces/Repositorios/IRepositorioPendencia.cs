@@ -12,5 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId);
         Task AtualizarStatusPendenciasPorIds(long[] ids, SituacaoPendencia situacaoPendencia);
         Task<IEnumerable<PendenciaPendenteDto>> ObterPendenciasPendentes();
+        Task<IEnumerable<PendenciaPendenteDto>> ObterPendenciasSemPendenciaPerfilUsuario();
     }
 }

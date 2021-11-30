@@ -15,7 +15,7 @@ namespace SME.SGP.Dados
 
         public async Task ExcluirPorPendenciaId(long pendenciaPerfilId)
         {
-            var command = @"delete from pendencia_perfil_usuario where pendencia_oerfil_id = @pendenciaPerfilId";
+            var command = @"delete from pendencia_perfil_usuario where pendencia_perfil_id = @pendenciaPerfilId";
 
             await database.Conexao.ExecuteScalarAsync(command, new { pendenciaPerfilId });
         }

@@ -47,10 +47,20 @@ namespace SME.SGP.Aplicacao
                                                                                                    .Value
                                                                                                    .FirstOrDefault(s => s.FuncionarioRF.Equals(pendenciaFuncionario.CodigoRf));
                     }
-                    else if(pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CEFAI)   
-                        eraCefai = lstCefais.Any(usuarioCefai => usuarioCefai != pendenciaFuncionario.UsuarioId);
+                    else if(pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CEFAI)
+                    {
+                        if(lstCefais.Count() > 0)
+                            eraCefai = lstCefais.Any(usuarioCefai => usuarioCefai != pendenciaFuncionario.UsuarioId);               
+                        else
+                            eraCefai = true;   
+                    }        
                     else if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.ADMUE)
-                        eraAdmUe = lstAdmUes.Any(usuarioAdmUe => usuarioAdmUe != pendenciaFuncionario.UsuarioId);
+                    {
+                        if (lstAdmUes.Count() > 0)
+                            eraAdmUe = lstAdmUes.Any(usuarioAdmUe => usuarioAdmUe != pendenciaFuncionario.UsuarioId);
+                        else
+                            eraAdmUe = true;
+                    }               
 
                     var filtroPendenciaPerfilUsuarioCefaiAdmUeDto = new FiltroPendenciaPerfilUsuarioCefaiAdmUeDto(funcionarioAtual, eraCefai, eraAdmUe, pendenciaFuncionario);
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaRemoverAtribuicaoPendenciaUsuariosUeFuncionario, filtroPendenciaPerfilUsuarioCefaiAdmUeDto, Guid.NewGuid(), null));
