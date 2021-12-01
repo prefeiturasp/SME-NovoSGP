@@ -321,9 +321,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil)
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil,bool validarVigencia = false)
         {
-            var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}";
+            var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}/validarVigencia/{validarVigencia}";
             return await ObterComponentesCurriculares(url);
         }
 
