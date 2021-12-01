@@ -32,18 +32,20 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(consolidacaoTurmaConselhoClasse.TurmaId));
+            var turma = await mediator
+                .Send(new ObterTurmaPorIdQuery(consolidacaoTurmaConselhoClasse.TurmaId));
 
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
-
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
+                        
+            var alunos = await mediator
+                .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
 
-            var anoAtual = DateTime.Now.Year;
-            var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
+            var tipoCalendarioId = await mediator
+                .Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
 
             if (tipoCalendarioId == 0)
                 throw new NegocioException("Não foi possível obter o tipo calendario.");
@@ -56,19 +58,25 @@ namespace SME.SGP.Aplicacao
             foreach (var aluno in alunos)
             {
                 var ultimoBimestreAtivo = aluno.Inativo ?
-                periodosEscolares.FirstOrDefault(p => p.PeriodoInicio <= aluno.DataSituacao && p.PeriodoFim >= aluno.DataSituacao)?.Bimestre : 4;
+                    periodosEscolares.FirstOrDefault(p => p.PeriodoInicio.Date <= aluno.DataSituacao && p.PeriodoFim.Date >= aluno.DataSituacao)?.Bimestre : 4;
 
                 if (aluno.Inativo && consolidacaoTurmaConselhoClasse.Bimestre > ultimoBimestreAtivo)
                     continue;
 
-                var matriculadoDepois = !aluno.Inativo ?
-                    periodosEscolares.FirstOrDefault(p => p.PeriodoInicio <= aluno.DataSituacao && p.PeriodoFim >= aluno.DataSituacao)?.Bimestre : null;
+                var matriculasAlunoTurma = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turma.CodigoTurma, aluno.CodigoAluno));
 
-                if (!aluno.Inativo && matriculadoDepois != null)
-                {
-                    if (consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
-                        continue;
-                }
+                var primeiroRegistroMatriculaAtiva = matriculasAlunoTurma
+                    .Where(mat => mat.PossuiSituacaoAtiva())
+                    .OrderBy(mat => mat.DataSituacao)
+                    .FirstOrDefault();
+
+                var dataSituacao = primeiroRegistroMatriculaAtiva?.DataSituacao ?? aluno.DataSituacao;
+
+                var matriculadoDepois = !aluno.Inativo ?
+                    periodosEscolares.FirstOrDefault(p => dataSituacao > p.PeriodoFim.Date)?.Bimestre : null;
+
+                if (!aluno.Inativo && matriculadoDepois != null && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
+                    continue;
 
                 try
                 {
