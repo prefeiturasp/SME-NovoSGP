@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FrequenciaDto> Executar(FiltroFrequenciaDto param)
         {
-            var aula = await mediator.Send(new ObterAulaPorIdQuery(param.AulaId)); // aulaCJ = true
+            var aula = await mediator.Send(new ObterAulaPorIdQuery(param.AulaId));
             
             if (aula == null)
                 throw new NegocioException("Aula não encontrada.");

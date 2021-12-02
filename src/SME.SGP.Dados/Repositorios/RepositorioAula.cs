@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioAula(ISgpContext conexao) : base(conexao)
         {
         }
-                                                                    // DisciplinaId: "1105", TurmaId: "2242706"
+
         public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
             var query = @"select *
