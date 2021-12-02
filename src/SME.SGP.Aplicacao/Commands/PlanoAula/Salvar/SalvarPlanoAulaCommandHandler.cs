@@ -152,7 +152,7 @@ namespace SME.SGP.Aplicacao
             }
             if (!string.IsNullOrEmpty(atual))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));,PlanoAulaDto.cs
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
             }
         }
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
