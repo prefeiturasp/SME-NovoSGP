@@ -40,11 +40,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 if (carta.Id == 0)
                 {
                     auditoria = await mediator.Send(new InserirCartaIntencoesCommand(carta, turmaId, param.ComponenteCurricularId));
+                    MoverRemoverExcluidos(carta, new CartaIntencoes() { Planejamento = string.Empty});
                 }
                 else
                 {
                     var existente = await mediator.Send(new ObterCartaIntentocesPorIdQuery(carta.Id));
-
+                    MoverRemoverExcluidos(carta, existente);
                     auditoria = await mediator.Send(new AlterarCartaIntencoesCommand(carta, existente, turmaId, param.ComponenteCurricularId));
                 }
 
@@ -56,6 +57,19 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             }
 
             return auditorias;
+        }
+
+        private void MoverRemoverExcluidos(CartaIntencoesDto carta, CartaIntencoes existente)
+        {
+            if (!string.IsNullOrEmpty(carta.Planejamento))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.CartaIntencoes, existente.Planejamento, carta.Planejamento));
+                carta.Planejamento = moverArquivo.Result;
+            }
+            if (!string.IsNullOrEmpty(existente.Planejamento))
+            {
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(existente.Planejamento, carta.Planejamento, TipoArquivo.CartaIntencoes.Name()));
+            }
         }
 
         private static async Task<bool> AulaDentroDoPeriodo(IMediator mediator, string turmaCodigo, DateTime dataAula)

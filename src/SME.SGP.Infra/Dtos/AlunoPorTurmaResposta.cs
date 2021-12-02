@@ -17,7 +17,7 @@ namespace SME.SGP.Infra
         public DateTime DataSituacao { get; set; }
         public DateTime DataMatricula { get; set; }
         public string EscolaTransferencia { get; set; }
-        public string NomeAluno { get => Maioridade && !string.IsNullOrWhiteSpace(NomeSocialAluno) ? NomeSocialAluno : nomeAluno; set { nomeAluno = value; } }
+        public string NomeAluno { get => !string.IsNullOrWhiteSpace(NomeSocialAluno) ? NomeSocialAluno : nomeAluno; set { nomeAluno = value; } }
         public string NomeSocialAluno { get; set; }
         public int NumeroAlunoChamada { get; set; }
         public char? ParecerConclusivo { get; set; }
@@ -54,6 +54,11 @@ namespace SME.SGP.Infra
                         SituacaoMatriculaAluno.PendenteRematricula,
                         SituacaoMatriculaAluno.SemContinuidade
     };
+
+        public bool PossuiSituacaoAtiva()
+        {
+            return SituacoesAtiva.Contains(CodigoSituacaoMatricula);
+        }
 
         public bool DeveMostrarNaChamada(DateTime dataAula)
         {
@@ -92,11 +97,12 @@ namespace SME.SGP.Infra
 
             return true;
         }
-        public bool PodeEditarNotaConceitoNoPeriodo(PeriodoEscolar periodoEscolar)
+
+        public bool PodeEditarNotaConceitoNoPeriodo(PeriodoEscolar periodoEscolar, PeriodoFechamentoBimestre periodoFechamentoBimestre = null)
         {
             if (!PodeEditarNotaConceito())
             {
-                return DataSituacao >= periodoEscolar?.PeriodoFim;
+                return DataSituacao >= periodoEscolar?.PeriodoFim || (periodoFechamentoBimestre != null && DataSituacao >= periodoFechamentoBimestre.InicioDoFechamento);
             }
             return true;
         }

@@ -1,8 +1,9 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IAlterarRegistroIndividualUseCase : IUseCase<AlterarRegistroIndividualDto, AuditoriaDto>
+    public interface IAlterarRegistroIndividualUseCase : IUseCase<AlterarRegistroIndividualDto, RegistroIndividual>
     {
     }
 }

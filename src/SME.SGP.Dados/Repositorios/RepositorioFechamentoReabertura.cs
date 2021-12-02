@@ -206,15 +206,16 @@ namespace SME.SGP.Dados.Repositorios
             var query = $@"select fr.* 
                           from fechamento_reabertura_bimestre frb
                          inner join fechamento_reabertura fr on fr.id = frb.fechamento_reabertura_id
-                         inner join dre on dre.id = fr.dre_id
-                         inner join ue on ue.id = fr.ue_id
+                         left join dre on dre.id = fr.dre_id
+                         left join ue on ue.id = fr.ue_id
                          where not fr.excluido 
                           {bimestreWhere}
                            and TO_DATE(fr.inicio::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
                            and TO_DATE(fr.fim::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
                            and fr.tipo_calendario_id = @tipoCalendarioId
-                           and dre.dre_id = @dreCodigo
-                           and ue.ue_id = @ueCodigo
+                           and ((dre.dre_id = @dreCodigo and ue.ue_id = @ueCodigo)
+                           or (dre.dre_id = @dreCodigo and ue.ue_id is null)
+                           or (dre.dre_id is null and ue.ue_id is null))
                            and fr.status = 1 ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoReabertura>(query, new

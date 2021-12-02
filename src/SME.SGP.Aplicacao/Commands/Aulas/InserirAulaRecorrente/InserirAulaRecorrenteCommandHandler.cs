@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
 
                 var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuarioLogado.CodigoRf, false, aulaRecorrente.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
 
-                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
+                if (possuiAtribuicaoCJ && (atribuicoesEsporadica != null && atribuicoesEsporadica.Any()))
                 {
                     var verificaAtribuicao = atribuicoesEsporadica.FirstOrDefault(a => a.DataInicio <= aulaRecorrente.DataAula.Date && a.DataFim >= aulaRecorrente.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe);
                     if (verificaAtribuicao == null)
@@ -123,6 +123,10 @@ namespace SME.SGP.Aplicacao
                 aulaRecorrente.DataAula,
                 aulaRecorrente.RecorrenciaAula);
             var fimRecorrencia = await mediator.Send(obterFimPeriodoQuery);
+
+            if (fimRecorrencia == null || fimRecorrencia == DateTime.MinValue)
+                fimRecorrencia = inicioRecorrencia;
+
             await GerarRecorrenciaParaPeriodos(aulaRecorrente, inicioRecorrencia, fimRecorrencia, usuario, atribuicao);
         }
 
@@ -130,7 +134,13 @@ namespace SME.SGP.Aplicacao
         {
             var diasParaIncluirRecorrencia = ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia);
 
+            if (diasParaIncluirRecorrencia == null || !diasParaIncluirRecorrencia.Any())
+                throw new NegocioException("Não foi possível obter dias para incluir aulas recorrentes.");
+
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aulaRecorrente.CodigoTurma));
+
+            if(turma == null)
+                throw new NegocioException("Não foi possível obter a turma para inclusão de aulas recorrentes.");
 
             var validacaoDatas = await ValidarDatasAula(diasParaIncluirRecorrencia, aulaRecorrente.CodigoTurma, 
                 aulaRecorrente.ComponenteCurricularId, aulaRecorrente.TipoCalendarioId, aulaRecorrente.EhRegencia, 
@@ -211,11 +221,22 @@ namespace SME.SGP.Aplicacao
             var validacaoAulasExistentes = await ValidarAulaExistenteNaData(diasParaIncluirRecorrencia, turmaCodigo, componenteCurricularCodigo, usuario.EhProfessorCj());
             var datasValidas = validacaoAulasExistentes.datasValidas;
 
+            if(datasValidas == null || !datasValidas.Any())
+            {
+                var mensagem = validacaoAulasExistentes.mensagensValidacao.Any() ?
+                    string.Join("<br/>", validacaoAulasExistentes.mensagensValidacao) : 
+                    $"{string.Join("<br/>", diasParaIncluirRecorrencia)} Não foi possível validar essas datas para a inclusão de aulas recorrentes.";
+                throw new NegocioException(mensagem);
+            }               
+
             // Grade Curricular
             var validacaoGradeCurricular = await ValidarGradeCurricular(datasValidas, turmaCodigo, componenteCurricularCodigo, ehRegencia, quantidade, usuario.CodigoRf);
 
             // Dias Letivos
             var validacaoDiasLetivos = await ValidarDiasLetivos(validacaoGradeCurricular.datasValidas, turma, tipoCalendarioId);
+
+            if (validacaoDiasLetivos.diasLetivos == null || !validacaoDiasLetivos.diasLetivos.Any())
+                throw new NegocioException($"{string.Join("<br/>", validacaoDiasLetivos.mensagensValidacao)}");
 
             // Atribuição Professor
             var validacaoAtribuicaoProfessor = await ValidarAtribuicaoProfessor(validacaoDiasLetivos.diasLetivos, turmaCodigo, componenteCurricularCodigo, usuario, atribuicao);
@@ -327,6 +348,10 @@ namespace SME.SGP.Aplicacao
 
                 return (datasAtribuicaoCJ, mensagensValidacao);
             }
+
+            if(datasValidas == null || !datasValidas.Any())
+                throw new NegocioException("Não foi possível obter datas validas para a atribuição do professor no EOL.");
+
             var datasAtribuicaoEOL = await mediator.Send(new ObterValidacaoPodePersistirTurmaNasDatasQuery(
                 usuario.CodigoRf,
                 turmaCodigo,
