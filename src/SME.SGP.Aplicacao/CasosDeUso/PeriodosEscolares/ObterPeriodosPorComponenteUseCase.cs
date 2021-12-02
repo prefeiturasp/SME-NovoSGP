@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var listaPeriodos = new List<PeriodoEscolarComponenteDto>();
 
             if (ehRegencia)
-                listaPeriodos = SepararSemanasRegencia(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim);
+                listaPeriodos = SepararSemanasRegenciaNovo(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim);
             else
                 listaPeriodos = SepararPeriodosAulas(periodoEscolar);
 
@@ -36,9 +37,9 @@ namespace SME.SGP.Aplicacao
             long id = 1;
             bool jaPassouPorUltimosDias = false;
 
-            while(dataInicioPeriodo <= dataFimPeriodo)
+            while (dataInicioPeriodo <= dataFimPeriodo)
             {
-                if(dataInicio == DateTime.MinValue)
+                if (dataInicio == DateTime.MinValue)
                     dataInicio = dataInicioPeriodo;
 
                 //para verificar ultimos dias do período
@@ -47,12 +48,12 @@ namespace SME.SGP.Aplicacao
                 if (dataInicioPeriodo.DayOfWeek == DayOfWeek.Saturday)
                     dataFim = dataInicioPeriodo;
 
-                if(calcularDiferencaDatas.Days < 7 && dataFimPeriodo.DayOfWeek < DayOfWeek.Saturday && !jaPassouPorUltimosDias)
+                if (calcularDiferencaDatas.Days < 7 && dataFimPeriodo.DayOfWeek < DayOfWeek.Saturday && !jaPassouPorUltimosDias)
                 {
                     dataFim = dataFimPeriodo;
                     jaPassouPorUltimosDias = true;
                 }
-                  
+
                 if (dataInicio != DateTime.MinValue && dataFim != DateTime.MinValue)
                 {
                     string formataDataInicio = dataInicio.Date.ToString("dd/MM/yy");
@@ -74,6 +75,49 @@ namespace SME.SGP.Aplicacao
             return retornaListaPeriodoSeparado;
         }
 
+        public List<PeriodoEscolarComponenteDto> SepararSemanasRegenciaNovo(DateTime dataInicio, DateTime dataFim)
+        {
+            long id = 1;           
+            var domingo = DateTimeExtension.ObterDomingo(dataInicio);
+            var sabado = DateTimeExtension.ObterSabado(dataInicio);
+
+            var retornaListaPeriodoSeparado = new List<PeriodoEscolarComponenteDto>();
+            string formataDataInicio = dataInicio.Date.ToString("dd/MM/yy");
+            string formataDataFim = sabado.Date.ToString("dd/MM/yy");
+
+            retornaListaPeriodoSeparado.Add(new PeriodoEscolarComponenteDto
+            {
+                Id = id++,
+                DataInicio = dataInicio,
+                DataFim = sabado,
+                PeriodoEscolar = $"{formataDataInicio} - {formataDataFim}"
+            });
+
+            domingo = domingo.AddDays(7);
+            sabado = sabado.AddDays(7);
+
+            while (domingo < dataFim)
+            {
+                if (sabado > dataFim)
+                    sabado = dataFim;
+
+                formataDataInicio = domingo.Date.ToString("dd/MM/yy");
+                formataDataFim = sabado.Date.ToString("dd/MM/yy");
+
+                retornaListaPeriodoSeparado.Add(new PeriodoEscolarComponenteDto
+                {
+                    Id = id++,
+                    DataInicio = domingo,
+                    DataFim = sabado,
+                    PeriodoEscolar = $"{formataDataInicio} - {formataDataFim}"
+                });
+                domingo = domingo.AddDays(7);
+                sabado = sabado.AddDays(7);
+            }
+
+            return retornaListaPeriodoSeparado;
+        }
+
         public List<PeriodoEscolarComponenteDto> SepararPeriodosAulas(IEnumerable<PeriodoEscolarVerificaRegenciaDto> periodosAulas)
         {
             DateTime dataInicioPeriodo = DateTime.MinValue;
@@ -85,16 +129,16 @@ namespace SME.SGP.Aplicacao
 
             foreach (var periodo in periodosAulas)
             {
-                if(qtdeDiasAulas == 0)
+                if (qtdeDiasAulas == 0)
                     if (dataInicioPeriodo == DateTime.MinValue)
-                             dataInicioPeriodo = periodo.DataAula;
-                 
-                if(qtdeDiasAulas < 5)
+                        dataInicioPeriodo = periodo.DataAula;
+
+                if (qtdeDiasAulas < 5)
                     qtdeDiasAulas++;
 
                 if (qtdeDiasAulas == 5 || contador == periodosAulas.Count())
                 {
-                    string formataDataInicio = dataInicioPeriodo.Date.ToString("dd/MM/yy"); 
+                    string formataDataInicio = dataInicioPeriodo.Date.ToString("dd/MM/yy");
                     string formataDataFim = periodo.DataAula.Date.ToString("dd/MM/yy");
                     listaPeriodos.Add(new PeriodoEscolarComponenteDto
                     {
