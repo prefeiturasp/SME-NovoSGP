@@ -169,8 +169,15 @@ namespace SME.SGP.Aplicacao
                                                     string codigoAluno,
                                                     List<RegistroFrequenciaPorDisciplinaAlunoDto> registroFrequenciaAluno)
         {
+
+            var totalAulasNaDisciplinaPorAluno = registroFrequenciaAluno
+                .Where(aluno => aluno.AlunoCodigo == codigoAluno)
+                .Aggregate(0,
+                    (total, frequencia) =>
+                        total + (frequencia.TotalPresencas + frequencia.TotalAusencias + frequencia.TotalPresencas));
+
             var frequenciaDisciplinaAluno = TrataFrequenciaPorDisciplinaAluno(codigoAluno,
-                                                                              totalAulasNaDisciplina,
+                totalAulasNaDisciplinaPorAluno == 0 ? totalAulasNaDisciplina : totalAulasNaDisciplinaPorAluno, 
                                                                               registroFrequenciaAluno,
                                                                               frequenciaDosAlunos,
                                                                               totalCompensacoesDisciplinaAlunos,

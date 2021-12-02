@@ -145,6 +145,9 @@ namespace SME.SGP.Dominio
         ExecucaoConsolidacaoDiariosBordo = 81,
         ExecucaoConsolidacaoRegistrosPedagogicos = 82,
 
+
+        PermiteCompensacaoForaPeriodo = 83,
+
         //Sistema
         HabilitarServicosEmBackground = 100,
         ProcessarDeadletter = 101,
