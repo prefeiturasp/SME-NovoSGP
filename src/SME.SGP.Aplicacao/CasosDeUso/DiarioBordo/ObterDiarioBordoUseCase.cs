@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<DiarioBordoDto> Executar(long aulaId)
+        public async Task<DiarioBordoDto> Executar(long aulaId, long componenteCurricularId)
         {
             Aula aula = await mediator.Send(new ObterAulaPorIdQuery(aulaId));
             if (aula == null || aula.Excluido)
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             var aberto = await AulaDentroDoPeriodo(mediator, aula.TurmaId, aula.DataAula);
 
-            DiarioBordo diarioBordo = await mediator.Send(new ObterDiarioBordoPorAulaIdQuery(aulaId));
+            DiarioBordo diarioBordo = await mediator.Send(new ObterDiarioBordoPorAulaIdQuery(aulaId,componenteCurricularId));
             if (diarioBordo == null || diarioBordo.Excluido)
             {
                 diarioBordo = new DiarioBordo
