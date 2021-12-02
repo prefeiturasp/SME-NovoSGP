@@ -22,60 +22,14 @@ namespace SME.SGP.Aplicacao
             var listaPeriodos = new List<PeriodoEscolarComponenteDto>();
 
             if (ehRegencia)
-                listaPeriodos = SepararSemanasRegenciaNovo(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim);
+                listaPeriodos = SepararSemanasRegencia(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim);
             else
                 listaPeriodos = SepararPeriodosAulas(periodoEscolar);
 
             return listaPeriodos;
         }
 
-        public List<PeriodoEscolarComponenteDto> SepararSemanasRegencia(DateTime dataInicioPeriodo, DateTime dataFimPeriodo)
-        {
-            var retornaListaPeriodoSeparado = new List<PeriodoEscolarComponenteDto>();
-            var dataInicio = DateTime.MinValue;
-            var dataFim = DateTime.MinValue;
-            long id = 1;
-            bool jaPassouPorUltimosDias = false;
-
-            while (dataInicioPeriodo <= dataFimPeriodo)
-            {
-                if (dataInicio == DateTime.MinValue)
-                    dataInicio = dataInicioPeriodo;
-
-                //para verificar ultimos dias do período
-                TimeSpan calcularDiferencaDatas = dataFimPeriodo - dataInicio;
-
-                if (dataInicioPeriodo.DayOfWeek == DayOfWeek.Saturday)
-                    dataFim = dataInicioPeriodo;
-
-                if (calcularDiferencaDatas.Days < 7 && dataFimPeriodo.DayOfWeek < DayOfWeek.Saturday && !jaPassouPorUltimosDias)
-                {
-                    dataFim = dataFimPeriodo;
-                    jaPassouPorUltimosDias = true;
-                }
-
-                if (dataInicio != DateTime.MinValue && dataFim != DateTime.MinValue)
-                {
-                    string formataDataInicio = dataInicio.Date.ToString("dd/MM/yy");
-                    string formataDataFim = dataFim.Date.ToString("dd/MM/yy");
-
-                    retornaListaPeriodoSeparado.Add(new PeriodoEscolarComponenteDto
-                    {
-                        Id = id++,
-                        DataInicio = dataInicio,
-                        DataFim = dataFim,
-                        PeriodoEscolar = $"{formataDataInicio} - {formataDataFim}"
-                    });
-
-                    dataInicio = dataFim = DateTime.MinValue;
-                }
-
-                dataInicioPeriodo = dataInicioPeriodo.AddDays(1);
-            }
-            return retornaListaPeriodoSeparado;
-        }
-
-        public List<PeriodoEscolarComponenteDto> SepararSemanasRegenciaNovo(DateTime dataInicio, DateTime dataFim)
+        public List<PeriodoEscolarComponenteDto> SepararSemanasRegencia(DateTime dataInicio, DateTime dataFim)
         {
             long id = 1;           
             var domingo = DateTimeExtension.ObterDomingo(dataInicio);
