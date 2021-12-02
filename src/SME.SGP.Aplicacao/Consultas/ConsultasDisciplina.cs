@@ -134,6 +134,7 @@ namespace SME.SGP.Aplicacao
                     if (d.TerritorioSaber)
                         d.Nome = componenteEOL.Descricao;
                     d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
+                    d.CdComponenteCurricularPai = componenteEOL.CodigoComponenteCurricularPai;
                 });
 
                 if (!usuarioLogado.EhProfessor())
