@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                    .WithMessage("A aula deve ser informada!");
             RuleFor(a => a.ComponenteCurricularId)
                    .NotEmpty()
-                   .WithMessage("O Componente Curricular deve ser informado!");
+                   .WithMessage("O Id do Componente Curricular deve ser informado!");
 
             RuleFor(a => a.Planejamento)
                    .NotEmpty().WithMessage("O planejamento é obrigatório para o registro do diário de bordo!")

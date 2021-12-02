@@ -16,7 +16,7 @@ namespace SME.SGP.Infra
         {
             RuleFor(a => a.ComponenteCurricularId)
                    .NotEmpty()
-                   .WithMessage("O Componente Curricular deve ser informado!");
+                   .WithMessage("O Id do Componente Curricular deve ser informado!");
             RuleFor(a => a.AulaId)
                    .NotEmpty()
                    .WithMessage("A aula deve ser informada!");
