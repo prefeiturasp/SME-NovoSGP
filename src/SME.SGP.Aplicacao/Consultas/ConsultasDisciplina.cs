@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
             return componentes;
         }
 
-        public async Task<List<DisciplinaDto>> ObterComponentesCurricularesPorProfessorETurma(string codigoTurma, bool turmaPrograma)
+        public async Task<List<DisciplinaDto>> ObterComponentesCurricularesPorProfessorETurma(string codigoTurma, bool turmaPrograma, bool validarVigencia= false)
         {
             List<DisciplinaDto> disciplinasDto;
 
@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
+                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, validarVigencia);
 
                 disciplinasDto = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(
                     componentesCurriculares?
