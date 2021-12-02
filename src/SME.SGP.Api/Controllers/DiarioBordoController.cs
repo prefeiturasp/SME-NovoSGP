@@ -17,13 +17,13 @@ namespace SME.SGP.Api.Controllers
     public class DiarioBordoController : ControllerBase
     {
 
-        [HttpGet("{aulaId}")]
+        [HttpGet("{aulaId}/{componenteCurricularId}")]
         [ProducesResponseType(typeof(DiarioBordoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> Obter([FromServices] IObterDiarioBordoUseCase useCase, long aulaId)
+        public async Task<IActionResult> Obter([FromServices] IObterDiarioBordoUseCase useCase, long aulaId,long componenteCurricularId)
         {
-            var result = await useCase.Executar(aulaId);
+            var result = await useCase.Executar(aulaId, componenteCurricularId);
             if (result == null)
                 return NoContent();
 				
