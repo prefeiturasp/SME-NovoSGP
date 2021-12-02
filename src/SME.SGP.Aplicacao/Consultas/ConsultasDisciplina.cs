@@ -103,14 +103,16 @@ namespace SME.SGP.Aplicacao
             }
 
             var turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
+            
             if (turma == null)
                 throw new NegocioException("Não foi possível encontrar a turma");
-
+            
             if (usuarioLogado.EhProfessorCj())
             {
                 var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
                 disciplinasDto = MapearParaDto(disciplinas, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
             }
+
             else
             {
                 var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
@@ -120,10 +122,9 @@ namespace SME.SGP.Aplicacao
                     .Select(a => a.TerritorioSaber ? (a.CodigoComponenteTerritorioSaber == 0 ? a.Codigo : a.CodigoComponenteTerritorioSaber) : a.Codigo).ToArray()))?.OrderBy(c => c.Nome)?.ToList();
 
                 var componentesCurricularesJurema = await repositorioCache.ObterAsync("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
+                
                 if (componentesCurricularesJurema == null)
-                {
                     throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
-                }
 
                 disciplinasDto.ForEach(d =>
                 {
@@ -144,7 +145,9 @@ namespace SME.SGP.Aplicacao
             if(turma.ModalidadeCodigo == Modalidade.EJA && disciplinasDto.Any())
             {
                 var idComponenteInformaticaOie = 1060;
+                
                 var idComponenteLeituraOsl = 1061;
+                
                 foreach(var disciplina in disciplinasDto)
                 {
                     if (disciplina.CodigoComponenteCurricular == idComponenteInformaticaOie || disciplina.CodigoComponenteCurricular == idComponenteLeituraOsl)
