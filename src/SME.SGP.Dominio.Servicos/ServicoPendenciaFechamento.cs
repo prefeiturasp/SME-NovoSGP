@@ -59,10 +59,7 @@ namespace SME.SGP.Dominio.Servicos
             var aulasPendentes = repositorioAula.ObterAulasReposicaoPendentes(turmaCodigo, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
             if (aulasPendentes != null && aulasPendentes.Any())
             {
-                var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
-
-                if (componenteCurricular == null)
-                    throw new NegocioException("Componente curricular não encontrado.");
+                var componenteCurricular = await BuscaInformacoesDaDisciplina(disciplinaId);
 
                 var mensagem = new StringBuilder($"A aulas de reposição de {componenteCurricular.Nome} da turma {turmaNome} a seguir estão pendentes de aprovação:<br>");
 
@@ -70,19 +67,16 @@ namespace SME.SGP.Dominio.Servicos
 
                 mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
 
+                var professorTitularPorTurmaEDisciplina = await BuscaProfessorTitularPorTurmaEDisciplina(turmaCodigo, disciplinaId);
+
                 foreach (var aula in aulasPendentes.OrderBy(a => a.DataAula))
                 {
-                    var professoresTitulares = await mediator
-                        .Send(new ObterProfessoresTitularesDaTurmaQuery(aula.TurmaId));
+                    var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(aula.TurmaId));
 
-                    var professor = servicoUsuario
-                        .ObterUsuarioPorCodigoRfLoginOuAdiciona(string.IsNullOrEmpty(aula.ProfessorRf) ? aula.ProfessorRf : professoresTitulares.FirstOrDefault());
+                    Usuario professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
 
-                    if (professor == null)
-                        throw new NegocioException($"Professor com RF {aula.ProfessorRf} não encontrado.");
-
-                    mensagem.AppendLine($"Professor {aula.ProfessorRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
-                    mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {aula.ProfessorRf}</td></tr>");
+                    mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
+                    mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {professor.CodigoRf}</td></tr>");
                 }
                 mensagemHtml.Append("</table>");
                 var professorRf = aulasPendentes.First().ProfessorRf;
@@ -93,6 +87,27 @@ namespace SME.SGP.Dominio.Servicos
 
             aulasReposicaoPendentes = aulasPendentes.Count();
             return aulasReposicaoPendentes;
+        }
+
+        private async Task<ProfessorTitularDisciplinaEol> BuscaProfessorTitularPorTurmaEDisciplina(string turmaCodigo, long disciplinaId)
+        {
+            var professoresTitularesPorTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turmaCodigo));
+            var professorTitularPorTurmaEDisciplina = professoresTitularesPorTurma.FirstOrDefault(o => o.DisciplinaId == disciplinaId);
+
+            if (professorTitularPorTurmaEDisciplina == null)
+                throw new NegocioException($"Não existe professor titular para esta turma/disciplina {turmaCodigo}/{disciplinaId}");
+
+            return professorTitularPorTurmaEDisciplina;
+        }
+
+        private async Task<DisciplinaDto> BuscaInformacoesDaDisciplina(long disciplinaId)
+        {
+            var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
+
+            if (componenteCurricular == null)
+                throw new NegocioException("Componente curricular não encontrado.");
+
+            return componenteCurricular;
         }
 
         public async Task<int> ValidarAulasSemFrequenciaRegistrada(long fechamentoId, string turmaCodigo, string turmaNome, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int bimestre)
