@@ -86,6 +86,7 @@ namespace SME.SGP.Aplicacao
         {
             entidade.Planejamento = request.Planejamento;
             entidade.ReflexoesReplanejamento = request.ReflexoesReplanejamento;
+            entidade.ComponenteCurricularId = request.ComponenteCurricularId;
         }
     }
 }
