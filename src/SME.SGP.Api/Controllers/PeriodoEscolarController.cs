@@ -101,6 +101,15 @@ namespace SME.SGP.Api.Controllers
                 return NoContent();
         }
 
+        [HttpGet("turmas/{turmaCodigo}/periodo-letivo")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(PeriodoEscolarLetivoTurmaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterPeriodoLetivoTurma(string turmaCodigo, [FromServices] IObterPeriodoLetivoTurmaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(turmaCodigo));
+        }
+
         [HttpGet("listar/{turmaCodigo}/{componenteCodigo}/{bimestre}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(List<PeriodoEscolarComponenteDto>), 200)]
