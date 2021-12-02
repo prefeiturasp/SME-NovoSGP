@@ -323,8 +323,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil,bool realizarAgrupamentoComponente = false)
         {
-            var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}/validarVigencia/{realizarAgrupamentoComponente}";
-            return await ObterComponentesCurriculares(url);
+            return await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma,login,perfil,realizarAgrupamentoComponente));
         }
 
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil)

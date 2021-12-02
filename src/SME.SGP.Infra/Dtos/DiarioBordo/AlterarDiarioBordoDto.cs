@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
         public long AulaId { get; set; }
         public string Planejamento { get; set; }
         public string ReflexoesReplanejamento { get; set; }
+        public long ComponenteCurricularId { get; set; }
     }
 
     public class AlterarDiarioBordoDtoValidator : AbstractValidator<AlterarDiarioBordoDto>
@@ -25,6 +26,10 @@ namespace SME.SGP.Infra
             RuleFor(a => a.AulaId)
                    .NotEmpty()
                    .WithMessage("A aula deve ser informada!");
+
+            RuleFor(a => a.ComponenteCurricularId)
+                   .NotEmpty()
+                   .WithMessage("O Componente Curricular deve ser informado!");
 
             RuleFor(a => a.Planejamento)
                    .NotEmpty().WithMessage("O planejamento é obrigatório para o registro do diário de bordo!")
