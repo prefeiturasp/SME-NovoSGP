@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioAula(ISgpContext conexao) : base(conexao)
         {
         }
-
+                                                                    // DisciplinaId: "1105", TurmaId: "2242706"
         public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
             var query = @"select *
@@ -589,15 +589,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and t.ano_letivo = @anoLetivo");
 
             if (!string.IsNullOrWhiteSpace(usuarioRF))
-            {
                 query.AppendLine("and a.professor_rf = @usuarioRF ");
-            }
-
-            if (ehProfessor)
-            {
-                var filtroAulaCJ = aulaCJ ? "" : "not";
-                query.AppendLine($"and {filtroAulaCJ} a.aula_cj ");
-            }
 
             return database.Conexao.Query<Aula, Turma, Aula>(query.ToString(), (aula, turma) =>
             {

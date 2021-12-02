@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(request.TurmaCodigo);
             var tipoCalendarioId = await ObterTipoCalendario(turma);
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());            
 
             var datasAulas = ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo,
                 string.Empty, request.EhProfessorCj, request.EhProfessor);
@@ -43,9 +43,9 @@ namespace SME.SGP.Aplicacao
 
             var aulasPermitidas = usuarioLogado
                 .ObterAulasQuePodeVisualizar(aulas, new string[] { request.ComponenteCurricularCodigo })
-                .Select(a => a.Id);
+                .Select(a => a.Id);                
 
-            return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data)
+                return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data)
                     .Select(x => new DatasAulasDto()
                     {
                         Data = x.Key,
@@ -53,6 +53,7 @@ namespace SME.SGP.Aplicacao
                         {
                             AulaId = a.IdAula,
                             AulaCJ = a.AulaCJ,
+                            PodeEditar = (usuarioLogado.EhProfessorCj() && a.AulaCJ) || (!a.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar())),
                             ProfessorRf = a.ProfessorRf,
                             CriadoPor = a.CriadoPor,
                             PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula)),

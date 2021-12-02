@@ -78,6 +78,7 @@ namespace SME.SGP.Dominio
         public string ObterLoginAtual()
         {
             var loginAtual = contextoAplicacao.ObterVariavel<string>("login");
+            
             if (loginAtual == null)
                 throw new NegocioException("Não foi possível localizar o login no token");
 
@@ -139,16 +140,16 @@ namespace SME.SGP.Dominio
         public async Task<Usuario> ObterUsuarioLogado()
         {
             var login = ObterLoginAtual();
+            
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
 
             if (usuario == null)
-            {
                 throw new NegocioException("Usuário não encontrado.");
-            }
 
             var perfisDoUsuario = await repositorioCache.ObterAsync($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
 
             usuario.DefinirPerfis(perfisDoUsuario);
+            
             usuario.DefinirPerfilAtual(ObterPerfilAtual());
 
             return usuario;

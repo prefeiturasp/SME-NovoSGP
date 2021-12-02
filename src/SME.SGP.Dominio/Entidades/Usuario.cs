@@ -44,20 +44,15 @@ namespace SME.SGP.Dominio
         public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, string[] componentesCurricularesProfessor)
         {
             if (TemPerfilGestaoUes() || TemPerfilAdmUE())
-            {
                 return aulas;
-            }
+            
             else
             {
                 if (EhProfessorCj())
-                {
                     return aulas.Where(a => a.ProfessorRf == CodigoRf);
-                }
+            
                 else
-                {
-                    return aulas.Where(a => (componentesCurricularesProfessor.Contains(a.DisciplinaId) && !a.AulaCJ) || a.ProfessorRf == CodigoRf);
-                }
-
+                    return aulas.Where(a => (componentesCurricularesProfessor.Contains(a.DisciplinaId)) || a.ProfessorRf == CodigoRf);
             }
         }
 
