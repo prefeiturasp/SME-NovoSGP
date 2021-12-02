@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var componenteCurricularEol = new List<ComponenteCurricularEol>();
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"v1/componentes-curriculares/turmas/{request.CodigoTurma}/funcionarios/{request.Login}/perfis/{request.Perfil}/validarVigencia/{request.RealizarAgrupamentoComponente}");
+            var resposta = await httpClient.GetAsync($"v1/componentes-curriculares/turmas/{request.CodigoTurma}/funcionarios/{request.Login}/perfis/{request.Perfil}/agrupaComponenteCurricular/{request.RealizarAgrupamentoComponente}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
