@@ -9,18 +9,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPeriodoPorComponenteUseCase : AbstractUseCase, IObterPeriodoPorComponenteUseCase
+    public class ObterPeriodosPorComponenteUseCase : AbstractUseCase, IObterPeriodosPorComponenteUseCase
     {
-        public ObterPeriodoPorComponenteUseCase(IMediator mediator) : base(mediator)
+        public ObterPeriodosPorComponenteUseCase(IMediator mediator) : base(mediator)
         {
         }
 
-        public async Task<List<PeriodoEscolarComponenteDto>> Executar(string turmaCodigo, string componenteCodigo, int bimestre)
+        public async Task<IEnumerable<PeriodoEscolarComponenteDto>> Executar(string turmaCodigo, long componenteCodigo, bool ehRegencia, int bimestre)
         {
             var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, componenteCodigo, bimestre));
             var listaPeriodos = new List<PeriodoEscolarComponenteDto>();
 
-            if (periodoEscolar.FirstOrDefault().EhRegencia)
+            if (ehRegencia)
                 listaPeriodos = SepararSemanasRegencia(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim);
             else
                 listaPeriodos = SepararPeriodosAulas(periodoEscolar);

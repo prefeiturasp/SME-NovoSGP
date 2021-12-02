@@ -10,10 +10,10 @@ namespace SME.SGP.Aplicacao
     public class ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery : IRequest<IEnumerable<PeriodoEscolarVerificaRegenciaDto>>
     {
         public string TurmaCodigo { get; set; }
-        public string ComponenteCodigo { get; set; }
+        public long ComponenteCodigo { get; set; }
         public int Bimestre { get; set; }
 
-        public ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(string turmaCodigo, string componenteCodigo, int bimestre)
+        public ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(string turmaCodigo, long componenteCodigo, int bimestre)
         {
             TurmaCodigo = turmaCodigo;
             ComponenteCodigo = componenteCodigo;

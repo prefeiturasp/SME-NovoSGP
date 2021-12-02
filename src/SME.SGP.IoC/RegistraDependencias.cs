@@ -791,7 +791,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterPeriodoFechamentoVigenteUseCase, ObterPeriodoFechamentoVigenteUseCase>();
 
             //PeriodoEscolar
-            services.TryAddScoped<IObterPeriodoPorComponenteUseCase, ObterPeriodoPorComponenteUseCase>();
+            services.TryAddScoped<IObterPeriodosPorComponenteUseCase, ObterPeriodosPorComponenteUseCase>();
 
             // Plano AEE
             services.TryAddScoped<IObterPlanoAEEPorIdUseCase, ObterPlanoAEEPorIdUseCase>();
