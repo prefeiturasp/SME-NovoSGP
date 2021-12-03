@@ -12,9 +12,6 @@ namespace SME.SGP.Aplicacao
         public static async Task<IEnumerable<EventoAulaDiaDto>> Executar(IMediator mediator, FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId,
             int mes, IServicoUsuario servicoUsuario)
         {
-            string rf = "";
-            string dadosTurma = "";
-
             var eventosDaUeSME = await mediator.Send(new ObterEventosDaUeSMEPorMesQuery()
             {
                 UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
@@ -24,9 +21,11 @@ namespace SME.SGP.Aplicacao
             });
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            rf = usuarioLogado.CodigoRf;
-            dadosTurma = filtroAulasEventosCalendarioDto.TurmaCodigo;
-
+            
+            string rf = usuarioLogado.CodigoRf;
+            
+            string dadosTurma = filtroAulasEventosCalendarioDto.TurmaCodigo;
+            
             if (usuarioLogado == null)
                 throw new NegocioException("Não foi possível localizar o Usuário logado.");
 
@@ -40,10 +39,9 @@ namespace SME.SGP.Aplicacao
             });
 
             string[] componentesCurricularesDoProfessor = new string[0];
+            
             if (usuarioLogado.EhProfessor())
-            {
                 componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));
-            }
 
             IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
 
