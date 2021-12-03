@@ -15,11 +15,15 @@ namespace SME.SGP.Aplicacao
     public class CriarAulasRegenciaAutomaticamenteCommandHandler : IRequestHandler<CriarAulasRegenciaAutomaticamenteCommand, bool>
     {
         private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IMediator mediator;
 
-        public CriarAulasRegenciaAutomaticamenteCommandHandler(IRepositorioAula repositorioAula, IMediator mediator)
+        public CriarAulasRegenciaAutomaticamenteCommandHandler(IRepositorioAula repositorioAula, 
+                                                               IRepositorioFrequencia repositorioFrequencia,
+                                                               IMediator mediator)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
+            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -29,7 +33,7 @@ namespace SME.SGP.Aplicacao
             var diasParaCriarAula = request.DiasLetivos;
             var diasForaDoPeriodo = request.DiasForaDoPeriodoEscolar;
             var aulasACriar = new List<Aula>();
-            var aulasAExcluirComFrequenciaRegistrada = new List<DateTime>();
+            var aulasAExcluirComFrequenciaRegistrada = new List<(long id, DateTime data)>();
             var dadosTurmas = request.DadosTurmas;
             var ueCodigo = request.UeCodigo;
             var modalidade = request.Modalidade;
@@ -105,9 +109,12 @@ namespace SME.SGP.Aplicacao
 
                 if (aulasAExcluirComFrequenciaRegistrada.Any())
                 {
+                    await ExcluirFrequenciaRepetida(aulasAExcluirComFrequenciaRegistrada, aulasCriadasPorUsuarios, componentesCurricularesAulas);
+
                     var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(dadoTurma.TurmaCodigo));
+
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoExclusaoAulasComFrequencia,
-                        new NotificarExclusaoAulasComFrequenciaDto(turma, aulasAExcluirComFrequenciaRegistrada), Guid.NewGuid(), null));
+                        new NotificarExclusaoAulasComFrequenciaDto(turma, aulasAExcluirComFrequenciaRegistrada.Select(ae => ae.data)), Guid.NewGuid(), null));
 
                     aulasAExcluirComFrequenciaRegistrada.Clear();
                 }
@@ -128,8 +135,38 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
+        private async Task ExcluirFrequenciaRepetida(IList<(long id, DateTime data)> aulasAExcluirComFrequenciaRegistrada, IEnumerable<Aula> aulasCriadasPorUsuarios, IEnumerable<DisciplinaDto> componentesCurriculares)
+        {
+            var idsAulasExclusaoLogica = new List<long>();
+            var aulasEquivalentes = (from a in aulasCriadasPorUsuarios
+                                     join ae in aulasAExcluirComFrequenciaRegistrada
+                                     on a.DataAula.Date equals ae.data.Date
+                                     join cc in componentesCurriculares
+                                     on a.DisciplinaId equals cc.CodigoComponenteCurricular.ToString()
+                                     where cc.Regencia
+                                     select new
+                                     {
+                                         aulaCriadaPorUsuario = a,
+                                         aulaComFrequenciaEquivalente = ae
+                                     });
 
-        private async Task ExcluirAulas(List<DateTime> aulasAExcluirComFrequenciaRegistrada, List<long> idsAulasAExcluir, List<Aula> aulasDaTurmaParaExcluir)
+            foreach (var aulaComAjusteFrequencia in aulasEquivalentes)
+            {
+                var frequenciaAulaUsuario = await mediator
+                    .Send(new ObterRegistroFrequenciaPorAulaIdQuery(aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id));
+                
+                if (frequenciaAulaUsuario != null)
+                {
+                    await repositorioFrequencia.ExcluirFrequenciaAula(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id);
+                    idsAulasExclusaoLogica.Add(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id);
+                    aulasAExcluirComFrequenciaRegistrada.Remove(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente);
+                }
+            }
+
+            await repositorioAula.ExcluirPeloSistemaAsync(idsAulasExclusaoLogica.ToArray());
+        }
+
+        private async Task ExcluirAulas(List<(long, DateTime)> aulasAExcluirComFrequenciaRegistrada, List<long> idsAulasAExcluir, List<Aula> aulasDaTurmaParaExcluir)
         {
             if (aulasDaTurmaParaExcluir != null)
             {
@@ -137,7 +174,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var existeFrequencia = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(aula.Id));
                     if (existeFrequencia)
-                        aulasAExcluirComFrequenciaRegistrada.Add(aula.DataAula);
+                        aulasAExcluirComFrequenciaRegistrada.Add((aula.Id, aula.DataAula));
                     else
                         idsAulasAExcluir.Add(aula.Id);
                 }
@@ -173,10 +210,10 @@ namespace SME.SGP.Aplicacao
             var aulasExcluir = new List<Aula>();
 
             aulasExcluir.AddRange(aulas.Where(c => (diasParaExcluir != null && diasParaExcluir.Any(a => a.Data == c.DataAula && !c.Excluido)) ||
-                                                   (turma.DataInicioTurma.HasValue && c.DataAula.Date < turma.DataInicioTurma.Value.Date)));
+                                                   (turma.DataInicioTurma.HasValue && c.DataAula.Date < turma.DataInicioTurma.Value.Date) ||
+                                                   datasDesconsideradas.Contains(c.DataAula)));
 
             var aulasDuplicadas = aulas
-                .Where(a => !datasDesconsideradas.Contains(a.DataAula))
                 .OrderBy(a => a.Id)
                 .GroupBy(a => a.DataAula)
                 .Where(a => a.Count() > 1);
@@ -199,7 +236,7 @@ namespace SME.SGP.Aplicacao
             var diasNaoLetivos = DeterminaDiasNaoLetivos(diasDoPeriodo, ueCodigo);
 
             var diasParaCriar = diasDoPeriodo
-                .Where(l => (diasLetivos != null && diasLetivos.Any(n => n.Data == l.Data) || 
+                .Where(l => (diasLetivos != null && diasLetivos.Any(n => n.Data == l.Data) ||
                              diasNaoLetivos == null || !diasNaoLetivos.Any(n => n.Data == l.Data)) &&
                              !datasDesconsideradas.Contains(l.Data))?
                 .ToList();
@@ -241,7 +278,7 @@ namespace SME.SGP.Aplicacao
                         TipoAula = TipoAula.Normal,
                         TipoCalendarioId = tipoCalendarioId,
                         TurmaId = turma.TurmaCodigo,
-                        UeId =ueCodigo,
+                        UeId = ueCodigo,
                         ProfessorRf = rfProfessor,
                         CriadoPor = "Sistema",
                         CriadoRF = "0"
