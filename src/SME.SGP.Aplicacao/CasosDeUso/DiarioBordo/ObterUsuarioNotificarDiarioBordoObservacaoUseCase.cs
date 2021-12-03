@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,18 +21,20 @@ namespace SME.SGP.Aplicacao
             if (turma is null)
                 throw new NegocioException("A turma informada não foi encontrada.");
 
-            var professoresTurmaObrigatoriosReceberNotificacao = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
-            if (!professoresTurmaObrigatoriosReceberNotificacao?.Any() ?? true)
-                throw new NegocioException("Nenhum professor para a turma informada foi encontrada.");
+            var diarioBordo = await mediator.Send(new ObterDiarioDeBordoPorIdQuery(208));//dto.DiarioBordoId););
 
-            // Caso um dos professores da turma for o usuário logado e for uma nova observação, ele não deve aparecer na listagem
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            if (usuarioLogado != null && dto.ObservacaoId is null && professoresTurmaObrigatoriosReceberNotificacao.Any(x => x.ProfessorRf == usuarioLogado.CodigoRf))
-            {
-                professoresTurmaObrigatoriosReceberNotificacao = professoresTurmaObrigatoriosReceberNotificacao.Where(x => x.ProfessorRf != usuarioLogado.CodigoRf).ToList();
-            }
 
-            return await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(turma, professoresTurmaObrigatoriosReceberNotificacao, dto.ObservacaoId));
+            //if (!diarioBordo.Auditoria.CriadoRF.Equals(usuarioLogado.CodigoRf))
+                var x =  await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(turma, ObterProfessorTitular(diarioBordo), dto.ObservacaoId));
+            return x;
+            //else
+              //  return default;
+        }
+
+        private List<ProfessorTitularDisciplinaEol> ObterProfessorTitular(DiarioBordoDetalhesDto diarioBordo)
+        {
+            return new List<ProfessorTitularDisciplinaEol> { new ProfessorTitularDisciplinaEol { ProfessorRf = diarioBordo.Auditoria.CriadoRF, ProfessorNome = diarioBordo.Auditoria.CriadoPor } };
         }
     }
 }

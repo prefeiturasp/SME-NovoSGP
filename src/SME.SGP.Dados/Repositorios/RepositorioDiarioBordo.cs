@@ -232,7 +232,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join turma t on a.turma_id = t.turma_id
                          where not db.excluido
                            and t.id = @turmaId
-                           and a.disciplina_id = @componenteCurricularCodigo 
+                           and db.componente_curricular_id = @componenteCurricularCodigo 
                            and not a.excluido ");
 
 
@@ -248,7 +248,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = $"select count(0) {condicao}";
 
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
-                new { turmaId, componenteCurricularCodigo = componenteCurricularCodigo.ToString(), periodoInicio, periodoFim });
+                new { turmaId, componenteCurricularCodigo, periodoInicio, periodoFim });
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
@@ -260,7 +260,7 @@ namespace SME.SGP.Dados.Repositorios
                                                     new
                                                     {
                                                         turmaId,
-                                                        componenteCurricularCodigo = componenteCurricularCodigo.ToString(),
+                                                        componenteCurricularCodigo,
                                                         periodoInicio,
                                                         periodoFim,
                                                         qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,

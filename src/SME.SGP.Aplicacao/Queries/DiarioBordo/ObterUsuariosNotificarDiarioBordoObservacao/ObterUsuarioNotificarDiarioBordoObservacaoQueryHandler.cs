@@ -22,9 +22,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>> Handle(ObterUsuarioNotificarDiarioBordoObservacaoQuery request, CancellationToken cancellationToken)
-            => request.ObservacaoId != null
-                ? await ObterUsuariosAdicionadosNaObservacaoParaSeremNotificadosAsync(request.ObservacaoId.GetValueOrDefault(), request.ProfessoresDaTurma)
-                : await ObterUsuariosDosProfessoresDaTurmaAsync(request.ProfessoresDaTurma);
+            => await ObterUsuariosDosProfessoresDaTurmaAsync(request.ProfessoresDaTurma);
 
         private async Task<IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>> ObterUsuariosDosProfessoresDaTurmaAsync(IEnumerable<ProfessorTitularDisciplinaEol> professores)
         {
