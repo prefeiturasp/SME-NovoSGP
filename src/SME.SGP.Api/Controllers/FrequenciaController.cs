@@ -186,7 +186,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(new FrequenciaPorBimestresAlunoTurmaComponenteCurricularDto(turmaCodigo, alunoCodigo, bimestres, componenteCurricularId)));
         }
 
-        [HttpGet("frequencias/detalhar")]
+        [HttpGet("frequencias/detalhadas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterFrequenciaDetalhadaAluno([FromQuery] FiltroFrequenciaDetalhadaDto filtroFrequenciaDetalhadaDto, [FromServices] IObterFrequenciasDetalhadasPorDataUseCase useCase)

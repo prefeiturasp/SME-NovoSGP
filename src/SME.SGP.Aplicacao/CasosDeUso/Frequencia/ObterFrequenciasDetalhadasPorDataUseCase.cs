@@ -53,11 +53,11 @@ namespace SME.SGP.Aplicacao
 
                 var frequenciaTurmaRegistrada = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, long.Parse(aula.DisciplinaId), periodoEscolar.Id));
 
-                var frequenciaAlunoRegistrada = frequenciaTurmaRegistrada.FirstOrDefault(a => a.CodigoAluno == filtro.CodigoAluno);
+                var frequenciaAlunoRegistrada = frequenciaTurmaRegistrada.FirstOrDefault(a => a.CodigoAluno == filtro.CodigoAluno && a.DisciplinaId == aula.DisciplinaId && a.PeriodoEscolarId == periodoEscolar.Id);
 
                 var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, aula.DisciplinaId, periodoEscolar.Id));
 
-                frequenciaDetalhadaALuno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAlunoRegistrada, percentualAlerta, percentualCritico, turmaPossuiFrequenciaRegistrada);
+                frequenciaDetalhadaALuno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAlunoRegistrada, percentualAlerta, percentualCritico, turmaPossuiFrequenciaRegistrada, turma);
 
                 frequenciaRetorno.Add(frequenciaDetalhadaALuno);
             }
@@ -65,25 +65,37 @@ namespace SME.SGP.Aplicacao
             return frequenciaRetorno;
         }
 
-        private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaPossuiFrequenciaRegistrada)
+        private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaPossuiFrequenciaRegistrada, Turma turma)
         {
-            var percentualFrequencia = 0;
-            if (turmaPossuiFrequenciaRegistrada)
-            {
-                percentualFrequencia = (int)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
-            }
+            var percentualFrequencia = "0";
+            if (turma.AnoLetivo.Equals(2020))
+                percentualFrequencia = frequenciaAluno == null || frequenciaAluno.TotalAusencias == 0
+                    ?
+                    "100"
+                    :
+                    frequenciaAluno?.PercentualFrequencia.ToString();
             else
-            {
-                percentualFrequencia = int.MinValue;
-            }
-            var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : percentualFrequencia.ToString();
+                percentualFrequencia = frequenciaAluno == null && turmaPossuiFrequenciaRegistrada
+                ?
+                "100"
+                :
+                frequenciaAluno != null
+                ?
+                frequenciaAluno?.PercentualFrequencia.ToString()
+                :
+                "";
+
+            var percentualFrequenciaCauculada = (int)Math.Round(Convert.ToDouble(percentualFrequencia));
+
+
+            var percentualFrequenciaLabel = percentualFrequenciaCauculada < 0 ? null : percentualFrequencia.ToString();
 
             // Critico
-            if (percentualFrequencia <= percentualCritico)
+            if (percentualFrequenciaCauculada <= percentualCritico)
                 return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequenciaLabel };
 
             // Alerta
-            if (percentualFrequencia <= percentualAlerta)
+            if (percentualFrequenciaCauculada <= percentualAlerta)
                 return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequenciaLabel };
 
             return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequenciaLabel };
