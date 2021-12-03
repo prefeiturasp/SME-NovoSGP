@@ -17,9 +17,10 @@ into tmp_acompanhamento_aluno
 
   from arquivo a
  inner join (
-select uuid(cast(regexp_matches(PERCURSO_INDIVIDUAL, '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}', 'gi')  as varchar)) as Codigo
-	, replace(replace(cast(
-		regexp_matches(PERCURSO_INDIVIDUAL, '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[0-9a-zA-Z]+', 'gi') 
+select uuid(cast(regexp_matches(cast(regexp_matches(PERCURSO_INDIVIDUAL, 'https:\/\/novosgp.sme.prefeitura.sp.gov.br\/Arquivos\/aluno\/acompanhamento\/2021\/(?:[0-9]{1}|[0-9]{2})\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[0-9a-zA-Z]+', 'gi') as varchar)
+			, '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}', 'gi')  as varchar)) as Codigo
+	, replace(replace(cast(regexp_matches(cast(regexp_matches(PERCURSO_INDIVIDUAL, 'https:\/\/novosgp.sme.prefeitura.sp.gov.br\/Arquivos\/aluno\/acompanhamento\/2021\/(?:[0-9]{1}|[0-9]{2})\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[0-9a-zA-Z]+', 'gi') as varchar)
+			, '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[0-9a-zA-Z]+', 'gi') 
 		as varchar),'{',''),'}','') as Nome
 	, replace(replace(cast(
 		regexp_matches(PERCURSO_INDIVIDUAL, 'https:\/\/novosgp.sme.prefeitura.sp.gov.br\/Arquivos\/aluno\/acompanhamento\/2021\/(?:[0-9]{1}|[0-9]{2})\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[0-9a-zA-Z]+', 'gi') 
