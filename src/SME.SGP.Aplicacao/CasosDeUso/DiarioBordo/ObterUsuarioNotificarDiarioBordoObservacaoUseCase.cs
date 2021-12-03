@@ -21,15 +21,14 @@ namespace SME.SGP.Aplicacao
             if (turma is null)
                 throw new NegocioException("A turma informada não foi encontrada.");
 
-            var diarioBordo = await mediator.Send(new ObterDiarioDeBordoPorIdQuery(208));//dto.DiarioBordoId););
+            var diarioBordo = await mediator.Send(new ObterDiarioDeBordoPorIdQuery(dto.DiarioBordoId));
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            //if (!diarioBordo.Auditoria.CriadoRF.Equals(usuarioLogado.CodigoRf))
-                var x =  await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(turma, ObterProfessorTitular(diarioBordo), dto.ObservacaoId));
-            return x;
-            //else
-              //  return default;
+            if (!diarioBordo.Auditoria.CriadoRF.Equals(usuarioLogado.CodigoRf))
+                return   await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(turma, ObterProfessorTitular(diarioBordo), dto.ObservacaoId));
+            else
+                return default;
         }
 
         private List<ProfessorTitularDisciplinaEol> ObterProfessorTitular(DiarioBordoDetalhesDto diarioBordo)
