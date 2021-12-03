@@ -9,6 +9,6 @@ namespace SME.SGP.Infra
         public string TurmaCodigo { get; set; }
         public string ComponenteCurricularCodigo { get; set; }
         public string ComponenteCurricularDescricao { get; set; }
-        public DateTime DataInicioTurma { get; set; }
+        public DateTime? DataInicioTurma { get; set; }
     }
 }
