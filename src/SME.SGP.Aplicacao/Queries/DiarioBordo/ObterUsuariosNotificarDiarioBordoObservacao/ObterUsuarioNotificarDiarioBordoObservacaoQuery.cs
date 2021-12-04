@@ -9,18 +9,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUsuarioNotificarDiarioBordoObservacaoQuery : IRequest<IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>>
     {
-        public Turma Turma { get; set; }
         public IEnumerable<ProfessorTitularDisciplinaEol> ProfessoresDaTurma { get; set; }
         public long? ObservacaoId { get; set; }
 
-        public ObterUsuarioNotificarDiarioBordoObservacaoQuery(Turma turma, IEnumerable<ProfessorTitularDisciplinaEol> professoresDaTurma)
+        public ObterUsuarioNotificarDiarioBordoObservacaoQuery(IEnumerable<ProfessorTitularDisciplinaEol> professoresDaTurma)
         {
-            Turma = turma;
             ProfessoresDaTurma = professoresDaTurma;
         }
 
-        public ObterUsuarioNotificarDiarioBordoObservacaoQuery(Turma turma, IEnumerable<ProfessorTitularDisciplinaEol> professoresDaTurma, long? observacaoId)
-            : this(turma, professoresDaTurma)
+        public ObterUsuarioNotificarDiarioBordoObservacaoQuery(IEnumerable<ProfessorTitularDisciplinaEol> professoresDaTurma, long? observacaoId)
+            : this(professoresDaTurma)
         {
             ObservacaoId = observacaoId;
         }
@@ -30,10 +28,6 @@ namespace SME.SGP.Aplicacao
     {
         public ObterUsuarioNotificarDiarioBordoObservacaoQueryValidator()
         {
-            RuleFor(x => x.Turma)
-                .NotEmpty()
-                .WithMessage("A turma deve ser informada.");
-
             RuleForEach(x => x.ProfessoresDaTurma)
                 .NotEmpty()
                 .WithMessage("Todos os professores da turma devem ser informados.");

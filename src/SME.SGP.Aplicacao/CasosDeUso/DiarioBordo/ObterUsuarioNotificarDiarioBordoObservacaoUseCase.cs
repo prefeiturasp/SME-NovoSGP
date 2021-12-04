@@ -4,36 +4,24 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterUsuarioNotificarDiarioBordoObservacaoUseCase : AbstractUseCase, IObterUsuarioNotificarDiarioBordoObservacaoUseCase
+    public class ObterUsuarioNotificarDiarioBordoObservacaoUseCase : IObterUsuarioNotificarDiarioBordoObservacaoUseCase
     {
-        public ObterUsuarioNotificarDiarioBordoObservacaoUseCase(IMediator mediator) : base(mediator)
+        private readonly IMediator mediator;
+
+        public ObterUsuarioNotificarDiarioBordoObservacaoUseCase(IMediator mediator)
         {
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>> Executar(ObterUsuarioNotificarDiarioBordoObservacaoDto dto)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(dto.TurmaId));
-            if (turma is null)
-                throw new NegocioException("A turma informada não foi encontrada.");
+            var usuariosNotificados = await mediator.Send(new ObterDiarioBordoNotificacaoQuery(dto.TurmaId, dto.ObservacaoId, dto.DiarioBordoId));
 
-            var diarioBordo = await mediator.Send(new ObterDiarioDeBordoPorIdQuery(dto.DiarioBordoId));
-
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            if (!diarioBordo.Auditoria.CriadoRF.Equals(usuarioLogado.CodigoRf))
-                return   await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(turma, ObterProfessorTitular(diarioBordo), dto.ObservacaoId));
-            else
-                return default;
-        }
-
-        private List<ProfessorTitularDisciplinaEol> ObterProfessorTitular(DiarioBordoDetalhesDto diarioBordo)
-        {
-            return new List<ProfessorTitularDisciplinaEol> { new ProfessorTitularDisciplinaEol { ProfessorRf = diarioBordo.Auditoria.CriadoRF, ProfessorNome = diarioBordo.Auditoria.CriadoPor } };
-        }
+            return usuariosNotificados;
+        }        
     }
 }
