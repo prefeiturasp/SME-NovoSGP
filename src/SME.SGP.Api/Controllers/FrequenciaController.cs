@@ -84,7 +84,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("frequencias")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PDA_I, Policy = "Bearer")]
         public async Task<IActionResult> Registrar([FromBody] FrequenciaDto frequenciaDto, [FromServices] IInserirFrequenciaUseCase useCase)
         {
@@ -184,6 +184,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterFrequenciasPorBimestresAlunoTurmaComponenteCurricular(string turmaCodigo, string alunoCodigo, string componenteCurricularId, [FromQuery] int[] bimestres, [FromServices] IObterFrequenciasPorBimestresAlunoTurmaComponenteCurricularUseCase useCase)
         {
             return Ok(await useCase.Executar(new FrequenciaPorBimestresAlunoTurmaComponenteCurricularDto(turmaCodigo, alunoCodigo, bimestres, componenteCurricularId)));
+        }
+
+        [HttpPost("frequencias/salvar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> SalvarFrequencia([FromBody] IEnumerable<FrequenciaSalvarDto> frequenciaListaoDto, [FromServices] IInserirFrequenciaListaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(frequenciaListaoDto));
         }
     }
 }
