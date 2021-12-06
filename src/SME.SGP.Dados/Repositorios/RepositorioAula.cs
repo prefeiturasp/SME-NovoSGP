@@ -613,6 +613,45 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplinaDiarioBordo(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehProfessor = false)
+        {
+            var query = new StringBuilder("select distinct a.*, t.* ");
+            query.AppendLine("from aula a ");
+            query.AppendLine("inner join turma t on ");
+            query.AppendLine("a.turma_id = t.turma_id ");
+            query.AppendLine("inner join periodo_escolar pe on pe.id = @periodoEscolarId ");
+            query.AppendLine("                and pe.periodo_inicio <= a.data_aula ");
+            query.AppendLine("                and pe.periodo_fim >= a.data_aula ");
+            query.AppendLine("inner join diario_bordo db on db.aula_id = a.id ");
+            query.AppendLine("where");
+            query.AppendLine("not a.excluido");
+            query.AppendLine("and a.turma_id = @turmaCodigo ");
+            query.AppendLine("and db.componente_curricular_id = @disciplinaId ");
+            query.AppendLine("and t.ano_letivo = @anoLetivo");
+
+            if (!string.IsNullOrWhiteSpace(usuarioRF))
+                query.AppendLine("and a.professor_rf = @usuarioRF ");
+
+            if (ehProfessor)
+            {
+                var filtroAulaCJ = aulaCJ ? "" : "not";
+                query.AppendLine($"and {filtroAulaCJ} a.aula_cj ");
+            }
+
+            return database.Conexao.Query<Aula, Turma, Aula>(query.ToString(), (aula, turma) =>
+            {
+                aula.Turma = turma;
+                return aula;
+            }, new
+            {
+                periodoEscolarId,
+                usuarioRF,
+                anoLetivo,
+                turmaCodigo,
+                disciplinaId = int.Parse(disciplinaId.ToString())
+            });
+        }
+
         public Aula ObterPorWorkflowId(long workflowId)
         {
             var query = @"select a.id,
