@@ -12,6 +12,8 @@ namespace SME.SGP.Aplicacao
     public class ObterAulaPorIdUseCase : AbstractUseCase, IObterAulaPorIdUseCase
     {
         private readonly IConsultasDisciplina consultasDisciplina;
+        
+        private static Usuario usuarioLogado = new();
 
         public ObterAulaPorIdUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina) : base(mediator)
         {
@@ -21,18 +23,24 @@ namespace SME.SGP.Aplicacao
         public async Task<AulaConsultaDto> Executar(long aulaId)
         {
             var aula = await mediator.Send(new ObterAulaPorIdQuery(aulaId));
+            
             if (aula == null || aula.Excluido)
                 throw new NegocioException($"Aula de id {aulaId} não encontrada");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
+            
             var aberto = await AulaDentroDoPeriodo(aula.TurmaId, aula.DataAula);
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            
+            usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var usuarioAcessoAoComponente = await UsuarioComAcessoAoComponente(usuarioLogado, aula, usuarioLogado.EhProfessorCj());
+            
             var aulaEmManutencao = await mediator.Send(new ObterAulaEmManutencaoQuery(aula.Id));
 
             var mesmoAnoLetivo = DateTime.Today.Year == aula.DataAula.Year;
+            
             var bimestreAula = await mediator.Send(new ObterBimestreAtualQuery(aula.DataAula, turma));
+            
             bool temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));
 
             return MapearParaDto(aula, aberto, usuarioAcessoAoComponente, aulaEmManutencao, temPeriodoAberto);
@@ -55,22 +63,31 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.EhGestorEscolar())
                 return true;
 
-            var componentesUsuario = ehCJ ?
-                await mediator.Send(new ObterComponentesCJQuery(null, aula.TurmaId, string.Empty, long.Parse(aula.DisciplinaId), usuarioLogado.CodigoRf, false)) :
-                await mediator.Send(new ObterComponentesCurricularesPorTurmaLoginEPerfilQuery(aula.TurmaId, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual));
+            var componentesUsuario = ehCJ 
+                                    ? await mediator.Send(new ObterComponentesCJQuery(null, 
+                                                                                      aula.TurmaId, 
+                                                                                      string.Empty, 
+                                                                                      long.Parse(aula.DisciplinaId), 
+                                                                                      usuarioLogado.CodigoRf, false)) 
+                                    : await mediator.Send(new ObterComponentesCurricularesPorTurmaLoginEPerfilQuery(aula.TurmaId, 
+                                                                                                                    usuarioLogado.CodigoRf, 
+                                                                                                                    usuarioLogado.PerfilAtual));
 
             if (aula.CriadoRF == usuarioLogado.CodigoRf)
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
+
                 if (turma == null)
                     throw new NegocioException($"Turma de codigo [{aula.TurmaId}] não localizada!");
 
                 var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(aula.TurmaId, turma.TipoTurma == TipoTurma.Programa);
+                
                 if (!disciplinas.Any(d => d.CodigoComponenteCurricular == long.Parse(aula.DisciplinaId)))
                     return true;
             }
 
             var disciplina = componentesUsuario?.FirstOrDefault(x => x.Codigo.ToString().Equals(aula.DisciplinaId));
+            
             return disciplina != null;
         }
 
@@ -99,6 +116,8 @@ namespace SME.SGP.Aplicacao
                 Migrado = aula.Migrado,
                 SomenteLeitura = !usuarioAcessoAoComponente || !temPeriodoAberto,
                 EmManutencao = aulaEmManutencao
+                //, PodeEditar =  (usuarioLogado.EhProfessorCj() && aula.AulaCJ) 
+                //           || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar()))
             };
 
             return dto;
