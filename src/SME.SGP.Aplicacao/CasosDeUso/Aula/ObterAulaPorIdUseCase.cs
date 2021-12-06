@@ -13,8 +13,6 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasDisciplina consultasDisciplina;
         
-        private static Usuario usuarioLogado = new();
-
         public ObterAulaPorIdUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina) : base(mediator)
         {
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
@@ -31,7 +29,7 @@ namespace SME.SGP.Aplicacao
             
             var aberto = await AulaDentroDoPeriodo(aula.TurmaId, aula.DataAula);
             
-            usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var usuarioAcessoAoComponente = await UsuarioComAcessoAoComponente(usuarioLogado, aula, usuarioLogado.EhProfessorCj());
             
@@ -43,7 +41,7 @@ namespace SME.SGP.Aplicacao
             
             bool temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));
 
-            return MapearParaDto(aula, aberto, usuarioAcessoAoComponente, aulaEmManutencao, temPeriodoAberto);
+            return await MapearParaDto(aula, aberto, usuarioAcessoAoComponente, aulaEmManutencao, temPeriodoAberto);
         }
 
         private async Task<bool> AulaDentroDoPeriodo(string turmaCodigo, DateTime dataAula)
@@ -91,8 +89,10 @@ namespace SME.SGP.Aplicacao
             return disciplina != null;
         }
 
-        private static AulaConsultaDto MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente, bool aulaEmManutencao, bool temPeriodoAberto)
+        private async Task<AulaConsultaDto> MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente, bool aulaEmManutencao, bool temPeriodoAberto)
         {
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
             AulaConsultaDto dto = new AulaConsultaDto()
             {
                 Id = aula.Id,
@@ -115,9 +115,9 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = aula.CriadoRF,
                 Migrado = aula.Migrado,
                 SomenteLeitura = !usuarioAcessoAoComponente || !temPeriodoAberto,
-                EmManutencao = aulaEmManutencao
-                //, PodeEditar =  (usuarioLogado.EhProfessorCj() && aula.AulaCJ) 
-                //           || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar()))
+                EmManutencao = aulaEmManutencao,
+                PodeEditar = (usuarioLogado.EhProfessorCj() && aula.AulaCJ)
+                          || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar()))
             };
 
             return dto;
