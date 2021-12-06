@@ -40,8 +40,8 @@ namespace SME.SGP.Aplicacao
 
             var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação no Diário de bordo do dia {dataAtual} da turma <strong>{diarioBordo.Aula.Turma.Nome}</strong> da <strong>{diarioBordo.Aula.Turma.Ue.TipoEscola}-{diarioBordo.Aula.Turma.Ue.Nome}</strong> ({diarioBordo.Aula.Turma.Ue.Dre.Abreviacao}).");
 
-            mensagem.AppendLine($"<br/><br/>Observação: Acesse o Diário de bordo de uma das aulas para consultar a observação.");
-            
+            mensagem.AppendLine($"<br/><br/>Observação: {dadosMensagem.Observacao}.");
+
             var titulo = $"Nova observação no Diário de bordo da turma {diarioBordo.Aula.Turma.Nome} ({dataAtual})";
 
             if (dadosMensagem.UsuariosNotificacao != null && dadosMensagem.UsuariosNotificacao.Any())
