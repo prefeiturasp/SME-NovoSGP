@@ -28,16 +28,22 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<long>> ObterUsuariosQueForamNotificadosNoUltimoEnvioAsync(long observacaoId)
         {
-            var turma = await mediator.Send(new ObterTurmaDiarioBordoAulaPorObservacaoIdQuery(observacaoId));
-            if (turma is null)
-                throw new NegocioException("A turma informada não foi encontrada.");
+            var diarioBordoObs = await mediator.Send(new ObterDiarioBordoObservacaoPorObservacaoIdQuery(observacaoId));
 
-            var professoresTurmaObrigatoriosReceberNotificacao = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
-            if (!professoresTurmaObrigatoriosReceberNotificacao?.Any() ?? true)
-                throw new NegocioException("Nenhum professor para a turma informada foi encontrada.");
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var usuariosNotificados = await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(turma, professoresTurmaObrigatoriosReceberNotificacao, observacaoId));
-            return usuariosNotificados?.Select(x => x.UsuarioId).ToList();
+            if (!diarioBordoObs.UsuarioCodigoRfDiarioBordo.Equals(usuarioLogado.CodigoRf))
+            {
+                var retorno = await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(ObterProfessorTitular(diarioBordoObs), observacaoId));
+                return retorno.Select(s => s.UsuarioId);
+            }
+            else
+                return default;
+        }
+
+        private List<ProfessorTitularDisciplinaEol> ObterProfessorTitular(DiarioBordoObservacaoDto diarioBordo)
+        {
+            return new List<ProfessorTitularDisciplinaEol> { new ProfessorTitularDisciplinaEol { ProfessorRf = diarioBordo.UsuarioCodigoRfDiarioBordo, ProfessorNome = diarioBordo.UsuarioNomeDiarioBordo } };
         }
     }
 }

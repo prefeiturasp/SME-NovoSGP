@@ -14,13 +14,13 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioDiarioBordo(ISgpContext conexao) : base(conexao) { }
 
-        public async Task<DiarioBordo> ObterPorAulaId(long aulaId)
+        public async Task<DiarioBordo> ObterPorAulaId(long aulaId,long componenteCurricularId)
         {
             var sql = @"select id, aula_id, devolutiva_id, planejamento, reflexoes_replanejamento,
                     criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
-                    from diario_bordo where aula_id = @aulaId";
+                    from diario_bordo where aula_id = @aulaId and componente_curricular_id  = @componenteCurricularId; ";
 
-            var parametros = new { aulaId = aulaId };
+            var parametros = new { aulaId ,componenteCurricularId};
 
             return await database.QueryFirstOrDefaultAsync<DiarioBordo>(sql, parametros);
         }
@@ -232,7 +232,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join turma t on a.turma_id = t.turma_id
                          where not db.excluido
                            and t.id = @turmaId
-                           and a.disciplina_id = @componenteCurricularCodigo 
+                           and db.componente_curricular_id = @componenteCurricularCodigo 
                            and not a.excluido ");
 
 
@@ -248,7 +248,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = $"select count(0) {condicao}";
 
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
-                new { turmaId, componenteCurricularCodigo = componenteCurricularCodigo.ToString(), periodoInicio, periodoFim });
+                new { turmaId, componenteCurricularCodigo, periodoInicio, periodoFim });
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
@@ -260,7 +260,7 @@ namespace SME.SGP.Dados.Repositorios
                                                     new
                                                     {
                                                         turmaId,
-                                                        componenteCurricularCodigo = componenteCurricularCodigo.ToString(),
+                                                        componenteCurricularCodigo,
                                                         periodoInicio,
                                                         periodoFim,
                                                         qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,

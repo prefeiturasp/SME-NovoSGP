@@ -1,7 +1,4 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -10,12 +7,16 @@ namespace SME.SGP.Infra
         public long AulaId { get; set; }
         public string Planejamento { get; set; }
         public string ReflexoesReplanejamento { get; set; }
+        public long ComponenteCurricularId { get; set; }
     }
 
     public class InserirDiarioBordoDtoValidator: AbstractValidator<InserirDiarioBordoDto>
     {
         public InserirDiarioBordoDtoValidator()
         {
+            RuleFor(a => a.ComponenteCurricularId)
+                   .NotEmpty()
+                   .WithMessage("O Id do Componente Curricular deve ser informado!");
             RuleFor(a => a.AulaId)
                    .NotEmpty()
                    .WithMessage("A aula deve ser informada!");
