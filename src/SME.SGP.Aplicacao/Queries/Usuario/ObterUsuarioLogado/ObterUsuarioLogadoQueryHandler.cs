@@ -55,6 +55,9 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Usuário não encontrado.");
             }
 
+            if (!string.IsNullOrEmpty(contextoAplicacao.NomeUsuario))
+                usuario.Nome = contextoAplicacao.NomeUsuario;
+
             var chaveRedis = $"perfis-usuario-{login}";
             var perfisUsuarioString = repositorioCache.Obter(chaveRedis);
 
