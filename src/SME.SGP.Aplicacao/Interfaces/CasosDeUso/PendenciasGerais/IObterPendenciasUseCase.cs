@@ -1,13 +1,10 @@
 ﻿using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public interface IObterPendenciasUseCase 
     {
-        Task<PaginacaoResultadoDto<PendenciaDto>> Executar();
+        Task<PaginacaoResultadoDto<PendenciaDto>> Executar(string turmaId, int? tipoPendencia, string tituloPendencia);
     }
 }

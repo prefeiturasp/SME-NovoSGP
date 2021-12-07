@@ -13,11 +13,16 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<PaginacaoResultadoDto<PendenciaDto>> Executar()
+        public async Task<PaginacaoResultadoDto<PendenciaDto>> Executar(FiltroPendenciasUsuarioDto filtroPendencias)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
 
-            return await mediator.Send(new ObterPendenciasPorUsuarioQuery(usuarioId));
+            return await mediator.Send(
+                                    new ObterPendenciasPorUsuarioQuery(usuarioId, 
+                                                                       filtroPendencias.TurmaId, 
+                                                                       filtroPendencias.TipoPendencia, 
+                                                                       filtroPendencias.TituloPendencia)
+                                      );
         }
     }
 }

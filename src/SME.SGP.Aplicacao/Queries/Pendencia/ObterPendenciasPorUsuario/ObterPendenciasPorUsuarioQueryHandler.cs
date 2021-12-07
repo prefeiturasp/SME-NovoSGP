@@ -23,7 +23,12 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<PaginacaoResultadoDto<PendenciaDto>> Handle(ObterPendenciasPorUsuarioQuery request, CancellationToken cancellationToken)
-            => await MapearParaDtoPaginado(await repositorioPendencia.ListarPendenciasUsuario(request.UsuarioId, Paginacao));
+            => await MapearParaDtoPaginado(
+                        await repositorioPendencia.ListarPendenciasUsuario(request.UsuarioId,
+                                                                           request.TurmaId,
+                                                                           request.TipoPendencia,
+                                                                           request.TituloPendencia,
+                                                                           Paginacao));
 
         private async Task<PaginacaoResultadoDto<PendenciaDto>> MapearParaDtoPaginado(PaginacaoResultadoDto<Pendencia> pendenciasPaginadas)
         {
