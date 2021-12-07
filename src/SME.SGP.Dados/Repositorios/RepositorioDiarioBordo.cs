@@ -248,7 +248,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = $"select count(0) {condicao}";
 
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
-                new { turmaId, componenteCurricularCodigo = componenteCurricularCodigo.ToString(), periodoInicio, periodoFim });
+                new { turmaId, componenteCurricularCodigo, periodoInicio, periodoFim });
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
@@ -260,7 +260,7 @@ namespace SME.SGP.Dados.Repositorios
                                                     new
                                                     {
                                                         turmaId,
-                                                        componenteCurricularCodigo = componenteCurricularCodigo.ToString(),
+                                                        componenteCurricularCodigo,
                                                         periodoInicio,
                                                         periodoFim,
                                                         qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
