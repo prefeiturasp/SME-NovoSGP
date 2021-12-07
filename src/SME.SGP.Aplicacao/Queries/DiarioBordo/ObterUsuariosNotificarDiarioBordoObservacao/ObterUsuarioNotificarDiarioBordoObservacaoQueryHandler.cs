@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 var usuarios = await mediator.Send(new ObterUsuariosPorCodigosRfQuery(professoresRf));
                 if (usuarios != null && usuarios.Any())
                 {
-                    return professores
+                    var retorno = professores
                         .Select(x => new UsuarioNotificarDiarioBordoObservacaoDto
                         {
                             Nome = $"{x.ProfessorNome} ({x.ProfessorRf})",
@@ -36,6 +36,7 @@ namespace SME.SGP.Aplicacao
                             UsuarioId = usuarios.FirstOrDefault(y => y.CodigoRf == x.ProfessorRf).Id
                         })
                         .ToList();
+                    return retorno;
                 }
             }
 
