@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     [Route("api/v1/calendarios")]
     public class FrequenciaController : ControllerBase
     {
