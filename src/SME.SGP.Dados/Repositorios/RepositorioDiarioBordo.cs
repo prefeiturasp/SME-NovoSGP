@@ -232,7 +232,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join turma t on a.turma_id = t.turma_id
                          where not db.excluido
                            and t.id = @turmaId
-                           and a.disciplina_id = @componenteCurricularCodigo 
+                           and db.componente_curricular_id = @componenteCurricularCodigo 
                            and not a.excluido ");
 
 
