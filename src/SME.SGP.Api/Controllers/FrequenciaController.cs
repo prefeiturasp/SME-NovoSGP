@@ -186,6 +186,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(new FrequenciaPorBimestresAlunoTurmaComponenteCurricularDto(turmaCodigo, alunoCodigo, bimestres, componenteCurricularId)));
         }
 
+        [HttpPost("frequencias/salvar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> SalvarFrequencia([FromBody] IEnumerable<FrequenciaSalvarDto> frequenciaListaoDto, [FromServices] IInserirFrequenciaListaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(frequenciaListaoDto));
+        }
+
         [HttpGet("frequencias/por-periodo")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
