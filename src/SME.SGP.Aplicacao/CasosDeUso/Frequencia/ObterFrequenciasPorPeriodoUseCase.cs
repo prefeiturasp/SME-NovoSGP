@@ -59,8 +59,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Parâmetro de percentual de frequência em alerta não encontrado contate a SME.");
                 var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
 
-                var componenteCurricularAula = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] {
-                /*param.ComponenteCurricularId.HasValue ? param.ComponenteCurricularId.Value :*/ Convert.ToInt64(aula.DisciplinaId) }));
+                var componenteCurricularAula = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] {Convert.ToInt64(aula.DisciplinaId) }));
 
                 if (componenteCurricularAula == null || componenteCurricularAula.ToList().Count <= 0)
                     throw new NegocioException("Componente curricular da aula não encontrado");
@@ -221,46 +220,39 @@ namespace SME.SGP.Aplicacao
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
-            try
+            foreach (var aluno in alunosDaTurma)
             {
-                foreach (var aluno in alunosDaTurma)
+                FrequeciaPorDataPeriodoDto frequenciaAluno = new FrequeciaPorDataPeriodoDto();
+
+                frequenciaAluno.CodigoAluno = aluno.CodigoAluno;
+                frequenciaAluno.NomeAluno = aluno.NomeAluno;
+                frequenciaAluno.NumeroAlunoChamada = aluno.NumeroAlunoChamada;
+
+                foreach (FrequenciaDto frequenciaDia in frequeciasDia)
                 {
-                    FrequeciaPorDataPeriodoDto frequenciaAluno = new FrequeciaPorDataPeriodoDto();
+                    var aula = await mediator.Send(new ObterAulaPorIdQuery(frequenciaDia.AulaId));
+                    if (aula == null)
+                        throw new NegocioException("Aula não encontrada.");
 
-                    frequenciaAluno.CodigoAluno = aluno.CodigoAluno;
-                    frequenciaAluno.NomeAluno = aluno.NomeAluno;
-                    frequenciaAluno.NumeroAlunoChamada = aluno.NumeroAlunoChamada;
+                    FrequenciaAulaPorDataPeriodoDto frequenciaAlunoAula = new FrequenciaAulaPorDataPeriodoDto();
 
-                    foreach (FrequenciaDto frequenciaDia in frequeciasDia)
+                    frequenciaAlunoAula.DataAula = aula.DataAula;
+
+                    bool verificaSeAlunoTeveFrequencia = frequenciaDia.ListaFrequencia.Any(a => a.CodigoAluno == aluno.CodigoAluno);
+
+                    if (verificaSeAlunoTeveFrequencia)
                     {
-                        var aula = await mediator.Send(new ObterAulaPorIdQuery(frequenciaDia.AulaId));
-                        if (aula == null)
-                            throw new NegocioException("Aula não encontrada.");
+                        var tipoFrequencia = ObterTipoFrequencia(frequenciaDia.ListaFrequencia.Where(a => a.CodigoAluno == aluno.CodigoAluno).FirstOrDefault().Aulas);
 
-                        FrequenciaAulaPorDataPeriodoDto frequenciaAlunoAula = new FrequenciaAulaPorDataPeriodoDto();
-
-                        frequenciaAlunoAula.DataAula = aula.DataAula;
-
-                        bool verificaSeAlunoTeveFrequencia = frequenciaDia.ListaFrequencia.Any(a => a.CodigoAluno == aluno.CodigoAluno);
-
-                        if (verificaSeAlunoTeveFrequencia)
-                        {
-                            var tipoFrequencia = ObterTipoFrequencia(frequenciaDia.ListaFrequencia.Where(a => a.CodigoAluno == aluno.CodigoAluno).FirstOrDefault().Aulas);
-
-                            if (tipoFrequencia != null)
-                                frequenciaAlunoAula.TipoFrequencia = tipoFrequencia;
-                        }
-
-
-                        frequenciaAluno.Aulas.Add(frequenciaAlunoAula);
+                        if (tipoFrequencia != null)
+                            frequenciaAlunoAula.TipoFrequencia = tipoFrequencia;
                     }
 
-                    registroFrequenciaPorDataPeriodo.ListaFrequencia.Add(frequenciaAluno);
-                }
-            }
-            catch (Exception ex)
-            {
 
+                    frequenciaAluno.Aulas.Add(frequenciaAlunoAula);
+                }
+
+                registroFrequenciaPorDataPeriodo.ListaFrequencia.Add(frequenciaAluno);
             }
 
             registroFrequenciaPorDataPeriodo = await ObterRegistroFrequenciaPorData(disciplinaId, codigoTurma, dataInicio, dataFim, registroFrequenciaPorDataPeriodo.ListaFrequencia);
@@ -291,7 +283,7 @@ namespace SME.SGP.Aplicacao
         private async Task<RegistroFrequenciaPorDataPeriodoDto> ObterRegistroFrequenciaPorData(string disciplinaId, string turmaId, DateTime dataInicio, DateTime dataFim, IList<FrequeciaPorDataPeriodoDto> listaFrequencia)
         {
             var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorDataEAulaIdQuery(disciplinaId, turmaId, dataInicio, dataFim));
-            
+
             if (registroFrequencia == null)
             {
                 return null;
@@ -317,7 +309,7 @@ namespace SME.SGP.Aplicacao
                     ListaFrequencia = listaFrequencia
                 };
 
-                
+
                 return RegistroFrequenciaPorDataPeriodoDto;
             }
         }
