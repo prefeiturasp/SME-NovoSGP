@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $"v1/componentes-curriculares/turmas/{request.CodigoTurma}/funcionarios/{request.Login}/perfis/{request.Perfil}";
+            var httpClient = httpClientFactory.CreateClient("servicoEOL"); 
+            var url = $"v1/componentes-curriculares/turmas/{request.CodigoTurma}/funcionarios/{request.Login}/perfis/{request.Perfil}/agrupaComponenteCurricular/{request.RealizarAgrupamentoComponente}";
             try
             {
                 var resposta = await httpClient.GetAsync(url);
