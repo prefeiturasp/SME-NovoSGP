@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
             if (possuiAbrangenciaUE)
             {
-                var ueCodigo = await mediator.Send(new ObterUePorLoginPerfilProfessorOuAbrangenciaUeQuery(usuario.Login, perfil));
+                string ueCodigo = await mediator.Send(new ObterUePorLoginPerfilProfessorOuAbrangenciaUeQuery(usuario.Login, perfil));
                 int anoLetivo = DateTime.Now.Year;
                 return await mediator.Send(new ObterTurmasPorAnoAtualECodigoUeQuery(ueCodigo, anoLetivo));
             }
