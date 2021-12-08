@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterPendenciasUseCase 
     {
-        Task<PaginacaoResultadoDto<PendenciaDto>> Executar(string turmaId, int? tipoPendencia, string tituloPendencia);
+        Task<PaginacaoResultadoDto<PendenciaDto>> Executar(FiltroPendenciasUsuarioDto filtroPendenciasDto);
     }
 }

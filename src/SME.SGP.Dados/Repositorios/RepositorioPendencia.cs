@@ -41,25 +41,28 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute(query, new { fechamentoId, tipoPendencia });
         }
 
-        public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, string turmaId, int? tipoPendencia, string tituloPendencia, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, string turmaCodigo, int? tipoPendencia, string tituloPendencia, Paginacao paginacao)
         {
             var query = @"from pendencia p
                           left join pendencia_perfil pp on pp.pendencia_id = p.id
                           left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
-                          left join pendencia_usuario pu on pu.pendencia_id = p.id
-                          inner join turma t on t.ue_id = p.ue_id 
-                         where not p.excluido 
-                           and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
-                           and p.situacao = @situacao";
+                          left join pendencia_usuario pu on pu.pendencia_id = p.id ";
 
-            if (turmaId != null)
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += @"left join turma t on t.ue_id = p.ue_id ";
+
+            query += @"where not p.excluido 
+                           and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
+                           and p.situacao = @situacao";         
+
+            if (!string.IsNullOrEmpty(turmaCodigo))
                 query = $"{query} and t.turma_id = @turmaId";
 
-            if (tipoPendencia != null)
+            if (tipoPendencia > 0)
                 query = $"{query} and p.tipo = @tipoPendencia";
 
             if (!string.IsNullOrEmpty(tituloPendencia))
-                query = $"{query} and p.titulo like @tituloPendencia";
+                query = $"{query} and UPPER(p.titulo) like UPPER(@tituloPendencia)";
 
             var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
@@ -67,6 +70,7 @@ namespace SME.SGP.Dados.Repositorios
                 paginacao = new Paginacao(1, 10);
 
             var situacao = SituacaoPendencia.Pendente;
+
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
             var queryTotalRegistros = $"select count(0) {query}";
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao });
@@ -125,6 +129,16 @@ namespace SME.SGP.Dados.Repositorios
                             where ppu.id is null and not p.excluido and p.situacao = @situacao and p.ue_id is not null";
  
             return await database.Conexao.QueryAsync<PendenciaPendenteDto>(query, new { situacao = SituacaoPendencia.Pendente });
+        }
+
+        public async Task<int> ObterModalidadePorPendenciaETurmaId(long pendenciaId, long turmaId)
+        {
+            var query = @"select t.modalidade_codigo from pendencia p
+                            inner join ue ue on ue.id = p.ue_id 
+                            inner join turma t on t.ue_id = ue.id 
+                            where p.id = @pendenciaId and t.id = @turmaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { pendenciaId, turmaId });
         }
     }
 }

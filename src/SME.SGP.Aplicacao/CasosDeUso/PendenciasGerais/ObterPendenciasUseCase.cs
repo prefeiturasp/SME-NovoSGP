@@ -17,12 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
 
-            return await mediator.Send(
-                                    new ObterPendenciasPorUsuarioQuery(usuarioId, 
-                                                                       filtroPendencias.TurmaId, 
-                                                                       filtroPendencias.TipoPendencia, 
-                                                                       filtroPendencias.TituloPendencia)
-                                      );
+            return await mediator.Send(new ObterPendenciasPorUsuarioQuery(usuarioId, filtroPendencias.TurmaCodigo, filtroPendencias.TipoPendencia, filtroPendencias.TituloPendencia));
         }
     }
 }

@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<PendenciaDto>> Handle(ObterPendenciasPorUsuarioQuery request, CancellationToken cancellationToken)
             => await MapearParaDtoPaginado(
                         await repositorioPendencia.ListarPendenciasUsuario(request.UsuarioId,
-                                                                           request.TurmaId,
+                                                                           request.TurmaCodigo,
                                                                            request.TipoPendencia,
                                                                            request.TituloPendencia,
                                                                            Paginacao));
@@ -51,7 +51,8 @@ namespace SME.SGP.Aplicacao
                     Tipo = pendencia.Tipo.GroupName(),
                     Titulo = !string.IsNullOrEmpty(pendencia.Titulo) ? pendencia.Titulo : pendencia.Tipo.Name(),
                     Detalhe = await ObterDescricaoPendencia(pendencia),
-                    Turma = await ObterNomeTurma(pendencia)
+                    Turma = await ObterNomeTurma(pendencia),
+                    Bimestre = await ObterBimestreTurma(pendencia)
                 });
             }
 
@@ -69,6 +70,22 @@ namespace SME.SGP.Aplicacao
                         "";
         }
 
+        private async Task<string> ObterBimestreTurma(Pendencia pendencia)
+        {
+            Turma turma = pendencia.EhPendenciaAula() ? 
+                         await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendencia.Id)) :
+                    pendencia.EhPendenciaFechamento() ?
+                         await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendencia.Id)) :
+                    pendencia.EhPendenciaProfessor() ?
+                        await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendencia.Id)) :
+                        null;
+
+            if (turma == null)
+                return "";
+            else
+                return await ObterDescricaoBimestrePendencia(pendencia.Id, turma.Id, pendencia.CriadoEm);
+        }
+
         private async Task<string> ObterDescricaoTurmaPendenciaFechamento(long pendenciaId)
             => ObterNomeTurma(await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendenciaId)));
 
@@ -78,8 +95,17 @@ namespace SME.SGP.Aplicacao
         private async Task<string> ObterDescricaoTurmaPendenciaProfessor(long pendenciaId)
             => ObterNomeTurma(await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendenciaId)));
 
+        private async Task<string> ObterDescricaoBimestrePendencia(long pendenciaId, long turmaId, DateTime dataPendenciaCriada)
+        {
+            int bimestre = await mediator.Send(new ObterModalidadePorPendenciaQuery(pendenciaId, turmaId, dataPendenciaCriada));
+            return ObterNomeBimestre(bimestre);
+        }
+
         private string ObterNomeTurma(Turma turma)
             => turma != null ? $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}" : "";
+
+        private string ObterNomeBimestre(int bimestre)
+            => $"{bimestre}º Bimestre";
 
         private async Task<string> ObterDescricaoPendencia(Pendencia pendencia)
         {

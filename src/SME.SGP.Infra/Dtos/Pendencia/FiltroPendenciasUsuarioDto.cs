@@ -2,14 +2,14 @@
 {
     public class FiltroPendenciasUsuarioDto
     {
-        public FiltroPendenciasUsuarioDto(string turmaId, int? tipoPendencia, string tituloPendencia)
+        public FiltroPendenciasUsuarioDto(string turmaCodigo, int? tipoPendencia, string tituloPendencia)
         {
-            TurmaId = turmaId;
+            TurmaCodigo = turmaCodigo;
             TipoPendencia = tipoPendencia;
             TituloPendencia = tituloPendencia;
         }
 
-        public string TurmaId { get; set; }
+        public string TurmaCodigo { get; set; }
 
         public int? TipoPendencia { get; set; }
 

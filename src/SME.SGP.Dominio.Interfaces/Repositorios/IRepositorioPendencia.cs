@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
         
         void ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia);
         
-        Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, string turmaId, int? tipoPendencia, string tituloPendencia, Paginacao paginacao);
+        Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, string turmaCodigo, int? tipoPendencia, string tituloPendencia, Paginacao paginacao);
         
         Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId);
         
@@ -19,5 +19,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PendenciaPendenteDto>> ObterPendenciasPendentes();
         
         Task<IEnumerable<PendenciaPendenteDto>> ObterPendenciasSemPendenciaPerfilUsuario();
+
+        Task<int> ObterModalidadePorPendenciaETurmaId(long pendenciaId, long turmaId);
     }
 }
