@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Npgsql;
 using NpgsqlTypes;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -27,6 +26,7 @@ namespace SME.SGP.Dados.Repositorios
                                 cc.area_conhecimento_id as AreaConhecimentoId,
                                 cc.componente_curricular_pai_id as CdComponenteCurricularPai,
                                 coalesce(cc.descricao_sgp,cc.descricao) as Nome,
+                                descricao_infantil as NomeComponenteInfantil,
                                 cc.eh_base_nacional as EhBaseNacional,
                                 cc.eh_compartilhada as Compartilhada,
                                 cc.eh_regencia as Regencia,

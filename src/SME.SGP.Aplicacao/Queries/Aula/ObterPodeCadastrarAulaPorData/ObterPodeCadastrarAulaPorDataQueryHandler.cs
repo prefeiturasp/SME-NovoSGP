@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<PodeCadastrarAulaPorDataRetornoDto> Handle(ObterPodeCadastrarAulaPorDataQuery request, CancellationToken cancellationToken)
         {
-            var hoje = DateTime.Today;
+            var hoje = DateTime.Today.Date;
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.Turma.CodigoTurma));
 
             // Periodo Escolar
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
 
             if (request.DataAula.Year == hoje.Year)
             {
-                if (request.DataAula <= hoje)
+                if (request.DataAula.Date <= hoje)
                 {
                     // Consultar fechamento só se não for data no bimestre corrente
                     var periodoEscolarAtual = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, hoje);

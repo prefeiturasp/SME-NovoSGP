@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 .ReturnsAsync(1);
 
             // Act
-            var auditoriaDto = inserirDiarioBordoCommandHandler.Handle(new InserirDiarioBordoCommand(1, "teste de inclusão de diário de bordo... teste de inclusão de diário de bordo... teste de inclusão de diário de bordo... teste de inclusão de diário de bordo... teste de inclusão de diário de bordo.....", ""), new System.Threading.CancellationToken());
+            var auditoriaDto = inserirDiarioBordoCommandHandler.Handle(new InserirDiarioBordoCommand(1, "teste de inclusão de diário de bordo... teste de inclusão de diário de bordo... teste de inclusão de diário de bordo... teste de inclusão de diário de bordo... teste de inclusão de diário de bordo.....", "",1), new System.Threading.CancellationToken());
 
             // Assert
             repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<DiarioBordo>()), Times.Once);
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         [Fact]
         public async Task Deve_Obrigar_Planejamento()
         {
-            var command = new InserirDiarioBordoCommand(1, "", "");
+            var command = new InserirDiarioBordoCommand(1, "", "",1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Planejamento);
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         [Fact]
         public async Task Deve_Exigir_Planejamento_Com_200_Caracteres()
         {
-            var command = new InserirDiarioBordoCommand(1, "teste de limite de caracteres", "");
+            var command = new InserirDiarioBordoCommand(1, "teste de limite de caracteres", "",1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Planejamento);
