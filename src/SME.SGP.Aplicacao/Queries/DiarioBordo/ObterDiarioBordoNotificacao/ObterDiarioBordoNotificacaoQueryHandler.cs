@@ -23,21 +23,41 @@ namespace SME.SGP.Aplicacao
             if (turma is null)
                 throw new NegocioException("A turma informada não foi encontrada.");
 
-            var diarioBordo = await mediator.Send(new ObterDiarioDeBordoPorIdQuery(request.DiarioBordoId));
-            if (diarioBordo is null)
-                throw new NegocioException("O diário de bordo informado não foi encontrado.");
+            var professorRf = string.Empty;
+            var professorNome = string.Empty;
+
+            if (request.DiarioBordoId > 0)
+            {
+                var diarioBordo = await mediator.Send(new ObterDiarioDeBordoPorIdQuery(request.DiarioBordoId));
+                
+                if (diarioBordo is null)
+                    throw new NegocioException("O diário de bordo informado não foi encontrado.");
+
+                professorRf = diarioBordo.Auditoria.CriadoRF;
+                professorNome = diarioBordo.Auditoria.CriadoPor;
+            }
+            else if(request.ObservacaoId.HasValue)
+            {
+                var diarioBordoObs = await mediator.Send(new ObterDiarioBordoObservacaoPorObservacaoIdQuery(request.ObservacaoId.Value));
+
+                if (diarioBordoObs is null)
+                    throw new NegocioException("O diário de bordo observação informado não foi encontrado.");
+
+                professorRf = diarioBordoObs.UsuarioCodigoRfDiarioBordo;
+                professorNome = diarioBordoObs.UsuarioNomeDiarioBordo;
+            }            
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            if (!diarioBordo.Auditoria.CriadoRF.Equals(usuarioLogado.CodigoRf))
-                return await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(ObterProfessorTitular(diarioBordo), request.ObservacaoId));
+            if (!professorRf.Equals(usuarioLogado.CodigoRf))
+                return await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(ObterProfessorTitular(professorRf, professorNome)));
             else
                 return default;
         }
 
-        private List<ProfessorTitularDisciplinaEol> ObterProfessorTitular(DiarioBordoDetalhesDto diarioBordo)
+        private List<ProfessorTitularDisciplinaEol> ObterProfessorTitular(string codigoRf, string nome)
         {
-            return new List<ProfessorTitularDisciplinaEol> { new ProfessorTitularDisciplinaEol { ProfessorRf = diarioBordo.Auditoria.CriadoRF, ProfessorNome = diarioBordo.Auditoria.CriadoPor } };
+            return new List<ProfessorTitularDisciplinaEol> { new ProfessorTitularDisciplinaEol { ProfessorRf = codigoRf, ProfessorNome = nome } };
         }
     }
 }
