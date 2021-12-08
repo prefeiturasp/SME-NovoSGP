@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dominio
 {
@@ -14,10 +11,10 @@ namespace SME.SGP.Dominio
         [Display(Name = "Tarde")]
         Tarde = 3,
         [Display(Name = "Vespertino")]
-        Vespertino = 3,
+        Vespertino = 4,
         [Display(Name = "Noite")]
-        Noite = 3,
+        Noite = 5,
         [Display(Name = "Integral")]
-        Integral = 3,
+        Integral = 6,
     }
 }

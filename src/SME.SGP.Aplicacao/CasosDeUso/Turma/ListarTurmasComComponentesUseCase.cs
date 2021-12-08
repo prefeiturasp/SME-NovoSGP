@@ -17,22 +17,29 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public async Task<PaginacaoResultadoDto<ListaTurmasComComponenteDto>> Executar(FiltroTurmaDto filtroTurmaDto)
+        public async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> Executar(FiltroTurmaDto filtroTurmaDto)
         {
-            var resultado = new PaginacaoResultadoDto<ListaTurmasComComponenteDto>();
+            var resultado = new PaginacaoResultadoDto<TurmaComComponenteDto>();
             int qtdeRegistros = Paginacao.QuantidadeRegistros;
             int qtdeRegistrosIgnorados = Paginacao.QuantidadeRegistrosIgnorados;
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var turmasPaginadas = await mediator.Send(new ListagemTurmasComComponenteQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.DreCodigo,
-                                                                                           filtroTurmaDto.TurmaCodigo, filtroTurmaDto.AnoLetivo,
-                                                                                           qtdeRegistros, qtdeRegistrosIgnorados, filtroTurmaDto.Bimestre, filtroTurmaDto.Modalidade.Value, filtroTurmaDto.Semestre, usuario.EhProfessor(), usuario.CodigoRf));
-
+            var turmasPaginadas = await mediator.Send(new ObterTurmasComComponentesQuery(filtroTurmaDto.UeCodigo,
+                                                                                         filtroTurmaDto.DreCodigo,
+                                                                                         filtroTurmaDto.TurmaCodigo,
+                                                                                         filtroTurmaDto.AnoLetivo,
+                                                                                         qtdeRegistros,
+                                                                                         qtdeRegistrosIgnorados,
+                                                                                         filtroTurmaDto.Bimestre,
+                                                                                         filtroTurmaDto.Modalidade.Value,
+                                                                                         filtroTurmaDto.Semestre,
+                                                                                         usuario.EhProfessor(),
+                                                                                         usuario.CodigoRf));
 
             if (turmasPaginadas == null || !turmasPaginadas.Items.Any())
                 return default;
-
+            
             var componentesCodigos = turmasPaginadas.Items.Select(c => c.ComponenteCurricularCodigo).Distinct().ToArray();
 
             var componentesRetorno = await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(componentesCodigos));
@@ -40,13 +47,12 @@ namespace SME.SGP.Aplicacao
             return MapearParaDtoComPaginacao(turmasPaginadas, componentesRetorno);
         }
 
-        private PaginacaoResultadoDto<ListaTurmasComComponenteDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
+        private PaginacaoResultadoDto<TurmaComComponenteDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
         {
             if (turmasPaginadas == null)
-            {
                 turmasPaginadas = new PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>();
-            }
-            return new PaginacaoResultadoDto<ListaTurmasComComponenteDto>
+
+            return new PaginacaoResultadoDto<TurmaComComponenteDto>
             {
                 Items = MapearEventosParaDto(turmasPaginadas.Items, listaComponentes),
                 TotalPaginas = turmasPaginadas.TotalPaginas,
@@ -54,32 +60,25 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private IEnumerable<ListaTurmasComComponenteDto> MapearEventosParaDto(IEnumerable<RetornoConsultaListagemTurmaComponenteDto> items, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
+        private IEnumerable<TurmaComComponenteDto> MapearEventosParaDto(IEnumerable<RetornoConsultaListagemTurmaComponenteDto> items, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
         {
-            return items?.Select(c => MapearParaDto(c, listaComponentes));
+            return items?
+                .OrderBy(a => a.NomeTurma)
+                .ThenBy(a => a.NomeComponenteCurricular)
+                .Select(c => MapearParaDto(c, listaComponentes));
         }
 
-        private ListaTurmasComComponenteDto MapearParaDto(RetornoConsultaListagemTurmaComponenteDto turmas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
+        private TurmaComComponenteDto MapearParaDto(RetornoConsultaListagemTurmaComponenteDto turmas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
         {
-            var nomeComponente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo).Descricao;
-            return turmas == null ? null : new ListaTurmasComComponenteDto
+            var nomeComponente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo)?.Descricao ?? turmas.NomeComponenteCurricular;
+            return turmas == null ? null : new TurmaComComponenteDto
             {
                 Id = turmas.Id,
                 NomeTurma = turmas.NomeTurmaFormatado(nomeComponente),
                 TurmaCodigo = turmas.TurmaCodigo,
                 ComponenteCurricularCodigo = turmas.ComponenteCurricularCodigo,
-                Turno = ObterTipoTurnoTurma(turmas.Turno)
+                Turno = turmas.Turno.ObterNome()
             };
-        }
-
-        private string ObterTipoTurnoTurma(int tipoTurno)
-        {
-            var nomeTipoTurno = Enum.GetValues(typeof(TipoTurnoEOL))
-                                .Cast<TipoTurnoEOL>()
-                                .Where(d => ((int)d) == tipoTurno)
-                                .Select(d => new { Name = d.Name() })
-                                .FirstOrDefault();
-            return nomeTipoTurno.Name;
         }
     }
 }
