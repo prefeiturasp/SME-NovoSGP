@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
             if (!diarioBordoObs.UsuarioCodigoRfDiarioBordo.Equals(usuarioLogado.CodigoRf))
             {
-                var retorno = await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(ObterProfessorTitular(diarioBordoObs), observacaoId));
+                var retorno = await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(ObterProfessorTitular(diarioBordoObs)));
                 return retorno.Select(s => s.UsuarioId);
             }
             else
