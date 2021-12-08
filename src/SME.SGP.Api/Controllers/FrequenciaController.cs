@@ -195,9 +195,9 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("frequencias/por-periodo")]
+        [ProducesResponseType(typeof(RegistroFrequenciaPorDataPeriodoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         public async Task<IActionResult> ObterFrequenciasPorPeriodo([FromQuery] FiltroFrequenciaPorPeriodoDto filtro, [FromServices] IObterFrequenciasPorPeriodoUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
