@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterUePorLoginPerfilProfessorOuAbrangenciaUeQuery : IRequest<AbrangenciaUeRetorno>
+    public class ObterUePorLoginPerfilProfessorOuAbrangenciaUeQuery : IRequest<string>
     {
         public string Login { get; set; }
         public Guid Perfil { get; set; }

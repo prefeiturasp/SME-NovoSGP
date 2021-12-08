@@ -42,7 +42,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0);
         Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas);
         Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil);
-        Task<AbrangenciaUeRetorno> ObterUe(string login, Guid perfil);
+        Task<string> ObterUe(string login, Guid perfil);
 
         Task<bool> UsuarioPossuiAbrangenciaAdm(long usuarioId);
 

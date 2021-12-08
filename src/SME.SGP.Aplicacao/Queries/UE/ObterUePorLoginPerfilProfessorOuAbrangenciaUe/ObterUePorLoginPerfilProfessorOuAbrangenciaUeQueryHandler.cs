@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterUePorLoginPerfilProfessorOuAbrangenciaUeQueryHandler : IRequestHandler<ObterUePorLoginPerfilProfessorOuAbrangenciaUeQuery, AbrangenciaUeRetorno>
+    public class ObterUePorLoginPerfilProfessorOuAbrangenciaUeQueryHandler : IRequestHandler<ObterUePorLoginPerfilProfessorOuAbrangenciaUeQuery, string>
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         public ObterUePorLoginPerfilProfessorOuAbrangenciaUeQueryHandler(IRepositorioAbrangencia repositorioAbrangencia)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
         }
-        public async Task<AbrangenciaUeRetorno> Handle(ObterUePorLoginPerfilProfessorOuAbrangenciaUeQuery request, CancellationToken cancellationToken)
+        public async Task<string> Handle(ObterUePorLoginPerfilProfessorOuAbrangenciaUeQuery request, CancellationToken cancellationToken)
          => await repositorioAbrangencia.ObterUe(request.Login, request.Perfil);
     }
 }
