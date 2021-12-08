@@ -127,7 +127,8 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterUsuariosParaNotificar([FromQuery] ObterUsuarioNotificarDiarioBordoObservacaoDto dto, [FromServices] IObterUsuarioNotificarDiarioBordoObservacaoUseCase obterUsuarioNotificarDiarioBordoObservacaoUseCase)
         {
-            return Ok(await obterUsuarioNotificarDiarioBordoObservacaoUseCase.Executar(dto));
+            var retorno = await obterUsuarioNotificarDiarioBordoObservacaoUseCase.Executar(dto);
+            return Ok(retorno);
         }
     }
 }
