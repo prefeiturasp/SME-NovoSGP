@@ -16,17 +16,16 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<TurmaNaoHistoricaDto>> Executar()
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
-            var possuiAbrangenciaUE = usuario.EhAbrangenciaUEouProfessor();
+            bool possuiAbrangenciaUE = usuario.EhAbrangenciaUE();
 
             if (possuiAbrangenciaUE)
             {
-                string ueCodigo = await mediator.Send(new ObterUePorLoginPerfilProfessorOuAbrangenciaUeQuery(usuario.Login, perfil));
+                long usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
                 int anoLetivo = DateTime.Now.Year;
-                return await mediator.Send(new ObterTurmasPorAnoAtualECodigoUeQuery(ueCodigo, anoLetivo));
+                return await mediator.Send(new ObterTurmasPorAnoECodigoUeQuery(usuarioId, anoLetivo));
             }
-            else
-                return null;
+
+            return new List<TurmaNaoHistoricaDto>();
         }
     }
 }

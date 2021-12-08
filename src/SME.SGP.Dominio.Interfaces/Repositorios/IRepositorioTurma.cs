@@ -53,6 +53,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<GraficoBaseDto>> ObterInformacoesEscolaresTurmasAsync(int anoLetivo, long dreId, long ueId, AnoItinerarioPrograma[] anos, Modalidade modalidade, int? semestre);
         Task<Turma> ObterTurmaCompletaPorCodigo(string turmaCodigo);
         Task<IEnumerable<TurmaDTO>> ObterTurmasInfantilPorAno(int anoLetivo, string ueCodigo);
-        Task<IEnumerable<TurmaNaoHistoricaDto>> ObterTurmasPorAnoAtualECodigoUe(string codigoUe, int anoLetivo);
+        Task<IEnumerable<TurmaNaoHistoricaDto>> ObterTurmasPorAnoECodigoUe(long usuarioId, int anoLetivo);
     }
 }

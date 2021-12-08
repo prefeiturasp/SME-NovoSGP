@@ -226,7 +226,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await servicoAbrangencia.SincronizarAbrangenciaHistorica(anoLetivo, professorRf));
         }
 
-        [HttpGet("/api/v1/abrangencias/turmas/nao-historicas")]
+        [HttpGet("/api/v1/abrangencias/turmas/vigentes")]
         [ProducesResponseType(typeof(IEnumerable<TurmaNaoHistoricaDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
