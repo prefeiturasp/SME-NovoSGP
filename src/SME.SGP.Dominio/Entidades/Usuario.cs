@@ -147,6 +147,11 @@ namespace SME.SGP.Dominio
             return Perfis.Any(x => x.Tipo == TipoPerfil.UE && x.CodigoPerfil == Dominio.Perfis.PERFIL_CP);
         }
 
+        public bool EhAbrangenciaUEouProfessor()
+        {
+            return Perfis.Any(x => x.Tipo == TipoPerfil.UE || EhPerfilProfessor());
+        }
+
         public bool EhProfessorCj()
         {
             return PerfilAtual == Dominio.Perfis.PERFIL_CJ

@@ -388,6 +388,25 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaUeRetorno>(query.ToString(), new { codigo, login, perfil }));
         }
 
+        public async Task<AbrangenciaUeRetorno> ObterUe(string login, Guid perfil)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select distinct");
+            query.AppendLine("va.ue_codigo as codigo,");
+            query.AppendLine("va.ue_nome as nome,");
+            query.AppendLine("u.tipo_escola as tipoEscola");
+            query.AppendLine("from");
+            query.AppendLine("v_abrangencia_usuario va");
+            query.AppendLine("inner join ue u");
+            query.AppendLine("on u.ue_id = va.ue_codigo");
+            query.AppendLine("where");
+            query.AppendLine("va.login = @login");
+            query.AppendLine("and va.usuario_perfil = @perfil");
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaUeRetorno>(query.ToString(), new {login, perfil }));
+        }
+
         public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null, string filtro = "", bool filtroEhCodigo = false)
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
