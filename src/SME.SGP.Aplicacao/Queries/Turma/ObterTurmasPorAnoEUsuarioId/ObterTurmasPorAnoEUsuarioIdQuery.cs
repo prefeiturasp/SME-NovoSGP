@@ -7,20 +7,20 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmasPorAnoECodigoUeQuery : IRequest<IEnumerable<TurmaNaoHistoricaDto>>
+    public class ObterTurmasPorAnoEUsuarioIdQuery : IRequest<IEnumerable<TurmaNaoHistoricaDto>>
     {
         public long UsuarioId { get; set; }
         public int AnoLetivo { get; set; }
 
-        public ObterTurmasPorAnoECodigoUeQuery(long usuarioId, int anoLetivo)
+        public ObterTurmasPorAnoEUsuarioIdQuery(long usuarioId, int anoLetivo)
         {
             UsuarioId = usuarioId;
             AnoLetivo = anoLetivo;
         }
     }
-    public class ObterTurmasPorAnoECodigoUeQueryValidator : AbstractValidator<ObterTurmasPorAnoECodigoUeQuery>
+    public class ObterTurmasPorAnoEUsuarioIdQueryValidator : AbstractValidator<ObterTurmasPorAnoEUsuarioIdQuery>
     {
-        public ObterTurmasPorAnoECodigoUeQueryValidator()
+        public ObterTurmasPorAnoEUsuarioIdQueryValidator()
         {
             RuleFor(c => c.UsuarioId)
                .NotEmpty()

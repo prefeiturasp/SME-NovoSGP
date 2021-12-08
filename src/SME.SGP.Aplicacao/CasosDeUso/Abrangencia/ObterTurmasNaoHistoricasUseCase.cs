@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             {
                 long usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
                 int anoLetivo = DateTime.Now.Year;
-                return await mediator.Send(new ObterTurmasPorAnoECodigoUeQuery(usuarioId, anoLetivo));
+                return await mediator.Send(new ObterTurmasPorAnoEUsuarioIdQuery(usuarioId, anoLetivo));
             }
 
             return new List<TurmaNaoHistoricaDto>();
