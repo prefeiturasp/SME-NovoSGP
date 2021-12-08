@@ -11,24 +11,21 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioDiarioBordoObservacao(ISgpContext conexao) : base(conexao) { }
 
-        public async Task ExcluirObservacoesPorDiarioBordoId(long diarioBordoId, long? usuarioId)
+        public async Task ExcluirObservacoesPorDiarioBordoId(long diarioBordoObservacaoId)
         {
 			var query = @"update diario_bordo_observacao 
 							set excluido = true
 							, alterado_por = @alteradoPor
 							, alterado_rf = @alteradoRF
 							, alterado_em = @alteradoEm
-						where diario_bordo_id = @diarioBordoId";
-
-			if (usuarioId.HasValue)
-				query += " and usuario_id = @usuarioId";
+						where id = @diarioBordoObservacaoId ";
 
 			var parametros = new
 			{
-				diarioBordoId,
+				diarioBordoObservacaoId,
 				alteradoPor = database.UsuarioLogadoNomeCompleto,
 				alteradoRF = database.UsuarioLogadoRF,
-				alteradoEm = DateTimeExtension.HorarioBrasilia()
+				alteradoEm = DateTimeExtension.HorarioBrasilia(),
 			};
 
 			await database.Conexao.ExecuteScalarAsync(query, parametros);
