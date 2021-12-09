@@ -1,11 +1,11 @@
 ﻿using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterComponentesCurricularesPorProfessorETurmasCodigosUseCase : IUseCase<IEnumerable<string>, IEnumerable<DisciplinaNomeDto>>
+    public interface IObterComponentesCurricularesPorProfessorETurmasCodigosUseCase
     {
+        Task<IEnumerable<DisciplinaNomeDto>> Executar(IEnumerable<string> codigoUe, bool realizarAgrupamentoComponente);
     }
 }
