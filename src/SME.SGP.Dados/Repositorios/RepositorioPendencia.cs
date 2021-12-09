@@ -48,15 +48,9 @@ namespace SME.SGP.Dados.Repositorios
                           left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
                           left join pendencia_usuario pu on pu.pendencia_id = p.id ";
 
-            //if (!string.IsNullOrEmpty(turmaCodigo))
-            //    query += @"inner join turma t on t.ue_id = p.ue_id ";
-
             query += @"where not p.excluido 
                            and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
-                           and p.situacao = @situacao";         
-
-            //if (!string.IsNullOrEmpty(turmaCodigo))
-            //    query = $"{query} and t.turma_id = @turmaCodigo";
+                           and p.situacao = @situacao";
 
             if (tipoPendencia > 0)
                 query = $"{query} and p.tipo = @tipoPendencia";

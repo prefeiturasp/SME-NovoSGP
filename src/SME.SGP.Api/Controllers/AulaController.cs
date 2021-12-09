@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
@@ -67,8 +66,13 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterRecorrenciaDaSerie(long aulaId, [FromServices] IConsultasAula consultas, [FromServices] IObterFrequenciaOuPlanoNaRecorrenciaUseCase obterFrequenciaOuPlanoNaRecorrenciaUseCase)
         {
             var recorrencia = consultas.ObterRecorrenciaDaSerie(aulaId);
-            var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica ? 1
-                : await consultas.ObterQuantidadeAulasRecorrentes(aulaId, RecorrenciaAula.RepetirTodosBimestres);
+            
+            var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica 
+                                                ? 1
+                                                : await consultas
+                                                        .ObterQuantidadeAulasRecorrentes(aulaId, 
+                                                                                         RecorrenciaAula.RepetirTodosBimestres);
+            
             var existeFrequenciaPlanoAula = await obterFrequenciaOuPlanoNaRecorrenciaUseCase.Executar(aulaId);
 
             var retorno = new AulaRecorrenciaDto()

@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao
             var componentesCurricularesParaVisualizar = new List<string>();
 
             var componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo, request.RfLogado, request.PerfilAtual);
+            
             var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado?.Select(b => b.Codigo.ToString());            
 
             foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
@@ -40,6 +41,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> PodePersistirTurmaDisciplina(string criadoRF, string turmaCodigo, string componenteParaVerificarAtribuicao)
         {
             long hojeTick = DateTime.Today.Ticks;
+            
             return await mediator.Send(new PodePersistirTurmaDisciplinaQuery(criadoRF, turmaCodigo, componenteParaVerificarAtribuicao, hojeTick));
         }
     }
