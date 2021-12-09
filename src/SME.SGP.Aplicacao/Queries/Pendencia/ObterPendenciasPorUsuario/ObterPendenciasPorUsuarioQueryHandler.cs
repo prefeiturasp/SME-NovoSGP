@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,12 +24,31 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<PaginacaoResultadoDto<PendenciaDto>> Handle(ObterPendenciasPorUsuarioQuery request, CancellationToken cancellationToken)
-            => await MapearParaDtoPaginado(
-                        await repositorioPendencia.ListarPendenciasUsuario(request.UsuarioId,
-                                                                           request.TurmaCodigo,
-                                                                           request.TipoPendencia,
-                                                                           request.TituloPendencia,
-                                                                           Paginacao));
+        {
+            var pendencias = await repositorioPendencia.ListarPendenciasUsuario(request.UsuarioId,
+                                                                                request.TipoPendencia,
+                                                                                request.TituloPendencia,
+                                                                                Paginacao);
+
+            var itensDaLista = pendencias.Items.ToList();
+
+            if (!string.IsNullOrEmpty(request.TurmaCodigo))
+            {
+                foreach (var pendencia in pendencias.Items)
+                {
+                    var pendenciaFiltrada = await repositorioPendencia
+                                                   .FiltrarListaPendenciasUsuario(request.TurmaCodigo, 
+                                                                                  pendencia);
+
+                    if (pendenciaFiltrada == null)
+                        itensDaLista.Remove(pendencia);
+                }                
+            }
+
+            pendencias.Items = itensDaLista;
+
+            return await MapearParaDtoPaginado(pendencias);
+        }
 
         private async Task<PaginacaoResultadoDto<PendenciaDto>> MapearParaDtoPaginado(PaginacaoResultadoDto<Pendencia> pendenciasPaginadas)
         {

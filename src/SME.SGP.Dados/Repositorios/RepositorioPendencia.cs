@@ -41,28 +41,28 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute(query, new { fechamentoId, tipoPendencia });
         }
 
-        public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, string turmaCodigo, int? tipoPendencia, string tituloPendencia, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, int? tipoPendencia, string tituloPendencia, Paginacao paginacao)
         {
             var query = @"from pendencia p
                           left join pendencia_perfil pp on pp.pendencia_id = p.id
                           left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
                           left join pendencia_usuario pu on pu.pendencia_id = p.id ";
 
-            if (!string.IsNullOrEmpty(turmaCodigo))
-                query += @"left join turma t on t.ue_id = p.ue_id ";
+            //if (!string.IsNullOrEmpty(turmaCodigo))
+            //    query += @"inner join turma t on t.ue_id = p.ue_id ";
 
             query += @"where not p.excluido 
                            and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
                            and p.situacao = @situacao";         
 
-            if (!string.IsNullOrEmpty(turmaCodigo))
-                query = $"{query} and t.turma_id = @turmaId";
+            //if (!string.IsNullOrEmpty(turmaCodigo))
+            //    query = $"{query} and t.turma_id = @turmaCodigo";
 
             if (tipoPendencia > 0)
                 query = $"{query} and p.tipo = @tipoPendencia";
 
             if (!string.IsNullOrEmpty(tituloPendencia))
-                query = $"{query} and UPPER(p.titulo) like UPPER(@tituloPendencia)";
+                query = $"{query} and UPPER(p.titulo) like UPPER('%" + tituloPendencia + "%')";
 
             var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
@@ -73,7 +73,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
             var queryTotalRegistros = $"select count(0) {query}";
-            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao });
+            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao, tipoPendencia, tituloPendencia });
 
             var queryPendencias = $@"select p.* {query} {orderBy}
                     offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;";
@@ -84,6 +84,8 @@ namespace SME.SGP.Dados.Repositorios
                 qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
                 qtde_registros = paginacao.QuantidadeRegistros,
                 situacao,
+                tipoPendencia,
+                tituloPendencia
             };
 
             retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendencias, parametros);
@@ -139,6 +141,112 @@ namespace SME.SGP.Dados.Repositorios
                             where p.id = @pendenciaId and t.id = @turmaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { pendenciaId, turmaId });
+        }
+
+        public async Task<Pendencia> FiltrarListaPendenciasUsuario(string turmaCodigo, Pendencia pendencia)
+        {
+            var query = @"select p.* from pendencia p";
+
+            switch (pendencia.Tipo)
+            {
+                case TipoPendencia.AvaliacaoSemNotaParaNenhumAluno:
+                    
+                    query += @" LEFT JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
+	                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
+	                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
+                                LEFT JOIN turma t ON t.id = ft.turma_id ";
+                    
+                    break;
+
+                case TipoPendencia.AulasReposicaoPendenteAprovacao:
+                    
+                    query += @" LEFT JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
+	                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
+	                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
+                                LEFT JOIN turma t ON t.id = ft.turma_id ";
+
+                    break;
+
+                case TipoPendencia.AulasSemFrequenciaNaDataDoFechamento:
+                    
+                    query += @" LEFT JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
+	                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
+	                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
+                                LEFT JOIN turma t ON t.id = ft.turma_id ";
+
+                    break;
+
+                case TipoPendencia.ResultadosFinaisAbaixoDaMedia:
+                    
+                    query += @" LEFT JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
+	                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
+	                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
+                                LEFT JOIN turma t ON t.id = ft.turma_id ";
+
+                    break;
+
+                case TipoPendencia.AulaNaoLetivo:
+                    
+                    query += @" LEFT JOIN pendencia_aula pa ON pa.pendencia_id = p.id
+                                LEFT JOIN aula a ON a.id = pa.aula_id
+                                LEFT JOIN turma t ON t.id = a.turma_id ";
+
+                    break;
+
+                case TipoPendencia.CalendarioLetivoInsuficiente:
+                    
+                    query += @" LEFT JOIN pendencia_calendario_ue pcu on pcu.pendencia_id = p.id
+                                LEFT JOIN tipo_calendario tc on tc.id = pcu.tipo_calendario_id
+                                LEFT JOIN aula a on a.tipo_calendario_id = tc.id
+                                LEFT JOIN turma t on t.id = a.turma_id ";
+
+                    break;
+
+                case TipoPendencia.CadastroEventoPendente:
+                    
+                    query += @" LEFT JOIN pendencia_calendario_ue pcu on pcu.pendencia_id = p.id
+                                LEFT JOIN tipo_calendario tc on tc.id = pcu.tipo_calendario_id
+                                LEFT JOIN aula a on a.tipo_calendario_id = tc.id
+                                LEFT JOIN turma t on t.id = a.turma_id ";
+
+                    break;
+
+                case TipoPendencia.AusenciaDeAvaliacaoProfessor:
+                    
+                    query += @" LEFT JOIN pendencia_professor pp ON pp.pendencia_id = p.id
+                                LEFT JOIN turma t on t.id = pp.turma_id ";
+
+                    break;
+
+                case TipoPendencia.AusenciaDeAvaliacaoCP:
+
+                    query += @" LEFT JOIN pendencia_professor pp ON pp.pendencia_id = p.id
+                                LEFT JOIN turma t on t.id = pp.turma_id ";
+
+                    break;
+
+                case TipoPendencia.AusenciaFechamento:
+
+                    query += @" LEFT JOIN pendencia_professor pp ON pp.pendencia_id = p.id
+                                LEFT JOIN turma t on t.id = pp.turma_id ";
+
+                    break;
+
+                case TipoPendencia.AusenciaDeRegistroIndividual:
+
+                    query += @" LEFT JOIN pendencia_registro_individual pri ON pri.pendencia_id = p.id
+                                LEFT JOIN turma t ON t.id = pri.turma_id ";
+
+                    break;
+
+
+                default:
+                    break;
+            }
+
+            query += $@" WHERE p.id = {pendencia.Id} AND t.turma_id = {turmaCodigo}";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<Pendencia>(query);
         }
     }
 }
