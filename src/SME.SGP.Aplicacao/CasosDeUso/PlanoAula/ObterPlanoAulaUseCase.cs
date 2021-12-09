@@ -52,7 +52,6 @@ namespace SME.SGP.Aplicacao
             {
                 Id = plano.Id,
                 Descricao = plano.Descricao,
-                DesenvolvimentoAula = plano.DesenvolvimentoAula,
                 RecuperacaoAula = plano.RecuperacaoAula,
                 LicaoCasa = plano.LicaoCasa,
                 AulaId = plano.AulaId,
