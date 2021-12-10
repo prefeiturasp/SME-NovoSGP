@@ -22,10 +22,6 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             
-            string rf = usuarioLogado.CodigoRf;
-            
-            string dadosTurma = filtroAulasEventosCalendarioDto.TurmaCodigo;
-            
             if (usuarioLogado == null)
                 throw new NegocioException("Não foi possível localizar o Usuário logado.");
 

@@ -89,6 +89,5 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(aulaId, turmaCodigo, componenteCurricular, dataAula, ehRegencia, tipoAula)));
         }
-
     }
 }
