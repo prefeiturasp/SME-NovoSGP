@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("É preciso informar o Id da pendência para consultar o bimestre");
             RuleFor(a => a.TurmaId)
                 .NotEmpty()
-                .WithMessage("É preciso informar o Id da pendência para consultar o bimestre");
+                .WithMessage("É preciso informar o Id da turma para consultar o bimestre");
             RuleFor(a => a.DataPendencia)
                 .NotEmpty()
                 .WithMessage("É preciso informar a data da pendência para consultar o bimestre");

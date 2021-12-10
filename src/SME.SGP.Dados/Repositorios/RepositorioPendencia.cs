@@ -154,34 +154,9 @@ namespace SME.SGP.Dados.Repositorios
             switch (pendencia.Tipo)
             {
                 case TipoPendencia.AvaliacaoSemNotaParaNenhumAluno:
-
-                    query += @" LEFT JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
-	                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
-	                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
-                                LEFT JOIN turma t ON t.id = ft.turma_id ";
-
-                    break;
-
                 case TipoPendencia.AulasReposicaoPendenteAprovacao:
-
-                    query += @" LEFT JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
-	                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
-	                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
-                                LEFT JOIN turma t ON t.id = ft.turma_id ";
-
-                    break;
-
                 case TipoPendencia.AulasSemFrequenciaNaDataDoFechamento:
-
-                    query += @" LEFT JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
-	                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
-	                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
-                                LEFT JOIN turma t ON t.id = ft.turma_id ";
-
-                    break;
-
                 case TipoPendencia.ResultadosFinaisAbaixoDaMedia:
-
                     query += @" LEFT JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
 	                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
 	                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
@@ -198,16 +173,7 @@ namespace SME.SGP.Dados.Repositorios
                     break;
 
                 case TipoPendencia.CalendarioLetivoInsuficiente:
-
-                    query += @" LEFT JOIN pendencia_calendario_ue pcu on pcu.pendencia_id = p.id
-                                LEFT JOIN tipo_calendario tc on tc.id = pcu.tipo_calendario_id
-                                LEFT JOIN aula a on a.tipo_calendario_id = tc.id
-                                LEFT JOIN turma t on t.turma_id = a.turma_id ";
-
-                    break;
-
                 case TipoPendencia.CadastroEventoPendente:
-
                     query += @" LEFT JOIN pendencia_calendario_ue pcu on pcu.pendencia_id = p.id
                                 LEFT JOIN tipo_calendario tc on tc.id = pcu.tipo_calendario_id
                                 LEFT JOIN aula a on a.tipo_calendario_id = tc.id
@@ -216,19 +182,7 @@ namespace SME.SGP.Dados.Repositorios
                     break;
 
                 case TipoPendencia.AusenciaDeAvaliacaoProfessor:
-
-                    query += @" LEFT JOIN pendencia_professor pp ON pp.pendencia_id = p.id
-                                LEFT JOIN turma t on t.id = pp.turma_id ";
-
-                    break;
-
                 case TipoPendencia.AusenciaDeAvaliacaoCP:
-
-                    query += @" LEFT JOIN pendencia_professor pp ON pp.pendencia_id = p.id
-                                LEFT JOIN turma t on t.id = pp.turma_id ";
-
-                    break;
-
                 case TipoPendencia.AusenciaFechamento:
 
                     query += @" LEFT JOIN pendencia_professor pp ON pp.pendencia_id = p.id
@@ -242,7 +196,6 @@ namespace SME.SGP.Dados.Repositorios
                                 LEFT JOIN turma t ON t.id = pri.turma_id ";
 
                     break;
-
 
                 default:
 
