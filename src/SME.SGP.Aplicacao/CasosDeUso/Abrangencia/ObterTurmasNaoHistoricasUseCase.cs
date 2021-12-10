@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<TurmaNaoHistoricaDto>> Executar()
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            bool possuiAbrangenciaUE = usuario.EhAbrangenciaUE();
+            bool possuiAbrangenciaUE = usuario.EhAbrangenciaSomenteUE();
 
             if (possuiAbrangenciaUE)
             {
