@@ -74,7 +74,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (turma.DeveVerificarRegraRegulares())
             {
-                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };                
+                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico));
             }
@@ -126,9 +126,20 @@ namespace SME.SGP.Dominio.Servicos
             // Filtra componentes que lançam frequência
             var componentesCurriculareslancaFrequencia = componentesCurriculares.Where(c => c.RegistraFrequencia);
             var componentesCurricularesCodigos = componentesCurriculareslancaFrequencia.Select(c => c.CodigoComponenteCurricular.ToString()).ToArray();
-
+            
             var frequencias = await mediator.Send(new ObterFrequenciasAlunosPorCodigoAlunoCodigoComponentesTurmaQuery(alunoCodigo, turmasCodigos, componentesCurricularesCodigos));
-            if (frequencias.Any(f => f.PercentualFrequencia < parametroFrequenciaBaseNacional)) return false;
+            var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
+            var percentualFreqPorPeriodo = new List<(string disciplina, int bimestre, double percentual)>();
+            foreach (var disciplinaCodigo in componentesCurricularesCodigos)
+            {
+                periodos.ToList().ForEach(p =>
+                {
+                    var frequenciaEquivalente = frequencias.SingleOrDefault(f => f.DisciplinaId.Equals(disciplinaCodigo) && f.Bimestre == p.Bimestre);
+                    percentualFreqPorPeriodo.Add((disciplinaCodigo, p.Bimestre, frequenciaEquivalente?.PercentualFrequencia ?? 100));
+                });
+            }
+
+            if (percentualFreqPorPeriodo.GroupBy(f => f.disciplina).Any(f => (f.Sum(p => p.percentual) / f.Count()) < parametroFrequenciaBaseNacional)) return false;
 
             return true;
         }
