@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace SME.SGP.Dominio
 {
@@ -12,7 +15,7 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Diario de Classe")]
         DiarioClasse = 3,
-        
+
         [Display(Name = "AEE")]
         AEE = 4,
         [Display(Name = "Todos")]

@@ -42,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute(query, new { fechamentoId, tipoPendencia });
         }
 
-        public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, int? tipoPendencia, string tituloPendencia, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, int[] tiposPendencias, string tituloPendencia, Paginacao paginacao)
         {
             var query = @"from pendencia p
                           left join pendencia_perfil pp on pp.pendencia_id = p.id
@@ -53,8 +53,8 @@ namespace SME.SGP.Dados.Repositorios
                            and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
                            and p.situacao = @situacao";
 
-            if (tipoPendencia > 0)
-                query = $"{query} and p.tipo = @tipoPendencia";
+            if (tiposPendencias != null)
+                query = $"{query} and p.tipo = any(@tiposPendencias) ";
 
             if (!string.IsNullOrEmpty(tituloPendencia))
                 query = $"{query} and UPPER(p.titulo) like UPPER('%" + tituloPendencia + "%')";
@@ -68,26 +68,33 @@ namespace SME.SGP.Dados.Repositorios
 
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
             var queryTotalRegistros = $"select count(0) {query}";
-            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao, tipoPendencia, tituloPendencia });
+            try
+            {
+                var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao, tiposPendencias, tituloPendencia });
 
-            var queryPendencias = $@"select distinct coalesce(p.alterado_em, p.criado_em), p.* {query} {orderBy}
+                var queryPendencias = $@"select distinct coalesce(p.alterado_em, p.criado_em), p.* {query} {orderBy}
                     offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;";
 
-            var parametros = new
+                var parametros = new
+                {
+                    usuarioId,
+                    qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
+                    qtde_registros = paginacao.QuantidadeRegistros,
+                    situacao,
+                    tiposPendencias,
+                    tituloPendencia
+                };
+
+                retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendencias, parametros);
+                retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
+                retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
+
+                return retornoPaginado;
+            }
+            catch (Exception ex)
             {
-                usuarioId,
-                qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
-                qtde_registros = paginacao.QuantidadeRegistros,
-                situacao,
-                tipoPendencia,
-                tituloPendencia
-            };
-
-            retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendencias, parametros);
-            retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
-            retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
-
-            return retornoPaginado;
+                return null;
+            }
         }
 
         public async Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)
