@@ -10,5 +10,6 @@ namespace SME.SGP.Infra
         public string Turma { get; set; }
         public string Titulo { get; set; }
         public string Detalhe { get; set; }
+        public string Bimestre { get; set; }
     }
 }

@@ -14,13 +14,11 @@ namespace SME.SGP.Aplicacao
         public static async Task<EventosAulasNoDiaCalendarioDto> Executar(IMediator mediator, FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId, int mes, int dia, int anoLetivo,
             IServicoUsuario servicoUsuario)
         {
-            string rf = "";
-            string dadosTurma = "";
-
             var dataConsulta = new DateTime(anoLetivo, mes, dia);
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            rf = usuarioLogado.CodigoRf;
+
+            var rf = usuarioLogado.CodigoRf;
 
             if (usuarioLogado == null)
                 throw new NegocioException("Não foi possível localizar o Usuário logado.");
@@ -46,7 +44,8 @@ namespace SME.SGP.Aplicacao
             {
                 TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo
             });
-            dadosTurma = turma.CodigoTurma + "-" + turma.Nome;
+            
+            var dadosTurma = turma.CodigoTurma + "-" + turma.Nome;
 
             var retorno = new EventosAulasNoDiaCalendarioDto();
 
@@ -60,24 +59,23 @@ namespace SME.SGP.Aplicacao
             });
 
             retorno.PodeCadastrarAula = podeCadastrarAulaEMensagem.PodeCadastrar;
+            
             retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
 
 
             string[] componentesCurricularesDoProfessor = new string[0];
+            
             if (usuarioLogado.EhProfessor())
-            {
                 componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));
-            }
 
             IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
 
-
             IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();
+            
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
 
             if (aulasParaVisualizar.Any())
             {
-
                 componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)).ToArray(), aulasParaVisualizar.Any(a => a.DisciplinaId.Length > 5)));
 
                 atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
@@ -105,4 +103,3 @@ namespace SME.SGP.Aplicacao
         }
     }
 }
-

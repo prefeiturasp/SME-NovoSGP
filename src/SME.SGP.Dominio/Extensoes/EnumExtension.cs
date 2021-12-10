@@ -19,6 +19,10 @@ namespace SME.SGP.Dominio
         {
             return enumValue.ObterAtributo<DisplayAttribute>().Name;
         }
+        public static string ObterNomeGrupo(this Enum enumValue)
+        {
+            return enumValue.ObterAtributo<DisplayAttribute>().GroupName;
+        }
         public static TAttribute ObterAtributo<TAttribute>(this Enum enumValue)
         where TAttribute : Attribute
         {

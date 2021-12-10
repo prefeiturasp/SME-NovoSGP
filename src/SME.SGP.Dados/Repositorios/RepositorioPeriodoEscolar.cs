@@ -368,5 +368,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { periodoEscolarId });
         }
+
+        public async Task<int> ObterBimestrePorDataPendenciaEModalidade(DateTime dataPendenciaCriada, int modalidadeTipoCalendario)
+        {
+            var query = @"select pe.bimestre from periodo_escolar pe 
+                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                where tc.modalidade = @modalidadeTipoCalendario 
+                                and @dataPendenciaCriada between pe.periodo_inicio and pe.periodo_fim";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { dataPendenciaCriada, modalidadeTipoCalendario });
+        }
     }
 }
