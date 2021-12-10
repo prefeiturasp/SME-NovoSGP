@@ -249,16 +249,10 @@ namespace SME.SGP.Aplicacao
 
                         var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
                         FrequenciaAluno frequenciaAluno;
-                        var percentualFrequenciaPadrao = false;
                         if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
-                        {
                             frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
-
-                        }
                         else if (frequenciasAlunoParaTratar.Count() == 1)
-                        {
                             frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
-                        }
                         else
                         {
                             frequenciaAluno = new FrequenciaAluno()
@@ -270,8 +264,13 @@ namespace SME.SGP.Aplicacao
                             frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
                             frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
                             frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
-                            percentualFrequenciaPadrao = true;
-                            frequenciasAlunoParaTratar.ToList().ForEach(f => frequenciaAluno.AdicionarFrequenciaBimestre(f.Bimestre, tipoCalendario.AnoLetivo.Equals(2020) && f.TotalAulas.Equals(0) ? 100 : f.PercentualFrequencia));
+                            frequenciasAlunoParaTratar
+                                .ToList()
+                                .ForEach(f =>
+                                {
+                                    frequenciaAluno
+                                        .AdicionarFrequenciaBimestre(f.Bimestre, tipoCalendario.AnoLetivo.Equals(2020) && f.TotalAulas.Equals(0) ? 100 : f.PercentualFrequencia);
+                                });
                         }
 
                         if (disciplinaEol.Regencia)
@@ -298,8 +297,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                 notasConselhoClasseAluno,
                                                                                                                 notasFechamentoAluno,
                                                                                                                 turmaPossuiRegistroFrequencia,
-                                                                                                                disciplina.LancaNota,
-                                                                                                                percentualFrequenciaPadrao));
+                                                                                                                disciplina.LancaNota));
                         }
                     }
                 }
@@ -307,8 +305,8 @@ namespace SME.SGP.Aplicacao
                 gruposMatrizesNotas.Add(conselhoClasseAlunoNotas);
             }
 
-            retorno.TemConselhoClasseAluno = conselhoClasseId > 0 ? await VerificaSePossuiConselhoClasseAlunoAsync(conselhoClasseId, alunoCodigo) : false;
-            retorno.PodeEditarNota = turmasComMatriculasValidas.Any() ? await VerificaSePodeEditarNota(alunoCodigo, turma, periodoEscolar) : false;
+            retorno.TemConselhoClasseAluno = conselhoClasseId > 0 && await VerificaSePossuiConselhoClasseAlunoAsync(conselhoClasseId, alunoCodigo);
+            retorno.PodeEditarNota = turmasComMatriculasValidas.Any() && await VerificaSePodeEditarNota(alunoCodigo, turma, periodoEscolar);
             retorno.NotasConceitos = gruposMatrizesNotas;
 
             return retorno;
@@ -578,15 +576,12 @@ namespace SME.SGP.Aplicacao
             return notasPeriodos;
         }
 
-        private ConselhoClasseComponenteFrequenciaDto ObterNotasFrequenciaComponente(string componenteCurricularNome, long componenteCurricularCodigo, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool turmaPossuiRegistroFrequencia, bool componenteLancaNota, bool percentualFrequenciaPadrao)
+        private ConselhoClasseComponenteFrequenciaDto ObterNotasFrequenciaComponente(string componenteCurricularNome, long componenteCurricularCodigo, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool turmaPossuiRegistroFrequencia, bool componenteLancaNota)
         {
             var percentualFrequencia = double.MinValue;
 
-            if (turmaPossuiRegistroFrequencia && percentualFrequenciaPadrao)
-                percentualFrequencia = 100;
-
-            else if (turmaPossuiRegistroFrequencia)
-                percentualFrequencia = (double)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
+            if (turmaPossuiRegistroFrequencia)
+                percentualFrequencia = Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
 
             // Cálculo de frequência particular do ano de 2020
             if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))
