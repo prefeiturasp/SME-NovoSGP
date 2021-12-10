@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                throw new Exception("Forçado parada");
                 var alunosAusentes = await mediator.Send(new ObterAlunosAusentesPorTurmaNoPeriodoQuery(request.TurmaCodigo, request.DataInicio, request.DataFim, request.ComponenteCurricularId));
 
                 if (alunosAusentes != null && alunosAusentes.Any())
