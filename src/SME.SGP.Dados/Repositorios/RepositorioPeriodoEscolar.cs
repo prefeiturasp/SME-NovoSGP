@@ -368,5 +368,23 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { periodoEscolarId });
         }
+
+        public async Task<IEnumerable<PeriodoEscolarVerificaRegenciaDto>> ObterPeriodoEscolaresPorTurmaComponenteBimestre(string turmaCodigo, long componenteCurricularId, int bimestre)
+        {
+            var query = @"select pe.id as Id,
+                                   pe.periodo_inicio as DataInicio,    
+                                   pe.periodo_fim as DataFim, 
+                                   pe.bimestre as Bimestre,
+                                   a.id as AulaId, 
+                                   a.data_aula as DataAula
+                            from periodo_escolar pe 
+                                inner join aula a on a.tipo_calendario_id = pe.tipo_calendario_id 
+                                where a.turma_id = @turmaCodigo
+                                and pe.bimestre = @bimestre
+                                and a.disciplina_id = cast(@componenteCurricularId as varchar)
+                                and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
+                                and not a.excluido";
+            return await database.Conexao.QueryAsync<PeriodoEscolarVerificaRegenciaDto>(query, new { turmaCodigo, componenteCurricularId, bimestre});
+        }
     }
 }

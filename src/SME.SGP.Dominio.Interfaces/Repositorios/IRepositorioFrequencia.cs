@@ -33,5 +33,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<string>> ObterTurmasCodigosFrequenciasExistentesPorAnoAsync(int[] anosLetivos);        
         Task<IEnumerable<TotalFrequenciaEAulasPorPeriodoDto>> ObterTotalFrequenciaEAulasPorPeriodo(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard);
         Task<IEnumerable<FrequenciaDetalhadaPorDataDto>> ObterFrequenciasDetalhadasPorData(string codigoAluno, DateTime dataInicio, DateTime dataFim);
+        Task<IEnumerable<RegistroFrequencia>> ObterRegistroFrequenciaPorDataEAulaId(string disciplina, string tumaId, DateTime dataInicio, DateTime dataFim);
     }
 }

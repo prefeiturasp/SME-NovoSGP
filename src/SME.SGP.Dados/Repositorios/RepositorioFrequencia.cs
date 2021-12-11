@@ -214,6 +214,19 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<RegistroFrequencia>(query, new { aulaId });
         }
 
+        public async Task<IEnumerable<RegistroFrequencia>> ObterRegistroFrequenciaPorDataEAulaId(string disciplina, string turmaId, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select rf.*
+                            from registro_frequencia rf
+                            inner join aula a on rf.aula_id  = a.id 
+                          where DATE(a.data_aula) between Date(@dataInicio) and Date(@dataFim)
+                                and a.disciplina_id = @disciplina
+                                and a.turma_id = @turmaId
+                            order by rf.criado_em desc";
+
+            return await database.Conexao.QueryAsync<RegistroFrequencia>(query, new { disciplina, turmaId, dataInicio, dataFim });
+        }
+
         public async Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string turma, short bimestre, short anoLetivo)
         {
             var sql = @"

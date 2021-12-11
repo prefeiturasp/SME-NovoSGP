@@ -109,5 +109,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(turmaCodigo));
         }
+
+        [HttpGet("turmas/{turmaCodigo}/componentes-curriculares/{componenteCurricularId}/regencia/{ehRegencia}/bimestres/{bimestre}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarComponenteDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterPeriodoPorComponente(string turmaCodigo, long componenteCurricularId, bool ehRegencia, int bimestre, [FromServices] IObterPeriodosPorComponenteUseCase useCase)
+        {
+            return Ok(await useCase.Executar(turmaCodigo, componenteCurricularId, ehRegencia, bimestre));
+        }
     }
 }
