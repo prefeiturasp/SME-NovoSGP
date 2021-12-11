@@ -1017,6 +1017,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterTiposFrequenciasUseCase, ObterTiposFrequenciasUseCase>();
             services.TryAddScoped<IInserirFrequenciaUseCase, InserirFrequenciaUseCase>();
             services.TryAddScoped<IObterFrequenciaPorAulaUseCase, ObterFrequenciaPorAulaUseCase>();
+            services.TryAddScoped<IObterFrequenciasDetalhadasPorDataUseCase, ObterFrequenciasDetalhadasPorDataUseCase>();
 
             services.TryAddScoped<IExecutarSincronizacaoDadosFrequenciaUseCase, ExecutarSincronizacaoDadosFrequenciaUseCase>();
             services.TryAddScoped<IExecutarSincronizacaoDadosTurmasFrequenciaUseCase, ExecutarSincronizacaoDadosTurmasFrequenciaUseCase>();
