@@ -564,8 +564,6 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("	from fechamento_turma_disciplina ftd");
             sqlQuery.AppendLine("		inner join fechamento_turma ft");
             sqlQuery.AppendLine("			on ftd.fechamento_turma_id = ft.id");
-            sqlQuery.AppendLine("		inner join turma t");
-            sqlQuery.AppendLine("			on ft.turma_id = t.id");
             sqlQuery.AppendLine("where ftd.situacao = @situacaoFechamentoTurmaDisciplina and");
             sqlQuery.AppendLine("	   ftd.criado_em::date >= @dataInicio::date and");
             sqlQuery.AppendLine($"	   coalesce(ftd.alterado_em, ftd.criado_em)::timestamp < (current_timestamp - interval '{tempoConsideradoExpiracaoMinutos} minutes') and");
@@ -573,7 +571,7 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("	   not ft.excluido and");
             sqlQuery.AppendLine("	   not exists (select 1");
             sqlQuery.AppendLine("	  		      	 from tmp_fechamento_disciplinas_duplicados tmp_fdd");
-            sqlQuery.AppendLine("	  		       where tmp_fdd.turma_id = t.id and");
+            sqlQuery.AppendLine("	  		       where tmp_fdd.turma_id = ft.turma_id and");
             sqlQuery.AppendLine("	  		      	     tmp_fdd.periodo_escolar_id = ft.periodo_escolar_id and");
             sqlQuery.AppendLine("	  		      	     tmp_fdd.disciplina_id = ftd.disciplina_id)");
             sqlQuery.AppendLine("order by 1;");
@@ -606,8 +604,6 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("	from fechamento_turma_disciplina ftd");
             sqlQuery.AppendLine("		inner join fechamento_turma ft");
             sqlQuery.AppendLine("			on ftd.fechamento_turma_id = ft.id");
-            sqlQuery.AppendLine("		inner join turma t");
-            sqlQuery.AppendLine("			on ft.turma_id = t.id");
             sqlQuery.AppendLine("where not ftd.excluido and");
             sqlQuery.AppendLine("	   not ft.excluido and");
             sqlQuery.AppendLine("	   ftd.criado_em::date >= @dataInicio::date");
