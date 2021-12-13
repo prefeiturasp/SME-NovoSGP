@@ -53,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
                            and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
                            and p.situacao = @situacao";
 
-            if (tiposPendencias != null)
+            if (tiposPendencias.Length > 0)
                 query = $"{query} and p.tipo = any(@tiposPendencias) ";
 
             if (!string.IsNullOrEmpty(tituloPendencia))
