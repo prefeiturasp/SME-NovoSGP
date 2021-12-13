@@ -1,7 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -14,5 +11,6 @@ namespace SME.SGP.Infra
         public string TurmaCodigo { get; set; }
         public int Bimestre { get; set; }
         public int? Semestre { get; set; }
+        public bool ConsideraHistorico { get; set; } = false;
     }
 }

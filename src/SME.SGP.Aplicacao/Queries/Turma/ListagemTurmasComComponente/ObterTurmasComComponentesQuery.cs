@@ -18,8 +18,9 @@ namespace SME.SGP.Aplicacao
         public int? Semestre { get; set; }
         public bool EhProfessor { get; set; }
         public string CodigoRf { get; set; }
+        public bool ConsideraHistorico { get; set; }
 
-        public ObterTurmasComComponentesQuery(string ueCodigo, string dreCodigo, string turmaCodigo, int anoLetivo, int qtdeRegistros, int qtdeRegistrosIgnorados, int? bimestre, Modalidade? modalidade, int? semestre, bool ehProfessor, string codigoRf)
+        public ObterTurmasComComponentesQuery(string ueCodigo, string dreCodigo, string turmaCodigo, int anoLetivo, int qtdeRegistros, int qtdeRegistrosIgnorados, int? bimestre, Modalidade? modalidade, int? semestre, bool ehProfessor, string codigoRf, bool consideraHistorico)
         {
             UeCodigo = ueCodigo;
             DreCodigo = dreCodigo;
@@ -32,6 +33,7 @@ namespace SME.SGP.Aplicacao
             Semestre = semestre;
             EhProfessor = ehProfessor;
             CodigoRf = codigoRf;
+            ConsideraHistorico = consideraHistorico;
         }
 
         public class ObterTurmasComComponentesQueryValidator : AbstractValidator<ObterTurmasComComponentesQuery>
