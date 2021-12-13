@@ -532,45 +532,40 @@ namespace SME.SGP.Dados.Repositorios
 
             ConsultaRegistrosFechamentosTurmaDisciplinaDuplicados(sqlQuery);
 
-            sqlQuery.AppendLine("drop table if exists tmp_fechamento_disciplinas_duplicados_sequenciados;");
-            sqlQuery.AppendLine("create temporary table tmp_fechamento_disciplinas_duplicados_sequenciados as");
-            sqlQuery.AppendLine("select ftd.id fechamento_turma_disciplina_id,");
-            sqlQuery.AppendLine("	    row_number() over (partition by ft.turma_id, pe.bimestre, ftd.disciplina_id order by ftd.id desc) sequencia");
+            sqlQuery.AppendLine(", tmp_fechamento_disciplinas_duplicados_sequenciados as");
+            sqlQuery.AppendLine("(select ftd.id fechamento_turma_disciplina_id,");
+            sqlQuery.AppendLine("	    row_number() over (partition by ft.turma_id, ft.periodo_escolar_id, ftd.disciplina_id order by ftd.id desc) sequencia");
             sqlQuery.AppendLine("	from fechamento_turma_disciplina ftd");
             sqlQuery.AppendLine("		inner join fechamento_turma ft");
             sqlQuery.AppendLine("			on ftd.fechamento_turma_id = ft.id");
-            sqlQuery.AppendLine("		inner join periodo_escolar pe");
-            sqlQuery.AppendLine("			on ft.periodo_escolar_id = pe.id");
             sqlQuery.AppendLine("		inner join tmp_fechamento_disciplinas_duplicados tmp_fdd");
             sqlQuery.AppendLine("			on ft.turma_id = tmp_fdd.turma_id and");
-            sqlQuery.AppendLine("			   pe.bimestre = tmp_fdd.bimestre and");
+            sqlQuery.AppendLine("			   ft.periodo_escolar_id = tmp_fdd.periodo_escolar_id and");
             sqlQuery.AppendLine("			   ftd.disciplina_id = tmp_fdd.disciplina_id");
             sqlQuery.AppendLine("where not ftd.excluido and");
             sqlQuery.AppendLine("	   not ft.excluido and");
-            sqlQuery.AppendLine("	   ftd.criado_em::date >= @dataInicio::date;");
+            sqlQuery.AppendLine("	   ftd.criado_em::date >= @dataInicio::date)");
             sqlQuery.AppendLine("select fechamento_turma_disciplina_id");
-            sqlQuery.AppendLine("	from tmp_fechamento_disciplinas_duplicados_sequenciados");
+            sqlQuery.AppendLine("  from tmp_fechamento_disciplinas_duplicados_sequenciados");
             sqlQuery.AppendLine("where sequencia > 1;");
 
             return await database.Conexao.QueryAsync<long>(sqlQuery.ToString(), new { dataInicio });
         }        
 
-        public async Task<IEnumerable<(long fechamentoTurmaDisciplinaId, int bimestre, string codigoRf)>> ObterFechamentosTurmaDisciplinaEmProcessamentoComTempoExpirado(DateTime dataInicio, int tempoConsideradoExpiracaoMinutos)
+        public async Task<IEnumerable<(long fechamentoTurmaDisciplinaId, long periodoEscolarId, string codigoRf)>> ObterFechamentosTurmaDisciplinaEmProcessamentoComTempoExpirado(DateTime dataInicio, int tempoConsideradoExpiracaoMinutos)
         {
             var sqlQuery = new StringBuilder();
 
             ConsultaRegistrosFechamentosTurmaDisciplinaDuplicados(sqlQuery);
 
             sqlQuery.AppendLine("select distinct ftd.id fechamentoTurmaDisciplinaId,");
-            sqlQuery.AppendLine("				 pe.bimestre,");
+            sqlQuery.AppendLine("				 ft.periodo_escolar_id as periodoEscolarId,");
             sqlQuery.AppendLine("				 coalesce(ftd.alterado_rf, ftd.criado_rf) codigo_rf");
             sqlQuery.AppendLine("	from fechamento_turma_disciplina ftd");
             sqlQuery.AppendLine("		inner join fechamento_turma ft");
             sqlQuery.AppendLine("			on ftd.fechamento_turma_id = ft.id");
             sqlQuery.AppendLine("		inner join turma t");
             sqlQuery.AppendLine("			on ft.turma_id = t.id");
-            sqlQuery.AppendLine("		inner join periodo_escolar pe");
-            sqlQuery.AppendLine("			on ft.periodo_escolar_id = pe.id");
             sqlQuery.AppendLine("where ftd.situacao = @situacaoFechamentoTurmaDisciplina and");
             sqlQuery.AppendLine("	   ftd.criado_em::date >= @dataInicio::date and");
             sqlQuery.AppendLine($"	   coalesce(ftd.alterado_em, ftd.criado_em)::timestamp < (current_timestamp - interval '{tempoConsideradoExpiracaoMinutos} minutes') and");
@@ -579,11 +574,11 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("	   not exists (select 1");
             sqlQuery.AppendLine("	  		      	 from tmp_fechamento_disciplinas_duplicados tmp_fdd");
             sqlQuery.AppendLine("	  		       where tmp_fdd.turma_id = t.id and");
-            sqlQuery.AppendLine("	  		      	     tmp_fdd.bimestre = pe.bimestre and");
+            sqlQuery.AppendLine("	  		      	     tmp_fdd.periodo_escolar_id = ft.periodo_escolar_id and");
             sqlQuery.AppendLine("	  		      	     tmp_fdd.disciplina_id = ftd.disciplina_id)");
             sqlQuery.AppendLine("order by 1;");
 
-            return await database.Conexao.QueryAsync<(long, int, string)>(sqlQuery.ToString(), new
+            return await database.Conexao.QueryAsync<(long, long, string)>(sqlQuery.ToString(), new
             {
                 situacaoFechamentoTurmaDisciplina = (int)SituacaoFechamento.EmProcessamento,
                 dataInicio
@@ -604,25 +599,22 @@ namespace SME.SGP.Dados.Repositorios
 
         private void ConsultaRegistrosFechamentosTurmaDisciplinaDuplicados(StringBuilder sqlQuery)
         {
-            sqlQuery.AppendLine("drop table if exists tmp_fechamento_disciplinas_duplicados;");
-            sqlQuery.AppendLine("create temporary table tmp_fechamento_disciplinas_duplicados as");
-            sqlQuery.AppendLine("select ft.turma_id,");
-            sqlQuery.AppendLine("	    pe.bimestre,");
+            sqlQuery.AppendLine(";with tmp_fechamento_disciplinas_duplicados as");
+            sqlQuery.AppendLine("(select ft.turma_id,");
+            sqlQuery.AppendLine("	    ft.periodo_escolar_id,");
             sqlQuery.AppendLine("       ftd.disciplina_id");
             sqlQuery.AppendLine("	from fechamento_turma_disciplina ftd");
             sqlQuery.AppendLine("		inner join fechamento_turma ft");
             sqlQuery.AppendLine("			on ftd.fechamento_turma_id = ft.id");
             sqlQuery.AppendLine("		inner join turma t");
             sqlQuery.AppendLine("			on ft.turma_id = t.id");
-            sqlQuery.AppendLine("		inner join periodo_escolar pe");
-            sqlQuery.AppendLine("			on ft.periodo_escolar_id = pe.id");
             sqlQuery.AppendLine("where not ftd.excluido and");
             sqlQuery.AppendLine("	   not ft.excluido and");
             sqlQuery.AppendLine("	   ftd.criado_em::date >= @dataInicio::date");
             sqlQuery.AppendLine("group by ft.turma_id,");
-            sqlQuery.AppendLine("		  pe.bimestre,");
+            sqlQuery.AppendLine("		  ft.periodo_escolar_id,");
             sqlQuery.AppendLine("		  ftd.disciplina_id");
-            sqlQuery.AppendLine("having count(0) > 1;");
+            sqlQuery.AppendLine("having count(0) > 1)");
         }
     }
 }
