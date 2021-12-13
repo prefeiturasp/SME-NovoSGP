@@ -18,7 +18,7 @@ namespace SME.SGP.IoC
             };
 
             var conexaoRabbit = factory.CreateConnection();
-            IModel _channel = conexaoRabbit.CreateModel();
+            IModel _channel = conexaoRabbit.CreateModel();            
             services.AddSingleton(conexaoRabbit);
             services.AddSingleton(_channel);
         }
