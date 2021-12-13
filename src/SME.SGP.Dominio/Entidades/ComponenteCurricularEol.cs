@@ -18,6 +18,7 @@ namespace SME.SGP.Dominio
         public bool RegistraFrequencia { get; set; }
         public bool TerritorioSaber { get; set; }
         public bool BaseNacional { get; set; }
+        public bool ExibirComponenteEOL { get; set; }
         public GrupoMatriz GrupoMatriz { get; set; }
         public string TurmaCodigo { get; set; }
 
