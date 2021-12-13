@@ -74,7 +74,8 @@ namespace SME.SGP.Aplicacao
             { 
                 AulaId = request.AulaId,
                 Planejamento = request.Planejamento,
-                ReflexoesReplanejamento = request.ReflexoesReplanejamento
+                ReflexoesReplanejamento = request.ReflexoesReplanejamento,
+                ComponenteCurricularId = request.ComponenteCurricularId
             };
     }
 }

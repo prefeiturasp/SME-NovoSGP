@@ -153,6 +153,10 @@ namespace SME.SGP.Dominio.Servicos
         {
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio, turma.Semestre);
 
+            var parametroSistema = await mediator
+                                         .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo,
+                                                                                         turma.AnoLetivo));
+
             PeriodoEscolarDto periodo = null;
             // Eja possui 2 calendarios por ano
             if (turma.ModalidadeCodigo == Modalidade.EJA)
@@ -168,8 +172,11 @@ namespace SME.SGP.Dominio.Servicos
                 periodo = (await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id)).Periodos
                     .FirstOrDefault(p => p.Bimestre == bimestre);
 
-            if (!await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre, tipoCalendario: tipoCalendario))
-                throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto.");
+            if (parametroSistema == null || !parametroSistema.Ativo)
+            {
+                if (!await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre, tipoCalendario: tipoCalendario))
+                    throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto.");
+            }
 
             return periodo;
         }

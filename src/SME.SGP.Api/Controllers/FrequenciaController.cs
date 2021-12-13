@@ -34,6 +34,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Listar([FromQuery] FiltroFrequenciaDto filtro, [FromServices] IObterFrequenciaPorAulaUseCase useCase)
         {
             var retorno = await useCase.Executar(filtro);            
+            
             if (retorno == null)
                 return NoContent();
 

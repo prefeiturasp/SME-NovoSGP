@@ -155,14 +155,16 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<long>> ObterComponentesPorAlunoTurmaBimestreAsync(string alunoCodigo, int bimestre, long turmaId)
         {
-            var query = new StringBuilder( @"select ccn.componente_curricular_codigo as ComponenteCurricularId 
+            var query = new StringBuilder(@"select coalesce(ccn.componente_curricular_codigo, ftd.disciplina_id) as ComponenteCurricularId 
                             from conselho_classe_aluno cca 
-	                        inner join conselho_classe_nota ccn
+	                        left join conselho_classe_nota ccn
 		                        on ccn.conselho_classe_aluno_id  = cca.id 
 	                        inner join conselho_classe cc 
 		                        on cca.conselho_classe_id = cc.id
 	                        inner join fechamento_turma ft 
-		                        on cc.fechamento_turma_id  = ft.id
+		                        on cc.fechamento_turma_id  = ft.id 
+                            inner join fechamento_turma_disciplina ftd
+		                    	on ft.id = ftd.fechamento_turma_id
 	                        left join periodo_escolar pe 
 		                        on ft.periodo_escolar_id = pe.id 
 	                        where cca.aluno_codigo = @alunoCodigo

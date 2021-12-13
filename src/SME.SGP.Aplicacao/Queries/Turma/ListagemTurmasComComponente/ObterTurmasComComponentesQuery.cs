@@ -2,13 +2,10 @@
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ListagemTurmasComComponenteQuery : IRequest<PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>>
+    public class ObterTurmasComComponentesQuery : IRequest<PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>>
     {
         public string UeCodigo { get; set; }
         public string DreCodigo { get; set; }
@@ -21,8 +18,9 @@ namespace SME.SGP.Aplicacao
         public int? Semestre { get; set; }
         public bool EhProfessor { get; set; }
         public string CodigoRf { get; set; }
+        public bool ConsideraHistorico { get; set; }
 
-        public ListagemTurmasComComponenteQuery(string ueCodigo, string dreCodigo, string turmaCodigo, int anoLetivo, int qtdeRegistros, int qtdeRegistrosIgnorados, int? bimestre, Modalidade? modalidade, int? semestre, bool ehProfessor, string codigoRf)
+        public ObterTurmasComComponentesQuery(string ueCodigo, string dreCodigo, string turmaCodigo, int anoLetivo, int qtdeRegistros, int qtdeRegistrosIgnorados, int? bimestre, Modalidade? modalidade, int? semestre, bool ehProfessor, string codigoRf, bool consideraHistorico)
         {
             UeCodigo = ueCodigo;
             DreCodigo = dreCodigo;
@@ -35,11 +33,12 @@ namespace SME.SGP.Aplicacao
             Semestre = semestre;
             EhProfessor = ehProfessor;
             CodigoRf = codigoRf;
+            ConsideraHistorico = consideraHistorico;
         }
 
-        public class ListagemTurmasComComponenteQueryValidator : AbstractValidator<ListagemTurmasComComponenteQuery>
+        public class ObterTurmasComComponentesQueryValidator : AbstractValidator<ObterTurmasComComponentesQuery>
         {
-            public ListagemTurmasComComponenteQueryValidator()
+            public ObterTurmasComComponentesQueryValidator()
             {
                 RuleFor(c => c.UeCodigo)
                     .NotEmpty()
