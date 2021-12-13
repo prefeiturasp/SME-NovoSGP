@@ -79,9 +79,10 @@ namespace SME.SGP.Dominio.Servicos
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico));
             }
             else
-            {
                 turmasCodigos = new string[1] { turma.CodigoTurma };
-            }
+
+            if (!turmasCodigos.Any())
+                turmasCodigos = new string[] { turma.CodigoTurma };
 
             // Frequencia
             Filtrar(pareceresDaTurma.Where(c => c.Frequencia), "Frequência");
