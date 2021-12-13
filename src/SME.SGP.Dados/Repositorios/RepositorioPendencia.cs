@@ -42,22 +42,30 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute(query, new { fechamentoId, tipoPendencia });
         }
 
-        public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, int[] tiposPendencias, string tituloPendencia, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, int[] tiposPendencias, string tituloPendencia, string turmaCodigo, Paginacao paginacao, int? tipoGrupo)
         {
             var query = @"from pendencia p
                           left join pendencia_perfil pp on pp.pendencia_id = p.id
                           left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
                           left join pendencia_usuario pu on pu.pendencia_id = p.id ";
 
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                if (tipoGrupo > 0)
+                    query += RetornaQueryTurmaParaUnicoTipo((TipoPendenciaGrupo)tipoGrupo.Value);
+
             query += @"where not p.excluido 
                            and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
                            and p.situacao = @situacao";
 
             if (tiposPendencias.Length > 0)
-                query = $"{query} and p.tipo = any(@tiposPendencias) ";
-
+                query = $"{query} and p.tipo = any(@tiposPendencias) ";  
+                
             if (!string.IsNullOrEmpty(tituloPendencia))
                 query = $"{query} and UPPER(p.titulo) like UPPER('%" + tituloPendencia + "%')";
+
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                if (tipoGrupo > 0)
+                    query+= $" AND t.turma_id = '{turmaCodigo}'";
 
             var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
@@ -145,6 +153,35 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { pendenciaId, turmaId });
         }
 
+        public string RetornaQueryTurmaParaUnicoTipo(TipoPendenciaGrupo tipoGrupo)
+        {
+            string query = string.Empty;
+            switch (tipoGrupo)
+            {
+                case TipoPendenciaGrupo.Fechamento:
+                    query = @"  LEFT JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
+	                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
+	                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
+                                LEFT JOIN pendencia_professor ppf ON pp.pendencia_id = p.id
+                                LEFT JOIN turma t ON t.id = coalesce(ft.turma_id, ppf.turma_id) ";
+                    break;
+
+                case TipoPendenciaGrupo.Calendario:
+                    query = @"  LEFT JOIN pendencia_aula pa ON pa.pendencia_id = p.id
+                                LEFT JOIN pendencia_calendario_ue pcu on pcu.pendencia_id = p.id
+                                LEFT JOIN tipo_calendario tc on tc.id = pcu.tipo_calendario_id
+                                LEFT JOIN aula a on a.tipo_calendario_id = tc.id
+                                LEFT JOIN turma t on t.turma_id = a.turma_id ";
+                    break;
+
+                case TipoPendenciaGrupo.DiarioClasse:
+                    query = @"  LEFT JOIN pendencia_registro_individual pri ON pri.pendencia_id = p.id
+                                LEFT JOIN turma t ON t.id = pri.turma_id ";
+                    break;
+            }
+            return query;
+        }
+
         public async Task<Pendencia> FiltrarListaPendenciasUsuario(string turmaCodigo, Pendencia pendencia)
         {
             var query = @"select p.* from pendencia p";
@@ -206,9 +243,8 @@ namespace SME.SGP.Dados.Repositorios
 
             if (tipoPendenciaAceito)
                 query += $@" WHERE p.id = {pendencia.Id} AND t.turma_id = '{turmaCodigo}'";
-
             else
-                query += $@" WHERE p.id = {pendencia.Id}";
+                return null;
 
             return await database.Conexao.QueryFirstOrDefaultAsync<Pendencia>(query);
         }
