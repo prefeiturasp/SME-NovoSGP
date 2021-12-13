@@ -24,7 +24,6 @@ namespace SME.SGP.Api.Middlewares
 
         public override async void OnException(ExceptionContext context)
         {
-            //var internalIP = Dns.GetHostEntry(Dns.GetHostName()).AddressList?.Where(c => c.AddressFamily == AddressFamily.InterNetwork).ToString();
             var internalIP = "";
 
             switch (context.Exception)
