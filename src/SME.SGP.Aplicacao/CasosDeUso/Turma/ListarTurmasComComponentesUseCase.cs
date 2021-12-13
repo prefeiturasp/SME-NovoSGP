@@ -35,7 +35,8 @@ namespace SME.SGP.Aplicacao
                                                                                          filtroTurmaDto.Modalidade.Value,
                                                                                          filtroTurmaDto.Semestre,
                                                                                          usuario.EhProfessor(),
-                                                                                         usuario.CodigoRf));
+                                                                                         usuario.CodigoRf,
+                                                                                         filtroTurmaDto.ConsideraHistorico));
 
             if (turmasPaginadas == null || !turmasPaginadas.Items.Any())
                 return default;
