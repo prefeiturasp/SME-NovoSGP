@@ -58,14 +58,14 @@ namespace SME.SGP.Dados.Repositorios
                            and p.situacao = @situacao";
 
             if (tiposPendencias.Length > 0)
-                query = $"{query} and p.tipo = any(@tiposPendencias) ";  
-                
+                query = $"{query} and p.tipo = any(@tiposPendencias) ";
+
             if (!string.IsNullOrEmpty(tituloPendencia))
                 query = $"{query} and UPPER(p.titulo) like UPPER('%" + tituloPendencia + "%')";
 
             if (!string.IsNullOrEmpty(turmaCodigo))
                 if (tipoGrupo > 0)
-                    query+= $" AND t.turma_id = '{turmaCodigo}'";
+                    query += $" AND t.turma_id = '{turmaCodigo}'";
 
             var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
@@ -76,33 +76,27 @@ namespace SME.SGP.Dados.Repositorios
 
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
             var queryTotalRegistros = $"select count(0) {query}";
-            try
-            {
-                var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao, tiposPendencias, tituloPendencia });
 
-                var queryPendencias = $@"select distinct coalesce(p.alterado_em, p.criado_em), p.* {query} {orderBy}
+            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao, tiposPendencias, tituloPendencia });
+
+            var queryPendencias = $@"select distinct coalesce(p.alterado_em, p.criado_em), p.* {query} {orderBy}
                     offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;";
 
-                var parametros = new
-                {
-                    usuarioId,
-                    qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
-                    qtde_registros = paginacao.QuantidadeRegistros,
-                    situacao,
-                    tiposPendencias,
-                    tituloPendencia
-                };
-
-                retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendencias, parametros);
-                retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
-                retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
-
-                return retornoPaginado;
-            }
-            catch (Exception ex)
+            var parametros = new
             {
-                return null;
-            }
+                usuarioId,
+                qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
+                qtde_registros = paginacao.QuantidadeRegistros,
+                situacao,
+                tiposPendencias,
+                tituloPendencia
+            };
+
+            retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendencias, parametros);
+            retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
+            retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retornoPaginado;
         }
 
         public async Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)
