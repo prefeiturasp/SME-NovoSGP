@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Contexto
         private readonly NpgsqlConnection conexao;
         private readonly IContextoAplicacao contextoAplicacao;
         
-        public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao, string stringConexao = "SGP_PostgresHml2")
+        public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao, string stringConexao = "SGP_Postgres")
         {
             conexao = new NpgsqlConnection(configuration.GetConnectionString(stringConexao));
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
