@@ -27,15 +27,16 @@ namespace SME.SGP.Aplicacao
         {
             int[] tiposPendenciasAFiltrar = request.TipoPendencia > 0 ? RetornaTiposPendenciaGrupo((TipoPendenciaGrupo)request.TipoPendencia).ToArray() : new int[] { };
 
-
             var pendencias = await repositorioPendencia.ListarPendenciasUsuario(request.UsuarioId,
                                                                                 tiposPendenciasAFiltrar.ToArray(),
                                                                                 request.TituloPendencia,
-                                                                                Paginacao);
+                                                                                request.TurmaCodigo,
+                                                                                Paginacao,
+                                                                                request.TipoPendencia);
 
             var itensDaLista = pendencias.Items.ToList();
 
-            if (!string.IsNullOrEmpty(request.TurmaCodigo))
+            if (!string.IsNullOrEmpty(request.TurmaCodigo) && request.TipoPendencia == 0)
             {
                 foreach (var pendencia in pendencias.Items)
                 {
