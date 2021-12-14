@@ -67,7 +67,7 @@ namespace SME.SGP.Dominio
                     return atividades.Where(a => a.ProfessorRf == CodigoRf);
             
                 else
-                    return atividades.Where(a => (componentesCurricularesProfessor.Intersect(a.Disciplinas.Select(d => d.DisciplinaId)).Any() && a.EhCj) || a.ProfessorRf == CodigoRf);
+                    return atividades.Where(a => (componentesCurricularesProfessor.Intersect(a.Disciplinas.Select(d => d.DisciplinaId)).Any() && !a.EhCj) || a.ProfessorRf == CodigoRf);
             }
         }
 
