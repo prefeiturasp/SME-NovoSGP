@@ -36,7 +36,8 @@ namespace SME.SGP.Aplicacao
                     {
                         var caminhoBase = UtilArquivo.ObterDiretorioBase();
                         var caminhoArquivoDestino = Path.Combine(caminhoBase, novoCaminho, nomeArquivo.ToString());                        
-                        Regex.Replace(acompanhamentoAluno.PercursoIndividual, @$"https.+?{nomeArquivo.ToString()}", caminhoArquivoDestino);
+                        var str = Regex.Replace(acompanhamentoAluno.PercursoIndividual, @$"https.+?{nomeArquivo.ToString()}", caminhoArquivoDestino);
+                        acompanhamentoAluno.PercursoIndividual = str;
                     }
                 }
         }
