@@ -383,7 +383,8 @@ namespace SME.SGP.Dados.Repositorios
                                 and pe.bimestre = @bimestre
                                 and a.disciplina_id = cast(@componenteCurricularId as varchar)
                                 and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
-                                and not a.excluido";
+                                and not a.excluido 
+                                order by a.data_aula";
             return await database.Conexao.QueryAsync<PeriodoEscolarVerificaRegenciaDto>(query, new { turmaCodigo, componenteCurricularId, bimestre});
         }
     }
