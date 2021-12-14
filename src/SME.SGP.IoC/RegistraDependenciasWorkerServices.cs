@@ -671,6 +671,10 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExcluirDiarioBordoPorAulaIdUseCase, ExcluirDiarioBordoPorAulaIdUseCase>();
 
             services.TryAddScopedWorkerService<IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase, ObterInformacoesDeFrequenciaAlunoPorSemestreUseCase>();
+
+            services.TryAddScopedWorkerService<IRabbitDeadletterSerapSyncUseCase, RabbitDeadletterSerapSyncUseCase>();
+
+
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

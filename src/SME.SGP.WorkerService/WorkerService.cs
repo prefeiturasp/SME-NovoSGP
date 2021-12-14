@@ -70,6 +70,7 @@ namespace SME.SGP.Worker.Service
             RegistraDependenciasWorkerServices.Registrar(services);
             RegistrarMapeamentos.Registrar();
             RegistraClientesHttp.Registrar(services, configuration);
+            services.AddRabbit();
             Orquestrador.Inicializar(services.BuildServiceProvider());
             
         }
