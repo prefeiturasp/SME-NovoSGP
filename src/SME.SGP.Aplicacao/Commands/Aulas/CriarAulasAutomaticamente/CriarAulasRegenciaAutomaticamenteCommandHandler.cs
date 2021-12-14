@@ -45,15 +45,21 @@ namespace SME.SGP.Aplicacao
 
             foreach (var dadoTurma in dadosTurmas)
             {
+                
                 var aulas = (List<Aula>)await mediator
                     .Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(dadoTurma.TurmaCodigo, tipoCalendarioId, "Sistema"));
 
-                var aulasCriadasPorUsuarios = mediator
-                    .Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(dadoTurma.TurmaCodigo, tipoCalendarioId)).Result
-                    .Where(a => !a.CriadoPor.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase));
+                var aulasCriadasPorUsuarios =
+                    await mediator.Send(
+                        new ObterAulasDaTurmaPorTipoCalendarioQuery(dadoTurma.TurmaCodigo, tipoCalendarioId));
+                    
+                    
+                var aulasCriadas = aulasCriadasPorUsuarios
+                    .Select(a => Convert.ToInt64(a.DisciplinaId))
+                    .ToArray();
 
                 var componentesCurricularesAulas = await mediator
-                    .Send(new ObterDisciplinasPorIdsQuery(aulasCriadasPorUsuarios.Select(a => Convert.ToInt64(a.DisciplinaId)).ToArray()));
+                    .Send(new ObterDisciplinasPorIdsQuery(aulasCriadas));
 
                 var datasDesconsideradas = (from a in aulasCriadasPorUsuarios
                                             join cc in componentesCurricularesAulas
