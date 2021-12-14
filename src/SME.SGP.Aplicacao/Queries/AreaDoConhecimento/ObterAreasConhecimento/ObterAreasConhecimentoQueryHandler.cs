@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao
             {
                 var codigosTurmas = request.ComponentesCurriculares
                     .Select(cc => cc.TurmaCodigo)
+                    .Where(codigoTurma => codigoTurma != null)
                     .Distinct();
 
                 codigosTurmas.ToList().ForEach(ct =>
