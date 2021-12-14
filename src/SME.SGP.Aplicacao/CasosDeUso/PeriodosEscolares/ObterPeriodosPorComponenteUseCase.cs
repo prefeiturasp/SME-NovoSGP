@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             if (ehRegencia)
                 listaPeriodos = SepararSemanasRegencia(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim);
             else
-                listaPeriodos = SepararPeriodosAulas(periodoEscolar);
+                listaPeriodos = SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula));
 
             return listaPeriodos;
         }
