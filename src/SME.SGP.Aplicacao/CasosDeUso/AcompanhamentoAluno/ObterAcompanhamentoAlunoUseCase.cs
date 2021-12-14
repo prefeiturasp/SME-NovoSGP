@@ -46,6 +46,7 @@ namespace SME.SGP.Aplicacao
                 percursoIndividual.AppendLine(registroIndividual.Registro);
             }
 
+            acompanhamentoAlunoTurmaSemestre.TextoSugerido = true;
             acompanhamentoAlunoTurmaSemestre.PercursoIndividual = percursoIndividual.ToString();
         }
 
