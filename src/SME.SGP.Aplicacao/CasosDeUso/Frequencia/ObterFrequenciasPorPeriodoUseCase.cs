@@ -271,7 +271,8 @@ namespace SME.SGP.Aplicacao
                 var frequenciaDetalhadaALuno = new FrequenciaDetalhadaDto
                 {
                     DataAula = frequenciaAluno.DataAula,
-                    NumeroAula = frequenciaAluno.NumeroAula
+                    NumeroAula = frequenciaAluno.NumeroAula,
+                    CodigoAluno = codigoAluno
                 };
 
                 var aula = await mediator.Send(new ObterAulaPorIdQuery(frequenciaAluno.AulaId));

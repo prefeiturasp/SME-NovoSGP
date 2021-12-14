@@ -6,6 +6,7 @@ namespace SME.SGP.Infra
     {
         public DateTime DataAula { get; set; }
         public long NumeroAula { get; set; }
+        public string CodigoAluno { get; set; }
         public IndicativoFrequenciaDto IndicativoFrequencia { get; set; }
     }
 }
