@@ -28,7 +28,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public NotaTipoValor ObterPorTurmaId(long turmaId, TipoTurma tipoTurma = TipoTurma.Regular)
         {
-            var sql = tipoTurma == TipoTurma.EdFisica ? 
+            var sql = tipoTurma == TipoTurma.EdFisica ?
                     $@"select *
 	                      from notas_conceitos_ciclos_parametos
                        where tipo_nota = {(int)TipoNota.Nota}
@@ -38,7 +38,10 @@ namespace SME.SGP.Dados.Repositorios
                     from
 	                    turma t
                     inner join tipo_ciclo_ano tca on
-	                    tca.ano = t.ano
+	                    (
+		                    (t.ano = 'S' and tca.ano = '1') OR
+    	                    (tca.ano = t.ano)
+                        )
 	                    and tca.modalidade = t.modalidade_codigo
                     inner join tipo_ciclo tc on
 	                    tca.tipo_ciclo_id = tc.id
