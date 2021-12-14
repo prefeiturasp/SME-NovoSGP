@@ -12,13 +12,13 @@ namespace SME.SGP.Api.Controllers
     public class PendenciasController : ControllerBase
     {
         [HttpGet()]
-        [Route("turma/{turmaCodigo}/tipo/{tipoPendencia}/titulo/{tituloPendencia}")]
+        [Route("listar")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<PendenciaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Listar(string turmaCodigo, int? tipoPendencia, string tituloPendencia, 
+        public async Task<IActionResult> Listar([FromQuery] FiltroPendenciasUsuarioDto filtro, 
                                                 [FromServices] IObterPendenciasUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroPendenciasUsuarioDto(turmaCodigo, tipoPendencia, tituloPendencia)));
+            return Ok(await useCase.Executar(filtro));
         }
     }
 }

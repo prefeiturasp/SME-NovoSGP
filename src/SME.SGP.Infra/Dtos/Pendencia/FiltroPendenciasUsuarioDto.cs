@@ -2,7 +2,7 @@
 {
     public class FiltroPendenciasUsuarioDto
     {
-        public FiltroPendenciasUsuarioDto(string turmaCodigo, int? tipoPendencia, string tituloPendencia)
+        public FiltroPendenciasUsuarioDto(string turmaCodigo = null, int tipoPendencia = 0, string tituloPendencia = null)
         {
             TurmaCodigo = turmaCodigo;
             TipoPendencia = tipoPendencia;
@@ -11,7 +11,7 @@
 
         public string TurmaCodigo { get; set; }
 
-        public int? TipoPendencia { get; set; }
+        public int TipoPendencia { get; set; }
 
         public string TituloPendencia { get; set; }
     }
