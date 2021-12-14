@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQueryHandler : IRequestHandler<ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQuery, IEnumerable<(long fechamentoTurmaDisciplinaId, int bimestre, string codigoRf)>>
+    public class ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQueryHandler : IRequestHandler<ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQuery, IEnumerable<(long fechamentoTurmaDisciplinaId, long periodoEscolarId, string codigoRf)>>
     {
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
 
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
         }
 
-        public async Task<IEnumerable<(long fechamentoTurmaDisciplinaId, int bimestre, string codigoRf)>> Handle(ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<(long fechamentoTurmaDisciplinaId, long periodoEscolarId, string codigoRf)>> Handle(ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQuery request, CancellationToken cancellationToken)
         {
             return await repositorioFechamentoTurmaDisciplina
                 .ObterFechamentosTurmaDisciplinaEmProcessamentoComTempoExpirado(request.DataInicio, request.TempoConsideradoExpiradoEmMinutos);
