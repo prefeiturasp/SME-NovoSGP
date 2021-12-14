@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var componenteCurricular = request.ComponentesCurricularesParaVisualizacao.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId));
             
-                    var professorTitular = professoresTitulares != null ? professoresTitulares.FirstOrDefault(p => p.DisciplinaId == long.Parse(aulaParaVisualizar.DisciplinaId)) : null;
+                    var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinaId == long.Parse(aulaParaVisualizar.DisciplinaId));
 
                     var eventoAulaDto = new EventoAulaDto()
                     {
@@ -40,7 +40,8 @@ namespace SME.SGP.Aplicacao
                         EhReposicao = aulaParaVisualizar.TipoAula == TipoAula.Reposicao,
                         EstaAguardandoAprovacao = aulaParaVisualizar.Status == EntidadeStatus.AguardandoAprovacao,
                         EhAulaCJ = aulaParaVisualizar.AulaCJ,
-                        PodeEditarAula = professorTitular != null && !aulaParaVisualizar.AulaCJ || usuarioLogado.EhProfessorCj() && aulaParaVisualizar.AulaCJ,
+                        PodeEditarAula = professorTitular != null && !aulaParaVisualizar.AulaCJ 
+                                      || usuarioLogado.EhProfessorCj() && aulaParaVisualizar.AulaCJ,
                         Quantidade = aulaParaVisualizar.Quantidade,
                         ComponenteCurricularId = long.Parse(aulaParaVisualizar.DisciplinaId)
                     };
