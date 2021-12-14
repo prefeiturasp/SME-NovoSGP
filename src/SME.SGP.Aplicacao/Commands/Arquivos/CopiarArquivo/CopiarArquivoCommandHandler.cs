@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var caminhoBase = UtilArquivo.ObterDiretorioBase();
             var nomeArquivo = Path.GetFileName(request.Nome);
-           
+
             var caminhoArquivoOriginal = Path.Combine(caminhoBase, request.TipoArquivoOriginal.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString().PadLeft(2, '0'));
             var caminhoArquivoDestino = Path.Combine(caminhoBase, request.TipoArquivoDestino.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString().PadLeft(2, '0'));
             CopiarArquivo(caminhoArquivoOriginal, caminhoArquivoDestino, nomeArquivo);
@@ -55,18 +55,10 @@ namespace SME.SGP.Aplicacao
             if (!Directory.Exists(caminhoArquivoDestino))
                 Directory.CreateDirectory(caminhoArquivoDestino);
 
-            try
-            {
-                var pathArquivoDestino = Path.Combine(caminhoArquivoDestino, nomeArquivo);
-                var pathArquivoOrigem = Path.Combine(caminhoArquivoOrigem, nomeArquivo);
-                if (File.Exists(pathArquivoOrigem) && !File.Exists(pathArquivoDestino))
-                    File.Copy(pathArquivoOrigem, pathArquivoDestino);
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }            
+            var pathArquivoDestino = Path.Combine(caminhoArquivoDestino, nomeArquivo);
+            var pathArquivoOrigem = Path.Combine(caminhoArquivoOrigem, nomeArquivo);
+            if (File.Exists(pathArquivoOrigem) && !File.Exists(pathArquivoDestino))
+                File.Copy(pathArquivoOrigem, pathArquivoDestino);
         }
     }
 }
