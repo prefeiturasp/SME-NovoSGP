@@ -49,9 +49,11 @@ namespace SME.SGP.Dados.Repositorios
                           left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
                           left join pendencia_usuario pu on pu.pendencia_id = p.id ";
 
-            if (!string.IsNullOrEmpty(turmaCodigo))
-                if (tipoGrupo > 0)
-                    query += RetornaQueryTurmaParaUnicoTipo((TipoPendenciaGrupo)tipoGrupo.Value);
+            if (!string.IsNullOrEmpty(turmaCodigo) && string.IsNullOrEmpty(tituloPendencia) && tiposPendencias.Count() == 0)
+                query += RetornaQuerySoTurmaFiltrada(turmaCodigo);
+
+            if (!string.IsNullOrEmpty(turmaCodigo) && tiposPendencias.Count() > 0)
+                query += RetornaQueryTurmaParaUnicoTipo((TipoPendenciaGrupo)tipoGrupo.Value, turmaCodigo);
 
             query += @"where not p.excluido 
                            and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
@@ -63,9 +65,8 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(tituloPendencia))
                 query = $"{query} and UPPER(p.titulo) like UPPER('%" + tituloPendencia + "%')";
 
-            if (!string.IsNullOrEmpty(turmaCodigo))
-                if (tipoGrupo > 0)
-                    query += $" AND t.turma_id = '{turmaCodigo}'";
+            if(!string.IsNullOrEmpty(turmaCodigo))
+                query += $" AND t.turma_id = '{turmaCodigo}'";
 
             var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
@@ -147,16 +148,17 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { pendenciaId, turmaId });
         }
 
-        public string RetornaQueryTurmaParaUnicoTipo(TipoPendenciaGrupo tipoGrupo)
+        public string RetornaQueryTurmaParaUnicoTipo(TipoPendenciaGrupo tipoGrupo, string turmaCodigo)
         {
             string query = string.Empty;
+
             switch (tipoGrupo)
             {
                 case TipoPendenciaGrupo.Fechamento:
                     query = @"  LEFT JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
 	                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
 	                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
-                                LEFT JOIN pendencia_professor ppf ON pp.pendencia_id = p.id
+                                LEFT JOIN pendencia_professor ppf ON ppf.pendencia_id = p.id
                                 LEFT JOIN turma t ON t.id = coalesce(ft.turma_id, ppf.turma_id) ";
                     break;
 
@@ -173,6 +175,28 @@ namespace SME.SGP.Dados.Repositorios
                                 LEFT JOIN turma t ON t.id = pri.turma_id ";
                     break;
             }
+
+            return query;
+        }
+
+        public string RetornaQuerySoTurmaFiltrada(string turmaCodigo)
+        {
+            string query = string.Empty;
+
+            if (!string.IsNullOrEmpty(turmaCodigo))
+            {
+                query = @"  LEFT JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
+	                        LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
+	                        LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
+                            LEFT JOIN pendencia_professor ppf ON ppf.pendencia_id = p.id
+                            LEFT JOIN pendencia_aula pa ON pa.pendencia_id = p.id
+                            LEFT JOIN pendencia_calendario_ue pcu on pcu.pendencia_id = p.id
+                            LEFT JOIN tipo_calendario tc on tc.id = pcu.tipo_calendario_id
+                            LEFT JOIN aula a on a.tipo_calendario_id = tc.id
+                            LEFT JOIN pendencia_registro_individual pri ON pri.pendencia_id = p.id
+                            INNER JOIN turma t ON t.id = coalesce(ft.turma_id, ppf.turma_id, pri.turma_id) or t.turma_id = a.turma_id ";
+            }
+
             return query;
         }
 

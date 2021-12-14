@@ -27,31 +27,39 @@ namespace SME.SGP.Aplicacao
         {
             int[] tiposPendenciasAFiltrar = request.TipoPendencia > 0 ? RetornaTiposPendenciaGrupo((TipoPendenciaGrupo)request.TipoPendencia).ToArray() : new int[] { };
 
-            var pendencias = await repositorioPendencia.ListarPendenciasUsuario(request.UsuarioId,
-                                                                                tiposPendenciasAFiltrar.ToArray(),
-                                                                                request.TituloPendencia,
-                                                                                request.TurmaCodigo,
-                                                                                Paginacao,
-                                                                                request.TipoPendencia);
-
-            var itensDaLista = pendencias.Items.ToList();
-
-            if (!string.IsNullOrEmpty(request.TurmaCodigo) && request.TipoPendencia == 0)
+            try
             {
-                foreach (var pendencia in pendencias.Items)
+
+                var pendencias = await repositorioPendencia.ListarPendenciasUsuario(request.UsuarioId,
+                                                                                    tiposPendenciasAFiltrar.ToArray(),
+                                                                                    request.TituloPendencia,
+                                                                                    request.TurmaCodigo,
+                                                                                    Paginacao,
+                                                                                    request.TipoPendencia);
+
+                var itensDaLista = pendencias.Items.ToList();
+
+                if (!string.IsNullOrEmpty(request.TurmaCodigo) && request.TipoPendencia == 0)
                 {
-                    var pendenciaFiltrada = await repositorioPendencia
-                                                   .FiltrarListaPendenciasUsuario(request.TurmaCodigo,
-                                                                                  pendencia);
+                    foreach (var pendencia in pendencias.Items)
+                    {
+                        var pendenciaFiltrada = await repositorioPendencia
+                                                       .FiltrarListaPendenciasUsuario(request.TurmaCodigo,
+                                                                                      pendencia);
 
-                    if (pendenciaFiltrada == null)
-                        itensDaLista.Remove(pendencia);
+                        if (pendenciaFiltrada == null)
+                            itensDaLista.Remove(pendencia);
+                    }
                 }
+
+                pendencias.Items = itensDaLista;
+
+                return await MapearParaDtoPaginado(pendencias);
             }
-
-            pendencias.Items = itensDaLista;
-
-            return await MapearParaDtoPaginado(pendencias);
+            catch(Exception ex)
+            {
+                return null;
+            }
         }
 
         public IEnumerable<int> RetornaTiposPendenciaGrupo(TipoPendenciaGrupo tipoGrupo)
@@ -139,7 +147,7 @@ namespace SME.SGP.Aplicacao
             => turma != null ? $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}" : "";
 
         private string ObterNomeBimestre(int bimestre)
-            => $"{bimestre}º Bimestre";
+            => bimestre == 0? "Final" : $"{bimestre}º Bimestre";
 
         private async Task<string> ObterDescricaoPendencia(Pendencia pendencia)
         {
