@@ -9,9 +9,9 @@ namespace SME.SGP.Infra
     {
         public string AlunoCodigo { get; set; }
         public DateTime DataAula { get; set; }
-        public long? AulaId { get; set; }
-        public int? NumeroAula { get; set; }
-        public TipoFrequencia? TipoFrequencia { get; set; }
+        public long[] AulaId { get; set; }
+        public int[] NumeroAula { get; set; }
+        public string TipoFrequencia { get; set; }
         public List<FrequenciaAulasDoDiaDto> Aulas { get; set; }
     }
 }
