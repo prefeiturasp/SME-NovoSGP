@@ -93,7 +93,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, int semestre)
         {
-            var turma = await consultasTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
+            //var periodosAberto = await mediator.Send(new ObterPeriodoComFechamentoEmAbertoQuery(turma.UeId));
             var periodosAberto = await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(turma.UeId);
 
             PeriodoEscolar periodoEscolar;
