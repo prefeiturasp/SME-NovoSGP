@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioPeriodoEscolar : RepositorioBase<PeriodoEscolar>, IRepositorioPeriodoEscolar
+    public class RepositorioPeriodoEscolarConsulta : RepositorioBase<PeriodoEscolar>, IRepositorioPeriodoEscolar
     {
-        public RepositorioPeriodoEscolar(ISgpContext conexao) : base(conexao) { }
+        public RepositorioPeriodoEscolarConsulta(ISgpContextConsultas conexao) : base(conexao) { }
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPorTipoCalendario(long tipoCalendarioId)
         {

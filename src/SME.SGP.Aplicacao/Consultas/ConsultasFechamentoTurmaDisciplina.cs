@@ -94,7 +94,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, int semestre)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            //var periodosAberto = await mediator.Send(new ObterPeriodoComFechamentoEmAbertoQuery(turma.UeId));
+
             var periodosAberto = await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(turma.UeId);
 
             PeriodoEscolar periodoEscolar;
@@ -109,6 +109,7 @@ namespace SME.SGP.Aplicacao
                 var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, semestre);
                 if (tipoCalendario == null)
                     throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
+
                 var periodosEscolares = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
                 if (periodosEscolares == null)
                     throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
