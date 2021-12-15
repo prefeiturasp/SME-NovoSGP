@@ -7,5 +7,6 @@ namespace SME.SGP.Infra
     {
         public DateTime DataAula { get; set; }
         public string TipoFrequencia { get; set; }
+        public long AulaId { get; set; }
     }
 }

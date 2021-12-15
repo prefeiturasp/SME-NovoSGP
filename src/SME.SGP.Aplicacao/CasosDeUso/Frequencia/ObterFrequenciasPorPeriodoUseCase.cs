@@ -228,12 +228,13 @@ namespace SME.SGP.Aplicacao
                 };
                 foreach (FrequenciaDto frequenciaDia in frequeciasDia)
                 {
-                    var aula = aulas.Where(x => x.Id == frequenciaDia.AulaId).FirstOrDefault(); //await mediator.Send(new ObterAulaPorIdQuery(frequenciaDia.AulaId));
+                    var aula = aulas.Where(x => x.Id == frequenciaDia.AulaId).FirstOrDefault();
                     if (aula == null)
                         throw new NegocioException("Aula não encontrada.");
 
                     var frequenciaAlunoAula = new FrequenciaAulaPorDataPeriodoDto
                     {
+                        AulaId = aula.Id,
                         DataAula = aula.DataAula
                     };
 
@@ -266,7 +267,7 @@ namespace SME.SGP.Aplicacao
 
             var frequenciasAluno = await mediator.Send(new ObterFrequenciasDetalhadasPorDataQuery(codigoAluno, dataInicio, dataFim));
 
-            foreach (var frequenciaAluno in frequenciasAluno)
+            foreach (var frequenciaAluno in frequenciasAluno.Distinct())
             {
                 var frequenciaDetalhadaALuno = new FrequenciaDetalhadaDto
                 {
