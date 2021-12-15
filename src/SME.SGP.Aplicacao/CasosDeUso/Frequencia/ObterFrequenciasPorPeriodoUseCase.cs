@@ -267,7 +267,7 @@ namespace SME.SGP.Aplicacao
 
             var frequenciasAluno = await mediator.Send(new ObterFrequenciasDetalhadasPorDataQuery(codigoAluno, dataInicio, dataFim));
 
-            foreach (var frequenciaAluno in frequenciasAluno.Distinct())
+            foreach (var frequenciaAluno in frequenciasAluno)
             {
                 var frequenciaDetalhadaALuno = new FrequenciaDetalhadaDto
                 {
