@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAusenciasAlunosPorAlunosETurmaIdQueryHandler : IRequestHandler<ObterAusenciasAlunosPorAlunosETurmaIdQuery, IEnumerable<AusenciaPorDisciplinaAlunoDto>>
     {
-        private readonly IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno;
+        private readonly IRepositorioRegistroFrequenciaAlunoConsulta repositorioRegistroFrequenciaAluno;
 
-        public ObterAusenciasAlunosPorAlunosETurmaIdQueryHandler(IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno)
+        public ObterAusenciasAlunosPorAlunosETurmaIdQueryHandler(IRepositorioRegistroFrequenciaAlunoConsulta repositorioRegistroFrequenciaAluno)
         {
             this.repositorioRegistroFrequenciaAluno = repositorioRegistroFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroFrequenciaAluno));
         }

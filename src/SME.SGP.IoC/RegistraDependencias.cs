@@ -210,8 +210,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioGradeDisciplina, RepositorioGradeDisciplina>();
             services.TryAddScoped<IRepositorioFrequencia, RepositorioFrequencia>();
             services.TryAddScoped<IRepositorioRegistroAusenciaAluno, RepositorioRegistroAusenciaAluno>();
+            services.TryAddScoped<IRepositorioRegistroAusenciaAlunoConsulta, RepositorioRegistroAusenciaAlunoConsulta>();
             services.TryAddScoped<IRepositorioAtribuicaoEsporadica, RepositorioAtribuicaoEsporadica>();
             services.TryAddScoped<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
+            services.TryAddScoped<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta, RepositorioFrequenciaAlunoDisciplinaPeriodoConsulta>();
             services.TryAddScoped<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
             services.TryAddScoped<IRepositorioTipoAvaliacao, RepositorioTipoAvaliacao>();
             services.TryAddScoped<IRepositorioPlanoAula, RepositorioPlanoAula>();
@@ -389,6 +391,7 @@ namespace SME.SGP.IoC
             // Frequência 
             services.TryAddScoped<IRepositorioFrequenciaPreDefinida, RepositorioFrequenciaPreDefinida>();
             services.TryAddScoped<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
+            services.TryAddScoped<IRepositorioRegistroFrequenciaAlunoConsulta, RepositorioRegistroFrequenciaAlunoConsulta>();
             services.TryAddScoped<IRepositorioDashBoardFrequencia, RepositorioDashBoardFrequencia>();
 
             //Evento Bimestre
