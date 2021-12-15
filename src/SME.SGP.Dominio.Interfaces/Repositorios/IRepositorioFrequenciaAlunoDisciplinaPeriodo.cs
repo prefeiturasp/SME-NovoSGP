@@ -30,7 +30,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         
 
-        Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosAsync(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId);
         Task SalvarVariosAsync(IEnumerable<FrequenciaAluno> entidades);
           
         Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorAnoModalidadeSemestre(string alunoCodigo, int anoTurma, long tipoCalendarioId);
