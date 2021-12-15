@@ -257,7 +257,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, bool consideraInativos = false)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
 
@@ -269,7 +269,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                var resposta = await httpClient.GetAsync($"turmas/{turmaId}");
+                var resposta = await httpClient.GetAsync($"turmas/{turmaId}/considera-inativos/{consideraInativos}");
                 if (resposta.IsSuccessStatusCode)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
