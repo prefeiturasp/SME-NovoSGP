@@ -24,8 +24,11 @@ namespace SME.SGP.Aplicacao
         private readonly IAsyncPolicy policy;
 
         public CalcularFrequenciaPorTurmaCommandHandler(IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno,
-            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
-            IUnitOfWork unitOfWork, IMediator mediator, IReadOnlyPolicyRegistry<string> registry)
+                                                        IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
+                                                        IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
+                                                        IUnitOfWork unitOfWork,
+                                                        IMediator mediator,
+                                                        IReadOnlyPolicyRegistry<string> registry)
         {
             this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
@@ -53,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
                 var periodosEscolaresParaFiltro = ausenciasDosAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
 
-                var frequenciaDosAlunos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunosAsync(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId);
+                var frequenciaDosAlunos = await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId));
 
                 var frequenciasParaRemover = new List<FrequenciaAluno>();
                 var frequenciasParaPersistir = new List<FrequenciaAluno>();
@@ -61,8 +64,8 @@ namespace SME.SGP.Aplicacao
                 if (ausenciasDosAlunos != null && ausenciasDosAlunos.Any())
                 {
                     //Transformar em uma query única?
-                    var totalAulasNaDisciplina = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, request.DisciplinaId, request.TurmaId);
-                    var totalAulasDaTurmaGeral = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, string.Empty, request.TurmaId);
+                    var totalAulasNaDisciplina = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.DisciplinaId, request.TurmaId));
+                    var totalAulasDaTurmaGeral = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, string.Empty, request.TurmaId));
 
                     var alunosComAusencias = ausenciasDosAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
                     var bimestresParaFiltro = ausenciasDosAlunos.Select(a => a.Bimestre).Distinct().ToList();
