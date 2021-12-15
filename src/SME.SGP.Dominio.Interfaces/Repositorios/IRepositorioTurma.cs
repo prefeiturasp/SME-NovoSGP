@@ -11,8 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         IEnumerable<Turma> MaterializarCodigosTurma(string[] idTurmas, out string[] codigosNaoEncontrados);
 
-        Task<Turma> ObterPorCodigo(string turmaCodigo);
-
         Task<Turma> ObterPorId(long id);
 
         Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo);

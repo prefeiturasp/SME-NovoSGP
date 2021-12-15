@@ -169,12 +169,7 @@ namespace SME.SGP.Dados.Repositorios
             codigosNaoEncontrados = naoEncontrados.ToArray();
 
             return resultado;
-        }
-
-        public async Task<Turma> ObterPorCodigo(string turmaCodigo)
-        {
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
-        }
+        }         
 
         public async Task<long> ObterTurmaIdPorCodigo(string turmaCodigo)
         {
