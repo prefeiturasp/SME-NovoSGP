@@ -226,7 +226,7 @@ namespace SME.SGP.Aplicacao
                 frequenciaAluno.CodigoAluno = aluno.CodigoAluno;
                 frequenciaAluno.NomeAluno = aluno.NomeAluno;
                 frequenciaAluno.NumeroAlunoChamada = aluno.NumeroAlunoChamada;
-
+                var detalhesAulaAluno = await ObterDetalhesFrequencia(aluno.CodigoAluno,dataInicio,dataFim);
                 foreach (FrequenciaDto frequenciaDia in frequeciasDia)
                 {
                     var aula = await mediator.Send(new ObterAulaPorIdQuery(frequenciaDia.AulaId));
@@ -250,6 +250,9 @@ namespace SME.SGP.Aplicacao
                     frequenciaAluno.Aulas.Add(frequenciaAlunoAula);
                 }
 
+                foreach (var aulaDetalhe in detalhesAulaAluno)
+                    frequenciaAluno.AulasDetalhes.Add(aulaDetalhe);
+
                 registroFrequenciaPorDataPeriodo.ListaFrequencia.Add(frequenciaAluno);
             }
 
@@ -271,13 +274,26 @@ namespace SME.SGP.Aplicacao
                 var frequenciaDetalhadaALuno = new FrequenciaDetalhadaDto
                 {
                     DataAula = frequenciaAluno.DataAula,
-                    NumeroAula = frequenciaAluno.NumeroAula,
-                    CodigoAluno = codigoAluno
+                    CodigoAluno = codigoAluno,
                 };
 
                 var aula = await mediator.Send(new ObterAulaPorIdQuery(frequenciaAluno.AulaId));
                 if (aula == null)
                     throw new NegocioException("Aula não encontrada.");
+                else
+                {
+                    frequenciaDetalhadaALuno.AulaId = aula.Id;
+                    frequenciaDetalhadaALuno.PossuiAnotacao = await VerificarSePossuiAnotacaoNaAula(frequenciaDetalhadaALuno.CodigoAluno, frequenciaDetalhadaALuno.AulaId);
+                    var tipoFrequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(long.Parse(aula.TurmaId), long.Parse(aula.DisciplinaId), frequenciaDetalhadaALuno.CodigoAluno));
+                    for (int numeroAula = 1; numeroAula <= aula.Quantidade; numeroAula++)
+                    {
+                        frequenciaDetalhadaALuno.Aulas.Add(new FrequenciaDetalhadaAulasDto
+                        {
+                            NumeroAula = numeroAula,
+                            TipoFrequencia = tipoFrequenciaPreDefinida.ShortName()
+                        });
+                    }
+                }
 
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
                 if (turma == null)
@@ -307,7 +323,6 @@ namespace SME.SGP.Aplicacao
 
                 frequenciaRetorno.Add(frequenciaDetalhadaALuno);
             }
-
             return frequenciaRetorno;
         }
 
@@ -366,45 +381,32 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
-
+        private async Task<bool> VerificarSePossuiAnotacaoNaAula(string codigoAluno, long aulaId)
+        {
+            var anotacao = await mediator.Send(new ObterAnotacaoFrequenciaAlunoQuery(codigoAluno, aulaId));
+            return anotacao == null ? false : true;
+        }
         private async Task<RegistroFrequenciaPorDataPeriodoDto> ObterRegistroFrequenciaPorData(string disciplinaId, string turmaId, DateTime dataInicio, DateTime dataFim, IList<FrequeciaPorDataPeriodoDto> listaFrequencia)
         {
             var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorDataEAulaIdQuery(disciplinaId, turmaId, dataInicio, dataFim));
-            var listaDetalhes = new List<FrequenciaDetalhadaDto>();
             if (registroFrequencia == null)
-            {
                 return null;
-            }
             else
             {
                 var menorCriadoEm = registroFrequencia.OrderBy(a => a.CriadoEm).FirstOrDefault();
                 var maiorAlteradoEm = registroFrequencia.OrderByDescending(a => a.CriadoEm).FirstOrDefault();
                 if (maiorAlteradoEm == null)
-                {
                     maiorAlteradoEm = menorCriadoEm;
-                }
-
-                var codigoAlunos = listaFrequencia.Select(x => x.CodigoAluno).Distinct();
-                foreach (var item in codigoAlunos)
-                {
-                    var detalheLista = await ObterDetalhesFrequencia(item, dataInicio, dataFim);
-                    foreach (var lista in detalheLista)
-                        listaDetalhes.Add(lista);
-                }
                 var RegistroFrequenciaPorDataPeriodoDto = new RegistroFrequenciaPorDataPeriodoDto()
                 {
                     AlteradoEm = maiorAlteradoEm.AlteradoEm,
-                    AlteradoPor = maiorAlteradoEm.AlteradoPor,
-                    AlteradoRF = maiorAlteradoEm.AlteradoPor,
+                    AlteradoPor = maiorAlteradoEm.AlteradoPor ?? string.Empty,
+                    AlteradoRF = maiorAlteradoEm.AlteradoPor ?? string.Empty,
                     CriadoEm = menorCriadoEm.CriadoEm,
-                    CriadoPor = menorCriadoEm.CriadoPor,
-                    CriadoRF = menorCriadoEm.CriadoRF,
-                    ListaFrequencia = listaFrequencia,
-                    ListaFrequenciaDetalhes = listaDetalhes
+                    CriadoPor = menorCriadoEm.CriadoPor ?? string.Empty,
+                    CriadoRF = menorCriadoEm.CriadoRF ?? string.Empty,
+                    ListaFrequencia = listaFrequencia
                 };
-
-
-
                 return RegistroFrequenciaPorDataPeriodoDto;
             }
         }

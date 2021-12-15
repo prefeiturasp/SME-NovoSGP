@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -9,11 +7,12 @@ namespace SME.SGP.Infra
         public FrequeciaPorDataPeriodoDto()
         {
             Aulas = new List<FrequenciaAulaPorDataPeriodoDto>();
+            AulasDetalhes = new List<FrequenciaDetalhadaDto>();
         }
         public string CodigoAluno { get; set; }
         public string NomeAluno { get; set; }
         public int NumeroAlunoChamada { get; set; }
-
-        public List<FrequenciaAulaPorDataPeriodoDto> Aulas { get; set; }
+        public IList<FrequenciaAulaPorDataPeriodoDto> Aulas { get; set; }
+        public IList<FrequenciaDetalhadaDto> AulasDetalhes { get; set; }
     }
 }

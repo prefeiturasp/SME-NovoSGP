@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -9,7 +8,6 @@ namespace SME.SGP.Infra
         public RegistroFrequenciaPorDataPeriodoDto()
         {
             ListaFrequencia = new List<FrequeciaPorDataPeriodoDto>();
-            ListaFrequenciaDetalhes = new List<FrequenciaDetalhadaDto>();
         }
         public DateTime? AlteradoEm { get; set; }
 
@@ -17,7 +15,7 @@ namespace SME.SGP.Infra
 
         public string AlteradoRF { get; set; }
 
-        public DateTime CriadoEm { get; set; }
+        public DateTime? CriadoEm { get; set; }
 
         public string CriadoPor { get; set; }
 
@@ -25,7 +23,5 @@ namespace SME.SGP.Infra
 
         [ListaTemElementos(ErrorMessage = "A lista de frequência é obrigatória")]
         public IList<FrequeciaPorDataPeriodoDto> ListaFrequencia { get; set; }
-        public IList<FrequenciaDetalhadaDto> ListaFrequenciaDetalhes { get; set; }
-
     }
 }
