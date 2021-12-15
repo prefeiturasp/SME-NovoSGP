@@ -11,24 +11,21 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioDiarioBordoObservacao(ISgpContext conexao) : base(conexao) { }
 
-        public async Task ExcluirObservacoesPorDiarioBordoId(long diarioBordoId, long? usuarioId)
+        public async Task ExcluirObservacoesPorDiarioBordoId(long diarioBordoObservacaoId)
         {
 			var query = @"update diario_bordo_observacao 
 							set excluido = true
 							, alterado_por = @alteradoPor
 							, alterado_rf = @alteradoRF
 							, alterado_em = @alteradoEm
-						where diario_bordo_id = @diarioBordoId";
-
-			if (usuarioId.HasValue)
-				query += " and usuario_id = @usuarioId";
+						where id = @diarioBordoObservacaoId ";
 
 			var parametros = new
 			{
-				diarioBordoId,
+				diarioBordoObservacaoId,
 				alteradoPor = database.UsuarioLogadoNomeCompleto,
 				alteradoRF = database.UsuarioLogadoRF,
-				alteradoEm = DateTimeExtension.HorarioBrasilia()
+				alteradoEm = DateTimeExtension.HorarioBrasilia(),
 			};
 
 			await database.Conexao.ExecuteScalarAsync(query, parametros);
@@ -90,12 +87,11 @@ namespace SME.SGP.Dados.Repositorios
 
 		public async Task<DiarioBordoObservacaoDto> ObterDiarioBordoObservacaoPorObservacaoId(long observacaoId)
 		{
-			const string sql = @"select
-									dbob.Observacao, dbob.diario_bordo_id as DiarioBordoId, u.rf_codigo as UsuarioCodigoRfDiarioBordo, u.nome as UsuarioNomeDiarioBordo
-								from
-									diario_bordo_observacao dbob
-								where
-									dbob.id = @observacaoId";
+			const string sql = @" select dbob.Observacao, dbob.diario_bordo_id as DiarioBordoId, u.rf_codigo as UsuarioCodigoRfDiarioBordo, u.nome as UsuarioNomeDiarioBordo
+								  from diario_bordo_observacao dbob
+								  inner join diario_bordo db on dbob.diario_bordo_id = db.id
+								  inner join usuario u on u.rf_codigo = db.criado_rf 	
+								where dbob.id = @observacaoId";
 
 			return await database.Conexao.QuerySingleOrDefaultAsync<DiarioBordoObservacaoDto>(sql, new { observacaoId });
 		}

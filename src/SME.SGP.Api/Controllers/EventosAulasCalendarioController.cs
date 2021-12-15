@@ -51,6 +51,7 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(retorno);
         }
+
         [HttpGet]
         [ProducesResponseType(typeof(EventoAulaDiaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -69,8 +70,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterEventosAulasNoDiaPorCalendario(long tipoCalendarioId, int mes, int dia, 
             [FromQuery]FiltroAulasEventosCalendarioDto filtro, [FromServices]IMediator mediator, [FromServices]IServicoUsuario servicoUsuario)
         {            
-            var retorno = await ObterAulasEventosProfessorCalendarioPorMesDiaUseCase.Executar(mediator, filtro, tipoCalendarioId, mes, dia, filtro.AnoLetivo, servicoUsuario);
-            
+            var retorno = await ObterAulasEventosProfessorCalendarioPorMesDiaUseCase.Executar(mediator, filtro, tipoCalendarioId, mes, dia, filtro.AnoLetivo);
             retorno.EventosAulasMes = await ObterAulasEventosProfessorCalendarioPorMesUseCase.Executar(mediator, filtro, tipoCalendarioId, mes, servicoUsuario);
             
             return Ok(retorno);

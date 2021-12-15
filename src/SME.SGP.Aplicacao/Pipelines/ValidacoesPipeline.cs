@@ -12,8 +12,7 @@ namespace SME.SGP.Aplicacao.Pipelines
     {
         private readonly IEnumerable<IValidator<TRequest>> validadores;
 
-        public ValidacoesPipeline(IMediator mediator,
-                                  IEnumerable<IValidator<TRequest>> validadores)
+        public ValidacoesPipeline(IEnumerable<IValidator<TRequest>> validadores)
         {
             this.validadores = validadores ?? throw new System.ArgumentNullException(nameof(validadores));
         }
@@ -24,16 +23,13 @@ namespace SME.SGP.Aplicacao.Pipelines
             {
                 var context = new ValidationContext(request);
 
-                var erros = validadores
-                    .Select(v => v.Validate(context))
-                    .SelectMany(result => result.Errors)
-                    .Where(f => f != null)
-                    .ToList();
+                var erros = validadores.Select(v => v.Validate(context))
+                                       .SelectMany(result => result.Errors)
+                                       .Where(f => f != null)
+                                       .ToList();
 
                 if (erros != null && erros.Any())
-                {
                     throw new ValidacaoException(erros);
-                }
             }
 
             return next();
