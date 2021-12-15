@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao
                 TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
             };
 
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
 
@@ -223,7 +223,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> BuscaTurma(string turmaId)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
             if (turma == null)
                 throw new NegocioException("Turma não localizada!");
 

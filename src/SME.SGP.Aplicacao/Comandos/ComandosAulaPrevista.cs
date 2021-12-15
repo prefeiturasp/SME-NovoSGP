@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,18 +16,20 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
 
         public ComandosAulaPrevista(IRepositorioAulaPrevista repositorio,
                                     IRepositorioAulaPrevistaBimestre repositorioBimestre,
                                     IRepositorioTurma repositorioTurma,
                                      IRepositorioTipoCalendario repositorioTipoCalendario,
-                                    IUnitOfWork unitOfWork)
+                                    IUnitOfWork unitOfWork, IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<string> Alterar(AulaPrevistaDto dto, long id)
@@ -91,7 +94,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurma(string turmaId)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
             if (turma == null)
                 throw new NegocioException("Turma não encontrada!");

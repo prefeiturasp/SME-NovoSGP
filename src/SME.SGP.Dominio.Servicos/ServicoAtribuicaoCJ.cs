@@ -1,4 +1,6 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -19,9 +21,10 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
         public ServicoAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAbrangencia servicoAbrangencia, IRepositorioTurma repositorioTurma,
-            IRepositorioAbrangencia repositorioAbrangencia, IRepositorioAula repositorioAula, IServicoUsuario servicoUsuario, IRepositorioComponenteCurricular repositorioComponenteCurricular)
+            IRepositorioAbrangencia repositorioAbrangencia, IRepositorioAula repositorioAula, IServicoUsuario servicoUsuario, IRepositorioComponenteCurricular repositorioComponenteCurricular, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
@@ -30,6 +33,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task Salvar(AtribuicaoCJ atribuicaoCJ,IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol, IEnumerable<AtribuicaoCJ> atribuicoesAtuais = null)
@@ -74,7 +78,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (atribuicaoCJ.Substituir)
             {
-                var turma = await repositorioTurma.ObterPorCodigo(atribuicaoCJ.TurmaId);
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atribuicaoCJ.TurmaId));
               
                 if (abrangenciasAtuais != null && !abrangenciasAtuais.Any())
                 {

@@ -14,11 +14,11 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioAula repositorio;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
 
         private readonly IRepositorioAula repositorioAula;
 
-        public ObterDatasAulasPorProfessorEComponenteQueryHandler(IMediator mediator, IRepositorioAula repositorio, IRepositorioTurma repositorioTurma, IRepositorioAula repositorioAula)
+        public ObterDatasAulasPorProfessorEComponenteQueryHandler(IMediator mediator, IRepositorioAula repositorio, IRepositorioTurmaConsulta repositorioTurma, IRepositorioAula repositorioAula)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 

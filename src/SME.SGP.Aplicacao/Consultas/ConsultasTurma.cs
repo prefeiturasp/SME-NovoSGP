@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<Turma> ObterPorCodigo(string codigoTurma)
-            => await repositorioTurma.ObterPorCodigo(codigoTurma);
+            => await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
 
         public async Task<Turma> ObterComUeDrePorCodigo(string codigoTurma)
             => await repositorioTurma.ObterTurmaComUeEDrePorCodigo(codigoTurma);

@@ -10,17 +10,17 @@ namespace SME.SGP.Aplicacao
     public class ObterPeriodoEscolarIdPorTurmaBimestreQueryHandler : IRequestHandler<ObterPeriodoEscolarIdPorTurmaBimestreQuery, long>
     {
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IMediator mediator;
 
-        public ObterPeriodoEscolarIdPorTurmaBimestreQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioTurma repositorioTurma)
+        public ObterPeriodoEscolarIdPorTurmaBimestreQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IMediator mediator)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<long> Handle(ObterPeriodoEscolarIdPorTurmaBimestreQuery request, CancellationToken cancellationToken)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(request.TurmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 

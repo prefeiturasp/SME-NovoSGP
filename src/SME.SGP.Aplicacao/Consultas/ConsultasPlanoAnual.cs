@@ -263,7 +263,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodoEscolar(string turmaId, int anoLetivo)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
             if (turma == null)
             {
                 throw new NegocioException("Turma não encontrada.");

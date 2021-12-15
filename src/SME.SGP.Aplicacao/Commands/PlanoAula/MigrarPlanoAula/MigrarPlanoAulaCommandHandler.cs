@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarMigracao(MigrarPlanoAulaDto migrarPlanoAulaDto, string codigoRf, bool ehProfessorCj, string ueId, string turmaCodigo)
         {
 
-            var turmaAula = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turmaAula = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             Ue ue = repositorioUe.ObterPorId(turmaAula.UeId);
             turmaAula.AdicionarUe(ue);
 

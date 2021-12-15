@@ -126,14 +126,18 @@ namespace SME.SGP.Aplicacao
                     => await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestre);
 
         public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplina(string turmaCodigo, string disciplinaId, int bimestre)
-                    => await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turmaCodigo, new long[] { Convert.ToInt64(disciplinaId) }, bimestre);
+        {
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
+
+            return await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { Convert.ToInt64(disciplinaId) }, bimestre);
+        }
 
         public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaId)
             => await repositorioFechamentoTurmaDisciplina.ObterNotasBimestre(codigoAluno, fechamentoTurmaId);
 
         public async Task<FechamentoTurmaDisciplinaBimestreDto> ObterNotasFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int? bimestre, int semestre)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, ModalidadeParaModalidadeTipoCalendario(turma.ModalidadeCodigo), semestre);
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");

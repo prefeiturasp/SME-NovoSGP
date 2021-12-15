@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao
 
             retorno.EhSintese = !disciplinaEOL.LancaNota;
 
-            var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.CodigoTurma, new long[] { filtros.DisciplinaCodigo });
+            var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { filtros.DisciplinaCodigo });
             var notasFechamentosFinais = Enumerable.Empty<FechamentoNota>();
             if (fechamentosTurmaDisciplina != null && fechamentosTurmaDisciplina.Any())
                 notasFechamentosFinais = await repositorioFechamentoNota.ObterPorFechamentosTurma(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray());
@@ -225,7 +225,7 @@ namespace SME.SGP.Aplicacao
             //BIMESTRE / NOTA / DISCIPLINA ID / ALUNO CODIGO
             foreach (var periodo in periodosEscolares)
             {
-                var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.CodigoTurma, new long[] { disciplinaCodigo }, periodo.Bimestre);
+                var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { disciplinaCodigo }, periodo.Bimestre);
 
                 foreach (var fechamentoTurmaDisciplina in fechamentosTurmaDisciplina)
                 {

@@ -2,11 +2,9 @@
 using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -18,14 +16,14 @@ namespace SME.SGP.Aplicacao.Teste.Queries
         private readonly ObterDatasAulasPorProfessorEComponenteQueryHandler query;
         private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioAula> repositorio;
-        private readonly Mock<IRepositorioTurma> repositorioTurma;
+        private readonly Mock<IRepositorioTurmaConsulta> repositorioTurma;
         private readonly Mock<IRepositorioAula> repositorioAula;
 
         public ObterDatasAulasPorProfessorEComponenteQueryHandlerTeste()
         {
             mediator = new Mock<IMediator>();
             repositorio = new Mock<IRepositorioAula>();
-            repositorioTurma = new Mock<IRepositorioTurma>();
+            repositorioTurma = new Mock<IRepositorioTurmaConsulta>();
             repositorioAula = new Mock<IRepositorioAula>();
 
             query = new ObterDatasAulasPorProfessorEComponenteQueryHandler(mediator.Object, repositorio.Object, repositorioTurma.Object, repositorioAula.Object);

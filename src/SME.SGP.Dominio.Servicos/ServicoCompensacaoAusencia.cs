@@ -424,7 +424,7 @@ namespace SME.SGP.Dominio.Servicos
             var turmasComErro = new StringBuilder("");
             foreach (var turmaId in compensacaoCopia.TurmasIds)
             {
-                var turma = await repositorioTurma.ObterPorCodigo(turmaId);
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
                 CompensacaoAusenciaDto compensacaoDto = new CompensacaoAusenciaDto()
                 {
                     TurmaId = turmaId,

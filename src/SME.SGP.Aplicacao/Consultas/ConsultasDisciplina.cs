@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao
                     return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
             }
 
-            var turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
             if (turma == null)
                 throw new NegocioException("Não foi possível encontrar a turma");
 
@@ -180,7 +180,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
             }
 
-            var turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
             if (turma == null)
                 throw new NegocioException("Não foi possível encontrar a turma");
 
@@ -298,7 +298,7 @@ namespace SME.SGP.Aplicacao
 
                             //disciplinasDto.Add(consultaDisciplinaPai.First());
                         }
-                        var turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
+                        var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
                         disciplinasDto.Add(MapearParaDto(disciplina, true, turma.EnsinoEspecial));
                     }
                 }
