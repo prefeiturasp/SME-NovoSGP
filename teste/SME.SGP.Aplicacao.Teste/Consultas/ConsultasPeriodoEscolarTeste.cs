@@ -14,11 +14,11 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly IConsultasPeriodoEscolar consultas;
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
         private readonly Mock<IConsultasTipoCalendario> consultasTipoCalendario;
-        private readonly Mock<IRepositorioPeriodoEscolar> repositorio;
+        private readonly Mock<IRepositorioPeriodoEscolarConsulta> repositorio;
 
         public ConsultasPeriodoEscolarTeste()
         {
-            repositorio = new Mock<IRepositorioPeriodoEscolar>();
+            repositorio = new Mock<IRepositorioPeriodoEscolarConsulta>();
             consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
             consultasTipoCalendario = new Mock<IConsultasTipoCalendario>();
 

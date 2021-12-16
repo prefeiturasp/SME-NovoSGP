@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAula repositorioAula;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IConsultasTurma consultasTurma;
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
-            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioComponenteCurricular repositorioComponenteCurricular,
             IRepositorioTurma repositorioTurma,
             IRepositorioAula repositorioAula,

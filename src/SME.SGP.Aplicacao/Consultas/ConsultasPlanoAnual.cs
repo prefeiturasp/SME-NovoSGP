@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricular;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
         private readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                    IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
-                                   IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                   IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                    IRepositorioTipoCalendario repositorioTipoCalendario,
                                    IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual,
                                    IRepositorioTurma repositorioTurma,

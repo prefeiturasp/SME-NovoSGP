@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioPeriodoEscolarConsulta : RepositorioBase<PeriodoEscolar>, IRepositorioPeriodoEscolar
+    public class RepositorioPeriodoEscolarConsulta : RepositorioBase<PeriodoEscolar>, IRepositorioPeriodoEscolarConsulta
     {
         public RepositorioPeriodoEscolarConsulta(ISgpContextConsultas conexao) : base(conexao) { }
 

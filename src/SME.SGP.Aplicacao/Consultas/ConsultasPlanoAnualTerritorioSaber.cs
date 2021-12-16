@@ -13,13 +13,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioPlanoAnualTerritorioSaber repositorioPlanoAnualTerritorioSaber;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IMediator mediator;
 
         public ConsultasPlanoAnualTerritorioSaber(IRepositorioPlanoAnualTerritorioSaber repositorioPlanoAnualTerritorioSaber,
                                                   IRepositorioTurma repositorioTurma,
-                                                  IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                                  IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                                   IRepositorioTipoCalendario repositorioTipoCalendario,
                                                   IMediator mediator)
         {

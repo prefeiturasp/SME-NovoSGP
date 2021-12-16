@@ -9,10 +9,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodoEscolarIdPorTurmaBimestreQueryHandler : IRequestHandler<ObterPeriodoEscolarIdPorTurmaBimestreQuery, long>
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IMediator mediator;
 
-        public ObterPeriodoEscolarIdPorTurmaBimestreQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IMediator mediator)
+        public ObterPeriodoEscolarIdPorTurmaBimestreQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IMediator mediator)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

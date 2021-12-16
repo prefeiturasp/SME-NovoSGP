@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAulaPrevista repositorio;
         private readonly IRepositorioAulaPrevistaBimestre repositorioBimestre;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IConsultasTurma consultasTurma;
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasAulaPrevista(IRepositorioAulaPrevista repositorio,
                                      IRepositorioAulaPrevistaBimestre repositorioBimestre,
-                                     IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                     IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                      IRepositorioTurma repositorioTurma,
                                      IRepositorioTipoCalendario repositorioTipoCalendario,
                                      IConsultasTurma consultasTurma,

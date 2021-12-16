@@ -10,12 +10,12 @@ namespace SME.SGP.Aplicacao
     public class TurmaEmPeriodoAbertoQueryHandler : IRequestHandler<TurmaEmPeriodoAbertoQuery, bool>
     {
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
 
         public TurmaEmPeriodoAbertoQueryHandler(IRepositorioTipoCalendario repositorioTipoCalendario,
-                                                IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                                IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                                 IRepositorioEventoFechamento repositorioEventoFechamento,
                                                 IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {

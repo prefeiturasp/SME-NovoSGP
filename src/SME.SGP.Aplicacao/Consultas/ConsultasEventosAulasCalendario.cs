@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IServicoEol servicoEOL;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioComponenteCurricular repositorioComponenteCurricular,
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IConsultasDisciplina consultasDisciplina,

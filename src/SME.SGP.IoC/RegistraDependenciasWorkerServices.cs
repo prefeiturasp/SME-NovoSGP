@@ -220,7 +220,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioObjetivoDesenvolvimento, RepositorioObjetivoDesenvolvimento>();
             services.TryAddScopedWorkerService<IRepositorioObjetivoDesenvolvimentoPlano, RepositorioObjetivoDesenvolvimentoPlano>();
             services.TryAddScopedWorkerService<IRepositorioParametrosSistema, RepositorioParametrosSistema>();
-            services.TryAddScopedWorkerService<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolarConsulta>();
+            services.TryAddScopedWorkerService<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();
             services.TryAddScopedWorkerService<IRepositorioPlanoAnual, RepositorioPlanoAnual>();
             services.TryAddScopedWorkerService<IRepositorioPlanoAula, RepositorioPlanoAula>();
             services.TryAddScopedWorkerService<IRepositorioPlanoCiclo, RepositorioPlanoCiclo>();

@@ -33,7 +33,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento;
@@ -57,7 +57,7 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioTurmaConsulta repositorioTurma,
                                                 IRepositorioUe repositorioUe,
                                                 IServicoPeriodoFechamento servicoPeriodoFechamento,
-                                                IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                                IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                                 IRepositorioTipoCalendario repositorioTipoCalendario,
                                                 IRepositorioTipoAvaliacao repositorioTipoAvaliacao,
                                                 IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,

@@ -25,7 +25,7 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
         private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
@@ -74,7 +74,7 @@ namespace SME.SGP.Dominio
             IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
-            IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+            IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioAula repositorioAula, IRepositorioTurmaConsulta repositorioTurma, IRepositorioParametrosSistema repositorioParametrosSistema,
             IServicoUsuario servicoUsuario, IConfiguration configuration, IMediator mediator)
         {

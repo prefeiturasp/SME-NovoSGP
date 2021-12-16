@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ConsultasConselhoClasse : IConsultasConselhoClasse
     {
         private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
         private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
 
         public ConsultasConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasse,
-                                       IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                       IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                        IRepositorioParametrosSistema repositorioParametrosSistema,
                                        IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
                                        IRepositorioTipoCalendario repositorioTipoCalendario,
