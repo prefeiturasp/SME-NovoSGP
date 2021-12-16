@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioConselhoClasseNota : IRepositorioBase<ConselhoClasseNota>
+    public interface IRepositorioConselhoClasseNotaConsulta : IRepositorioBase<ConselhoClasseNota>
     {
         Task<ConselhoClasseNota> ObterPorConselhoClasseAlunoComponenteCurricularAsync(long conselhoClasseAlunoId, long componenteCurricularCodigo);
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAsync(long conselhoClasseId, string alunoCodigo);

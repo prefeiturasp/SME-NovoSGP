@@ -20,7 +20,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
         private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IRepositorioConselhoClasseParecerConclusivo repositorioParecer;
-        private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
+        private readonly IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioDre repositorioDre;
@@ -43,7 +43,7 @@ namespace SME.SGP.Dominio.Servicos
                                      IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                      IConsultasConselhoClasse consultasConselhoClasse,
                                      IConsultasDisciplina consultasDisciplina,
-                                     IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
+                                     IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota,
                                      IUnitOfWork unitOfWork,
                                      IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo,
                                      IMediator mediator,
