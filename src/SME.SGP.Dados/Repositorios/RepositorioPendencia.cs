@@ -49,8 +49,8 @@ namespace SME.SGP.Dados.Repositorios
                           left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
                           left join pendencia_usuario pu on pu.pendencia_id = p.id ";
 
-            if (!string.IsNullOrEmpty(turmaCodigo) && string.IsNullOrEmpty(tituloPendencia) && tiposPendencias.Count() == 0)
-                query += RetornaQuerySoTurmaFiltrada(turmaCodigo);
+            if (!string.IsNullOrEmpty(turmaCodigo) && tiposPendencias.Count() == 0)
+                query += RetornaQueryTurmaFiltrada(turmaCodigo);
 
             if (!string.IsNullOrEmpty(turmaCodigo) && tiposPendencias.Count() > 0)
                 query += RetornaQueryTurmaParaUnicoTipo((TipoPendenciaGrupo)tipoGrupo.Value, turmaCodigo);
@@ -179,7 +179,7 @@ namespace SME.SGP.Dados.Repositorios
             return query;
         }
 
-        public string RetornaQuerySoTurmaFiltrada(string turmaCodigo)
+        public string RetornaQueryTurmaFiltrada(string turmaCodigo)
         {
             string query = string.Empty;
 
