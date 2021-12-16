@@ -15,11 +15,11 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<RegistroFrequenciaPorDataPeriodoDto> Executar(FiltroFrequenciaPorPeriodoDto param)
         {
-
             List<FrequenciaDto> RetornoFrequencia = new List<FrequenciaDto>();
-
+            RegistroFrequenciaPorDataPeriodoDto registroFrequenciaPorDataPeriodo = new RegistroFrequenciaPorDataPeriodoDto();
             var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(param.TurmaId.ToString(), param.DataInicio));
             var listaAlunoaCodigos = alunosDaTurma.Select(x => x.CodigoAluno);
+
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
@@ -27,12 +27,39 @@ namespace SME.SGP.Aplicacao
             if (aulas == null)
                 throw new NegocioException("Aula não encontrada.");
 
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(param.TurmaId));
+            if (turma == null)
+                throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
+
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+
+            var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(tipoCalendarioId, param.DataInicio));
+            if (periodoEscolar == null)
+                throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
+
+            var parametroPercentualCritico = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, periodoEscolar.PeriodoInicio.Year));
+            if (parametroPercentualCritico == null)
+                throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
+            var percentualCritico = int.Parse(parametroPercentualCritico.Valor);
+
+            var parametroPercentualAlerta = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaAlerta, periodoEscolar.PeriodoInicio.Year));
+            if (parametroPercentualAlerta == null)
+                throw new NegocioException("Parâmetro de percentual de frequência em alerta não encontrado contate a SME.");
+            var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
+
+            var mesmoAnoLetivo = DateTime.Today.Year == turma.AnoLetivo;
+
+            registroFrequenciaPorDataPeriodo.TemPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo));
+            
+            var componenteCurricularAula = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { Convert.ToInt64(param.DisciplinaId) }));
+            var frequenciaAlunosRegistrada = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, long.Parse(param.DisciplinaId), periodoEscolar.Id));
+            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, param.DisciplinaId, periodoEscolar.Id));
+
+            if (componenteCurricularAula == null || componenteCurricularAula.ToList().Count <= 0)
+                throw new NegocioException("Componente curricular da aula não encontrado");
+
             foreach (Aula aula in aulas)
             {
-                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
-                if (turma == null)
-                    throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
-
                 FrequenciaDto registroFrequenciaDto = await ObterRegistroFrequencia(aula, turma);
 
                 var frequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(aula.Id));
@@ -40,35 +67,8 @@ namespace SME.SGP.Aplicacao
                 if (frequenciaAlunos == null)
                     frequenciaAlunos = new List<FrequenciaAlunoSimplificadoDto>();
 
-                var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula));
-                if (periodoEscolar == null)
-                    throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
-
-                var mesmoAnoLetivo = DateTime.Today.Year == aula.DataAula.Year;
-
-                registroFrequenciaDto.TemPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo));
-
-
-                var parametroPercentualCritico = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, periodoEscolar.PeriodoInicio.Year));
-                if (parametroPercentualCritico == null)
-                    throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
-                var percentualCritico = int.Parse(parametroPercentualCritico.Valor);
-
-                var parametroPercentualAlerta = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaAlerta, periodoEscolar.PeriodoInicio.Year));
-                if (parametroPercentualAlerta == null)
-                    throw new NegocioException("Parâmetro de percentual de frequência em alerta não encontrado contate a SME.");
-                var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
-
-                var componenteCurricularAula = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { Convert.ToInt64(aula.DisciplinaId) }));
-
-                if (componenteCurricularAula == null || componenteCurricularAula.ToList().Count <= 0)
-                    throw new NegocioException("Componente curricular da aula não encontrado");
-
                 var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoNaAulaQuery(aula.Id));
-
-                var frequenciaAlunosRegistrada = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, long.Parse(aula.DisciplinaId), periodoEscolar.Id));
-
-                var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, aula.DisciplinaId, periodoEscolar.Id));
+                
                 foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
                 {
                     // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
@@ -131,7 +131,7 @@ namespace SME.SGP.Aplicacao
 
                 RetornoFrequencia.Add(registroFrequenciaDto);
             }
-            return await ObterListaFrequenciaAula(RetornoFrequencia, param.DisciplinaId, param.TurmaId, param.DataInicio, param.DataFim, alunosDaTurma,aulas, listaAlunoaCodigos);
+            return await ObterListaFrequenciaAula(registroFrequenciaPorDataPeriodo, RetornoFrequencia, param.DisciplinaId, param.TurmaId, param.DataInicio, param.DataFim, alunosDaTurma,aulas, listaAlunoaCodigos);
         }
 
         private string ObterFrequenciaAluno(IEnumerable<FrequenciaAlunoSimplificadoDto> frequenciaAlunos, string codigoAluno, int numeroAula, TipoFrequencia tipoFrequenciaPreDefinida)
@@ -140,6 +140,80 @@ namespace SME.SGP.Aplicacao
             if (tipoFrequencia.HasValue)
                 return tipoFrequencia.ShortName();
             return tipoFrequenciaPreDefinida.ShortName();
+        }
+
+        private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
+        {
+            var percentualFrequencia = 0;
+            if (turmaComFrequenciasRegistradas)
+            {
+                percentualFrequencia = (int)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
+            }
+            else
+            {
+                percentualFrequencia = int.MinValue;
+            }
+            var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : percentualFrequencia.ToString();
+
+            // Critico
+            if (percentualFrequencia <= percentualCritico)
+                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequenciaLabel };
+
+            // Alerta
+            if (percentualFrequencia <= percentualAlerta)
+                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequenciaLabel };
+
+            return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequenciaLabel };
+        }
+
+        private async Task<RegistroFrequenciaPorDataPeriodoDto> ObterListaFrequenciaAula(RegistroFrequenciaPorDataPeriodoDto registroFrequenciaPorDataPeriodo, List<FrequenciaDto> frequeciasDia, string disciplinaId, string codigoTurma, DateTime dataInicio, DateTime dataFim,
+            IEnumerable<AlunoPorTurmaResposta> alunosDaTurma,IEnumerable<Aula> aulas, IEnumerable<string> listaAlunoCodigo)
+        {
+            var detalhesAulaAlunos = await ObterDetalhesFrequencia(listaAlunoCodigo, dataInicio, dataFim, aulas);
+
+            foreach (var aluno in alunosDaTurma)
+            {
+                var frequenciaAluno = new FrequeciaPorDataPeriodoDto
+                {
+                    CodigoAluno = aluno.CodigoAluno,
+                    NomeAluno = aluno.NomeAluno,
+                    NumeroAlunoChamada = aluno.NumeroAlunoChamada
+                };
+                foreach (FrequenciaDto frequenciaDia in frequeciasDia)
+                {
+                    var aula = aulas.Where(x => x.Id == frequenciaDia.AulaId).FirstOrDefault();
+                    if (aula == null)
+                        throw new NegocioException("Aula não encontrada.");
+
+                    var frequenciaAlunoAula = new FrequenciaAulaPorDataPeriodoDto
+                    {
+                        AulaId = aula.Id,
+                        DataAula = aula.DataAula
+                    };
+
+                    bool verificaSeAlunoTeveFrequencia = frequenciaDia.ListaFrequencia.Any(a => a.CodigoAluno == aluno.CodigoAluno);
+
+                    if (verificaSeAlunoTeveFrequencia)
+                    {
+                        var tipoFrequencia = ObterTipoFrequencia(frequenciaDia.ListaFrequencia.Where(a => a.CodigoAluno == aluno.CodigoAluno).FirstOrDefault().Aulas);
+                        if (tipoFrequencia != null)
+                            frequenciaAlunoAula.TipoFrequencia = tipoFrequencia;
+                    }
+                    frequenciaAluno.Aulas.Add(frequenciaAlunoAula);
+                }
+
+                var todosDetalhesAluno = detalhesAulaAlunos.Where(d => d.CodigoAluno == aluno.CodigoAluno);
+                foreach(var detalheAluno in todosDetalhesAluno)
+                {
+                    frequenciaAluno.AulasDetalhes.Add(detalheAluno);
+                }
+                
+                registroFrequenciaPorDataPeriodo.ListaFrequencia.Add(frequenciaAluno);
+            }
+
+            registroFrequenciaPorDataPeriodo = await ObterRegistroFrequenciaPorData(disciplinaId, codigoTurma, dataInicio, dataFim, registroFrequenciaPorDataPeriodo.ListaFrequencia);
+
+            return registroFrequenciaPorDataPeriodo;
         }
 
         private string ObterTipoResponsavel(string tipoResponsavel)
@@ -187,107 +261,6 @@ namespace SME.SGP.Aplicacao
             return registroFrequenciaDto;
         }
 
-        private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
-        {
-            var percentualFrequencia = 0;
-            if (turmaComFrequenciasRegistradas)
-            {
-                percentualFrequencia = (int)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
-            }
-            else
-            {
-                percentualFrequencia = int.MinValue;
-            }
-            var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : percentualFrequencia.ToString();
-
-            // Critico
-            if (percentualFrequencia <= percentualCritico)
-                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequenciaLabel };
-
-            // Alerta
-            if (percentualFrequencia <= percentualAlerta)
-                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequenciaLabel };
-
-            return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequenciaLabel };
-        }
-
-        private async Task<RegistroFrequenciaPorDataPeriodoDto> ObterListaFrequenciaAula(List<FrequenciaDto> frequeciasDia, string disciplinaId, string codigoTurma, DateTime dataInicio, DateTime dataFim,
-            IEnumerable<AlunoPorTurmaResposta> alunosDaTurma,IEnumerable<Aula> aulas, IEnumerable<string> listaAlunoCodigo)
-        {
-            RegistroFrequenciaPorDataPeriodoDto registroFrequenciaPorDataPeriodo = new RegistroFrequenciaPorDataPeriodoDto();
-
-            if (alunosDaTurma == null || !alunosDaTurma.Any())
-                throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
-
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(codigoTurma));
-            if (turma == null)
-                throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
-
-            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
-
-            var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(tipoCalendarioId, dataInicio));
-            if (periodoEscolar == null)
-                throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
-
-            var parametroPercentualCritico = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, periodoEscolar.PeriodoInicio.Year));
-            if (parametroPercentualCritico == null)
-                throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
-            var percentualCritico = int.Parse(parametroPercentualCritico.Valor);
-
-            var parametroPercentualAlerta = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaAlerta, periodoEscolar.PeriodoInicio.Year));
-            if (parametroPercentualAlerta == null)
-                throw new NegocioException("Parâmetro de percentual de frequência em alerta não encontrado contate a SME.");
-            var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
-
-            var frequenciaTurmaRegistrada = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, long.Parse(disciplinaId), periodoEscolar.Id));
-            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, disciplinaId, periodoEscolar.Id));
-
-            foreach (var aluno in alunosDaTurma)
-            {
-                var frequenciaAluno = new FrequeciaPorDataPeriodoDto
-                {
-                    CodigoAluno = aluno.CodigoAluno,
-                    NomeAluno = aluno.NomeAluno,
-                    NumeroAlunoChamada = aluno.NumeroAlunoChamada
-                };
-                foreach (FrequenciaDto frequenciaDia in frequeciasDia)
-                {
-                    var aula = aulas.Where(x => x.Id == frequenciaDia.AulaId).FirstOrDefault();
-                    if (aula == null)
-                        throw new NegocioException("Aula não encontrada.");
-
-                    var frequenciaAlunoAula = new FrequenciaAulaPorDataPeriodoDto
-                    {
-                        AulaId = aula.Id,
-                        DataAula = aula.DataAula
-                    };
-
-                    bool verificaSeAlunoTeveFrequencia = frequenciaDia.ListaFrequencia.Any(a => a.CodigoAluno == aluno.CodigoAluno);
-
-                    if (verificaSeAlunoTeveFrequencia)
-                    {
-                        var tipoFrequencia = ObterTipoFrequencia(frequenciaDia.ListaFrequencia.Where(a => a.CodigoAluno == aluno.CodigoAluno).FirstOrDefault().Aulas);
-                        if (tipoFrequencia != null)
-                            frequenciaAlunoAula.TipoFrequencia = tipoFrequencia;
-                    }
-                    frequenciaAluno.Aulas.Add(frequenciaAlunoAula);
-                }
-                var frequenciaAlunoRegistrada = frequenciaTurmaRegistrada.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno && a.DisciplinaId == disciplinaId && a.PeriodoEscolarId == periodoEscolar.Id);
-
-                frequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAlunoRegistrada, percentualAlerta, percentualCritico, turmaPossuiFrequenciaRegistrada, turma);
-
-                var detalhesAulaAluno = await ObterDetalhesFrequencia(listaAlunoCodigo, dataInicio, dataFim,aulas);
-                foreach (var aulaDetalhe in detalhesAulaAluno)
-                    frequenciaAluno.AulasDetalhes.Add(aulaDetalhe);
-
-                registroFrequenciaPorDataPeriodo.ListaFrequencia.Add(frequenciaAluno);
-            }
-
-            registroFrequenciaPorDataPeriodo = await ObterRegistroFrequenciaPorData(disciplinaId, codigoTurma, dataInicio, dataFim, registroFrequenciaPorDataPeriodo.ListaFrequencia);
-
-            return registroFrequenciaPorDataPeriodo;
-        }
-
         public async Task<IEnumerable<FrequenciaDetalhadaDto>> ObterDetalhesFrequencia(IEnumerable<string> listaAlunoCodigo, DateTime dataInicio, DateTime dataFim, IEnumerable<Aula> aulas)
         {
             var frequenciaRetorno = new List<FrequenciaDetalhadaDto>();
@@ -307,7 +280,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Aula não encontrada.");
                 else
                 {
-                    var frequenciaAlunoAula = await mediator.Send(new ObterFrequenciaAlunoNaAulaQuery(codigoAluno, aula.Id));
+                    var frequenciaAlunoAula = await mediator.Send(new ObterFrequenciaAlunoNaAulaQuery(frequenciaAluno.AlunoCodigo, aula.Id));
                     frequenciaDetalhadaALuno.AulaId = aula.Id;
                     frequenciaDetalhadaALuno.PossuiAnotacao = await VerificarSePossuiAnotacaoNaAula(frequenciaDetalhadaALuno.CodigoAluno, frequenciaDetalhadaALuno.AulaId);
                     var tipoFrequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(long.Parse(aula.TurmaId), long.Parse(aula.DisciplinaId), frequenciaDetalhadaALuno.CodigoAluno));
@@ -325,8 +298,6 @@ namespace SME.SGP.Aplicacao
             }
             return frequenciaRetorno;
         }
-
-
 
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaPossuiFrequenciaRegistrada, Turma turma)
         {
