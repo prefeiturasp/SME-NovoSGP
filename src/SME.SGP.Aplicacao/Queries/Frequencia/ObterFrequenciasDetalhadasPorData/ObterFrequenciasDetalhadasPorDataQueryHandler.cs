@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Queries.Frequencia.ObterFrequenciasDetalhadasPorData
 
         public async Task<IEnumerable<FrequenciaDetalhadaPorDataDto>> Handle(ObterFrequenciasDetalhadasPorDataQuery request, CancellationToken cancellationToken)
         {
-            var frequenciasPorData = await repositorioFrequencia.ObterFrequenciasDetalhadasPorData(request.CodigoAluno, request.DataInicio, request.DataFim);
+            var frequenciasPorData = await repositorioFrequencia.ObterFrequenciasDetalhadasPorData(request.AlunosCodigos, request.DataInicio, request.DataFim);
 
             return frequenciasPorData;
         }

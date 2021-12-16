@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao
             List<FrequenciaDto> RetornoFrequencia = new List<FrequenciaDto>();
 
             var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(param.TurmaId.ToString(), param.DataInicio));
+            var listaAlunoaCodigos = alunosDaTurma.Select(x => x.CodigoAluno);
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
@@ -130,7 +131,7 @@ namespace SME.SGP.Aplicacao
 
                 RetornoFrequencia.Add(registroFrequenciaDto);
             }
-            return await ObterListaFrequenciaAula(RetornoFrequencia, param.DisciplinaId, param.TurmaId, param.DataInicio, param.DataFim, alunosDaTurma,aulas);
+            return await ObterListaFrequenciaAula(RetornoFrequencia, param.DisciplinaId, param.TurmaId, param.DataInicio, param.DataFim, alunosDaTurma,aulas, listaAlunoaCodigos);
         }
 
         private string ObterFrequenciaAluno(IEnumerable<FrequenciaAlunoSimplificadoDto> frequenciaAlunos, string codigoAluno, int numeroAula, TipoFrequencia tipoFrequenciaPreDefinida)
@@ -211,7 +212,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<RegistroFrequenciaPorDataPeriodoDto> ObterListaFrequenciaAula(List<FrequenciaDto> frequeciasDia, string disciplinaId, string codigoTurma, DateTime dataInicio, DateTime dataFim,
-            IEnumerable<AlunoPorTurmaResposta> alunosDaTurma,IEnumerable<Aula> aulas)
+            IEnumerable<AlunoPorTurmaResposta> alunosDaTurma,IEnumerable<Aula> aulas, IEnumerable<string> listaAlunoCodigo)
         {
             RegistroFrequenciaPorDataPeriodoDto registroFrequenciaPorDataPeriodo = new RegistroFrequenciaPorDataPeriodoDto();
 
@@ -249,7 +250,7 @@ namespace SME.SGP.Aplicacao
                     frequenciaAluno.Aulas.Add(frequenciaAlunoAula);
                 }
 
-                var detalhesAulaAluno = await ObterDetalhesFrequencia(aluno.CodigoAluno, dataInicio, dataFim,aulas);
+                var detalhesAulaAluno = await ObterDetalhesFrequencia(listaAlunoCodigo, dataInicio, dataFim,aulas);
                 foreach (var aulaDetalhe in detalhesAulaAluno)
                     frequenciaAluno.AulasDetalhes.Add(aulaDetalhe);
 
@@ -261,18 +262,18 @@ namespace SME.SGP.Aplicacao
             return registroFrequenciaPorDataPeriodo;
         }
 
-        public async Task<IEnumerable<FrequenciaDetalhadaDto>> ObterDetalhesFrequencia(string codigoAluno, DateTime dataInicio, DateTime dataFim, IEnumerable<Aula> aulas)
+        public async Task<IEnumerable<FrequenciaDetalhadaDto>> ObterDetalhesFrequencia(IEnumerable<string> listaAlunoCodigo, DateTime dataInicio, DateTime dataFim, IEnumerable<Aula> aulas)
         {
             var frequenciaRetorno = new List<FrequenciaDetalhadaDto>();
 
-            var frequenciasAluno = await mediator.Send(new ObterFrequenciasDetalhadasPorDataQuery(codigoAluno, dataInicio, dataFim));
+            var frequenciasAluno = await mediator.Send(new ObterFrequenciasDetalhadasPorDataQuery(listaAlunoCodigo.ToArray(), dataInicio, dataFim));
 
             foreach (var frequenciaAluno in frequenciasAluno)
             {
                 var frequenciaDetalhadaALuno = new FrequenciaDetalhadaDto
                 {
                     DataAula = frequenciaAluno.DataAula,
-                    CodigoAluno = codigoAluno,
+                    CodigoAluno = frequenciaAluno.AlunoCodigo,
                 };
 
                 var aula = aulas.Where(x => x.Id == frequenciaAluno.AulaId).FirstOrDefault();
