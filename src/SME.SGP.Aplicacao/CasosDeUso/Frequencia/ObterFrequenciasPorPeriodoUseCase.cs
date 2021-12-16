@@ -280,15 +280,17 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Aula não encontrada.");
                 else
                 {
+                    var frequenciaAlunoAula = await mediator.Send(new ObterFrequenciaAlunoNaAulaQuery(codigoAluno, aula.Id));
                     frequenciaDetalhadaALuno.AulaId = aula.Id;
                     frequenciaDetalhadaALuno.PossuiAnotacao = await VerificarSePossuiAnotacaoNaAula(frequenciaDetalhadaALuno.CodigoAluno, frequenciaDetalhadaALuno.AulaId);
                     var tipoFrequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(long.Parse(aula.TurmaId), long.Parse(aula.DisciplinaId), frequenciaDetalhadaALuno.CodigoAluno));
                     for (int numeroAula = 1; numeroAula <= aula.Quantidade; numeroAula++)
                     {
+                        var frequenciaNumeroAulaAluno = frequenciaAlunoAula.Where(f => f.NumeroAula == numeroAula).FirstOrDefault();
                         frequenciaDetalhadaALuno.Aulas.Add(new FrequenciaDetalhadaAulasDto
                         {
                             NumeroAula = numeroAula,
-                            TipoFrequencia = tipoFrequenciaPreDefinida.ShortName()
+                            TipoFrequencia = frequenciaNumeroAulaAluno != null ? ObterSiglaFrequenciaAulaAluno(frequenciaNumeroAulaAluno.TipoFrequencia) : tipoFrequenciaPreDefinida.ShortName()
                         });
                     }
                 }
@@ -324,6 +326,8 @@ namespace SME.SGP.Aplicacao
             return frequenciaRetorno;
         }
 
+
+
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaPossuiFrequenciaRegistrada, Turma turma)
         {
             var percentualFrequencia = "0";
@@ -358,6 +362,14 @@ namespace SME.SGP.Aplicacao
                 return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequenciaLabel };
 
             return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequenciaLabel };
+        }
+
+        private string ObterSiglaFrequenciaAulaAluno(int tipoFrequencia)
+        {
+            return Enum.GetValues(typeof(TipoFrequencia))
+            .Cast<TipoFrequencia>()
+            .Where(tf => (int)tf == tipoFrequencia)
+            .Select(tf => tf.ShortName()).FirstOrDefault();
         }
 
         private string ObterTipoFrequencia(IEnumerable<FrequenciaAulaDto> aulas)

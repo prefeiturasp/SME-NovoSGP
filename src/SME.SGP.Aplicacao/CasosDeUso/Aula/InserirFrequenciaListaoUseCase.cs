@@ -114,6 +114,7 @@ namespace SME.SGP.Aplicacao
                     RegistroFrequenciaId = registroFrequencia.Id
                 };
 
+                await mediator.Send(new ExcluirFrequenciaPorRegistroFrequenciaIdAlunoCodigoNumeroAulaCommand(registroFrequencia.Id, registroFrequenciaAluno.CodigoAluno, registroFrequenciaAluno.NumeroAula));
                 await mediator.Send(new SalvarRegistroFrequenciaAlunoCommand(registroFrequenciaAluno));
 
                 if (alteracaoRegistro)
@@ -173,6 +174,7 @@ namespace SME.SGP.Aplicacao
                     RegistroFrequenciaId = registroFrequencia.Id
                 };
 
+                await mediator.Send(new ExcluirFrequenciaPorRegistroFrequenciaIdAlunoCodigoNumeroAulaCommand(registroFrequencia.Id, registroFrequenciaAluno.CodigoAluno, registroFrequenciaAluno.NumeroAula));
                 await mediator.Send(new SalvarRegistroFrequenciaAlunoCommand(registroFrequenciaAluno));
 
                 if (alteracaoRegistro)
