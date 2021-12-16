@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
-        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                                        IRepositorioParametrosSistema repositorioParametrosSistema,
                                        IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                        IRepositorioTipoCalendario repositorioTipoCalendario,
-                                       IRepositorioFechamentoTurma repositorioFechamentoTurma,
+                                       IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
                                        IConsultasTurma consultasTurma,
                                        IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                        IConsultasPeriodoFechamento consultasPeriodoFechamento,

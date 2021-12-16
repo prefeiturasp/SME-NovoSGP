@@ -23,7 +23,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEol servicoEOL;
@@ -42,7 +42,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioTipoCalendario repositorioTipoCalendario,
                                           IServicoEol servicoEOL,
                                           IServicoUsuario servicoUsuario,
-                                          IRepositorioTurma repositorioTurma,
+                                          IRepositorioTurmaConsulta repositorioTurmaConsulta,
                                           IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                           IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
                                           IConsultasDisciplina consultasDisciplina,
@@ -56,7 +56,7 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasTurma = consultasTurma ?? throw new System.ArgumentNullException(nameof(consultasTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -188,7 +188,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<Turma> BuscaTurma(string turmaId)
         {
-            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId);
+            var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException("Turma não localizada!");
 
@@ -349,7 +349,7 @@ namespace SME.SGP.Dominio.Servicos
             // Excluir lista carregada
             foreach (var compensacaoExcluir in compensacoesExcluir)
             {
-                var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(compensacaoExcluir.TurmaId);
+                var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(compensacaoExcluir.TurmaId);
                 var periodo = await BuscaPeriodo(turma, compensacaoExcluir.Bimestre);
 
                 unitOfWork.IniciarTransacao();

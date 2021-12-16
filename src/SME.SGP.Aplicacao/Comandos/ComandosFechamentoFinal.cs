@@ -12,22 +12,22 @@ namespace SME.SGP.Aplicacao
     public class ComandosFechamentoFinal : IComandosFechamentoFinal
     {
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
-        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
         private readonly IMediator mediator;
 
         public ComandosFechamentoFinal(
             IServicoFechamentoFinal servicoFechamentoFinal,
-            IRepositorioTurma repositorioTurma,
+            IRepositorioTurmaConsulta repositorioTurmaConsulta,
             IRepositorioFechamentoAluno repositorioFechamentoAluno,
-            IRepositorioFechamentoTurma repositorioFechamentoTurma,
+            IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
             IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
             IMediator mediator)
         {
             this.servicoFechamentoFinal = servicoFechamentoFinal ?? throw new System.ArgumentNullException(nameof(servicoFechamentoFinal));
-            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoAluno));
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
-            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
+            var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma.");
             return turma;

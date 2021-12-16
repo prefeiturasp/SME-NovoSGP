@@ -23,7 +23,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -35,7 +35,7 @@ namespace SME.SGP.Dominio.Servicos
                                             IRepositorioFrequencia repositorioFrequencia,
                                             IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
-                                            IRepositorioTurma repositorioTurma,
+                                            IRepositorioTurmaConsulta repositorioTurma,
                                             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                             IRepositorioTipoCalendario repositorioTipoCalendario,
                                             IServicoNotificacao servicoNotificacao,

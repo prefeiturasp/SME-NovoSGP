@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioFechamentoTurma : IRepositorioBase<FechamentoTurma>
+    public interface IRepositorioFechamentoTurmaConsulta : IRepositorioBase<FechamentoTurma>
     {
         Task<FechamentoTurma> ObterPorTurmaCodigoBimestreAsync(string turmaCodigo, int bimestre = 0);
         Task<FechamentoTurma> ObterPorTurmaPeriodo(long turmaId, long periodoId = 0);
