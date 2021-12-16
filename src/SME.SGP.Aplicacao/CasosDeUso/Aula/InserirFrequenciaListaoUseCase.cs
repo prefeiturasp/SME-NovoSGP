@@ -23,7 +23,13 @@ namespace SME.SGP.Aplicacao
                 ? await mediator.Send(new ObterAulaPorIdQuery(param.FirstOrDefault().Aulas.FirstOrDefault().AulaId))
                 : await mediator.Send(new ObterAulaPorIdQuery(param.FirstOrDefault().AulaId[0]));
 
+            if(aula == null)
+                throw new NegocioException("Aula não encontrada.");
+
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada.");
+
             string disciplinaCodigo = aula.DisciplinaId;
             var listaDatasAulas = new List<DateTime>();
 
