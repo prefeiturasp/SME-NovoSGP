@@ -24,6 +24,15 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query, new { fechamentoTurmaId });
         }
 
+        public async Task<ConselhoClasse> ObterConselhoClassePorId(long conselhoClasseId)
+        {
+            var query = @"select c.* 
+                            from conselho_classe c 
+                           where c.id = @conselhoClasseId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query, new { conselhoClasseId });
+        }
+
         public async Task<IEnumerable<long>> ObterConselhoClasseIdsPorTurmaEPeriodoAsync(string[] turmasCodigos, long? periodoEscolarId = null)
         {
             var query = new StringBuilder(@"select c.id 

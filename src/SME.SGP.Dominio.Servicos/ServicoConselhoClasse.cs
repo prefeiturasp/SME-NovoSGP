@@ -17,7 +17,7 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
-        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
+        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
         private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IRepositorioConselhoClasseParecerConclusivo repositorioParecer;
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
 
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
-                                     IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
+                                     IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
                                      IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
                                      IRepositorioConselhoClasseParecerConclusivo repositorioParecer,
                                      IRepositorioTipoCalendario repositorioTipoCalendario,
@@ -472,7 +472,8 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<ConselhoClasseAluno> ObterConselhoClasseAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
-            ConselhoClasseAluno conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
+            var conselhoClasseAluno = await mediator.Send(new ObterPorConselhoClasseAlunoCodigoQuery(conselhoClasseId, alunoCodigo));
+            
             if (conselhoClasseAluno == null)
             {
                 ConselhoClasse conselhoClasse = null;
@@ -482,7 +483,7 @@ namespace SME.SGP.Dominio.Servicos
                     await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
                 }
                 else
-                    conselhoClasse = repositorioConselhoClasse.ObterPorId(conselhoClasseId);
+                    conselhoClasse = await mediator.Send(new ObterConselhoClassePorIdQuery(conselhoClasseId));
 
                 conselhoClasseAluno = new ConselhoClasseAluno() { AlunoCodigo = alunoCodigo, ConselhoClasse = conselhoClasse, ConselhoClasseId = conselhoClasse.Id };
                 await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
