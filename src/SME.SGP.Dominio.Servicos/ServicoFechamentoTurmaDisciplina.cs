@@ -310,18 +310,6 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public void VerificaPendenciasFechamento(long fechamentoId)
-        {
-            // Verifica existencia de pendencia em aberto
-            if (!servicoPendenciaFechamento.VerificaPendenciasFechamento(fechamentoId))
-            {
-                var fechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina.ObterPorId(fechamentoId);
-                // Atualiza situação do fechamento
-                fechamentoTurmaDisciplina.Situacao = SituacaoFechamento.ProcessadoComSucesso;
-                repositorioFechamentoTurmaDisciplina.Salvar(fechamentoTurmaDisciplina);
-            }
-        }
-
         private async Task<IEnumerable<FechamentoAluno>> AtualizaSinteseAlunos(long fechamentoTurmaDisciplinaId, DateTime dataReferencia, DisciplinaDto disciplina)
         {
             var fechamentoAlunos = await repositorioFechamentoAluno.ObterPorFechamentoTurmaDisciplina(fechamentoTurmaDisciplinaId);

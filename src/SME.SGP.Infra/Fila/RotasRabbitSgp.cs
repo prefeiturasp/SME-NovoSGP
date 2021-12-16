@@ -189,6 +189,7 @@
         public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";
 
         public const string VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes = "sgp.fechamento.turma.disciplina.processamento.varredura";
+        public const string VerificaPendenciasFechamentoTurma = "sgp.fechamento.turma.pendencia.verificar";
 
         public const string AjusteImagesAcompanhamentoAprendizagemAlunoCarregar = "sgp.acompanhamento.aprendizado.aluno.imagens.ajuste.carregar";
         public const string AjusteImagesAcompanhamentoAprendizagemAlunoSync = "sgp.acompanhamento.aprendizado.aluno.imagens.ajuste.sync";
