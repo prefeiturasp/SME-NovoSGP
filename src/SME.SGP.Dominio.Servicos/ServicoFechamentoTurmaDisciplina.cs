@@ -253,7 +253,10 @@ namespace SME.SGP.Dominio.Servicos
             unitOfWork.IniciarTransacao();
             try
             {
-                var fechamentoTurmaId = await repositorioFechamentoTurma.SalvarAsync(fechamentoTurmaDisciplina.FechamentoTurma);
+                var fechamentoTurmaId = fechamentoTurmaDisciplina.FechamentoTurma.Id > 0 ?
+                    fechamentoTurmaDisciplina.FechamentoTurma.Id :
+                    await repositorioFechamentoTurma.SalvarAsync(fechamentoTurmaDisciplina.FechamentoTurma);
+
                 fechamentoTurmaDisciplina.FechamentoTurmaId = fechamentoTurmaId;
 
                 await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
