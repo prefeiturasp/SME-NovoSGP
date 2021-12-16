@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
         private readonly IMediator mediator;
+        private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
 
         public ComandosFechamentoFinal(
             IServicoFechamentoFinal servicoFechamentoFinal,
@@ -24,6 +25,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno,
             IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
             IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
+            IRepositorioNotaTipoValor repositorioNotaTipoValor,
             IMediator mediator)
         {
             this.servicoFechamentoFinal = servicoFechamentoFinal ?? throw new System.ArgumentNullException(nameof(servicoFechamentoFinal));
@@ -31,6 +33,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoAluno));
+            this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoAluno));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
@@ -81,14 +84,15 @@ namespace SME.SGP.Aplicacao
 
                     if (fechamentoNota != null)
                     {
-                        if (fechamentoItemDto.Nota.HasValue)
+                        var tipoNota = repositorioNotaTipoValor.ObterPorTurmaId(turma.Id, turma.TipoTurma);
+
+                        if (tipoNota.TipoNota == TipoNota.Nota)
                         {
                             if (fechamentoNota.Nota.HasValue)
-                                if (fechamentoNota.Nota.Value != fechamentoItemDto.Nota.Value)
-                                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, fechamentoItemDto.Nota.Value, fechamentoNota.Id));
+                                if (fechamentoNota.Nota.Value != fechamentoItemDto.Nota)
+                                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, fechamentoItemDto.Nota, fechamentoNota.Id));
                         }
-                        else
-                        if (fechamentoNota.ConceitoId.Value != fechamentoItemDto.ConceitoId.Value)
+                        else if (fechamentoNota.ConceitoId.Value != fechamentoItemDto.ConceitoId.Value)
                             await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId.Value, fechamentoItemDto.ConceitoId.Value, fechamentoNota.Id));
                     }
 

@@ -5,7 +5,7 @@ namespace SME.SGP.Infra
     public class FechamentoAlunoStatusDto
     {
         public long TurmaId { get; set; }
-        public int Ano { get; set; }
+        public string Ano { get; set; }
         public string AlunoCodigo { get; set; }
         public string TurmaNome { get; set; }
         public Modalidade Modalidade { get; set; }

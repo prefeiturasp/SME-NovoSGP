@@ -240,6 +240,12 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.AnotacoesFrequenciaDaAulaExcluir, new ComandoRabbit("Executar exclusão de anotações de frequência por aula id", typeof(IExcluirAnotacoesFrequenciaPorAulaIdUseCase)));
             comandos.Add(RotasRabbitSgp.DiarioBordoDaAulaExcluir, new ComandoRabbit("Executar exclusão de diario de bordo por aula id", typeof(IExcluirDiarioBordoPorAulaIdUseCase)));
 
+            // Consolidação frequência
+            comandos.Add(RotasRabbitSgp.RotaConsolidacaoDashBoardFrequencia, new ComandoRabbit("Consolidar frequências por tipo período para o dashboard", typeof(IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaConsolidacaoDiariaDashBoardFrequencia, new ComandoRabbit("Consolidação geral de frequências diarias para o dashboard", typeof(IExecutaConsolidacaoDiariaDashBoardFrequenciaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaConsolidacaoSemanalDashBoardFrequencia, new ComandoRabbit("Consolidação geral de frequências semanais para o dashboard", typeof(IExecutaConsolidacaoSemanalDashBoardFrequenciaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaConsolidacaoMensalDashBoardFrequencia, new ComandoRabbit("Consolidação geral de frequências mensal para o dashboard", typeof(IExecutaConsolidacaoMensalDashBoardFrequenciaUseCase)));
+
             comandos.Add(RotasRabbitSgp.VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes, new ComandoRabbit("Efetua a varredura em busca de fechamentos em processamento pendentes", typeof(IVarreduraFechamentosEmProcessamentoPendentesUseCase)));
 
             comandos.Add(RotasRabbitSgp.AjusteImagesAcompanhamentoAprendizagemAlunoCarregar, new ComandoRabbit("Efetua a atualização da rota das imagens do acompanhamento aluno", typeof(ICarregarAjusteImagensAcompanhamentoAprendizagemAlunoUseCase)));

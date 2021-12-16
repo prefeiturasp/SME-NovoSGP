@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SME.SGP.Dominio.Enumerados;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
@@ -18,8 +16,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorEstudanteQuery(codigoEstudante));
 
-            if (encaminhamentoAEE != null)
-                throw new NegocioException("Estudante/Criança já possui encaminhametno AEE em aberto");
+            if (encaminhamentoAEE != null && encaminhamentoAEE.SituacaoTipo != SituacaoAEE.Indeferido)
+                throw new NegocioException("Estudante/Criança já possui encaminhamento AEE em aberto");
 
             return true;
         }

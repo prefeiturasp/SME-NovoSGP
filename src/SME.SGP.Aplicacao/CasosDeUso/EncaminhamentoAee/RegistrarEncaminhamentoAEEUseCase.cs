@@ -1,7 +1,9 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -13,10 +15,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
     public class RegistrarEncaminhamentoAEEUseCase : IRegistrarEncaminhamentoAEEUseCase
     {
         private readonly IMediator mediator;
+        private readonly IRepositorioRespostaEncaminhamentoAEE repositorioRespostaEncaminhamentoAEE;
 
-        public RegistrarEncaminhamentoAEEUseCase(IMediator mediator)
+        public RegistrarEncaminhamentoAEEUseCase(IMediator mediator, IRepositorioRespostaEncaminhamentoAEE repositorioRespostaEncaminhamentoAEE)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.repositorioRespostaEncaminhamentoAEE = repositorioRespostaEncaminhamentoAEE ?? throw new System.ArgumentNullException(nameof(repositorioRespostaEncaminhamentoAEE));
         }
 
         public async Task<ResultadoEncaminhamentoAEEDto> Executar(EncaminhamentoAeeDto encaminhamentoAEEDto)
@@ -42,6 +46,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 if (encaminhamentoAEE != null)
                 {
                     await AlterarEncaminhamento(encaminhamentoAEEDto, encaminhamentoAEE);
+                    await RemoverArquivosNaoUtilizados(encaminhamentoAEEDto.Secoes);
 
                     if (await ParametroGeracaoPendenciaAtivo())
                         await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(encaminhamentoAEE.Id, encaminhamentoAEEDto.Situacao));
@@ -72,6 +77,41 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             return parametro != null && parametro.Ativo;
         }
 
+        private async Task RemoverArquivosNaoUtilizados(List<EncaminhamentoAEESecaoDto> secoes)
+        {
+            try
+            {
+                var resposta = new List<EncaminhamentoAEESecaoQuestaoDto>();
+                foreach (var s in secoes)
+                {
+                    foreach (var q in s.Questoes)
+                    {
+                        if (string.IsNullOrEmpty(q.Resposta) && q.TipoQuestao == TipoQuestao.Upload)
+                        {
+                            resposta.Add(q);
+                        }
+                    }
+                }
+
+                if (resposta != null && resposta.Any())
+                {
+                    foreach (var item in resposta)
+                    {
+                        var entidadeResposta = repositorioRespostaEncaminhamentoAEE.ObterPorId(item.RespostaEncaminhamentoId);
+                        if (entidadeResposta != null)
+                        {
+                            await mediator.Send(new ExcluirRespostaEncaminhamentoAEECommand(entidadeResposta));
+                        }
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureMessage($"1.0 RemoverArquivosNaoUtilizados - Falha ao deletar o arquivo {ex.Message} ");
+                SentrySdk.CaptureException(ex);
+            }
+        }
         public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE)
         {
             encaminhamentoAEE.Situacao = encaminhamentoAEEDto.Situacao;
@@ -160,7 +200,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             => respostas.Where(c => c.RespostaEncaminhamentoId == 0);
 
         private IEnumerable<RespostaEncaminhamentoAEE> ObterRespostasAExcluir(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostasEncaminhamento)
-            => questaoExistente.Respostas.Where(s => !respostasEncaminhamento.Any(c => c.RespostaEncaminhamentoId == s.Id));
+        {
+            var retorno = questaoExistente.Respostas.Where(s => !respostasEncaminhamento.Any(c => c.RespostaEncaminhamentoId == s.Id));
+            return retorno;
+        }
 
         private IEnumerable<RespostaEncaminhamentoAEE> ObterRespostasAAlterar(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostasEncaminhamento)
             => questaoExistente.Respostas.Where(s => respostasEncaminhamento.Any(c => c.RespostaEncaminhamentoId == s.Id));

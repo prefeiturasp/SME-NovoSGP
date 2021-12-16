@@ -294,6 +294,7 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = aa.id
                                 and aad.disciplina_id = a.disciplina_id
                                 left join notas_conceito n on aa.id = n.atividade_avaliativa
+                                where aa.atividade_classroom_id is null and aa.tipo_avaliacao_id <> 18
                                 group by a.id,aad.atividade_avaliativa_id) a where a.nota_id is null;";
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
@@ -317,6 +318,8 @@ namespace SME.SGP.Dados.Repositorios
 	                        not a.excluido
 	                        and a.id = @aula
                             and a.data_aula::date < @hoje
+                            and aa.atividade_classroom_id is null
+                            and aa.tipo_avaliacao_id <> 18
 	                        and n.id is null";
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
@@ -345,8 +348,7 @@ namespace SME.SGP.Dados.Repositorios
                             where
 	                            not aula.excluido
 	                            and aula.id = @aula
-                                and aula.data_aula::date < @hoje
-                                and (rf.id is null or tr.id is null) " :
+                                and aula.data_aula::date < @hoje " :
 
                                 $@"select
 	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
@@ -365,7 +367,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            not aula.excluido
 	                            and aula.id = @aula
                                 and aula.data_aula::date < @hoje
-                                and rf.id is null";
+                                ";
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }

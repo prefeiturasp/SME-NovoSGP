@@ -204,6 +204,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioFeriadoCalendario, RepositorioFeriadoCalendario>();
             services.TryAddScopedWorkerService<IRepositorioFrequencia, RepositorioFrequencia>();
             services.TryAddScopedWorkerService<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
+            services.TryAddScopedWorkerService<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta, RepositorioFrequenciaAlunoDisciplinaPeriodoConsulta>();
             services.TryAddScopedWorkerService<IRepositorioGrade, RepositorioGrade>();
             services.TryAddScopedWorkerService<IRepositorioGradeDisciplina, RepositorioGradeDisciplina>();
             services.TryAddScopedWorkerService<IRepositorioGradeFiltro, RepositorioGradeFiltro>();
@@ -226,6 +227,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioPlanoCiclo, RepositorioPlanoCiclo>();
             services.TryAddScopedWorkerService<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
             services.TryAddScopedWorkerService<IRepositorioRegistroAusenciaAluno, RepositorioRegistroAusenciaAluno>();
+            services.TryAddScopedWorkerService<IRepositorioRegistroAusenciaAlunoConsulta, RepositorioRegistroAusenciaAlunoConsulta>();
             services.TryAddScopedWorkerService<IRepositorioRegistroPoa, RepositorioRegistroPoa>();
             services.TryAddScopedWorkerService<IRepositorioCompensacaoAusencia, RepositorioCompensacaoAusencia>();
             services.TryAddScopedWorkerService<IRepositorioCompensacaoAusenciaAluno, RepositorioCompensacaoAusenciaAluno>();
@@ -350,6 +352,7 @@ namespace SME.SGP.IoC
             // Consolidação Devolutivas
             services.TryAddScopedWorkerService<IRepositorioConsolidacaoDevolutivas, RepositorioConsolidacaoDevolutivas>();
             services.TryAddScopedWorkerService<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
+            services.TryAddScopedWorkerService<IRepositorioRegistroFrequenciaAlunoConsulta, RepositorioRegistroFrequenciaAlunoConsulta>();
 
 
             // Consolidacao de Acompanhamento Aprendizagem Aluno
@@ -671,6 +674,10 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExcluirDiarioBordoPorAulaIdUseCase, ExcluirDiarioBordoPorAulaIdUseCase>();
 
             services.TryAddScopedWorkerService<IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase, ObterInformacoesDeFrequenciaAlunoPorSemestreUseCase>();
+
+            services.TryAddScopedWorkerService<IRabbitDeadletterSerapSyncUseCase, RabbitDeadletterSerapSyncUseCase>();
+
+
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
