@@ -19,7 +19,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
         private readonly IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequencia;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
@@ -36,7 +36,7 @@ namespace SME.SGP.Dominio.Servicos
         public ServicoCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                           IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
                                           IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia,
-                                          IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequencia,
+                                          IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequencia,
                                           IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                           IConsultasTurma consultasTurma,
                                           IRepositorioTipoCalendario repositorioTipoCalendario,
@@ -234,7 +234,7 @@ namespace SME.SGP.Dominio.Servicos
             IEnumerable<CompensacaoAusenciaAluno> alunos = new List<CompensacaoAusenciaAluno>();
 
             if (alteracao)
-                alunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
+                alunos = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(compensacaoId));
 
             // excluir os removidos da lista
             foreach (var alunoRemovido in alunos.Where(a => !alunosDto.Any(d => d.Id == a.CodigoAluno)))
@@ -331,7 +331,8 @@ namespace SME.SGP.Dominio.Servicos
                 compensacao.Excluir();
                 compensacoesExcluir.Add(compensacao);
 
-                var compensacoesAlunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
+                var compensacoesAlunos = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(compensacaoId));
+
                 foreach (var compensacaoAluno in compensacoesAlunos)
                 {
                     compensacaoAluno.Excluir();

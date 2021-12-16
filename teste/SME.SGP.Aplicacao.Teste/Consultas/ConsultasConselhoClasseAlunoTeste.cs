@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioConselhoClasseAluno> repositorioConselhoClasseAluno;
         private readonly Mock<IRepositorioTurma> repositorioTurma;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
-        private readonly Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodo> repositorioFrequenciaAlunoDisciplinaPeriodo;
+        private readonly Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta> repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly Mock<IServicoConselhoClasse> servicoConselhoClasse;
         private readonly Mock<IServicoEol> servicoEOL;
         private readonly Mock<IServicoUsuario> servicoUsuario;
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasFechamentoNota = new Mock<IConsultasFechamentoNota>();
             servicoEOL = new Mock<IServicoEol>();
             servicoUsuario = new Mock<IServicoUsuario>();
-            repositorioFrequenciaAlunoDisciplinaPeriodo = new Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodo>();
+            repositorioFrequenciaAlunoDisciplinaPeriodo = new Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta>();
             consultasFrequencia = new Mock<IConsultasFrequencia>();
             servicoConselhoClasse = new Mock<IServicoConselhoClasse>();
             mediator = new Mock<IMediator>();

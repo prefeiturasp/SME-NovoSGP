@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 {
     public class NotificarCompensacaoAusenciaUseCase : AbstractUseCase, INotificarCompensacaoAusenciaUseCase
     {
-        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
+        private readonly IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAluno;
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEol servicoEOL;
 
         public NotificarCompensacaoAusenciaUseCase(IMediator mediator,
-                                                   IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
+                                                   IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAluno,
                                                    IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                                    IRepositorioTurma repositorioTurma,
                                                    IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,

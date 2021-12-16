@@ -17,7 +17,7 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IConfiguration configuration;
         private readonly IRepositorioFrequencia repositorioFrequencia;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno;
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
@@ -34,7 +34,7 @@ namespace SME.SGP.Dominio.Servicos
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IRepositorioFrequencia repositorioFrequencia,
                                             IRepositorioComponenteCurricular repositorioComponenteCurricular,
-                                            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
+                                            IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno,
                                             IRepositorioTurma repositorioTurma,
                                             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                             IRepositorioTipoCalendario repositorioTipoCalendario,
