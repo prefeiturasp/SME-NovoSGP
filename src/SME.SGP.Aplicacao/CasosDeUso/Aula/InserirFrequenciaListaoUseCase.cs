@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             RetornoBaseDto retorno = new RetornoBaseDto();
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var aula = param.FirstOrDefault().Aulas.Any()
+            var aula = param.FirstOrDefault().Aulas != null
                 ? await mediator.Send(new ObterAulaPorIdQuery(param.FirstOrDefault().Aulas.FirstOrDefault().AulaId))
                 : await mediator.Send(new ObterAulaPorIdQuery(param.FirstOrDefault().AulaId[0]));
 
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var aluno in param)
                 {
-                    if (aluno.Aulas.Count() > 0)
+                    if (aluno.Aulas != null)
                         await SalvaRegistroListaAulas(aluno.Aulas, aluno, aula, turma, usuario);                      
                     else
                         await SalvaRegistroParaTodasAulasDoDia(aluno, usuario);
@@ -51,8 +51,6 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var data in listaDatasAulas)
                     await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(null, data, turma.CodigoTurma, disciplinaCodigo));
-
-                retorno.Mensagens.Add("Frequências cadastradas com sucesso!");
             }
             catch (Exception)
             {
@@ -104,7 +102,7 @@ namespace SME.SGP.Aplicacao
 
                 int tipoFrequencia = (int)Enum.GetValues(typeof(TipoFrequencia))
                         .Cast<TipoFrequencia>()
-                        .Where(tf => tf.ShortName() == aluno.TipoFrequencia)
+                        .Where(tf => tf.ShortName() == alunoAula.TipoFrequencia)
                         .FirstOrDefault();       
 
                 var registroFrequenciaAluno = new RegistroFrequenciaAluno
