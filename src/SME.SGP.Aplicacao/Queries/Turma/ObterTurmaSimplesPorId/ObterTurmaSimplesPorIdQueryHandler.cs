@@ -2,8 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,15 +9,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaSimplesPorIdQueryHandler : IRequestHandler<ObterTurmaSimplesPorIdQuery, ObterTurmaSimplesPorIdRetornoDto>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
 
-        public ObterTurmaSimplesPorIdQueryHandler(IRepositorioTurma repositorioTurma)
+        public ObterTurmaSimplesPorIdQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta)
         {
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
         }
         public async Task<ObterTurmaSimplesPorIdRetornoDto> Handle(ObterTurmaSimplesPorIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTurma.ObterTurmaSimplesPorId(request.Id);
+            return await repositorioTurmaConsulta.ObterTurmaSimplesPorId(request.Id);
         }
     }
 }

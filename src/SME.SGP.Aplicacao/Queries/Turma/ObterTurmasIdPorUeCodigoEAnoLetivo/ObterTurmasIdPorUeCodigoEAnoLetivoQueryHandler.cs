@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasIdPorUeCodigoEAnoLetivoQueryHandler : IRequestHandler<ObterTurmasIdPorUeCodigoEAnoLetivoQuery, IEnumerable<long>>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
 
-        public ObterTurmasIdPorUeCodigoEAnoLetivoQueryHandler(IRepositorioTurma repositorioTurma)
+        public ObterTurmasIdPorUeCodigoEAnoLetivoQueryHandler(IRepositorioTurmaConsulta repositorioTurma)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }

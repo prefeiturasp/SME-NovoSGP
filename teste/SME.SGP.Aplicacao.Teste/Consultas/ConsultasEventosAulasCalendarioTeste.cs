@@ -27,11 +27,11 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
         private readonly Mock<IRepositorioFechamentoReabertura> repositorioFechamentoReabertura;
         private readonly Mock<IRepositorioParametrosSistema> repositorioParametrosSistema;
-        private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
+        private readonly Mock<IRepositorioPeriodoEscolarConsulta> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendatio;
         private readonly Mock<IServicoEol> servicoEOL;
         private readonly Mock<IServicoUsuario> servicoUsuario;
-        private readonly Mock<IRepositorioComponenteCurricular> repositorioComponenteCurricular;
+        private readonly Mock<IRepositorioComponenteCurricularConsulta> repositorioComponenteCurricular;
         
 
         public ConsultasEventosAulasCalendarioTeste()
@@ -41,8 +41,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             servicoUsuario = new Mock<IServicoUsuario>();
             httpContext = new Mock<IHttpContextAccessor>();
             comandosDiasLetivosMock = new Mock<IComandosDiasLetivos>();
-            repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
-            repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
+            repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricularConsulta>();
+            repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolarConsulta>();
             repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
             repositorioTipoCalendatio = new Mock<IRepositorioTipoCalendario>();
             servicoEOL = new Mock<IServicoEol>();

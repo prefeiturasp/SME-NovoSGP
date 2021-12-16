@@ -9,14 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterSituacaoConselhoClasseQueryHandler : IRequestHandler<ObterSituacaoConselhoClasseQuery, SituacaoConselhoClasse>
     {
-        private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
+        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
 
         public ObterSituacaoConselhoClasseQueryHandler(IRepositorioConselhoClasse repositorioConselhoClasse)
         {
-            this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
+            this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
         }
 
         public async Task<SituacaoConselhoClasse> Handle(ObterSituacaoConselhoClasseQuery request, CancellationToken cancellationToken)
-            => await repositorioConselhoClasse.ObterSituacaoConselhoClasse(request.TurmaId, request.PeriodoEscolarId);
+            => await repositorioConselhoClasseConsulta.ObterSituacaoConselhoClasse(request.TurmaId, request.PeriodoEscolarId);
     }
 }

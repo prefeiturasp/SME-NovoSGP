@@ -10,11 +10,11 @@ namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultasPeriodoEscolar : IConsultasPeriodoEscolar
     {
-        private readonly IRepositorioPeriodoEscolar repositorio;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorio;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
 
-        public ConsultasPeriodoEscolar(IRepositorioPeriodoEscolar repositorio,
+        public ConsultasPeriodoEscolar(IRepositorioPeriodoEscolarConsulta repositorio,
                                     IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                     IConsultasTipoCalendario consultasTipoCalendario)
         {

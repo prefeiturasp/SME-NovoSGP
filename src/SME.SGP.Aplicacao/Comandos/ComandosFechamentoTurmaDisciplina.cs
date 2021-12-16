@@ -13,12 +13,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IMediator mediator;
 
         public ComandosFechamentoTurmaDisciplina(IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina,
                                                  IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
-                                                 IRepositorioFechamentoTurma repositorioFechamentoTurma,
+                                                 IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
                                                  IMediator mediator)
         {
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(servicoFechamentoTurmaDisciplina));

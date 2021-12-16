@@ -27,37 +27,37 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
-        private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
+        private readonly IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IUnitOfWork unitOfWork;
         private List<FechamentoNotaDto> notasEnvioWfAprovacao;
         private Turma turmaFechamento;
         private readonly IMediator mediator;
 
         public ServicoFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
-                                                IRepositorioFechamentoTurma repositorioFechamentoTurma,
-                                                IRepositorioFechamentoAluno repositorioFechamentoAluno,
+                                                IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
+                                                IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno,
                                                 IRepositorioFechamentoNota repositorioFechamentoNota,
                                                 IRepositorioDre repositorioDre,
-                                                IRepositorioComponenteCurricular repositorioComponenteCurricular,
-                                                IRepositorioTurma repositorioTurma,
+                                                IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
+                                                IRepositorioTurmaConsulta repositorioTurma,
                                                 IRepositorioUe repositorioUe,
                                                 IServicoPeriodoFechamento servicoPeriodoFechamento,
-                                                IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                                IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                                 IRepositorioTipoCalendario repositorioTipoCalendario,
                                                 IRepositorioTipoAvaliacao repositorioTipoAvaliacao,
                                                 IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,

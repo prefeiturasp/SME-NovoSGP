@@ -95,17 +95,6 @@ namespace SME.SGP.Dados.Repositorios
             return fechammentosTurmaDisciplina;
         }
 
-        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(string turmaCodigo,
-            long[] disciplinasId, int bimestre = 0)
-        {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
-
-            if (turma == null)
-                return Enumerable.Empty<FechamentoTurmaDisciplina>();
-
-            return await ObterFechamentosTurmaDisciplinas(turma.Id, disciplinasId, bimestre);
-        }
-
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaCodigo,
             long disciplinaId, int bimestre = 0)
         {
