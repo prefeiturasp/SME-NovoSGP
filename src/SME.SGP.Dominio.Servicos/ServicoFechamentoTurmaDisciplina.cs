@@ -282,8 +282,9 @@ namespace SME.SGP.Dominio.Servicos
 
                 unitOfWork.PersistirTransacao();
 
-                if (alunosComNotaAlterada.Length > 0)
-                    Cliente.Executar<IServicoFechamentoTurmaDisciplina>(s => s.GerarNotificacaoAlteracaoLimiteDias(turmaFechamento, usuarioLogado, ue, entidadeDto.Bimestre, alunosComNotaAlterada));
+                //TODO Removido temporariamente
+                //if (alunosComNotaAlterada.Length > 0)
+                //    Cliente.Executar<IServicoFechamentoTurmaDisciplina>(s => s.GerarNotificacaoAlteracaoLimiteDias(turmaFechamento, usuarioLogado, ue, entidadeDto.Bimestre, alunosComNotaAlterada));
 
                 await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
                                                 turmaFechamento.CodigoTurma,
