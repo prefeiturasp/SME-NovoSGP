@@ -11,17 +11,17 @@ namespace SME.SGP.Aplicacao
     public class ObterNotasFinaisFechamentoQueryHandler : IRequestHandler<ObterNotasFinaisFechamentoQuery, IEnumerable<FechamentoConselhoClasseNotaFinalDto>>
     {
 
-        private readonly IRepositorioConselhoClasse repositorio;
+        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
 
         public ObterNotasFinaisFechamentoQueryHandler(IRepositorioConselhoClasse repositorio)
         {
-            this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
         }
 
         public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> Handle(ObterNotasFinaisFechamentoQuery request,
             CancellationToken cancellationToken)
         {
-            var retorno = await repositorio.ObterNotasFechamentoOuConselhoAlunos(request.UeId,
+            var retorno = await repositorioConselhoClasseConsulta.ObterNotasFechamentoOuConselhoAlunos(request.UeId,
                                                                           request.Ano,
                                                                           request.DreId,
                                                                           request.Modalidade,

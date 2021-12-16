@@ -297,8 +297,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<AuditoriaDto> GerarConselhoClasse(ConselhoClasse conselhoClasse, FechamentoTurma fechamentoTurma)
         {
-            var conselhoClasseExistente = await repositorioConselhoClasse
-                .ObterPorTurmaEPeriodoAsync(fechamentoTurma.TurmaId, fechamentoTurma.PeriodoEscolarId);
+            var conselhoClasseExistente = await mediator.Send(new ObterPorTurmaEPeriodoQuery(fechamentoTurma.TurmaId, fechamentoTurma.PeriodoEscolarId));
 
             if (conselhoClasseExistente != null)
                 throw new NegocioException($"Já existe um conselho de classe gerado para a turma {fechamentoTurma.Turma.Nome}!");
@@ -508,8 +507,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task ConsolidaConselhoClasse(int dreId)
         {
-            var listaConselhoAlunoReprocessar = await repositorioConselhoClasse
-                .ObterAlunosReprocessamentoConsolidacaoConselho(dreId);
+            var listaConselhoAlunoReprocessar = await mediator.Send(new ObterAlunosReprocessamentoConsolidacaoConselhoQuery(dreId));
 
             var listaAgrupada = listaConselhoAlunoReprocessar
                 .GroupBy(l => new { l.turmaId, l.bimestre })

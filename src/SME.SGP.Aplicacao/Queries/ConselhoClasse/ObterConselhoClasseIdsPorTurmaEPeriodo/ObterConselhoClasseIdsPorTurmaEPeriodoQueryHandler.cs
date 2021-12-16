@@ -8,15 +8,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterConselhoClasseIdsPorTurmaEPeriodoQueryHandler : IRequestHandler<ObterConselhoClasseIdsPorTurmaEPeriodoQuery, long[]>
     {
-        private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
+        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
 
         public ObterConselhoClasseIdsPorTurmaEPeriodoQueryHandler(IRepositorioConselhoClasse repositorioConselhoClasse)
         {
-            this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasse));
+            this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
         }
         public async Task<long[]> Handle(ObterConselhoClasseIdsPorTurmaEPeriodoQuery request, CancellationToken cancellationToken)
         {
-            var ids = await repositorioConselhoClasse.ObterConselhoClasseIdsPorTurmaEPeriodoAsync(request.TurmasCodigos, request.PeriodoEscolarId);
+            var ids = await repositorioConselhoClasseConsulta.ObterConselhoClasseIdsPorTurmaEPeriodoAsync(request.TurmasCodigos, request.PeriodoEscolarId);
             if (ids != null && ids.Any())
                 return ids.ToArray();
             return default;

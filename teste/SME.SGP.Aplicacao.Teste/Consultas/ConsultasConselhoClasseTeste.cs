@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     {
         private readonly ConsultasConselhoClasse consultasConselhoClasse;
         private readonly Mock<IConsultasDisciplina> consultasDisciplinas;
-        private readonly Mock<IRepositorioConselhoClasse> repositorioConselhoClasse;
+        private readonly Mock<IRepositorioConselhoClasseConsulta> repositorioConselhoClasseConsulta;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioParametrosSistema> repositorioParametrosSistema;
         private readonly Mock<IRepositorioConselhoClasseAluno> repositorioConselhoClasseAluno;
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         public ConsultasConselhoClasseTeste()
         {
             consultasDisciplinas = new Mock<IConsultasDisciplina>();
-            repositorioConselhoClasse = new Mock<IRepositorioConselhoClasse>();
+            repositorioConselhoClasseConsulta = new Mock<IRepositorioConselhoClasseConsulta>();
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
             repositorioConselhoClasseAluno = new Mock<IRepositorioConselhoClasseAluno>();
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasFechamentoTurma = new Mock<IConsultasFechamentoTurma>();
             servicoDeNotasConceitos = new Mock<IServicoDeNotasConceitos>();
             mediator = new Mock<IMediator>();
-            consultasConselhoClasse = new ConsultasConselhoClasse(repositorioConselhoClasse.Object, 
+            consultasConselhoClasse = new ConsultasConselhoClasse(repositorioConselhoClasseConsulta.Object, 
                                        repositorioPeriodoEscolar.Object,
                                        repositorioParametrosSistema.Object,
                                        repositorioConselhoClasseAluno.Object,
