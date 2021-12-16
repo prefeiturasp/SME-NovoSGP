@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoEol servicoEOL;
 
         public NotificarCompensacaoAusenciaUseCase(IMediator mediator,
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                                                    IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                                    IRepositorioTurmaConsulta repositorioTurmaConsulta,
                                                    IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
-                                                   IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                                   IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                                    IServicoEol servicoEOL) : base(mediator)
         {
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));

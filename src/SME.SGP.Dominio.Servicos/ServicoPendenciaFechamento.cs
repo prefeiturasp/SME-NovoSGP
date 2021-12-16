@@ -22,7 +22,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
 
         private int avaliacoesSemnota;
@@ -37,7 +37,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioPendencia repositorioPendencia,
                                           IRepositorioPendenciaFechamento repositorioPendenciaFechamento,
                                           IRepositorioAula repositorioAula,
-                                          IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                          IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                           IRepositorioFechamentoNota repositorioFechamentoNota,
                                           IServicoUsuario servicoUsuario,
                                           IServicoAbrangencia servicoAbrangencia,

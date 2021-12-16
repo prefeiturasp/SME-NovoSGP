@@ -29,7 +29,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IRepositorioProcessoExecutando repositorioProcessoExecutando;
         private readonly IMediator mediator;
 
@@ -43,7 +43,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IServicoEol servicoEOL,
                                           IServicoUsuario servicoUsuario,
                                           IRepositorioTurmaConsulta repositorioTurmaConsulta,
-                                          IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                          IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                           IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
                                           IConsultasDisciplina consultasDisciplina,
                                           IUnitOfWork unitOfWork, IRepositorioProcessoExecutando repositorioProcessoExecutando,

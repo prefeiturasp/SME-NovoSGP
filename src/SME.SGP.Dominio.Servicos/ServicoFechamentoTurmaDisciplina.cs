@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
-        private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
+        private readonly IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
@@ -42,7 +42,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IUnitOfWork unitOfWork;
         private List<FechamentoNotaDto> notasEnvioWfAprovacao;
         private Turma turmaFechamento;
@@ -50,10 +50,10 @@ namespace SME.SGP.Dominio.Servicos
 
         public ServicoFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                                 IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
-                                                IRepositorioFechamentoAluno repositorioFechamentoAluno,
+                                                IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno,
                                                 IRepositorioFechamentoNota repositorioFechamentoNota,
                                                 IRepositorioDre repositorioDre,
-                                                IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                                IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                                 IRepositorioTurmaConsulta repositorioTurma,
                                                 IRepositorioUe repositorioUe,
                                                 IServicoPeriodoFechamento servicoPeriodoFechamento,

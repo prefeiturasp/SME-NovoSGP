@@ -11,10 +11,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosFechamentoAluno : IComandosFechamentoAluno
     {
-        private readonly IRepositorioFechamentoAluno repositorio;
+        private readonly IRepositorioFechamentoAlunoConsulta repositorio;
         private readonly IMediator mediator;
 
-        public ComandosFechamentoAluno(IRepositorioFechamentoAluno repositorio, IMediator mediator)
+        public ComandosFechamentoAluno(IRepositorioFechamentoAlunoConsulta repositorio, IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

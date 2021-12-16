@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioDre> repositorioDre;
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioAtividadeAvaliativaRegencia> repositorioAtividadeAvaliativaRegencia;
-        private readonly Mock<IRepositorioComponenteCurricular> repositorioComponenteCurricular;
+        private readonly Mock<IRepositorioComponenteCurricularConsulta> repositorioComponenteCurricular;
         private readonly Mock<IMediator> mediator;
 
 
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioDre = new Mock<IRepositorioDre>();
             repositorioEvento = new Mock<IRepositorioEvento>();
             repositorioAtividadeAvaliativaRegencia = new Mock<IRepositorioAtividadeAvaliativaRegencia>();
-            repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
+            repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricularConsulta>();
             mediator = new Mock<IMediator>();
             
 

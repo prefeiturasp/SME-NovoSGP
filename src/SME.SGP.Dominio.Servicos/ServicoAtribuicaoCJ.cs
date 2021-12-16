@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -19,12 +17,12 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAbrangencia servicoAbrangencia;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
         public ServicoAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAbrangencia servicoAbrangencia, IRepositorioTurma repositorioTurma,
-            IRepositorioAbrangencia repositorioAbrangencia, IRepositorioAula repositorioAula, IServicoUsuario servicoUsuario, IRepositorioComponenteCurricular repositorioComponenteCurricular, IMediator mediator)
+            IRepositorioAbrangencia repositorioAbrangencia, IRepositorioAula repositorioAula, IServicoUsuario servicoUsuario, IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));

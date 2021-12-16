@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoAluno servicoAluno;
         private readonly IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase obterInformacoesDeFrequenciaAlunoPorSemestreUseCase;
         private readonly IServicoEol servicoEOL;
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                                    IServicoFrequencia servicoFrequencia,
                                    IServicoEol servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                                    IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                    IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                    IConsultasTipoCalendario consultasTipoCalendario,
                                    IConsultasTurma consultasTurma,
                                    IRepositorioAula repositorioAula,
