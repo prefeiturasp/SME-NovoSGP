@@ -101,14 +101,10 @@ namespace SME.SGP.Dominio.Servicos
             var qtdDiasParametroString = await repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.QuantidadeDiasNotificarAlteracaoChamadaEfetivada,
                                                    anoAtual);
-
             var parseado = int.TryParse(qtdDiasParametroString, out int qtdDiasParametro);
 
             if (!parseado)
-            {
-                SentrySdk.CaptureEvent(new SentryEvent(new Exception($"Não foi encontrado parametro ativo para o tipo 'QuantidadeDiasNotificarAlteracaoChamadaEfetivada' para o ano de {anoAtual}")));
                 return;
-            }
 
             var qtdDiasAlteracao = (alteradoEm.Date - criadoEm.Date).TotalDays;
 
