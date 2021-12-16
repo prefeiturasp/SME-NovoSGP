@@ -8,14 +8,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciasDetalhadasPorDataQuery : IRequest<IEnumerable<FrequenciaDetalhadaPorDataDto>>
     {
-        public ObterFrequenciasDetalhadasPorDataQuery(string codigoAluno, DateTime dataInicio, DateTime dataFim)
+        public ObterFrequenciasDetalhadasPorDataQuery(string[] alunosCodigos, DateTime dataInicio, DateTime dataFim)
         {
-            CodigoAluno = codigoAluno;
+            AlunosCodigos = alunosCodigos;
             DataInicio = dataInicio;
             DataFim = dataFim;
         }
 
-        public string CodigoAluno { get; set; }
+        public string[] AlunosCodigos { get; set; }
         public DateTime DataInicio { get; set; }
         public DateTime DataFim { get; set; }
     }

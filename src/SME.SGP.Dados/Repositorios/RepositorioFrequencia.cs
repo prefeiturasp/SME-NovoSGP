@@ -389,20 +389,20 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<FrequenciaDetalhadaPorDataDto>> ObterFrequenciasDetalhadasPorData(string codigoAluno, DateTime dataInicio, DateTime dataFim)
+        public async Task<IEnumerable<FrequenciaDetalhadaPorDataDto>> ObterFrequenciasDetalhadasPorData(string[] codigoAluno, DateTime dataInicio, DateTime dataFim)
         {
             
             var query = @"select distinct a.data_aula as DataAula,
                                       a.id as AulaId,
-                                      a.tipo_calendario_id TipoCalendario
+                                      a.tipo_calendario_id TipoCalendario,raa.codigo_aluno as AlunoCodigo
                        from registro_frequencia_aluno raa 
                        inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
                        inner join aula a on a.id = rf.aula_id 
-                             where raa.codigo_aluno = @codigoAluno
+                             where raa.codigo_aluno = any(@codigoAluno)
                         and not raa.excluido
                         and not a.excluido 
                         and a.data_aula between @dataInicio and @dataFim 
-                         group by a.data_aula ,a.id ,a.tipo_calendario_id; ";
+                         group by a.data_aula ,a.id ,a.tipo_calendario_id,raa.codigo_aluno; ";
 
             return await database.Conexao.QueryAsync<FrequenciaDetalhadaPorDataDto>(query, new { codigoAluno, dataInicio, dataFim });
         }
