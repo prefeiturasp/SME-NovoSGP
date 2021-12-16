@@ -52,8 +52,6 @@ namespace SME.SGP.Dados.Repositorios
                            and p.situacao = @situacao";
             var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
-
-
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
