@@ -27,6 +27,7 @@ namespace SME.SGP.Infra
 
         public bool MarcadorDiasSemRegistroExibir { get; set; }
         public string MarcadorDiasSemRegistroTexto { get; set; }
+        public DateTime DataMatricula { get; set; }
 
         /// <summary>
         /// Refere-se ao processo que a tela executa, se já foi realizado ou não
@@ -65,7 +66,7 @@ namespace SME.SGP.Infra
                 CodigoEOL = dadosAluno.CodigoAluno,
                 SituacaoCodigo = dadosAluno.CodigoSituacaoMatricula,
                 Situacao = dadosAluno.SituacaoMatricula,
-                DataSituacao = dadosAluno.DataSituacao,
+                DataSituacao = dadosAluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Rematriculado ? dadosAluno.DataMatricula : dadosAluno.DataSituacao,
                 NomeResponsavel = dadosAluno.NomeResponsavel,
                 TipoResponsavel = dadosAluno.TipoResponsavel,
                 CelularResponsavel = dadosAluno.CelularResponsavel,
