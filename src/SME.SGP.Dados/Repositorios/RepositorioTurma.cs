@@ -2,15 +2,12 @@
 using Dommel;
 using Sentry;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -186,17 +183,6 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task<IEnumerable<string>> ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(int anoLetivo, bool definirTurmasComoHistorica, string listaTurmas, IDbTransaction transacao)
-        {
-            var sqlQuery = GerarQueryCodigosTurmasForaLista(anoLetivo, true).Replace("#idsTurmas", listaTurmas);
-            return await contexto.Conexao.QueryAsync<string>(sqlQuery, transacao);
-        }
-        private string MapearParaCodigosQuerySql(IEnumerable<string> codigos)
-        {
-            string[] arrCodigos = codigos.Select(x => $"'{x}'").ToArray();
-            return string.Join(",", arrCodigos);
-        }
-
         private string GerarQueryCodigosTurmasForaLista(int anoLetivo, bool definirTurmasComoHistorica) =>
             $@"select distinct t.turma_id
 	                from turma t
@@ -216,6 +202,17 @@ namespace SME.SGP.Dados.Repositorios
 	                  t.dt_fim_eol is not null and 
                       t.dt_fim_eol {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas extintas após o 1º bimestre do ano letivo considerado serão marcadas como histórica
 
+        public async Task<IEnumerable<string>> ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(int anoLetivo, bool definirTurmasComoHistorica, string listaTurmas, IDbTransaction transacao)
+        {
+            var sqlQuery = GerarQueryCodigosTurmasForaLista(anoLetivo, true).Replace("#idsTurmas", listaTurmas);
+            return await contexto.Conexao.QueryAsync<string>(sqlQuery, transacao);
+        }
+        private string MapearParaCodigosQuerySql(IEnumerable<string> codigos)
+        {
+            string[] arrCodigos = codigos.Select(x => $"'{x}'").ToArray();
+            return string.Join(",", arrCodigos);
+        }
+                
         public async Task<bool> AtualizarTurmaParaHistorica(string turmaId)
         {
             var query = @"update public.turma 
@@ -655,21 +652,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private const string QueryAulasTurmasForaListaCodigos = @"select id from public.aula where turma_id = #turmaId";
 
-            return await contexto.QueryAsync<TurmaAlunoBimestreFechamentoDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre, bimestre });
-        }
-
-        public async Task<IEnumerable<long>> ObterTurmasIdsPorUeEAnoLetivo(int anoLetivo, string ueCodigo)
-        {
-            var query = new StringBuilder(@"select t.id 
-                                              from turma t
-                                             inner join ue u on u.id = t.ue_id 
-                                             where t.ano_letivo = @anoLetivo
-                                               and u.ue_id = @ueCodigo
-                                               and not t.historica ");            
-
-            return await contexto.Conexao.QueryAsync<long>(query.ToString(), new { anoLetivo, ueCodigo });
-
-        }
+        
         private const string QueryDefinirTurmaHistorica = "update public.turma set historica = true where turma_id = #turmaId;";
     }
 }
