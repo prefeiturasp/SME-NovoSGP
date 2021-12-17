@@ -76,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
             var situacao = SituacaoPendencia.Pendente;
 
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
-            var queryTotalRegistros = $"select count(0) {query}";
+            var queryTotalRegistros = $"select count(distinct p.id) {query}";
 
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao, tiposPendencias, tituloPendencia });
 
