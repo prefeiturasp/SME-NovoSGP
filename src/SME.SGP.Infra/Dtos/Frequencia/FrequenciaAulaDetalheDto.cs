@@ -19,6 +19,7 @@ namespace SME.SGP.Infra
             Desabilitado = aluno.EstaInativo(aula.DataAula) || aula.EhDataSelecionadaFutura;
             PermiteAnotacao = aluno.EstaAtivo(aula.DataAula);
             PossuiAnotacao = anotacoesTurma.Any(a => a.AulaId == AulaId);
+            EhReposicao = TipoAula.Reposicao == aula.TipoAula ? true : false;
 
             var registrosFrequenciaAula = registrosFrequenciaAlunos.Where(a => a.AulaId == AulaId);
             CarregarDetalheFrequencia(aula, registrosFrequenciaAula, frequenciaPreDefinida);
@@ -32,6 +33,7 @@ namespace SME.SGP.Infra
         private TipoFrequencia? Tipo { get; set; }
         public string TipoFrequencia  { get => Tipo?.ShortName() ?? ""; }
         public IList<FrequenciaDetalheAulaDto> DetalheFrequencia { get; set; }
+        public bool EhReposicao { get; set; }
 
         private void CarregarDetalheFrequencia(Aula aula, IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAula, FrequenciaPreDefinidaDto frequenciaPreDefinida)
         {
