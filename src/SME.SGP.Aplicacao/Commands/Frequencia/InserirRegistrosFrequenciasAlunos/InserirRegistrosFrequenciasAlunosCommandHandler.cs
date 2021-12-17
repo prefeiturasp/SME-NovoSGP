@@ -36,11 +36,16 @@ namespace SME.SGP.Aplicacao
                 {
                     foreach (var frequencia in request.Frequencias)
                     {
-                        var preDefinida = frequencia.TipoFrequenciaPreDefinido != "" ? (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), frequencia.TipoFrequenciaPreDefinido) : TipoFrequencia.C;
+                        var preDefinida = !string.IsNullOrEmpty(frequencia.TipoFrequenciaPreDefinido) ? 
+                            (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), frequencia.TipoFrequenciaPreDefinido) : 
+                            TipoFrequencia.C;
 
                         foreach (var aulaRegistrada in frequencia.Aulas)
                         {
-                            var presenca = aulaRegistrada.TipoFrequencia != "" ? (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), aulaRegistrada.TipoFrequencia) : preDefinida;
+                            var presenca = !string.IsNullOrEmpty(aulaRegistrada.TipoFrequencia) ? 
+                                (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), aulaRegistrada.TipoFrequencia) : 
+                                preDefinida;
+
                             var entidade = new RegistroFrequenciaAluno()
                             {
                                 CodigoAluno = frequencia.CodigoAluno,

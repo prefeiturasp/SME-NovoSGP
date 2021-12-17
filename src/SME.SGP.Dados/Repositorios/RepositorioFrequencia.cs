@@ -214,6 +214,19 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<RegistroFrequencia>(query, new { aulaId });
         }
 
+        public async Task<IEnumerable<RegistroFrequencia>> ObterRegistroFrequenciaPorDataEAulaId(string disciplina, string turmaId, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select rf.*
+                            from registro_frequencia rf
+                            inner join aula a on rf.aula_id  = a.id 
+                          where DATE(a.data_aula) between Date(@dataInicio) and Date(@dataFim)
+                                and a.disciplina_id = @disciplina
+                                and a.turma_id = @turmaId
+                            order by rf.criado_em desc";
+
+            return await database.Conexao.QueryAsync<RegistroFrequencia>(query, new { disciplina, turmaId, dataInicio, dataFim });
+        }
+
         public async Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string turma, short bimestre, short anoLetivo)
         {
             var sql = @"
@@ -374,6 +387,39 @@ namespace SME.SGP.Dados.Repositorios
                 datafim,
                 mes
             });
+        }
+
+        public async Task<IEnumerable<RegistroFrequenciaAlunoPorAulaDto>> ObterFrequenciasDetalhadasPorData(string turmaCodigo, string componenteCurricularId, string[] codigosAlunos, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select a.id as AulaId
+                            , rf.id as RegistroFrequenciaId
+                            , rfa.codigo_aluno as AlunoCodigo
+                            , rfa.numero_aula as NumeroAula
+                            , rfa.valor as TipoFrequencia
+                            , rfa.criado_em as CriadoEm
+                            , rfa.criado_por as CriadoPor
+                            , rfa.criado_rf as CriadoRf
+                            , rfa.alterado_em as AlteradoEm
+                            , rfa.alterado_por as AlteradoPor
+                            , rfa.alterado_rf as AlteradoRf
+                       from registro_frequencia_aluno rfa 
+                       inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
+                       inner join aula a on a.id = rf.aula_id 
+                       where rfa.codigo_aluno = any(@codigosAlunos)
+                        and not rfa.excluido
+                        and not a.excluido 
+                        and a.turma_id = @turmaCodigo
+                        and a.disciplina_id = @componenteCurricularId
+                        and a.data_aula between @dataInicio and @dataFim ";
+
+            return await database.Conexao.QueryAsync<RegistroFrequenciaAlunoPorAulaDto>(query, new { turmaCodigo, componenteCurricularId, codigosAlunos, dataInicio, dataFim });
+        }
+
+        public async Task<bool> RegistraFrequencia(long componenteCurricularId)
+        {
+            var query = "select permite_registro_frequencia from componente_curricular where id = @componenteCurricularId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { componenteCurricularId });
         }
     }
 }

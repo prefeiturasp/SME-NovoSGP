@@ -1055,5 +1055,23 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DataAulaDto>(query, new { turmaId, componenteCurricularId, dataCriacao = dataCriacao.Date });
         }
+
+        public async Task<IEnumerable<Aula>> ObterAulasPorDataPeriodo(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId)
+        {
+            var query = @"select *
+                 from aula
+                where not excluido
+                  and DATE(data_aula) between Date(@dataInicio) and Date(@dataFim)
+                  and turma_id = @turmaId
+                  and disciplina_id = @disciplinaId";
+
+            return await database.Conexao.QueryAsync<Aula>(query, new
+            {
+                dataInicio = dataInicio.Date,
+                dataFim = dataFim.Date,
+                turmaId,
+                disciplinaId
+            });
+        }
     }
 }

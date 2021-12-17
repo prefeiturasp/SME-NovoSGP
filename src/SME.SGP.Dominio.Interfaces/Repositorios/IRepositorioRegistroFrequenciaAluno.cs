@@ -9,6 +9,7 @@ namespace SME.SGP.Dominio
     public interface IRepositorioRegistroFrequenciaAluno : IRepositorioBase<RegistroFrequenciaAluno>
     {
         Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId);
+        Task RemoverPorRegistroFrequenciaIdENumeroAula(long registroFrequenciaId, int numeroAula, string codigoAluno);
         Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string turmaId, IEnumerable<string> alunos);
         Task<IEnumerable<RegistroFrequenciaGeralPorDisciplinaAlunoTurmaDataDto>> ObterFrequenciaAlunosGeralPorAnoQuery(int ano);
         Task<IEnumerable<FrequenciaAlunoSimplificadoDto>> ObterFrequenciasPorAulaId(long aulaId);
@@ -17,5 +18,6 @@ namespace SME.SGP.Dominio
 
         Task<bool> InserirVarios(IEnumerable<RegistroFrequenciaAluno> registros);
         Task ExcluirVarios(List<long> idsParaExcluir);
+        Task<IEnumerable<FrequenciaAlunoAulaDto>> ObterFrequenciasDoAlunoNaAula(string codigoAluno, long aulaId);
     }
 }
