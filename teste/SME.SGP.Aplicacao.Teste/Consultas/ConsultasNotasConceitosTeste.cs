@@ -56,10 +56,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioNotaParametro = new Mock<IRepositorioNotaParametro>();
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
             repositorioAtividadeAvaliativaDisciplina = new Mock<IRepositorioAtividadeAvaliativaDisciplina>();
-            repositorioConceito = new Mock<IRepositorioConceito>();
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolarConsulta>();
             repositorioConceito = new Mock<IRepositorioConceitoConsulta>();
-            repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
             repositorioTipoAvaliacao = new Mock<IRepositorioTipoAvaliacao>();
             repositorioTurma = new Mock<IRepositorioTurma>();
@@ -85,11 +83,11 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                     repositorioTipoCalendario.Object,
                     repositorioNotaParametro.Object,
                     repositorioAtividadeAvaliativa.Object,
-                    repositorioAtividadeAvaliativaDisciplina.Object,
                     repositorioConceito.Object,
                     repositorioPeriodoEscolar.Object,
                     repositorioParametrosSistema.Object,
                     repositorioTipoAvaliacao.Object,
+                    repositorioAtividadeAvaliativaDisciplina.Object,
                     repositorioTurma.Object,
                     repositorioUe.Object,
                     repositorioDre.Object,
@@ -97,6 +95,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                     repositorioAtividadeAvaliativaRegencia.Object,
                     repositorioComponenteCurricular.Object,
                     mediator.Object);
+
+            
         }
 
         [Theory]

@@ -238,7 +238,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioCompensacaoAusenciaDisciplinaRegencia, RepositorioCompensacaoAusenciaDisciplinaRegencia>();
             services.TryAddScopedWorkerService<IRepositorioSupervisorEscolaDre, RepositorioSupervisorEscolaDre>();
             services.TryAddScopedWorkerService<IRepositorioTipoAvaliacao, RepositorioTipoAvaliacao>();
-            services.TryAddScopedWorkerService<IRepositorioTipoCalendario, RepositorioTipoCalendarioConsulta>();
+            services.TryAddScopedWorkerService<IRepositorioTipoCalendarioConsulta, RepositorioTipoCalendarioConsulta>();
+            services.TryAddScopedWorkerService<IRepositorioTipoCalendario, RepositorioTipoCalendario>();
             services.TryAddScopedWorkerService<IRepositorioTurma, RepositorioTurma>();
             services.TryAddScopedWorkerService<IRepositorioUe, RepositorioUe>();
             services.TryAddScopedWorkerService<IRepositorioUeConsulta, RepositorioUeConsulta>();

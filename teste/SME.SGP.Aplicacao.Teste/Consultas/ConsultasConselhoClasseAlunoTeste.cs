@@ -15,14 +15,11 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     public class ConsultasConselhoClasseAlunoTeste
     {
         private readonly ConsultasConselhoClasseAluno consultasConselhoClasseAluno;
-        private readonly Mock<IConsultasAulaPrevista> consultasAulaPrevista;
         private readonly Mock<IConsultasConselhoClasseNota> consultasConselhoClasseNota;
         private readonly Mock<IConsultasDisciplina> consultasDisciplina;
-        private readonly Mock<IConsultasFechamentoNota> consultasFechamentoNota;
         private readonly Mock<IConsultasFechamentoTurma> consultasFechamentoTurma;
         private readonly Mock<IConsultasFrequencia> consultasFrequencia;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
-        private readonly Mock<IConsultasTipoCalendario> consultasTipoCalendario;
         private readonly Mock<IRepositorioConselhoClasseAlunoConsulta> repositorioConselhoClasseAluno;
         private readonly Mock<IRepositorioTurma> repositorioTurma;
         private readonly Mock<IRepositorioTipoCalendarioConsulta> repositorioTipoCalendario;
@@ -31,29 +28,22 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IServicoEol> servicoEOL;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IMediator> mediator;
-        private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
 
         public ConsultasConselhoClasseAlunoTeste()
         {
             repositorioConselhoClasseAluno = new Mock<IRepositorioConselhoClasseAlunoConsulta>();
-            repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
-            repositorioConselhoClasseAluno = new Mock<IRepositorioConselhoClasseAluno>();
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendarioConsulta>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             consultasDisciplina = new Mock<IConsultasDisciplina>();
-            consultasTipoCalendario = new Mock<IConsultasTipoCalendario>();
             consultasFechamentoTurma = new Mock<IConsultasFechamentoTurma>();
-            consultasAulaPrevista = new Mock<IConsultasAulaPrevista>();
             consultasConselhoClasseNota = new Mock<IConsultasConselhoClasseNota>();
-            consultasFechamentoNota = new Mock<IConsultasFechamentoNota>();
             servicoEOL = new Mock<IServicoEol>();
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioFrequenciaAlunoDisciplinaPeriodo = new Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta>();
             consultasFrequencia = new Mock<IConsultasFrequencia>();
             servicoConselhoClasse = new Mock<IServicoConselhoClasse>();
             mediator = new Mock<IMediator>();
-            repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             repositorioTurma = new Mock<IRepositorioTurma>();
             consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
 

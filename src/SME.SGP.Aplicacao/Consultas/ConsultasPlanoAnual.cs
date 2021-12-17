@@ -26,8 +26,6 @@ namespace SME.SGP.Aplicacao
         public ConsultasPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                    IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                                    IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-                                   IRepositorioTipoCalendario repositorioTipoCalendario,
-                                   IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                    IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                    IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual,
                                    IRepositorioTurma repositorioTurma,

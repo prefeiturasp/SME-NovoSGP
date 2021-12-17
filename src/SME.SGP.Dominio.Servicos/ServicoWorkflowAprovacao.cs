@@ -21,13 +21,10 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
-        private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
-        private readonly IRepositorioUsuarioConsulta repositorioUsuario;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoEol servicoEOL;
@@ -45,14 +42,11 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioEvento repositorioEvento,
                                         IConfiguration configuration,
                                         IRepositorioAula repositorioAula,
-                                        IRepositorioUe repositorioUe,
                                         IRepositorioTurmaConsulta repositorioTurma,
                                         IRepositorioUeConsulta repositorioUe,
-                                        IRepositorioTurma repositorioTurma,
                                         IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
                                         IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                         IRepositorioFechamentoNota repositorioFechamentoNota,
-                                        IRepositorioUsuarioConsulta repositorioUsuario,
                                         IRepositorioPendencia repositorioPendencia,
                                         IRepositorioEventoTipo repositorioEventoTipo,
                                         IMediator mediator)
@@ -71,7 +65,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
-            this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

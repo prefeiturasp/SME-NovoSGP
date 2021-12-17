@@ -12,11 +12,8 @@ namespace SME.SGP.Aplicacao
     public class ComandosFechamentoFinal : IComandosFechamentoFinal
     {
         private readonly IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno;
-        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
-        
-        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
-        private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
-        
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;        
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;        
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
@@ -30,8 +27,6 @@ namespace SME.SGP.Aplicacao
             IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,            
             IRepositorioNotaTipoValor repositorioNotaTipoValor,
             IRepositorioTurma repositorioTurma,
-            IRepositorioFechamentoAluno repositorioFechamentoAluno,
-            IRepositorioFechamentoTurma repositorioFechamentoTurma,
             IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
             IMediator mediator)
         {

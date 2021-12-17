@@ -20,7 +20,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;        
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;        
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IServicoConselhoClasse servicoConselhoClasse;

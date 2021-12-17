@@ -14,9 +14,9 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFechamentoTurmaDisciplinaConsulta : RepositorioBase<FechamentoTurmaDisciplina>,IRepositorioFechamentoTurmaDisciplinaConsulta
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
 
-        public RepositorioFechamentoTurmaDisciplinaConsulta(ISgpContextConsultas database, IRepositorioTurma repositorioTurma) : base(database)
+        public RepositorioFechamentoTurmaDisciplinaConsulta(ISgpContextConsultas database, IRepositorioTurmaConsulta repositorioTurma) : base(database)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }

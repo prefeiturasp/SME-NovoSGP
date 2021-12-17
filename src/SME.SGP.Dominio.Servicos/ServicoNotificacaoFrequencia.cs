@@ -18,16 +18,11 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno;
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -38,14 +33,9 @@ namespace SME.SGP.Dominio.Servicos
                                             IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                             IRepositorioFrequencia repositorioFrequencia,
                                             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
-                                            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
                                             IRepositorioTurmaConsulta repositorioTurma,
                                             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-                                            IRepositorioTipoCalendario repositorioTipoCalendario,
-                                            IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno,
-                                            IRepositorioTurma repositorioTurma,
-                                            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                             IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,

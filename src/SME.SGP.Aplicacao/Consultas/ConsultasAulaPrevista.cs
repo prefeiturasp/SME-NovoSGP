@@ -11,35 +11,22 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasAulaPrevista : IConsultasAulaPrevista
     {
-        
-        
-        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;        
         private readonly IRepositorioAulaPrevistaConsulta repositorioAulaPrevistaConsulta;
         private readonly IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IRepositorioTurma repositorioTurma;
         private readonly IConsultasTurma consultasTurma;
         private readonly IMediator mediator;
 
-        public ConsultasAulaPrevista(IRepositorioAulaPrevista repositorio,
-                                     IRepositorioAulaPrevistaBimestre repositorioBimestre,
-                                     IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-        public ConsultasAulaPrevista(IRepositorioAulaPrevistaConsulta repositorioAulaPrevistaConsulta,
+        public ConsultasAulaPrevista(IRepositorioAulaPrevistaConsulta repositorioAulaPrevista,
                                      IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre,
-                                     IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                     IRepositorioTurma repositorioTurma,
-                                     IRepositorioTipoCalendario repositorioTipoCalendario,
-                                     IConsultasTurma consultasTurma,
+                                     IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+                                     IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,                                     
                                      IMediator mediator)
-                                     IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
-                                     IConsultasTurma consultasTurma)
         {
             this.repositorioAulaPrevistaConsulta = repositorioAulaPrevistaConsulta ?? throw new ArgumentNullException(nameof(repositorioAulaPrevistaConsulta));
             this.repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

@@ -17,32 +17,16 @@ namespace SME.SGP.Dominio.Servicos
         protected IServicoCalculoParecerConclusivo quandoFalso;
         protected IEnumerable<ConselhoClasseParecerConclusivo> pareceresDoServico;
 
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
-        private readonly IRepositorioConceito repositorioConceito;
-        private readonly IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota;
         private readonly IRepositorioConceitoConsulta repositorioConceito;
-        private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IConsultasFrequencia consultasFrequencia;
-        private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
 
-        public ServicoCalculoParecerConclusivo(IRepositorioParametrosSistema repositorioParametrosSistema,
-                                               IRepositorioFechamentoNota repositorioFechamentoNota,
-                                               IRepositorioConceito repositorioConceito,
-                                               IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota,
-                                               IRepositorioConceitoConsulta repositorioConceito,
-                                               IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
+        public ServicoCalculoParecerConclusivo(IRepositorioConceitoConsulta repositorioConceito,
                                                IConsultasFrequencia consultasFrequencia,
-                                               IServicoEol servicoEOL,
                                                IMediator mediator)
         {
-            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
-            this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
-            this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
