@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IInserirFrequenciaListaoUseCase : IUseCase<IEnumerable<FrequenciaSalvarDto>, RetornoBaseDto>
+    public interface IInserirFrequenciaListaoUseCase : IUseCase<IEnumerable<FrequenciaSalvarAulaAlunosDto>, AuditoriaDto>
     {
     }
 }
