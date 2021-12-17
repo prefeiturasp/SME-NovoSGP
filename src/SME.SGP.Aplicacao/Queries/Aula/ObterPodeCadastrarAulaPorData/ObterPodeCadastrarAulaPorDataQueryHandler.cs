@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
                         {
                             periodoFechamento.FechamentosBimestre = fechamentoPeriodoDataAula;
                             if (periodoFechamento.ExisteFechamentoEmAberto(hoje))
-                                return new PodeCadastrarAulaPorDataRetornoDto(true);
+                                return new PodeCadastrarAulaPorDataRetornoDto(true, somenteReposicao: somenteAulaReposicao);
                         }
                         else
                         {
