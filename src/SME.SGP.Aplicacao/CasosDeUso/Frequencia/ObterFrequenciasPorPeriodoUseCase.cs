@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                   param.DataFim));
 
             var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoPorPeriodoQuery(param.TurmaId, param.DataInicio, param.DataFim));
-            var frequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorTurmaComponenteQuery(param.TurmaId, componenteCurricularId));
+            var frequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorTurmaComponenteQuery(turma.Id, componenteCurricularId));
 
             return await mediator.Send(new ObterListaFrequenciaAulasQuery(turma,
                                                                           alunosDaTurma,

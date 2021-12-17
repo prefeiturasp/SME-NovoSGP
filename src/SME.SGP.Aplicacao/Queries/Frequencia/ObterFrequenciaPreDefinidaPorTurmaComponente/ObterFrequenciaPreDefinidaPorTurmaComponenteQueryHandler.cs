@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<FrequenciaPreDefinidaDto>> Handle(ObterFrequenciaPreDefinidaPorTurmaComponenteQuery request, CancellationToken cancellationToken)
-            => await repositorioFrequenciaPreDefinida.ObterPorTurmaEComponente(request.TurmaCodigo, request.ComponenteCurricularId);
+            => await repositorioFrequenciaPreDefinida.ObterPorTurmaEComponente(request.TurmaId, request.ComponenteCurricularId);
     }
 }

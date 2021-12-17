@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Infra
 {
@@ -32,7 +33,7 @@ namespace SME.SGP.Infra
 
         public void CarregarAulas(IEnumerable<Aula> aulas, IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos, AlunoPorTurmaResposta aluno, IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma, FrequenciaPreDefinidaDto frequenciaPreDefinida)
         {
-            foreach (var aula in aulas)
+            foreach (var aula in aulas.OrderBy(a => a.DataAula))
             {
                 Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, registrosFrequenciaAlunos, anotacoesTurma, frequenciaPreDefinida));
             }

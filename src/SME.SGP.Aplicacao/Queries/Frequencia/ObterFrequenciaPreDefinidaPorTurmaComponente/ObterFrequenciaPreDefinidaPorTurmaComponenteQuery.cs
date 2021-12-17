@@ -6,13 +6,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciaPreDefinidaPorTurmaComponenteQuery : IRequest<IEnumerable<FrequenciaPreDefinidaDto>>
     {
-        public ObterFrequenciaPreDefinidaPorTurmaComponenteQuery(string turmaCodigo, long componenteCurricularId)
+        public ObterFrequenciaPreDefinidaPorTurmaComponenteQuery(long turmaId, long componenteCurricularId)
         {
-            TurmaCodigo = turmaCodigo;
+            TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
         }
 
-        public string TurmaCodigo { get; }
+        public long TurmaId { get; }
         public long ComponenteCurricularId { get; }
     }
 }
