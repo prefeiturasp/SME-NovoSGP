@@ -612,7 +612,8 @@ namespace SME.SGP.Dominio.Servicos
                         }
                         else
                         {
-                            if (evento.TipoEvento.Codigo == (long)TipoEvento.OrganizacaoEscolar || evento.TipoEvento.Codigo == (long)TipoEvento.RecreioNasFerias)
+                            if (evento.TipoEvento.Codigo == (long)TipoEvento.OrganizacaoEscolar || evento.TipoEvento.Codigo == (long)TipoEvento.RecreioNasFerias ||
+                                evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoDoDia || evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoDeAula)
                             {
                                 return devePassarPorWorkflow;
                             }
