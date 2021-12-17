@@ -10,7 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         void GeraNovoCodigo(Notificacao notificacao);
 
-        long ObtemNovoCodigo();
         Task<long> ObtemNovoCodigoAsync();
 
         void Salvar(Notificacao notificacao);
@@ -22,7 +21,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Cargo? ObterProximoNivel(Cargo? cargo, bool primeiroNivel);
 
-        Notificacao ObterPorCodigo(long codigo);        
+        Task<Notificacao> ObterPorCodigo(long codigo);        
 
         Task ExcluirPeloSistemaAsync(long[] ids);
 

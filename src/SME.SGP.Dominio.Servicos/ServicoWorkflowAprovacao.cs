@@ -345,7 +345,7 @@ namespace SME.SGP.Dominio.Servicos
         private async void EnviaNotificacaoParaNiveis(List<WorkflowAprovacaoNivel> niveis, long codigoNotificacao = 0)
         {
             if (codigoNotificacao == 0)
-                codigoNotificacao = servicoNotificacao.ObtemNovoCodigo();
+                codigoNotificacao = await servicoNotificacao.ObtemNovoCodigoAsync();
 
             List<Cargo?> cargosNotificados = new List<Cargo?>();
 
@@ -943,7 +943,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (!await repositorioAula.VerificarAulaPorWorkflowId(workflowId))
             {
-                Notificacao notificacao = servicoNotificacao.ObterPorCodigo(codigoDaNotificacao);
+                Notificacao notificacao = await mediator.Send(new ObterNotificacaoPorCodigoQuery(codigoDaNotificacao));
+                    
                 await servicoNotificacao.ExcluirPeloSistemaAsync(new long[notificacao.Id]);
                 await ExcluirWorkflowNotificacoes(workflowId);
                 return "Não existe aula para esse fluxo de aprovação. A notificação foi excluída.";

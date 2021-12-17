@@ -191,6 +191,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
             services.TryAddScoped<IRepositorioSupervisorEscolaDre, RepositorioSupervisorEscolaDre>();
             services.TryAddScoped<IRepositorioNotificacao, RepositorioNotificacao>();
+            services.TryAddScoped<IRepositorioNotificacaoConsulta, RepositorioNotificacaoConsulta>();
             services.TryAddScoped<IRepositorioWorkflowAprovacao, RepositorioWorkflowAprovacao>();
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivel, RepositorioWorkflowAprovacaoNivel>();

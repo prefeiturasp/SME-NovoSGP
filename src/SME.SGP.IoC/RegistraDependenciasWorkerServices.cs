@@ -215,6 +215,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioNotaTipoValor, RepositorioNotaTipoValor>();
             services.TryAddScopedWorkerService<IRepositorioNotasConceitos, RepositorioNotasConceitos>();
             services.TryAddScopedWorkerService<IRepositorioNotificacao, RepositorioNotificacao>();
+            services.TryAddScopedWorkerService<IRepositorioNotificacaoConsulta, RepositorioNotificacaoConsulta>();
             services.TryAddScopedWorkerService<IRepositorioNotificacaoAulaPrevista, RepositorioNotificacaoAulaPrevista>();
             services.TryAddScopedWorkerService<IRepositorioNotificacaoFrequencia, RepositorioNotificacaoFrequencia>();
             services.TryAddScopedWorkerService<IRepositorioObjetivoAprendizagemAula, RepositorioObjetivoAprendizagemAula>();
