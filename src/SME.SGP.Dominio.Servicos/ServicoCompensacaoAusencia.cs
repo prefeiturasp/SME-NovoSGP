@@ -22,6 +22,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTurma consultasTurma;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
@@ -29,7 +31,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IRepositorioProcessoExecutando repositorioProcessoExecutando;
         private readonly IMediator mediator;
 
@@ -42,8 +44,8 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                           IServicoEol servicoEOL,
                                           IServicoUsuario servicoUsuario,
-                                          IRepositorioTurma repositorioTurma,
-                                          IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                          IRepositorioTurmaConsulta repositorioTurmaConsulta,
+                                          IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                           IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
                                           IConsultasDisciplina consultasDisciplina,
                                           IUnitOfWork unitOfWork, IRepositorioProcessoExecutando repositorioProcessoExecutando,
@@ -56,7 +58,7 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasTurma = consultasTurma ?? throw new System.ArgumentNullException(nameof(consultasTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -188,7 +190,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<Turma> BuscaTurma(string turmaId)
         {
-            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId);
+            var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException("Turma não localizada!");
 
@@ -350,7 +352,7 @@ namespace SME.SGP.Dominio.Servicos
             // Excluir lista carregada
             foreach (var compensacaoExcluir in compensacoesExcluir)
             {
-                var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(compensacaoExcluir.TurmaId);
+                var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(compensacaoExcluir.TurmaId);
                 var periodo = await BuscaPeriodo(turma, compensacaoExcluir.Bimestre);
 
                 unitOfWork.IniciarTransacao();
@@ -425,7 +427,7 @@ namespace SME.SGP.Dominio.Servicos
             var turmasComErro = new StringBuilder("");
             foreach (var turmaId in compensacaoCopia.TurmasIds)
             {
-                var turma = await repositorioTurma.ObterPorCodigo(turmaId);
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
                 CompensacaoAusenciaDto compensacaoDto = new CompensacaoAusenciaDto()
                 {
                     TurmaId = turmaId,

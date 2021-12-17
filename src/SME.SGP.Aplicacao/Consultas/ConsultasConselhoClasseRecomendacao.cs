@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
     public class ConsultasConselhoClasseRecomendacao : IConsultasConselhoClasseRecomendacao
     {
         private readonly IConsultasFechamentoAluno consultasFechamentoAluno;
-        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
+        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IConsultasConselhoClasseAluno consultasConselhoClasseAluno;
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IMediator mediator;
 
-        public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
+        public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
             IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasPeriodoFechamento consultasPeriodoFechamento,
             IConsultasConselhoClasse consultasConselhoClasse, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IMediator mediator, IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClassesIdParaTratar, alunoCodigo);
 
-                    if (conselhoClasseAluno != null && (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || !string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia) || !string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas)))
+                    if (conselhoClasseAluno != null)
                     {
                         if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno))
                             recomendacaoAluno.AppendLine(conselhoClasseAluno.RecomendacoesAluno);

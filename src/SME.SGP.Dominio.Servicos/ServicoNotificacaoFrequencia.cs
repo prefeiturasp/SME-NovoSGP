@@ -18,6 +18,11 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno;
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
@@ -32,6 +37,11 @@ namespace SME.SGP.Dominio.Servicos
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                             IRepositorioFrequencia repositorioFrequencia,
+                                            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
+                                            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
+                                            IRepositorioTurmaConsulta repositorioTurma,
+                                            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+                                            IRepositorioTipoCalendario repositorioTipoCalendario,
                                             IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno,
                                             IRepositorioTurma repositorioTurma,

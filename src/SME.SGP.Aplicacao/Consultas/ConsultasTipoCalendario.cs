@@ -15,13 +15,13 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
 
         public ConsultasTipoCalendario(IRepositorioTipoCalendarioConsulta repositorio,
                                        IRepositorioEvento repositorioEvento,
                                        IRepositorioAbrangencia repositorioAbrangencia,
                                        IServicoUsuario servicoUsuario,
-                                       IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+                                       IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));

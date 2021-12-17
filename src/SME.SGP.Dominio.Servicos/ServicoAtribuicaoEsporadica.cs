@@ -9,12 +9,15 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoAtribuicaoEsporadica : IServicoAtribuicaoEsporadica
     {
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
+        public ServicoAtribuicaoEsporadica(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioTipoCalendario repositorioTipoCalendario,
         public ServicoAtribuicaoEsporadica(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoUsuario servicoUsuario, IServicoEol servicoEOL, IUnitOfWork unitOfWork)
         {

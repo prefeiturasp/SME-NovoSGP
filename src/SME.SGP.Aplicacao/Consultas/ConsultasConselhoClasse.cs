@@ -12,6 +12,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasConselhoClasse : IConsultasConselhoClasse
     {
+        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
@@ -25,6 +30,12 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IMediator mediator;
 
+        public ConsultasConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasse,
+                                       IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+                                       IRepositorioParametrosSistema repositorioParametrosSistema,
+                                       IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
+                                       IRepositorioTipoCalendario repositorioTipoCalendario,
+                                       IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
         public ConsultasConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                        IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                        IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
@@ -38,7 +49,7 @@ namespace SME.SGP.Aplicacao
                                        IServicoDeNotasConceitos servicoDeNotasConceitos,
                                        IMediator mediator)
         {
-            this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
+            this.repositorioConselhoClasseConsulta = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
@@ -83,7 +94,7 @@ namespace SME.SGP.Aplicacao
             if (fechamentoTurma == null && !turma.EhAnoAnterior())
                 throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
 
-            var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id) : null;
+            var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
 
             var periodoEscolarId = fechamentoTurma?.PeriodoEscolarId;
 
@@ -168,7 +179,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public ConselhoClasse ObterPorId(long conselhoClasseId)
-            => repositorioConselhoClasse.ObterPorId(conselhoClasseId);
+            => repositorioConselhoClasseConsulta.ObterPorId(conselhoClasseId);
 
         public async Task<(int, bool)> ValidaConselhoClasseUltimoBimestre(Turma turma)
         {

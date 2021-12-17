@@ -21,7 +21,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IRepositorioPeriodoFechamentoBimestre repositorioPeriodoFechamentoBimestre;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioEventoTipo repositorioTipoEvento;
         private readonly IRepositorioUeConsulta repositorioUe;
@@ -36,6 +36,9 @@ namespace SME.SGP.Dominio.Servicos
                                  IRepositorioPeriodoFechamentoBimestre repositorioPeriodoFechamentoBimestre,
                                  IServicoUsuario servicoUsuario,
                                  IRepositorioTipoCalendario repositorioTipoCalendario,
+                                 IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+                                 IRepositorioDre repositorioDre,
+                                 IRepositorioUe repositorioUe,
                                  IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                  IRepositorioDreConsulta repositorioDre,
                                  IRepositorioUeConsulta repositorioUe,

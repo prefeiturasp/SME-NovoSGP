@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasComFechamentoOuConselhoNaoFinalizadosQueryHandler : IRequestHandler<ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery, IEnumerable<Turma>>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
 
-        public ObterTurmasComFechamentoOuConselhoNaoFinalizadosQueryHandler(IRepositorioTurma repositorioTurma)
+        public ObterTurmasComFechamentoOuConselhoNaoFinalizadosQueryHandler(IRepositorioTurmaConsulta repositorioTurma)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }

@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricular;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
         private readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
@@ -25,6 +25,8 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                    IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
+                                   IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+                                   IRepositorioTipoCalendario repositorioTipoCalendario,
                                    IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                    IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                    IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual,
@@ -263,7 +265,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodoEscolar(string turmaId, int anoLetivo)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
             if (turma == null)
             {
                 throw new NegocioException("Turma não encontrada.");

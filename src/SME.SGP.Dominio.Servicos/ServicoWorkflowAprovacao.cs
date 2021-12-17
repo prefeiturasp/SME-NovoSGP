@@ -20,6 +20,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioNotificacao repositorioNotificacao;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
+        private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
@@ -43,6 +45,8 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioEvento repositorioEvento,
                                         IConfiguration configuration,
                                         IRepositorioAula repositorioAula,
+                                        IRepositorioUe repositorioUe,
+                                        IRepositorioTurmaConsulta repositorioTurma,
                                         IRepositorioUeConsulta repositorioUe,
                                         IRepositorioTurma repositorioTurma,
                                         IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,

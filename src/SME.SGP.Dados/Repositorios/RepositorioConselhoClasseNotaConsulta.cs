@@ -6,12 +6,13 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Text;
+using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioConselhoClasseNota : RepositorioBase<ConselhoClasseNota>, IRepositorioConselhoClasseNota
+    public class RepositorioConselhoClasseNotaConsulta : RepositorioBase<ConselhoClasseNota>, IRepositorioConselhoClasseNotaConsulta
     {
-        public RepositorioConselhoClasseNota(ISgpContext database) : base(database)
+        public RepositorioConselhoClasseNotaConsulta(ISgpContextConsultas database) : base(database)
         {
         }
 

@@ -1,10 +1,8 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -13,11 +11,15 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasAula consultasAula;
         private readonly IRepositorioGrade repositorioGrade;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
+        private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
         public ConsultasGrade(IRepositorioGrade repositorioGrade,
+                              IConsultasAula consultasAula, IServicoUsuario servicoUsuario, IRepositorioUe repositorioUe, IRepositorioTurmaConsulta repositorioTurma, IMediator mediator)
                               IConsultasAula consultasAula, IServicoUsuario servicoUsuario, IRepositorioUeConsulta repositorioUe, IRepositorioTurma repositorioTurma)
         {
             this.repositorioGrade = repositorioGrade ?? throw new System.ArgumentNullException(nameof(repositorioGrade));
@@ -25,6 +27,7 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurmaProfessor(string turmaCodigo, long disciplina, int semana, DateTime dataAula, string codigoRf = null, bool ehRegencia = false)
@@ -33,7 +36,7 @@ namespace SME.SGP.Aplicacao
             if (ue == null)
                 throw new NegocioException("Ue não localizada.");
 
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             if (turma == null)
                 throw new NegocioException("Turma não localizada.");
 

@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 int codigoTurma;
                 if (int.TryParse(filtroRelatorioBoletimDto.TurmaCodigo, out codigoTurma) && codigoTurma <= 0)
                     filtroRelatorioBoletimDto.TurmaCodigo = String.Empty;
-                else if (await repositorioTurma.ObterPorCodigo(filtroRelatorioBoletimDto.TurmaCodigo) == null)
+                else if (await mediator.Send(new ObterTurmaPorCodigoQuery(filtroRelatorioBoletimDto.TurmaCodigo)) == null)
                     throw new NegocioException("Não foi possível encontrar a turma");
             }
 

@@ -27,11 +27,15 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
-        private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
+        private readonly IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
@@ -42,21 +46,23 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IUnitOfWork unitOfWork;
         private List<FechamentoNotaDto> notasEnvioWfAprovacao;
         private Turma turmaFechamento;
         private readonly IMediator mediator;
 
         public ServicoFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
-                                                IRepositorioFechamentoTurma repositorioFechamentoTurma,
-                                                IRepositorioFechamentoAluno repositorioFechamentoAluno,
+                                                IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
+                                                IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno,
                                                 IRepositorioFechamentoNota repositorioFechamentoNota,
                                                 IRepositorioDre repositorioDre,
-                                                IRepositorioComponenteCurricular repositorioComponenteCurricular,
-                                                IRepositorioTurma repositorioTurma,
+                                                IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
+                                                IRepositorioTurmaConsulta repositorioTurma,
                                                 IRepositorioUe repositorioUe,
                                                 IServicoPeriodoFechamento servicoPeriodoFechamento,
+                                                IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+                                                IRepositorioTipoCalendario repositorioTipoCalendario,
                                                 IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                                 IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                                 IRepositorioTipoAvaliacao repositorioTipoAvaliacao,
@@ -254,7 +260,10 @@ namespace SME.SGP.Dominio.Servicos
             unitOfWork.IniciarTransacao();
             try
             {
-                var fechamentoTurmaId = await repositorioFechamentoTurma.SalvarAsync(fechamentoTurmaDisciplina.FechamentoTurma);
+                var fechamentoTurmaId = fechamentoTurmaDisciplina.FechamentoTurma.Id > 0 ?
+                    fechamentoTurmaDisciplina.FechamentoTurma.Id :
+                    await repositorioFechamentoTurma.SalvarAsync(fechamentoTurmaDisciplina.FechamentoTurma);
+
                 fechamentoTurmaDisciplina.FechamentoTurmaId = fechamentoTurmaId;
 
                 await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
@@ -309,18 +318,6 @@ namespace SME.SGP.Dominio.Servicos
             {
                 unitOfWork.Rollback();
                 throw e;
-            }
-        }
-
-        public void VerificaPendenciasFechamento(long fechamentoId)
-        {
-            // Verifica existencia de pendencia em aberto
-            if (!servicoPendenciaFechamento.VerificaPendenciasFechamento(fechamentoId))
-            {
-                var fechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina.ObterPorId(fechamentoId);
-                // Atualiza situação do fechamento
-                fechamentoTurmaDisciplina.Situacao = SituacaoFechamento.ProcessadoComSucesso;
-                repositorioFechamentoTurmaDisciplina.Salvar(fechamentoTurmaDisciplina);
             }
         }
 

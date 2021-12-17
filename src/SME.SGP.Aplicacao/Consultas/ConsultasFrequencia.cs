@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoAluno servicoAluno;
         private readonly IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase obterInformacoesDeFrequenciaAlunoPorSemestreUseCase;
         private readonly IServicoEol servicoEOL;
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                                    IServicoFrequencia servicoFrequencia,
                                    IServicoEol servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                                    IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                    IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                    IConsultasTipoCalendario consultasTipoCalendario,
                                    IConsultasTurma consultasTurma,
                                    IRepositorioAula repositorioAula,
@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao
                 TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
             };
 
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
 
@@ -223,7 +223,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> BuscaTurma(string turmaId)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
             if (turma == null)
                 throw new NegocioException("Turma não localizada!");
 

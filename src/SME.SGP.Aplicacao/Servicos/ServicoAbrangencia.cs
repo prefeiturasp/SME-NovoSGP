@@ -172,7 +172,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 foreach (AbrangenciaTurmaRetornoEolDto turma in turmasHistoricasEOL)
                 {
                     Abrangencia abrangencia = new Abrangencia();
-                    var turmaSGP = await repositorioTurma.ObterTurmaCompletaPorCodigo(turma.Codigo);
+                    var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(turma.Codigo));
 
                     if (turmaSGP == null)
                         throw new NegocioException($"Turma não encontrada no SGP - [{turma.Codigo} - {turma.NomeTurma}]");
@@ -290,6 +290,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 if (turmasEol != null)
                     await SincronizarEstruturaInstitucional(turmasEol);
             }
+
             return repositorioTurma.MaterializarCodigosTurma(codigosNaoEncontrados, out codigosNaoEncontrados);
         }
 

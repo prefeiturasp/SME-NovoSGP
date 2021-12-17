@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioConselhoClasseParecerConclusivo : RepositorioBase<ConselhoClasseParecerConclusivo>, IRepositorioConselhoClasseParecerConclusivo
+    public class RepositorioConselhoClasseParecerConclusivoConsulta : RepositorioBase<ConselhoClasseParecerConclusivo>, IRepositorioConselhoClasseParecerConclusivo
     {
-        public RepositorioConselhoClasseParecerConclusivo(ISgpContext database) : base(database)
+        public RepositorioConselhoClasseParecerConclusivoConsulta(ISgpContextConsultas database) : base(database)
         {
         }
 

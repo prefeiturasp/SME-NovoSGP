@@ -9,11 +9,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosDiasLetivos : IComandosDiasLetivos
     {
-        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;        
 
         public ComandosDiasLetivos(
-            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioEvento repositorioEvento,
             IRepositorioTipoCalendario repositorioTipoCalendario,
             IRepositorioParametrosSistemaConsulta repositorioParametrosSistema)

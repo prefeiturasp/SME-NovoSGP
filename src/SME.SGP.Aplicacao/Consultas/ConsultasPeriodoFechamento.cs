@@ -3,7 +3,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -11,6 +10,9 @@ namespace SME.SGP.Aplicacao
     public class ConsultasPeriodoFechamento : IConsultasPeriodoFechamento
     {
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
+        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IRepositorioDreConsulta repositorioDre;
@@ -21,6 +23,9 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
 
         public ConsultasPeriodoFechamento(IServicoPeriodoFechamento servicoPeriodoFechamento,
+                                IRepositorioTurmaConsulta repositorioTurma,
+                                IRepositorioUe repositorioUe,
+                                IRepositorioDre repositorioDre,
                                 IRepositorioTurma repositorioTurma,
                                 IRepositorioUeConsulta repositorioUe,
                                 IRepositorioDreConsulta repositorioDre,

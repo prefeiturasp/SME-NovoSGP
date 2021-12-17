@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -10,17 +11,28 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasAulaPrevista : IConsultasAulaPrevista
     {
+        
+        
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        
         private readonly IRepositorioAulaPrevistaConsulta repositorioAulaPrevistaConsulta;
         private readonly IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IConsultasTurma consultasTurma;
+        private readonly IMediator mediator;
 
+        public ConsultasAulaPrevista(IRepositorioAulaPrevista repositorio,
+                                     IRepositorioAulaPrevistaBimestre repositorioBimestre,
+                                     IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
         public ConsultasAulaPrevista(IRepositorioAulaPrevistaConsulta repositorioAulaPrevistaConsulta,
                                      IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre,
                                      IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                      IRepositorioTurma repositorioTurma,
+                                     IRepositorioTipoCalendario repositorioTipoCalendario,
+                                     IConsultasTurma consultasTurma,
+                                     IMediator mediator)
                                      IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                      IConsultasTurma consultasTurma)
         {
@@ -30,6 +42,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<AulasPrevistasDadasAuditoriaDto> BuscarPorId(long id)
@@ -185,7 +198,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurma(string turmaId)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
             if (turma == null)
                 throw new NegocioException("Turma não encontrada!");
