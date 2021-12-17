@@ -9,14 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class TurmaEmPeriodoAbertoQueryHandler : IRequestHandler<TurmaEmPeriodoAbertoQuery, bool>
     {
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
+        private readonly IRepositorioEventoFechamentoConsulta repositorioEventoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
 
-        public TurmaEmPeriodoAbertoQueryHandler(IRepositorioTipoCalendario repositorioTipoCalendario,
+        public TurmaEmPeriodoAbertoQueryHandler(IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                                 IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                                IRepositorioEventoFechamento repositorioEventoFechamento,
+                                                IRepositorioEventoFechamentoConsulta repositorioEventoFechamento,
                                                 IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));

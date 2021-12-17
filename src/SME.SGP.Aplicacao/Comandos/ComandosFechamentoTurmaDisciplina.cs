@@ -12,12 +12,12 @@ namespace SME.SGP.Aplicacao
     public class ComandosFechamentoTurmaDisciplina : IComandosFechamentoTurmaDisciplina
     {
         private readonly IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina;
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
         private readonly IMediator mediator;
 
         public ComandosFechamentoTurmaDisciplina(IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina,
-                                                 IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
+                                                 IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
                                                  IRepositorioFechamentoTurma repositorioFechamentoTurma,
                                                  IMediator mediator)
         {
@@ -65,8 +65,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task ProcessarPendentes(int anoLetivo)
         {
-            var fechamentosPendentes = await repositorioFechamentoTurmaDisciplina
-                .ObterFechamentosComSituacaoEmProcessamentoPorAnoLetivo(anoLetivo);
+            var fechamentosPendentes = await repositorioFechamentoTurmaDisciplina.ObterFechamentosComSituacaoEmProcessamentoPorAnoLetivo(anoLetivo);
 
             foreach (var fechamento in fechamentosPendentes)
             {

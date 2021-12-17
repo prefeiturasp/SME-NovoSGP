@@ -204,8 +204,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         public async Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false)
         {
-            var ue = repositorioUe
-                .ObterPorId(ueId);
+            var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
 
             if (ue == null)
                 throw new NegocioException("UE não localizada.");
@@ -299,10 +298,18 @@ namespace SME.SGP.Aplicacao.Servicos
             string[] codigosNaoEncontrados;
 
             if (abrangenciaEol.IdDres != null && abrangenciaEol.IdDres.Length > 0)
-                dres = repositorioDre.MaterializarCodigosDre(abrangenciaEol.IdDres, out codigosNaoEncontrados);
-
+            {
+                var retorno = await mediator.Send(new ObterDreMaterializarCodigosQuery(abrangenciaEol.IdDres));
+                dres = retorno.Item1;
+                codigosNaoEncontrados = retorno.Item2;
+            }
+                
             if (abrangenciaEol.IdUes != null && abrangenciaEol.IdUes.Length > 0)
-                ues = repositorioUe.MaterializarCodigosUe(abrangenciaEol.IdUes, out codigosNaoEncontrados);
+            {
+                var retorno = await mediator.Send(new ObterUeMaterializarCodigosQuery(abrangenciaEol.IdUes));
+                ues = retorno.Item1;
+                codigosNaoEncontrados = retorno.Item2;
+            }
 
             if (abrangenciaEol.IdTurmas != null && abrangenciaEol.IdTurmas.Length > 0)
             {

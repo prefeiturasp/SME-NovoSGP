@@ -32,9 +32,9 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento;
         private readonly IServicoEol servicoEOL;
@@ -58,11 +58,11 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioUe repositorioUe,
                                                 IServicoPeriodoFechamento servicoPeriodoFechamento,
                                                 IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                                IRepositorioTipoCalendario repositorioTipoCalendario,
+                                                IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                                 IRepositorioTipoAvaliacao repositorioTipoAvaliacao,
                                                 IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
                                                 IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
-                                                IRepositorioParametrosSistema repositorioParametrosSistema,
+                                                IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                                 IRepositorioConceito repositorioConceito,
                                                 IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento,
                                                 IConsultasDisciplina consultasDisciplina,

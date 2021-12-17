@@ -13,12 +13,12 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanoAnualTerritorioSaber repositorioPlanoAnualTerritorioSaber;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
 
         public ConsultasPlanoAnualTerritorioSaber(IRepositorioPlanoAnualTerritorioSaber repositorioPlanoAnualTerritorioSaber,
                                                   IRepositorioTurma repositorioTurma,
                                                   IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                                  IRepositorioTipoCalendario repositorioTipoCalendario)
+                                                  IRepositorioTipoCalendarioConsulta repositorioTipoCalendario)
         {
             this.repositorioPlanoAnualTerritorioSaber = repositorioPlanoAnualTerritorioSaber ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnualTerritorioSaber));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));

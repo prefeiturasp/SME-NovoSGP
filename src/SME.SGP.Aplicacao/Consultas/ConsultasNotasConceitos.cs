@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
-        private readonly IRepositorioConceito repositorioConceito;
+        private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioFrequencia repositorioFrequencia;
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
@@ -46,9 +46,9 @@ namespace SME.SGP.Aplicacao
             IConsultasPeriodoFechamento consultasFechamento,
             IServicoDeNotasConceitos servicoDeNotasConceitos, IRepositorioNotasConceitos repositorioNotasConceitos,
             IRepositorioFrequencia repositorioFrequencia, IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno,
-            IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioTipoCalendario repositorioTipoCalendario,
+            IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina, IRepositorioConceito repositorioConceito,
+            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina, IRepositorioConceitoConsulta repositorioConceito,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioParametrosSistema repositorioParametrosSistema,
             IRepositorioTipoAvaliacao repositorioTipoAvaliacao, IRepositorioTurma repositorioTurma, IRepositorioUe repositorioUe,
             IRepositorioDre repositorioDre, IRepositorioEvento repositorioEvento, IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,

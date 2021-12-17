@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultasDisciplina> consultasDisciplinas;
         private readonly Mock<IRepositorioConselhoClasse> repositorioConselhoClasse;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
-        private readonly Mock<IRepositorioParametrosSistema> repositorioParametrosSistema;
+        private readonly Mock<IRepositorioParametrosSistemaConsulta> repositorioParametrosSistema;
         private readonly Mock<IRepositorioConselhoClasseAluno> repositorioConselhoClasseAluno;
-        private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
+        private readonly Mock<IRepositorioTipoCalendarioConsulta> repositorioTipoCalendario;
         private readonly Mock<IRepositorioFechamentoTurma> repositorioFechamentoTurma;
         private readonly Mock<IConsultasTurma> consultasTurma;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
@@ -30,9 +30,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasDisciplinas = new Mock<IConsultasDisciplina>();
             repositorioConselhoClasse = new Mock<IRepositorioConselhoClasse>();
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
-            repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
+            repositorioParametrosSistema = new Mock<IRepositorioParametrosSistemaConsulta>();
             repositorioConselhoClasseAluno = new Mock<IRepositorioConselhoClasseAluno>();
-            repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
+            repositorioTipoCalendario = new Mock<IRepositorioTipoCalendarioConsulta>();
             repositorioFechamentoTurma = new Mock<IRepositorioFechamentoTurma>();
             consultasTurma = new Mock<IConsultasTurma>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();

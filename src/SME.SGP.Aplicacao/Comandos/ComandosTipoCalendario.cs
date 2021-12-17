@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
         {
             var tipoCalendario = MapearParaDominio(dto, id);
 
-            bool ehRegistroExistente = await repositorio.VerificarRegistroExistente(dto.Id, dto.Nome);
+            bool ehRegistroExistente = await mediator.Send(new VerificarRegistroExistenteTipoCalendarioQuery(dto.Id, dto.Nome));
 
             if (ehRegistroExistente)
                 throw new NegocioException($"O Tipo de Calendário Escolar '{dto.Nome}' já existe");
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
             {
                 var tipoCalendario = MapearParaDominio(dto, 0);
 
-                bool ehRegistroExistente = await repositorio.VerificarRegistroExistente(0, dto.Nome);
+                bool ehRegistroExistente = await mediator.Send(new VerificarRegistroExistenteTipoCalendarioQuery(0, dto.Nome));
 
                 if (ehRegistroExistente)
                     throw new NegocioException($"O Tipo de Calendário Escolar '{dto.Nome}' já existe");

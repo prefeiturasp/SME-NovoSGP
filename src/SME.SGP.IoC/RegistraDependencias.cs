@@ -200,10 +200,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
             services.TryAddScoped<IRepositorioAbrangencia, RepositorioAbrangencia>();
             services.TryAddScoped<IRepositorioTipoCalendario, RepositorioTipoCalendario>();
+            services.TryAddScoped<IRepositorioTipoCalendarioConsulta, RepositorioTipoCalendarioConsulta>();
             services.TryAddScoped<IRepositorioFeriadoCalendario, RepositorioFeriadoCalendario>();
             services.TryAddScoped<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();
             services.TryAddScoped<IRepositorioEvento, RepositorioEvento>();
             services.TryAddScoped<IRepositorioParametrosSistema, RepositorioParametrosSistema>();
+            services.TryAddScoped<IRepositorioParametrosSistemaConsulta, RepositorioParametrosSistemaConsulta>();
             services.TryAddScoped<IRepositorioAula, RepositorioAula>();
             services.TryAddScoped<IRepositorioGrade, RepositorioGrade>();
             services.TryAddScoped<IRepositorioGradeFiltro, RepositorioGradeFiltro>();
@@ -220,7 +222,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioObjetivoAprendizagemAula, RepositorioObjetivoAprendizagemAula>();
             services.TryAddScoped<IRepositorioAtribuicaoCJ, RepositorioAtribuicaoCJ>();
             services.TryAddScoped<IRepositorioDre, RepositorioDre>();
+            services.TryAddScoped<IRepositorioDreConsulta, RepositorioDreConsulta>();
             services.TryAddScoped<IRepositorioUe, RepositorioUe>();
+            services.TryAddScoped<IRepositorioUeConsulta, RepositorioUeConsulta>();
             services.TryAddScoped<IRepositorioTurma, RepositorioTurma>();
             services.TryAddScoped<IRepositorioAtividadeAvaliativaRegencia, RepositorioAtividadeAvaliativaRegencia>();
             services.TryAddScoped<IRepositorioNotasConceitos, RepositorioNotasConceitos>();
@@ -247,7 +251,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPeriodoFechamentoBimestre, RepositorioPeriodoFechamentoBimestre>();
             services.TryAddScoped<IRepositorioNotificacaoCompensacaoAusencia, RepositorioNotificacaoCompensacaoAusencia>();
             services.TryAddScoped<IRepositorioEventoFechamento, RepositorioEventoFechamento>();
+            services.TryAddScoped<IRepositorioEventoFechamentoConsulta, RepositorioEventoFechamentoConsulta>();
             services.TryAddScoped<IRepositorioFechamentoTurmaDisciplina, RepositorioFechamentoTurmaDisciplina>();
+            services.TryAddScoped<IRepositorioFechamentoTurmaDisciplinaConsulta, RepositorioFechamentoTurmaDisciplinaConsulta>();
             services.TryAddScoped<IRepositorioFechamentoNota, RepositorioFechamentoNota>();
             services.TryAddScoped<IRepositorioRecuperacaoParalela, RepositorioRecuperacaoParalela>();
             services.TryAddScoped<IRepositorioRecuperacaoParalelaPeriodo, RepositorioRecuperacaoParalelaPeriodo>();
@@ -352,6 +358,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendencia, RepositorioPendencia>();
             services.TryAddScoped<IRepositorioPendenciaFechamento, RepositorioPendenciaFechamento>();
             services.TryAddScoped<IRepositorioPendenciaAula, RepositorioPendenciaAula>();
+            services.TryAddScoped<IRepositorioPendenciaAulaConsulta, RepositorioPendenciaAulaConsulta>();
             services.TryAddScoped<IRepositorioPendenciaUsuario, RepositorioPendenciaUsuario>();
             services.TryAddScoped<IRepositorioPendenciaCalendarioUe, RepositorioPendenciaCalendarioUe>();
             services.TryAddScoped<IRepositorioPendenciaParametroEvento, RepositorioPendenciaParametroEvento>();
@@ -371,6 +378,7 @@ namespace SME.SGP.IoC
 
             // PlanoAEE
             services.TryAddScoped<IRepositorioPlanoAEE, RepositorioPlanoAEE>();
+            services.TryAddScoped<IRepositorioPlanoAEEConsulta, RepositorioPlanoAEEConsulta>();
             services.TryAddScoped<IRepositorioPlanoAEEVersao, RepositorioPlanoAEEVersao>();
             services.TryAddScoped<IRepositorioPlanoAEEQuestao, RepositorioPlanoAEEQuestao>();
             services.TryAddScoped<IRepositorioPlanoAEEResposta, RepositorioPlanoAEEResposta>();

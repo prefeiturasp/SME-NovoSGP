@@ -6,10 +6,8 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +16,7 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoPeriodoFechamento : IServicoPeriodoFechamento
     {
-        private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioDreConsulta repositorioDre;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
@@ -26,7 +24,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioEventoTipo repositorioTipoEvento;
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IServicoEol servicoEol;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -39,8 +37,8 @@ namespace SME.SGP.Dominio.Servicos
                                  IServicoUsuario servicoUsuario,
                                  IRepositorioTipoCalendario repositorioTipoCalendario,
                                  IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                 IRepositorioDre repositorioDre,
-                                 IRepositorioUe repositorioUe,
+                                 IRepositorioDreConsulta repositorioDre,
+                                 IRepositorioUeConsulta repositorioUe,
                                  IRepositorioEventoFechamento repositorioEventoFechamento,
                                  IRepositorioEvento repositorioEvento,
                                  IRepositorioEventoTipo repositorioTipoEvento,
@@ -109,7 +107,8 @@ namespace SME.SGP.Dominio.Servicos
                             AtualizaDatasInicioEFim(periodoFechamentoBimestreDre, periodoFechamentoBimestreUe);
                             await repositorioPeriodoFechamentoBimestre.SalvarAsync(periodoFechamentoBimestreUe);
 
-                            EventoFechamento fechamentoExistente = repositorioEventoFechamento.ObterPorIdFechamento(periodoFechamentoBimestreUe.Id);
+                            EventoFechamento fechamentoExistente = await mediator.Send(new ObterEventoFechamenoPorIdQuery(periodoFechamentoBimestreUe.Id));
+                            
                             if (fechamentoExistente != null)
                                 AtualizaEventoDeFechamento(periodoFechamentoBimestreUe, fechamentoExistente);
 
@@ -346,7 +345,7 @@ namespace SME.SGP.Dominio.Servicos
             });
         }
 
-        private void CriarEventoFechamento(PeriodoFechamento fechamento)
+        private async void CriarEventoFechamento(PeriodoFechamento fechamento)
         {
             if (fechamento.UeId > 0)
             {
@@ -358,7 +357,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 foreach (var bimestre in fechamento.FechamentosBimestre)
                 {
-                    EventoFechamento fechamentoExistente = repositorioEventoFechamento.ObterPorIdFechamento(bimestre.Id);
+                    EventoFechamento fechamentoExistente = await mediator.Send(new ObterEventoFechamenoPorIdQuery(bimestre.Id));
 
                     if (fechamentoExistente != null)
                     {

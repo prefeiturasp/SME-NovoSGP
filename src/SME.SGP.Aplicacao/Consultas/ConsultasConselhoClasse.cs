@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
         private readonly IConsultasTurma consultasTurma;
@@ -22,14 +22,14 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
         private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IMediator mediator;
 
         public ConsultasConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                        IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                       IRepositorioParametrosSistema repositorioParametrosSistema,
+                                       IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                        IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
-                                       IRepositorioTipoCalendario repositorioTipoCalendario,
+                                       IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                        IRepositorioFechamentoTurma repositorioFechamentoTurma,
                                        IConsultasTurma consultasTurma,
                                        IConsultasPeriodoEscolar consultasPeriodoEscolar,
@@ -110,8 +110,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
 
-            var mediaAprovacao = double.Parse(await repositorioParametrosSistema
-                .ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            var mediaAprovacao = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
             var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
 

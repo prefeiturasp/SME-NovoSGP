@@ -10,21 +10,21 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasAulaPrevista : IConsultasAulaPrevista
     {
-        private readonly IRepositorioAulaPrevista repositorio;
-        private readonly IRepositorioAulaPrevistaBimestre repositorioBimestre;
+        private readonly IRepositorioAulaPrevistaConsulta repositorioAulaPrevistaConsulta;
+        private readonly IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IConsultasTurma consultasTurma;
 
-        public ConsultasAulaPrevista(IRepositorioAulaPrevista repositorio,
-                                     IRepositorioAulaPrevistaBimestre repositorioBimestre,
+        public ConsultasAulaPrevista(IRepositorioAulaPrevistaConsulta repositorioAulaPrevistaConsulta,
+                                     IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre,
                                      IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                      IRepositorioTurma repositorioTurma,
-                                     IRepositorioTipoCalendario repositorioTipoCalendario,
+                                     IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                      IConsultasTurma consultasTurma)
         {
-            this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.repositorioAulaPrevistaConsulta = repositorioAulaPrevistaConsulta ?? throw new ArgumentNullException(nameof(repositorioAulaPrevistaConsulta));
             this.repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
         public async Task<AulasPrevistasDadasAuditoriaDto> BuscarPorId(long id)
         {
             AulasPrevistasDadasAuditoriaDto aulaPrevistaDto = null;
-            var aulaPrevista = repositorio.ObterPorId(id);
+            var aulaPrevista = repositorioAulaPrevistaConsulta.ObterPorId(id);
 
             if (aulaPrevista != null)
             {
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
             AulasPrevistasDadasAuditoriaDto aulaPrevistaDto;
 
-            var aulaPrevista = await repositorio.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
+            var aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
 
             var ehAnoLetivo = turma.AnoLetivo == DateTime.Today.Year;
             var periodosAbertos = await consultasTurma.PeriodosEmAbertoTurma(turmaId, DateTime.Now, ehAnoLetivo);

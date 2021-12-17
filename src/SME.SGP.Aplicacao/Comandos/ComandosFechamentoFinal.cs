@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
         private readonly IMediator mediator;
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioTurma repositorioTurma,
             IRepositorioFechamentoAluno repositorioFechamentoAluno,
             IRepositorioFechamentoTurma repositorioFechamentoTurma,
-            IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
+            IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
             IMediator mediator)
         {
             this.servicoFechamentoFinal = servicoFechamentoFinal ?? throw new System.ArgumentNullException(nameof(servicoFechamentoFinal));

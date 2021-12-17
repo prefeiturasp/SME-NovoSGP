@@ -20,10 +20,10 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
 
         public MigrarPlanoAulaCommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioPlanoAula repositorioPlanoAula,
-            IConsultasAbrangencia consultasAbrangencia, IRepositorioTurma repositorioTurma, IRepositorioUe repositorioUe)
+            IConsultasAbrangencia consultasAbrangencia, IRepositorioTurma repositorioTurma, IRepositorioUeConsulta repositorioUe)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

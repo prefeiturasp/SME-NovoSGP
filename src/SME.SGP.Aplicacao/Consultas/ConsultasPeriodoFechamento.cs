@@ -12,21 +12,21 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioUeConsulta repositorioUe;
+        private readonly IRepositorioDreConsulta repositorioDre;
         private readonly IRepositorioEvento repositorioEvento;
-        private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
+        private readonly IRepositorioEventoFechamentoConsulta repositorioEventoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
 
         public ConsultasPeriodoFechamento(IServicoPeriodoFechamento servicoPeriodoFechamento,
                                 IRepositorioTurma repositorioTurma,
-                                IRepositorioUe repositorioUe,
-                                IRepositorioDre repositorioDre,
+                                IRepositorioUeConsulta repositorioUe,
+                                IRepositorioDreConsulta repositorioDre,
                                 IConsultasTipoCalendario consultasTipoCalendario,
                                 IRepositorioEvento repositorioEvento,
-                                IRepositorioEventoFechamento repositorioEventoFechamento,
+                                IRepositorioEventoFechamentoConsulta repositorioEventoFechamento,
                                 IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                 IRepositorioPeriodoFechamento repositorioPeriodoFechamento)
         {

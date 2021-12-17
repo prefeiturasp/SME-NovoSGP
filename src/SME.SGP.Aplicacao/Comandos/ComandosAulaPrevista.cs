@@ -11,15 +11,15 @@ namespace SME.SGP.Aplicacao
     public class ComandosAulaPrevista : IComandosAulaPrevista
     {
         private readonly IRepositorioAulaPrevista repositorio;
-        private readonly IRepositorioAulaPrevistaBimestre repositorioBimestre;
+        private readonly IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IUnitOfWork unitOfWork;
 
         public ComandosAulaPrevista(IRepositorioAulaPrevista repositorio,
-                                    IRepositorioAulaPrevistaBimestre repositorioBimestre,
+                                    IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre,
                                     IRepositorioTurma repositorioTurma,
-                                     IRepositorioTipoCalendario repositorioTipoCalendario,
+                                     IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                     IUnitOfWork unitOfWork)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));

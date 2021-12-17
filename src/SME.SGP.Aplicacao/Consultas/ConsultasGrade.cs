@@ -14,11 +14,11 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAula consultasAula;
         private readonly IRepositorioGrade repositorioGrade;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasGrade(IRepositorioGrade repositorioGrade,
-                              IConsultasAula consultasAula, IServicoUsuario servicoUsuario, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma)
+                              IConsultasAula consultasAula, IServicoUsuario servicoUsuario, IRepositorioUeConsulta repositorioUe, IRepositorioTurma repositorioTurma)
         {
             this.repositorioGrade = repositorioGrade ?? throw new System.ArgumentNullException(nameof(repositorioGrade));
             this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));

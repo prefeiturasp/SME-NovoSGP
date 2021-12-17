@@ -19,7 +19,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
-        private readonly IRepositorioConceito repositorioConceito;
+        private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IServicoEol servicoEOL;
@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public ServicoCalculoParecerConclusivo(IRepositorioParametrosSistema repositorioParametrosSistema,
                                                IRepositorioFechamentoNota repositorioFechamentoNota,
-                                               IRepositorioConceito repositorioConceito,
+                                               IRepositorioConceitoConsulta repositorioConceito,
                                                IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                                IConsultasFrequencia consultasFrequencia,
                                                IServicoEol servicoEOL,

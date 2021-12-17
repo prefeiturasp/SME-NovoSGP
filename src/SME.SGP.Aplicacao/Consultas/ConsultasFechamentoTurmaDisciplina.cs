@@ -22,20 +22,20 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasTurma consultasTurma;
-        private readonly IRepositorioConceito repositorioConceito;
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioConceitoConsulta repositorioConceito;
+        private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioSintese repositorioSintese;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
-        public ConsultasFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
-            IRepositorioTipoCalendario repositorioTipoCalendario,
+        public ConsultasFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
+            IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IRepositorioTurma repositorioTurma,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
             IConsultasFrequencia consultasFrequencia,
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             IServicoEol servicoEOL,
             IServicoUsuario servicoUsuario,
             IServicoAluno servicoAluno,
-            IRepositorioConceito repositorioConceito,
+            IRepositorioConceitoConsulta repositorioConceito,
             IRepositorioSintese repositorioSintese,
             IRepositorioParametrosSistema repositorioParametrosSistema,
             IConsultasPeriodoFechamento consultasFechamento,

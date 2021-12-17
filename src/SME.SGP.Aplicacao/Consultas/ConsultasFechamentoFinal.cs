@@ -19,20 +19,20 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
-        public ConsultasFechamentoFinal(IConsultasAulaPrevista consultasAulaPrevista, IRepositorioTurma repositorioTurma, IRepositorioTipoCalendario repositorioTipoCalendario,
-                            IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
+        public ConsultasFechamentoFinal(IConsultasAulaPrevista consultasAulaPrevista, IRepositorioTurma repositorioTurma, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
+                            IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
                             IServicoEol servicoEOL, IRepositorioFechamentoNota repositorioFechamentoNota,
                             IServicoAluno servicoAluno,
                             IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioNotaTipoValor repositorioNotaTipoValor,

@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Sentry;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -19,9 +18,9 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno;
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEol servicoEOL;
@@ -31,13 +30,13 @@ namespace SME.SGP.Dominio.Servicos
 
 
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
-                                            IRepositorioParametrosSistema repositorioParametrosSistema,
+                                            IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                             IRepositorioFrequencia repositorioFrequencia,
                                             IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno,
                                             IRepositorioTurma repositorioTurma,
                                             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                            IRepositorioTipoCalendario repositorioTipoCalendario,
+                                            IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
                                             IServicoEol servicoEOL,

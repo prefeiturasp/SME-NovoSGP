@@ -13,12 +13,12 @@ namespace SME.SGP.Aplicacao
     public class ObterPodeCadastrarAulaPorDataQueryHandler : IRequestHandler<ObterPodeCadastrarAulaPorDataQuery, PodeCadastrarAulaPorDataRetornoDto>
     {
         private readonly IRepositorioEvento repositorioEvento;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IMediator mediator;
 
-        public ObterPodeCadastrarAulaPorDataQueryHandler(IRepositorioEvento repositorioEvento, IRepositorioTipoCalendario repositorioTipoCalendario,
+        public ObterPodeCadastrarAulaPorDataQueryHandler(IRepositorioEvento repositorioEvento, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IRepositorioPeriodoFechamento repositorioPeriodoFechamento, IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IMediator mediator)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));

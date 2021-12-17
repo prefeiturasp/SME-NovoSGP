@@ -19,9 +19,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioFrequencia> repositorioFrequencia;
         private readonly Mock<IRepositorioNotaParametro> repositorioNotaParametro;
         private readonly Mock<IRepositorioNotasConceitos> repositorioNotasConceitos;
-        private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
+        private readonly Mock<IRepositorioTipoCalendarioConsulta> repositorioTipoCalendario;
         private readonly Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta> repositorioFrequenciaAluno;
-        private readonly Mock<IRepositorioConceito> repositorioConceito;
+        private readonly Mock<IRepositorioConceitoConsulta> repositorioConceito;
         private readonly Mock<IServicoAluno> servicoAluno;
         private readonly Mock<IServicoDeNotasConceitos> servicoDeNotasConceitos;
         private readonly Mock<IServicoEol> servicoEOL;
@@ -52,11 +52,11 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioFrequenciaAluno = new Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta>();
             servicoUsuario = new Mock<IServicoUsuario>();
             servicoAluno = new Mock<IServicoAluno>();
-            repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
+            repositorioTipoCalendario = new Mock<IRepositorioTipoCalendarioConsulta>();
             repositorioNotaParametro = new Mock<IRepositorioNotaParametro>();
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
             repositorioAtividadeAvaliativaDisciplina = new Mock<IRepositorioAtividadeAvaliativaDisciplina>();
-            repositorioConceito = new Mock<IRepositorioConceito>();
+            repositorioConceito = new Mock<IRepositorioConceitoConsulta>();
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
             repositorioTipoAvaliacao = new Mock<IRepositorioTipoAvaliacao>();
