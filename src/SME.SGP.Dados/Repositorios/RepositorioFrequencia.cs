@@ -389,22 +389,31 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<FrequenciaDetalhadaPorDataDto>> ObterFrequenciasDetalhadasPorData(string[] codigoAluno, DateTime dataInicio, DateTime dataFim)
+        public async Task<IEnumerable<RegistroFrequenciaAlunoPorAulaDto>> ObterFrequenciasDetalhadasPorData(string turmaCodigo, string componenteCurricularId, string[] codigosAlunos, DateTime dataInicio, DateTime dataFim)
         {
-            
-            var query = @"select distinct a.data_aula as DataAula,
-                                      a.id as AulaId,
-                                      a.tipo_calendario_id TipoCalendario,raa.codigo_aluno as AlunoCodigo
-                       from registro_frequencia_aluno raa 
-                       inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
+            var query = @"select a.id as AulaId
+                            , rf.id as RegistroFrequenciaId
+                            , rfa.codigo_aluno as AlunoCodigo
+                            , rfa.numero_aula as NumeroAula
+                            , rfa.valor as TipoFrequencia
+                       from registro_frequencia_aluno rfa 
+                       inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
                        inner join aula a on a.id = rf.aula_id 
-                             where raa.codigo_aluno = any(@codigoAluno)
-                        and not raa.excluido
+                       where rfa.codigo_aluno = any(@codigosAlunos)
+                        and not rfa.excluido
                         and not a.excluido 
-                        and a.data_aula between @dataInicio and @dataFim 
-                         group by a.data_aula ,a.id ,a.tipo_calendario_id,raa.codigo_aluno; ";
+                        and a.turma_id = @turmaCodigo
+                        and a.disciplina_id = @componenteCurricularId
+                        and a.data_aula between @dataInicio and @dataFim ";
 
-            return await database.Conexao.QueryAsync<FrequenciaDetalhadaPorDataDto>(query, new { codigoAluno, dataInicio, dataFim });
+            return await database.Conexao.QueryAsync<RegistroFrequenciaAlunoPorAulaDto>(query, new { turmaCodigo, componenteCurricularId, codigosAlunos, dataInicio, dataFim });
+        }
+
+        public async Task<bool> RegistraFrequencia(long componenteCurricularId)
+        {
+            var query = "select permite_registro_frequencia from componente_curricular where id = @componenteCurricularId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { componenteCurricularId });
         }
     }
 }

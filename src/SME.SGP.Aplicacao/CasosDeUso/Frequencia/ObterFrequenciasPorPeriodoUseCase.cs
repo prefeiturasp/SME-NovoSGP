@@ -13,383 +13,98 @@ namespace SME.SGP.Aplicacao
         public ObterFrequenciasPorPeriodoUseCase(IMediator mediator) : base(mediator)
         {
         }
+
         public async Task<RegistroFrequenciaPorDataPeriodoDto> Executar(FiltroFrequenciaPorPeriodoDto param)
         {
-            List<FrequenciaDto> RetornoFrequencia = new List<FrequenciaDto>();
-            RegistroFrequenciaPorDataPeriodoDto registroFrequenciaPorDataPeriodo = new RegistroFrequenciaPorDataPeriodoDto();
-            var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(param.TurmaId.ToString(), param.DataInicio));
-            var listaAlunoaCodigos = alunosDaTurma.Select(x => x.CodigoAluno);
+            var componenteCurricularId = long.Parse(param.DisciplinaId);
 
-            if (alunosDaTurma == null || !alunosDaTurma.Any())
-                throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
-
-            var aulas = await mediator.Send(new ObterAulasPorDataPeriodoQuery(param.DataInicio, param.DataFim, param.TurmaId, param.DisciplinaId));
-            if (aulas == null)
-                throw new NegocioException("Aula não encontrada.");
-
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(param.TurmaId));
-            if (turma == null)
-                throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
+            var turma = await ObterTurma(param.TurmaId);
+            var alunosDaTurma = await ObterAlunos(param.TurmaId.ToString(), param.DataInicio);
+            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, param.DisciplinaId);
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+            var periodoEscolar = await ObterPeriodoEscolar(tipoCalendarioId, param.DataInicio);
 
-            var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(tipoCalendarioId, param.DataInicio));
-            if (periodoEscolar == null)
-                throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
-
-            var parametroPercentualCritico = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, periodoEscolar.PeriodoInicio.Year));
-            if (parametroPercentualCritico == null)
-                throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
-            var percentualCritico = int.Parse(parametroPercentualCritico.Valor);
-
-            var parametroPercentualAlerta = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaAlerta, periodoEscolar.PeriodoInicio.Year));
-            if (parametroPercentualAlerta == null)
-                throw new NegocioException("Parâmetro de percentual de frequência em alerta não encontrado contate a SME.");
-            var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
+            var percentualCritico = await ObterParametro(TipoParametroSistema.PercentualFrequenciaCritico, turma.AnoLetivo);
+            var percentualAlerta = await ObterParametro(TipoParametroSistema.PercentualFrequenciaAlerta, turma.AnoLetivo);
 
             var mesmoAnoLetivo = DateTime.Today.Year == turma.AnoLetivo;
 
-            registroFrequenciaPorDataPeriodo.TemPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo));
-            
-            var componenteCurricularAula = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { Convert.ToInt64(param.DisciplinaId) }));
-            var frequenciaAlunosRegistrada = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, long.Parse(param.DisciplinaId), periodoEscolar.Id));
+            var registraFrequencia = await OterComponenteRegistraFrequencia(param.DisciplinaId);
+            var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, componenteCurricularId, periodoEscolar.Id));
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, param.DisciplinaId, periodoEscolar.Id));
+            var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciaAlunosPorPeriodoQuery(param.TurmaId,
+                                                                                                                  param.DisciplinaId,
+                                                                                                                  alunosDaTurma.Select(a => a.CodigoAluno).ToArray(),
+                                                                                                                  param.DataInicio,
+                                                                                                                  param.DataFim));
 
-            if (componenteCurricularAula == null || componenteCurricularAula.ToList().Count <= 0)
-                throw new NegocioException("Componente curricular da aula não encontrado");
+            var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoPorPeriodoQuery(param.TurmaId, param.DataInicio, param.DataFim));
+            var frequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorTurmaComponenteQuery(param.TurmaId, componenteCurricularId));
 
-            foreach (Aula aula in aulas)
-            {
-                FrequenciaDto registroFrequenciaDto = await ObterRegistroFrequencia(aula, turma);
-
-                var frequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(aula.Id));
-
-                if (frequenciaAlunos == null)
-                    frequenciaAlunos = new List<FrequenciaAlunoSimplificadoDto>();
-
-                var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoNaAulaQuery(aula.Id));
-                
-                foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
-                {
-                    // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
-                    // se a matrícula foi ativada após a data da aula                
-                    if ((aluno.EstaInativo(aula.DataAula) && (aluno.DataSituacao < periodoEscolar.PeriodoInicio || aluno.DataSituacao < aula.DataAula)) ||
-                        (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataMatricula > aula.DataAula))
-                        continue;
-
-                    var tipoFrequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(turma.Id, long.Parse(aula.DisciplinaId), aluno.CodigoAluno));
-
-                    var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
-                    var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
-                    {
-                        CodigoAluno = aluno.CodigoAluno,
-                        NomeAluno = aluno.NomeAluno,
-                        NumeroAlunoChamada = aluno.NumeroAlunoChamada,
-                        CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
-                        SituacaoMatricula = aluno.SituacaoMatricula,
-                        DataSituacao = aluno.DataSituacao,
-                        DataNascimento = aluno.DataNascimento,
-                        Desabilitado = aluno.EstaInativo(aula.DataAula) || aula.EhDataSelecionadaFutura,
-                        PermiteAnotacao = aluno.EstaAtivo(aula.DataAula),
-                        PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno),
-                        NomeResponsavel = aluno.NomeResponsavel,
-                        TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
-                        CelularResponsavel = aluno.CelularResponsavel,
-                        DataAtualizacaoContato = aluno.DataAtualizacaoContato,
-                        EhAtendidoAEE = alunoPossuiPlanoAEE,
-                        TipoFrequenciaPreDefinido = tipoFrequenciaPreDefinida.ShortName()
-                    };
-
-                    // Marcador visual da situação
-
-                    registroFrequenciaAluno.Marcador = await mediator.Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, periodoEscolar, turma.ModalidadeCodigo));
-
-                    aluno.CodigoTurma = long.Parse(turma.CodigoTurma);
-
-                    var frequenciaAluno = frequenciaAlunosRegistrada.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
-                    registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, percentualAlerta, percentualCritico, turmaPossuiFrequenciaRegistrada);
-
-                    if (!componenteCurricularAula.FirstOrDefault().RegistraFrequencia || !aula.PermiteRegistroFrequencia(turma))
-                    {
-                        registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
-                        continue;
-                    }
-
-                    for (int numeroAula = 1; numeroAula <= aula.Quantidade; numeroAula++)
-                    {
-                        registroFrequenciaAluno.Aulas.Add(new FrequenciaAulaDto
-                        {
-                            NumeroAula = numeroAula,
-                            TipoFrequencia = ObterFrequenciaAluno(frequenciaAlunos, aluno.CodigoAluno, numeroAula, tipoFrequenciaPreDefinida)
-                        });
-                    }
-
-                    registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
-                }
-
-                registroFrequenciaDto.Desabilitado = registroFrequenciaDto.ListaFrequencia.All(c => c.Desabilitado) || aula.EhDataSelecionadaFutura || !aula.PermiteRegistroFrequencia(turma);
-
-                RetornoFrequencia.Add(registroFrequenciaDto);
-            }
-            return await ObterListaFrequenciaAula(registroFrequenciaPorDataPeriodo, RetornoFrequencia, param.DisciplinaId, param.TurmaId, param.DataInicio, param.DataFim, alunosDaTurma,aulas, listaAlunoaCodigos);
+            return await mediator.Send(new ObterListaFrequenciaAulasQuery(turma,
+                                                                          alunosDaTurma,
+                                                                          aulas,
+                                                                          frequenciaAlunos,
+                                                                          registrosFrequenciaAlunos,
+                                                                          anotacoesTurma,
+                                                                          frequenciaPreDefinida,
+                                                                          periodoEscolar,
+                                                                          registraFrequencia,
+                                                                          turmaPossuiFrequenciaRegistrada,
+                                                                          param.DataInicio,
+                                                                          param.DataFim,
+                                                                          percentualAlerta,
+                                                                          percentualCritico));
         }
 
-        private string ObterFrequenciaAluno(IEnumerable<FrequenciaAlunoSimplificadoDto> frequenciaAlunos, string codigoAluno, int numeroAula, TipoFrequencia tipoFrequenciaPreDefinida)
+        private async Task<bool> OterComponenteRegistraFrequencia(string disciplinaId)
+            => await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(long.Parse(disciplinaId)));
+
+        private async Task<int> ObterParametro(TipoParametroSistema parametro, int anoLetivo)
         {
-            var tipoFrequencia = frequenciaAlunos.FirstOrDefault(a => a.NumeroAula == numeroAula && a.CodigoAluno == codigoAluno && a.TipoFrequencia > 0)?.TipoFrequencia;
-            if (tipoFrequencia.HasValue)
-                return tipoFrequencia.ShortName();
-            return tipoFrequenciaPreDefinida.ShortName();
+            var parametroPercentual = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(parametro, anoLetivo));
+            if (parametroPercentual == null || string.IsNullOrEmpty(parametroPercentual.Valor))
+                throw new NegocioException("Parâmetro de percentual de frequência em nível crítico/alerta não encontrado.");
+
+            return int.Parse(parametroPercentual.Valor);
         }
 
-        private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
+        private async Task<PeriodoEscolar> ObterPeriodoEscolar(long tipoCalendarioId, DateTime dataInicio)
         {
-            var percentualFrequencia = 0;
-            if (turmaComFrequenciasRegistradas)
-            {
-                percentualFrequencia = (int)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
-            }
-            else
-            {
-                percentualFrequencia = int.MinValue;
-            }
-            var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : percentualFrequencia.ToString();
+            var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(tipoCalendarioId, dataInicio));
+            if (periodoEscolar == null)
+                throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
 
-            // Critico
-            if (percentualFrequencia <= percentualCritico)
-                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequenciaLabel };
-
-            // Alerta
-            if (percentualFrequencia <= percentualAlerta)
-                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequenciaLabel };
-
-            return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequenciaLabel };
+            return periodoEscolar;
         }
 
-        private async Task<RegistroFrequenciaPorDataPeriodoDto> ObterListaFrequenciaAula(RegistroFrequenciaPorDataPeriodoDto registroFrequenciaPorDataPeriodo, List<FrequenciaDto> frequeciasDia, string disciplinaId, string codigoTurma, DateTime dataInicio, DateTime dataFim,
-            IEnumerable<AlunoPorTurmaResposta> alunosDaTurma,IEnumerable<Aula> aulas, IEnumerable<string> listaAlunoCodigo)
+        private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunos(string turmaId, DateTime dataInicio)
         {
-            var detalhesAulaAlunos = await ObterDetalhesFrequencia(listaAlunoCodigo, dataInicio, dataFim, aulas);
+            var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(turmaId, dataInicio));
 
-            foreach (var aluno in alunosDaTurma)
-            {
-                var frequenciaAluno = new FrequeciaPorDataPeriodoDto
-                {
-                    CodigoAluno = aluno.CodigoAluno,
-                    NomeAluno = aluno.NomeAluno,
-                    NumeroAlunoChamada = aluno.NumeroAlunoChamada
-                };
-                foreach (FrequenciaDto frequenciaDia in frequeciasDia)
-                {
-                    var aula = aulas.Where(x => x.Id == frequenciaDia.AulaId).FirstOrDefault();
-                    if (aula == null)
-                        throw new NegocioException("Aula não encontrada.");
+            if (alunosDaTurma == null || !alunosDaTurma.Any())
+                throw new NegocioException("Não foram encontrados alunos para a turma informada.");
 
-                    var frequenciaAlunoAula = new FrequenciaAulaPorDataPeriodoDto
-                    {
-                        AulaId = aula.Id,
-                        DataAula = aula.DataAula
-                    };
-
-                    bool verificaSeAlunoTeveFrequencia = frequenciaDia.ListaFrequencia.Any(a => a.CodigoAluno == aluno.CodigoAluno);
-
-                    if (verificaSeAlunoTeveFrequencia)
-                    {
-                        var tipoFrequencia = ObterTipoFrequencia(frequenciaDia.ListaFrequencia.Where(a => a.CodigoAluno == aluno.CodigoAluno).FirstOrDefault().Aulas);
-                        if (tipoFrequencia != null)
-                            frequenciaAlunoAula.TipoFrequencia = tipoFrequencia;
-                    }
-                    frequenciaAluno.Aulas.Add(frequenciaAlunoAula);
-                }
-
-                var todosDetalhesAluno = detalhesAulaAlunos.Where(d => d.CodigoAluno == aluno.CodigoAluno);
-                foreach(var detalheAluno in todosDetalhesAluno)
-                {
-                    frequenciaAluno.AulasDetalhes.Add(detalheAluno);
-                }
-                
-                registroFrequenciaPorDataPeriodo.ListaFrequencia.Add(frequenciaAluno);
-            }
-
-            registroFrequenciaPorDataPeriodo = await ObterRegistroFrequenciaPorData(disciplinaId, codigoTurma, dataInicio, dataFim, registroFrequenciaPorDataPeriodo.ListaFrequencia);
-
-            return registroFrequenciaPorDataPeriodo;
+            return alunosDaTurma;
         }
 
-        private string ObterTipoResponsavel(string tipoResponsavel)
+        private async Task<Turma> ObterTurma(string turmaId)
         {
-            switch (tipoResponsavel)
-            {
-                case "1":
-                    {
-                        return TipoResponsavel.Filicacao1.Name();
-                    }
-                case "2":
-                    {
-                        return TipoResponsavel.Filiacao2.Name();
-                    }
-                case "3":
-                    {
-                        return TipoResponsavel.ResponsavelLegal.Name();
-                    }
-                case "4":
-                    {
-                        return TipoResponsavel.ProprioEstudante.Name();
-                    }
-            }
-            return TipoResponsavel.Filicacao1.ToString();
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaId));
+            if (turma == null)
+                throw new NegocioException("Não foi encontrada a turma informada.");
+
+            return turma;
         }
 
-        private async Task<FrequenciaDto> ObterRegistroFrequencia(Aula aula, Turma turma)
+        private async Task<IEnumerable<Aula>> ObterAulas(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId)
         {
-            var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorAulaIdQuery(aula.Id));
-            if (registroFrequencia == null)
-            {
-                registroFrequencia = new RegistroFrequencia(aula);
-            }
-            var registroFrequenciaDto = new FrequenciaDto(aula.Id)
-            {
-                AlteradoEm = registroFrequencia.AlteradoEm,
-                AlteradoPor = registroFrequencia.AlteradoPor,
-                AlteradoRF = registroFrequencia.AlteradoRF,
-                CriadoEm = registroFrequencia.CriadoEm,
-                CriadoPor = registroFrequencia.CriadoPor,
-                CriadoRF = registroFrequencia.CriadoRF,
-                Id = registroFrequencia.Id,
-                Desabilitado = !aula.PermiteRegistroFrequencia(turma)
-            };
-            return registroFrequenciaDto;
-        }
-
-        public async Task<IEnumerable<FrequenciaDetalhadaDto>> ObterDetalhesFrequencia(IEnumerable<string> listaAlunoCodigo, DateTime dataInicio, DateTime dataFim, IEnumerable<Aula> aulas)
-        {
-            var frequenciaRetorno = new List<FrequenciaDetalhadaDto>();
-
-            var frequenciasAluno = await mediator.Send(new ObterFrequenciasDetalhadasPorDataQuery(listaAlunoCodigo.ToArray(), dataInicio, dataFim));
-
-            foreach (var frequenciaAluno in frequenciasAluno)
-            {
-                var frequenciaDetalhadaALuno = new FrequenciaDetalhadaDto
-                {
-                    DataAula = frequenciaAluno.DataAula,
-                    CodigoAluno = frequenciaAluno.AlunoCodigo,
-                };
-
-                var aula = aulas.Where(x => x.Id == frequenciaAluno.AulaId).FirstOrDefault();
-                if (aula == null)
-                    throw new NegocioException("Aula não encontrada.");
-                else
-                {
-                    var frequenciaAlunoAula = await mediator.Send(new ObterFrequenciaAlunoNaAulaQuery(frequenciaAluno.AlunoCodigo, aula.Id));
-                    frequenciaDetalhadaALuno.AulaId = aula.Id;
-                    frequenciaDetalhadaALuno.PossuiAnotacao = await VerificarSePossuiAnotacaoNaAula(frequenciaDetalhadaALuno.CodigoAluno, frequenciaDetalhadaALuno.AulaId);
-                    var tipoFrequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(long.Parse(aula.TurmaId), long.Parse(aula.DisciplinaId), frequenciaDetalhadaALuno.CodigoAluno));
-                    for (int numeroAula = 1; numeroAula <= aula.Quantidade; numeroAula++)
-                    {
-                        var frequenciaNumeroAulaAluno = frequenciaAlunoAula.Where(f => f.NumeroAula == numeroAula).FirstOrDefault();
-                        frequenciaDetalhadaALuno.Aulas.Add(new FrequenciaDetalhadaAulasDto
-                        {
-                            NumeroAula = numeroAula,
-                            TipoFrequencia = frequenciaNumeroAulaAluno != null ? ObterSiglaFrequenciaAulaAluno(frequenciaNumeroAulaAluno.TipoFrequencia) : tipoFrequenciaPreDefinida.ShortName()
-                        });
-                    }
-                }
-                frequenciaRetorno.Add(frequenciaDetalhadaALuno);
-            }
-            return frequenciaRetorno;
-        }
-
-        private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaPossuiFrequenciaRegistrada, Turma turma)
-        {
-            var percentualFrequencia = "0";
-            if (turma.AnoLetivo.Equals(2020))
-                percentualFrequencia = frequenciaAluno == null || frequenciaAluno.TotalAusencias == 0
-                    ?
-                    "100"
-                    :
-                    frequenciaAluno?.PercentualFrequencia.ToString();
-            else
-                percentualFrequencia = frequenciaAluno == null && turmaPossuiFrequenciaRegistrada
-                ?
-                "100"
-                :
-                frequenciaAluno != null
-                ?
-                frequenciaAluno?.PercentualFrequencia.ToString()
-                :
-                "";
-
-            var percentualFrequenciaCauculada = (int)Math.Round(Convert.ToDouble(percentualFrequencia));
-
-
-            var percentualFrequenciaLabel = percentualFrequenciaCauculada < 0 ? null : percentualFrequencia.ToString();
-
-            // Critico
-            if (percentualFrequenciaCauculada <= percentualCritico)
-                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequenciaLabel };
-
-            // Alerta
-            if (percentualFrequenciaCauculada <= percentualAlerta)
-                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequenciaLabel };
-
-            return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequenciaLabel };
-        }
-
-        private string ObterSiglaFrequenciaAulaAluno(int tipoFrequencia)
-        {
-            return Enum.GetValues(typeof(TipoFrequencia))
-            .Cast<TipoFrequencia>()
-            .Where(tf => (int)tf == tipoFrequencia)
-            .Select(tf => tf.ShortName()).FirstOrDefault();
-        }
-
-        private string ObterTipoFrequencia(IEnumerable<FrequenciaAulaDto> aulas)
-        {
+            var aulas = await mediator.Send(new ObterAulasPorDataPeriodoQuery(dataInicio, dataFim, turmaId, disciplinaId));
             if (aulas == null)
-                return null;
-            else
-            {
-                if (aulas.Count() == 1)
-                    return aulas.FirstOrDefault().TipoFrequencia;
-                else
-                {
-                    var quantidadeDeFreqDiferentes = aulas.GroupBy(a => a.TipoFrequencia);
+                throw new NegocioException("Aulas não encontradas para a turma no Período.");
 
-                    if (quantidadeDeFreqDiferentes.Count() > 1)
-                        return null;
-                    else
-                        return aulas.FirstOrDefault().TipoFrequencia;
-                }
-            }
-        }
-        private async Task<bool> VerificarSePossuiAnotacaoNaAula(string codigoAluno, long aulaId)
-        {
-            var anotacao = await mediator.Send(new ObterAnotacaoFrequenciaAlunoQuery(codigoAluno, aulaId));
-            return anotacao == null ? false : true;
-        }
-        private async Task<RegistroFrequenciaPorDataPeriodoDto> ObterRegistroFrequenciaPorData(string disciplinaId, string turmaId, DateTime dataInicio, DateTime dataFim, IList<FrequeciaPorDataPeriodoDto> listaFrequencia)
-        {
-            var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorDataEAulaIdQuery(disciplinaId, turmaId, dataInicio, dataFim));
-            if (registroFrequencia == null)
-                return null;
-            else
-            {
-                var menorCriadoEm = registroFrequencia.OrderBy(a => a.CriadoEm).FirstOrDefault();
-                var maiorAlteradoEm = registroFrequencia.OrderByDescending(a => a.CriadoEm).FirstOrDefault();
-                if (maiorAlteradoEm == null)
-                    maiorAlteradoEm = menorCriadoEm;
-                var RegistroFrequenciaPorDataPeriodoDto = new RegistroFrequenciaPorDataPeriodoDto()
-                {
-                    AlteradoEm = maiorAlteradoEm.AlteradoEm,
-                    AlteradoPor = maiorAlteradoEm.AlteradoPor ?? string.Empty,
-                    AlteradoRF = maiorAlteradoEm.AlteradoPor ?? string.Empty,
-                    CriadoEm = menorCriadoEm.CriadoEm,
-                    CriadoPor = menorCriadoEm.CriadoPor ?? string.Empty,
-                    CriadoRF = menorCriadoEm.CriadoRF ?? string.Empty,
-                    ListaFrequencia = listaFrequencia
-                };
-                return RegistroFrequenciaPorDataPeriodoDto;
-            }
+            return aulas;
         }
     }
 }
