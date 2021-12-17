@@ -14,41 +14,35 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
-        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
-        private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IMediator mediator;
 
-        public ConsultasConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasse,
-                                       IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-                                       IRepositorioParametrosSistema repositorioParametrosSistema,
+        public ConsultasConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta,
                                        IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
-                                       IRepositorioTipoCalendario repositorioTipoCalendario,
-                                       IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
+                                       IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+                                       IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
+                                       IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                        IConsultasTurma consultasTurma,
                                        IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                        IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                        IConsultasFechamentoTurma consultasFechamentoTurma,
-                                       IServicoDeNotasConceitos servicoDeNotasConceitos,
                                        IMediator mediator)
         {
-            this.repositorioConselhoClasseConsulta = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
+            this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
-            this.servicoDeNotasConceitos = servicoDeNotasConceitos ?? throw new ArgumentNullException(nameof(servicoDeNotasConceitos));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -110,8 +104,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
 
-            var mediaAprovacao = double.Parse(await repositorioParametrosSistema
-                .ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            var mediaAprovacao = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
             var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
 

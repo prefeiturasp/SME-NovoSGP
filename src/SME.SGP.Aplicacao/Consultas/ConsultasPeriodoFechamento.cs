@@ -11,21 +11,19 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
-        private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioDre repositorioDre;
-        private readonly IRepositorioEvento repositorioEvento;
-        private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
+        private readonly IRepositorioUeConsulta repositorioUe;
+        private readonly IRepositorioDreConsulta repositorioDre;
+        private readonly IRepositorioEventoFechamentoConsulta repositorioEventoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
 
         public ConsultasPeriodoFechamento(IServicoPeriodoFechamento servicoPeriodoFechamento,
                                 IRepositorioTurmaConsulta repositorioTurma,
-                                IRepositorioUe repositorioUe,
-                                IRepositorioDre repositorioDre,
+                                IRepositorioUeConsulta repositorioUe,
+                                IRepositorioDreConsulta repositorioDre,
                                 IConsultasTipoCalendario consultasTipoCalendario,
-                                IRepositorioEvento repositorioEvento,
-                                IRepositorioEventoFechamento repositorioEventoFechamento,
+                                IRepositorioEventoFechamentoConsulta repositorioEventoFechamento,
                                 IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                 IRepositorioPeriodoFechamento repositorioPeriodoFechamento)
         {
@@ -34,7 +32,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioUe = repositorioUe ?? throw new System.ArgumentNullException(nameof(repositorioUe));
             this.repositorioDre = repositorioDre ?? throw new System.ArgumentNullException(nameof(repositorioDre));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new System.ArgumentNullException(nameof(consultasTipoCalendario));
-            this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new System.ArgumentNullException(nameof(repositorioEventoFechamento));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoFechamento));

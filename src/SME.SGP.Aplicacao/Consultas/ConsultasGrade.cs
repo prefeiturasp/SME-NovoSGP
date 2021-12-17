@@ -11,20 +11,20 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasAula consultasAula;
         private readonly IRepositorioGrade repositorioGrade;
-        private readonly IRepositorioTurmaConsulta repositorioTurma;
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
+        
 
-        public ConsultasGrade(IRepositorioGrade repositorioGrade,
-                              IConsultasAula consultasAula, IServicoUsuario servicoUsuario, IRepositorioUe repositorioUe, IRepositorioTurmaConsulta repositorioTurma, IMediator mediator)
+        public ConsultasGrade(IRepositorioGrade repositorioGrade,IConsultasAula consultasAula, IServicoUsuario servicoUsuario, IRepositorioUeConsulta repositorioUe, IRepositorioTurmaConsulta repositorioTurma, IMediator mediator)
         {
             this.repositorioGrade = repositorioGrade ?? throw new System.ArgumentNullException(nameof(repositorioGrade));
             this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
         public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurmaProfessor(string turmaCodigo, long disciplina, int semana, DateTime dataAula, string codigoRf = null, bool ehRegencia = false)

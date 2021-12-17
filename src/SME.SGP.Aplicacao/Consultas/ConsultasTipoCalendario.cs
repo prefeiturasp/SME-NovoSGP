@@ -11,13 +11,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasTipoCalendario : IConsultasTipoCalendario
     {
-        private readonly IRepositorioTipoCalendario repositorio;
+        private readonly IRepositorioTipoCalendarioConsulta repositorio;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
 
-        public ConsultasTipoCalendario(IRepositorioTipoCalendario repositorio,
+        public ConsultasTipoCalendario(IRepositorioTipoCalendarioConsulta repositorio,
                                        IRepositorioEvento repositorioEvento,
                                        IRepositorioAbrangencia repositorioAbrangencia,
                                        IServicoUsuario servicoUsuario,

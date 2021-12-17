@@ -7,9 +7,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUsuarioPorRfQueryHandler : IRequestHandler<ObterUsuarioPorRfQuery, Dominio.Usuario>
     {
-        private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IRepositorioUsuarioConsulta repositorioUsuario;
 
-        public ObterUsuarioPorRfQueryHandler(IRepositorioUsuario repositorioUsuario)
+        public ObterUsuarioPorRfQueryHandler(IRepositorioUsuarioConsulta repositorioUsuario)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
         }

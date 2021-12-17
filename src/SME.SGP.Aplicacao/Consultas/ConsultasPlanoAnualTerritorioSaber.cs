@@ -12,19 +12,16 @@ namespace SME.SGP.Aplicacao
     public class ConsultasPlanoAnualTerritorioSaber : IConsultasPlanoAnualTerritorioSaber
     {
         private readonly IRepositorioPlanoAnualTerritorioSaber repositorioPlanoAnualTerritorioSaber;
-        private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IMediator mediator;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
 
         public ConsultasPlanoAnualTerritorioSaber(IRepositorioPlanoAnualTerritorioSaber repositorioPlanoAnualTerritorioSaber,
-                                                  IRepositorioTurma repositorioTurma,
                                                   IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-                                                  IRepositorioTipoCalendario repositorioTipoCalendario,
+                                                  IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                                   IMediator mediator)
         {
             this.repositorioPlanoAnualTerritorioSaber = repositorioPlanoAnualTerritorioSaber ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnualTerritorioSaber));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

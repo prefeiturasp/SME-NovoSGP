@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAEEComTurmaPorIdQueryHandler : IRequestHandler<ObterPlanoAEEComTurmaPorIdQuery, PlanoAEE>
     {
-        private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
+        private readonly IRepositorioPlanoAEEConsulta repositorioPlanoAEE;
 
-        public ObterPlanoAEEComTurmaPorIdQueryHandler(IRepositorioPlanoAEE repositorioPlanoAEE)
+        public ObterPlanoAEEComTurmaPorIdQueryHandler(IRepositorioPlanoAEEConsulta repositorioPlanoAEE)
         {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
         }

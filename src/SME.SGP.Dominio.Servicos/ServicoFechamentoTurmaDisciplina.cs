@@ -21,10 +21,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasSupervisor consultasSupervisor;
-        private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
-        private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
-        private readonly IRepositorioConceito repositorioConceito;
-        private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno;
@@ -32,14 +28,13 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
-        private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
@@ -52,23 +47,18 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
                                                 IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno,
                                                 IRepositorioFechamentoNota repositorioFechamentoNota,
-                                                IRepositorioDre repositorioDre,
                                                 IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                                 IRepositorioTurmaConsulta repositorioTurma,
                                                 IRepositorioUe repositorioUe,
                                                 IServicoPeriodoFechamento servicoPeriodoFechamento,
                                                 IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-                                                IRepositorioTipoCalendario repositorioTipoCalendario,
+                                                IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                                 IRepositorioTipoAvaliacao repositorioTipoAvaliacao,
-                                                IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
-                                                IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
-                                                IRepositorioParametrosSistema repositorioParametrosSistema,
-                                                IRepositorioConceito repositorioConceito,
+                                                IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                                 IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento,
                                                 IConsultasDisciplina consultasDisciplina,
                                                 IConsultasFrequencia consultasFrequencia,
                                                 IServicoNotificacao servicoNotificacao,
-                                                IServicoPendenciaFechamento servicoPendenciaFechamento,
                                                 IServicoEol servicoEOL,
                                                 IServicoUsuario servicoUsuario,
                                                 IComandosWorkflowAprovacao comandosWorkflowAprovacao,
@@ -86,8 +76,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new ArgumentNullException(nameof(servicoPeriodoFechamento));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
-            this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
@@ -98,12 +86,9 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
-            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
             this.repositorioWfAprovacaoNotaFechamento = repositorioWfAprovacaoNotaFechamento ?? throw new ArgumentNullException(nameof(repositorioWfAprovacaoNotaFechamento));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-            this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -168,7 +153,8 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task Reprocessar(long fechamentoTurmaDisciplinaId, Usuario usuario = null)
         {
-            var fechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina.ObterPorId(fechamentoTurmaDisciplinaId);
+            var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorIdQuery(fechamentoTurmaDisciplinaId));
+                
             if (fechamentoTurmaDisciplina == null)
                 throw new NegocioException("Fechamento ainda não realizado para essa turma.");
 

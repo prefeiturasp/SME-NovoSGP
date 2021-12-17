@@ -12,9 +12,10 @@ namespace SME.SGP.Aplicacao
     public class ComandosFechamentoFinal : IComandosFechamentoFinal
     {
         private readonly IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno;
-        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;        
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;        
+        private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
         private readonly IMediator mediator;
         private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
@@ -23,9 +24,10 @@ namespace SME.SGP.Aplicacao
             IServicoFechamentoFinal servicoFechamentoFinal,
             IRepositorioTurmaConsulta repositorioTurmaConsulta,
             IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno,
-            IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
-            IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
+            IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,            
             IRepositorioNotaTipoValor repositorioNotaTipoValor,
+            IRepositorioTurma repositorioTurma,
+            IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
             IMediator mediator)
         {
             this.servicoFechamentoFinal = servicoFechamentoFinal ?? throw new System.ArgumentNullException(nameof(servicoFechamentoFinal));

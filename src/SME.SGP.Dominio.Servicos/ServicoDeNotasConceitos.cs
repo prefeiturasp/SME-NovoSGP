@@ -21,7 +21,7 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioCiclo repositorioCiclo;
-        private readonly IRepositorioConceito repositorioConceito;
+        private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
         private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
@@ -45,7 +45,7 @@ namespace SME.SGP.Dominio
                 if (_usuariosCPs == null)
                 {
                     var listaCPsUe = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.CP);
-                    _usuariosCPs = CarregaUsuariosPorRFs(listaCPsUe);
+                    _usuariosCPs = CarregaUsuariosPorRFs(listaCPsUe).Result;
                 }
 
                 return _usuariosCPs;
@@ -60,7 +60,7 @@ namespace SME.SGP.Dominio
                 if (_usuarioDiretor == null)
                 {
                     var diretor = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Diretor);
-                    _usuarioDiretor = CarregaUsuariosPorRFs(diretor).First();
+                    _usuarioDiretor = CarregaUsuariosPorRFs(diretor).Result.First();
                 }
 
                 return _usuarioDiretor;
@@ -70,7 +70,7 @@ namespace SME.SGP.Dominio
         public ServicoDeNotasConceitos(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IServicoEol servicoEOL, IConsultasAbrangencia consultasAbrangencia,
             IRepositorioNotaTipoValor repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo,
-            IRepositorioConceito repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro,
+            IRepositorioConceitoConsulta repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro,
             IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
@@ -213,12 +213,12 @@ namespace SME.SGP.Dominio
             }
         }
 
-        private IEnumerable<Usuario> CarregaUsuariosPorRFs(IEnumerable<UsuarioEolRetornoDto> listaCPsUe)
+        private async Task<IEnumerable<Usuario>> CarregaUsuariosPorRFs(IEnumerable<UsuarioEolRetornoDto> listaCPsUe)
         {
+            var usuarios = new List<Usuario>();
             foreach (var cpUe in listaCPsUe)
-            {
-                yield return servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cpUe.CodigoRf);
-            }
+                usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cpUe.CodigoRf));
+            return usuarios;
         }
 
         private static void ValidarSeAtividadesAvaliativasExistem(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> avaliacoes)

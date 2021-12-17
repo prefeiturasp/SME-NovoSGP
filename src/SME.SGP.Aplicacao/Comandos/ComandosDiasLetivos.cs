@@ -1,7 +1,5 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosDiasLetivos : IComandosDiasLetivos
     {
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;        
 
         public ComandosDiasLetivos(
             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioEvento repositorioEvento,
             IRepositorioTipoCalendario repositorioTipoCalendario,
-            IRepositorioParametrosSistema repositorioParametrosSistema)
+            IRepositorioParametrosSistemaConsulta repositorioParametrosSistema)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
