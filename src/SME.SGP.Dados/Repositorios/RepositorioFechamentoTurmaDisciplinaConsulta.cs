@@ -149,20 +149,22 @@ namespace SME.SGP.Dados.Repositorios
                 new { codigoAluno, fechamentoTurmaDisciplinaId });
         }
 
-        public override FechamentoTurmaDisciplina ObterPorId(long id)
+        public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplinaPorId(long id)
         {
             var query = @"select ftd.*, ft.* 
                             from fechamento_turma_disciplina ftd
                           inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
                           where ftd.id = @id";
 
-            return database.Conexao.Query<FechamentoTurmaDisciplina, FechamentoTurma, FechamentoTurmaDisciplina>(query
+            var retorno = await database.Conexao.QueryAsync<FechamentoTurmaDisciplina, FechamentoTurma, FechamentoTurmaDisciplina>(query
                 , (fechamentoTurmaDisciplina, fechamentoTurma) =>
                 {
                     fechamentoTurmaDisciplina.FechamentoTurma = fechamentoTurma;
                     return fechamentoTurmaDisciplina;
                 }
-                , new { id }).FirstOrDefault();
+                , new { id });
+            
+            return retorno.FirstOrDefault();
         }
 
         public async Task<SituacaoFechamento> ObterSituacaoFechamento(long turmaId, long componenteCurricularId,
