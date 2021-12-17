@@ -22,8 +22,8 @@ namespace SME.SGP.Infra
             foreach (var aula in aulas.OrderBy(a => a.DataAula))
             {
                 var frequenciaId = registrosFrequenciaAlunos.FirstOrDefault(a => a.AulaId == aula.Id)?.RegistroFrequenciaId;
-
-                Aulas.Add(new AulaFrequenciaDto(aula.Id, aula.DataAula, aula.Quantidade, frequenciaId));
+                bool ehReposicao = TipoAula.Reposicao == aula.TipoAula ? true : false;
+                Aulas.Add(new AulaFrequenciaDto(aula.Id, aula.DataAula, aula.Quantidade, ehReposicao, frequenciaId));
             }
         }
 
