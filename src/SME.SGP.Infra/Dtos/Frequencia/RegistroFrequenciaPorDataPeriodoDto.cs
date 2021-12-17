@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,6 +25,24 @@ namespace SME.SGP.Infra
 
                 Aulas.Add(new AulaFrequenciaDto(aula.Id, aula.DataAula, aula.Quantidade, frequenciaId));
             }
+        }
+
+        public void CarregarAuditoria(IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos)
+        {
+            var ultimoRegistro = registrosFrequenciaAlunos.OrderByDescending(a => a.AlteradoEm > a.CriadoEm ? a.AlteradoEm : a.CriadoEm).FirstOrDefault();
+
+            if (ultimoRegistro != null)
+                Auditoria = new AuditoriaDto()
+                { 
+                    Id = ultimoRegistro.RegistroFrequenciaId,
+                    CriadoEm = ultimoRegistro.CriadoEm,
+                    CriadoPor = ultimoRegistro.CriadoPor,
+                    CriadoRF = ultimoRegistro.CriadoRf,
+                    AlteradoEm = ultimoRegistro.AlteradoEm,
+                    AlteradoPor = ultimoRegistro.AlteradoPor,
+                    AlteradoRF = ultimoRegistro.AlteradoRf,
+                };
+
         }
     }
 }

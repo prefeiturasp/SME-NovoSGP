@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
             var registrosFrequencias = new RegistroFrequenciaPorDataPeriodoDto();
 
             registrosFrequencias.CarregarAulas(request.Aulas, request.RegistrosFrequenciaAlunos);
+            registrosFrequencias.CarregarAuditoria(request.RegistrosFrequenciaAlunos);
 
             foreach (var aluno in request.AlunosDaTurma
                                     .Where(a => a.DeveMostrarNaChamada(request.DataInicio))

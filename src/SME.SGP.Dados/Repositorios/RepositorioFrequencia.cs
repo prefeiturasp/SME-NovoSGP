@@ -396,6 +396,12 @@ namespace SME.SGP.Dados.Repositorios
                             , rfa.codigo_aluno as AlunoCodigo
                             , rfa.numero_aula as NumeroAula
                             , rfa.valor as TipoFrequencia
+                            , rfa.criado_em as CriadoEm
+                            , rfa.criado_por as CriadoPor
+                            , rfa.criado_rf as CriadoRf
+                            , rfa.alterado_em as AlteradoEm
+                            , rfa.alterado_por as AlteradoPor
+                            , rfa.alterado_rf as AlteradoRf
                        from registro_frequencia_aluno rfa 
                        inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
                        inner join aula a on a.id = rf.aula_id 
