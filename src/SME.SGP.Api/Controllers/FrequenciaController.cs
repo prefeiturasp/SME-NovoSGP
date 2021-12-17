@@ -45,6 +45,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Notificar()
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotifificarRegistroFrequencia, null, Guid.NewGuid(), null));
+            
             return Ok();
         }
 
@@ -52,6 +53,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> NotificarAlunosFaltosos([FromServices] IServicoNotificacaoFrequencia servico)
         {
             await servico.NotificarAlunosFaltosos();
+            
             return Ok();
         }
 
@@ -59,6 +61,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> NotificarAlunosFaltososBimestre([FromServices] IServicoNotificacaoFrequencia servico)
         {
             await servico.NotificarAlunosFaltososBimestre();
+            
             return Ok();
         }
 
@@ -128,6 +131,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> CalcularFrequencia([FromBody] CalcularFrequenciaDto calcularFrequenciaDto, [FromServices] ICalculoFrequenciaTurmaDisciplinaUseCase calculoFrequenciaTurmaDisciplinaUseCase)
         {
             await calculoFrequenciaTurmaDisciplinaUseCase.IncluirCalculoFila(calcularFrequenciaDto);
+            
             return Ok();
         }
 
@@ -156,7 +160,9 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ConciliarFrequencia([FromQuery] DateTime dataReferencia, string turmaCodigo)
         {
             var mensagem = new ConciliacaoFrequenciaTurmasSyncDto(dataReferencia, turmaCodigo);
+            
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasSync, mensagem, Guid.NewGuid(), null));
+            
             return Ok();
         }
 
@@ -167,6 +173,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ConsolidarFrequencia([FromQuery] int ano, [FromServices] IExecutaConsolidacaoFrequenciaPorAnoUseCase useCase)
         {
             await useCase.Executar(ano);
+           
             return Ok();
         }
 

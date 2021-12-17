@@ -72,6 +72,7 @@ namespace SME.SGP.Api.Controllers
         {            
             var retorno = await ObterAulasEventosProfessorCalendarioPorMesDiaUseCase.Executar(mediator, filtro, tipoCalendarioId, mes, dia, filtro.AnoLetivo);
             retorno.EventosAulasMes = await ObterAulasEventosProfessorCalendarioPorMesUseCase.Executar(mediator, filtro, tipoCalendarioId, mes, servicoUsuario);
+            
             return Ok(retorno);
         }
 
