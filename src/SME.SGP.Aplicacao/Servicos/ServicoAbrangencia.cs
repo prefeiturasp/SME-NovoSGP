@@ -24,11 +24,11 @@ namespace SME.SGP.Aplicacao.Servicos
         private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
-        private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IRepositorioUsuarioConsulta repositorioUsuario;
 
         public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEol servicoEOL, IConsultasSupervisor consultasSupervisor,
             IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma, IRepositorioCicloEnsino repositorioCicloEnsino, IRepositorioTipoEscola repositorioTipoEscola,
-            IMediator mediator, IRepositorioUsuario repositorioUsuario)
+            IMediator mediator, IRepositorioUsuarioConsulta repositorioUsuario)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -26,6 +27,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoPerfil servicoPerfil;
         private readonly IServicoTokenJwt servicoTokenJwt;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
         public ComandosUsuario(IRepositorioUsuario repositorioUsuario,
             IServicoAutenticacao servicoAutenticacao,
@@ -39,7 +41,8 @@ namespace SME.SGP.Aplicacao
             IServicoAbrangencia servicoAbrangencia,
             IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-            IRepositorioHistoricoEmailUsuario repositorioHistoricoEmailUsuario)
+            IRepositorioHistoricoEmailUsuario repositorioHistoricoEmailUsuario,
+            IMediator mediator)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.servicoAutenticacao = servicoAutenticacao ?? throw new ArgumentNullException(nameof(servicoAutenticacao));
@@ -54,6 +57,7 @@ namespace SME.SGP.Aplicacao
             this.servicoEmail = servicoEmail ?? throw new ArgumentNullException(nameof(servicoEmail));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         //  TODO: aplicar validações permissão de acesso
@@ -73,7 +77,8 @@ namespace SME.SGP.Aplicacao
         public async Task AlterarSenha(AlterarSenhaDto alterarSenhaDto)
         {
             var login = servicoUsuario.ObterLoginAtual();
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(null, login);
+            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(null, login);
+            
             if (usuario == null)
             {
                 throw new NegocioException("Usuário não encontrado.");
@@ -84,7 +89,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<UsuarioAutenticacaoRetornoDto> AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
-            Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(recuperacaoSenhaDto.Token);
+            Usuario usuario = await mediator.Send(new ObterUsuarioPorTokenRecuperacaoSenhaQuery(recuperacaoSenhaDto.Token));
+                
             if (usuario == null)
                 throw new NegocioException("Usuário não encontrado.");
 
@@ -129,7 +135,7 @@ namespace SME.SGP.Aplicacao
 
             var dadosUsuario = await servicoEOL.ObterMeusDados(login);
 
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email, true);
+            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email, true);
 
             retornoAutenticacaoEol.Item1.PerfisUsuario = await servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
 
@@ -285,14 +291,15 @@ namespace SME.SGP.Aplicacao
         public async Task<string> SolicitarRecuperacaoSenha(string login)
         {
             string loginRecuperar = login.Replace(" ","");
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, loginRecuperar);
+            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(null, loginRecuperar));
+            
             var usuarioCore = await servicoEOL.ObterMeusDados(loginRecuperar);
 
             if (usuarioCore == null && usuario == null)
                 throw new NegocioException("Usuário ou RF não encontrado");
 
             if (usuario == null)
-                usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, loginRecuperar, usuarioCore.Nome, usuarioCore.Email);
+                usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, loginRecuperar, usuarioCore.Nome, usuarioCore.Email);
 
             if (usuario.Perfis == null || !usuario.Perfis.Any())
             {
@@ -307,9 +314,10 @@ namespace SME.SGP.Aplicacao
             return usuarioCore.Email;
         }
 
-        public bool TokenRecuperacaoSenhaEstaValido(Guid token)
+        public async Task<bool> TokenRecuperacaoSenhaEstaValido(Guid token)
         {
-            Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(token);
+            Usuario usuario = await mediator.Send(new ObterUsuarioPorTokenRecuperacaoSenhaQuery(token));
+            
             return usuario != null && usuario.TokenRecuperacaoSenhaEstaValido();
         }
 

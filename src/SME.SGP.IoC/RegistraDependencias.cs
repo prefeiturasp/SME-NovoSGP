@@ -195,6 +195,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivel, RepositorioWorkflowAprovacaoNivel>();
             services.TryAddScoped<IRepositorioUsuario, RepositorioUsuario>();
+            services.TryAddScoped<IRepositorioUsuarioConsulta, RepositorioUsuarioConsulta>();
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
             services.TryAddScoped<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
             services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();

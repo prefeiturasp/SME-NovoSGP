@@ -25,7 +25,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
-        private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IRepositorioUsuarioConsulta repositorioUsuario;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoEol servicoEOL;
@@ -48,7 +48,7 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
                                         IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                         IRepositorioFechamentoNota repositorioFechamentoNota,
-                                        IRepositorioUsuario repositorioUsuario,
+                                        IRepositorioUsuarioConsulta repositorioUsuario,
                                         IRepositorioPendencia repositorioPendencia,
                                         IRepositorioEventoTipo repositorioEventoTipo,
                                         IMediator mediator)
@@ -342,7 +342,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void EnviaNotificacaoParaNiveis(List<WorkflowAprovacaoNivel> niveis, long codigoNotificacao = 0)
+        private async void EnviaNotificacaoParaNiveis(List<WorkflowAprovacaoNivel> niveis, long codigoNotificacao = 0)
         {
             if (codigoNotificacao == 0)
                 codigoNotificacao = servicoNotificacao.ObtemNovoCodigo();
@@ -352,7 +352,7 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var aprovaNivel in niveis)
             {
                 if (!cargosNotificados.Contains(aprovaNivel.Cargo))
-                    cargosNotificados.Add(EnviaNotificacaoParaNivel(aprovaNivel, codigoNotificacao));
+                    cargosNotificados.Add(await EnviaNotificacaoParaNivel(aprovaNivel, codigoNotificacao));
             }
         }
 
@@ -370,7 +370,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private Cargo? EnviaNotificacaoParaNivel(WorkflowAprovacaoNivel nivel, long codigoNotificacao)
+        private async Task<Cargo?> EnviaNotificacaoParaNivel(WorkflowAprovacaoNivel nivel, long codigoNotificacao)
         {
             Notificacao notificacao;
             List<Usuario> usuarios = nivel.Usuarios.ToList();
@@ -383,7 +383,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     try
                     {
-                        usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(string.Empty, funcionario.Id, buscaLogin: true));
+                        usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(string.Empty, funcionario.Id, buscaLogin: true));
                     }
                     catch (Exception e)
                     {
@@ -492,7 +492,7 @@ namespace SME.SGP.Dominio.Servicos
             var usuarioRf = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.AlteradoRF;
             var periodoEscolar = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar;
             var notaConceitoTitulo = notasEmAprovacao.First().ConceitoId.HasValue ? "conceito" : "nota";
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(usuarioRf, "");
+            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(usuarioRf, ""));
 
             if (usuario != null)
             {
@@ -883,7 +883,7 @@ namespace SME.SGP.Dominio.Servicos
             NotificarCriadorEventoDataPassadaReprovacao(evento, codigoDaNotificacao, motivo);
         }
 
-        private void TrataReprovacaoEventoLiberacaoExcepcional(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, Cargo? cargoDoNivelQueRecusou)
+        private async void TrataReprovacaoEventoLiberacaoExcepcional(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, Cargo? cargoDoNivelQueRecusou)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflow.Id);
             if (evento == null)
@@ -903,12 +903,12 @@ namespace SME.SGP.Dominio.Servicos
 
                 foreach (var funcionario in funcionariosRetorno)
                 {
-                    var usuarioDiretor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id);
+                    var usuarioDiretor = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id);
 
                     NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuarioDiretor, motivo, escola.Nome);
                 }
             }
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
+            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
             NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuario, motivo, escola.Nome);
         }
 

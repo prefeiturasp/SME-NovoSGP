@@ -242,6 +242,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioUe, RepositorioUe>();
             services.TryAddScopedWorkerService<IRepositorioUeConsulta, RepositorioUeConsulta>();
             services.TryAddScopedWorkerService<IRepositorioUsuario, RepositorioUsuario>();
+            services.TryAddScopedWorkerService<IRepositorioUsuarioConsulta, RepositorioUsuarioConsulta>();
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacao, RepositorioWorkflowAprovacao>();
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivel, RepositorioWorkflowAprovacaoNivel>();
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
