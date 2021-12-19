@@ -22,14 +22,16 @@ namespace SME.SGP.Infra
             foreach (var aula in aulas.OrderBy(a => a.DataAula))
             {
                 var frequenciaId = registrosFrequenciaAlunos.FirstOrDefault(a => a.AulaId == aula.Id)?.RegistroFrequenciaId;
-                bool ehReposicao = TipoAula.Reposicao == aula.TipoAula ? true : false;
+                bool ehReposicao = TipoAula.Reposicao == aula.TipoAula;
                 Aulas.Add(new AulaFrequenciaDto(aula.Id, aula.DataAula, aula.Quantidade, ehReposicao, frequenciaId));
             }
         }
 
         public void CarregarAuditoria(IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos)
         {
-            var ultimoRegistro = registrosFrequenciaAlunos.OrderByDescending(a => a.AlteradoEm > a.CriadoEm ? a.AlteradoEm : a.CriadoEm).FirstOrDefault();
+            var ultimoRegistro = registrosFrequenciaAlunos
+                .OrderByDescending(a => a.AlteradoEm > a.CriadoEm ? a.AlteradoEm : a.CriadoEm)
+                .FirstOrDefault();
 
             if (ultimoRegistro != null)
                 Auditoria = new AuditoriaDto()
