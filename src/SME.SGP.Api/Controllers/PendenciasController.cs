@@ -12,11 +12,12 @@ namespace SME.SGP.Api.Controllers
     public class PendenciasController : ControllerBase
     {
         [HttpGet()]
+        [Route("listar")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<PendenciaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Listar([FromServices] IObterPendenciasUseCase useCase)
+        public async Task<IActionResult> Listar([FromServices] IObterPendenciasUseCase useCase, [FromQuery] string turmaCodigo = null, int tipoPendencia = 0, string tituloPendencia = null)
         {
-            return Ok(await useCase.Executar());
+            return Ok(await useCase.Executar(turmaCodigo, tipoPendencia, tituloPendencia));
         }
     }
 }

@@ -67,7 +67,7 @@ namespace SME.SGP.Dominio
                     return atividades.Where(a => a.ProfessorRf == CodigoRf);
             
                 else
-                    return atividades.Where(a => (componentesCurricularesProfessor.Intersect(a.Disciplinas.Select(d => d.DisciplinaId)).Any() && a.EhCj) || a.ProfessorRf == CodigoRf);
+                    return atividades.Where(a => (componentesCurricularesProfessor.Intersect(a.Disciplinas.Select(d => d.DisciplinaId)).Any() && !a.EhCj || a.Disciplinas.Select(item => item.DisciplinaId).Any() && a.EhCj) || a.ProfessorRf == CodigoRf);
             }
         }
 
@@ -135,6 +135,11 @@ namespace SME.SGP.Dominio
         public bool EhAbrangenciaUEECP()
         {
             return Perfis.Any(x => x.Tipo == TipoPerfil.UE && x.CodigoPerfil == Dominio.Perfis.PERFIL_CP);
+        }
+
+        public bool EhAbrangenciaSomenteUE()
+        {
+            return Perfis.Any(x => x.Tipo == TipoPerfil.UE) && !PossuiPerfilSmeOuDre();
         }
 
         public bool EhProfessorCj()

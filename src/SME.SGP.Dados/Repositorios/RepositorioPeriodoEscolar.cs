@@ -368,5 +368,34 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { periodoEscolarId });
         }
+
+        public async Task<int> ObterBimestrePorDataPendenciaEModalidade(DateTime dataPendenciaCriada, int modalidadeTipoCalendario)
+        {
+            var query = @"select pe.bimestre from periodo_escolar pe 
+                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                where tc.modalidade = @modalidadeTipoCalendario 
+                                and @dataPendenciaCriada between pe.periodo_inicio and pe.periodo_fim";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { dataPendenciaCriada, modalidadeTipoCalendario });
+        }
+
+        public async Task<IEnumerable<PeriodoEscolarVerificaRegenciaDto>> ObterPeriodoEscolaresPorTurmaComponenteBimestre(string turmaCodigo, long componenteCurricularId, int bimestre)
+        {
+            var query = @"select pe.id as Id,
+                                   pe.periodo_inicio as DataInicio,    
+                                   pe.periodo_fim as DataFim, 
+                                   pe.bimestre as Bimestre,
+                                   a.id as AulaId, 
+                                   a.data_aula as DataAula
+                            from periodo_escolar pe 
+                                inner join aula a on a.tipo_calendario_id = pe.tipo_calendario_id 
+                                where a.turma_id = @turmaCodigo
+                                and pe.bimestre = @bimestre
+                                and a.disciplina_id = cast(@componenteCurricularId as varchar)
+                                and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
+                                and not a.excluido 
+                                order by a.data_aula";
+            return await database.Conexao.QueryAsync<PeriodoEscolarVerificaRegenciaDto>(query, new { turmaCodigo, componenteCurricularId, bimestre});
+        }
     }
 }

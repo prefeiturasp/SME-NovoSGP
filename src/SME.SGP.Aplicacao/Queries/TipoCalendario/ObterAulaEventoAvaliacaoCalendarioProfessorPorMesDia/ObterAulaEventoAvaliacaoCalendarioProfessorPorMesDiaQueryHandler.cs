@@ -19,16 +19,18 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<EventoAulaDto>> Handle(ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery request, CancellationToken cancellationToken)
         {
             var retorno = new List<EventoAulaDto>();
-            
+
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
             var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(request.TurmaCodigo));
-            
+
             if (request.Aulas.Any())
             {
                 foreach (var aulaParaVisualizar in request.Aulas)
                 {
                     var componenteCurricular = request.ComponentesCurricularesParaVisualizacao.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId));
             
-                    var professorTitular = professoresTitulares != null ? professoresTitulares.FirstOrDefault(p => p.DisciplinaId == long.Parse(aulaParaVisualizar.DisciplinaId)) : null;
+                    var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinaId == long.Parse(aulaParaVisualizar.DisciplinaId));
 
                     var eventoAulaDto = new EventoAulaDto()
                     {
@@ -38,7 +40,8 @@ namespace SME.SGP.Aplicacao
                         EhReposicao = aulaParaVisualizar.TipoAula == TipoAula.Reposicao,
                         EstaAguardandoAprovacao = aulaParaVisualizar.Status == EntidadeStatus.AguardandoAprovacao,
                         EhAulaCJ = aulaParaVisualizar.AulaCJ,
-                        PodeEditarAula = professorTitular != null && !aulaParaVisualizar.AulaCJ,
+                        PodeEditarAula = professorTitular != null && !aulaParaVisualizar.AulaCJ 
+                                      || usuarioLogado.EhProfessorCj() && aulaParaVisualizar.AulaCJ,
                         Quantidade = aulaParaVisualizar.Quantidade,
                         ComponenteCurricularId = long.Parse(aulaParaVisualizar.DisciplinaId)
                     };

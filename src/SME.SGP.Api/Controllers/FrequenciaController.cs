@@ -45,6 +45,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Notificar()
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotifificarRegistroFrequencia, null, Guid.NewGuid(), null));
+            
             return Ok();
         }
 
@@ -52,6 +53,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> NotificarAlunosFaltosos([FromServices] IServicoNotificacaoFrequencia servico)
         {
             await servico.NotificarAlunosFaltosos();
+            
             return Ok();
         }
 
@@ -59,6 +61,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> NotificarAlunosFaltososBimestre([FromServices] IServicoNotificacaoFrequencia servico)
         {
             await servico.NotificarAlunosFaltososBimestre();
+            
             return Ok();
         }
 
@@ -128,6 +131,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> CalcularFrequencia([FromBody] CalcularFrequenciaDto calcularFrequenciaDto, [FromServices] ICalculoFrequenciaTurmaDisciplinaUseCase calculoFrequenciaTurmaDisciplinaUseCase)
         {
             await calculoFrequenciaTurmaDisciplinaUseCase.IncluirCalculoFila(calcularFrequenciaDto);
+            
             return Ok();
         }
 
@@ -156,7 +160,9 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ConciliarFrequencia([FromQuery] DateTime dataReferencia, string turmaCodigo)
         {
             var mensagem = new ConciliacaoFrequenciaTurmasSyncDto(dataReferencia, turmaCodigo);
+            
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasSync, mensagem, Guid.NewGuid(), null));
+            
             return Ok();
         }
 
@@ -167,6 +173,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ConsolidarFrequencia([FromQuery] int ano, [FromServices] IExecutaConsolidacaoFrequenciaPorAnoUseCase useCase)
         {
             await useCase.Executar(ano);
+           
             return Ok();
         }
 
@@ -185,6 +192,23 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterFrequenciasPorBimestresAlunoTurmaComponenteCurricular(string turmaCodigo, string alunoCodigo, string componenteCurricularId, [FromQuery] int[] bimestres, [FromServices] IObterFrequenciasPorBimestresAlunoTurmaComponenteCurricularUseCase useCase)
         {
             return Ok(await useCase.Executar(new FrequenciaPorBimestresAlunoTurmaComponenteCurricularDto(turmaCodigo, alunoCodigo, bimestres, componenteCurricularId)));
+        }
+
+        [HttpPost("frequencias/salvar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> SalvarFrequencia([FromBody] IEnumerable<FrequenciaSalvarAulaAlunosDto> frequenciaListaoDto, [FromServices] IInserirFrequenciaListaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(frequenciaListaoDto));
+        }
+
+        [HttpGet("frequencias/por-periodo")]
+        [ProducesResponseType(typeof(RegistroFrequenciaPorDataPeriodoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterFrequenciasPorPeriodo([FromQuery] FiltroFrequenciaPorPeriodoDto filtro, [FromServices] IObterFrequenciasPorPeriodoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
         }
     }
 }

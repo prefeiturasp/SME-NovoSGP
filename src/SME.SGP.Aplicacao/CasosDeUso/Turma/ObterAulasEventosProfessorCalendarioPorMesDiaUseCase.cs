@@ -69,7 +69,6 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
 
-
             IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();
             
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
@@ -103,4 +102,3 @@ namespace SME.SGP.Aplicacao
         }
     }
 }
-
