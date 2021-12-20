@@ -8,5 +8,6 @@ namespace SME.SGP.Infra
         public DateTime DataFim { get; set; }
         public string TurmaId { get; set; }
         public string DisciplinaId { get; set; }
+        public string ComponenteCurricularId { get; set; }
     }
 }

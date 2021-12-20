@@ -35,7 +35,8 @@ namespace SME.SGP.Infra
         {
             foreach (var aula in aulas.OrderBy(a => a.DataAula))
             {
-                Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, registrosFrequenciaAlunos, anotacoesTurma, frequenciaPreDefinida));
+                if (aluno.EstaAtivo(aula.DataAula))
+                    Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, registrosFrequenciaAlunos, anotacoesTurma, frequenciaPreDefinida));
             }
         }
     }
