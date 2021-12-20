@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -241,26 +240,6 @@ namespace SME.SGP.Dados.Repositorios
 
             query.Append(";");
             return query.ToString();
-        }
-
-
-        public async Task<IEnumerable<objConsolidacaoConselhoAluno>> ObterAlunosReprocessamentoConsolidacaoConselho(int dreId)
-        {
-            var query = new StringBuilder($@"select t.id as turmaId, pe.bimestre, cca.aluno_codigo as alunoCodigo   from conselho_classe_aluno cca
-                          inner join conselho_classe cc on cc.id = cca.conselho_classe_id
-                          inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id
-                          inner join turma t on t.id = ft.turma_id
-                          inner join ue ue on ue.id = t.ue_id 
-                          inner join dre dre on dre.id = ue.dre_id 
-                          inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
-                          inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id
-                          where  t.ano_letivo = {DateTime.Now.Year}
-                          and dre.id = @dreId 
-                          and pe.bimestre in (1,2,3)
-                          and tc.id in (24,25,26,27)");
-            
-            return await database.Conexao
-                .QueryAsync<objConsolidacaoConselhoAluno>(query.ToString(), new { dreId });
         }
     }
 }
