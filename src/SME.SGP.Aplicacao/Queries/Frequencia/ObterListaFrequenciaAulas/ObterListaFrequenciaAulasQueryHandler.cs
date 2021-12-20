@@ -66,7 +66,9 @@ namespace SME.SGP.Aplicacao
                 if (RegistraFrequencia(request.RegistraFrequencia, request.Aulas, request.Turma))
                 {
                     var registrosFrequenciaAluno = request.RegistrosFrequenciaAlunos.Where(a => a.AlunoCodigo == aluno.CodigoAluno);
-                    registroFrequenciaAluno.CarregarAulas(request.Aulas, registrosFrequenciaAluno, aluno, request.AnotacoesTurma, frequenciaPreDefinida);
+                    var anotacoesAluno = request.AnotacoesTurma.Where(a => a.AlunoCodigo == aluno.CodigoAluno);
+
+                    registroFrequenciaAluno.CarregarAulas(request.Aulas, registrosFrequenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida);
                 }
 
                 registrosFrequencias.Alunos.Add(registroFrequenciaAluno);
