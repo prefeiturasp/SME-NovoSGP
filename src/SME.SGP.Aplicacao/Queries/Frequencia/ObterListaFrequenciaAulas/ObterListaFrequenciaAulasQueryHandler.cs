@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
                 // Indicativo de Frequencia (%)
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, request.PercentualAlerta, request.PercentualCritico, request.TurmaPossuiFrequenciaRegistrada);
 
-                if (!NaoRegistraFrequencia(request.RegistraFrequencia, request.Aulas, request.Turma))
+                if (RegistraFrequencia(request.RegistraFrequencia, request.Aulas, request.Turma))
                 {
                     var registrosFrequenciaAluno = request.RegistrosFrequenciaAlunos.Where(a => a.AlunoCodigo == aluno.CodigoAluno);
                     registroFrequenciaAluno.CarregarAulas(request.Aulas, registrosFrequenciaAluno, aluno, request.AnotacoesTurma, frequenciaPreDefinida);
@@ -75,10 +75,12 @@ namespace SME.SGP.Aplicacao
             return registrosFrequencias;
         }
 
-        private bool NaoRegistraFrequencia(bool registraFrequencia, IEnumerable<Aula> aulas, Turma turma)
+        private bool RegistraFrequencia(bool registraFrequencia, IEnumerable<Aula> aulas, Turma turma)
         {
             var aula = aulas.First();
-            return !registraFrequencia || !aula.PermiteRegistroFrequencia(turma);
+
+            return registraFrequencia 
+                && aula.PermiteRegistroFrequencia(turma);
         }
 
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)

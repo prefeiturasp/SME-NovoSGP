@@ -17,6 +17,6 @@ namespace SME.SGP.Infra
         public DateTime DataAula { get; }
         public int NumeroAulas { get; }
         public long? FrequenciaId { get; }
-        public bool EhReposicao { get; set; }
+        public bool EhReposicao { get; }
     }
 }
