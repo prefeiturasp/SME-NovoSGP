@@ -18,20 +18,24 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<PeriodoEscolarComponenteDto>> Executar(string turmaCodigo, long componenteCodigo, bool ehRegencia, int bimestre)
         {
+
             var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, componenteCodigo, bimestre));
+
             var listaPeriodos = new List<PeriodoEscolarComponenteDto>();
 
             if (ehRegencia)
                 listaPeriodos = SepararSemanasRegencia(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim);
             else
-                listaPeriodos = SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula));
+                listaPeriodos = SepararPeriodosAulas(periodoEscolar
+                                                    .OrderBy(x => x.DataAula));
 
             return listaPeriodos;
+
         }
 
         public List<PeriodoEscolarComponenteDto> SepararSemanasRegencia(DateTime dataInicio, DateTime dataFim)
         {
-            long id = 1;           
+            long id = 1;
             var domingo = DateTimeExtension.ObterDomingo(dataInicio);
             var sabado = DateTimeExtension.ObterSabado(dataInicio);
 
