@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
             var mesmoAnoLetivo = DateTime.Today.Year == turma.AnoLetivo;
 
-            var registraFrequencia = await OterComponenteRegistraFrequencia(param.DisciplinaId);
+            var registraFrequencia = await OterComponenteRegistraFrequencia(param.ComponenteCurricularId);
             var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, componenteCurricularId, periodoEscolar.Id));
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, param.DisciplinaId, periodoEscolar.Id));
             var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciaAlunosPorPeriodoQuery(param.TurmaId,
