@@ -198,7 +198,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task AprovarAlteracaoNotaFechamento(long codigoDaNotificacao, long workFlowId, string turmaCodigo, string criadoRF, string criadoPor)
         {
-            var notasEmAprovacao = ObterNotasEmAprovacao(workFlowId);
+            var notasEmAprovacao = await ObterNotasEmAprovacao(workFlowId);
             if (notasEmAprovacao != null && notasEmAprovacao.Any())
             {
                 await AtualizarNotasFechamento(notasEmAprovacao, criadoRF, criadoPor, workFlowId);
@@ -857,17 +857,16 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task TrataReprovacaoAlteracaoNotaFechamento(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
-            var notasEmAprovacao = ObterNotasEmAprovacao(workflow.Id);
+            var notasEmAprovacao = await ObterNotasEmAprovacao(workflow.Id);
 
             await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, workflow.TurmaId, false, motivo);
         }
 
-        private IEnumerable<WfAprovacaoNotaFechamento> ObterNotasEmAprovacao(long workflowId)
-            => repositorioFechamentoNota.ObterNotasEmAprovacaoWf(workflowId).Result;
-
-
-
-
+        private async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacao(long workflowId)
+        {
+            return await mediator.Send(new ObterNotaFechamentoEmAprovacaoPorWorkflowIdQuery(workflowId));
+        }
+            
         private void TrataReprovacaoEventoDataPassada(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflow.Id);
