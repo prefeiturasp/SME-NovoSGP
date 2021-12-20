@@ -365,6 +365,7 @@ namespace SME.SGP.IoC
 
             // Consolidação Frequencia Turma
             services.TryAddScopedWorkerService<IRepositorioConsolidacaoFrequenciaTurma, RepositorioConsolidacaoFrequenciaTurma>();
+            services.TryAddScopedWorkerService<IRepositorioConsolidacaoFrequenciaTurmaConsulta, RepositorioConsolidacaoFrequenciaTurmaConsulta>();
 
 
             // Consolidação Devolutivas
