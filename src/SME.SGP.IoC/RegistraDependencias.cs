@@ -271,7 +271,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioSintese, RepositorioSintese>();
             services.TryAddScoped<IRepositorioFechamentoAluno, RepositorioFechamentoAluno>();
             services.TryAddScoped<IRepositorioFechamentoAlunoConsulta, RepositorioFechamentoAlunoConsulta>();
-            services.TryAddScoped<IRepositorioFechamentoTurmaConsulta, RepositorioFechamentoTurma>();
+            services.TryAddScoped<IRepositorioFechamentoTurma, RepositorioFechamentoTurma>();
+            services.TryAddScoped<IRepositorioFechamentoTurmaConsulta, RepositorioFechamentoTurmaConsulta>();
             services.TryAddScoped<IRepositorioConselhoClasse, RepositorioConselhoClasse>();
             services.TryAddScoped<IRepositorioConselhoClasseConsulta, RepositorioConselhoClasseConsulta>();
             services.TryAddScoped<IRepositorioConselhoClasseAluno, RepositorioConselhoClasseAluno>();

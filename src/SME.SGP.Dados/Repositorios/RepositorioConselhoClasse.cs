@@ -19,18 +19,7 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute("update conselho_classe set situacao = @situacaoConselhoClasse where id = @conselhoClasseId", new { conselhoClasseId, situacaoConselhoClasse = (int)situacaoConselhoClasse });
 
             return Task.FromResult(true);
-        }
-
-        public async Task<SituacaoConselhoClasse> ObterSituacaoConselhoClasse(long turmaId, long periodoEscolarId)
-        {
-            var query = @"select cc.situacao
-                        from conselho_classe cc
-                       inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id
-                       where ft.turma_id = @turmaId
-                        and ft.periodo_escolar_id = @periodoEscolarId";
-
-            return (SituacaoConselhoClasse)await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, periodoEscolarId });
-        }
+        }        
 
         public async Task<IEnumerable<ConselhoClasseSituacaoQuantidadeDto>> ObterConselhoClasseSituacao(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
