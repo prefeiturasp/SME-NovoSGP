@@ -381,11 +381,10 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PeriodoEscolarVerificaRegenciaDto>> ObterPeriodoEscolaresPorTurmaComponenteBimestre(string turmaCodigo, long componenteCurricularId, int bimestre)
         {
-            var query = @"select pe.id as Id,
+            var query = @"select distinct pe.id as Id,
                                    pe.periodo_inicio as DataInicio,    
                                    pe.periodo_fim as DataFim, 
                                    pe.bimestre as Bimestre,
-                                   a.id as AulaId, 
                                    a.data_aula as DataAula
                             from periodo_escolar pe 
                                 inner join aula a on a.tipo_calendario_id = pe.tipo_calendario_id 
