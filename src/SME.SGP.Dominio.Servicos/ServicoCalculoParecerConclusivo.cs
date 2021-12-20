@@ -123,7 +123,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 periodos.ToList().ForEach(p =>
                 {
-                    var frequenciaEquivalente = frequencias.SingleOrDefault(f => f.DisciplinaId.Equals(disciplinaCodigo) && f.Bimestre == p.Bimestre);
+                    var frequenciaEquivalente = frequencias.SingleOrDefault(f => f.DisciplinaId.Equals(disciplinaCodigo) && f.Bimestre == p.Bimestre && f.TurmaId.Equals(turma.CodigoTurma));
                     percentualFreqPorPeriodo.Add((disciplinaCodigo, p.Bimestre, frequenciaEquivalente?.PercentualFrequencia ?? 100));
                 });
             }
