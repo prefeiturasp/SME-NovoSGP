@@ -16,14 +16,17 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IMediator mediator;
 
-        public CriarAulasRegenciaAutomaticamenteCommandHandler(IRepositorioAula repositorioAula, 
+        public CriarAulasRegenciaAutomaticamenteCommandHandler(IRepositorioAula repositorioAula,
                                                                IRepositorioFrequencia repositorioFrequencia,
+                                                               IRepositorioPlanoAula repositorioPlanoAula,
                                                                IMediator mediator)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
+            this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -52,8 +55,13 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(dadoTurma.TurmaCodigo, tipoCalendarioId)).Result
                     .Where(a => !a.CriadoPor.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase));
 
+                var idsDisciplinas = aulasCriadasPorUsuarios?.Select(a => Convert.ToInt64(a.DisciplinaId));
+
+                if (idsDisciplinas == null || !idsDisciplinas.Any())
+                    idsDisciplinas = aulas.Select(a => Convert.ToInt64(a.DisciplinaId));
+
                 var componentesCurricularesAulas = await mediator
-                    .Send(new ObterDisciplinasPorIdsQuery(aulasCriadasPorUsuarios.Select(a => Convert.ToInt64(a.DisciplinaId)).ToArray()));
+                    .Send(new ObterDisciplinasPorIdsQuery(idsDisciplinas.Distinct().ToArray()));
 
                 var datasDesconsideradas = (from a in aulasCriadasPorUsuarios
                                             join cc in componentesCurricularesAulas
@@ -154,16 +162,29 @@ namespace SME.SGP.Aplicacao
             {
                 var frequenciaAulaUsuario = await mediator
                     .Send(new ObterRegistroFrequenciaPorAulaIdQuery(aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id));
-                
-                if (frequenciaAulaUsuario != null)
-                {
-                    await repositorioFrequencia.ExcluirFrequenciaAula(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id);
-                    idsAulasExclusaoLogica.Add(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id);
-                    aulasAExcluirComFrequenciaRegistrada.Remove(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente);
-                }
-            }
 
-            await repositorioAula.ExcluirPeloSistemaAsync(idsAulasExclusaoLogica.ToArray());
+                if (frequenciaAulaUsuario == null)
+                {
+                    var frequencia = await mediator
+                        .Send(new ObterRegistroFrequenciaPorAulaIdQuery(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id));
+                    frequencia.AulaId = aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id;
+                    await repositorioFrequencia.SalvarAsync(frequencia);
+
+                    var planoAulaCriadaPeloUsuario = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id));
+                    var planoAulaSistema = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id));
+
+                    if (planoAulaCriadaPeloUsuario == null && planoAulaSistema != null)
+                    {
+                        planoAulaSistema.AulaId = aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id;
+                        await repositorioPlanoAula.SalvarAsync(planoAulaSistema);
+                    }
+                }
+                else
+                    await repositorioFrequencia.ExcluirFrequenciaAula(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id);
+
+                await repositorioAula.ExcluirPeloSistemaAsync(new long[] { aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id });
+                aulasAExcluirComFrequenciaRegistrada.Remove(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente);
+            }
         }
 
         private async Task ExcluirAulas(List<(long, DateTime)> aulasAExcluirComFrequenciaRegistrada, List<long> idsAulasAExcluir, List<Aula> aulasDaTurmaParaExcluir)
