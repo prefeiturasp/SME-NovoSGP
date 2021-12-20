@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioAtividadeAvaliativaDisciplina> repositorioAtividadeAvaliativaDisciplina;
         private readonly Mock<IRepositorioAtividadeAvaliativaRegencia> repositorioAtividadeAvaliativaRegencia;
         private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCj;
-        private readonly Mock<IRepositorioAula> repositorioAula;
+        private readonly Mock<IRepositorioAulaConsulta> repositorioAula;
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
         private readonly Mock<IRepositorioFechamentoReabertura> repositorioFechamentoReabertura;
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
         public ConsultasEventosAulasCalendarioTeste()
         {
-            repositorioAula = new Mock<IRepositorioAula>();
+            repositorioAula = new Mock<IRepositorioAulaConsulta>();
             repositorioEvento = new Mock<IRepositorioEvento>();
             servicoUsuario = new Mock<IServicoUsuario>();
             httpContext = new Mock<IHttpContextAccessor>();

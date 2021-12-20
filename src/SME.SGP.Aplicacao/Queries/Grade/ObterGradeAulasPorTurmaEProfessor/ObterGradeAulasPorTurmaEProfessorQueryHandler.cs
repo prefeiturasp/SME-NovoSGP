@@ -12,13 +12,13 @@ namespace SME.SGP.Aplicacao
     public class ObterGradeAulasPorTurmaEProfessorQueryHandler : IRequestHandler<ObterGradeAulasPorTurmaEProfessorQuery, GradeComponenteTurmaAulasDto>
     {
         private readonly IRepositorioTurmaConsulta repositorioTurma;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioGrade repositorioGrade;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
         public ObterGradeAulasPorTurmaEProfessorQueryHandler(IRepositorioTurmaConsulta repositorioTurma,
-                                                             IRepositorioAula repositorioAula,
+                                                             IRepositorioAulaConsulta repositorioAula,
                                                              IRepositorioGrade repositorioGrade,
                                                              IServicoUsuario servicoUsuario,
                                                              IMediator mediator)

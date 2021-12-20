@@ -14,7 +14,7 @@ namespace SME.SGP.Dominio.Servicos
         private static readonly long[] componentesQueNaoPodemSerSubstituidos = { 1033, 1051, 1052, 1053, 1054, 1030 };
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
@@ -22,7 +22,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IMediator mediator;
 
         public ServicoAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAbrangencia servicoAbrangencia, IRepositorioTurma repositorioTurma,
-            IRepositorioAbrangencia repositorioAbrangencia, IRepositorioAula repositorioAula, IServicoUsuario servicoUsuario, IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IMediator mediator)
+            IRepositorioAbrangencia repositorioAbrangencia, IRepositorioAulaConsulta repositorioAula, IServicoUsuario servicoUsuario, IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));

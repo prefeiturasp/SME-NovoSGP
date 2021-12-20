@@ -16,7 +16,7 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoWorkflowAprovacao : IServicoWorkflowAprovacao
     {
         private readonly IConfiguration configuration;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioNotificacao repositorioNotificacao;
@@ -41,7 +41,7 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel,
                                         IRepositorioEvento repositorioEvento,
                                         IConfiguration configuration,
-                                        IRepositorioAula repositorioAula,
+                                        IRepositorioAulaConsulta repositorioAula,
                                         IRepositorioTurmaConsulta repositorioTurma,
                                         IRepositorioUeConsulta repositorioUe,
                                         IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,

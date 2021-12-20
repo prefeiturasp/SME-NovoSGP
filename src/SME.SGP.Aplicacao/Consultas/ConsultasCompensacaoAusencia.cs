@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasCompensacaoAusencia : ConsultasBase, IConsultasCompensacaoAusencia
     {
-        private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
+        private readonly IRepositorioCompensacaoAusenciaConsulta repositorioCompensacaoAusencia;
         private readonly IConsultasCompensacaoAusenciaAluno consultasCompensacaoAusenciaAluno;
         private readonly IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia;
         private readonly IConsultasFrequencia consultasFrequencia;
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
-        public ConsultasCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia, 
+        public ConsultasCompensacaoAusencia(IRepositorioCompensacaoAusenciaConsulta repositorioCompensacaoAusencia, 
                                             IConsultasCompensacaoAusenciaAluno consultasCompensacaoAusenciaAluno,
                                             IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia,
                                             IConsultasFrequencia consultasFrequencia,

@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioEvento repositorioEvento;
-        private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitosConsulta repositorioNotasConceitos;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina, IConsultasDisciplina consultasDisciplina,
             IConsultasPeriodoFechamento consultasFechamento,
             IServicoDeNotasConceitos servicoDeNotasConceitos, IRepositorioNotasConceitosConsulta repositorioNotasConceitos,
-            IRepositorioFrequencia repositorioFrequencia, IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodoConsulta,
+            IRepositorioFrequenciaConsulta repositorioFrequencia, IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodoConsulta,
             IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioConceitoConsulta repositorioConceito,

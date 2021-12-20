@@ -10,11 +10,11 @@ namespace SME.SGP.Aplicacao
 {
     public class RecalcularFrequenciaPorTurmaCommandHandler : IRequestHandler<RecalcularFrequenciaPorTurmaCommand, bool>
     {
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IMediator mediator;
 
-        public RecalcularFrequenciaPorTurmaCommandHandler(IRepositorioAula repositorioAula, IRepositorioEvento repositorioEvento, IMediator mediator)
+        public RecalcularFrequenciaPorTurmaCommandHandler(IRepositorioAulaConsulta repositorioAula, IRepositorioEvento repositorioEvento, IMediator mediator)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));

@@ -190,6 +190,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioAtribuicaoCJ, RepositorioAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IRepositorioAtribuicaoEsporadica, RepositorioAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IRepositorioAula, RepositorioAula>();
+            services.TryAddScopedWorkerService<IRepositorioAulaConsulta, RepositorioAulaConsulta>();
             services.TryAddScopedWorkerService<IRepositorioAulaPrevista, RepositorioAulaPrevista>();
             services.TryAddScopedWorkerService<IRepositorioAulaPrevistaBimestre, RepositorioAulaPrevistaBimestre>();
             services.TryAddScopedWorkerService<IRepositorioCache, RepositorioCache>();
@@ -204,6 +205,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioEventoMatricula, RepositorioEventoMatricula>();
             services.TryAddScopedWorkerService<IRepositorioFeriadoCalendario, RepositorioFeriadoCalendario>();
             services.TryAddScopedWorkerService<IRepositorioFrequencia, RepositorioFrequencia>();
+            services.TryAddScopedWorkerService<IRepositorioFrequenciaConsulta, RepositorioFrequenciaConsulta>();
             services.TryAddScopedWorkerService<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
             services.TryAddScopedWorkerService<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta, RepositorioFrequenciaAlunoDisciplinaPeriodoConsulta>();
             services.TryAddScopedWorkerService<IRepositorioGrade, RepositorioGrade>();
@@ -218,6 +220,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioNotificacaoConsulta, RepositorioNotificacaoConsulta>();
             services.TryAddScopedWorkerService<IRepositorioNotificacaoAulaPrevista, RepositorioNotificacaoAulaPrevista>();
             services.TryAddScopedWorkerService<IRepositorioNotificacaoFrequencia, RepositorioNotificacaoFrequencia>();
+            services.TryAddScopedWorkerService<IRepositorioNotificacaoFrequenciaConsulta, RepositorioNotificacaoFrequenciaConsulta>();
             services.TryAddScopedWorkerService<IRepositorioObjetivoAprendizagemAula, RepositorioObjetivoAprendizagemAula>();
             services.TryAddScopedWorkerService<IRepositorioObjetivoAprendizagemPlano, RepositorioObjetivoAprendizagemPlano>();
             services.TryAddScopedWorkerService<IRepositorioObjetivoDesenvolvimento, RepositorioObjetivoDesenvolvimento>();
@@ -233,6 +236,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioRegistroAusenciaAlunoConsulta, RepositorioRegistroAusenciaAlunoConsulta>();
             services.TryAddScopedWorkerService<IRepositorioRegistroPoa, RepositorioRegistroPoa>();
             services.TryAddScopedWorkerService<IRepositorioCompensacaoAusencia, RepositorioCompensacaoAusencia>();
+            services.TryAddScopedWorkerService<IRepositorioCompensacaoAusenciaConsulta, RepositorioCompensacaoAusenciaConsulta>();
             services.TryAddScopedWorkerService<IRepositorioCompensacaoAusenciaAluno, RepositorioCompensacaoAusenciaAluno>();
             services.TryAddScopedWorkerService<IRepositorioCompensacaoAusenciaAlunoConsulta, RepositorioCompensacaoAusenciaAlunoConsulta>();
             services.TryAddScopedWorkerService<IRepositorioCompensacaoAusenciaDisciplinaRegencia, RepositorioCompensacaoAusenciaDisciplinaRegencia>();
@@ -312,6 +316,8 @@ namespace SME.SGP.IoC
 
             // Acompanhamento Aluno
             services.TryAddScopedWorkerService<IRepositorioAcompanhamentoAluno, RepositorioAcompanhamentoAluno>();
+            services.TryAddScopedWorkerService<IRepositorioAcompanhamentoAlunoConsulta, RepositorioAcompanhamentoAlunoConsulta>();
+            services.TryAddScopedWorkerService<IRepositorioAcompanhamentoAlunoConsulta, RepositorioAcompanhamentoAlunoConsulta>();
             services.TryAddScopedWorkerService<IRepositorioAcompanhamentoAlunoSemestre, RepositorioAcompanhamentoAlunoSemestre>();
             services.TryAddScopedWorkerService<IRepositorioAcompanhamentoAlunoFoto, RepositorioAcompanhamentoAlunoFoto>();
 

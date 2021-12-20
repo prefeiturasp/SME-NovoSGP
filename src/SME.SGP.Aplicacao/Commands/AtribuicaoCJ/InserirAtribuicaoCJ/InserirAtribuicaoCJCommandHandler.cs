@@ -17,12 +17,12 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IMediator mediator;
 
         public InserirAtribuicaoCJCommandHandler(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioAbrangencia repositorioAbrangencia,
                                                  IRepositorioTurma repositorioTurma, IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
-                                                 IRepositorioAula repositorioAula, IMediator mediator)
+                                                 IRepositorioAulaConsulta repositorioAula, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));

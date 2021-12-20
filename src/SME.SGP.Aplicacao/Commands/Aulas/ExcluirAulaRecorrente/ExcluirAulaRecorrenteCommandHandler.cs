@@ -15,22 +15,22 @@ namespace SME.SGP.Aplicacao
     public class ExcluirAulaRecorrenteCommandHandler : IRequestHandler<ExcluirAulaRecorrenteCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
-        private readonly IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno;
+        private readonly IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno;
         private readonly IRepositorioDevolutiva repositorioDevolutiva;
 
         public ExcluirAulaRecorrenteCommandHandler(IMediator mediator,
-                                                   IRepositorioAula repositorioAula,
+                                                   IRepositorioAulaConsulta repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
                                                    IServicoNotificacao servicoNotificacao,
                                                    IRepositorioPlanoAula repositorioPlanoAula,
                                                    IRepositorioDiarioBordo repositorioDiarioBordo,
-                                                   IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno,
+                                                   IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno,
                                                    IRepositorioDevolutiva repositorioDevolutiva,
                                                    IUnitOfWork unitOfWork)
         {

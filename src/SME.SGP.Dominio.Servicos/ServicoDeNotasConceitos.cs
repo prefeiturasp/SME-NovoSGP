@@ -19,7 +19,7 @@ namespace SME.SGP.Dominio
         private readonly string hostAplicacao;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioCiclo repositorioCiclo;
         private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
@@ -75,7 +75,7 @@ namespace SME.SGP.Dominio
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
             IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-            IRepositorioAula repositorioAula, IRepositorioTurmaConsulta repositorioTurma, IRepositorioParametrosSistema repositorioParametrosSistema,
+            IRepositorioAulaConsulta repositorioAula, IRepositorioTurmaConsulta repositorioTurma, IRepositorioParametrosSistema repositorioParametrosSistema,
             IServicoUsuario servicoUsuario, IConfiguration configuration, IMediator mediator)
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));

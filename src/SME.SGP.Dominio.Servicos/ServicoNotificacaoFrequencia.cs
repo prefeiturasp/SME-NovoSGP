@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using Sentry;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -15,7 +16,7 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoNotificacaoFrequencia : IServicoNotificacaoFrequencia
     {
         private readonly IConfiguration configuration;
-        private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno;
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
@@ -27,11 +28,12 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasFeriadoCalendario consultasFeriadoCalendario;
+        private readonly IMediator mediator;
 
 
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
-                                            IRepositorioFrequencia repositorioFrequencia,
+                                            IRepositorioFrequenciaConsulta repositorioFrequencia,
                                             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                             IRepositorioTurmaConsulta repositorioTurma,
                                             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
@@ -40,7 +42,8 @@ namespace SME.SGP.Dominio.Servicos
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
                                             IServicoEol servicoEOL,
-                                            IConfiguration configuration)
+                                            IConfiguration configuration,
+                                            IMediator mediator)
         {
             this.repositorioNotificacaoFrequencia = repositorioNotificacaoFrequencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoFrequencia));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
@@ -55,6 +58,7 @@ namespace SME.SGP.Dominio.Servicos
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasFeriadoCalendario = consultasFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(consultasFeriadoCalendario));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         #region Metodos Publicos
@@ -457,7 +461,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             // Busca registro de aula sem frequencia e sem notificação do tipo
             IEnumerable<RegistroFrequenciaFaltanteDto> turmasSemRegistro = null;
-            turmasSemRegistro = repositorioNotificacaoFrequencia.ObterTurmasSemRegistroDeFrequencia(tipo);
+            turmasSemRegistro = await mediator.Send(new ObterNotificacaoFrequenciaTurmasSemRegistroDeFrequenciaQuery(tipo));
 
             if (turmasSemRegistro != null)
             {

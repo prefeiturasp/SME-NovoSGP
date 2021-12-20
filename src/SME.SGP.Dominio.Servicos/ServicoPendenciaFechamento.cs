@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioPendenciaFechamento repositorioPendenciaFechamento;
         private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNota;
@@ -35,7 +35,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
                                           IRepositorioPendencia repositorioPendencia,
                                           IRepositorioPendenciaFechamento repositorioPendenciaFechamento,
-                                          IRepositorioAula repositorioAula,
+                                          IRepositorioAulaConsulta repositorioAula,
                                           IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                           IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
                                           IServicoUsuario servicoUsuario,

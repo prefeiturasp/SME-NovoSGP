@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
         private readonly Mock<IConsultasTipoCalendario> consultasTipoCalendário;
         private readonly Mock<IConsultasTurma> consultasTurma;
-        private readonly Mock<IRepositorioAula> repositorioAula;
+        private readonly Mock<IRepositorioAulaConsulta> repositorioAula;
         private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
         private readonly Mock<IRepositorioTurmaConsulta> repositorioTurma;
         private readonly Mock<IServicoEol> servicoEol;
@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
         public ConsultasAulasTeste()
         {
-            repositorioAula = new Mock<IRepositorioAula>();
+            repositorioAula = new Mock<IRepositorioAulaConsulta>();
             servicoUsuario = new Mock<IServicoUsuario>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             repositorioPlanoAula = new Mock<IRepositorioPlanoAula>();
