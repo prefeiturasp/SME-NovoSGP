@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
 
         private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
 
-        public ObterNotasFinaisFechamentoQueryHandler(IRepositorioConselhoClasse repositorio)
+        public ObterNotasFinaisFechamentoQueryHandler(IRepositorioConselhoClasseConsulta repositorio)
         {
-            this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
+            this.repositorioConselhoClasseConsulta = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
         public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> Handle(ObterNotasFinaisFechamentoQuery request,
