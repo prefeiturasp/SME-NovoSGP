@@ -2,6 +2,7 @@
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -19,8 +20,9 @@ namespace SME.SGP.Aplicacao
         public bool EhProfessor { get; set; }
         public string CodigoRf { get; set; }
         public bool ConsideraHistorico { get; set; }
+        public string ComponentesCurricularesDoProfessorCJ { get; set; }
 
-        public ObterTurmasComComponentesQuery(string ueCodigo, string dreCodigo, string turmaCodigo, int anoLetivo, int qtdeRegistros, int qtdeRegistrosIgnorados, int? bimestre, Modalidade? modalidade, int? semestre, bool ehProfessor, string codigoRf, bool consideraHistorico)
+        public ObterTurmasComComponentesQuery(string ueCodigo, string dreCodigo, string turmaCodigo, int anoLetivo, int qtdeRegistros, int qtdeRegistrosIgnorados, int? bimestre, Modalidade? modalidade, int? semestre, bool ehProfessor, string codigoRf, bool consideraHistorico, string componentesCurricularesDoProfessorCJ)
         {
             UeCodigo = ueCodigo;
             DreCodigo = dreCodigo;
@@ -34,6 +36,7 @@ namespace SME.SGP.Aplicacao
             EhProfessor = ehProfessor;
             CodigoRf = codigoRf;
             ConsideraHistorico = consideraHistorico;
+            ComponentesCurricularesDoProfessorCJ = componentesCurricularesDoProfessorCJ;
         }
 
         public class ObterTurmasComComponentesQueryValidator : AbstractValidator<ObterTurmasComComponentesQuery>
