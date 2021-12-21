@@ -1,12 +1,9 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -14,11 +11,11 @@ namespace SME.SGP.Aplicacao
     public class ConsultasPendenciaFechamento : ConsultasBase, IConsultasPendenciaFechamento
     {
         private readonly IRepositorioPendenciaFechamento repositorioPendenciaFechamento;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         
         public ConsultasPendenciaFechamento(IContextoAplicacao contextoAplicacao
                                 , IRepositorioPendenciaFechamento repositorioPendenciaFechamento,
-                        IRepositorioComponenteCurricular repositorioComponenteCurricular) : base(contextoAplicacao)
+                        IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular) : base(contextoAplicacao)
         {
             this.repositorioPendenciaFechamento = repositorioPendenciaFechamento ?? throw new ArgumentNullException(nameof(repositorioPendenciaFechamento));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));

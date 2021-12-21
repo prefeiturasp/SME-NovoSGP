@@ -23,7 +23,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFeriadoCalendario repositorioFeriadoCalendario;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IServicoLog servicoLog;
         private readonly IServicoNotificacao servicoNotificacao;
@@ -34,7 +34,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public ServicoEvento(IRepositorioEvento repositorioEvento,
                              IRepositorioEventoTipo repositorioEventoTipo,
-                             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                              IServicoUsuario servicoUsuario,
                              IRepositorioFeriadoCalendario repositorioFeriadoCalendario,
                              IRepositorioTipoCalendario repositorioTipoCalendario,
@@ -612,7 +612,8 @@ namespace SME.SGP.Dominio.Servicos
                         }
                         else
                         {
-                            if (evento.TipoEvento.Codigo == (long)TipoEvento.OrganizacaoEscolar || evento.TipoEvento.Codigo == (long)TipoEvento.RecreioNasFerias)
+                            if (evento.TipoEvento.Codigo == (long)TipoEvento.OrganizacaoEscolar || evento.TipoEvento.Codigo == (long)TipoEvento.RecreioNasFerias ||
+                                evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoDoDia || evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoDeAula)
                             {
                                 return devePassarPorWorkflow;
                             }

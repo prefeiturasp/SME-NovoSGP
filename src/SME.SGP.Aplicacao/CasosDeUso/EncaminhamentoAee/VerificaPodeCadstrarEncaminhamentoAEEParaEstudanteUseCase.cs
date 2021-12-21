@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorEstudanteQuery(codigoEstudante));
 
             if (encaminhamentoAEE != null && encaminhamentoAEE.SituacaoTipo != SituacaoAEE.Indeferido)
-                throw new NegocioException("Estudante/Criança já possui encaminhametno AEE em aberto");
+                throw new NegocioException("Estudante/Criança já possui encaminhamento AEE em aberto");
 
             return true;
         }

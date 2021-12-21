@@ -4,8 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,13 +11,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterGradeAulasPorTurmaEProfessorQueryHandler : IRequestHandler<ObterGradeAulasPorTurmaEProfessorQuery, GradeComponenteTurmaAulasDto>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioGrade repositorioGrade;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
-        public ObterGradeAulasPorTurmaEProfessorQueryHandler(IRepositorioTurma repositorioTurma,
+        public ObterGradeAulasPorTurmaEProfessorQueryHandler(IRepositorioTurmaConsulta repositorioTurma,
                                                              IRepositorioAula repositorioAula,
                                                              IRepositorioGrade repositorioGrade,
                                                              IServicoUsuario servicoUsuario,

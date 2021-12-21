@@ -9,14 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUePorIdQueryHandler : IRequestHandler<ObterUePorIdQuery, Ue>
     {
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
 
-        public ObterUePorIdQueryHandler(IRepositorioUe repositorioUe)
+        public ObterUePorIdQueryHandler(IRepositorioUeConsulta repositorioUe)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }
 
         public async Task<Ue> Handle(ObterUePorIdQuery request, CancellationToken cancellationToken)
-                => await repositorioUe.ObterUeComDrePorId(request.Id);
+                => await repositorioUe.ObterUePorId(request.Id);
     }
 }
