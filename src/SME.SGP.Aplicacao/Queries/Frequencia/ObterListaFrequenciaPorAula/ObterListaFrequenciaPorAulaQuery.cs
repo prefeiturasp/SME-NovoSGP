@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.AulaId)
                 .NotEmpty()
-                .WithMessage("a aula deve ser informada.");
+                .WithMessage("A aula deve ser informada.");
         }
     }
 }
