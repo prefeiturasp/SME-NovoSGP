@@ -25,6 +25,13 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
+            var componentesCurricularesDoProfessorCJ = string.Empty;
+            if (usuario.EhProfessorCj())
+            {
+                var atribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, filtroTurmaDto.TurmaCodigo, string.Empty, 0, usuario.Login, string.Empty, true));
+                componentesCurricularesDoProfessorCJ = String.Join(",", atribuicoes.Select(s => s.DisciplinaId.ToString()).Distinct());
+            }
+
             var turmasPaginadas = await mediator.Send(new ObterTurmasComComponentesQuery(filtroTurmaDto.UeCodigo,
                                                                                          filtroTurmaDto.DreCodigo,
                                                                                          filtroTurmaDto.TurmaCodigo,
@@ -36,7 +43,8 @@ namespace SME.SGP.Aplicacao
                                                                                          filtroTurmaDto.Semestre,
                                                                                          usuario.EhProfessor(),
                                                                                          usuario.CodigoRf,
-                                                                                         filtroTurmaDto.ConsideraHistorico));
+                                                                                         filtroTurmaDto.ConsideraHistorico,
+                                                                                         componentesCurricularesDoProfessorCJ));
 
             if (turmasPaginadas == null || !turmasPaginadas.Items.Any())
                 return default;
