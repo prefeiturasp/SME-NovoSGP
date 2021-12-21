@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FrequenciaAlunosPorBimestreDto> Executar(ObterFrequenciaAlunosPorBimestreDto dto)
         {
-            var componenteCurricular = await ObterComponenteCurricularAsync(dto.ComponenteCurricularId);
+            var componenteCurricular = await ObterComponenteCurricularAsync(dto.ComponenteCurricularId, dto.PossuiTerritorio);
             if (componenteCurricular is null)
                 throw new NegocioException("O componente curricular informado não foi encontrado.");
 
@@ -50,7 +50,6 @@ namespace SME.SGP.Aplicacao
             var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendarioId, periodoAtual.PeriodoFim);
 
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(turma.CodigoTurma, bimestreDoPeriodo.PeriodoFim.Date));
-
             if (!alunos?.Any() ?? true)
                 throw new NegocioException("Os alunos da turma não foram encontrados.");
 
@@ -140,9 +139,9 @@ namespace SME.SGP.Aplicacao
         }        
 
 
-        private async Task<DisciplinaDto> ObterComponenteCurricularAsync(long componenteCurricularId)
+        private async Task<DisciplinaDto> ObterComponenteCurricularAsync(long componenteCurricularId, bool? possuiTerritorio = false)
         {
-            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { componenteCurricularId }));
+            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { componenteCurricularId }, possuiTerritorio));
             return componentes.FirstOrDefault();
         }
 

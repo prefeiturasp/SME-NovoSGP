@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Sentry;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -17,13 +16,13 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IConfiguration configuration;
         private readonly IRepositorioFrequencia repositorioFrequencia;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno;
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -31,13 +30,13 @@ namespace SME.SGP.Dominio.Servicos
 
 
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
-                                            IRepositorioParametrosSistema repositorioParametrosSistema,
+                                            IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                             IRepositorioFrequencia repositorioFrequencia,
-                                            IRepositorioComponenteCurricular repositorioComponenteCurricular,
-                                            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
-                                            IRepositorioTurma repositorioTurma,
-                                            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                            IRepositorioTipoCalendario repositorioTipoCalendario,
+                                            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
+                                            IRepositorioTurmaConsulta repositorioTurma,
+                                            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+                                            IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno,
+                                            IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
                                             IServicoEol servicoEOL,
@@ -331,7 +330,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuarios = new List<(Cargo?, Usuario)>();
             foreach (var usuarioEol in funcionariosRetornoEol)
-                usuarios.Add((usuarioEol.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.Id)));
+                usuarios.Add((usuarioEol.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.Id).Result));
 
             var cargoNotificacao = funcionariosRetornoEol.GroupBy(f => f.Cargo).Select(f => f.Key).First();
             // Carrega só até o nível de Diretor
@@ -357,7 +356,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (disciplinaEols != null)
                     foreach (var disciplina in disciplinaEols)
                     {
-                        return RetornaUsuarios(disciplina.ProfessorRf);
+                        return await RetornaUsuarios(disciplina.ProfessorRf);
                     }
             }
             else
@@ -367,21 +366,21 @@ namespace SME.SGP.Dominio.Servicos
                         .OrderBy(o => o.DataAula)
                         .Last().ProfessorId;
 
-                return this.RetornaUsuarios(professorRf);
+                return await this.RetornaUsuarios(professorRf);
 
             }
 
             return null;
         }
 
-        private IEnumerable<(Cargo?, Usuario)> RetornaUsuarios(string procurarRfs)
+        private async Task<IEnumerable<(Cargo?, Usuario)>> RetornaUsuarios(string procurarRfs)
         {
             var rfs = procurarRfs.Split(new char[] { ',' });
             var usuarios = new List<(Cargo?, Usuario)>();
 
             foreach (var rf in rfs)
             {
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(rf.Trim());
+                var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(rf.Trim());
                 if (usuario != null)
                     usuarios.Add((null, usuario));
             }
@@ -398,7 +397,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuarios = new List<(Cargo?, Usuario)>();
             foreach (var funcionario in funcionariosRetorno)
-                usuarios.Add((funcionario.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id)));
+                usuarios.Add((funcionario.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id).Result));
 
             return usuarios;
         }

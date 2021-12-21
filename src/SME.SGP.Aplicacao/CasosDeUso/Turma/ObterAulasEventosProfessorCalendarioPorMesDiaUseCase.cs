@@ -28,7 +28,6 @@ namespace SME.SGP.Aplicacao
                 if (usuarioLogado == null)
                     throw new NegocioException("Não foi possível localizar o Usuário logado.");
 
-
                 var eventosDaUeSME = await mediator.Send(new ObterEventosCalendarioProfessorPorMesDiaQuery()
                 {
                     UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
@@ -64,24 +63,20 @@ namespace SME.SGP.Aplicacao
                 });
 
                 retorno.PodeCadastrarAula = podeCadastrarAulaEMensagem.PodeCadastrar;
+                retorno.SomenteAulaReposicao = podeCadastrarAulaEMensagem.SomenteReposicao;
                 retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
-
 
                 string[] componentesCurricularesDoProfessor = new string[0];
                 if (usuarioLogado.EhProfessor())
-                {
                     componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));
-                }
 
                 IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
-
 
                 IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();
                 IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
 
                 if (aulasParaVisualizar.Any())
                 {
-
                     componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)).ToArray(), aulasParaVisualizar.Any(a => a.DisciplinaId.Length > 5)));
 
                     atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()

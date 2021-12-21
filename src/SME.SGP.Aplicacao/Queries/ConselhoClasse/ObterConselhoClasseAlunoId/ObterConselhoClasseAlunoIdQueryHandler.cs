@@ -8,8 +8,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterConselhoClasseAlunoIdQueryHandler : IRequestHandler<ObterConselhoClasseAlunoIdQuery, long>
     {
-        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
-        public ObterConselhoClasseAlunoIdQueryHandler(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno)
+        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
+        public ObterConselhoClasseAlunoIdQueryHandler(IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
         }

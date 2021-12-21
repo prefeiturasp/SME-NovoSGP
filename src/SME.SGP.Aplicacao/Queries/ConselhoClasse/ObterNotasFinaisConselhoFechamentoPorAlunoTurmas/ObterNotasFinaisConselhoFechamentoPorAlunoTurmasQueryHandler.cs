@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQueryHandler : IRequestHandler<ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery, IEnumerable<NotaConceitoFechamentoConselhoFinalDto>>
     {
-        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
+        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
 
-        public ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQueryHandler(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno)
+        public ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQueryHandler(IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
         }

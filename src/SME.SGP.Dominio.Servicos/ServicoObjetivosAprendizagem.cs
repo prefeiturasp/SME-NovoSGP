@@ -1,4 +1,6 @@
-﻿using Sentry;
+﻿using MediatR;
+using Sentry;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
@@ -14,21 +16,25 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IServicoJurema servicoJurema;
+        private readonly IMediator mediator;
 
         public ServicoObjetivosAprendizagem(IServicoJurema servicoJurema,
                                             IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
-                                            IRepositorioCache repositorioCache)
+                                            IRepositorioCache repositorioCache,
+                                            IMediator mediator)
         {
             this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
             this.repositorioObjetivoAprendizagem = repositorioObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagem));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task SincronizarObjetivosComJurema()
         {
-            var parametrosDataUltimaAtualizacao = await repositorioParametrosSistema.ObterUnicoChaveEValorPorTipo(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema);
+            var parametrosDataUltimaAtualizacao = await mediator.Send(new ObterParametroSistemaUnicoChaveEValorPorTipoQuery(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema));
+
             if (parametrosDataUltimaAtualizacao.HasValue)
             {
                 var dataUltimaAtualizacao = DateTime.Parse(parametrosDataUltimaAtualizacao.Value.Value);

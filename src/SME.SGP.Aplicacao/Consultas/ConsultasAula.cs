@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -20,21 +21,34 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioAula repositorio;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IServicoEol servicoEol;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
+        private IRepositorioAula object1;
+        private IConsultasPeriodoEscolar object2;
+        private IConsultasFrequencia object3;
+        private IConsultasTipoCalendario object4;
+        private IRepositorioPlanoAula object5;
+        private IRepositorioTurmaConsulta object6;
+        private IServicoUsuario object7;
+        private IServicoEol object8;
+        private IConsultasDisciplina object9;
+        private IConsultasTurma object10;
+        private IConsultasPeriodoFechamento object11;
 
         public ConsultasAula(IRepositorioAula repositorio,
                              IConsultasPeriodoEscolar consultasPeriodoEscolar,
                              IConsultasFrequencia consultasFrequencia,
                              IConsultasTipoCalendario consultasTipoCalendario,
                              IRepositorioPlanoAula repositorioPlanoAula,
-                             IRepositorioTurma repositorioTurma,
+                             IRepositorioTurmaConsulta repositorioTurma,
                              IServicoUsuario servicoUsuario,
                              IServicoEol servicoEol,
                              IConsultasDisciplina consultasDisciplina,
                              IConsultasTurma consultasTurma,
-                             IConsultasPeriodoFechamento consultasPeriodoFechamento)
+                             IConsultasPeriodoFechamento consultasPeriodoFechamento,
+                             IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
@@ -47,7 +61,8 @@ namespace SME.SGP.Aplicacao
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-        }
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }               
 
         public async Task<bool> AulaDentroPeriodo(Aula aula)
         {
@@ -101,7 +116,7 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var usuarioRF = usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorInfantil() ? usuarioLogado.CodigoRf : string.Empty;
 
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 

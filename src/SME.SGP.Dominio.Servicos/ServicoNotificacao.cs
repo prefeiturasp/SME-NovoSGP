@@ -1,9 +1,10 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,14 +15,17 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
         public ServicoNotificacao(IRepositorioNotificacao repositorioNotificacao,
                                   IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
-                                  IServicoEol servicoEOL)
+                                  IServicoEol servicoEOL,
+                                  IMediator mediator)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task ExcluirFisicamenteAsync(long[] ids)
@@ -32,17 +36,12 @@ namespace SME.SGP.Dominio.Servicos
         public void GeraNovoCodigo(Notificacao notificacao)
         {
             if (notificacao.Codigo == 0)
-                notificacao.Codigo = ObtemNovoCodigo();
-        }
-
-        public long ObtemNovoCodigo()
-        {
-            return repositorioNotificacao.ObterUltimoCodigoPorAno(DateTime.Now.Year) + 1;
+                notificacao.Codigo = ObtemNovoCodigoAsync().Result;
         }
 
         public async Task<long> ObtemNovoCodigoAsync()
         {
-            return await repositorioNotificacao.ObterUltimoCodigoPorAnoAsync(DateTime.Now.Year) + 1;
+            return await mediator.Send(new ObterNotificacaoUltimoCodigoPorAnoQuery(DateTime.Now.Year)) + 1;
         }
 
         public void Salvar(Notificacao notificacao)
@@ -148,9 +147,9 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public Notificacao ObterPorCodigo(long codigo)
+        public async Task<Notificacao> ObterPorCodigo(long codigo)
         {
-            return repositorioNotificacao.ObterPorCodigo(codigo);
+            return await mediator.Send(new ObterNotificacaoPorCodigoQuery(codigo));
         }        
 
         public async Task ExcluirPeloSistemaAsync(long[] ids)

@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultasFechamentoTurma : IConsultasFechamentoTurma
     {
-        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
 
-        public ConsultasFechamentoTurma(IRepositorioFechamentoTurma repositorioFechamentoTurma)
+        public ConsultasFechamentoTurma(IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
         }

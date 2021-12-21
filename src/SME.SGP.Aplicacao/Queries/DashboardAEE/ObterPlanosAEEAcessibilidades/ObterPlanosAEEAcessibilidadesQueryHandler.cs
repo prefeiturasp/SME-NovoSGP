@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanosAEEAcessibilidadesQueryHandler : IRequestHandler<ObterPlanosAEEAcessibilidadesQuery, IEnumerable<AEEAcessibilidadeRetornoDto>>
     {
-        private readonly IRepositorioPlanoAEE repositorio;
+        private readonly IRepositorioPlanoAEEConsulta repositorio;
 
-        public ObterPlanosAEEAcessibilidadesQueryHandler(IRepositorioPlanoAEE repositorio)
+        public ObterPlanosAEEAcessibilidadesQueryHandler(IRepositorioPlanoAEEConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

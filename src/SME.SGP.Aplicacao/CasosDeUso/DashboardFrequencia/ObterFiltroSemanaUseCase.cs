@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                         semanas.Add(new FiltroSemanaDto()
                         {
                             Inicio = inicio,
-                            Fim = inicio.AddDays(5) <= dataReferencia ? inicio.AddDays(5) : dataReferencia
+                            Fim = inicio.AddDays(6) <= dataReferencia ? inicio.AddDays(6) : dataReferencia
                         });
                     }
                 }
