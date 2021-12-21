@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
                 if (turma != null)
                 {
-                    var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(filtro.TurmaCodigo));
+                    var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(filtro.TurmaCodigo, true));
                     await ConsolidarFrequenciaAlunos(filtro.TurmaId, filtro.TurmaCodigo, filtro.PercentualFrequenciaMinimo, alunos);
                 }
 

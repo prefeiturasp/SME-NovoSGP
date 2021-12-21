@@ -5,6 +5,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta
     {
-        Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId);
+        Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, params string[] turmasId);
     }
 }
