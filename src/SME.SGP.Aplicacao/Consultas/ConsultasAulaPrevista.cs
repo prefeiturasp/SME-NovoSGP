@@ -11,17 +11,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasAulaPrevista : IConsultasAulaPrevista
     {
-        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;        
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioAulaPrevistaConsulta repositorioAulaPrevistaConsulta;
         private readonly IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IConsultasTurma consultasTurma;
         private readonly IMediator mediator;
 
-        public ConsultasAulaPrevista(IRepositorioAulaPrevistaConsulta repositorioAulaPrevista,
+        public ConsultasAulaPrevista(IRepositorioAulaPrevistaConsulta repositorioAulaPrevistaConsulta,
                                      IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre,
                                      IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-                                     IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,                                     
+                                     IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
+                                     IConsultasTurma consultasTurma,
                                      IMediator mediator)
         {
             this.repositorioAulaPrevistaConsulta = repositorioAulaPrevistaConsulta ?? throw new ArgumentNullException(nameof(repositorioAulaPrevistaConsulta));
