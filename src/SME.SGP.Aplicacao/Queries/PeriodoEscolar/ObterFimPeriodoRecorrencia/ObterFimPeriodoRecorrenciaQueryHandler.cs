@@ -12,10 +12,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFimPeriodoRecorrenciaQueryHandler : IRequestHandler<ObterFimPeriodoRecorrenciaQuery, DateTime>
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioCache repositorioCache;
         
-        public ObterFimPeriodoRecorrenciaQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioCache repositorioCache)
+        public ObterFimPeriodoRecorrenciaQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioCache repositorioCache)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));

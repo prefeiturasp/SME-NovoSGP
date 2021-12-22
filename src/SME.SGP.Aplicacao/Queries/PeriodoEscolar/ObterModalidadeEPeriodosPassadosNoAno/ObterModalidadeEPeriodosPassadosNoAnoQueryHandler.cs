@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterModalidadeEPeriodosPassadosNoAnoQueryHandler : IRequestHandler<ObterModalidadeEPeriodosPassadosNoAnoQuery, IEnumerable<PeriodoEscolarModalidadeDto>>
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
 
-        public ObterModalidadeEPeriodosPassadosNoAnoQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+        public ObterModalidadeEPeriodosPassadosNoAnoQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }

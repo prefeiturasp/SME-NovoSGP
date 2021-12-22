@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -21,16 +22,25 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirRespostaEncaminhamentoAEECommand request, CancellationToken cancellationToken)
         {
-            request.Resposta.Excluido = true;
-            var arquivoId = request.Resposta.ArquivoId;
-            request.Resposta.ArquivoId = null;
+            try
+            {
+                request.Resposta.Excluido = true;
+                var arquivoId = request.Resposta.ArquivoId;
+                request.Resposta.ArquivoId = null;
 
-            await repositorioRespostaEncaminhamentoAEE.SalvarAsync(request.Resposta);
+                await repositorioRespostaEncaminhamentoAEE.SalvarAsync(request.Resposta);
 
-            if (arquivoId.HasValue)
-                await RemoverArquivo(arquivoId);
+                if (arquivoId.HasValue)
+                    await RemoverArquivo(arquivoId);
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureMessage($"1.1 ExcluirRespostaEncaminhamentoAEECommandHandler - Falha ao deletar o arquivo {ex.Message} ");
+                return false;
+            }
+
         }
 
         private async Task RemoverArquivo(long? arquivoId)

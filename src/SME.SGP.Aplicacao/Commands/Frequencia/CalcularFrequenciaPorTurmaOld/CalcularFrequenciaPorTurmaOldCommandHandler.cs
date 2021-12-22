@@ -12,12 +12,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         public readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
-        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
+        private readonly IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAluno;
 
         public CalcularFrequenciaPorTurmaOldCommandHandler(
             IMediator mediator,
             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
-            IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno)
+            IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAluno)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
@@ -26,8 +26,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(CalcularFrequenciaPorTurmaOldCommand request, CancellationToken cancellationToken)
         {
-            var totalAulasNaDisciplina = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, request.DisciplinaId, request.TurmaId);
-            var totalAulasDaTurmaGeral = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, string.Empty, request.TurmaId);
+            var totalAulasNaDisciplina = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.DisciplinaId, request.TurmaId));
+            var totalAulasDaTurmaGeral = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, string.Empty, request.TurmaId));
 
             var ausenciasDosAlunos = await mediator.Send(new ObterAusenciasAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId));
             foreach (var codigoAluno in request.Alunos)
@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDataAsync(codigoAluno, dataAtual, TipoFrequenciaAluno.PorDisciplina, disciplinaId);
+                var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunosPorAlunoDataTipoFrequenciaDisciplinaQuery(codigoAluno, dataAtual, TipoFrequenciaAluno.PorDisciplina, disciplinaId));
 
                 if (frequenciaAluno != null)
                     await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverAsync(frequenciaAluno);
@@ -79,7 +79,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<FrequenciaAluno> MapearFrequenciaAluno(string codigoAluno, string turmaId, string disciplinaId, long? periodoEscolarId, DateTime periodoInicio, DateTime periodoFim, int bimestre, int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipo)
         {
-            var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterAsync(codigoAluno, disciplinaId, periodoEscolarId.Value, tipo, turmaId);
+            var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQuery(codigoAluno, disciplinaId, periodoEscolarId.Value, tipo, turmaId));
+            
             return frequenciaAluno == null ?
             new FrequenciaAluno
                          (
@@ -103,7 +104,7 @@ namespace SME.SGP.Aplicacao
             if (totalAusenciasGeralAluno != null && totalAusenciasGeralAluno.Any())
             {
                 var periodoAusencias = totalAusenciasGeralAluno.FirstOrDefault();
-
+                
                 var totalCompensacoesGeralAluno = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurmaAsync(periodoAusencias.Bimestre, codigoAluno, string.Empty, turmaId);
                 var frequenciaGeralAluno = await MapearFrequenciaAluno(codigoAluno,
                                                                     turmaId,
@@ -128,7 +129,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDataAsync(codigoAluno, dataAtual, TipoFrequenciaAluno.Geral);
+                var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunosPorAlunoDataTipoFrequenciaQuery(codigoAluno, dataAtual, TipoFrequenciaAluno.Geral));
 
                 if (frequenciaAluno != null)
                     await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverAsync(frequenciaAluno);

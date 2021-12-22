@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQueryHandler: IRequestHandler<ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery, int>
     {
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
 
-        public ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQueryHandler(IRepositorioAula repositorioAula)
+        public ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQueryHandler(IRepositorioAulaConsulta repositorioAula)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }

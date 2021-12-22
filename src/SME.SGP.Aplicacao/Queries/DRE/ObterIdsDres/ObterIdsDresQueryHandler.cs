@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterIdsDresQueryHandler : IRequestHandler<ObterIdsDresQuery, IEnumerable<long>>
     {
-        private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioDreConsulta repositorioDre;
 
-        public ObterIdsDresQueryHandler(IRepositorioDre repositorioDre)
+        public ObterIdsDresQueryHandler(IRepositorioDreConsulta repositorioDre)
         {
             this.repositorioDre = repositorioDre ?? throw new System.ArgumentNullException(nameof(repositorioDre));
         }

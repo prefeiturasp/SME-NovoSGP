@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -11,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosComNotaLancadaPorPeriodoEscolarUEQueryHandler : IRequestHandler<ObterAlunosComNotaLancadaPorPeriodoEscolarUEQuery, IEnumerable<AlunosFechamentoNotaDto>>
     {
-        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
+        private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNota;
 
-        public ObterAlunosComNotaLancadaPorPeriodoEscolarUEQueryHandler(IRepositorioFechamentoNota repositorioFechamentoNota)
+        public ObterAlunosComNotaLancadaPorPeriodoEscolarUEQueryHandler(IRepositorioFechamentoNotaConsulta repositorioFechamentoNota)
         {
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
         }

@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciaGeralPorTurmaQueryHandler : IRequestHandler<ObterFrequenciaGeralPorTurmaQuery, IEnumerable<FrequenciaAlunoDto>>
     {
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorio;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorio;
 
-        public ObterFrequenciaGeralPorTurmaQueryHandler(IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorio)
+        public ObterFrequenciaGeralPorTurmaQueryHandler(IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,14 +11,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasPorUeModalidadesAnoQueryHandler : IRequestHandler<ObterTurmasPorUeModalidadesAnoQuery, IEnumerable<Turma>>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
 
-        public ObterTurmasPorUeModalidadesAnoQueryHandler(IRepositorioTurma repositorioTurma)
+        public ObterTurmasPorUeModalidadesAnoQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta)
         {
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
         }
 
         public async Task<IEnumerable<Turma>> Handle(ObterTurmasPorUeModalidadesAnoQuery request, CancellationToken cancellationToken)
-            => await repositorioTurma.ObterTurmasPorUeModalidadesAno(request.UeId, request.Modalidades.Cast<int>().ToArray(), request.Ano);
+            => await repositorioTurmaConsulta.ObterTurmasPorUeModalidadesAno(request.UeId, request.Modalidades.Cast<int>().ToArray(), request.Ano);
     }
 }

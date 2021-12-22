@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTotalCompensacaoAusenciaPorAnoLetivoQueryHandler : IRequestHandler<ObterTotalCompensacaoAusenciaPorAnoLetivoQuery, TotalCompensacaoAusenciaDto>
     {
-        private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
+        private readonly IRepositorioCompensacaoAusenciaConsulta repositorioCompensacaoAusencia;
 
-        public ObterTotalCompensacaoAusenciaPorAnoLetivoQueryHandler(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia)
+        public ObterTotalCompensacaoAusenciaPorAnoLetivoQueryHandler(IRepositorioCompensacaoAusenciaConsulta repositorioCompensacaoAusencia)
         {
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
         }

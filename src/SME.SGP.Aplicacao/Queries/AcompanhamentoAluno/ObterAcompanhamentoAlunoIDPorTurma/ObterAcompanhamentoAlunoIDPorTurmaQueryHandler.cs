@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAcompanhamentoAlunoIDPorTurmaQueryHandler : IRequestHandler<ObterAcompanhamentoAlunoIDPorTurmaQuery, long>
     {
-        private readonly IRepositorioAcompanhamentoAluno repositorio;
+        private readonly IRepositorioAcompanhamentoAlunoConsulta repositorio;
 
-        public ObterAcompanhamentoAlunoIDPorTurmaQueryHandler(IRepositorioAcompanhamentoAluno repositorio)
+        public ObterAcompanhamentoAlunoIDPorTurmaQueryHandler(IRepositorioAcompanhamentoAlunoConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
