@@ -15,8 +15,10 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasseAlunoTurmaComplementar repositorioCCAlunoTurmaComplementar;
         private readonly IMediator mediator;
 
-        public InserirTurmasComplementaresCommandHandler(IRepositorioTurma repositorioTurma, IMediator mediator,
-            IRepositorioConselhoClasseAlunoTurmaComplementar repositorioCCAlunoTurmaComplementar)
+        public InserirTurmasComplementaresCommandHandler(
+            IRepositorioTurmaConsulta repositorioTurmaConsulta,
+            IRepositorioConselhoClasseAlunoTurmaComplementar repositorioCCAlunoTurmaComplementar,
+            IMediator mediator)
         {
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

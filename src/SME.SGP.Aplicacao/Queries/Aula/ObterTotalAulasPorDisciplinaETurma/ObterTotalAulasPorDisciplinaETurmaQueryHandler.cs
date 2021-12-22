@@ -16,6 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<int> Handle(ObterTotalAulasPorDisciplinaETurmaQuery request, CancellationToken cancellationToken)
-            => await repositorioConsulta.ObterTotalAulasPorDisciplinaETurma(request.DataAula, request.DisciplinaId, request.TurmaId);
+            => await repositorioConsulta.ObterTotalAulasPorDisciplinaETurma(request.DataAula, request.DisciplinaId, request.TurmasId);
     }
 }
