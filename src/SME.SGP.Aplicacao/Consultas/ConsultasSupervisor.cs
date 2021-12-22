@@ -15,13 +15,13 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
 
         public ConsultasSupervisor(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
                                    IServicoEol servicoEOL,
                                    IRepositorioAbrangencia repositorioAbrangencia,
                                    IServicoUsuario servicoUsuario,
-                                   IRepositorioUe repositorioUe)
+                                   IRepositorioUeConsulta repositorioUe)
         {
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new System.ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));

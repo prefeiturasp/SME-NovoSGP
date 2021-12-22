@@ -10,16 +10,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasFechamentoAcompanhamentoQueryHandler : ConsultasBase, IRequestHandler<ObterTurmasFechamentoAcompanhamentoQuery, PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
 
-        public ObterTurmasFechamentoAcompanhamentoQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioTurma repositorioTurma) : base(contextoAplicacao)
+        public ObterTurmasFechamentoAcompanhamentoQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioTurmaConsulta repositorioTurmaConsulta) : base(contextoAplicacao)
         {
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
         }
 
         public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> Handle(ObterTurmasFechamentoAcompanhamentoQuery request, CancellationToken cancellationToken)
         {
-            var turmasPaginada = await repositorioTurma.ObterTurmasFechamentoAcompanhamento(Paginacao,
+            var turmasPaginada = await repositorioTurmaConsulta.ObterTurmasFechamentoAcompanhamento(Paginacao,
                                                                                             request.DreId,
                                                                                             request.UeId,
                                                                                             request.TurmasCodigo,

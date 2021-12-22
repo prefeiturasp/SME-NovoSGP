@@ -1,7 +1,9 @@
 ﻿using MediatR;
+using Sentry;
 using SME.Background.Core.Exceptions;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections;
 using System.IO;
 using System.Linq;

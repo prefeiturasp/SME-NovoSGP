@@ -15,24 +15,24 @@ namespace SME.SGP.Aplicacao
 {
     public class NotificarCompensacaoAusenciaUseCase : AbstractUseCase, INotificarCompensacaoAusenciaUseCase
     {
-        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
+        private readonly IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAluno;
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoEol servicoEOL;
 
         public NotificarCompensacaoAusenciaUseCase(IMediator mediator,
-                                                   IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
+                                                   IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAluno,
                                                    IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
-                                                   IRepositorioTurma repositorioTurma,
+                                                   IRepositorioTurmaConsulta repositorioTurmaConsulta,
                                                    IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
-                                                   IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                                   IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                                    IServicoEol servicoEOL) : base(mediator)
         {
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             // Carrega dados da compensacao a notificar
             var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
 
-            var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(compensacao.TurmaId);
+            var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(compensacao.TurmaId);
 
             var disciplinaEOL = await ObterNomeDisciplina(compensacao.DisciplinaId);
 

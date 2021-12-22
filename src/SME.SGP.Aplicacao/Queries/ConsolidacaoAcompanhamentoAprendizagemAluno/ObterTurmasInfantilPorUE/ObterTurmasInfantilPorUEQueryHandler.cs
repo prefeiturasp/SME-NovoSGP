@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasInfantilPorUEQueryHandler : IRequestHandler<ObterTurmasInfantilPorUEQuery, IEnumerable<TurmaDTO>>
     {
-        private readonly IRepositorioTurma repositorio;
+        private readonly IRepositorioTurmaConsulta repositorio;
 
-        public ObterTurmasInfantilPorUEQueryHandler(IRepositorioTurma repositorio)
+        public ObterTurmasInfantilPorUEQueryHandler(IRepositorioTurmaConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

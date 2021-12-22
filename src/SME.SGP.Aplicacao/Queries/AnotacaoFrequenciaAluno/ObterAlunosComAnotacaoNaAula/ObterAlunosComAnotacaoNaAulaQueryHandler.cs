@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosComAnotacaoNaAulaQueryHandler : IRequestHandler<ObterAlunosComAnotacaoNaAulaQuery, IEnumerable<string>>
     {
-        private readonly IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno;
+        private readonly IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno;
 
-        public ObterAlunosComAnotacaoNaAulaQueryHandler(IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno)
+        public ObterAlunosComAnotacaoNaAulaQueryHandler(IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno)
         {
             this.repositorioAnotacaoFrequenciaAluno = repositorioAnotacaoFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFrequenciaAluno));
         }

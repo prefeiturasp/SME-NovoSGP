@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -16,13 +15,13 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioPendenciaFechamento repositorioPendenciaFechamento;
-        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
+        private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNota;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
 
         private int avaliacoesSemnota;
@@ -36,9 +35,9 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
                                           IRepositorioPendencia repositorioPendencia,
                                           IRepositorioPendenciaFechamento repositorioPendenciaFechamento,
-                                          IRepositorioAula repositorioAula,
-                                          IRepositorioComponenteCurricular repositorioComponenteCurricular,
-                                          IRepositorioFechamentoNota repositorioFechamentoNota,
+                                          IRepositorioAulaConsulta repositorioAula,
+                                          IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
+                                          IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
                                           IServicoUsuario servicoUsuario,
                                           IServicoAbrangencia servicoAbrangencia,
                                           IMediator mediator)
@@ -74,7 +73,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(aula.TurmaId));
 
-                    Usuario professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
+                    Usuario professor = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
 
                     mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
                     mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {professor.CodigoRf}</td></tr>");
@@ -339,7 +338,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (!string.IsNullOrWhiteSpace(rfConsiderado))
                 {
-                    var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(rfConsiderado);
+                    var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(rfConsiderado).Result;
 
                     if (professor == null)
                         throw new NegocioException($"Professor com RF {professorRF} não encontrado.");
@@ -352,7 +351,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 foreach (var loginCp in loginsCPs)
                 {
-                    var cp = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(loginCp);
+                    var cp = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(loginCp).Result;
                     yield return (professorRF.codigoTurma, cp, professorRF.disciplnaId, true);
                 }
             }
@@ -388,7 +387,11 @@ namespace SME.SGP.Dominio.Servicos
             if (pendenciaFechamento == null)
                 throw new NegocioException("Pendência de fechamento não localizada com o identificador consultado");
 
-            Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.VerificaPendenciasFechamento(pendenciaFechamento.FechamentoId));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.VerificaPendenciasFechamentoTurma,
+                                                           new VerificaPendenciasFechamentoCommand(pendenciaFechamento.FechamentoId),
+                                                           Guid.NewGuid(),
+                                                           null, 
+                                                           false));
             return auditoriaDto;
         }
 

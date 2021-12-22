@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
             if (workflowAprovacaoNiveisDto.Tipo != WorkflowAprovacaoTipo.Basica && workflowAprovacaoNiveisDto.EntidadeParaAprovarId == 0)
                 throw new NegocioException("Para um workflow diferente de básico, é necessário informar o Id da entidade para Aprovar.");
 
-            WorkflowAprovacao workflowAprovacao = MapearDtoParaEntidade(workflowAprovacaoNiveisDto);
+            WorkflowAprovacao workflowAprovacao = await MapearDtoParaEntidade(workflowAprovacaoNiveisDto);
 
             await repositorioWorkflowAprovacao.SalvarAsync(workflowAprovacao);
 
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
             return workflowAprovacao.Id;
         }
 
-        private WorkflowAprovacao MapearDtoParaEntidade(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
+        private async Task<WorkflowAprovacao> MapearDtoParaEntidade(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
         {
             WorkflowAprovacao workflowAprovacao = new WorkflowAprovacao();
             workflowAprovacao.Ano = workflowAprovacaoNiveisDto.Ano;
@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao
                 {
                     foreach (var usuarioRf in nivel.UsuariosRf)
                     {
-                        workflowNivel.Adicionar(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioRf));
+                        workflowNivel.Adicionar(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioRf));
                     }
                 }
 

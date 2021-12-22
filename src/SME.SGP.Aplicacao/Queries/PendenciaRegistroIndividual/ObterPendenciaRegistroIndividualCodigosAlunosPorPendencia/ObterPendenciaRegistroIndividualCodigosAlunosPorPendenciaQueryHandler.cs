@@ -13,14 +13,14 @@ namespace SME.SGP.Aplicacao
     public class ObterPendenciaRegistroIndividualCodigosAlunosPorPendenciaQueryHandler : IRequestHandler<ObterPendenciaRegistroIndividualCodigosAlunosPorPendenciaQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
         private readonly IRepositorioPendenciaRegistroIndividual repositorioPendenciaRegistroIndividual;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IMediator mediator;
 
         public ObterPendenciaRegistroIndividualCodigosAlunosPorPendenciaQueryHandler(IRepositorioPendenciaRegistroIndividual repositorioPendenciaRegistroIndividual,
-            IRepositorioTurma repositorioTurma, IMediator mediator)
+            IRepositorioTurmaConsulta repositorioTurmaConsulta, IMediator mediator)
         {
             this.repositorioPendenciaRegistroIndividual = repositorioPendenciaRegistroIndividual;
-            this.repositorioTurma = repositorioTurma;
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta;
             this.mediator = mediator;
         }
 
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             if (pendenciaRegistroIndividual is null)
                 throw new NegocioException("A pendência por ausência de registro individual não foi encontrada.");
 
-            var turma = await repositorioTurma.ObterPorId(pendenciaRegistroIndividual.TurmaId);
+            var turma = await repositorioTurmaConsulta.ObterPorId(pendenciaRegistroIndividual.TurmaId);
             if (turma is null)
                 throw new NegocioException("A turma não foi encontrada.");
 
