@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
 
-        public ObterConselhoClasseIdsPorTurmaEPeriodoQueryHandler(IRepositorioConselhoClasse repositorioConselhoClasse)
+        public ObterConselhoClasseIdsPorTurmaEPeriodoQueryHandler(IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta)
         {
             this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
         }

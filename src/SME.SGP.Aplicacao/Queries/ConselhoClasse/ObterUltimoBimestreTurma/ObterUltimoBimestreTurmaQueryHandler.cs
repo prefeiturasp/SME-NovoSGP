@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
 
         public ObterUltimoBimestreTurmaQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-                                                    IRepositorioConselhoClasse repositorioConselhoClasse)
+                                                    IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));

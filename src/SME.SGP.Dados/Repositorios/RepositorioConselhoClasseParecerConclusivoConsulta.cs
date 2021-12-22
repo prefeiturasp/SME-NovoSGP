@@ -55,7 +55,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             return @"select ccp.* from conselho_classe_parecer ccp 
                         inner join conselho_classe_parecer_ano ccpa on ccp.id = ccpa.parecer_id 
-                        inner join turma t on inner join turma t on ccpa.modalidade = t.modalidade_codigo 
+                        inner join turma t on ccpa.modalidade = t.modalidade_codigo 
 	                                                                and ((t.ano = 'S' and ccpa.ano_turma = 1) OR cast(ccpa.ano_turma as varchar) = t.ano) 
                         where {0} and ccpa.inicio_vigencia <= @dataConsulta and (ccpa.fim_vigencia >= @dataConsulta or ccpa.fim_vigencia is null)";
         }
