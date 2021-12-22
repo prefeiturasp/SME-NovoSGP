@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<DisciplinaDto>> ObterComponentesCurricularesRegenciaPorAnoETurno(long ano, long turno);
         void SalvarVarias(IEnumerable<ComponenteCurricularDto> componentesCurriculares);
         Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIds(long[] ids);
+        Task<DisciplinaDto> ObterDisciplinaPorId(long id);
         Task<long[]> ListarCodigosJuremaPorComponenteCurricularId(long id);
         Task<bool> VerificaPossuiObjetivosAprendizagemPorComponenteCurricularId(long id);
         Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, long turmaId, int bimestre, string codigoAluno);

@@ -18,6 +18,8 @@ namespace SME.SGP.Aplicacao
         private readonly IConfiguration configuration;
         private readonly IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva;
         private readonly IServicoNotificacao servicoNotificacao;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+
 
         public SalvarNotificacaoDevolutivaUseCase(IMediator mediator, IConfiguration configuration, IServicoNotificacao servicoNotificacao,
             IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva)
@@ -26,6 +28,7 @@ namespace SME.SGP.Aplicacao
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.repositorioNotificacaoDevolutiva = repositorioNotificacaoDevolutiva ?? throw new ArgumentNullException(nameof(repositorioNotificacaoDevolutiva));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
@@ -37,14 +40,15 @@ namespace SME.SGP.Aplicacao
 
             var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
             var devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(devolutivaId));
-            var componentes = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual,realizarAgrupamentoComponente:false));
-            var componenteCurricular = componentes.FirstOrDefault(c => c.Codigo == titulares.FirstOrDefault().DisciplinaId);
+            var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinaPorId(titulares.FirstOrDefault().DisciplinaId);
+            //var componentes = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual,realizarAgrupamentoComponente:false));
+            //var componenteCurricular = componentes.FirstOrDefault(c => c.Codigo == titulares.FirstOrDefault().DisciplinaId);
             var codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id);
             var botaoDownload = MontarBotaoDownload(codigoRelatorio);
 
             if (titulares != null)
             {
-                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) registrou a devolutiva dos diários de bordo de <strong>{componenteCurricular.Descricao}</strong> da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.TipoEscola}-{turma.Ue.Nome}</strong> " +
+                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) registrou a devolutiva dos diários de bordo de <strong>{componenteCurricular.NomeComponenteInfantil}</strong> da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.TipoEscola}-{turma.Ue.Nome}</strong> " +
                     $"<strong>({turma.Ue.Dre.Abreviacao})</strong>. Esta devolutiva contempla os diários de bordo do período de <strong>{devolutiva.PeriodoInicio:dd/MM/yyyy}</strong> à <strong>{devolutiva.PeriodoFim:dd/MM/yyyy}</strong>.");
 
                 mensagem.AppendLine($"<br/><br/>Clique no botão abaixo para fazer o download do arquivo com o conteúdo da devolutiva.");
@@ -64,7 +68,7 @@ namespace SME.SGP.Aplicacao
                                 Ano = DateTime.Now.Year,
                                 Categoria = NotificacaoCategoria.Aviso,
                                 Tipo = NotificacaoTipo.Planejamento,
-                                Titulo = $"Devolutiva do Diário de bordo da turma {turma.Nome} - {componenteCurricular.Descricao}",
+                                Titulo = $"Devolutiva do Diário de bordo da turma {turma.Nome} - {componenteCurricular.NomeComponenteInfantil}",
                                 Mensagem = mensagem.ToString(),
                                 UsuarioId = usuario.Id,
                                 TurmaId = "",
