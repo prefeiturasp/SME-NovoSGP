@@ -5,6 +5,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioRegistroAusenciaAlunoConsulta
     {
-        Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, string turmaId);
+        Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, params string[] turmasId);
     }
 }

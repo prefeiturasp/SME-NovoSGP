@@ -75,8 +75,7 @@ namespace SME.SGP.Aplicacao
                                             where cc.Regencia
                                             select a.DataAula);
 
-                aulas.AddRange(await mediator
-                    .Send(new ObterAulasExcluidasComDiarioDeBordoAtivosQuery(dadoTurma.TurmaCodigo, tipoCalendarioId)));
+                
 
                 var professorTitular = await mediator
                     .Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(dadoTurma.TurmaCodigo, dadoTurma.ComponenteCurricularCodigo));

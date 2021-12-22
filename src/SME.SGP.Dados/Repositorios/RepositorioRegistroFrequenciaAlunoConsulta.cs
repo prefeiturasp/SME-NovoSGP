@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterAusenciasAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string turmaId, IEnumerable<string> codigoAlunos)
+        public async Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterAusenciasAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, IEnumerable<string> codigoAlunos, params string[] turmasId)
         {
             var query = @"           
                     select
@@ -41,7 +41,7 @@ namespace SME.SGP.Dados.Repositorios
 	                not rfa.excluido
 	                and not a.excluido
 	                and rfa.codigo_aluno = any(@codigoAlunos)	                
-	                and a.turma_id = @turmaId
+	                and a.turma_id = any(@turmasId)
 	                and p.periodo_inicio <= @dataAula
 	                and p.periodo_fim >= @dataAula
 	                and a.data_aula >= p.periodo_inicio
@@ -56,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
                     rfa.codigo_aluno,
                     a.disciplina_id";
 
-            return await database.Conexao.QueryAsync<AusenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmaId, tipoFrequencia = (int)TipoFrequencia.F });
+            return await database.Conexao.QueryAsync<AusenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmasId, tipoFrequencia = (int)TipoFrequencia.F });
         }
     }
 }
