@@ -48,7 +48,6 @@ namespace SME.SGP.Aplicacao
 
             foreach (var dadoTurma in dadosTurmas)
             {
-                
                 var aulas = (List<Aula>)await mediator
                     .Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(dadoTurma.TurmaCodigo, tipoCalendarioId, "Sistema"));
 
@@ -62,7 +61,7 @@ namespace SME.SGP.Aplicacao
                     .Select(a => Convert.ToInt64(a.DisciplinaId))
                     .ToArray();
 
-                var idsDisciplinas = aulasCriadasPorUsuarios?.Select(a => Convert.ToInt64(a.DisciplinaId));
+                var idsDisciplinas = aulasCriadas?.Select(idAula => Convert.ToInt64(idAula));
 
                 if (idsDisciplinas == null || !idsDisciplinas.Any())
                     idsDisciplinas = aulas.Select(a => Convert.ToInt64(a.DisciplinaId));
