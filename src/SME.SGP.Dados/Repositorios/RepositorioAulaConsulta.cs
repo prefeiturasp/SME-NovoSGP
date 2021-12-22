@@ -835,9 +835,7 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join turma t
                                     on a.turma_id = t.turma_id
                           where a.tipo_calendario_id = @tipoCalendarioId and 
-                                a.turma_id = @turmaId and 
-                                not a.excluido and
-                                extract(year from a.data_aula) = t.ano_letivo";
+                                a.turma_id = @turmaId";
 
             var criadoRf = new string[] { criadoPor };
 
