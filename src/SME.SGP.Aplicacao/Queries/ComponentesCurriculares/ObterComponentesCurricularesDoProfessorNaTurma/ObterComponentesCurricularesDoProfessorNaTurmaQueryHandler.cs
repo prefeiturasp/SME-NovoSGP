@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 return await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(
                     request.CodigoTurma,
                     request.Login,
-                    request.PerfilUsuario);
+                    request.PerfilUsuario,request.RealizarAgrupamentoComponente);
             });
         }
     }

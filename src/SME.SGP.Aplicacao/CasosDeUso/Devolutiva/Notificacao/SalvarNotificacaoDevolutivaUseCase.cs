@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
             var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
             var devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(devolutivaId));
-            var componentes = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+            var componentes = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual,realizarAgrupamentoComponente:false));
             var componenteCurricular = componentes.FirstOrDefault(c => c.Codigo == titulares.FirstOrDefault().DisciplinaId);
             var codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id);
             var botaoDownload = MontarBotaoDownload(codigoRelatorio);
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             if (titulares != null)
             {
                 var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) registrou a devolutiva dos diários de bordo de <strong>{componenteCurricular.Descricao}</strong> da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.TipoEscola}-{turma.Ue.Nome}</strong> " +
-                    $"({turma.Ue.Dre.Abreviacao}). Esta devolutiva contempla os diários de bordo do período de <strong>{devolutiva.PeriodoInicio:dd/MM/yyyy}</strong> à <strong>{devolutiva.PeriodoFim:dd/MM/yyyy}</strong>.");
+                    $"<strong>({turma.Ue.Dre.Abreviacao})</strong>. Esta devolutiva contempla os diários de bordo do período de <strong>{devolutiva.PeriodoInicio:dd/MM/yyyy}</strong> à <strong>{devolutiva.PeriodoFim:dd/MM/yyyy}</strong>.");
 
                 mensagem.AppendLine($"<br/><br/>Clique no botão abaixo para fazer o download do arquivo com o conteúdo da devolutiva.");
                 mensagem.AppendLine(botaoDownload);
@@ -99,7 +99,11 @@ namespace SME.SGP.Aplicacao
         }
         private async Task<Guid> SolicitarRelatorioDevolutiva(long devolutivaId) 
         {
-            return await mediator.Send(new SolicitaRelatorioDevolutivasCommand(devolutivaId));
+            var filtro = new FiltroRelatorioDevolutivasSincrono()
+            {
+                DevolutivaId = devolutivaId
+            };
+            return await mediator.Send(new SolicitaRelatorioDevolutivasCommand(filtro));
         }
     }
 }

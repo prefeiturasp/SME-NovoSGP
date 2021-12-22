@@ -1,24 +1,25 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Infra;
 using System;
 
 namespace SME.SGP.Aplicacao
 {
     public class SolicitaRelatorioDevolutivasCommand : IRequest<Guid>
     {
-        public SolicitaRelatorioDevolutivasCommand(long devolutivaId)
+        public SolicitaRelatorioDevolutivasCommand(FiltroRelatorioDevolutivasSincrono filtro)
         {
-            DevolutivaId = devolutivaId;
+            Filtro = filtro;
         }
-        public long DevolutivaId { get; set; }
+        public FiltroRelatorioDevolutivasSincrono Filtro { get; set; }
 
         public class SolicitaRelatorioDevolutivasCommandValidator : AbstractValidator<SolicitaRelatorioDevolutivasCommand>
         {
             public SolicitaRelatorioDevolutivasCommandValidator()
             {
-                RuleFor(c => c.DevolutivaId)
+                RuleFor(c => c.Filtro)
                    .NotEmpty()
-                   .WithMessage("O DevolutivaId deve ser informado para solicitação do relatório.");
+                   .WithMessage("O filtro deve ser informado para solicitação do relatório.");
 
             }
         }
