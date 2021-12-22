@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTiposCalendariosPorAnosLetivoModalidadesQueryHandler : IRequestHandler<ObterTiposCalendariosPorAnosLetivoModalidadesQuery, IEnumerable<TipoCalendarioBuscaDto>>
     {
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
 
-        public ObterTiposCalendariosPorAnosLetivoModalidadesQueryHandler(IRepositorioTipoCalendario repositorioTipoCalendario)
+        public ObterTiposCalendariosPorAnosLetivoModalidadesQueryHandler(IRepositorioTipoCalendarioConsulta repositorioTipoCalendario)
         {
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }

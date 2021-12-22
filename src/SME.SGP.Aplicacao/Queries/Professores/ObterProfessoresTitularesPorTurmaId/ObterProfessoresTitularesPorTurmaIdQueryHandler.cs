@@ -16,18 +16,18 @@ namespace SME.SGP.Aplicacao
     public  class ObterProfessoresTitularesPorTurmaIdQueryHandler: IRequestHandler<ObterProfessoresTitularesPorTurmaIdQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
     {
         private readonly IServicoEol servicoEol;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IHttpClientFactory httpClientFactory;
 
-        public ObterProfessoresTitularesPorTurmaIdQueryHandler(IServicoEol servicoEol, IRepositorioTurma repositorioTurma, IHttpClientFactory httpClientFactory)
+        public ObterProfessoresTitularesPorTurmaIdQueryHandler(IServicoEol servicoEol, IRepositorioTurmaConsulta repositorioTurmaConsulta, IHttpClientFactory httpClientFactory)
         {
             this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesPorTurmaIdQuery request, CancellationToken cancellationToken)
         {
-            var turma = await repositorioTurma.ObterPorId(request.TurmaId);
+            var turma = await repositorioTurmaConsulta.ObterPorId(request.TurmaId);
 
             StringBuilder url = new StringBuilder();
 

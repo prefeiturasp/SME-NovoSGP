@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQueryHandler : IRequestHandler<ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQuery, IEnumerable<(long fechamentoTurmaDisciplinaId, long periodoEscolarId, string codigoRf)>>
     {
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
 
-        public ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQueryHandler(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina)
+        public ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQueryHandler(IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina)
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
         }

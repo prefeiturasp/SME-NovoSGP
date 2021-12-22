@@ -1,5 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Servicos;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -14,14 +14,15 @@ namespace SME.SGP.Dominio.Servicos
         private static readonly long[] componentesQueNaoPodemSerSubstituidos = { 1033, 1051, 1052, 1053, 1054, 1030 };
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAbrangencia servicoAbrangencia;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
         public ServicoAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAbrangencia servicoAbrangencia, IRepositorioTurma repositorioTurma,
-            IRepositorioAbrangencia repositorioAbrangencia, IRepositorioAula repositorioAula, IServicoUsuario servicoUsuario, IRepositorioComponenteCurricular repositorioComponenteCurricular)
+            IRepositorioAbrangencia repositorioAbrangencia, IRepositorioAulaConsulta repositorioAula, IServicoUsuario servicoUsuario, IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
@@ -30,6 +31,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task Salvar(AtribuicaoCJ atribuicaoCJ,IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol, IEnumerable<AtribuicaoCJ> atribuicoesAtuais = null)
@@ -74,7 +76,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (atribuicaoCJ.Substituir)
             {
-                var turma = await repositorioTurma.ObterPorCodigo(atribuicaoCJ.TurmaId);
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atribuicaoCJ.TurmaId));
               
                 if (abrangenciasAtuais != null && !abrangenciasAtuais.Any())
                 {

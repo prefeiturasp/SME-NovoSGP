@@ -1,8 +1,5 @@
 ﻿using MediatR;
-using Sentry;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +20,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirPendenciaAulaCommand request, CancellationToken cancellationToken)
         {
 
-            var pendenciasId = await repositorioPendenciaAula.ObterPendenciaIdPorAula(request.AulaId, request.TipoPendenciaAula);
+            var pendenciasId = await mediator.Send(new ObterPendenciasAulaPorAulaIdTipoQuery(request.AulaId, request.TipoPendenciaAula));
+            
             foreach (var pendenciaId in pendenciasId)
             {
                 await repositorioPendenciaAula.Excluir(pendenciaId, request.AulaId);
@@ -36,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ExcluirPendenciaSeNaoHouverMaisPendenciaAula(long pendenciaId)
         {
-            var pendenciasAulasRestantes = await repositorioPendenciaAula.ObterPendenciasAulasPorPendencia(pendenciaId);
+            var pendenciasAulasRestantes = await mediator.Send(new ObterPendenciasAulaPorIdQuery(pendenciaId));
             if (pendenciasAulasRestantes == null || !pendenciasAulasRestantes.Any())
                 await mediator.Send(new ExcluirPendenciaPorIdCommand(pendenciaId));
         }

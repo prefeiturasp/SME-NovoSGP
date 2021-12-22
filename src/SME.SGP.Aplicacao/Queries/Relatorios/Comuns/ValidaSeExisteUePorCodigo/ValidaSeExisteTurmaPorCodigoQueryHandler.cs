@@ -1,19 +1,18 @@
-﻿using System;
-using MediatR;
-using SME.SGP.Dominio.Interfaces;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao.Queries
 {
     public class ValidaSeExisteTurmaPorCodigoQueryHandler : IRequestHandler<ValidaSeExisteTurmaPorCodigoQuery, bool>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IMediator mediator;
 
-        public ValidaSeExisteTurmaPorCodigoQueryHandler(IRepositorioTurma repositorioTurma)
+        public ValidaSeExisteTurmaPorCodigoQueryHandler(IMediator mediator)
         {
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(ValidaSeExisteTurmaPorCodigoQuery request, CancellationToken cancellationToken)
@@ -23,7 +22,7 @@ namespace SME.SGP.Aplicacao.Queries
                 int codigoTurma;
                 if (int.TryParse(request.CodigoTurma, out codigoTurma) && codigoTurma <= 0)
                     request.CodigoTurma = String.Empty;
-                else if (await repositorioTurma.ObterPorCodigo(request.CodigoTurma) == null)
+                else if (await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma)) == null)
                     throw new NegocioException("Não foi possível encontrar a turma");
             }
             return true;

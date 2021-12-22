@@ -18,6 +18,21 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
+        public async Task<IEnumerable<FrequenciaAlunoSimplificadoDto>> ObterFrequenciasPorAulaId(long aulaId)
+        {
+            var query = @"select 
+                        rfa.codigo_aluno as CodigoAluno,
+                        rfa.numero_aula as NumeroAula,
+                        rfa.valor as TipoFrequencia
+                        from registro_frequencia rf 
+                        inner join registro_frequencia_aluno rfa on rf.id = rfa.registro_frequencia_id 
+                        where not rf.excluido
+                          and not rfa.excluido
+                          and rf.aula_id = @aulaId";
+
+            return await database.Conexao.QueryAsync<FrequenciaAlunoSimplificadoDto>(query, new { aulaId });
+        }
+
         public async Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterAusenciasAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, IEnumerable<string> codigoAlunos, params string[] turmasId)
         {
             var query = @"           

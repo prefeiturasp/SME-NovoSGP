@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,15 +10,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasPorCodigosQueryHandler : IRequestHandler<ObterTurmasPorCodigosQuery, IEnumerable<Turma>>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
 
-        public ObterTurmasPorCodigosQueryHandler(IRepositorioTurma repositorioTurma)
+        public ObterTurmasPorCodigosQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta)
         {
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
         }
         public async Task<IEnumerable<Turma>> Handle(ObterTurmasPorCodigosQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTurma.ObterPorCodigosAsync(request.Codigos);
+            return await repositorioTurmaConsulta.ObterPorCodigosAsync(request.Codigos);
         }
     }
 }

@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuantidadeUesPorAnoLetivoQueryHandler : IRequestHandler<ObterQuantidadeUesPorAnoLetivoQuery, int>
     {
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
 
-        public ObterQuantidadeUesPorAnoLetivoQueryHandler(IRepositorioUe repositorioUe)
+        public ObterQuantidadeUesPorAnoLetivoQueryHandler(IRepositorioUeConsulta repositorioUe)
         {
             this.repositorioUe = repositorioUe ?? throw new System.ArgumentNullException(nameof(repositorioUe));
         }

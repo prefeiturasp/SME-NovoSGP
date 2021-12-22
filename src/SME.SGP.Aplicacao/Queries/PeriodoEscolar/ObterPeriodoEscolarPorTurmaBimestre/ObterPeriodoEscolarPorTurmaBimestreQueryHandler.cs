@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodoEscolarPorTurmaBimestreQueryHandler : IRequestHandler<ObterPeriodoEscolarPorTurmaBimestreQuery, PeriodoEscolar>
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
 
-        public ObterPeriodoEscolarPorTurmaBimestreQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+        public ObterPeriodoEscolarPorTurmaBimestreQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar;
         }

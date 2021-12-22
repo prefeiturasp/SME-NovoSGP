@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterCodigosUEsQueryHandler : IRequestHandler<ObterCodigosUEsQuery, IEnumerable<string>>
     {
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
 
-        public ObterCodigosUEsQueryHandler(IRepositorioUe repositorioUe)
+        public ObterCodigosUEsQueryHandler(IRepositorioUeConsulta repositorioUe)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }

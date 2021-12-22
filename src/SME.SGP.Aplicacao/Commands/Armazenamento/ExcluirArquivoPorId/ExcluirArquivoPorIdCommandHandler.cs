@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -21,12 +22,20 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirArquivoPorIdCommand request, CancellationToken cancellationToken)
         {
-            var arquivo = await repositorioArquivo.ObterPorIdAsync(request.ArquivoId);
+            try
+            {
+                var arquivo = await repositorioArquivo.ObterPorIdAsync(request.ArquivoId);
 
-            await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(arquivo.Id));
-            await mediator.Send(new ExcluirArquivoFisicoCommand(arquivo.Codigo, arquivo.Tipo, arquivo.Nome));
+                await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(arquivo.Id));
+                await mediator.Send(new ExcluirArquivoFisicoCommand(arquivo.Codigo, arquivo.Tipo, arquivo.Nome));
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureMessage($"1.2 ExcluirArquivoPorIdCommandHandler - Falha ao deletar o arquivo {ex.Message} ");
+                throw;
+            }
         }
     }
 }
