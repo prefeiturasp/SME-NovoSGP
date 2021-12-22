@@ -45,9 +45,9 @@ namespace SME.SGP.Dominio.Servicos
             await repositorioFrequencia.ExcluirFrequenciaAula(aulaId);
         }
 
-        public IEnumerable<RegistroAusenciaAluno> ObterListaAusenciasPorAula(long aulaId)
+        public async Task<IEnumerable<RegistroAusenciaAluno>> ObterListaAusenciasPorAula(long aulaId)
         {
-            return repositorioFrequencia.ObterListaFrequenciaPorAula(aulaId);
+            return await mediator.Send(new ObterListaFrequenciaPorAulaQuery(aulaId));
         }
 
         public async Task Registrar(long aulaId, IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos)

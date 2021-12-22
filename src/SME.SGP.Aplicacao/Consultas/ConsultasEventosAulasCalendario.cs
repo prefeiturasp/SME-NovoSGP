@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IServicoEol servicoEOL;
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
         public ConsultasEventosAulasCalendario(
             IRepositorioEvento repositorioEvento,
             IComandosDiasLetivos comandosDiasLetivos,
-            IRepositorioAula repositorioAula,
+            IRepositorioAulaConsulta repositorioAula,
             IServicoUsuario servicoUsuario,
             IServicoEol servicoEOL,
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,

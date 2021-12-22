@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -11,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQueryHandler : IRequestHandler<ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery, IEnumerable<FrequenciaAlunoSimplificadoDto>>
     {
-        private readonly IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno;
+        private readonly IRepositorioRegistroFrequenciaAlunoConsulta repositorioRegistroFrequenciaAluno;
 
-        public ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQueryHandler(IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno)
+        public ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQueryHandler(IRepositorioRegistroFrequenciaAlunoConsulta repositorioRegistroFrequenciaAluno)
         {
             this.repositorioRegistroFrequenciaAluno = repositorioRegistroFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroFrequenciaAluno));
         }

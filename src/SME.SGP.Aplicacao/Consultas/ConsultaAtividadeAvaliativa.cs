@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -18,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
@@ -36,7 +35,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
             IRepositorioTurma repositorioTurma,
-            IRepositorioAula repositorioAula,
+            IRepositorioAulaConsulta repositorioAula,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IServicoUsuario servicoUsuario,
             IContextoAplicacao contextoAplicacao,

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -16,10 +15,10 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioPendenciaFechamento repositorioPendenciaFechamento;
-        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
+        private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNota;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
@@ -36,9 +35,9 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
                                           IRepositorioPendencia repositorioPendencia,
                                           IRepositorioPendenciaFechamento repositorioPendenciaFechamento,
-                                          IRepositorioAula repositorioAula,
+                                          IRepositorioAulaConsulta repositorioAula,
                                           IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
-                                          IRepositorioFechamentoNota repositorioFechamentoNota,
+                                          IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
                                           IServicoUsuario servicoUsuario,
                                           IServicoAbrangencia servicoAbrangencia,
                                           IMediator mediator)

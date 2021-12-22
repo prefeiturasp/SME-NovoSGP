@@ -18,14 +18,14 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
         private readonly IMediator mediator;
-        private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
+        private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
 
         public ComandosFechamentoFinal(
             IServicoFechamentoFinal servicoFechamentoFinal,
             IRepositorioTurmaConsulta repositorioTurmaConsulta,
             IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno,
             IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,            
-            IRepositorioNotaTipoValor repositorioNotaTipoValor,
+            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,
             IRepositorioTurma repositorioTurma,
             IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
             IMediator mediator)

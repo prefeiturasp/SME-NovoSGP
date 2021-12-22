@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -9,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulaPossuiFrequenciaQueryHandler : IRequestHandler<ObterAulaPossuiFrequenciaQuery, bool>
     {
-        private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
 
-        public ObterAulaPossuiFrequenciaQueryHandler(IRepositorioFrequencia repositorioFrequencia)
+        public ObterAulaPossuiFrequenciaQueryHandler(IRepositorioFrequenciaConsulta repositorioFrequencia)
         {
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
         }
