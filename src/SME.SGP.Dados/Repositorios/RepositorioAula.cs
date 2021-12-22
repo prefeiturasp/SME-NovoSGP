@@ -1073,5 +1073,23 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId
             });
         }
+
+        public async Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterDatasAulaDiarioBordoPorPeriodo(string turmaCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select a.id as AulaId, 
+                            db.id as DiarioBordoId, 
+                            a.data_aula as DataAula, 
+                            db.planejamento as Planejamento, 
+                            db.reflexoes_replanejamento as ReflexoesReplanejamento 
+                            from aula a 
+                            left join diario_bordo db on db.aula_id = a.id 
+                            where a.turma_id = @turmaCodigo 
+                            and a.data_aula between @dataInicio and @dataFim
+                            and db.componente_curricular_id = @componenteCurricularId
+                            and not a.excluido 
+                            order by a.data_aula desc";
+
+            return await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto>(query, new { turmaCodigo, componenteCurricularId, dataInicio, dataFim });
+        }
     }
 }
