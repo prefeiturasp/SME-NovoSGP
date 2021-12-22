@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> Handle(ObterAusenciasAlunosPorAlunosETurmaIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioRegistroFrequenciaAluno.ObterAusenciasAlunosPorAlunosETurmaIdEDataAula(request.DataAula,request.TurmaId,request.Alunos);
+            return await repositorioRegistroFrequenciaAluno.ObterAusenciasAlunosPorAlunosETurmaIdEDataAula(request.DataAula, request.Alunos, request.TurmasId);
         }
     }
 }

@@ -15,14 +15,13 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, string turmaId)
+        public async Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, params string[] turmasId)
         {
-            String query = BuildQueryObterTotalAulasPorDisciplinaETurma(dataAula, disciplinaId, turmaId);
-            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
+            String query = BuildQueryObterTotalAulasPorDisciplinaETurma(disciplinaId);
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { dataAula, disciplinaId, turmasId });
         }
 
-        private String BuildQueryObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId,
-            string turmaId)
+        private String BuildQueryObterTotalAulasPorDisciplinaETurma(string disciplinaId)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select ");
@@ -42,7 +41,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrWhiteSpace(disciplinaId))
                 query.AppendLine("and a.disciplina_id = @disciplinaId ");
 
-            query.AppendLine("and a.turma_id = @turmaId ");
+            query.AppendLine("and a.turma_id = any(@turmasId) ");
             return query.ToString();
         }
     }

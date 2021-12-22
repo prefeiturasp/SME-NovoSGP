@@ -17,7 +17,7 @@ namespace SME.SGP.Dados
             this.database = database ?? throw new System.ArgumentNullException(nameof(database));
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string[] turmasId)
         {
             var query = new StringBuilder(@"select
 	                        *
@@ -25,7 +25,7 @@ namespace SME.SGP.Dados
 	                        frequencia_aluno
                         where
 	                        codigo_aluno = any(@alunosCodigo)	                        	                        
-                            and turma_id = @turmaId ");
+                            and turma_id = any(@turmasId) ");
             if (periodosEscolaresId != null && periodosEscolaresId.AsList().Count > 0)
             {
                 query.AppendLine("and periodo_escolar_id = any(@periodosEscolaresId)");
@@ -35,7 +35,7 @@ namespace SME.SGP.Dados
             {
                 alunosCodigo,
                 periodosEscolaresId,
-                turmaId
+                turmasId
             });
         }
     }
