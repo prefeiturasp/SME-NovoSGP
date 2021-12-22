@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
             domingo = domingo.AddDays(7);
             sabado = sabado.AddDays(7);
 
-            dataFim = exibirDataFutura ? dataFim : DateTime.Now;
+            dataFim = exibirDataFutura ? dataFim : DateTimeExtension.HorarioBrasilia();
 
             while (domingo < dataFim)
             {
@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
             long id = 1;
             int contador = 1;
 
-            periodosAulas = exibirDataFutura ? periodosAulas : periodosAulas.Where(w => w.DataAula <= DateTime.Now);
+            periodosAulas = exibirDataFutura ? periodosAulas : periodosAulas.Where(w => w.DataAula <= DateTimeExtension.HorarioBrasilia());
 
             foreach (var periodo in periodosAulas)
             {
