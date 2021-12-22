@@ -1086,7 +1086,7 @@ namespace SME.SGP.Dados.Repositorios
                             where a.turma_id = @turmaCodigo 
                             and a.data_aula between @dataInicio and @dataFim
                             and db.componente_curricular_id = @componenteCurricularId
-                            and not a.excluido 
+                            and not a.excluido and not db.excluido
                             order by a.data_aula desc";
 
             return await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto>(query, new { turmaCodigo, componenteCurricularId, dataInicio, dataFim });
