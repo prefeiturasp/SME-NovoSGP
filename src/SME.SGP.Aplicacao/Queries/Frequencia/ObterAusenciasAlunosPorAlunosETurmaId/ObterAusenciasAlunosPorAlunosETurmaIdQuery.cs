@@ -9,16 +9,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAusenciasAlunosPorAlunosETurmaIdQuery : IRequest<IEnumerable<AusenciaPorDisciplinaAlunoDto>>
     {
-        public ObterAusenciasAlunosPorAlunosETurmaIdQuery(DateTime dataAula, IEnumerable<string> alunos, string turmaId)
+        public ObterAusenciasAlunosPorAlunosETurmaIdQuery(DateTime dataAula, IEnumerable<string> alunos, params string[] turmasId)
         {
             DataAula = dataAula;
             Alunos = alunos;
-            TurmaId = turmaId;
+            TurmasId = turmasId;
         }
 
         public DateTime DataAula { get; set; }
         public IEnumerable<string> Alunos { get; set; }
-        public string TurmaId { get; set; }
+        public string[] TurmasId { get; set; }
     }
 
     public class ObterAusenciasAlunosPorAlunosETurmaIdQueryValidator : AbstractValidator<ObterAusenciasAlunosPorAlunosETurmaIdQuery>
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.Alunos)
                 .NotEmpty()
                 .WithMessage("Os alunos precisam ser informados");
-            RuleFor(a => a.TurmaId)
+            RuleFor(a => a.TurmasId)
                 .NotEmpty()
                 .WithMessage("A turma precisa ser informada");
         }

@@ -6,16 +6,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTotalAulasPorDisciplinaETurmaQuery : IRequest<int>
     {
-        public ObterTotalAulasPorDisciplinaETurmaQuery(DateTime dataAula, string disciplinaId, string turmaId)
+        public ObterTotalAulasPorDisciplinaETurmaQuery(DateTime dataAula, string disciplinaId, params string[] turmasId)
         {
             DataAula = dataAula;
             DisciplinaId = disciplinaId;
-            TurmaId = turmaId;
+            TurmasId = turmasId;
         }
 
         public DateTime DataAula { get; }
         public string DisciplinaId { get; }
-        public string TurmaId { get; }
+        public string[] TurmasId { get; }
     }
 
     public class ObterTotalAulasPorDisciplinaETurmaQueryValidator : AbstractValidator<ObterTotalAulasPorDisciplinaETurmaQuery>
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("Data de referência deve ser informada para consulta do total de aulas no Bimestre");
 
-            RuleFor(a => a.TurmaId)
+            RuleFor(a => a.TurmasId)
                 .NotEmpty()
                 .WithMessage("Turma deve ser informada para consulta do total de aulas no Bimestre");
         }

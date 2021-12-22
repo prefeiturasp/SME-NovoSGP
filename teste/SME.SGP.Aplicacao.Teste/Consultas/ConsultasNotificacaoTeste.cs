@@ -28,13 +28,13 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             var obj = new HttpContextAccessor();
             obj.HttpContext = context;
 
-            consultasNotificacao = new ConsultasNotificacao(repositorioNotificacao.Object, repositorioUsuario.Object, new ContextoHttp(obj), mediator.Object);
+            consultasNotificacao = new ConsultasNotificacao(repositorioNotificacao.Object, new ContextoHttp(obj), mediator.Object);
         }
 
         [Fact(DisplayName = "DeveDispararExcecaoAoInstanciarSemDependencias")]
         public void DeveDispararExcecaoAoInstanciarSemDependencias()
         {
-            Assert.Throws<ArgumentNullException>(() => new ConsultasNotificacao(null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new ConsultasNotificacao(null, null, null));
         }
 
         [Fact(DisplayName = "ListarNotificacoesBasicaPorAnoLetivoRF")]
