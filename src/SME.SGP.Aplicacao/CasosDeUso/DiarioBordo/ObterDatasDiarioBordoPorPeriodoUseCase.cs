@@ -33,6 +33,7 @@ namespace SME.SGP.Aplicacao
                     var dadosAula = await mediator.Send(new ObterAulaPorIdQuery(dadosDiarioBordo.AulaId));
                     dadosDiarioBordo.Titulo = dadosAula.TipoAula == TipoAula.Reposicao ? $"{itensAula.DataAula.ToString("dd/MM/yyyy")} - Reposição" : $"{itensAula.DataAula.ToString("dd/MM/yyyy")}";
                     dadosDiarioBordo.Auditoria = (AuditoriaDto)dadosAula;
+                    dadosDiarioBordo.Pendente = false;
                     retorno.Add(dadosDiarioBordo);
                 }      
                 else
