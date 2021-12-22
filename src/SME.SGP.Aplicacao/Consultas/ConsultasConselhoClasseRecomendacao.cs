@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClassesIdParaTratar, alunoCodigo);
 
-                    if (conselhoClasseAluno != null && (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || !string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia) || !string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas)))
+                    if (conselhoClasseAluno != null)
                     {
                         if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno))
                             recomendacaoAluno.AppendLine(conselhoClasseAluno.RecomendacoesAluno);
