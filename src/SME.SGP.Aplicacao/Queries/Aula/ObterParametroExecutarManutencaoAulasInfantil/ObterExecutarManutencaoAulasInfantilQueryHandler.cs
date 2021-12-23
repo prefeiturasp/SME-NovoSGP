@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     class ObterExecutarManutencaoAulasInfantilQueryHandler : IRequestHandler<ObterExecutarManutencaoAulasInfantilQuery, bool>
     {
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
 
-        public ObterExecutarManutencaoAulasInfantilQueryHandler(IRepositorioParametrosSistema repositorioParametrosSistema)
+        public ObterExecutarManutencaoAulasInfantilQueryHandler(IRepositorioParametrosSistemaConsulta repositorioParametrosSistema)
         {
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }

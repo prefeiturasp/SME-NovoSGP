@@ -14,11 +14,11 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioRegistroIndividual repositorioRegistroIndividual;
-        private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioEventoFechamentoConsulta repositorioEventoFechamento;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
 
         public ListarAlunosDaTurmaPorComponenteRegistroIndividualQueryHandler(IRepositorioRegistroIndividual repositorioRegistroIndividual, IMediator mediator,
-                                                            IRepositorioEventoFechamento repositorioEventoFechamento, IRepositorioTipoCalendario repositorioTipoCalendario)
+                                                            IRepositorioEventoFechamentoConsulta repositorioEventoFechamento, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario)
         {
             this.repositorioRegistroIndividual = repositorioRegistroIndividual ?? throw new System.ArgumentNullException(nameof(repositorioRegistroIndividual));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));

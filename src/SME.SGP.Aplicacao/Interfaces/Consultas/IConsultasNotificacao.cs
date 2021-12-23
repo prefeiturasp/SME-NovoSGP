@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
     {
         Task<PaginacaoResultadoDto<NotificacaoBasicaDto>> Listar(NotificacaoFiltroDto filtroNotificacaoDto);
 
-        IEnumerable<NotificacaoBasicaDto> ListarPorAnoLetivoRf(int anoLetivo, string usuarioRf, int limite = 5);
+        Task<IEnumerable<NotificacaoBasicaDto>> ListarPorAnoLetivoRf(int anoLetivo, string usuarioRf, int limite = 5);
 
         NotificacaoDetalheDto Obter(long notificacaoId);
 
@@ -20,6 +20,6 @@ namespace SME.SGP.Aplicacao
 
         IEnumerable<EnumeradoRetornoDto> ObterTipos();
 
-        int QuantidadeNotificacoesNaoLidas(int anoLetivo, string usuarioRf);
+        Task<int> QuantidadeNotificacoesNaoLidas(int anoLetivo, string usuarioRf);
     }
 }

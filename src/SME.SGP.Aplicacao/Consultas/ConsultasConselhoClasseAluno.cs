@@ -19,24 +19,24 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasConselhoClasseNota consultasConselhoClasseNota;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;        
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IServicoConselhoClasse servicoConselhoClasse;
         private readonly IMediator mediator;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
-        public ConsultasConselhoClasseAluno(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
+        public ConsultasConselhoClasseAluno(IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
                                             IRepositorioTurma repositorioTurma,
                                             IConsultasDisciplina consultasDisciplina,
-                                            IRepositorioTipoCalendario repositorioTipoCalendario,
+                                            IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                             IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                             IConsultasConselhoClasseNota consultasConselhoClasseNota,
                                             IServicoEol servicoEOL,
                                             IServicoUsuario servicoUsuario,
-                                            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
+                                            IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo,
                                             IConsultasFrequencia consultasFrequencia,
                                             IServicoConselhoClasse servicoConselhoClasse,
                                             IConsultasPeriodoFechamento consultasPeriodoFechamento,
@@ -176,7 +176,6 @@ namespace SME.SGP.Aplicacao
             var periodoFim = periodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
 
             var turmasComMatriculasValidas = await ObterTurmasComMatriculasValidas(alunoCodigo, turmasCodigos, periodoInicio, periodoFim);
-
             if (turmasComMatriculasValidas.Any())
                 turmasCodigos = turmasComMatriculasValidas.ToArray();
 
@@ -486,7 +485,6 @@ namespace SME.SGP.Aplicacao
                                                                                   disciplinasId,
                                                                                   turmasCodigo, bimestres);
 
-
             var aulasComponentesTurmas = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(turmasCodigo, tipoCalendarioId, disciplinasId, bimestres));
 
             if (frequenciasAluno != null && frequenciasAluno.Any())
@@ -578,7 +576,7 @@ namespace SME.SGP.Aplicacao
 
         private ConselhoClasseComponenteFrequenciaDto ObterNotasFrequenciaComponente(string componenteCurricularNome, long componenteCurricularCodigo, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool turmaPossuiRegistroFrequencia, bool componenteLancaNota)
         {
-            var percentualFrequencia = double.MinValue;
+            var percentualFrequencia = double.MinValue;  
 
             if (turmaPossuiRegistroFrequencia)
                 percentualFrequencia = Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);

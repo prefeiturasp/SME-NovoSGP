@@ -13,10 +13,10 @@ namespace SME.SGP.Aplicacao
     public class ObterTipoNotaPorTurmaQueryHandler : IRequestHandler<ObterTipoNotaPorTurmaQuery, TipoNota>
     {
         private readonly IServicoEol servicoEol;
-        private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
+        private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IRepositorioCiclo repositorioCiclo;
 
-        public ObterTipoNotaPorTurmaQueryHandler(IServicoEol  servicoEol, IRepositorioNotaTipoValor repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo)
+        public ObterTipoNotaPorTurmaQueryHandler(IServicoEol  servicoEol, IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo)
         {
             this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));

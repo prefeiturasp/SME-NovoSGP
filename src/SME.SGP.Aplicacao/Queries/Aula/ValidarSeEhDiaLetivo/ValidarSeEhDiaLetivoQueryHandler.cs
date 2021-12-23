@@ -10,10 +10,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ValidarSeEhDiaLetivoQueryHandler : IRequestHandler<ValidarSeEhDiaLetivoQuery, bool>
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioEvento repositorioEvento;
 
-        public ValidarSeEhDiaLetivoQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioEvento repositorioEvento)
+        public ValidarSeEhDiaLetivoQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioEvento repositorioEvento)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
