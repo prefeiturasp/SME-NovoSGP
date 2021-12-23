@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
 
         public SalvarNotificacaoDevolutivaUseCase(IMediator mediator, IConfiguration configuration, IServicoNotificacao servicoNotificacao,
-            IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva)
+            IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva, IRepositorioComponenteCurricular repositorioComponenteCurricular)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -41,8 +41,7 @@ namespace SME.SGP.Aplicacao
             var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
             var devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(devolutivaId));
             var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinaPorId(titulares.FirstOrDefault().DisciplinaId);
-            //var componentes = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual,realizarAgrupamentoComponente:false));
-            //var componenteCurricular = componentes.FirstOrDefault(c => c.Codigo == titulares.FirstOrDefault().DisciplinaId);
+
             var codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id);
             var botaoDownload = MontarBotaoDownload(codigoRelatorio);
 

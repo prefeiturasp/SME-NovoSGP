@@ -43,7 +43,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<DisciplinaDto> ObterDisciplinaPorId(long id)
         {
-            var query = $@"select
+                var query = $@"select
                                 cc.id,
                                 cc.id as CodigoComponenteCurricular,
                                 cc.area_conhecimento_id as AreaConhecimentoId,
@@ -60,8 +60,8 @@ namespace SME.SGP.Dados.Repositorios
                                 cc.permite_registro_frequencia as RegistraFrequencia
                            from componente_curricular cc 
                            left join componente_curricular_grupo_matriz ccgm on ccgm.id = cc.grupo_matriz_id 
-                          WHERE cc.id = @id)";
-            return (await database.Conexao.QueryFirstOrDefaultAsync<DisciplinaDto>(query, new { id }));
+                          WHERE cc.id = @id";
+                return (await database.Conexao.QueryFirstAsync<DisciplinaDto>(query, new { id }));
         }
 
         public async Task<IEnumerable<ComponenteCurricularDto>> ListarComponentesCurriculares()
