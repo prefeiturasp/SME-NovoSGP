@@ -243,7 +243,7 @@ namespace SME.SGP.Dados
             });
         }
 
-        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual, string turmaCodigo = "")
+        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual, string turmaCodigo)
         {
             var query = @"select *
                         from frequencia_aluno fa

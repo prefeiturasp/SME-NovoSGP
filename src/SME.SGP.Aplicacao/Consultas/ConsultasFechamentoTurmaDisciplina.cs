@@ -227,7 +227,7 @@ namespace SME.SGP.Aplicacao
                         alunoDto.Informacao = marcador.Descricao;
                     }
 
-                    var frequenciaAluno = consultasFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim);
+                    var frequenciaAluno = consultasFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim, turmaId);
                     if (frequenciaAluno != null)
                     {
                         alunoDto.QuantidadeFaltas = frequenciaAluno.TotalAusencias;
