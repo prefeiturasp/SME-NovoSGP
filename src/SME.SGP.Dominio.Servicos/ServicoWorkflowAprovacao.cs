@@ -380,7 +380,9 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     try
                     {
-                        usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(string.Empty, funcionario.Id, buscaLogin: true));
+                        var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(string.Empty, funcionario.Id, buscaLogin: true);
+                        if (usuario != null)
+                            usuarios.Add(usuario);
                     }
                     catch (Exception e)
                     {

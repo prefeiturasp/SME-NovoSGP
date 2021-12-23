@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using Sentry;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
@@ -157,38 +158,47 @@ namespace SME.SGP.Dominio
 
         public async Task<Usuario> ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
         {
-            var eNumero = long.TryParse(codigoRf, out long n);
-
-            codigoRf = eNumero ? codigoRf : null;
-
-            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));            
-
-            if (usuario != null)
+            try
             {
-                if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
+                var eNumero = long.TryParse(codigoRf, out long n);
+
+                codigoRf = eNumero ? codigoRf : null;
+
+                var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));            
+
+                if (usuario != null)
                 {
-                    usuario.Nome = nome;
-                    repositorioUsuario.Salvar(usuario);
+                    if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
+                    {
+                        usuario.Nome = nome;
+                        repositorioUsuario.Salvar(usuario);
+                    }
+
+                    if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
+                    {
+                        usuario.CodigoRf = codigoRf;
+                        repositorioUsuario.Salvar(usuario);
+                    }
+
+                    return usuario;
                 }
 
-                if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
-                {
-                    usuario.CodigoRf = codigoRf;
-                    repositorioUsuario.Salvar(usuario);
-                }
-
-                return usuario;
-            }
-
-            if (string.IsNullOrEmpty(login))
-                login = codigoRf;
+                if (string.IsNullOrEmpty(login))
+                    login = codigoRf;
                       
 
-            usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
+                usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
 
-            repositorioUsuario.Salvar(usuario);
+                repositorioUsuario.Salvar(usuario);
 
-            return usuario;
+                return usuario;
+
+            }
+            catch (Exception e)
+            {
+                SentrySdk.CaptureException(e);
+                return null;
+            }
         }
 
         public async Task<Usuario> ObterUsuarioPorCodigoRfLoginOuAdicionaAsync(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
