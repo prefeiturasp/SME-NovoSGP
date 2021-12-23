@@ -3,20 +3,20 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ComandosFechamentoAluno : IComandosFechamentoAluno
     {
-        private readonly IRepositorioFechamentoAlunoConsulta repositorio;
+        private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
+        private readonly IRepositorioFechamentoAlunoConsulta repositorioFechamentoAlunoConsulta;
         private readonly IMediator mediator;
 
-        public ComandosFechamentoAluno(IRepositorioFechamentoAlunoConsulta repositorio, IMediator mediator)
+        public ComandosFechamentoAluno(IRepositorioFechamentoAluno repositorioFechamentoAluno, IRepositorioFechamentoAlunoConsulta repositorioFechamentoAlunoConsulta, IMediator mediator)
         {
-            this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioFechamentoAluno));
+            this.repositorioFechamentoAlunoConsulta = repositorioFechamentoAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioFechamentoAlunoConsulta));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -28,14 +28,14 @@ namespace SME.SGP.Aplicacao
             if (string.IsNullOrEmpty(anotacaoAluno.Anotacao))
                 anotacao.Excluido = true;
 
-            await repositorio.SalvarAsync(anotacao);
+            await repositorioFechamentoAluno.SalvarAsync(anotacao);
             return (AuditoriaPersistenciaDto)anotacao;
         }
 
         private async Task<FechamentoAluno> MapearParaEntidade(AnotacaoAlunoDto anotacaoAluno)
         {
-            var anotacao = await repositorio.ObterFechamentoAluno(anotacaoAluno.FechamentoId, anotacaoAluno.CodigoAluno);
-            MoverRemoverExcluidos(anotacaoAluno, anotacao);
+            var anotacao = await repositorioFechamentoAlunoConsulta.ObterFechamentoAluno(anotacaoAluno.FechamentoId, anotacaoAluno.CodigoAluno);
+            await MoverRemoverExcluidos(anotacaoAluno, anotacao);
             if (anotacao == null)
                 anotacao = new FechamentoAluno()
                 {
@@ -52,13 +52,12 @@ namespace SME.SGP.Aplicacao
         {
             if (!string.IsNullOrEmpty(anotacaoAluno?.Anotacao))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FechamentoAnotacao, anotacao!=null? anotacao.Anotacao:string.Empty, anotacaoAluno.Anotacao));
-                anotacaoAluno.Anotacao = moverArquivo.Result;
+                anotacaoAluno.Anotacao = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FechamentoAnotacao, anotacao != null ? anotacao.Anotacao : string.Empty, anotacaoAluno.Anotacao));
             }
             if (!string.IsNullOrEmpty(anotacao?.Anotacao))
             {
-                var aquivoNovo = anotacaoAluno?.Anotacao !=null ? anotacaoAluno.Anotacao : string.Empty;
-                await mediator.Send(new RemoverArquivosExcluidosCommand(arquivoAtual: anotacao.Anotacao, arquivoNovo: aquivoNovo,caminho:TipoArquivo.FechamentoAnotacao.Name()));
+                var aquivoNovo = anotacaoAluno?.Anotacao != null ? anotacaoAluno.Anotacao : string.Empty;
+                await mediator.Send(new RemoverArquivosExcluidosCommand(arquivoAtual: anotacao.Anotacao, arquivoNovo: aquivoNovo, caminho: TipoArquivo.FechamentoAnotacao.Name()));
             }
         }
     }
