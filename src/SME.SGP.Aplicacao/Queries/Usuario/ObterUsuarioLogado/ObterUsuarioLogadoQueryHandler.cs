@@ -19,11 +19,11 @@ namespace SME.SGP.Aplicacao
         private const string CLAIM_PERFIL_ATUAL = "perfil";
 
         private readonly IContextoAplicacao contextoAplicacao;
-        private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IRepositorioUsuarioConsulta repositorioUsuario;
         private readonly IRepositorioCache repositorioCache;
         private readonly IServicoEol servicoEOL;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
-        public ObterUsuarioLogadoQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioUsuario repositorioUsuario, 
+        public ObterUsuarioLogadoQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioUsuarioConsulta repositorioUsuario, 
             IRepositorioCache repositorioCache, IServicoEol servicoEOL, IRepositorioPrioridadePerfil repositorioPrioridadePerfil)
         {
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
             if (string.IsNullOrWhiteSpace(login))
                 throw new NegocioException("Usuário não encontrado.");
 
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
+            var usuario = await repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
 
             if (usuario == null)
             {

@@ -1,4 +1,4 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -17,30 +17,31 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IRepositorioAula repositorioAula;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioAulaConsulta repositorioAula;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
         public ConsultaAtividadeAvaliativa(
             IConsultasProfessor consultasProfessor,
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
-            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-            IRepositorioComponenteCurricular repositorioComponenteCurricular,
+            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
             IRepositorioTurma repositorioTurma,
-            IRepositorioAula repositorioAula,
+            IRepositorioAulaConsulta repositorioAula,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IServicoUsuario servicoUsuario,
             IContextoAplicacao contextoAplicacao,
             IConsultasTurma consultasTurma,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
-            IConsultasPeriodoFechamento consultasPeriodoFechamento) : base(contextoAplicacao)
+            IConsultasPeriodoFechamento consultasPeriodoFechamento, IMediator mediator) : base(contextoAplicacao)
         {
             this.consultasProfessor = consultasProfessor ?? throw new System.ArgumentNullException(nameof(consultasProfessor));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
@@ -55,6 +56,7 @@ namespace SME.SGP.Aplicacao
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>> ListarPaginado(FiltroAtividadeAvaliativaDto filtro)
@@ -120,7 +122,7 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<TurmaRetornoDto>();
 
-            var turma = await repositorioTurma.ObterPorCodigo(turmaId.ToString());
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId.ToString()));
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(usuario.CodigoRf);
 

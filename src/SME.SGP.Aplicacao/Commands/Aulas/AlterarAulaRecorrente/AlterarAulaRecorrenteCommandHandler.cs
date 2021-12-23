@@ -78,7 +78,8 @@ namespace SME.SGP.Aplicacao
 
             var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(request.TipoCalendarioId, dataAula, request.RecorrenciaAula));
 
-            var aulasDaRecorrencia = await repositorioAula.ObterAulasRecorrencia(aulaPaiIdOrigem, aulaOrigem.Id, fimRecorrencia);
+            var aulasDaRecorrencia = await mediator.Send(new ObterRepositorioAulaPorAulaRecorrenteQuery(aulaPaiIdOrigem, aulaOrigem.Id, fimRecorrencia));
+                
             var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasDaRecorrencia);
 
             try

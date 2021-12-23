@@ -7,9 +7,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQueryHandler : IRequestHandler<ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery, int>
     {
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
 
-        public ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQueryHandler(IRepositorioAula repositorioAula)
+        public ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQueryHandler(IRepositorioAulaConsulta repositorioAula)
         {
             this.repositorioAula = repositorioAula;
         }

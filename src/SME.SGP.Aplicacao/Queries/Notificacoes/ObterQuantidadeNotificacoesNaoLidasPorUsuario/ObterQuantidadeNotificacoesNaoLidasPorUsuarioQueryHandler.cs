@@ -7,9 +7,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuantidadeNotificacoesNaoLidasPorUsuarioQueryHandler : IRequestHandler<ObterQuantidadeNotificacoesNaoLidasPorUsuarioQuery, int>
     {
-        private readonly IRepositorioNotificacao repositorioNotificacao;
+        private readonly IRepositorioNotificacaoConsulta repositorioNotificacao;
 
-        public ObterQuantidadeNotificacoesNaoLidasPorUsuarioQueryHandler(IRepositorioNotificacao repositorioNotificacao)
+        public ObterQuantidadeNotificacoesNaoLidasPorUsuarioQueryHandler(IRepositorioNotificacaoConsulta repositorioNotificacao)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
         }

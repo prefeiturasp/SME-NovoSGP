@@ -10,22 +10,22 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTotalFrequenciaEAulasPorPeriodoQueryHandler : IRequestHandler<ObterTotalFrequenciaEAulasPorPeriodoQuery, IEnumerable<TotalFrequenciaEAulasPorPeriodoDto>>
     {
-        private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
 
-        public ObterTotalFrequenciaEAulasPorPeriodoQueryHandler(IRepositorioFrequencia repositorioFrequencia)
+        public ObterTotalFrequenciaEAulasPorPeriodoQueryHandler(IRepositorioFrequenciaConsulta repositorioFrequencia)
         {
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
         }
 
         public async Task<IEnumerable<TotalFrequenciaEAulasPorPeriodoDto>> Handle(ObterTotalFrequenciaEAulasPorPeriodoQuery request, CancellationToken cancellationToken)
             => await repositorioFrequencia.ObterTotalFrequenciaEAulasPorPeriodo(request.AnoLetivo,
-                                                                                    request.DreId,
-                                                                                    request.UeId,
-                                                                                    request.Modalidade,
-                                                                                    request.Semestre,
-                                                                                    request.DataInicio,
-                                                                                    request.DataFim,
-                                                                                    request.Mes,
-                                                                                    request.TipoPeriodoDashboard);
+                                                                                request.DreId,
+                                                                                request.UeId,
+                                                                                request.Modalidade,
+                                                                                request.Semestre,
+                                                                                request.DataInicio,
+                                                                                request.DataFim,
+                                                                                request.Mes,
+                                                                                request.TipoPeriodoDashboard);
     }
 }

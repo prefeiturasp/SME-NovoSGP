@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ComandosRelatorioSemestralPAPAluno : IComandosRelatorioSemestralPAPAluno
     {
         private readonly IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IComandosRelatorioSemestralTurmaPAP comandosRelatorioSemestral;
         private readonly IConsultasRelatorioSemestralTurmaPAP consultasRelatorioSemestral;
         private readonly IComandosRelatorioSemestralPAPAlunoSecao comandosRelatorioSemestralAlunoSecao;
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
 
         public ComandosRelatorioSemestralPAPAluno(IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno,
-                                               IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                               IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                                IComandosRelatorioSemestralTurmaPAP comandosRelatorioSemestral,
                                                IConsultasRelatorioSemestralTurmaPAP consultasRelatorioSemestral,
                                                IComandosRelatorioSemestralPAPAlunoSecao comandosRelatorioSemestralAlunoSecao,

@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -18,25 +19,38 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IConsultasTurma consultasTurma;
-        private readonly IRepositorioAula repositorio;
+        private readonly IRepositorioAulaConsulta repositorioConsulta;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IServicoEol servicoEol;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
+        private IRepositorioAula object1;
+        private IConsultasPeriodoEscolar object2;
+        private IConsultasFrequencia object3;
+        private IConsultasTipoCalendario object4;
+        private IRepositorioPlanoAula object5;
+        private IRepositorioTurmaConsulta object6;
+        private IServicoUsuario object7;
+        private IServicoEol object8;
+        private IConsultasDisciplina object9;
+        private IConsultasTurma object10;
+        private IConsultasPeriodoFechamento object11;
 
-        public ConsultasAula(IRepositorioAula repositorio,
+        public ConsultasAula(IRepositorioAulaConsulta repositorioConsulta,
                              IConsultasPeriodoEscolar consultasPeriodoEscolar,
                              IConsultasFrequencia consultasFrequencia,
                              IConsultasTipoCalendario consultasTipoCalendario,
                              IRepositorioPlanoAula repositorioPlanoAula,
-                             IRepositorioTurma repositorioTurma,
+                             IRepositorioTurmaConsulta repositorioTurma,
                              IServicoUsuario servicoUsuario,
                              IServicoEol servicoEol,
                              IConsultasDisciplina consultasDisciplina,
                              IConsultasTurma consultasTurma,
-                             IConsultasPeriodoFechamento consultasPeriodoFechamento)
+                             IConsultasPeriodoFechamento consultasPeriodoFechamento,
+                             IMediator mediator)
         {
-            this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.repositorioConsulta = repositorioConsulta ?? throw new ArgumentNullException(nameof(repositorioConsulta));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
@@ -47,7 +61,8 @@ namespace SME.SGP.Aplicacao
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-        }
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }               
 
         public async Task<bool> AulaDentroPeriodo(Aula aula)
         {
@@ -74,13 +89,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AulaConsultaDto> BuscarPorId(long id)
         {
-            var aula = repositorio.ObterPorId(id);
+            var aula = repositorioConsulta.ObterPorId(id);
 
             if (aula == null || aula.Excluido)
                 throw new NegocioException($"Aula de id {id} não encontrada");
 
             if (aula.AulaPaiId.HasValue)
-                aula.AulaPai = await repositorio.ObterCompletoPorIdAsync(aula.AulaPaiId.Value);
+                aula.AulaPai = await repositorioConsulta.ObterCompletoPorIdAsync(aula.AulaPaiId.Value);
 
             var aberto = await AulaDentroPeriodo(aula);
 
@@ -93,7 +108,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
-            return await repositorio.ObterAulaDataTurmaDisciplina(data, turmaId, disciplinaId);
+            return await repositorioConsulta.ObterAulaDataTurmaDisciplina(data, turmaId, disciplinaId);
         }
 
         public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turmaCodigo, string disciplinaCodigo)
@@ -101,7 +116,7 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var usuarioRF = usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorInfantil() ? usuarioLogado.CodigoRf : string.Empty;
 
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 
@@ -116,12 +131,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia)
         {
-            var aulaInicioRecorrencia = repositorio.ObterPorId(aulaInicialId);
+            var aulaInicioRecorrencia = repositorioConsulta.ObterPorId(aulaInicialId);
             var fimRecorrencia = await consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aulaInicioRecorrencia.TipoCalendarioId, aulaInicioRecorrencia.DataAula, recorrencia);
 
             var aulaIdOrigemRecorrencia = aulaInicioRecorrencia.AulaPaiId != null ? aulaInicioRecorrencia.AulaPaiId.Value
                                             : aulaInicialId;
-            var aulasRecorrentes = await repositorio.ObterAulasRecorrencia(aulaIdOrigemRecorrencia, aulaInicioRecorrencia.Id, fimRecorrencia);
+            var aulasRecorrentes = await repositorioConsulta.ObterAulasRecorrencia(aulaIdOrigemRecorrencia, aulaInicioRecorrencia.Id, fimRecorrencia);
             return aulasRecorrentes.Count() + 1;
         }
 
@@ -130,9 +145,9 @@ namespace SME.SGP.Aplicacao
             IEnumerable<AulasPorTurmaDisciplinaDto> aulas;
 
             if (ExperienciaPedagogica(disciplina))
-                aulas = await repositorio.ObterAulasTurmaExperienciasPedagogicasDia(turma, dataAula);
+                aulas = await repositorioConsulta.ObterAulasTurmaExperienciasPedagogicasDia(turma, dataAula);
             else
-                aulas = await repositorio.ObterAulasTurmaDisciplinaDiaProfessor(turma, disciplina, dataAula, codigoRf);
+                aulas = await repositorioConsulta.ObterAulasTurmaDisciplinaDiaProfessor(turma, disciplina, dataAula, codigoRf);
 
             return aulas.Sum(a => a.Quantidade);
         }
@@ -142,16 +157,16 @@ namespace SME.SGP.Aplicacao
             IEnumerable<AulasPorTurmaDisciplinaDto> aulas;
 
             if (ExperienciaPedagogica(disciplina))
-                aulas = await repositorio.ObterAulasTurmaExperienciasPedagogicasSemana(turma, semana);
+                aulas = await repositorioConsulta.ObterAulasTurmaExperienciasPedagogicasSemana(turma, semana);
             else
-                aulas = await repositorio.ObterAulasTurmaDisciplinaSemanaProfessor(turma, disciplina, semana, codigoRf);
+                aulas = await repositorioConsulta.ObterAulasTurmaDisciplinaSemanaProfessor(turma, disciplina, semana, codigoRf);
 
             return aulas.Sum(a => a.Quantidade);
         }
 
         public int ObterRecorrenciaDaSerie(long aulaId)
         {
-            var aula = repositorio.ObterPorId(aulaId);
+            var aula = repositorioConsulta.ObterPorId(aulaId);
 
             if (aula == null)
                 throw new NegocioException("Aula não encontrada");
@@ -161,7 +176,7 @@ namespace SME.SGP.Aplicacao
                 return (int)aula.RecorrenciaAula;
 
             // Busca aula origem da recorrencia
-            var aulaOrigemRecorrencia = repositorio.ObterPorId(aula.AulaPaiId.Value);
+            var aulaOrigemRecorrencia = repositorioConsulta.ObterPorId(aula.AulaPaiId.Value);
 
             // retorna o tipo de recorrencia da aula origem
             return (int)aulaOrigemRecorrencia.RecorrenciaAula;
@@ -214,7 +229,7 @@ namespace SME.SGP.Aplicacao
 
             periodosEscolares.Periodos.ForEach(p =>
             {
-                var aulas = repositorio
+                var aulas = repositorioConsulta
                     .ObterDatasDeAulasPorAnoTurmaEDisciplina(p.Id, anoLetivo, turmaCodigo, disciplinaCodigo, string.Empty, usuarioLogado.EhProfessorCj(), usuarioLogado.EhProfessor() || usuarioLogado.EhProfessorCj());
 
                 aulas.ToList().ForEach(aula =>

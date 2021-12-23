@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using MediatR;
+using Moq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -19,27 +20,29 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
         private readonly Mock<IConsultasTipoCalendario> consultasTipoCalendário;
         private readonly Mock<IConsultasTurma> consultasTurma;
-        private readonly Mock<IRepositorioAula> repositorioAula;
+        private readonly Mock<IRepositorioAulaConsulta> repositorioAula;
         private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
-        private readonly Mock<IRepositorioTurma> repositorioTurma;
+        private readonly Mock<IRepositorioTurmaConsulta> repositorioTurma;
         private readonly Mock<IServicoEol> servicoEol;
         private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IMediator> mediator;
 
         public ConsultasAulasTeste()
         {
-            repositorioAula = new Mock<IRepositorioAula>();
+            repositorioAula = new Mock<IRepositorioAulaConsulta>();
             servicoUsuario = new Mock<IServicoUsuario>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             repositorioPlanoAula = new Mock<IRepositorioPlanoAula>();
             consultasFrequencia = new Mock<IConsultasFrequencia>();
             servicoEol = new Mock<IServicoEol>();
             consultasDisciplinas = new Mock<IConsultasDisciplina>();
-            repositorioTurma = new Mock<IRepositorioTurma>();
+            repositorioTurma = new Mock<IRepositorioTurmaConsulta>();
             consultasTurma = new Mock<IConsultasTurma>();
             consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
             consultasTipoCalendário = new Mock<IConsultasTipoCalendario>();
+            mediator = new Mock<IMediator>();
 
-            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasFrequencia.Object, consultasTipoCalendário.Object, repositorioPlanoAula.Object, repositorioTurma.Object, servicoUsuario.Object, servicoEol.Object, consultasDisciplinas.Object, consultasTurma.Object, consultasPeriodoFechamento.Object);
+            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasFrequencia.Object, consultasTipoCalendário.Object, repositorioPlanoAula.Object, repositorioTurma.Object, servicoUsuario.Object, servicoEol.Object, consultasDisciplinas.Object, consultasTurma.Object, consultasPeriodoFechamento.Object, mediator.Object);
 
             Setup();
         }
