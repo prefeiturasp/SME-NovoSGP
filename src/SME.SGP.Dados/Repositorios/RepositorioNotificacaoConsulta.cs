@@ -207,7 +207,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirst<int>(query.ToString(), new { anoLetivo, usuarioRf, excluida = false, naoLida = (int)NotificacaoStatus.Pendente });
         }
 
-        public async Task<long> ObterUltimoCodigoPorAno(int ano)
+        public async Task<long> ObterUltimoCodigoPorAnoAsync(int ano)
         {
             var query = new StringBuilder();
 
@@ -292,6 +292,17 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select codigo from notificacao where id = @notificacaoId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { notificacaoId });
+        }
+
+        public long ObterUltimoCodigoPorAno(int ano)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("SELECT max(n.codigo)");
+            query.AppendLine("FROM notificacao n");
+            query.AppendLine("where EXTRACT(year FROM n.criado_em) = @ano");
+
+            return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { ano });
         }
     }
 }

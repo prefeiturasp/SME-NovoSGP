@@ -88,16 +88,16 @@ namespace SME.SGP.Dominio.Servicos
             else await ReprovarNivel(workflow, (long)codigoDaNotificacao, observacao, nivel.Cargo, nivel);
         }
 
-        public void ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)
+        public async Task ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)
         {
             if (workflowAprovacao.NotificacaoCategoria == NotificacaoCategoria.Workflow_Aprovacao)
             {
                 var niveisIniciais = workflowAprovacao.ObtemNiveis(workflowAprovacao.ObtemPrimeiroNivel()).ToList();
-                EnviaNotificacaoParaNiveis(niveisIniciais);
+                await EnviaNotificacaoParaNiveis(niveisIniciais);
             }
             else
             {
-                EnviaNotificacaoParaNiveis(workflowAprovacao.Niveis.ToList());
+                await EnviaNotificacaoParaNiveis(workflowAprovacao.Niveis.ToList());
             }
         }
 
@@ -144,7 +144,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var niveis = workflow.ObtemNiveisParaEnvioPosAprovacao();
             if (niveis != null && niveis.Any())
-                EnviaNotificacaoParaNiveis(niveis.ToList(), codigoDaNotificacao);
+                await EnviaNotificacaoParaNiveis(niveis.ToList(), codigoDaNotificacao);
             else
             {
                 if (workflow.Tipo == WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional)
@@ -339,7 +339,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async void EnviaNotificacaoParaNiveis(List<WorkflowAprovacaoNivel> niveis, long codigoNotificacao = 0)
+        private async Task EnviaNotificacaoParaNiveis(List<WorkflowAprovacaoNivel> niveis, long codigoNotificacao = 0)
         {
             if (codigoNotificacao == 0)
                 codigoNotificacao = await servicoNotificacao.ObtemNovoCodigoAsync();
