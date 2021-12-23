@@ -276,5 +276,37 @@ namespace SME.SGP.Aplicacao
                     anoLetivo
                     )
             );
+
+        public async Task<string> ObterFrequenciaGeralAlunoPorTurmas(string alunoCodigo, string[] turmasCodigos, string componenteCurricularCodigo = "", int? semestre = null)
+        {
+            var turmaCodigo = turmasCodigos.First();
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
+            if (turma == null)
+                throw new NegocioException("Turma não localizada.");
+
+            //Particularidade de 2020
+            if (turma.AnoLetivo.Equals(2020))
+                return await CalculoFrequenciaGlobal2020(alunoCodigo, turma);
+
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+
+            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(alunoCodigo, turmasCodigos, tipoCalendarioId));
+
+            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(new string[] { turma.CodigoTurma }, tipoCalendarioId, new string[] { }, new int[] { }));
+
+            if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada == null || turmaPossuiFrequenciaRegistrada.Count() == 0)
+                return "0";
+
+            else if (frequenciaAluno?.PercentualFrequencia > 0)
+                return frequenciaAluno.PercentualFrequencia.ToString();
+
+            else if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)
+                return "0";
+
+            else if (turmaPossuiFrequenciaRegistrada.Any())
+                return "100";
+
+            return "0";
+        }
     }
 }

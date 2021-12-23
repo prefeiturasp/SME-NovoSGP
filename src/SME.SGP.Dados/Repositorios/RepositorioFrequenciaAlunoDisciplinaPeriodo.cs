@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IConfiguration configuration) : base(database)
         {
             this.connectionString = configuration.GetConnectionString("SGP_Postgres");
-        }
+        } 
 
         public async Task SalvarVariosAsync(IEnumerable<FrequenciaAluno> entidades)
         {

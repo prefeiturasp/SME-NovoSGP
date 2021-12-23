@@ -104,10 +104,10 @@ namespace SME.SGP.Dominio.Servicos
         #region Frequência
         private async Task<bool> ValidarParecerPorFrequencia(string alunoCodigo, Turma turma, string[] turmasCodigos)
         {
-            if (!await ValidarFrequenciaGeralAluno(alunoCodigo, turma.CodigoTurma))
+            if (!await ValidarFrequenciaGeralAluno(alunoCodigo, turmasCodigos))
                 return false;
 
-            var parametroFrequenciaBaseNacional = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional, DateTime.Today.Year)));
+            var parametroFrequenciaBaseNacional = await ObterFrequenciaBaseNacional();
 
             Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
 
@@ -128,14 +128,25 @@ namespace SME.SGP.Dominio.Servicos
                 });
             }
 
-            if (percentualFreqPorPeriodo.GroupBy(f => f.disciplina).Any(f => (f.Sum(p => p.percentual) / f.Count()) < parametroFrequenciaBaseNacional)) return false;
+            if (FrequenciaAnualPorComponenteCritica(percentualFreqPorPeriodo, parametroFrequenciaBaseNacional)) 
+                return false;
 
             return true;
         }
 
-        private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo)
+        private async Task<double> ObterFrequenciaBaseNacional()
+            => double.Parse(
+                await mediator.Send(
+                    new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional, DateTime.Today.Year)));
+
+        private bool FrequenciaAnualPorComponenteCritica(List<(string disciplina, int bimestre, double percentual)> percentualFreqPorPeriodo, double parametroFrequenciaBaseNacional)
+            => percentualFreqPorPeriodo
+            .GroupBy(f => f.disciplina)
+            .Any(f => (f.Sum(p => p.percentual) / f.Count()) < parametroFrequenciaBaseNacional);
+
+        private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string[] turmasCodigos)
         {
-            var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo);
+            var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAlunoPorTurmas(alunoCodigo, turmasCodigos);
             double valorFrequenciaAluno = 0;
             if (frequenciaAluno != "")
                 valorFrequenciaAluno = Convert.ToDouble(frequenciaAluno);
