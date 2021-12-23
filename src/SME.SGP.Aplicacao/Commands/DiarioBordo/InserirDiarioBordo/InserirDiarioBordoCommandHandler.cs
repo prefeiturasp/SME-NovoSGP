@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var professorTurma = await servicoEol.VerificaAtribuicaoProfessorTurma(usuario.CodigoRf, turma.CodigoTurma);
-                if (professorTurma?.DataDisponibilizacao == null || professorTurma.DataDisponibilizacao < DateTime.Now)
+                if (professorTurma?.DataDisponibilizacao < DateTime.Now)
                 {
                     throw new NegocioException(
                         $"Você não possui permissão para inserir registro de diário de bordo, pois não está mais atribuído(a) a turma.");
