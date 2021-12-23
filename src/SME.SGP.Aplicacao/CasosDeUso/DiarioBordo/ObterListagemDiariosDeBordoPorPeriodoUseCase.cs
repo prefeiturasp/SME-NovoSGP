@@ -12,7 +12,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<DiarioBordoTituloDto>> Executar(FiltroListagemDiarioBordoDto param)
         {
-            return await mediator.Send(new ObterListagemDiariosDeBordoPorPeriodoQuery(param.TurmaId, param.ComponenteCurricularId, param.DataInicio, param.DataFim));
+            var componentePai = await mediator.Send(new ObterCodigoComponentePaiQuery(param.ComponenteCurricularId));
+
+            return await mediator.Send(new ObterListagemDiariosDeBordoPorPeriodoQuery(param.TurmaId, componentePai, param.ComponenteCurricularId, param.DataInicio, param.DataFim));
         }
     }
 }
