@@ -61,18 +61,11 @@ namespace SME.SGP.Aplicacao
 
             return BimestreFinal == dto.Bimestre
                 ? await ObterFrequenciaAlunosBimestreFinalAsync(turma, alunosValidosComOrdenacao, dto.ComponenteCurricularId, tipoCalendarioId)
-                : await ObterFrequenciaAlunosBimestresRegularesAsync(turma, alunosValidosComOrdenacao, dto.ComponenteCurricularId, tipoCalendarioId, dto.Bimestre);
+                : await ObterFrequenciaAlunosBimestresRegularesAsync(turma, alunosValidosComOrdenacao, dto.ComponenteCurricularId, tipoCalendarioId, dto.Bimestre, periodoAtual);
         }
 
-        private async Task<FrequenciaAlunosPorBimestreDto> ObterFrequenciaAlunosBimestresRegularesAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunos, long componenteCurricularId, long tipoCalendarioId, int? bimestre)
+        private async Task<FrequenciaAlunosPorBimestreDto> ObterFrequenciaAlunosBimestresRegularesAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunos, long componenteCurricularId, long tipoCalendarioId, int? bimestre, PeriodoEscolar periodoEscolar)
         {
-            var periodoEscolar = bimestre is null
-                ? await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turma, DateTime.Now))
-                : await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre.GetValueOrDefault()));
-
-            if (periodoEscolar is null)
-                throw new NegocioException("Não foi possível encontrar o período escolar da turma.");
-
             var aulasPrevistas = await ObterAulasPrevistasAsync(turma, componenteCurricularId, tipoCalendarioId, periodoEscolar.Bimestre);
             var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.Id, componenteCurricularId, tipoCalendarioId, periodoEscolar.Id));
 

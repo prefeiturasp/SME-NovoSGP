@@ -43,7 +43,7 @@ namespace SME.SGP.Dominio.Servicos
                                             IServicoUsuario servicoUsuario,
                                             IServicoEol servicoEOL,
                                             IConfiguration configuration,
-                                            IMediator mediator)
+                                            IMediator mediator, IConsultasFeriadoCalendario consultasFeriadoCalendario)
         {
             this.repositorioNotificacaoFrequencia = repositorioNotificacaoFrequencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoFrequencia));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
@@ -58,7 +58,7 @@ namespace SME.SGP.Dominio.Servicos
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasFeriadoCalendario = consultasFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(consultasFeriadoCalendario));
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));            
         }
 
         #region Metodos Publicos
