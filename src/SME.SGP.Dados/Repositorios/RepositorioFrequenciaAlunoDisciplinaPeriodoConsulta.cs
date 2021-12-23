@@ -304,6 +304,32 @@ namespace SME.SGP.Dados
                 });
         }
 
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaComponentesAlunoPorTurmas(string alunoCodigo, string[] codigosTurmas, long tipoCalendarioId)
+        {
+            var query = new StringBuilder($@"select fa.* 
+                            from frequencia_aluno fa
+                            inner join turma t on fa.turma_id = t.turma_id ");
+
+            if (tipoCalendarioId > 0)
+                query.AppendLine("inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id");
+
+            query.AppendLine(@" where fa.tipo = 1 
+                and fa.codigo_aluno = @alunoCodigo 
+                and t.turma_id = any(@codigosTurmas)
+                and t.tipo_turma in(1,2,7) ");
+
+            if (tipoCalendarioId > 0)
+                query.AppendLine(" and pe.tipo_calendario_id = @tipoCalendarioId");
+
+            return await database.Conexao
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new
+                {
+                    alunoCodigo,
+                    codigosTurmas,
+                    tipoCalendarioId
+                });
+        }
+
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorTurmas(string alunoCodigo, string[] codigosTurmas, long tipoCalendarioId)
         {
             var query = new StringBuilder($@"select fa.* 
