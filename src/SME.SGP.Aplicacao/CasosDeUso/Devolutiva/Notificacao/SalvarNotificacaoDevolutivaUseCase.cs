@@ -18,14 +18,17 @@ namespace SME.SGP.Aplicacao
         private readonly IConfiguration configuration;
         private readonly IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva;
         private readonly IServicoNotificacao servicoNotificacao;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+
 
         public SalvarNotificacaoDevolutivaUseCase(IMediator mediator, IConfiguration configuration, IServicoNotificacao servicoNotificacao,
-            IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva)
+            IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva, IRepositorioComponenteCurricular repositorioComponenteCurricular)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.repositorioNotificacaoDevolutiva = repositorioNotificacaoDevolutiva ?? throw new ArgumentNullException(nameof(repositorioNotificacaoDevolutiva));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
@@ -35,21 +38,24 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = dadosMensagem.Usuario;
             var devolutivaId = dadosMensagem.DevolutivaId;
 
-            var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turma.CodigoTurma));
+            var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
             var devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(devolutivaId));
+            var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinaPorId(titulares.FirstOrDefault().DisciplinaId);
+
+            var codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id);
+            var botaoDownload = MontarBotaoDownload(codigoRelatorio);
 
             if (titulares != null)
             {
-                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) registrou a devolutiva dos diários de bordo da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.TipoEscola}-{turma.Ue.Nome}</strong> ({turma.Ue.Dre.Abreviacao}). Esta devolutiva contempla os diários de bordo do período de <strong>{devolutiva.PeriodoInicio:dd/MM/yyyy}</strong> à <strong>{devolutiva.PeriodoFim:dd/MM/yyyy}</strong>.");
-                                
-                mensagem.AppendLine($"<br/><br/>Acesse o Diário de Bordo de uma das aulas para consultar o conteúdo da devolutiva.");
+                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) registrou a devolutiva dos diários de bordo de <strong>{componenteCurricular.NomeComponenteInfantil}</strong> da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.TipoEscola}-{turma.Ue.Nome}</strong> " +
+                    $"<strong>({turma.Ue.Dre.Abreviacao})</strong>. Esta devolutiva contempla os diários de bordo do período de <strong>{devolutiva.PeriodoInicio:dd/MM/yyyy}</strong> à <strong>{devolutiva.PeriodoFim:dd/MM/yyyy}</strong>.");
 
-                if (titulares.Count() == 1)
-                    titulares = titulares.FirstOrDefault().Split(',');
+                mensagem.AppendLine($"<br/><br/>Clique no botão abaixo para fazer o download do arquivo com o conteúdo da devolutiva.");
+                mensagem.AppendLine(botaoDownload);
 
                 foreach (var titular in titulares)
                 {
-                    var codigoRf = titular.Trim();
+                    var codigoRf = titular.ProfessorRf;
 
                     if (codigoRf != usuarioLogado.CodigoRf)
                     {
@@ -61,7 +67,7 @@ namespace SME.SGP.Aplicacao
                                 Ano = DateTime.Now.Year,
                                 Categoria = NotificacaoCategoria.Aviso,
                                 Tipo = NotificacaoTipo.Planejamento,
-                                Titulo = $"Devolutiva do Diário de bordo da turma {turma.Nome}",
+                                Titulo = $"Devolutiva do Diário de bordo da turma {turma.Nome} - {componenteCurricular.NomeComponenteInfantil}",
                                 Mensagem = mensagem.ToString(),
                                 UsuarioId = usuario.Id,
                                 TurmaId = "",
@@ -86,6 +92,21 @@ namespace SME.SGP.Aplicacao
                 return true;
             }
             return false;
+        }
+
+        private string MontarBotaoDownload(Guid codigoRelatorio)
+        {
+            var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
+            var urlNotificacao = $"{urlRedirecionamentoBase}api/v1/downloads/sgp/pdf/RelatorioDevolutiva.pdf/{codigoRelatorio}";
+            return $"<br/><br/><a href='{urlNotificacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>";
+        }
+        private async Task<Guid> SolicitarRelatorioDevolutiva(long devolutivaId) 
+        {
+            var filtro = new FiltroRelatorioDevolutivasSincrono()
+            {
+                DevolutivaId = devolutivaId
+            };
+            return await mediator.Send(new SolicitaRelatorioDevolutivasCommand(filtro));
         }
     }
 }
