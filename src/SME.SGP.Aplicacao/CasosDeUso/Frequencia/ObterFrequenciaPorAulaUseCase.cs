@@ -211,8 +211,7 @@ namespace SME.SGP.Aplicacao
             DateTime dataSituacao = DateTime.Parse(aluno.DataSituacao.ToString("dd/MM/yyyy"));
             DateTime dataMatricula = DateTime.Parse(aluno.DataMatricula.ToString("dd/MM/yyyy"));
             return (aluno.EstaInativo(aula.DataAula) && (dataSituacao < periodoEscolar.PeriodoInicio || dataSituacao < aula.DataAula)) ||
-                   (!aluno.Inativo && aula.DataAula < dataMatricula) ||
-                   (aluno.Inativo && !(aula.DataAula >= dataMatricula && aula.DataAula <= dataSituacao));
+                   (aluno.Inativo && (aula.DataAula >= dataMatricula));
         }
     }
 }
