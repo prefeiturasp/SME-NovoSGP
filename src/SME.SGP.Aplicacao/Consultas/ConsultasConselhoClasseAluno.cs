@@ -485,7 +485,6 @@ namespace SME.SGP.Aplicacao
                                                                                   disciplinasId,
                                                                                   turmasCodigo, bimestres);
 
-
             var aulasComponentesTurmas = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(turmasCodigo, tipoCalendarioId, disciplinasId, bimestres));
 
             if (frequenciasAluno != null && frequenciasAluno.Any())

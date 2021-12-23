@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -67,40 +68,21 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
 
-            if (turma == null)
-                throw new NegocioException("Turma não localizada.");
+            string[] turmasCodigos;
 
-            //Particularidade de 2020
-            if (turma.AnoLetivo.Equals(2020))
-                return await CalculoFrequenciaGlobal2020(alunoCodigo, turma);
-
-            if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
+            if (turma.DeveVerificarRegraRegulares())
             {
-                var frequenciaAcompanhamento = await obterInformacoesDeFrequenciaAlunoPorSemestreUseCase
-                    .Executar(new FiltroTurmaAlunoSemestreDto(turma.Id, Convert.ToInt64(alunoCodigo), semestre ?? 1));
-
-                return (frequenciaAcompanhamento.Sum(fa => fa.Frequencia ?? 0) / frequenciaAcompanhamento.Count()).ToString();
+                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
+                turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, false));
             }
+            else
+                turmasCodigos = new string[1] { turma.CodigoTurma };
 
-            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+            if (!turmasCodigos.Any())
+                turmasCodigos = new string[] { turma.CodigoTurma };
 
-            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
-
-            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(new string[] { turma.CodigoTurma }, tipoCalendarioId, new string[] { }, new int[] { }));
-
-            if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada == null || turmaPossuiFrequenciaRegistrada.Count() == 0 )
-                return "0";
-            
-            else if(frequenciaAluno?.PercentualFrequencia > 0)
-                return frequenciaAluno.PercentualFrequencia.ToString();
-
-            else if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)
-                return "0";
-            
-            else if (turmaPossuiFrequenciaRegistrada.Any())
-                return "100";
-
-            return "0";
+            return await ObterFrequenciaGeralAlunoPorTurmas(alunoCodigo, turmasCodigos, componenteCurricularCodigo, turma);
         }
 
         public async Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
@@ -277,12 +259,10 @@ namespace SME.SGP.Aplicacao
                     )
             );
 
-        public async Task<string> ObterFrequenciaGeralAlunoPorTurmas(string alunoCodigo, string[] turmasCodigos, string componenteCurricularCodigo = "", int? semestre = null)
+        public async Task<string> ObterFrequenciaGeralAlunoPorTurmas(string alunoCodigo, string[] turmasCodigos, string componenteCurricularCodigo = "", Turma turmaConsultada = null)
         {
-            var turmaCodigo = turmasCodigos.First();
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
-            if (turma == null)
-                throw new NegocioException("Turma não localizada.");
+            var turma = turmaConsultada ??
+                await ObterTurma(turmasCodigos);
 
             //Particularidade de 2020
             if (turma.AnoLetivo.Equals(2020))
@@ -307,6 +287,16 @@ namespace SME.SGP.Aplicacao
                 return "100";
 
             return "0";
+        }
+
+        private async Task<Turma> ObterTurma(string[] turmasCodigos)
+        {
+            var turmaCodigo = turmasCodigos.First();
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
+            if (turma == null)
+                throw new NegocioException("Turma não localizada.");
+
+            return turma;
         }
     }
 }
