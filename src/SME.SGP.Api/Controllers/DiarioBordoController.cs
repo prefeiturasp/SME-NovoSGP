@@ -132,7 +132,7 @@ namespace SME.SGP.Api.Controllers
         }
 
 
-        [HttpGet("turmas/{turmaCodigo}/inicio/{dataInicio}/fim{dataFim}/componentes-curriculares/{componenteCurricularId}")]
+        [HttpGet("turmas/{turmaCodigo}/inicio/{dataInicio}/fim/{dataFim}/componentes-curriculares/{componenteCurricularId}")]
         [ProducesResponseType(typeof(IEnumerable<DiarioBordoPorPeriodoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
