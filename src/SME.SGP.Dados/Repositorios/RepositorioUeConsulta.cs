@@ -281,11 +281,11 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<Ue> ObterUePorId(long id)
         {
             var query = @"select ue.* 
-                            from ue 
-                           inner join dre on dre.id = ue.dre_id
-                           where ue.id = @id";
+                        from ue 
+                        inner join dre on dre.id = ue.dre_id
+                        where ue.id = @id";
 
-            return await contexto.QueryFirstAsync<Ue>(query);
+            return await contexto.QueryFirstAsync<Ue>(query, new { id });
         }
 
         public async Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo)
