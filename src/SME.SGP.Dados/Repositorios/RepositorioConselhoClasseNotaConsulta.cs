@@ -1,12 +1,10 @@
-using Dapper;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System.Linq;
-using System.Text;
 using SME.SGP.Infra.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
