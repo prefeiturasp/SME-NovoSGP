@@ -158,47 +158,60 @@ namespace SME.SGP.Dominio
 
         public async Task<Usuario> ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
         {
-            try
+            var eNumero = long.TryParse(codigoRf, out long n);
+
+            codigoRf = eNumero ? codigoRf : null;
+
+            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));            
+
+            if (usuario != null)
             {
-                var eNumero = long.TryParse(codigoRf, out long n);
-
-                codigoRf = eNumero ? codigoRf : null;
-
-                var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));            
-
-                if (usuario != null)
+                if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
                 {
-                    if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
+                    usuario.Nome = nome;
+
+                    try
                     {
-                        usuario.Nome = nome;
                         repositorioUsuario.Salvar(usuario);
                     }
-
-                    if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
+                    catch (Exception e)
                     {
-                        usuario.CodigoRf = codigoRf;
-                        repositorioUsuario.Salvar(usuario);
-                    }
-
-                    return usuario;
+                        SentrySdk.CaptureException(e);
+                    }                    
                 }
 
-                if (string.IsNullOrEmpty(login))
-                    login = codigoRf;
-                      
-
-                usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
-
-                repositorioUsuario.Salvar(usuario);
+                if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
+                {
+                    usuario.CodigoRf = codigoRf;
+                    try
+                    {
+                        repositorioUsuario.Salvar(usuario);
+                    }
+                    catch (Exception e)
+                    {
+                        SentrySdk.CaptureException(e);
+                    }
+                    
+                }
 
                 return usuario;
+            }
 
+            if (string.IsNullOrEmpty(login))
+                login = codigoRf;                     
+
+            usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
+
+            try
+            {
+                repositorioUsuario.Salvar(usuario);
             }
             catch (Exception e)
             {
                 SentrySdk.CaptureException(e);
-                return null;
             }
+
+            return usuario;
         }
 
         public async Task<Usuario> ObterUsuarioPorCodigoRfLoginOuAdicionaAsync(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
@@ -214,13 +227,29 @@ namespace SME.SGP.Dominio
                 if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
                 {
                     usuario.Nome = nome;
-                    await repositorioUsuario.SalvarAsync(usuario);
+
+                    try
+                    {
+                        await repositorioUsuario.SalvarAsync(usuario);
+                    }
+                    catch (Exception e)
+                    {
+                        SentrySdk.CaptureException(e);
+                    }                    
                 }
 
                 if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
                 {
                     usuario.CodigoRf = codigoRf;
-                    await repositorioUsuario.SalvarAsync(usuario);
+
+                    try
+                    {
+                        await repositorioUsuario.SalvarAsync(usuario);
+                    }
+                    catch (Exception e)
+                    {
+                        SentrySdk.CaptureException(e);
+                    }                    
                 }
 
                 return usuario;
@@ -232,7 +261,15 @@ namespace SME.SGP.Dominio
 
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
 
-            await repositorioUsuario.SalvarAsync(usuario);
+            try
+            {
+                await repositorioUsuario.SalvarAsync(usuario);
+            }
+            catch (Exception e)
+            {
+                SentrySdk.CaptureException(e);
+            }
+            
 
             return usuario;
         }
