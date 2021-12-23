@@ -167,32 +167,13 @@ namespace SME.SGP.Dominio
             if (usuario != null)
             {
                 if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
-                {
                     usuario.Nome = nome;
 
-                    try
-                    {
-                        repositorioUsuario.Salvar(usuario);
-                    }
-                    catch (Exception e)
-                    {
-                        SentrySdk.CaptureException(e);
-                    }                    
-                }
-
                 if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
-                {
                     usuario.CodigoRf = codigoRf;
-                    try
-                    {
-                        repositorioUsuario.Salvar(usuario);
-                    }
-                    catch (Exception e)
-                    {
-                        SentrySdk.CaptureException(e);
-                    }
-                    
-                }
+
+                if (!usuario.Nome.Equals(nome) || !usuario.CodigoRf.Equals(codigoRf))
+                    await repositorioUsuario.SalvarAsync(usuario);
 
                 return usuario;
             }
@@ -202,14 +183,7 @@ namespace SME.SGP.Dominio
 
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
 
-            try
-            {
-                repositorioUsuario.Salvar(usuario);
-            }
-            catch (Exception e)
-            {
-                SentrySdk.CaptureException(e);
-            }
+            await repositorioUsuario.SalvarAsync(usuario);
 
             return usuario;
         }
