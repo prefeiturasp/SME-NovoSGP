@@ -12,17 +12,20 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoNotificacao : IServicoNotificacao
     {
+        private readonly IRepositorioNotificacaoConsulta repositorioNotificacaoConsulta;
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
 
         public ServicoNotificacao(IRepositorioNotificacao repositorioNotificacao,
+                                  IRepositorioNotificacaoConsulta repositorioNotificacaoConsulta,
                                   IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
                                   IServicoEol servicoEOL,
                                   IMediator mediator)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
+            this.repositorioNotificacaoConsulta = repositorioNotificacaoConsulta ?? throw new ArgumentNullException(nameof(repositorioNotificacaoConsulta));
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -36,7 +39,18 @@ namespace SME.SGP.Dominio.Servicos
         public void GeraNovoCodigo(Notificacao notificacao)
         {
             if (notificacao.Codigo == 0)
-                notificacao.Codigo = ObtemNovoCodigoAsync().Result;
+                notificacao.Codigo = ObtemNovoCodigo();
+        }
+
+        public async Task GeraNovoCodigoAsync(Notificacao notificacao)
+        {
+            if (notificacao.Codigo == 0)
+                notificacao.Codigo = await ObtemNovoCodigoAsync();
+        }
+
+        public long ObtemNovoCodigo()
+        {
+            return repositorioNotificacaoConsulta.ObterUltimoCodigoPorAno(DateTime.Now.Year) + 1;
         }
 
         public async Task<long> ObtemNovoCodigoAsync()
@@ -53,7 +67,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task SalvarAsync(Notificacao notificacao)
         {
-            GeraNovoCodigo(notificacao);
+            await GeraNovoCodigoAsync(notificacao);
 
             await repositorioNotificacao.SalvarAsync(notificacao);
         }

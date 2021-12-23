@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(ObterNotificacaoUltimoCodigoPorAnoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioNotificacaoConsulta.ObterUltimoCodigoPorAno(request.Ano);
+            return await repositorioNotificacaoConsulta.ObterUltimoCodigoPorAnoAsync(request.Ano);
         }
     }
 }
