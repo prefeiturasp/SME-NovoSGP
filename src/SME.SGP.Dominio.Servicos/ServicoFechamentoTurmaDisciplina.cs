@@ -461,7 +461,10 @@ namespace SME.SGP.Dominio.Servicos
         {
             var fechamento = new FechamentoTurmaDisciplina();
             if (id > 0)
+            {
                 fechamento = repositorioFechamentoTurmaDisciplina.ObterPorId(id);
+                fechamento.FechamentoTurma = repositorioFechamentoTurma.ObterPorId(fechamento.FechamentoTurmaId);
+            }                
 
             fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
             fechamento.DisciplinaId = fechamentoDto.DisciplinaId;
