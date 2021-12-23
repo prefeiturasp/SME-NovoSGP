@@ -27,7 +27,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurmaConsulta;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
@@ -45,7 +46,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IMediator mediator;
 
         public ServicoFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
-                                                IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
+                                                IRepositorioFechamentoTurma repositorioFechamentoTurma,
+                                                IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurmaConsulta,
                                                 IRepositorioFechamentoAlunoConsulta repositorioFechamentoAlunoConsulta,
                                                 IRepositorioFechamentoAluno repositorioFechamentoAluno,
                                                 IRepositorioFechamentoNota repositorioFechamentoNota,
@@ -72,6 +74,7 @@ namespace SME.SGP.Dominio.Servicos
                                                 IMediator mediator)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
+            this.repositorioFechamentoTurmaConsulta = repositorioFechamentoTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaConsulta));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioFechamentoAluno));
             this.repositorioFechamentoAlunoConsulta = repositorioFechamentoAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioFechamentoAlunoConsulta));
@@ -337,7 +340,7 @@ namespace SME.SGP.Dominio.Servicos
                 // Incluindo registro de fechamento turma disciplina
 
                 // Busca registro existente de fechamento da turma
-                var fechamentoTurma = await repositorioFechamentoTurma.ObterPorTurmaPeriodo(turma.Id, periodoEscolar.Id);
+                var fechamentoTurma = await repositorioFechamentoTurmaConsulta.ObterPorTurmaPeriodo(turma.Id, periodoEscolar.Id);
                 if (fechamentoTurma == null)
                     fechamentoTurma = new FechamentoTurma(turma, periodoEscolar);
 
@@ -467,7 +470,7 @@ namespace SME.SGP.Dominio.Servicos
             if (id > 0)
             {
                 fechamento = repositorioFechamentoTurmaDisciplina.ObterPorId(id);
-                fechamento.FechamentoTurma = repositorioFechamentoTurma.ObterPorId(fechamento.FechamentoTurmaId);
+                fechamento.FechamentoTurma = repositorioFechamentoTurmaConsulta.ObterPorId(fechamento.FechamentoTurmaId);
             }                
 
             fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
