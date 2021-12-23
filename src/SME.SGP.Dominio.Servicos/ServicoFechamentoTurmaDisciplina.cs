@@ -307,7 +307,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                 {
-                    var frequencia = consultasFrequencia.ObterPorAlunoDisciplinaData(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia, string.Empty);
+                    var frequencia = consultasFrequencia.ObterPorAlunoDisciplinaData(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia);
                     var percentualFrequencia = frequencia == null ? 100 : frequencia.PercentualFrequencia;
                     var sinteseDto =  await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplina);
 
