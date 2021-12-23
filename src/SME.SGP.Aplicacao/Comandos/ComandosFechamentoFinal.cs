@@ -15,7 +15,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;        
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;        
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
         private readonly IMediator mediator;
         private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
@@ -26,7 +25,6 @@ namespace SME.SGP.Aplicacao
             IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno,
             IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,            
             IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,
-            IRepositorioTurma repositorioTurma,
             IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
             IMediator mediator)
         {

@@ -14,7 +14,7 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
@@ -25,7 +25,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IMediator mediator;
 
         public ServicoFechamentoFinal(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
-                                      IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
+                                      IRepositorioFechamentoTurma repositorioFechamentoTurma,
                                       IRepositorioFechamentoAluno repositorioFechamentoAluno,
                                       IRepositorioFechamentoNota repositorioFechamentoNota,
                                       IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
