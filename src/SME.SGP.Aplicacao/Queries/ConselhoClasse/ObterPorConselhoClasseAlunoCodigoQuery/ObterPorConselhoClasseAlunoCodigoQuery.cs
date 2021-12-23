@@ -22,10 +22,6 @@ namespace SME.SGP.Aplicacao
                 RuleFor(c => c.AlunoCodigo)
                     .NotEmpty()
                     .WithMessage("O código do aluno deve ser informado.");
-
-                RuleFor(c => c.ConselhoClasseId)
-                    .NotEmpty()
-                    .WithMessage("O código do aluno deve ser informado.");
             }
         }
     }
