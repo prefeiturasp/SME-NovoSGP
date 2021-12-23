@@ -68,7 +68,7 @@ namespace SME.SGP.Dados
                                              where not excluido
                                                and ano_letivo = @anoLetivo
                                                and turma_id = @turmaId
-                                               and nome = @nome");
+                                               and nome = @nome ");
             if (idIgnorar > 0)
                 query.AppendLine("and id <> @idIgnorar");                                               
 
