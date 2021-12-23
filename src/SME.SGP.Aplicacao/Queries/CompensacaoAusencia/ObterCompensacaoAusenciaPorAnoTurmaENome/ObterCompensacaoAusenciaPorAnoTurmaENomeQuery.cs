@@ -35,11 +35,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.Atividade)
                 .NotEmpty()
                 .WithMessage("A atividade deve ser informado.");
-
-            RuleFor(x => x.Id)
-                .NotEmpty()
-                .WithMessage("Id deve ser informado.");
-
         }
     }
 }
