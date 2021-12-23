@@ -243,7 +243,7 @@ namespace SME.SGP.Dados
             });
         }
 
-        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
+        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual, string turmaCodigo = "")
         {
             var query = @"select *
                         from frequencia_aluno fa
@@ -252,13 +252,17 @@ namespace SME.SGP.Dados
                             and disciplina_id = @disciplinaId
 	                        and tipo = 1
 	                        and pe.periodo_inicio <= @dataAtual
-	                        and pe.periodo_fim >= @dataAtual";
+	                        and pe.periodo_fim >= @dataAtual ";
+            
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += "and fa.turma_id = @turmaCodigo";
 
             return database.QueryFirstOrDefault<FrequenciaAluno>(query, new
             {
                 codigoAluno,
                 disciplinaId,
                 dataAtual,
+                turmaCodigo
             });
         }
 
