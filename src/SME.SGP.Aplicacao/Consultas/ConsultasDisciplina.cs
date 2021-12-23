@@ -216,16 +216,11 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            
-            if (usuario.EhProfessorCj())
-                return await ObterComponentesCJ(turma.ModalidadeCodigo, turma.CodigoTurma, turma.Ue.CodigoUe, componenteCurricularCodigo, usuario.CodigoRf);
-            else
-            {                
-                var componentesCurriculares = await servicoEOL
+
+            var componentesCurriculares = await servicoEOL
                     .ObterComponentesRegenciaPorAno(turma.TipoTurno == 4 ? turma.AnoTurmaInteiro : 0);
 
-                return MapearComponentes(componentesCurriculares.OrderBy(c => c.Descricao));
-            }
+            return MapearComponentes(componentesCurriculares.OrderBy(c => c.Descricao));            
         }
 
         public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
