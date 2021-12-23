@@ -91,11 +91,15 @@ namespace SME.SGP.Aplicacao
                         if (tipoNota.TipoNota == TipoNota.Nota)
                         {
                             if (fechamentoNota.Nota.HasValue)
-                                if (fechamentoNota.Nota.Value != fechamentoItemDto.Nota)
-                                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, fechamentoItemDto.Nota, fechamentoNota.Id));
+                            {
+                                if (fechamentoNota.Nota != fechamentoItemDto.Nota)
+                                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota, fechamentoItemDto.Nota, fechamentoNota.Id));
+                            }
+                                
                         }
-                        else if (fechamentoNota.ConceitoId.Value != fechamentoItemDto.ConceitoId.Value)
-                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId.Value, fechamentoItemDto.ConceitoId.Value, fechamentoNota.Id));
+                        else if (fechamentoNota.ConceitoId != fechamentoItemDto.ConceitoId)
+                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, fechamentoItemDto.ConceitoId, fechamentoNota.Id));                     
+                            
                     }
 
                     MapearParaEntidade(fechamentoNota, fechamentoItemDto, fechamentoAluno);
