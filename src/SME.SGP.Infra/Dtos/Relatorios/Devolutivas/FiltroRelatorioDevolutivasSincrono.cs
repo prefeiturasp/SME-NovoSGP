@@ -6,7 +6,7 @@
         public string UsuarioNome { get; set; }
         public string UsuarioRF { get; set; }
         public long UeId { get; set; }
-        public string TurmaCodigo { get; set; }
+        public long TurmaId { get; set; }
 
     }
 }

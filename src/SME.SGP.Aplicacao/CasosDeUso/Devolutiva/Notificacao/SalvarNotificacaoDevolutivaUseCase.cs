@@ -19,16 +19,18 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioTurma repositorioTurma;
 
 
         public SalvarNotificacaoDevolutivaUseCase(IMediator mediator, IConfiguration configuration, IServicoNotificacao servicoNotificacao,
-            IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva, IRepositorioComponenteCurricular repositorioComponenteCurricular)
+            IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva, IRepositorioComponenteCurricular repositorioComponenteCurricular, IRepositorioTurma repositorioTurma)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.repositorioNotificacaoDevolutiva = repositorioNotificacaoDevolutiva ?? throw new ArgumentNullException(nameof(repositorioNotificacaoDevolutiva));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
@@ -43,7 +45,7 @@ namespace SME.SGP.Aplicacao
             var titularAtual = titularesEol.Where(x => x.DisciplinaId == devolutiva.CodigoComponenteCurricular).FirstOrDefault();
             var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinaPorId(titularAtual.DisciplinaId);
 
-            var codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id, turma.UeId, turma.CodigoTurma);
+            var codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id, turma.UeId, turma.CodigoTurma, usuarioLogado);
             var botaoDownload = MontarBotaoDownload(codigoRelatorio);
 
             if (titularesEol != null)
@@ -90,19 +92,19 @@ namespace SME.SGP.Aplicacao
         private string MontarBotaoDownload(Guid codigoRelatorio)
         {
             var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
-            var urlNotificacao = $"{urlRedirecionamentoBase}api/v1/downloads/sgp/pdf/RelatorioDevolutiva.pdf/{codigoRelatorio}";
+            var urlNotificacao = $"{urlRedirecionamentoBase}api/v1/downloads/sgp/pdfsincrono/RelatorioDevolutiva.pdf/{codigoRelatorio}";
             return $"<br/><br/><a href='{urlNotificacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>";
         }
-        private async Task<Guid> SolicitarRelatorioDevolutiva(long devolutivaId, long ueId, string codigoTurma)
+        private async Task<Guid> SolicitarRelatorioDevolutiva(long devolutivaId, long ueId, string codigoTurma, Usuario usuarioLogado)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
             var filtro = new FiltroRelatorioDevolutivasSincrono()
             {
                 DevolutivaId = devolutivaId,
                 UsuarioNome = usuarioLogado.Nome,
                 UsuarioRF = usuarioLogado.CodigoRf,
                 UeId = ueId,
-                TurmaCodigo = codigoTurma
+                TurmaId = turma.Id
             };
             return await mediator.Send(new SolicitaRelatorioDevolutivasCommand(filtro));
         }
