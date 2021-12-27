@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             var aula2 = new Aula() { DataAula = new DateTime(2020, 08, 05), Id = 2 };
             var aula3 = new Aula() { DataAula = new DateTime(2020, 08, 06), Id = 3 };
 
-            repositorio.Setup(x => x.ObterDatasDeAulasPorAnoTurmaEDisciplina(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null, null))
+            repositorio.Setup(x => x.ObterDatasDeAulasPorAnoTurmaEDisciplina(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(new List<Aula>()
                 {
                     aula1, aula2, aula3

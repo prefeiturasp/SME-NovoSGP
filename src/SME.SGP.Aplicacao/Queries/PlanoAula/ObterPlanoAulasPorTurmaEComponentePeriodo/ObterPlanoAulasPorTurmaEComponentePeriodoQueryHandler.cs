@@ -149,7 +149,7 @@ namespace SME.SGP.Aplicacao
             return ObterAulasSelecionadas(usuarioLogado, datasAulas, aulasPermitidas);
         }
 
-        private IEnumerable<Aula> ObterAulasSelecionadas(Usuario usuarioLogado, List<Aula> datasAulas, IEnumerable<long> aulasPermitidas)
+        private IEnumerable<Aula> ObterAulasSelecionadas(Usuario usuarioLogado, IEnumerable<Aula> datasAulas, IEnumerable<long> aulasPermitidas)
         {
             return datasAulas.Where(da => aulasPermitidas.Contains(da.Id)).Select(s => s);
         }
@@ -181,12 +181,11 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private List<Aula> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string usuarioRf, DateTime aulaInicio, DateTime aulaFim)
+        private IEnumerable<Aula> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string usuarioRf, DateTime aulaInicio, DateTime aulaFim)
         {
-            var lstAulas = new List<Aula>();
+            var lstPeriodosEscolaresIds = periodosEscolares.Select(s=> s.Id).Distinct();
 
-            foreach (var periodoEscolar in periodosEscolares)
-                lstAulas.AddRange(repositorioAula.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, componenteCurricularCodigo, usuarioRf, aulaInicio, aulaFim));
+            var lstAulas = repositorioAula.ObterDatasDeAulasPorAnoTurmaEDisciplina(lstPeriodosEscolaresIds, anoLetivo, turmaCodigo, componenteCurricularCodigo, usuarioRf, aulaInicio, aulaFim);
 
             return lstAulas;
         }

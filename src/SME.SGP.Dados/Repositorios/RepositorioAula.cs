@@ -573,13 +573,46 @@ namespace SME.SGP.Dados.Repositorios
             }));
         }
 
-        public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim)
+        
+        public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF)
         {
             var query = new StringBuilder("select distinct a.*, t.* ");
             query.AppendLine("from aula a ");
             query.AppendLine("inner join turma t on ");
             query.AppendLine("a.turma_id = t.turma_id ");
             query.AppendLine("inner join periodo_escolar pe on pe.id = @periodoEscolarId ");
+            query.AppendLine("                and pe.periodo_inicio <= a.data_aula ");
+            query.AppendLine("                and pe.periodo_fim >= a.data_aula ");
+            query.AppendLine("where");
+            query.AppendLine("not a.excluido");
+            query.AppendLine("and a.turma_id = @turmaCodigo ");
+            query.AppendLine("and a.disciplina_id = @disciplinaId ");
+            query.AppendLine("and t.ano_letivo = @anoLetivo ");
+
+            if (!string.IsNullOrWhiteSpace(usuarioRF))
+                query.AppendLine("and a.professor_rf = @usuarioRF ");
+
+            return database.Conexao.Query<Aula, Turma, Aula>(query.ToString(), (aula, turma) =>
+            {
+                aula.Turma = turma;
+                return aula;
+            }, new
+            {
+                periodoEscolarId,
+                usuarioRF,
+                anoLetivo,
+                turmaCodigo,
+                disciplinaId,
+            });
+        }
+
+        public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim)
+        {
+            var query = new StringBuilder("select distinct a.*, t.* ");
+            query.AppendLine("from aula a ");
+            query.AppendLine("inner join turma t on ");
+            query.AppendLine("a.turma_id = t.turma_id ");
+            query.AppendLine("inner join periodo_escolar pe on pe.id = ANY(@periodoEscolarId) ");
             query.AppendLine("                and pe.periodo_inicio <= a.data_aula ");
             query.AppendLine("                and pe.periodo_fim >= a.data_aula ");
             query.AppendLine("where");
@@ -600,7 +633,7 @@ namespace SME.SGP.Dados.Repositorios
                 return aula;
             }, new
             {
-                periodoEscolarId,
+                periodoEscolarId = periodosEscolaresId.Select(c => c).ToArray(),
                 usuarioRF,
                 anoLetivo,
                 turmaCodigo,
