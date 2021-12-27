@@ -159,9 +159,9 @@ namespace SME.SGP.Aplicacao
                     recomendacaoFamilia.AppendLine(recomendacoes.recomendacoesFamilia);
             }
 
-            var situacaoConselhoAluno = await ObterSituacaoConselhoClasse(turma.Id, periodoEscolar?.Id);
-            consultasConselhoClasseRecomendacaoConsultaDto.SituacaoConselho = situacaoConselhoAluno.GetAttribute<DisplayAttribute>().Name;
+            var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(alunoCodigo, bimestre, turma);
 
+            consultasConselhoClasseRecomendacaoConsultaDto.SituacaoConselho = situacaoConselhoAluno.GetAttribute<DisplayAttribute>().Name;
             consultasConselhoClasseRecomendacaoConsultaDto.AnotacoesAluno = anotacoesDoAluno;
             consultasConselhoClasseRecomendacaoConsultaDto.AnotacoesPedagogicas = anotacoesPedagogicas.ToString();
 
@@ -176,13 +176,14 @@ namespace SME.SGP.Aplicacao
             return consultasConselhoClasseRecomendacaoConsultaDto;
         }
 
-        private async Task<SituacaoConselhoClasse> ObterSituacaoConselhoClasse(long turmaId, long? periodoEscolarId)
+        private async Task<SituacaoConselhoClasse> BuscaSituacaoConselhoAluno(string alunoCodigo, int? bimestre, Turma turma)
         {
             SituacaoConselhoClasse statusAluno = SituacaoConselhoClasse.NaoIniciado;
-            long periodoId = periodoEscolarId != null ? (long)periodoEscolarId : 0;
-            if (periodoId > 0)
-                statusAluno = await mediator.Send(new ObterSituacaoConselhoClasseQuery(turmaId, periodoId));
 
+            var statusConselhoAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turma.Id, bimestre.Value, alunoCodigo);
+
+            if (statusConselhoAluno != null)
+                statusAluno = statusConselhoAluno.Status;
             return statusAluno;
         }
     }
