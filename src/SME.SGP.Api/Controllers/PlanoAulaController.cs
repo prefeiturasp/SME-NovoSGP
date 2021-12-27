@@ -33,9 +33,8 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("/turmas/{turmaCodigo}/componente/{componenteCurricularCodigo}")]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(PlanoAulaRetornoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPlanoAulaPorTurmaComponentePeriodo(string turmaCodigo, string componenteCurricularCodigo, [FromQuery] DateTime aulaInicio, [FromQuery] DateTime aulaFim, [FromServices] IObterPlanoAulasPorTurmaEComponentePeriodoUseCase useCase)
         {
