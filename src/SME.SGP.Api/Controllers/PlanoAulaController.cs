@@ -2,6 +2,7 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -29,6 +30,16 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(new FiltroObterPlanoAulaDto(aulaId, turmaId, componenteCurricularId)));
            
+        }
+
+        [HttpGet("/turmas/{turmaCodigo}/componente/{componenteCurricularCodigo}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [Permissao(Permissao.PDA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPlanoAulaPorTurmaComponentePeriodo(string turmaCodigo, string componenteCurricularCodigo, [FromQuery] DateTime aulaInicio, [FromQuery] DateTime aulaFim, [FromServices] IObterPlanoAulasPorTurmaEComponentePeriodoUseCase useCase)
+        {
+           return Ok(await useCase.Executar(new FiltroObterPlanoAulaPeriodoDto(turmaCodigo, componenteCurricularCodigo, aulaInicio, aulaFim)));
         }
 
         [HttpPost]

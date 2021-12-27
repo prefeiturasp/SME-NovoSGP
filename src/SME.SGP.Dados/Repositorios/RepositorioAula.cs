@@ -573,7 +573,7 @@ namespace SME.SGP.Dados.Repositorios
             }));
         }
 
-        public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehProfessor = false)
+        public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim)
         {
             var query = new StringBuilder("select distinct a.*, t.* ");
             query.AppendLine("from aula a ");
@@ -586,7 +586,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("not a.excluido");
             query.AppendLine("and a.turma_id = @turmaCodigo ");
             query.AppendLine("and a.disciplina_id = @disciplinaId ");
-            query.AppendLine("and t.ano_letivo = @anoLetivo");
+            query.AppendLine("and t.ano_letivo = @anoLetivo ");
+
+            if (aulaInicio.HasValue && aulaFim.HasValue)
+                query.AppendLine("and a.data_aula between @aulaInicio and @aulaFim ");
 
             if (!string.IsNullOrWhiteSpace(usuarioRF))
                 query.AppendLine("and a.professor_rf = @usuarioRF ");
@@ -601,7 +604,9 @@ namespace SME.SGP.Dados.Repositorios
                 usuarioRF,
                 anoLetivo,
                 turmaCodigo,
-                disciplinaId
+                disciplinaId,
+                aulaInicio,
+                aulaFim
             });
         }
 

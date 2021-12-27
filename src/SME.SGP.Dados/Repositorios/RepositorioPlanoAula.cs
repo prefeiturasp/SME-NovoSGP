@@ -80,7 +80,25 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PlanoAulaObjetivosAprendizagemDto> ObterPlanoAulaEObjetivosAprendizagem(long aulaId)
         {
-            var query = @"select
+            var query = ObterQueryPlanoAula();
+
+            query += " where a.id = @aulaId";
+
+            var lookup = new Dictionary<long, PlanoAulaObjetivosAprendizagemDto>();
+
+            await database.Conexao.QueryAsync(query, (Func<PlanoAulaObjetivosAprendizagemDto, long?, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>)((planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) =>
+            {
+                var retorno = ObterDependenciasPlanoAula(planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto, lookup);
+                                
+                return retorno;}), 
+            param: new { aulaId });
+
+            return lookup.Values.FirstOrDefault();
+        }
+
+        private string ObterQueryPlanoAula()
+        {
+            return @"select
                            pa.id, pa.descricao, pa.recuperacao_aula as RecuperacaoAula, pa.licao_casa as LicaoCasa, pa.migrado,
                            pa.criado_em as CriadoEm, pa.alterado_em as AlteradoEm, pa.criado_por as CriadoPor, pa.alterado_por as AlteradoPor, pa.criado_rf as CriadoRf, pa.alterado_rf as AlteradoRf,
                            a.id as AulaId, a.ue_id as UeId, a.disciplina_id as DisciplinaId, a.turma_id as TurmaId,
@@ -90,42 +108,52 @@ namespace SME.SGP.Dados.Repositorios
                       from aula a
                       inner join plano_aula pa on a.id = pa.aula_id
                       left join objetivo_aprendizagem_aula oaa on pa.id = oaa.plano_aula_id
-                      left join objetivo_aprendizagem oa on oaa.objetivo_aprendizagem_id = oa.id
-                     where a.id = @aulaId";
+                      left join objetivo_aprendizagem oa on oaa.objetivo_aprendizagem_id = oa.id ";
+        }
+
+        public async Task<IEnumerable<PlanoAulaObjetivosAprendizagemDto>> ObterPlanosAulaEObjetivosAprendizagem(IEnumerable<long> aulasId)
+        {
+            var query = ObterQueryPlanoAula();
+
+            query += " where a.id = ANY(@aulasId)";
 
             var lookup = new Dictionary<long, PlanoAulaObjetivosAprendizagemDto>();
 
-            await database.Conexao.QueryAsync<PlanoAulaObjetivosAprendizagemDto, long?, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>(query, (planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) =>
+            await database.Conexao.QueryAsync(query, (Func<PlanoAulaObjetivosAprendizagemDto, long?, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>)((planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) =>
             {
-
-                var retorno = new PlanoAulaObjetivosAprendizagemDto();
-                if (!lookup.TryGetValue(planoAulaObjetivosAprendizagemDto.Id, out retorno))
-                {
-                    retorno = planoAulaObjetivosAprendizagemDto;
-                    lookup.Add(planoAulaObjetivosAprendizagemDto.Id, retorno);
-                }
-
-                var objetivoComponente = retorno.ObjetivosAprendizagemComponente.FirstOrDefault(c => c.ComponenteCurricularId == componenteId);
-                if (objetivoComponente == null && componenteId.HasValue)
-                {
-                    objetivoComponente = new ObjetivosAprendizagemPorComponenteDto();
-                    objetivoComponente.ComponenteCurricularId = componenteId.Value;
-
-                    retorno.Adicionar(objetivoComponente);
-                }
-
-                if (objetivoComponente != null && objetivoAprendizagemDto != null)
-                {
-                    objetivoComponente.ObjetivosAprendizagem.Add(objetivoAprendizagemDto);
-                }
+                var retorno = ObterDependenciasPlanoAula(planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto, lookup);
 
                 return retorno;
-            }, param: new
-            {
-                aulaId
-            });
+            }),
+            param: new { aulasId = aulasId.Select(c => c).ToArray() });
 
-            return lookup.Values.FirstOrDefault();
+            return lookup.Values;
+        }
+
+        private PlanoAulaObjetivosAprendizagemDto ObterDependenciasPlanoAula(PlanoAulaObjetivosAprendizagemDto planoAulaObjetivosAprendizagemDto, long? componenteId, ObjetivoAprendizagemDto objetivoAprendizagemDto, Dictionary<long, PlanoAulaObjetivosAprendizagemDto> lookup)
+        {
+            var retorno = new PlanoAulaObjetivosAprendizagemDto();
+            if (!lookup.TryGetValue(planoAulaObjetivosAprendizagemDto.Id, out retorno))
+            {
+                retorno = planoAulaObjetivosAprendizagemDto;
+                lookup.Add(planoAulaObjetivosAprendizagemDto.Id, retorno);
+            }
+
+            var objetivoComponente = retorno.ObjetivosAprendizagemComponente.FirstOrDefault(c => c.ComponenteCurricularId == componenteId);
+            if (objetivoComponente == null && componenteId.HasValue)
+            {
+                objetivoComponente = new ObjetivosAprendizagemPorComponenteDto();
+                objetivoComponente.ComponenteCurricularId = componenteId.Value;
+
+                retorno.Adicionar(objetivoComponente);
+            }
+
+            if (objetivoComponente != null && objetivoAprendizagemDto != null)
+            {
+                objetivoComponente.ObjetivosAprendizagem.Add(objetivoAprendizagemDto);
+            }
+
+            return retorno;
         }
     }
 }
