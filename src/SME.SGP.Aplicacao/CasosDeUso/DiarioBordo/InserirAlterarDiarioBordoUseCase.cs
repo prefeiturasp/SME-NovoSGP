@@ -17,7 +17,6 @@ namespace SME.SGP.Aplicacao
         {
             var auditoria = new List<AuditoriaDiarioBordoDto>();
             AuditoriaDto dadosAuditoria = new AuditoriaDto();
-            AuditoriaDiarioBordoDto valorAuditoria = new AuditoriaDiarioBordoDto();
 
             foreach (var param in dados)
             {
@@ -31,8 +30,7 @@ namespace SME.SGP.Aplicacao
                     dadosAuditoria = await mediator.Send(new AlterarDiarioBordoCommand(param.Id, param.AulaId, param.Planejamento, param.ReflexoesReplanejamento, param.ComponenteCurricularId));       
                 }
 
-                valorAuditoria = (AuditoriaDiarioBordoDto)dadosAuditoria;
-                valorAuditoria.AulaId = param.AulaId;
+                var valorAuditoria = new AuditoriaDiarioBordoDto(dadosAuditoria, param.AulaId);
                 auditoria.Add(valorAuditoria);
             }
 

@@ -9,16 +9,16 @@ namespace SME.SGP.Infra
     {
         public long AulaId { get; set; }
 
-        public static explicit operator AuditoriaDiarioBordoDto(EntidadeBase entidade)
-            => new AuditoriaDiarioBordoDto()
-            {
-                Id = entidade.Id,
-                CriadoEm = entidade.CriadoEm,
-                CriadoPor = entidade.CriadoPor,
-                CriadoRF = entidade.CriadoRF,
-                AlteradoEm = entidade.AlteradoEm,
-                AlteradoPor = entidade.AlteradoPor,
-                AlteradoRF = entidade.AlteradoRF
-            };
+        public AuditoriaDiarioBordoDto(AuditoriaDto auditoria, long aulaId)
+        {
+            Id = auditoria.Id;
+            CriadoEm = auditoria.CriadoEm;
+            CriadoPor = auditoria.CriadoPor;
+            CriadoRF = auditoria.CriadoRF;
+            AlteradoEm = auditoria.AlteradoEm;
+            AlteradoPor = auditoria.AlteradoPor;
+            AlteradoRF = auditoria.AlteradoRF;
+            AulaId = aulaId;
+        }
     }
 }
