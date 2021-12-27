@@ -23,15 +23,14 @@ namespace SME.SGP.Aplicacao
             var todasAulasPeriodo = await mediator.Send(new ObterAulasPorDataPeriodoQuery(dataInicio, dataFim, turmaCodigo, componentePai));
             var datasComDiarioBordo = await mediator.Send(new ObterDatasDiarioBordoPorPeriodoQuery(turmaCodigo, dataInicio, dataFim, componenteCurricularId));
 
-            foreach(var aula in todasAulasPeriodo.GroupBy(t=> t.DataAula))
+            foreach(var aula in todasAulasPeriodo)
             {
-                var itensAula = aula.FirstOrDefault();
-                var dadosDiarioBordo = datasComDiarioBordo.Where(d => d.DataAula.Equals(itensAula.DataAula)).FirstOrDefault();
+                var dadosDiarioBordo = datasComDiarioBordo.Where(d => d.DataAula.Equals(aula.DataAula)).FirstOrDefault();
 
                 if (dadosDiarioBordo != null)
                 {
                     var dadosAula = await mediator.Send(new ObterAulaPorIdQuery(dadosDiarioBordo.AulaId));
-                    dadosDiarioBordo.Titulo = dadosAula.TipoAula == TipoAula.Reposicao ? $"{itensAula.DataAula.ToString("dd/MM/yyyy")} - Reposição" : $"{itensAula.DataAula.ToString("dd/MM/yyyy")}";
+                    dadosDiarioBordo.Titulo = dadosAula.TipoAula == TipoAula.Reposicao ? $"{aula.DataAula.ToString("dd/MM/yyyy")} - Reposição" : $"{aula.DataAula.ToString("dd/MM/yyyy")}";
                     dadosDiarioBordo.Auditoria = (AuditoriaDto)dadosAula;
                     dadosDiarioBordo.Pendente = false;
                     retorno.Add(dadosDiarioBordo);
@@ -40,11 +39,11 @@ namespace SME.SGP.Aplicacao
                 {
                     retorno.Add(new DiarioBordoPorPeriodoDto()
                     {
-                        AulaId = itensAula.Id,
+                        AulaId = aula.Id,
                         DiarioBordoId = null,
-                        DataAula = itensAula.DataAula,
+                        DataAula = aula.DataAula,
                         Pendente = true,
-                        Titulo = itensAula.TipoAula == TipoAula.Reposicao ? $"{itensAula.DataAula.ToString("dd/MM/yyyy")} - Reposição" : $"{itensAula.DataAula.ToString("dd/MM/yyyy")}",
+                        Titulo = aula.TipoAula == TipoAula.Reposicao ? $"{aula.DataAula.ToString("dd/MM/yyyy")} - Reposição" : $"{aula.DataAula.ToString("dd/MM/yyyy")}",
                         Planejamento = "",
                         ReflexoesReplanejamento = "",
                         Auditoria = null
