@@ -57,6 +57,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(diarioBordoDto));
         }
 
+        [HttpPost("salvar")]
+        [ProducesResponseType(typeof(IEnumerable<AuditoriaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_I, Policy = "Bearer")]
+        public async Task<IActionResult> SalvarVarios([FromServices] IInserirAlterarDiarioBordoUseCase useCase, [FromBody] IEnumerable<InserirAlterarDiarioBordoDto> diarioBordoDto)
+        {
+            return Ok(await useCase.Executar(diarioBordoDto));
+        }
+
         [HttpGet("devolutivas/{devolutivaId}")]
         [ProducesResponseType(typeof(DiarioBordoDto), 200)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
