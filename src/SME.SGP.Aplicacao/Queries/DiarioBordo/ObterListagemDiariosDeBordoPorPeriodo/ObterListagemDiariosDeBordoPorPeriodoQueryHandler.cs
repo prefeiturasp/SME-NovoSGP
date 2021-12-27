@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             {
                 TotalPaginas = dto.TotalPaginas,
                 TotalRegistros = dto.TotalRegistros,
-                Items = dto.Items.Select(item => new DiarioBordoTituloDto(item.Id, item.Descricao, item.Pendente))
+                Items = dto.Items.Select(item => new DiarioBordoTituloDto(item.Id, item.Descricao, item.Pendente, item.AulaId))
             };
         }
     }

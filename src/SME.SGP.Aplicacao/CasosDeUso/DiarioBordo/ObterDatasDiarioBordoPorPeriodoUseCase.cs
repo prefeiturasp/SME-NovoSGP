@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return retorno.OrderByDescending(a=> a.DataAula);
+            return retorno.OrderByDescending(a=> a.DataAula).Distinct();
         }
     }
 }

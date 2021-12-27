@@ -13,24 +13,27 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<AuditoriaDto>> Executar(IEnumerable<InserirAlterarDiarioBordoDto> dados)
+        public async Task<IEnumerable<AuditoriaDiarioBordoDto>> Executar(IEnumerable<InserirAlterarDiarioBordoDto> dados)
         {
-            var auditoria = new List<AuditoriaDto>();
+            var auditoria = new List<AuditoriaDiarioBordoDto>();
             AuditoriaDto dadosAuditoria = new AuditoriaDto();
+            AuditoriaDiarioBordoDto valorAuditoria = new AuditoriaDiarioBordoDto();
 
-            foreach(var param in dados)
+            foreach (var param in dados)
             {
                 if(param.Id == 0)    
                 {
                     dadosAuditoria = await mediator.Send(new InserirDiarioBordoCommand(param.AulaId, param.Planejamento, param.ReflexoesReplanejamento, param.ComponenteCurricularId));
                     await mediator.Send(new ExcluirPendenciaAulaCommand(param.AulaId, Dominio.TipoPendencia.DiarioBordo));
-                    auditoria.Add(dadosAuditoria);
                 }
                 else
                 {
-                    dadosAuditoria = await mediator.Send(new AlterarDiarioBordoCommand(param.Id, param.AulaId, param.Planejamento, param.ReflexoesReplanejamento, param.ComponenteCurricularId));
-                    auditoria.Add(dadosAuditoria);
-                }              
+                    dadosAuditoria = await mediator.Send(new AlterarDiarioBordoCommand(param.Id, param.AulaId, param.Planejamento, param.ReflexoesReplanejamento, param.ComponenteCurricularId));       
+                }
+
+                valorAuditoria = (AuditoriaDiarioBordoDto)dadosAuditoria;
+                valorAuditoria.AulaId = param.AulaId;
+                auditoria.Add(valorAuditoria);
             }
 
             return auditoria;
