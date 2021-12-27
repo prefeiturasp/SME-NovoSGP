@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
 
-        public ObterConselhoClassePorFechamentoIdQueryHandler(IRepositorioConselhoClasse repositorioConselhoClasse)
+        public ObterConselhoClassePorFechamentoIdQueryHandler(IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta)
         {
             this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
         }
