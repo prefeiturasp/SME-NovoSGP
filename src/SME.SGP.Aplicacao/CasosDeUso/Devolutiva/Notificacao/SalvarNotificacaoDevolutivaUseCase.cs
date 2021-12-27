@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
             var devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(devolutivaId));
             var titularesEol = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
             var titularAtual = titularesEol.Where(x => x.DisciplinaId == devolutiva.CodigoComponenteCurricular);
-            var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinaPorId(titularAtual.DisciplinaId);
+            var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinaPorId(devolutiva.CodigoComponenteCurricular);
 
             var codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id, turma.UeId, turma.CodigoTurma, usuarioLogado);
             var botaoDownload = MontarBotaoDownload(codigoRelatorio);
