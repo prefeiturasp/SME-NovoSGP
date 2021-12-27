@@ -1,11 +1,9 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -16,24 +14,20 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<PeriodoEscolarComponenteDto>> Executar(string turmaCodigo, long componenteCodigo, bool ehRegencia, int bimestre)
+        public async Task<IEnumerable<PeriodoEscolarComponenteDto>> Executar(string turmaCodigo, long componenteCodigo, bool ehRegencia, int bimestre, bool exibirDataFutura = false)
         {
 
             var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, componenteCodigo, bimestre));
 
             var listaPeriodos = new List<PeriodoEscolarComponenteDto>();
 
-            if (ehRegencia)
-                listaPeriodos = SepararSemanasRegencia(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim);
-            else
-                listaPeriodos = SepararPeriodosAulas(periodoEscolar
-                                                    .OrderBy(x => x.DataAula));
+            listaPeriodos = ehRegencia ? SepararSemanasRegencia(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim, exibirDataFutura)
+                                       : SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula), exibirDataFutura);
 
             return listaPeriodos;
-
         }
 
-        public List<PeriodoEscolarComponenteDto> SepararSemanasRegencia(DateTime dataInicio, DateTime dataFim)
+        private List<PeriodoEscolarComponenteDto> SepararSemanasRegencia(DateTime dataInicio, DateTime dataFim, bool exibirDataFutura)
         {
             long id = 1;
             var domingo = DateTimeExtension.ObterDomingo(dataInicio);
@@ -53,6 +47,8 @@ namespace SME.SGP.Aplicacao
 
             domingo = domingo.AddDays(7);
             sabado = sabado.AddDays(7);
+
+            dataFim = exibirDataFutura ? dataFim : DateTime.Now;
 
             while (domingo < dataFim)
             {
@@ -76,7 +72,7 @@ namespace SME.SGP.Aplicacao
             return retornaListaPeriodoSeparado;
         }
 
-        public List<PeriodoEscolarComponenteDto> SepararPeriodosAulas(IEnumerable<PeriodoEscolarVerificaRegenciaDto> periodosAulas)
+        private List<PeriodoEscolarComponenteDto> SepararPeriodosAulas(IEnumerable<PeriodoEscolarVerificaRegenciaDto> periodosAulas, bool exibirDataFutura)
         {
             DateTime dataInicioPeriodo = DateTime.MinValue;
 
@@ -84,6 +80,8 @@ namespace SME.SGP.Aplicacao
             int qtdeDiasAulas = 0;
             long id = 1;
             int contador = 1;
+
+            periodosAulas = exibirDataFutura ? periodosAulas : periodosAulas.Where(w => w.DataAula <= DateTime.Now);
 
             foreach (var periodo in periodosAulas)
             {
