@@ -242,7 +242,7 @@ namespace SME.SGP.Dados.Repositorios
                 condicao.AppendLine(" and a.data_aula::date <= @periodoFim ");
 
             condicao.AppendLine(@"union all
-                           select null id, a.data_aula DataAula, null CodigoRf, null Nome, null Tipo, true Pendente 
+                           select null id, a.data_aula DataAula, null CodigoRf, null Nome, null Tipo, a.id AulaId, true Pendente 
                          from aula a
                          inner join turma t on a.turma_id = t.turma_id
                          where t.id = @turmaId
@@ -259,14 +259,14 @@ namespace SME.SGP.Dados.Repositorios
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
-            var query = $"select count(0) from (select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, false Pendente {condicao}) as DiarioBordo";
+            var query = $"select count(0) from (select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, false Pendente {condicao}) as DiarioBordo";
 
              var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
                 new { turmaId, componenteCurricularPaiCodigo, componenteCurricularFilhoCodigo, periodoInicio, periodoFim });
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
-            query = $"select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, false Pendente {condicao} order by dataaula desc {offSet} ";
+            query = $"select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, false Pendente {condicao} order by dataaula desc {offSet} ";
 
             return new PaginacaoResultadoDto<DiarioBordoResumoDto>()
             {

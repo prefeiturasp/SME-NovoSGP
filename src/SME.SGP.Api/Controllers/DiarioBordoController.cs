@@ -58,7 +58,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("salvar")]
-        [ProducesResponseType(typeof(IEnumerable<AuditoriaDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AuditoriaDiarioBordoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_I, Policy = "Bearer")]
         public async Task<IActionResult> SalvarVarios([FromServices] IInserirAlterarDiarioBordoUseCase useCase, [FromBody] IEnumerable<InserirAlterarDiarioBordoDto> diarioBordoDto)

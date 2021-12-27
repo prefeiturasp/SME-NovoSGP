@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IInserirAlterarDiarioBordoUseCase : IUseCase<IEnumerable<InserirAlterarDiarioBordoDto>, IEnumerable<AuditoriaDto>>
+    public interface IInserirAlterarDiarioBordoUseCase : IUseCase<IEnumerable<InserirAlterarDiarioBordoDto>, IEnumerable<AuditoriaDiarioBordoDto>>
     {
     }
 }
