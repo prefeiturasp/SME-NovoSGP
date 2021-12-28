@@ -56,6 +56,10 @@ namespace SME.SGP.Aplicacao
                         TipoTurma.Regular
                     };
                 var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
+
+                if (!codigosTurmasRelacionadas.Any())
+                    codigosTurmasRelacionadas = new string[] { turma.CodigoTurma };
+
                 turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
             }
 
