@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PaginacaoResultadoDto<DevolutivaResumoDto>> ListarDevolutivasPorTurmaComponentePaginado(string turmaCodigo, long componenteCurricularCodigo, DateTime? dataReferencia, Paginacao paginacao)
         {
             var query = $"select count(distinct d.id) {ObterQuery(dataReferencia)}";
-            var totalRegistrosDaQuery = await database.Conexao.QueryFirstAsync<int>(query, new { turmaCodigo, componenteCurricularCodigo = componenteCurricularCodigo.ToString(), dataReferencia });
+            var totalRegistrosDaQuery = await database.Conexao.QueryFirstAsync<int>(query, new { turmaCodigo, componenteCurricularCodigo = componenteCurricularCodigo, dataReferencia });
 
             query = $@"select distinct d.Id
 	                         , d.periodo_inicio as PeriodoInicio
@@ -33,7 +33,7 @@ namespace SME.SGP.Dados.Repositorios
                 Items = await database.Conexao.QueryAsync<DevolutivaResumoDto>(query, new
                 {
                     turmaCodigo,
-                    componenteCurricularCodigo = componenteCurricularCodigo.ToString(),
+                    componenteCurricularCodigo = componenteCurricularCodigo,
                     dataReferencia,
                     qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
                     qtdeRegistros = paginacao.QuantidadeRegistros
@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join aula a on a.id = db.aula_id
                          where not d.excluido
                            and a.turma_id = @turmaCodigo
-                           and a.disciplina_id = @componenteCurricularCodigo");
+                           and db.componente_curricular_id = @componenteCurricularCodigo");
 
             if (dataReferencia.HasValue)
                 query.Append(" and @dataReferencia between d.periodo_inicio and d.periodo_fim");

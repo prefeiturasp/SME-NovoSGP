@@ -50,44 +50,44 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> ObterDiariosBordoPorPeriodoPaginado(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim, Paginacao paginacao)
         {
-            var condicao = @"from diario_bordo db 
+                var condicao = @"from diario_bordo db 
                          inner join aula a on a.id = db.aula_id
                          left join devolutiva d on db.devolutiva_id = d.id and not d.excluido
                          where not db.excluido
                            and d.id is null
                            and a.turma_id = @turmaCodigo
-                           and a.disciplina_id = @componenteCurricularCodigo
+                           and db.componente_curricular_id = @componenteCurricularCodigo
                            and a.data_aula between @periodoInicio and @periodoFim ";
 
-            var query = $"select count(0) {condicao}";
+                var query = $"select count(0) {condicao}";
 
-            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
-                new { turmaCodigo, componenteCurricularCodigo = componenteCurricularCodigo.ToString(), periodoInicio, periodoFim });
+                var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
+                    new { turmaCodigo, componenteCurricularCodigo = componenteCurricularCodigo, periodoInicio, periodoFim });
 
-            var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
+                var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
-            query = $@"select db.planejamento as DescricaoPlanejamento
+                query = $@"select db.planejamento as DescricaoPlanejamento
                             , db.reflexoes_replanejamento as DescricaoReflexoes
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data 
                             {condicao} 
                             order by a.data_aula {offSet} ";
 
-            return new PaginacaoResultadoDto<DiarioBordoDevolutivaDto>()
-            {
-                Items = await database.Conexao.QueryAsync<DiarioBordoDevolutivaDto>(query,
-                                                    new
-                                                    {
-                                                        turmaCodigo,
-                                                        componenteCurricularCodigo = componenteCurricularCodigo.ToString(),
-                                                        periodoInicio,
-                                                        periodoFim,
-                                                        qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
-                                                        qtdeRegistros = paginacao.QuantidadeRegistros
-                                                    }),
-                TotalRegistros = totalRegistrosDaQuery,
-                TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
-            };
+                return new PaginacaoResultadoDto<DiarioBordoDevolutivaDto>()
+                {
+                    Items = await database.Conexao.QueryAsync<DiarioBordoDevolutivaDto>(query,
+                                                        new
+                                                        {
+                                                            turmaCodigo,
+                                                            componenteCurricularCodigo = componenteCurricularCodigo,
+                                                            periodoInicio,
+                                                            periodoFim,
+                                                            qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
+                                                            qtdeRegistros = paginacao.QuantidadeRegistros
+                                                        }),
+                    TotalRegistros = totalRegistrosDaQuery,
+                    TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
+                };
         }
 
         public async Task<IEnumerable<Tuple<long, DateTime>>> ObterDatasPorIds(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim)
@@ -99,13 +99,13 @@ namespace SME.SGP.Dados.Repositorios
                          where not db.excluido
                            and db.devolutiva_id is null
                            and a.turma_id = @turmaCodigo
-                           and a.disciplina_id = @componenteCurricularCodigo
+                           and db.componente_curricular_id = @componenteCurricularCodigo
                            and a.data_aula between @periodoInicio and @periodoFim ";
 
             var resultado = await database.Conexao.QueryAsync<Tuple<long, DateTime>>(query, new
             {
                 turmaCodigo,
-                componenteCurricularCodigo = componenteCurricularCodigo.ToString(),
+                componenteCurricularCodigo = componenteCurricularCodigo,
                 periodoInicio,
                 periodoFim
             });
