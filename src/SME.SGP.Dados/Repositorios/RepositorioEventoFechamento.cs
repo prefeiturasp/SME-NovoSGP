@@ -78,9 +78,10 @@ namespace SME.SGP.Dados.Repositorios
             }) > 0;
         }
 
-        public async Task<bool> UeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, int bimestre)
+        public async Task<bool> UeEmFechamento(long tipoCalendarioId, bool modalidadeEhInfantil, int bimestre, DateTime dataReferencia)
         {
             var query = new StringBuilder();
+
             var consultaObterBimestreFinal = "(select pe2.bimestre from periodo_escolar pe2 where pe.tipo_calendario_id = pe2.tipo_calendario_id order by pe2.bimestre desc limit 1)";
 
             query.AppendLine(@"select count(pf.id) from periodo_fechamento pf 

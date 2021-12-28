@@ -3,7 +3,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -12,33 +11,24 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioDre repositorioDre;
-        private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
 
         public ConsultasPeriodoFechamento(IServicoPeriodoFechamento servicoPeriodoFechamento,
-                                IRepositorioTurma repositorioTurma,
-                                IRepositorioUe repositorioUe,
-                                IRepositorioDre repositorioDre,
-                                IConsultasTipoCalendario consultasTipoCalendario,
-                                IRepositorioEvento repositorioEvento,
-                                IRepositorioEventoFechamento repositorioEventoFechamento,
-                                IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
-                                IRepositorioPeriodoFechamento repositorioPeriodoFechamento)
+                                          IRepositorioTurma repositorioTurma,
+                                          IConsultasTipoCalendario consultasTipoCalendario,
+                                          IRepositorioEventoFechamento repositorioEventoFechamento,
+                                          IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
+                                          IRepositorioPeriodoFechamento repositorioPeriodoFechamento)
         {
-            this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new System.ArgumentNullException(nameof(servicoPeriodoFechamento));
-            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioUe = repositorioUe ?? throw new System.ArgumentNullException(nameof(repositorioUe));
-            this.repositorioDre = repositorioDre ?? throw new System.ArgumentNullException(nameof(repositorioDre));
-            this.consultasTipoCalendario = consultasTipoCalendario ?? throw new System.ArgumentNullException(nameof(consultasTipoCalendario));
-            this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
-            this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new System.ArgumentNullException(nameof(repositorioEventoFechamento));
-            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
-            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoFechamento));
+            this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new ArgumentNullException(nameof(servicoPeriodoFechamento));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
+            this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new ArgumentNullException(nameof(repositorioEventoFechamento));
+            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
+            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamento));
         }
 
         public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(Turma turma, int bimestre, long? periodoEscolarId)
@@ -76,15 +66,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0)
         {
-            var ueEmFechamento = await UeEmFechamento(tipoCalendario, bimestre, dataReferencia);
+            bool modalidadeEhInfantil = turma.EhTurmaInfantil;
+
+            var ueEmFechamento = await UeEmFechamento(tipoCalendario, modalidadeEhInfantil, bimestre, dataReferencia);
 
             bool retorno = ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestre, dataReferencia);
             return retorno;
         }
 
-        private async Task<bool> UeEmFechamento(TipoCalendario tipoCalendario, int bimestre, DateTime dataReferencia)
+        private async Task<bool> UeEmFechamento(TipoCalendario tipoCalendario, bool modalidadeEhInfantil, int bimestre, DateTime dataReferencia)
         {
-            return await repositorioEventoFechamento.UeEmFechamento(dataReferencia, tipoCalendario.Id, bimestre);
+            return await repositorioEventoFechamento.UeEmFechamento(tipoCalendario.Id, modalidadeEhInfantil, bimestre, dataReferencia);
         }
 
         private async Task<bool> UeEmReaberturaDeFechamento(TipoCalendario tipoCalendario, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
