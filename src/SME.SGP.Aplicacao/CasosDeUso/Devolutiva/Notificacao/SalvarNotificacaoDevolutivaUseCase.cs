@@ -41,14 +41,13 @@ namespace SME.SGP.Aplicacao
             var devolutivaId = dadosMensagem.DevolutivaId;
 
             var devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(devolutivaId));
-            var titularesEol = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
-            var titularAtual = titularesEol.Where(x => x.DisciplinaId == devolutiva.CodigoComponenteCurricular);
+            var titularEol = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turma.CodigoTurma, devolutiva.CodigoComponenteCurricular.ToString()));
             var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinaPorId(devolutiva.CodigoComponenteCurricular);
 
             var codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id, turma.UeId, turma.CodigoTurma, usuarioLogado);
             var botaoDownload = MontarBotaoDownload(codigoRelatorio);
 
-            if (titularesEol != null)
+            if (titularEol != null)
             {
                 var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) registrou a devolutiva dos diários de bordo de <strong>{componenteCurricular.NomeComponenteInfantil}</strong> da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.TipoEscola}-{turma.Ue.Nome}</strong> " +
                     $"<strong>({turma.Ue.Dre.Abreviacao})</strong>. Esta devolutiva contempla os diários de bordo do período de <strong>{devolutiva.PeriodoInicio:dd/MM/yyyy}</strong> à <strong>{devolutiva.PeriodoFim:dd/MM/yyyy}</strong>.");
@@ -56,35 +55,32 @@ namespace SME.SGP.Aplicacao
                 mensagem.AppendLine($"<br/><br/>Clique no botão abaixo para fazer o download do arquivo com o conteúdo da devolutiva.");
                 mensagem.AppendLine(botaoDownload);
 
-                foreach (var atual in titularAtual)
+                if (titularEol.ProfessorRf != usuarioLogado.CodigoRf)
                 {
-                    if (atual.ProfessorRf != usuarioLogado.CodigoRf)
+                    var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(titularEol.ProfessorRf));
+                    if (usuario != null)
                     {
-                        var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(atual.ProfessorRf));
-                        if (usuario != null)
+                        var notificacao = new Notificacao()
                         {
-                            var notificacao = new Notificacao()
-                            {
-                                Ano = DateTime.Now.Year,
-                                Categoria = NotificacaoCategoria.Aviso,
-                                Tipo = NotificacaoTipo.Planejamento,
-                                Titulo = $"Devolutiva do Diário de bordo da turma {turma.Nome} - {componenteCurricular.NomeComponenteInfantil}",
-                                Mensagem = mensagem.ToString(),
-                                UsuarioId = usuario.Id,
-                                TurmaId = "",
-                                UeId = "",
-                                DreId = "",
-                            };
+                            Ano = DateTime.Now.Year,
+                            Categoria = NotificacaoCategoria.Aviso,
+                            Tipo = NotificacaoTipo.Planejamento,
+                            Titulo = $"Devolutiva do Diário de bordo da turma {turma.Nome} - {componenteCurricular.NomeComponenteInfantil}",
+                            Mensagem = mensagem.ToString(),
+                            UsuarioId = usuario.Id,
+                            TurmaId = "",
+                            UeId = "",
+                            DreId = "",
+                        };
 
-                            await servicoNotificacao.SalvarAsync(notificacao);
+                        await servicoNotificacao.SalvarAsync(notificacao);
 
-                            var notificacaoDevolutiva = new NotificacaoDevolutiva()
-                            {
-                                NotificacaoId = notificacao.Id,
-                                DevolutivaId = devolutivaId
-                            };
-                            await repositorioNotificacaoDevolutiva.Salvar(notificacaoDevolutiva);
-                        }
+                        var notificacaoDevolutiva = new NotificacaoDevolutiva()
+                        {
+                            NotificacaoId = notificacao.Id,
+                            DevolutivaId = devolutivaId
+                        };
+                        await repositorioNotificacaoDevolutiva.Salvar(notificacaoDevolutiva);
                     }
                 }
                 return true;
