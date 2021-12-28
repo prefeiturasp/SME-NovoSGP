@@ -417,7 +417,7 @@ namespace SME.SGP.Aplicacao
             {
                 Codigo = componenteCurricular.CodigoComponenteCurricular,
                 Nome = componenteCurricular.Nome,
-                TotalFaltas = frequenciaDisciplina != null && frequenciaDisciplina.Any() ?  frequenciaDisciplina.Sum(x => x.TotalAusencias) : null,
+                TotalFaltas = frequenciaDisciplina != null && frequenciaDisciplina.Any() ?  frequenciaDisciplina.Sum(x => x.TotalAusencias) : (int?)null,
                 PercentualFrequencia = !String.IsNullOrEmpty(percentualFrequencia) ? $"{percentualFrequencia}%" : "",
                 ParecerFinal = parecerFinal?.Valor ?? string.Empty,
                 ParecerFinalId = (int)(parecerFinal?.Id ?? default)
