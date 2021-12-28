@@ -18,5 +18,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<string> ObterDescricaoPorId(long id);
         Task<bool> LancaNota(long id);
         Task<IEnumerable<ComponenteCurricularSimplesDto>> ObterDescricaoPorIds(long[] ids);
+        Task<string> ObterCodigoComponentePai(long componenteCurricularId);
     }
 }
