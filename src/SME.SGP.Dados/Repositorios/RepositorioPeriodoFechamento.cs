@@ -3,6 +3,7 @@ using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
@@ -35,15 +36,15 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<PeriodoFechamento> ObterPeriodoPorUeDataBimestreAsync(long ueId, DateTime dataReferencia, int bimestre)
+        public async Task<PeriodoFechamento> ObterPeriodoPorUeDataBimestreAsync(long ueId, DateTime dataReferencia, int bimestre, bool ehModalidadeInfantil)
         {
-            string query = @"select p.*, pfb.*
+            string query = $@"select p.*, pfb.*
                            from periodo_fechamento p
                            left join periodo_fechamento_bimestre pfb ON pfb.periodo_fechamento_id = p.id
                            left join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
                            where p.ue_id = @ueId
                            and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento
-                           and pe.bimestre = @bimestre";
+                           and pe.bimestre {BimestreConstants.ObterCondicaoBimestre(bimestre,ehModalidadeInfantil)}";
 
             var lookup = new Dictionary<long, PeriodoFechamento>();
 
