@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> UeEmFechamento(Turma turma, long tipoCalendarioId, int bimestre, DateTime dataReferencia)
-            => await repositorioEventoFechamento.UeEmFechamento(dataReferencia, tipoCalendarioId, bimestre);
+            => await repositorioEventoFechamento.UeEmFechamento(dataReferencia, tipoCalendarioId, turma.EhTurmaInfantil, bimestre);
 
         private async Task<bool> UeEmReaberturaDeFechamento(long tipoCalendarioId, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
         {
