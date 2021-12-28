@@ -214,8 +214,7 @@ namespace SME.SGP.Aplicacao
 
             periodosEscolares.Periodos.ForEach(p =>
             {
-                var aulas = repositorio
-                    .ObterDatasDeAulasPorAnoTurmaEDisciplina(p.Id, anoLetivo, turmaCodigo, disciplinaCodigo, string.Empty, usuarioLogado.EhProfessorCj(), usuarioLogado.EhProfessor() || usuarioLogado.EhProfessorCj());
+                var aulas = repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(p.Id, anoLetivo, turmaCodigo, disciplinaCodigo, string.Empty);
 
                 aulas.ToList().ForEach(aula =>
                 {
