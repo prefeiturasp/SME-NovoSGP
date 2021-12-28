@@ -28,6 +28,18 @@ namespace SME.SGP.Dados.Repositorios
                          where cc.permite_lancamento_nota 
                          ";
 
+        const string queryNotasConceitoFechamento = @"select fn.disciplina_id as ComponenteCurricularCodigo, fn.conceito_id as ConceitoId, fn.nota, pe.bimestre, cv.valor as conceito
+                                                        from fechamento_turma ft
+                                                       inner join turma t on t.id = ft.turma_id 
+                                                        left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
+                                                       inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
+                                                       inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
+                                                       inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
+                                                       inner join componente_curricular cc on cc.id = fn.disciplina_id
+                                                        left join conceito_valores cv on cv.id = fn.conceito_id
+                                                       where cc.permite_lancamento_nota 
+                                                         ";
+
         public RepositorioFechamentoNotaConsulta(ISgpContextConsultas database) : base(database)
         {
         }
@@ -62,7 +74,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos, string alunoCodigo, int bimestre)
         {
-            var query = $@"{queryNotasFechamento}
+            var query = $@"{queryNotasConceitoFechamento}
                            and t.turma_id = ANY(@turmasCodigos)
                            and fa.aluno_codigo = @alunoCodigo 
                            and pe.bimestre = @bimestre";
