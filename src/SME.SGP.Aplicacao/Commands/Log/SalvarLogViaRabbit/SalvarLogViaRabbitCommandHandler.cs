@@ -45,9 +45,9 @@ namespace SME.SGP.Aplicacao
         {
             var factory = new ConnectionFactory
             {
-                HostName = configuracaoRabbitOptions.HostName,
-                UserName = configuracaoRabbitOptions.UserName,
-                Password = configuracaoRabbitOptions.Password,
+                HostName =    configuracaoRabbitOptions.HostName,
+                UserName =    configuracaoRabbitOptions.UserName,
+                Password =    configuracaoRabbitOptions.Password,
                 VirtualHost = configuracaoRabbitOptions.VirtualHost
             };
 
