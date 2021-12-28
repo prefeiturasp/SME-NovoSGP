@@ -1073,5 +1073,60 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId
             });
         }
+
+        public async Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterDatasAulaDiarioBordoPorPeriodo(string turmaCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select a.id as AulaId, 
+                            db.id as DiarioBordoId, 
+                            a.data_aula as DataAula, 
+                            db.planejamento as Planejamento, 
+                            db.reflexoes_replanejamento as ReflexoesReplanejamento 
+                            from aula a 
+                            left join diario_bordo db on db.aula_id = a.id 
+                            where a.turma_id = @turmaCodigo 
+                            and a.data_aula between @dataInicio and @dataFim
+                            and db.componente_curricular_id = @componenteCurricularId
+                            and not a.excluido and not db.excluido
+                            order by a.data_aula desc";
+
+            return await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto>(query, new { turmaCodigo, componenteCurricularId, dataInicio, dataFim });
+        }
+
+        public async Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterAulasDiariosPorPeriodo(string turmaCodigo, long componenteCurricularFilhoId, string componenteCurricularPaiCodigo, DateTime dataFim, DateTime dataInicio)
+        {
+            var query = @"
+                         select db.id as DiarioBordoId, a.data_aula DataAula, a.id as AulaId, db.criado_rf CodigoRf,
+                         db.criado_por Nome, db.planejamento as Planejamento, db.reflexoes_replanejamento as ReflexoesReplanejamento, 
+                         a.tipo_aula as Tipo, false Pendente
+                         from aula a
+                         inner join turma t on a.turma_id = t.turma_id
+                         inner join diario_bordo db on a.id = db.aula_id
+                         where t.turma_id = @turmaCodigo
+                           and db.componente_curricular_id = @componenteCurricularFilhoId 
+                           and not a.excluido
+                           and a.data_aula >= @dataInicio
+                           and a.data_aula <= @dataFim
+                         union all
+                         select null DiarioBordoId, a.data_aula DataAula, a.id as AulaId, null CodigoRf, null Nome, 
+                         null Planejamento, null ReflexoesReplanejamento, null Tipo, true Pendente 
+                         from aula a
+                         inner join turma t on a.turma_id = t.turma_id
+                         where t.turma_id = @turmaCodigo
+                           and a.disciplina_id = @componenteCurricularPaiCodigo
+                           and a.data_aula >= @dataInicio
+                           and a.data_aula <= @dataFim
+                           and not a.excluido
+                           and not exists (select 1 from diario_bordo db where db.componente_curricular_id = @componenteCurricularFilhoId and db.aula_id = a.id)";
+
+            return await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto>(query,
+                                                    new
+                                                    {
+                                                        turmaCodigo,
+                                                        componenteCurricularFilhoId,
+                                                        componenteCurricularPaiCodigo,
+                                                        dataFim,
+                                                        dataInicio
+                                                    });
+        }
     }
 }
