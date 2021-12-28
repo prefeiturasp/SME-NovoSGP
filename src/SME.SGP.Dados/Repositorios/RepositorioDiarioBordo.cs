@@ -286,6 +286,7 @@ namespace SME.SGP.Dados.Repositorios
             };
         }
 
+
         public async Task<IEnumerable<QuantidadeTotalDiariosEDevolutivasPorAnoETurmaDTO>> ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade)
         {
             var sql = @"";
