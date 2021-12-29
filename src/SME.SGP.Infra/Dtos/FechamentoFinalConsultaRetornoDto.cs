@@ -19,5 +19,6 @@ namespace SME.SGP.Infra
         public DateTime EventoData { get; set; }
         public double FrequenciaMedia { get; set; }
         public double NotaMedia { get; set; }
+        public bool PeriodoEncerrado { get; set; }
     }
 }
