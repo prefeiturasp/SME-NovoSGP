@@ -8,6 +8,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Globalization;
+using SME.SGP.Infra.Consts;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -78,10 +79,11 @@ namespace SME.SGP.Dados.Repositorios
             }) > 0;
         }
 
-        public async Task<bool> UeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, int bimestre)
+        public async Task<bool> UeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, bool ehModalidadeInfantil, int bimestre)
         {
             var query = new StringBuilder();
-            var consultaObterBimestreFinal = "(select pe2.bimestre from periodo_escolar pe2 where pe.tipo_calendario_id = pe2.tipo_calendario_id order by pe2.bimestre desc limit 1)";
+
+            var consultaObterBimestreFinal = "(select pe2.bimestre from periodo_escolar pe2 where @tipoCalendarioId = pe2.tipo_calendario_id order by pe2.bimestre desc limit 1)";
 
             query.AppendLine(@"select count(pf.id) from periodo_fechamento pf 
 				inner join periodo_fechamento_bimestre pfb on pf.id = pfb.periodo_fechamento_id 
@@ -92,8 +94,11 @@ namespace SME.SGP.Dados.Repositorios
 				and TO_DATE(pfb.inicio_fechamento::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
 				and TO_DATE(pfb.final_fechamento::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')");
 
+            if (bimestre > 0)
+                query.AppendLine($"and pe.bimestre {BimestreConstants.ObterCondicaoBimestre(bimestre, ehModalidadeInfantil)}");
 
-            query.AppendLine($"and pe.bimestre =  {(bimestre > 0 ? "@bimestre" : consultaObterBimestreFinal)}");
+            else
+                query.AppendLine($"and pe.bimestre =  {consultaObterBimestreFinal}");
 
             return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new
             {
@@ -101,6 +106,11 @@ namespace SME.SGP.Dados.Repositorios
                 bimestre,
                 tipoCalendarioId
             }) > 0;
+        }
+
+        private string ObterCondicoesLogicas(int bimestre, bool ehModalidadeInfantil)
+        {
+            return ehModalidadeInfantil ? (bimestre <= 2 ? "= 2" : "= 4") : "= @bimestre";
         }
     }
 }
