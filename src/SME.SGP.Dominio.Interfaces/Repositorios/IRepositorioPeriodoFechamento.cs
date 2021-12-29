@@ -10,7 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
         PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId);
         void SalvarBimestres(IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, long fechamentoId);
         bool ValidaRegistrosForaDoPeriodo(DateTime inicioDoFechamento, DateTime finalDoFechamento, long fechamentoId, long periodoEscolarId, long? dreId);
-        Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurma(int anoLetivo, int bimestre, long? periodoEscolarId);
         Task<PeriodoFechamentoVigenteDto> ObterPeriodoVigentePorAnoModalidade(int anoLetivo, int modalidadeTipoCalendario);
         Task<IEnumerable<PeriodoFechamentoBimestre>> ObterPeriodosFechamentoEscolasPorDataFinal(DateTime dataFinal);
         Task<IEnumerable<PeriodoFechamentoBimestre>> ObterPeriodosFechamentoBimestrePorDataFinal(int modalidade, DateTime dataEncerramento);
