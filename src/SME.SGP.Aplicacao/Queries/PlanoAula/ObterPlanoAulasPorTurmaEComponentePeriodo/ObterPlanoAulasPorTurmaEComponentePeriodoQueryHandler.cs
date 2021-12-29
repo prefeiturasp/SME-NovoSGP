@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
 
             var codigoRf = ehProfessor ? usuarioLogado.CodigoRf : string.Empty;
 
-            var temPlanoAnual = await ValidarPlanoAnual(turma.Id, periodosEscolaresAulasInicioFim, request.ComponenteCurricularCodigo, usuarioLogado);
+            var temPlanoAnual = await ValidarPlanoAnual(turma, periodosEscolaresAulasInicioFim, request.ComponenteCurricularCodigo, usuarioLogado);
 
             var aulas = ObterAulas(request, turma, periodosEscolaresAulasInicioFim, usuarioLogado, codigoRf);
 
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
             return planoAulaDto;
         }
 
-        private async Task<bool> ValidarPlanoAnual(long turmaId, IEnumerable<PeriodoEscolar> periodosEscolaresAulasInicioFim, string ComponenteCurricularCodigo, Usuario usuarioLogado)
+        private async Task<bool> ValidarPlanoAnual(Turma turma, IEnumerable<PeriodoEscolar> periodosEscolaresAulasInicioFim, string ComponenteCurricularCodigo, Usuario usuarioLogado)
         {
             DisciplinaDto disciplinaDto = null;
             var temPlanoAnual = new List<long>();
@@ -63,12 +63,12 @@ namespace SME.SGP.Aplicacao
 
             foreach (var periodoEscolar in periodosEscolaresAulasInicioFim)
             {
-                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turmaId, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.Id : long.Parse(ComponenteCurricularCodigo)));
+                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.Id : long.Parse(ComponenteCurricularCodigo)));
 
                 temPlanoAnual.Add(planejamentoAnualPeriodoId);
 
                 if (planejamentoAnualPeriodoId == 0
-                    && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year)
+                    && turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year
                     && !usuarioLogado.PerfilAtual.Equals(Perfis.PERFIL_CJ)
                     && !(disciplinaDto != null && disciplinaDto.TerritorioSaber))
                     throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
@@ -105,17 +105,22 @@ namespace SME.SGP.Aplicacao
                     PossuiPlanoAnual = temPlanoAnual,
                     ObjetivosAprendizagemComponente = plano.ObjetivosAprendizagemComponente,
                     IdAtividadeAvaliativa = atividadeAvaliativa?.Id,
-                    PodeLancarNota = atividadeAvaliativa != null && plano.DataAula.Date <= DateTimeExtension.HorarioBrasilia().Date
+                    PodeLancarNota = atividadeAvaliativa != null && plano.DataAula.Date <= DateTimeExtension.HorarioBrasilia().Date,                    
+                    EhReposicao = plano.TipoAula == (int)TipoAula.Reposicao
                 });
             }            
 
-            var datasSemPlanoAula = aulas.Select(a => a.DataAula).Distinct().Except(planoAulas.Select(s => s.DataAula).Distinct());
+            var aulasSemPlanoAula = aulas.Where(a => !planoAulas.Select(b => b.DataAula).Contains(a.DataAula)).Select(aula=> aula);
 
-            planosAulaRetorno.AddRange((from data in datasSemPlanoAula select new PlanoAulaRetornoDto(){ DataAula = data }));
+            planosAulaRetorno.AddRange((from aula in aulasSemPlanoAula select new PlanoAulaRetornoDto()
+            { 
+                DataAula = aula.DataAula,
+                AulaId = aula.Id,
+                QtdAulas = aula.Quantidade,
+                EhReposicao = aula.EhReposicao()
+            }));
 
             return planosAulaRetorno;
-
-            
         }
 
         private PlanoAulaRetornoDto MapearParaDto(PlanoAulaObjetivosAprendizagemDto plano) =>
