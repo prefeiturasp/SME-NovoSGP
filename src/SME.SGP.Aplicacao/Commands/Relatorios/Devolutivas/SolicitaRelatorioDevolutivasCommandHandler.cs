@@ -29,6 +29,7 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
                 return JsonConvert.DeserializeObject<Guid>(json);
             }
             return Guid.Empty;
+
         }
     }
 }
