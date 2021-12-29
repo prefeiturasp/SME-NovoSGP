@@ -18,25 +18,7 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioPeriodoFechamento(ISgpContext conexao) : base(conexao)
         {
         }
-        public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurma(int anoLetivo, int bimestre, long? periodoEscolarId)
-        {
-            var validacaoBimestre = bimestre == 0 ? "order by pe.bimestre desc limit 1" : "and pe.bimestre = @bimestre";
-            var validacaoPeriodo = periodoEscolarId.HasValue ? "and pe.id = @periodoEscolarId" : "";
-
-            var query = $@"select pfb.* 
-                          from periodo_fechamento pf 
-                         inner join periodo_fechamento_bimestre pfb on pfb.periodo_fechamento_id = pf.id
-                         inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
-                         inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
-                         where tc.ano_letivo  = @anoLetivo
-                            {validacaoPeriodo} 
-                            {validacaoBimestre}";
-
-
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { anoLetivo, bimestre, periodoEscolarId });
-        }
-
+         
         public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId)
         {
             var query = new StringBuilder("select f.*,fb.*,p.*, t.*");

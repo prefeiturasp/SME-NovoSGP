@@ -52,12 +52,11 @@ namespace SME.SGP.Aplicacao
             if (temEventoNaoLetivoNoDia)
                 return new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois existe um evento de dia não letivo");
 
-            //var temPeriodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolar.Bimestre, turma.EhTurmaInfantil);
+            var temPeriodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolar.Bimestre);
 
-            //return temPeriodoAberto 
-            //       ? new PodeCadastrarAulaPorDataRetornoDto(true) 
-            //       : new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
-            return new PodeCadastrarAulaPorDataRetornoDto(true);
+            return temPeriodoAberto
+                   ? new PodeCadastrarAulaPorDataRetornoDto(true)
+                   : new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
         }
 
         private async Task<FechamentoReabertura> ObterPeriodoFechamentoReabertura(long tipoCalendarioId, long ueId, DateTime hoje)

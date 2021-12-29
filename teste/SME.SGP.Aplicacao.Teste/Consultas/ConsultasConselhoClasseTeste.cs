@@ -59,7 +59,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         {
             consultasTurma.Setup(t => t.ObterComUeDrePorCodigo(It.IsAny<string>())).Returns(Task.FromResult(ObterTurma()));
             consultasFechamentoTurma.Setup(f => f.ObterPorTurmaCodigoBimestreAsync(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(ObterFechamentoTurma()));
-            consultasPeriodoFechamento.Setup(f => f.ObterPeriodoFechamentoTurmaAsync(It.IsAny<Turma>(), It.IsAny<int>(), It.IsAny<long>())).Returns(Task.FromResult(ObterPeriodoFechamentoBimestre()));
             consultasPeriodoEscolar.Setup(p => p.ObterUltimoPeriodoAsync(It.IsAny<int>(), It.IsAny<ModalidadeTipoCalendario>(), It.IsAny<int>())).Returns(Task.FromResult(ObterPeriodoEscolar()));
             servicoDeNotasConceitos.Setup(tn => tn.ObterNotaTipo(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<bool>())).Returns(Task.FromResult(new NotaTipoValor()));
             repositorioParametrosSistema.Setup(m => m.ObterValorPorTipoEAno(It.IsAny<TipoParametroSistema>(),null)).Returns(Task.FromResult("10"));
