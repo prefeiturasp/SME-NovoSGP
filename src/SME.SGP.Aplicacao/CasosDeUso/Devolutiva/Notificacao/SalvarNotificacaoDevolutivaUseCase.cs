@@ -6,7 +6,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
