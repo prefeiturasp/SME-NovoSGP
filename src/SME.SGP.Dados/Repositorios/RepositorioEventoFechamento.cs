@@ -8,6 +8,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Globalization;
+using SME.SGP.Infra.Consts;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -94,7 +95,7 @@ namespace SME.SGP.Dados.Repositorios
 				and TO_DATE(pfb.final_fechamento::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')");
 
             if (bimestre > 0)
-                query.AppendLine($"and pe.bimestre {ObterCondicoesLogicas(bimestre, ehModalidadeInfantil)}");
+                query.AppendLine($"and pe.bimestre {BimestreConstants.ObterCondicaoBimestre(bimestre, ehModalidadeInfantil)}");
 
             else
                 query.AppendLine($"and pe.bimestre =  {consultaObterBimestreFinal}");
