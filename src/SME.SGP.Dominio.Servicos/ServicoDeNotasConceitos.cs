@@ -34,6 +34,7 @@ namespace SME.SGP.Dominio
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
+        private readonly ConsultasPeriodoFechamento consultasPeriodoFechamento;
 
         public Turma turma { get; set; }
 
@@ -76,7 +77,7 @@ namespace SME.SGP.Dominio
             IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
             IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
             IRepositorioAula repositorioAula, IRepositorioTurma repositorioTurma, IRepositorioParametrosSistema repositorioParametrosSistema,
-            IServicoUsuario servicoUsuario, IConfiguration configuration, IMediator mediator)
+            IServicoUsuario servicoUsuario, IConfiguration configuration, IMediator mediator, ConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -97,6 +98,7 @@ namespace SME.SGP.Dominio
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.hostAplicacao = configuration["UrlFrontEnd"];
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
@@ -328,8 +330,8 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Período escolar da atividade avaliativa não encontrado");
 
             var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
-            var existePeriodoEmAberto = periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
-                || await repositorioPeriodoFechamento.ExistePeriodoPorUeDataBimestre(turma.UeId, DateTime.Today, bimestreAvaliacao);
+
+            var existePeriodoEmAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.Bimestre);
 
             foreach (var notaConceito in notasConceitos)
             {
