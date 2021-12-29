@@ -44,7 +44,10 @@ namespace SME.SGP.Aplicacao
             var titularEol = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turma.CodigoTurma, devolutiva.CodigoComponenteCurricular.ToString()));
             var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinaPorId(devolutiva.CodigoComponenteCurricular);
 
-            var codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id, turma.UeId, turma.CodigoTurma, usuarioLogado);
+            Guid codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id, turma.UeId, turma.CodigoTurma, usuarioLogado);
+            if (codigoRelatorio.Equals("00000000-0000-0000-000000000000"))
+                throw new NegocioException("Código Relatório Inválido ");
+
             var botaoDownload = MontarBotaoDownload(codigoRelatorio);
 
             if (titularEol != null)
