@@ -20,12 +20,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PFA_C, Policy = "Bearer")]
         public async Task<IActionResult> Get([FromQuery]FiltroFechamentoDto fechamentoDto, [FromServices] IConsultasPeriodoFechamento consultasFechamento)
         {
-            var retornoBool = await consultasFechamento.TurmaEmPeriodoDeFechamento("2261033", new DateTime(2021, 12, 28), 4);
-
-            var retornoObjeto = await consultasFechamento.TurmaEmPeriodoDeFechamentoVigente("2261033", new DateTime(2021, 12, 10), 4);
-
-            return Ok(null);
-            //return Ok(await consultasFechamento.ObterPorTipoCalendarioSme(fechamentoDto));
+            return Ok(await consultasFechamento.ObterPorTipoCalendarioSme(fechamentoDto));
         }
 
         [HttpPost]
