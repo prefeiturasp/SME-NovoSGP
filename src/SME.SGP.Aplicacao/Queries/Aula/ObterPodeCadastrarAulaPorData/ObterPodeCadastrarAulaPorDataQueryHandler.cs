@@ -3,8 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,19 +15,22 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IMediator mediator;
+        private readonly ConsultasPeriodoFechamento consultasPeriodoFechamento;
 
         public ObterPodeCadastrarAulaPorDataQueryHandler(IRepositorioEvento repositorioEvento, IRepositorioTipoCalendario repositorioTipoCalendario,
-            IRepositorioPeriodoFechamento repositorioPeriodoFechamento, IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IMediator mediator)
+            IRepositorioPeriodoFechamento repositorioPeriodoFechamento, IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IMediator mediator,
+            ConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamento));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
         }
         public async Task<PodeCadastrarAulaPorDataRetornoDto> Handle(ObterPodeCadastrarAulaPorDataQuery request, CancellationToken cancellationToken)
         {
-            var hoje = DateTime.Today.Date;
+            var hoje = DateTimeExtension.HorarioBrasilia().Date;
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.Turma.CodigoTurma));
 
             // Periodo Escolar
@@ -51,45 +52,11 @@ namespace SME.SGP.Aplicacao
             if (temEventoNaoLetivoNoDia)
                 return new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois existe um evento de dia não letivo");
 
-            if (request.DataAula.Year == hoje.Year)
-            {
-                if (request.DataAula.Date <= hoje)
-                {
-                    // Consultar fechamento só se não for data no bimestre corrente
-                    var periodoEscolarAtual = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, hoje);
-                    if (periodoEscolarAtual == null || periodoEscolar.Id != periodoEscolarAtual.Id)
-                    {
-                        var periodoFechamento = await repositorioPeriodoFechamento.ObterPeriodoPorUeDataBimestreAsync(request.Turma.UeId, hoje, periodoEscolar.Bimestre, request.Turma.EhTurmaInfantil);
-                        var fechamentoPeriodoDataAula = periodoFechamento?.FechamentosBimestre.Where(x => x.PeriodoEscolarId == periodoEscolar.Id).ToList();
-                        if (fechamentoPeriodoDataAula != null && fechamentoPeriodoDataAula.Any())
-                        {
-                            periodoFechamento.FechamentosBimestre = fechamentoPeriodoDataAula;
-                            if (periodoFechamento.ExisteFechamentoEmAberto(hoje))
-                                return new PodeCadastrarAulaPorDataRetornoDto(true);
-                        }
-                        else
-                        {
-                            FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(request.TipoCalendarioId, request.Turma.UeId, hoje);
-                            var mesmoAnoLetivo = DateTime.Today.Year == request.DataAula.Year;
-                            bool TemPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo));
+            //var temPeriodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolar.Bimestre, turma.EhTurmaInfantil);
 
-                            return (periodoFechamentoReabertura != null && TemPeriodoAberto) ?
-                                new PodeCadastrarAulaPorDataRetornoDto(true) :
-                                new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
-                        }
-                    }
-                }
-                else
-                    return new PodeCadastrarAulaPorDataRetornoDto(true);
-            }
-            else
-            {
-                FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(request.TipoCalendarioId, request.Turma.UeId, hoje);
-                return periodoFechamentoReabertura != null ?
-                    new PodeCadastrarAulaPorDataRetornoDto(true) :
-                    new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
-            }
-
+            //return temPeriodoAberto 
+            //       ? new PodeCadastrarAulaPorDataRetornoDto(true) 
+            //       : new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
             return new PodeCadastrarAulaPorDataRetornoDto(true);
         }
 

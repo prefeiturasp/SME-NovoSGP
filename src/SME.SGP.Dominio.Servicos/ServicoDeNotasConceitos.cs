@@ -328,8 +328,9 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Período escolar da atividade avaliativa não encontrado");
 
             var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
-            var existePeriodoEmAberto = periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
-                || await repositorioPeriodoFechamento.ExistePeriodoPorUeDataBimestre(turma.UeId, DateTime.Today, bimestreAvaliacao);
+            var existePeriodoEmAberto = true;
+            //periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
+            //    || await repositorioPeriodoFechamento.ExistePeriodoPorDataBimestre(DateTimeExtension.HorarioBrasilia(), bimestreAvaliacao, turma.EhTurmaInfantil);
 
             foreach (var notaConceito in notasConceitos)
             {
