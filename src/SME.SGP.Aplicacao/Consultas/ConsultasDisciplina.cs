@@ -94,13 +94,13 @@ namespace SME.SGP.Aplicacao
 
             var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
 
-            //if (!usuarioLogado.EhProfessor())
-            //{
-            //    var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
+            if (!usuarioLogado.EhProfessor())
+            {
+                var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
 
-            //    if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-            //        return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
-            //}
+                if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
+                    return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+            }
 
             var turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
             
@@ -111,6 +111,10 @@ namespace SME.SGP.Aplicacao
             {
                 var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
                 disciplinasDto = MapearParaDto(disciplinas, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
+                disciplinasDto.ForEach(d =>
+                {
+                    d.NomeComponenteInfantil = d.NomeComponenteInfantil != null ? d.NomeComponenteInfantil : d.Nome;
+                });
             }
 
             else
