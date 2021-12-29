@@ -18,57 +18,6 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioPeriodoFechamento(ISgpContext conexao) : base(conexao)
         {
         }
-        public async Task<bool> ExistePeriodoPorUeDataBimestre(long ueId, DateTime dataReferencia, int bimestre)
-        {
-            string query = @"select  1
-                           from periodo_fechamento p
-                           left join periodo_fechamento_bimestre pfb ON pfb.periodo_fechamento_id = p.id
-                           left join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
-                           where p.ue_id = @ueId
-                           and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento
-                           and pe.bimestre = @bimestre";
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new
-            {
-                ueId,
-                dataReferencia,
-                bimestre
-            });
-        }
-
-        public async Task<PeriodoFechamento> ObterPeriodoPorUeDataBimestreAsync(long ueId, DateTime dataReferencia, int bimestre, bool ehModalidadeInfantil)
-        {
-            string query = $@"select p.*, pfb.*
-                           from periodo_fechamento p
-                           left join periodo_fechamento_bimestre pfb ON pfb.periodo_fechamento_id = p.id
-                           left join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
-                           where p.ue_id = @ueId
-                           and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento
-                           and pe.bimestre {BimestreConstants.ObterCondicaoBimestre(bimestre,ehModalidadeInfantil)}";
-
-            var lookup = new Dictionary<long, PeriodoFechamento>();
-
-            await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoFechamento>(query.ToString(), (periodoFechamento, periodoFechamentoBimestre) => {
-                var retorno = new PeriodoFechamento();
-                if (!lookup.TryGetValue(periodoFechamento.Id, out retorno))
-                {
-                    retorno = periodoFechamento;
-                    lookup.Add(periodoFechamento.Id, retorno);
-                }
-
-                retorno.AdicionarFechamentoBimestre(periodoFechamentoBimestre);
-
-                return retorno;
-            },  new
-            {
-                ueId,
-                dataReferencia,
-                bimestre
-            });
-
-            return lookup.Select( a => a.Value).FirstOrDefault();
-        }
-
         public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurma(int anoLetivo, int bimestre, long? periodoEscolarId)
         {
             var validacaoBimestre = bimestre == 0 ? "order by pe.bimestre desc limit 1" : "and pe.bimestre = @bimestre";
@@ -265,5 +214,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoVigenteDto>(query, new { anoLetivo, modalidadeTipoCalendario });
         }
+
     }
 }
