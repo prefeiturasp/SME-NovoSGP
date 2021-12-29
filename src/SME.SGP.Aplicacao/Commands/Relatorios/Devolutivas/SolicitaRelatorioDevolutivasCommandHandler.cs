@@ -36,9 +36,10 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
                 }
                 else
                 {
+                    var guid = Guid.Empty;
                     throw new NegocioException($"Falha ao enviar para o servidor de relatorios {resposta.StatusCode}, [{resposta}], {baseAdd}");
                 }
-                //return Guid.Empty;
+                
             }
             catch (Exception ex)
             {
