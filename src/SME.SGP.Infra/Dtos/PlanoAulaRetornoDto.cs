@@ -29,5 +29,6 @@ namespace SME.SGP.Infra
         public bool PossuiPlanoAnual { get; set; }
         public bool ObjetivosAprendizagemOpcionais { get; set; }
         public DateTime DataAula { get; set; } //Usado somente no Listão
+        public bool EhReposicao { get; set; }
     }
 }
