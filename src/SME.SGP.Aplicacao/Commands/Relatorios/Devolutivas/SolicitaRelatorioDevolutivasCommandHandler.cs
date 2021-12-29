@@ -19,24 +19,17 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
         }
         public async Task<Guid> Handle(SolicitaRelatorioDevolutivasCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var httpClient = httpClientFactory.CreateClient("servicoServidorRelatorios");
-                var filtro = JsonConvert.SerializeObject(request.Filtro);
-                var resposta = await httpClient.PostAsync($"api/v1/relatorios/sincronos/devolutivas", new StringContent(filtro, Encoding.UTF8, "application/json-patch+json"));
+            var httpClient = httpClientFactory.CreateClient("servicoServidorRelatorios");
+            var filtro = JsonConvert.SerializeObject(request.Filtro);
+            var resposta = await httpClient.PostAsync($"api/v1/relatorios/sincronos/devolutivas", new StringContent(filtro, Encoding.UTF8, "application/json-patch+json"));
 
-                if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
-                {
-                    var json = await resposta.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<Guid>(json);
-                }
-                return Guid.Empty;
-            }
-            catch (Exception ex)
+            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
-
-                throw;
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Guid>(json);
             }
+            return Guid.Empty;
+
         }
     }
 }
