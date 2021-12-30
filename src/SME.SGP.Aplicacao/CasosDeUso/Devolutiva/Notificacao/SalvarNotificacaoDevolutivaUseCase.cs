@@ -44,8 +44,6 @@ namespace SME.SGP.Aplicacao
             var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinaPorId(devolutiva.CodigoComponenteCurricular);
 
             Guid codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id, turma.UeId, turma.CodigoTurma, usuarioLogado);
-            if (codigoRelatorio.Equals("00000000-0000-0000-0000-000000000000"))
-                throw new NegocioException("Código Correlação do Relatório Inválido ");
 
             var botaoDownload = MontarBotaoDownload(codigoRelatorio);
 

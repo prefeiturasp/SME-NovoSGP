@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Dominio;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -20,32 +19,16 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
         }
         public async Task<Guid> Handle(SolicitaRelatorioDevolutivasCommand request, CancellationToken cancellationToken)
         {
+            var httpClient = httpClientFactory.CreateClient("servicoServidorRelatorios");
+            var filtro = JsonConvert.SerializeObject(request.Filtro);
+            HttpResponseMessage resposta = await httpClient.PostAsync($"api/v1/relatorios/sincronos/devolutivas", new StringContent(filtro, Encoding.UTF8, "application/json-patch+json"));
 
-            string baseAdd = string.Empty;
-            try
+            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
-                var httpClient = httpClientFactory.CreateClient("servicoServidorRelatorios");
-                baseAdd = httpClient.BaseAddress.ToString();
-                var filtro = JsonConvert.SerializeObject(request.Filtro);
-                var resposta = await httpClient.PostAsync($"api/v1/relatorios/sincronos/devolutivas", new StringContent(filtro, Encoding.UTF8, "application/json-patch+json"));
-
-                if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
-                {
-                    var json = await resposta.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<Guid>(json);
-                }
-                else
-                {
-                    var guid = Guid.Empty;
-                    throw new NegocioException($"Falha ao enviar para o servidor de relatorios {resposta.StatusCode}, [{resposta}], {baseAdd}");
-                }
-                
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Guid>(json);
             }
-            catch (Exception ex)
-            {
-                throw new NegocioException($"Falha ao enviar para o servidor de relatorios {ex.Message}, [{ex.StackTrace}], {baseAdd}");
-            }
-
+            return Guid.Empty;
         }
     }
 }

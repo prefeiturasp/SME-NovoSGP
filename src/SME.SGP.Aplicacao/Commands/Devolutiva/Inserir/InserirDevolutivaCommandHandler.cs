@@ -35,8 +35,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNovaNotificacaoDevolutiva,
-                       new SalvarNotificacaoDevolutivaDto(turma, usuarioLogado, devolutiva.Id), Guid.NewGuid(), null));
+            await mediator.Send(new SalvarNotificacaoDevolutivaDto(turma, usuarioLogado, devolutiva.Id));
 
             return (AuditoriaDto)devolutiva;
         }
