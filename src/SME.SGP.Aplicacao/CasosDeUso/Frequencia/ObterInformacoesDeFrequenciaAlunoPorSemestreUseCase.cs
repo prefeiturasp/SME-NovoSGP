@@ -47,26 +47,47 @@ namespace SME.SGP.Aplicacao
 
             List<FrequenciaAlunoBimestreDto> bimestres = new List<FrequenciaAlunoBimestreDto>();
 
-            if (semestre == 1)
+            if(turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
             {
-                dados1 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
-                    periodosEscolares.First(a => a.Bimestre == 1), componenteCurricularId);
-                dados2 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
-                    periodosEscolares.First(a => a.Bimestre == 2), componenteCurricularId);               
+                if (semestre == 1)
+                {
+                    dados1 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
+                        periodosEscolares.First(a => a.Bimestre == 1), componenteCurricularId);
+                    dados2 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
+                        periodosEscolares.First(a => a.Bimestre == 2), componenteCurricularId);
+                }
+                else
+                {
+                    dados1 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
+                        periodosEscolares.First(a => a.Bimestre == 3), componenteCurricularId);
+                    dados2 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
+                        periodosEscolares.First(a => a.Bimestre == 4), componenteCurricularId);
+                }
+
+                bimestres = TratarMediaBimestresParaSemestreInfantil(dados1, dados2);
             }
             else
             {
-                dados1 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
-                    periodosEscolares.First(a => a.Bimestre == 3), componenteCurricularId);
-                dados2 = await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
-                    periodosEscolares.First(a => a.Bimestre == 4), componenteCurricularId);
+                if (semestre == 1)
+                {
+                    bimestres.Add(await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
+                        periodosEscolares.First(a => a.Bimestre == 1), componenteCurricularId));
+                    bimestres.Add(await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
+                        periodosEscolares.First(a => a.Bimestre == 2), componenteCurricularId));
+                }
+                else
+                {
+                    bimestres.Add(await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
+                        periodosEscolares.First(a => a.Bimestre == 3), componenteCurricularId));
+                    bimestres.Add(await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
+                        periodosEscolares.First(a => a.Bimestre == 4), componenteCurricularId));
+                }
             }
-
-            bimestres = TratarMediaBimestresParaSemestre(dados1, dados2);
+            
             return bimestres.Where(bimestre => bimestre != null);
         }
 
-        public List<FrequenciaAlunoBimestreDto> TratarMediaBimestresParaSemestre(FrequenciaAlunoBimestreDto dados1, FrequenciaAlunoBimestreDto dados2)
+        public List<FrequenciaAlunoBimestreDto> TratarMediaBimestresParaSemestreInfantil(FrequenciaAlunoBimestreDto dados1, FrequenciaAlunoBimestreDto dados2)
         {
             int somatorioAusencias = 0;
             int somatorioAulasRealizadas = 0;
@@ -92,6 +113,9 @@ namespace SME.SGP.Aplicacao
         {
             FrequenciaAlunoBimestreDto dto = new FrequenciaAlunoBimestreDto();
 
+            if(turma.ModalidadeCodigo != Modalidade.EducacaoInfantil) 
+                dto.Bimestre = periodoEscolar.Bimestre.ToString();
+
             var frequenciasRegistradas = await mediator.Send(new ObterFrequenciaBimestresQuery(alunoCodigo,
                 periodoEscolar.Bimestre, turma.CodigoTurma, TipoFrequenciaAluno.Geral));
             
@@ -104,7 +128,6 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                
                 var alunoPossuiFrequenciaRegistrada = await mediator.Send(
                     new ObterFrequenciaAlunoTurmaPorComponenteCurricularPeriodosQuery(alunoCodigo,
                         componenteCurricularId.ToString(), turma.CodigoTurma, new[] {periodoEscolar.Bimestre}));
