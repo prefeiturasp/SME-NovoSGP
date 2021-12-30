@@ -64,7 +64,9 @@ namespace SME.SGP.Aplicacao
                         periodosEscolares.First(a => a.Bimestre == 4), componenteCurricularId);
                 }
 
-                bimestres = TratarMediaBimestresParaSemestreInfantil(dados1, dados2);
+                if(dados1 != null || dados2 != null)
+                    bimestres = TratarMediaBimestresParaSemestreInfantil(dados1, dados2);
+        
             }
             else
             {
