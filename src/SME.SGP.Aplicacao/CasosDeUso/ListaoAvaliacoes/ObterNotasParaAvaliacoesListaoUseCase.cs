@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
-        public async Task<NotasConceitosListaoRetornoDto> Executar(ListaNotasConceitosConsultaRefatoradaDto filtro)
+        public async Task<NotasConceitosListaoRetornoDto> Executar(ListaNotasConceitosBimestreRefatoradaDto filtro)
         {
             var retorno = new NotasConceitosListaoRetornoDto();
 
@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
 
             var periodoFechamentoBimestre = await mediator.Send(new ObterPeriodoFechamentoPorTurmaBimestrePeriodoEscolarQuery(turmaCompleta, filtro.Bimestre, filtro.PeriodoEscolarId));
-
+            
             var periodoInicio = new DateTime(filtro.PeriodoInicioTicks);
             var periodoFim = new DateTime(filtro.PeriodoFimTicks);
 
@@ -66,7 +66,6 @@ namespace SME.SGP.Aplicacao
             var nomeAvaliacaoAuditoriaInclusao = string.Empty;
             var nomeAvaliacaoAuditoriaAlteracao = string.Empty;
 
-            //TODO  REVER
             AtividadeAvaliativa atividadeAvaliativaParaObterTipoNota = null;
 
             var bimestreParaAdicionar = new NotasConceitosBimestreListaoRetornoDto()
@@ -205,7 +204,6 @@ namespace SME.SGP.Aplicacao
                                        where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
                                        select ft).FirstOrDefault();
 
-                // Carrega Notas do Bimestre
                 if (fechamentoTurma != null)
                 {
                     retorno.AuditoriaBimestreInserido = $"Nota final do bimestre inserida por {fechamentoTurma.CriadoPor}({fechamentoTurma.CriadoRF}) em {fechamentoTurma.CriadoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurma.CriadoEm.ToString("HH:mm")}.";
