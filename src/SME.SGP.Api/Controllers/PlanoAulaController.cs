@@ -32,7 +32,7 @@ namespace SME.SGP.Api.Controllers
            
         }
 
-        [HttpGet("/turmas/{turmaCodigo}/componente/{componenteCurricularCodigo}")]
+        [HttpGet("turmas/{turmaCodigo}/componente/{componenteCurricularCodigo}")]
         [ProducesResponseType(typeof(PlanoAulaRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
