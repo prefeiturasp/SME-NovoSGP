@@ -2,6 +2,7 @@
 {
     public class FrequenciaAlunoBimestreDto
     {
+        public string Bimestre { get; set; }
         public int AulasPrevistas { get; set; }
         public int AulasRealizadas { get; set; }
         public int Ausencias { get; set; }
