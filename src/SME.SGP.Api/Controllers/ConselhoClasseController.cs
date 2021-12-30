@@ -13,7 +13,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/conselhos-classe")]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class ConselhoClasseController : ControllerBase
     {
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/bimestres/{bimestre}/recomendacoes")]
@@ -62,7 +62,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(ConselhoClasseAlunoResumoDto), 200)]
-        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        //[Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterConselhoClasseTurma(string turmaCodigo, int bimestre, string alunoCodigo, bool ehFinal, bool consideraHistorico, [FromServices] IConsultasConselhoClasse consultasConselhoClasse)
             => Ok(await consultasConselhoClasse.ObterConselhoClasseTurma(turmaCodigo, alunoCodigo, bimestre, ehFinal, consideraHistorico));
 
