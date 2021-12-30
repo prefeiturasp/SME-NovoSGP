@@ -75,9 +75,10 @@ namespace SME.SGP.Aplicacao
             if (notificacao == null)
                 throw new NegocioException($"Notificação de Id: '{notificacaoId}' não localizada.");
 
-            if (Regex.Match(notificacao.Mensagem, "<a [^>]*?>").Success)
+            if (Regex.Match(notificacao.Mensagem, "<a [^>]*?>").Success && notificacao.Mensagem.Contains("Para visualizar a aula clique"))
             {
-                notificacao.Mensagem = Regex.Replace(notificacao.Mensagem, @"<a [^>]*?>(.*?)<\/a>", "");
+                notificacao.Mensagem = Regex.Replace(notificacao.Mensagem, @"Para visualizar a aula clique(\s)?.", "", RegexOptions.IgnoreCase);
+                notificacao.Mensagem = Regex.Replace(notificacao.Mensagem, @"<a [^>]*?>(.*?)<\/a>?.", "");
             }
             
             if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
