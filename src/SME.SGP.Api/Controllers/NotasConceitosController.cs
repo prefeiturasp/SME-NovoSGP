@@ -24,6 +24,16 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto));
         }
+
+        [HttpGet("avaliacoes-bimestre")]
+        [ProducesResponseType(typeof(NotasConceitosListaoRetornoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
+        public async Task<IActionResult> ListaNotaAvaliacoesBimestre([FromQuery] ListaNotasConceitosBimestreRefatoradaDto consultaListaNotasBimestreDto, [FromServices] IObterNotasParaAvaliacoesListaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(consultaListaNotasBimestreDto));
+        }
+
         [HttpGet("periodos")]
         [ProducesResponseType(typeof(IEnumerable<PeriodosParaConsultaNotasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
