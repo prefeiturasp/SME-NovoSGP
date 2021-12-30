@@ -6,7 +6,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,7 +43,8 @@ namespace SME.SGP.Aplicacao
             var titularEol = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turma.CodigoTurma, devolutiva.CodigoComponenteCurricular.ToString()));
             var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinaPorId(devolutiva.CodigoComponenteCurricular);
 
-            var codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id, turma.UeId, turma.CodigoTurma, usuarioLogado);
+            Guid codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id, turma.UeId, turma.CodigoTurma, usuarioLogado);
+
             var botaoDownload = MontarBotaoDownload(codigoRelatorio);
 
             if (titularEol != null)

@@ -148,8 +148,10 @@ namespace SME.SGP.Dados.Repositorios
                             , db.reflexoes_replanejamento as DescricaoReflexoes
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data
+                            ,d.descricao
                         from diario_bordo db
                        inner join aula a on a.id = db.aula_id
+                       left join devolutiva d on db.devolutiva_id  =d.id
                        where db.devolutiva_id = @devolutivaId
                       order by a.data_aula
                       offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
@@ -166,6 +168,7 @@ namespace SME.SGP.Dados.Repositorios
                 TotalRegistros = totalRegistrosDaQuery,
                 TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
             };
+
         }
 
         public async Task ExcluirReferenciaDevolutiva(long devolutivaId)
