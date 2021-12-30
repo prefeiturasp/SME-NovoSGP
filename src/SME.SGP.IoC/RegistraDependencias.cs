@@ -813,6 +813,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirPlanoAulaUseCase, ExcluirPlanoAulaUseCase>();
             services.TryAddScoped<IMigrarPlanoAulaUseCase, MigrarPlanoAulaUseCase>();
             services.TryAddScoped<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
+            services.TryAddScoped<IObterPlanoAulasPorTurmaEComponentePeriodoUseCase, ObterPlanoAulasPorTurmaEComponentePeriodoUseCase>();            
 
             // Relatórios
             services.TryAddScoped<IRelatorioPlanoAulaUseCase, RelatorioPlanoAulaUseCase>();

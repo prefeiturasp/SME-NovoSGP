@@ -176,6 +176,11 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Você não pode alterar esta Atividade Avaliativa.");
         }
 
+        public bool EhReposicao()
+        {
+            return TipoAula == TipoAula.Reposicao;
+        }
+
         public void ReprovarWorkflow()
         {
             if (Status != EntidadeStatus.AguardandoAprovacao)

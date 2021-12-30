@@ -29,6 +29,7 @@ namespace SME.SGP.Infra
         public DateTime? AlteradoEm { get; set; }
         public string AlteradoPor { get; set; }
         public string AlteradoRf { get; set; }
+        public int TipoAula { get; set; }
 
         public List<ObjetivosAprendizagemPorComponenteDto> ObjetivosAprendizagemComponente { get; set; }
 
@@ -36,6 +37,6 @@ namespace SME.SGP.Infra
         {
             if (objetivoAprendizagemComponente != null)
                 ObjetivosAprendizagemComponente.Add(objetivoAprendizagemComponente);
-        }
+        } 
     }
 }
