@@ -102,9 +102,9 @@ namespace SME.SGP.Dados.Repositorios
                            pa.id, pa.descricao, pa.recuperacao_aula as RecuperacaoAula, pa.licao_casa as LicaoCasa, pa.migrado,
                            pa.criado_em as CriadoEm, pa.alterado_em as AlteradoEm, pa.criado_por as CriadoPor, pa.alterado_por as AlteradoPor, pa.criado_rf as CriadoRf, pa.alterado_rf as AlteradoRf,
                            a.id as AulaId, a.ue_id as UeId, a.disciplina_id as DisciplinaId, a.turma_id as TurmaId,
-                           a.quantidade, a.tipo_calendario_id as TipoCalendarioId, a.data_aula as DataAula,
+                           a.quantidade, a.tipo_calendario_id as TipoCalendarioId, a.data_aula as DataAula, a.tipo_aula as TipoAula,
                            oaa.componente_curricular_id as id,
-                           oa.id, oa.descricao, oa.codigo, oa.ano_turma as Ano, oa.componente_curricular_id as IdComponenteCurricular, a.tipo_aula as TipoAula
+                           oa.id, oa.descricao, oa.codigo, oa.ano_turma as Ano, oa.componente_curricular_id as IdComponenteCurricular
                       from aula a
                       inner join plano_aula pa on a.id = pa.aula_id
                       left join objetivo_aprendizagem_aula oaa on pa.id = oaa.plano_aula_id
@@ -119,7 +119,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, PlanoAulaObjetivosAprendizagemDto>();
 
-            await database.Conexao.QueryAsync(query, (Func<PlanoAulaObjetivosAprendizagemDto, long?, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>)((planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) =>
+            await database.Conexao.QueryAsync(query.ToString(), (Func<PlanoAulaObjetivosAprendizagemDto, long?, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>)((planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) =>
             {
                 var retorno = ObterDependenciasPlanoAula(planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto, lookup);
 
