@@ -148,6 +148,7 @@ namespace SME.SGP.Dados.Repositorios
                             , db.reflexoes_replanejamento as DescricaoReflexoes
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data
+                            , db.inserido_cj 
                         from diario_bordo db
                        inner join aula a on a.id = db.aula_id
                        where db.devolutiva_id = @devolutivaId
