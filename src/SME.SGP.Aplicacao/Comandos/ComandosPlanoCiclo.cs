@@ -32,15 +32,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task Salvar(PlanoCicloDto planoCicloDto)
         {
-            string descricaoAtual;
-            var planoCiclo = MapearParaDominio(planoCicloDto, out descricaoAtual);
+            var planoCiclo = await MapearParaDominio(planoCicloDto);
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 planoCicloDto.Id = repositorioPlanoCiclo.Salvar(planoCiclo);
                 AjustarMatrizes(planoCiclo, planoCicloDto);
                 AjustarObjetivos(planoCiclo, planoCicloDto);
                 unitOfWork.PersistirTransacao();
-                await MoverRemoverExcluidos(planoCicloDto,descricaoAtual);
+                
             }
         }
 
@@ -90,54 +89,47 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private PlanoCiclo MapearParaDominio(PlanoCicloDto planoCicloDto,out string descricaoAtual)
+        private async Task<PlanoCiclo> MapearParaDominio(PlanoCicloDto planoCicloDto)
         {
-            descricaoAtual = string.Empty;
+            var descricaoAtual = string.Empty;
             if (planoCicloDto == null)
-            {
                 throw new ArgumentNullException(nameof(planoCicloDto));
-            }
+
             if (planoCicloDto.Id == 0 && repositorioPlanoCiclo.ObterPlanoCicloPorAnoCicloEEscola(planoCicloDto.Ano, planoCicloDto.CicloId, planoCicloDto.EscolaId))
-            {
                 throw new NegocioException("Já existe um plano ciclo referente a este Ano/Ciclo/Escola.");
-            }
 
             var planoCiclo = repositorioPlanoCiclo.ObterPorId(planoCicloDto.Id);
             if (planoCiclo == null)
-            {
                 planoCiclo = new PlanoCiclo();
-            }
             else
-            {
                 descricaoAtual = planoCiclo.Descricao;
-            }
+
             if (!planoCiclo.Migrado)
             {
                 if (planoCicloDto.IdsMatrizesSaber == null || !planoCicloDto.IdsMatrizesSaber.Any())
-                {
                     throw new NegocioException("A matriz de saberes deve conter ao menos 1 elemento.");
-                }
+
                 if (planoCicloDto.IdsObjetivosDesenvolvimento == null || !planoCicloDto.IdsObjetivosDesenvolvimento.Any())
-                {
                     throw new NegocioException("Os objetivos de desenvolvimento sustentável devem conter ao menos 1 elemento.");
-                }
             }
-            planoCiclo.Descricao = planoCicloDto.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoCiclo.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+
+            planoCiclo.Descricao = await MoverRemoverExcluidos(planoCicloDto, descricaoAtual);
             planoCiclo.CicloId = planoCicloDto.CicloId;
             planoCiclo.Ano = planoCicloDto.Ano;
             planoCiclo.EscolaId = planoCicloDto.EscolaId;
             return planoCiclo;
         }
-        private async Task MoverRemoverExcluidos(PlanoCicloDto novo, string atual)
+        private async Task<string> MoverRemoverExcluidos(PlanoCicloDto novo, string atual)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(novo.Descricao))
-            {
-                novo.Descricao = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanoCiclo, atual, novo.Descricao));
-            }
+                caminho = novo.Descricao = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanoCiclo, atual, novo.Descricao));
+
             if (!string.IsNullOrEmpty(atual))
-            {
                 await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo.Descricao, TipoArquivo.PlanoCiclo.Name()));
-            }
+
+            return caminho;
         }
         private void RemoverMatrizes(PlanoCicloDto planoCicloDto, IEnumerable<MatrizSaberPlano> matrizesPlanoCiclo)
         {
