@@ -250,7 +250,7 @@ namespace SME.SGP.Aplicacao
                                 throw new NegocioException("Não é possivel registrar fechamento pois não há registros de frequência no bimestre.");
                                
                             var percentualFrequencia = frequenciaAluno == null ? 100 : frequenciaAluno.PercentualFrequencia;
-                            var sinteseDto = await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplinaEOL);
+                            var sinteseDto = await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplinaEOL, turma.AnoLetivo);
 
                             alunoDto.SinteseId = sinteseDto.Id;
                             alunoDto.Sintese = sinteseDto.Valor;

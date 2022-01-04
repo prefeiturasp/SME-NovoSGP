@@ -232,7 +232,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (componenteSemNota && id > 0)
-                fechamentoAlunos = await AtualizaSinteseAlunos(id, periodoEscolar.PeriodoFim, disciplinaEOL);
+                fechamentoAlunos = await AtualizaSinteseAlunos(id, periodoEscolar.PeriodoFim, disciplinaEOL, turmaFechamento.AnoLetivo);
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado);
 
@@ -307,7 +307,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task<IEnumerable<FechamentoAluno>> AtualizaSinteseAlunos(long fechamentoTurmaDisciplinaId, DateTime dataReferencia, DisciplinaDto disciplina)
+        private async Task<IEnumerable<FechamentoAluno>> AtualizaSinteseAlunos(long fechamentoTurmaDisciplinaId, DateTime dataReferencia, DisciplinaDto disciplina, int anoLetivo)
         {
             var fechamentoAlunos = await repositorioFechamentoAlunoConsulta.ObterPorFechamentoTurmaDisciplina(fechamentoTurmaDisciplinaId);
             foreach (var fechamentoAluno in fechamentoAlunos)
@@ -316,7 +316,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var frequencia = consultasFrequencia.ObterPorAlunoDisciplinaData(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia);
                     var percentualFrequencia = frequencia == null ? 100 : frequencia.PercentualFrequencia;
-                    var sinteseDto =  await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplina);
+                    var sinteseDto =  await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplina, anoLetivo);
 
                     fechamentoNota.SinteseId = (long)sinteseDto.Id;
                 }
