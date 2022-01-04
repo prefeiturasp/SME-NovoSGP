@@ -112,14 +112,14 @@ namespace SME.SGP.Aplicacao
             return frequenciaAluno;
         }
 
-        public async Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina)
+        public async Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina, int anoLetivo)
         {
             if (_mediaFrequencia == 0)
             {
                 if (disciplina.Regencia || !disciplina.LancaNota)
-                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse, DateTime.Today.Year)));
+                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse, anoLetivo)));
                 else
-                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
+                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualFund2, anoLetivo)));
             }
 
             return _mediaFrequencia;
@@ -171,11 +171,11 @@ namespace SME.SGP.Aplicacao
         public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual, string turmaId)
             => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual, turmaId);
 
-        public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina)
+        public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina, int anoLetivo)
         {
             var sintese = percentualFrequencia == null ?
                 SinteseEnum.NaoFrequente :
-                percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
+                percentualFrequencia >= await ObterFrequenciaMedia(disciplina, anoLetivo) ?
                 SinteseEnum.Frequente :
                 SinteseEnum.NaoFrequente;
 
