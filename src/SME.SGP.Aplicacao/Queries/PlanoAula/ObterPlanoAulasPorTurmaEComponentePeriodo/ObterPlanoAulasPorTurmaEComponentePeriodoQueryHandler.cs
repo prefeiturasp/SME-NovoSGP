@@ -13,13 +13,11 @@ namespace SME.SGP.Aplicacao
     public class ObterPlanoAulasPorTurmaEComponentePeriodoQueryHandler : IRequestHandler<ObterPlanoAulasPorTurmaEComponentePeriodoQuery, IEnumerable<PlanoAulaRetornoDto>>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioAula repositorioAula;
 
-        public ObterPlanoAulasPorTurmaEComponentePeriodoQueryHandler(IMediator mediator, IRepositorioTurma repositorioTurma, IRepositorioAula repositorioAula)
+        public ObterPlanoAulasPorTurmaEComponentePeriodoQueryHandler(IMediator mediator, IRepositorioAula repositorioAula)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }
 
@@ -179,7 +177,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 
