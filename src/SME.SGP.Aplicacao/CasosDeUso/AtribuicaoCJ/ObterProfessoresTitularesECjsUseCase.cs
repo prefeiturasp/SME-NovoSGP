@@ -26,10 +26,11 @@ namespace SME.SGP.Aplicacao
         {
             IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaId, professorRf);
             List<AtribuicaoCJ> atribuicaoCJ = new List<AtribuicaoCJ>();
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
             if (anoLetivo >= 2022 && modalidadeId == Modalidade.EducacaoInfantil)
             {
-                var listaDisciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaId, false);
+                var listaDisciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaId, turma.TipoTurma == Dominio.Enumerados.TipoTurma.Programa);
                 var listaDisciplinaComProfessor = VerificaTitularidadeDisciplinaInfantil(professoresTitularesDisciplinasEol, listaDisciplinas);
 
                 foreach (var disciplinas in listaDisciplinas)
@@ -55,19 +56,26 @@ namespace SME.SGP.Aplicacao
             var listaProfessorDisciplina = new List<ProfessorTitularDisciplinaEol>();
             foreach(var disciplina in disciplinas)
             {
-                if(!professoresTitularesEol.Any(p => p.DisciplinaId == disciplina.CodigoComponenteCurricular))
+                if(professoresTitularesEol.Any(p => p.DisciplinaId == disciplina.CodigoComponenteCurricular))
                 {
+                    var dadosProfessorTitular = professoresTitularesEol.FirstOrDefault(p => p.DisciplinaId == disciplina.CodigoComponenteCurricular);
                     listaProfessorDisciplina.Add(new ProfessorTitularDisciplinaEol()
                     {
                         DisciplinaId = disciplina.Id,
-                        DisciplinaNome = disciplina.Nome,
-                        ProfessorNome = "Não há professor titular",
-                        ProfessorRf = ""
+                        DisciplinaNome = disciplina.NomeComponenteInfantil,
+                        ProfessorNome = dadosProfessorTitular.ProfessorNome,
+                        ProfessorRf = dadosProfessorTitular.ProfessorRf
                     });
                 }
                 else
                 {
-                    listaProfessorDisciplina.Add(professoresTitularesEol.FirstOrDefault(p => p.DisciplinaId == disciplina.CodigoComponenteCurricular));
+                    listaProfessorDisciplina.Add(new ProfessorTitularDisciplinaEol()
+                    {
+                        DisciplinaId = disciplina.Id,
+                        DisciplinaNome = disciplina.NomeComponenteInfantil,
+                        ProfessorNome = "Não há professor titular",
+                        ProfessorRf = ""
+                    });
                 }
             }
 
