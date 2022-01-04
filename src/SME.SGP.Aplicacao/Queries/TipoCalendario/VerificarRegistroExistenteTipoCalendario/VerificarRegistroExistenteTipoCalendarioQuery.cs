@@ -19,10 +19,6 @@ namespace SME.SGP.Aplicacao
     {
         public VerificarRegistroExistenteTipoCalendarioQueryValidator()
         {
-            RuleFor(x => x.TipoCalendarioId)
-                .NotEmpty()
-                .WithMessage("O id do tipo calendário deve ser informado.");
-
             RuleFor(x => x.NomeTipoCalendario)
                 .NotEmpty()
                 .WithMessage("O nome do tipo calendário deve ser informado.");
