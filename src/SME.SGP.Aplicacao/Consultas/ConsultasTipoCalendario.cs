@@ -97,8 +97,9 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<TipoCalendarioDto>> Listar()
         {
             var retorno = await repositorio.ObterTiposCalendario();
-            return from t in retorno
-                   select EntidadeParaDto(t);
+            return retorno
+                .Select(a => EntidadeParaDto(a))
+                .OrderByDescending(x => x.AnoLetivo);
         }
 
         public async Task<IEnumerable<TipoCalendarioDto>> ListarPorAnoLetivo(int anoLetivo)
