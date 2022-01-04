@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -29,7 +30,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public void Salvar(PlanoCicloDto planoCicloDto)
+        public async Task Salvar(PlanoCicloDto planoCicloDto)
         {
             string descricaoAtual;
             var planoCiclo = MapearParaDominio(planoCicloDto, out descricaoAtual);
@@ -39,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 AjustarMatrizes(planoCiclo, planoCicloDto);
                 AjustarObjetivos(planoCiclo, planoCicloDto);
                 unitOfWork.PersistirTransacao();
-                MoverRemoverExcluidos(planoCicloDto,descricaoAtual);
+                await MoverRemoverExcluidos(planoCicloDto,descricaoAtual);
             }
         }
 
@@ -127,16 +128,15 @@ namespace SME.SGP.Aplicacao
             planoCiclo.EscolaId = planoCicloDto.EscolaId;
             return planoCiclo;
         }
-        private void MoverRemoverExcluidos(PlanoCicloDto novo, string atual)
+        private async Task MoverRemoverExcluidos(PlanoCicloDto novo, string atual)
         {
             if (!string.IsNullOrEmpty(novo.Descricao))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanoCiclo, atual, novo.Descricao));
-                novo.Descricao = moverArquivo.Result;
+                novo.Descricao = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanoCiclo, atual, novo.Descricao));
             }
             if (!string.IsNullOrEmpty(atual))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo.Descricao, TipoArquivo.PlanoCiclo.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo.Descricao, TipoArquivo.PlanoCiclo.Name()));
             }
         }
         private void RemoverMatrizes(PlanoCicloDto planoCicloDto, IEnumerable<MatrizSaberPlano> matrizesPlanoCiclo)

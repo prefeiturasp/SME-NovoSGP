@@ -150,15 +150,15 @@ namespace SME.SGP.Aplicacao
 
             return planoAula;
         }
-        private void MoverRemoverExcluidos(string novo, string atual, TipoArquivo tipo)
+        private async Task MoverRemoverExcluidos(string novo, string atual, TipoArquivo tipo)
         {
             if (!string.IsNullOrEmpty(novo))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(tipo, atual, novo));
+                await mediator.Send(new MoverArquivosTemporariosCommand(tipo, atual, novo));
             }
             if (!string.IsNullOrEmpty(atual))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
             }
         }
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)

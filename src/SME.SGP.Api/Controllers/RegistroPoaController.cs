@@ -55,9 +55,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.RPOA_I, Policy = "Bearer")]
-        public IActionResult Post([FromBody]RegistroPoaDto registroPoaDto, [FromServices]IComandosRegistroPoa comandosRegistroPoa)
+        public async Task<IActionResult> Post([FromBody]RegistroPoaDto registroPoaDto, [FromServices]IComandosRegistroPoa comandosRegistroPoa)
         {
-            comandosRegistroPoa.Cadastrar(registroPoaDto);
+            await comandosRegistroPoa.Cadastrar(registroPoaDto);
 
             return Ok();
         }
@@ -67,11 +67,11 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.RPOA_C, Policy = "Bearer")]
-        public IActionResult Put(long id, [FromBody]RegistroPoaDto registroPoaDto, [FromServices]IComandosRegistroPoa comandosRegistroPoa)
+        public async Task<IActionResult> Put(long id, [FromBody]RegistroPoaDto registroPoaDto, [FromServices]IComandosRegistroPoa comandosRegistroPoa)
         {
             registroPoaDto.Id = id;
 
-            comandosRegistroPoa.Atualizar(registroPoaDto);
+            await comandosRegistroPoa.Atualizar(registroPoaDto);
 
             return Ok();
         }

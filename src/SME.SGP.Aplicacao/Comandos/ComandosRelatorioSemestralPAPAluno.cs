@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
                     unitOfWork.PersistirTransacao();
                     foreach (var secao in listaSecaoDto)
                     {
-                        MoverRemoverExcluidos(secao.SecaoNovo, secao.SecaoAtual);
+                        await MoverRemoverExcluidos(secao.SecaoNovo, secao.SecaoAtual);
                     }
                 }
                 catch (Exception)
@@ -105,15 +105,15 @@ namespace SME.SGP.Aplicacao
 
             return MapearParaAuditorio(relatorioSemestralAluno);
         }
-        private void MoverRemoverExcluidos(string secaoNovo, string secaoAtual)
+        private async Task MoverRemoverExcluidos(string secaoNovo, string secaoAtual)
         {
             if (!string.IsNullOrEmpty(secaoNovo))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RelatorioSemestralPAP, secaoAtual, secaoNovo));
+                await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RelatorioSemestralPAP, secaoAtual, secaoNovo));
             }
             if (!string.IsNullOrEmpty(secaoAtual))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(secaoAtual, secaoNovo, TipoArquivo.RelatorioSemestralPAP.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(secaoAtual, secaoNovo, TipoArquivo.RelatorioSemestralPAP.Name()));
             }
         }
         private async Task ValidarPersistenciaTurmaSemestre(Turma turma, int semestre)

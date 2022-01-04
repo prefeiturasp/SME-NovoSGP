@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.PersistirTransacao();
                 foreach (var item in listaDescricao)
                 {
-                    MoverRemoverExcluidos(item.DescricaoNovo, item.DescricaoAtual);
+                    await MoverRemoverExcluidos(item.DescricaoNovo, item.DescricaoAtual);
                 }
             }
             catch (Exception ex)
@@ -171,15 +171,15 @@ namespace SME.SGP.Aplicacao
             return auditorias;
         }
 
-        private void MoverRemoverExcluidos(string novo, string atual)
+        private async Task MoverRemoverExcluidos(string novo, string atual)
         {
             if (!string.IsNullOrEmpty(novo))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanejamentoAnual, atual, novo));
+                await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanejamentoAnual, atual, novo));
             }
             if (!string.IsNullOrEmpty(atual))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.PlanejamentoAnual.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.PlanejamentoAnual.Name()));
             }
         }
     }
