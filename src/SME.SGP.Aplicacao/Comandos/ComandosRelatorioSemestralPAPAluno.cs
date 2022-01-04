@@ -68,8 +68,7 @@ namespace SME.SGP.Aplicacao
                         if (secaoRelatorioAluno != null)
                         {
                             secaoRelatorioAluno.RelatorioSemestralPAPAlunoId = relatorioSemestralAluno.Id;
-                            listaSecaoDto.Add(new RelatorioSemestralAlunoSecaoResumidaDto() { SecaoAtual = secaoRelatorioAluno.Valor,SecaoNovo = secaoRelatorio.Valor });
-                            secaoRelatorio.Valor = secaoRelatorio.Valor.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.RelatorioSemestralPAP.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+                            secaoRelatorio.Valor = await MoverRemoverExcluidos(secaoRelatorio.Valor, secaoRelatorioAluno.Valor);
                             secaoRelatorioAluno.Valor = secaoRelatorio.Valor;
                             if (!string.IsNullOrEmpty(secaoRelatorioAluno.Valor))
                                 // Relatorio Semestral Aluno x Secao
@@ -83,7 +82,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 RelatorioSemestralPAPAlunoId = relatorioSemestralAlunoDto.RelatorioSemestralAlunoId,
                                 SecaoRelatorioSemestralPAPId = secaoRelatorio.Id,
-                                Valor = secaoRelatorio.Valor.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.RelatorioSemestralPAP.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/")
+                                Valor = secaoRelatorio.Valor
                         };
 
                             await comandosRelatorioSemestralAlunoSecao.SalvarAsync(secaoRelatorioAluno);
@@ -105,16 +104,17 @@ namespace SME.SGP.Aplicacao
 
             return MapearParaAuditorio(relatorioSemestralAluno);
         }
-        private async Task MoverRemoverExcluidos(string secaoNovo, string secaoAtual)
+        private async Task<string> MoverRemoverExcluidos(string secaoNovo, string secaoAtual)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(secaoNovo))
-            {
-                await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RelatorioSemestralPAP, secaoAtual, secaoNovo));
-            }
+                caminho = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RelatorioSemestralPAP, secaoAtual, secaoNovo));
+
             if (!string.IsNullOrEmpty(secaoAtual))
-            {
                 await mediator.Send(new RemoverArquivosExcluidosCommand(secaoAtual, secaoNovo, TipoArquivo.RelatorioSemestralPAP.Name()));
-            }
+
+            return caminho;
         }
         private async Task ValidarPersistenciaTurmaSemestre(Turma turma, int semestre)
         {
