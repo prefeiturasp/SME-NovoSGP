@@ -34,6 +34,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesUsuario(string turmaCodigo, string codigoRf, Guid perfilAtual, bool realizarAgrupamentoComponente)
         {
+            var obterTurma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
+            realizarAgrupamentoComponente = obterTurma.AnoLetivo != DateTimeExtension.HorarioBrasilia().Year;
             var componentesCurricularesEol = await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, codigoRf, perfilAtual, realizarAgrupamentoComponente);
 
             if (componentesCurricularesEol == null || !componentesCurricularesEol.Any())
@@ -79,7 +81,7 @@ namespace SME.SGP.Aplicacao
                         yield return new DisciplinaNomeDto()
                         {
                             Codigo = componenteSgp.Id.ToString(),
-                            Nome = componenteSgp.Nome
+                            Nome = componenteSgp.NomeComponenteInfantil
                         };
                 }
             }
