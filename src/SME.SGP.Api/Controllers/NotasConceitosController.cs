@@ -26,12 +26,12 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("avaliacoes-bimestre")]
-        [ProducesResponseType(typeof(NotasConceitosListaoRetornoDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
-        public async Task<IActionResult> ListaNotaAvaliacoesBimestre([FromQuery] ListaNotasConceitosBimestreRefatoradaDto consultaListaNotasBimestreDto, [FromServices] IObterNotasParaAvaliacoesListaoUseCase useCase)
+        [ProducesResponseType(typeof(NotasConceitosListaoRetornoDto),200)]
+        [ProducesResponseType(typeof(RetornoBaseDto),500)]
+        [Authorize("Bearer")]
+        public async Task<IActionResult> ListaNotaAvaliacoesBimestre([FromQuery]ListaNotasConceitosBimestreRefatoradaDto conceitosBimestreRefatoradaDto,[FromServices]IObterNotasParaAvaliacoesListaoUseCase useCase)
         {
-            return Ok(await useCase.Executar(consultaListaNotasBimestreDto));
+            return Ok(await useCase.Executar(conceitosBimestreRefatoradaDto));
         }
 
         [HttpGet("periodos")]
