@@ -43,6 +43,7 @@ namespace SME.SGP.Aplicacao
 
             return (await ObterComponentesCurricularesRepositorioSgp(componentesCurricularesEol))?
                 .OrderBy(c => c.Nome)?.ToList();
+
         }
 
         private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesRepositorioSgp(IEnumerable<ComponenteCurricularEol> componentesCurricularesEol)
@@ -77,11 +78,17 @@ namespace SME.SGP.Aplicacao
                             Codigo = componenteEol.CodigoComponenteTerritorioSaber.ToString(),
                             Nome = componenteEol.Descricao
                         };
-                    else
+                    else if (componenteEol.ExibirComponenteEOL)
                         yield return new DisciplinaNomeDto()
                         {
                             Codigo = componenteSgp.Id.ToString(),
                             Nome = componenteSgp.NomeComponenteInfantil
+                        };
+                    else
+                        yield return new DisciplinaNomeDto()
+                        {
+                            Codigo = componenteSgp.Id.ToString(),
+                            Nome = componenteSgp.Nome
                         };
                 }
             }
