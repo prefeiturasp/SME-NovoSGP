@@ -8,16 +8,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAulasPorTurmaEComponentePeriodoQuery : IRequest<IEnumerable<PlanoAulaRetornoDto>>
     {
-        public ObterPlanoAulasPorTurmaEComponentePeriodoQuery(string turmaCodigo, string componenteCurricularCodigo, DateTime aulaInicio, DateTime aulaFim)
+        public ObterPlanoAulasPorTurmaEComponentePeriodoQuery(string turmaCodigo, string componenteCurricularCodigo, string componenteCurricularId, DateTime aulaInicio, DateTime aulaFim)
         {
             TurmaCodigo = turmaCodigo;
             ComponenteCurricularCodigo = componenteCurricularCodigo;
+            ComponenteCurricularId = componenteCurricularId;
             AulaInicio = aulaInicio;
             AulaFim = aulaFim;
         }
 
         public string TurmaCodigo { get; set; }
         public string ComponenteCurricularCodigo { get; set; }
+        public string ComponenteCurricularId { get; set; }
         public DateTime AulaInicio { get; set; }
         public DateTime AulaFim { get; set; }
     }
@@ -33,6 +35,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.ComponenteCurricularCodigo)
                 .NotEmpty()
                 .WithMessage("Necessário informar o código do componente curricular para consulta de suas aulas!");
+
+            RuleFor(a => a.ComponenteCurricularId)
+                .NotEmpty()
+                .WithMessage("Necessário informar o id do componente curricular para consulta de suas aulas!");
 
             RuleFor(a => a.AulaInicio)
                 .NotEmpty()
