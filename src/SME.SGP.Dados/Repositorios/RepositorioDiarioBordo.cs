@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<DiarioBordo> ObterPorAulaId(long aulaId,long componenteCurricularId)
         {
             var sql = @"select id, aula_id, devolutiva_id, planejamento, reflexoes_replanejamento,
-                    criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
+                    criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf, inserido_cj
                     from diario_bordo where aula_id = @aulaId and componente_curricular_id  = @componenteCurricularId; ";
 
             var parametros = new { aulaId ,componenteCurricularId};

@@ -650,16 +650,22 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorTitularDisciplinaEol>>(json);
         }
 
-        public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo, string professorRf = null)
+        public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo, DateTime? dataReferencia = null, string professorRf = null, bool realizaAgrupamento = true)
         {
             StringBuilder url = new StringBuilder();
 
-            url.Append($"professores/{turmaCodigo}/titulares");
+            url.Append($"professores/{turmaCodigo}/titulares/realizaAgrupamentoComponente/{realizaAgrupamento}");
 
             //Ao passar o RF do professor, o endpoint retorna todas as disciplinas que o professor não é titular para evitar
             //que o professor se atribua como CJ da própria da turma que ele é titular da disciplina
             if (!string.IsNullOrEmpty(professorRf))
                 url.Append($"?codigoRf={professorRf}");
+
+            if (dataReferencia != null)
+                if (!string.IsNullOrEmpty(professorRf))
+                    url.Append($"&dataReferencia={dataReferencia.Value.ToString("dd/MM/yyyy")}");
+                else
+                    url.Append($"?dataReferencia={dataReferencia.Value.ToString("dd/MM/yyyy")}");
 
             var resposta = await httpClient.GetAsync(url.ToString());
             if (!resposta.IsSuccessStatusCode)
