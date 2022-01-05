@@ -37,6 +37,11 @@
 
         public const string RotaExecutaExclusaoPendenciasAusenciaFechamento = "sgp.pendencias.bimestre.ausencia.fechamento.excluir";
 
+        public const string RotaAtualizarParecerConclusivoAlunoPorDre = "sgp.conselho.classe.aluno.parecer.atualizar.dre";
+        public const string RotaAtualizarParecerConclusivoAlunoPorUe = "sgp.conselho.classe.aluno.parecer.atualizar.ue";
+        public const string RotaAtualizarParecerConclusivoAlunoPorTurma = "sgp.conselho.classe.aluno.parecer.atualizar.turma";
+        public const string RotaAtualizarParecerConclusivoAluno = "sgp.conselho.classe.aluno.parecer.atualizar";
+
         public const string RotaExecutaAtualizacaoSituacaoConselhoClasse = "sgp.conselho.classe.situacao.atualizar";
         public const string RotaNotificacaoAndamentoFechamento = "sgp.fechamento.andamento.notificar";
 
