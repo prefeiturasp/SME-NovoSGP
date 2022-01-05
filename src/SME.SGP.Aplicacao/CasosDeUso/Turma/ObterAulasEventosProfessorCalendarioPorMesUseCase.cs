@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             });
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            
+
             if (usuarioLogado == null)
                 throw new NegocioException("Não foi possível localizar o Usuário logado.");
 
@@ -35,9 +35,11 @@ namespace SME.SGP.Aplicacao
             });
 
             string[] componentesCurricularesDoProfessor = new string[0];
-            
+
+            var realizarAgrupamentoComponente = usuarioLogado.EhProfessorInfantil() || usuarioLogado.EhProfessorCjInfantil();
+
             if (usuarioLogado.EhProfessor())
-                componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));
+                componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo, realizarAgrupamentoComponente));
 
             IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
 
