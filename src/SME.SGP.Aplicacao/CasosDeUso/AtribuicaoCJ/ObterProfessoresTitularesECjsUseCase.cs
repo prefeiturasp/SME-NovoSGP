@@ -24,39 +24,25 @@ namespace SME.SGP.Aplicacao
         public async Task<AtribuicaoCJTitularesRetornoDto> Executar(string ueId, string turmaId,
                     string professorRf, Modalidade modalidadeId, int anoLetivo)
         {
-            IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaId, professorRf);
-            List<AtribuicaoCJ> atribuicaoCJ = new List<AtribuicaoCJ>();
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
+            var dataReferencia = anoLetivo == DateTimeExtension.HorarioBrasilia().Year
+                ? DateTimeExtension.HorarioBrasilia().Date
+                : new DateTime(anoLetivo, 12, 31, 0, 0, 0, DateTimeKind.Utc);
 
-            if (anoLetivo >= 2022 && modalidadeId == Modalidade.EducacaoInfantil)
-            {
-                var listaDisciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaId, turma.TipoTurma == Dominio.Enumerados.TipoTurma.Programa);
-                var listaDisciplinaComProfessor = VerificaTitularidadeDisciplinaInfantil(professoresTitularesDisciplinasEol, listaDisciplinas);
+            IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaId, dataReferencia, professorRf, false);
 
-                foreach (var disciplinas in listaDisciplinas)
-                    atribuicaoCJ.AddRange(await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(modalidadeId, turmaId, ueId, disciplinas.CodigoComponenteCurricular, professorRf, string.Empty, null, "", null, anoLetivo)));
+            var listaAtribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(modalidadeId, turmaId, ueId, 0, professorRf, string.Empty, null, "", null, anoLetivo));
 
-                if (professoresTitularesDisciplinasEol != null && professoresTitularesDisciplinasEol.Any())
-                    return TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(atribuicaoCJ, listaDisciplinaComProfessor);
-                else
-                    return null;
-            }
-            else
-            {
-                var listaAtribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(modalidadeId, turmaId, ueId, 0, professorRf, string.Empty, null, "", null, anoLetivo));
-
-                if (professoresTitularesDisciplinasEol != null && professoresTitularesDisciplinasEol.Any())
-                    return TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(listaAtribuicoes, professoresTitularesDisciplinasEol);
-                else return null;
-            }
+            if (professoresTitularesDisciplinasEol != null && professoresTitularesDisciplinasEol.Any())
+                return TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(listaAtribuicoes, professoresTitularesDisciplinasEol);
+            else return null;
         }
 
         public List<ProfessorTitularDisciplinaEol> VerificaTitularidadeDisciplinaInfantil(IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesEol, List<DisciplinaDto> disciplinas)
         {
             var listaProfessorDisciplina = new List<ProfessorTitularDisciplinaEol>();
-            foreach(var disciplina in disciplinas)
+            foreach (var disciplina in disciplinas)
             {
-                if(professoresTitularesEol.Any(p => p.DisciplinaId == disciplina.CodigoComponenteCurricular))
+                if (professoresTitularesEol.Any(p => p.DisciplinaId == disciplina.CodigoComponenteCurricular))
                 {
                     var dadosProfessorTitular = professoresTitularesEol.FirstOrDefault(p => p.DisciplinaId == disciplina.CodigoComponenteCurricular);
                     listaProfessorDisciplina.Add(new ProfessorTitularDisciplinaEol()
