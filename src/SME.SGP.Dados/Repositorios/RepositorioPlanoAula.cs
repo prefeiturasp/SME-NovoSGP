@@ -67,13 +67,16 @@ namespace SME.SGP.Dados.Repositorios
         public bool ValidarPlanoExistentePorTurmaDataEDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
             var query = @"select
-	                            1
-                            from
-	                            plano_aula pa
-                             inner join aula a on a.Id = pa.aula_id
-                             where DATE(a.data_aula) = @data
-                              and a.turma_id = @turmaId
-                              and a.disciplina_id = @disciplinaId";
+	                        1
+                        from
+	                        plano_aula pa
+                        inner join aula a on a.Id = pa.aula_id
+                        where not a.excluido 
+                            and pa.excluido 
+                            and DATE(a.data_aula) = @data
+                            and a.turma_id = @turmaId
+                            and a.disciplina_id = @disciplinaId
+                            and pa.excluido ";
 
             return database.Conexao.Query<bool>(query, new { data = data.Date, turmaId, disciplinaId }).SingleOrDefault();
         }
