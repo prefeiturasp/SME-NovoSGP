@@ -33,13 +33,13 @@ namespace SME.SGP.Api.Controllers
            
         }
 
-        [HttpGet("turmas/{turmaCodigo}/componente/{componenteCurricularCodigo}")]
+        [HttpGet("turmas/{turmaCodigo}/componente/{componenteCurricularCodigo}/componenteId/{componenteCurricularId}")]
         [ProducesResponseType(typeof(IEnumerable<PlanoAulaRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPlanoAulaPorTurmaComponentePeriodo(string turmaCodigo, string componenteCurricularCodigo, [FromQuery] DateTime aulaInicio, [FromQuery] DateTime aulaFim, [FromServices] IObterPlanoAulasPorTurmaEComponentePeriodoUseCase useCase)
+        public async Task<IActionResult> ObterPlanoAulaPorTurmaComponentePeriodo(string turmaCodigo, string componenteCurricularCodigo, string componenteCurricularId, [FromQuery] DateTime aulaInicio, [FromQuery] DateTime aulaFim, [FromServices] IObterPlanoAulasPorTurmaEComponentePeriodoUseCase useCase)
         {
-           return Ok(await useCase.Executar(new FiltroObterPlanoAulaPeriodoDto(turmaCodigo, componenteCurricularCodigo, aulaInicio, aulaFim)));
+           return Ok(await useCase.Executar(new FiltroObterPlanoAulaPeriodoDto(turmaCodigo, componenteCurricularCodigo, componenteCurricularId, aulaInicio, aulaFim)));
         }
 
         [HttpPost]

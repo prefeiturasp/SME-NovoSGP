@@ -19,7 +19,8 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<PlanoAulaRetornoDto>> Executar(FiltroObterPlanoAulaPeriodoDto param)
         {
             return await mediator.Send(new ObterPlanoAulasPorTurmaEComponentePeriodoQuery(param.TurmaCodigo, 
-                                                                                          param.ComponenteCurricularCodigo,                                                                                           
+                                                                                          param.ComponenteCurricularCodigo,
+                                                                                          param.ComponenteCurricularId,
                                                                                           param.AulaInicio,
                                                                                           param.AulaFim));
         } 

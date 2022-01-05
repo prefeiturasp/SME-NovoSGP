@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
             var codigoRf = ehProfessor ? usuarioLogado.CodigoRf : string.Empty;
 
-            var temPlanoAnual = await ValidarPlanoAnual(turma, periodosEscolaresAulasInicioFim, request.ComponenteCurricularCodigo, usuarioLogado);
+            var temPlanoAnual = await ValidarPlanoAnual(turma, periodosEscolaresAulasInicioFim, request.ComponenteCurricularId, usuarioLogado);
 
             var aulas = ObterAulas(request, turma, periodosEscolaresAulasInicioFim, usuarioLogado, codigoRf);
 
@@ -48,20 +48,20 @@ namespace SME.SGP.Aplicacao
             return planoAulaDto;
         }
 
-        private async Task<bool> ValidarPlanoAnual(Turma turma, IEnumerable<PeriodoEscolar> periodosEscolaresAulasInicioFim, string ComponenteCurricularCodigo, Usuario usuarioLogado)
+        private async Task<bool> ValidarPlanoAnual(Turma turma, IEnumerable<PeriodoEscolar> periodosEscolaresAulasInicioFim, string ComponenteCurricularId, Usuario usuarioLogado)
         {
             DisciplinaDto disciplinaDto = null;
             var temPlanoAnual = new List<long>();
 
-            if (!string.IsNullOrEmpty(ComponenteCurricularCodigo))
+            if (!string.IsNullOrEmpty(ComponenteCurricularId))
             {
-                var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { long.Parse(ComponenteCurricularCodigo) }));
+                var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { long.Parse(ComponenteCurricularId) }));
                 disciplinaDto = disciplinasRetorno.SingleOrDefault();
             }
 
             foreach (var periodoEscolar in periodosEscolaresAulasInicioFim)
             {
-                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.Id : long.Parse(ComponenteCurricularCodigo)));
+                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.Id : long.Parse(ComponenteCurricularId)));
 
                 temPlanoAnual.Add(planejamentoAnualPeriodoId);
 
