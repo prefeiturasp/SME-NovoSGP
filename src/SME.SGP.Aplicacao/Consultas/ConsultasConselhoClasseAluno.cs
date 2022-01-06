@@ -96,7 +96,8 @@ namespace SME.SGP.Aplicacao
             var gruposMatrizes = disciplinas.Where(x => !x.LancaNota && x.GrupoMatriz != null)
                                             .GroupBy(c => new { Id = c.GrupoMatriz?.Id, Nome = c.GrupoMatriz?.Nome });
 
-            var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaBimestresAsync(alunoCodigo, bimestre, turma.CodigoTurma);
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+            var frequenciaAluno = await mediator.Send(new ObterFrequenciasAlunoComponentePorTurmasQuery(alunoCodigo, new string[] { turma.CodigoTurma }, tipoCalendarioId, bimestre));
 
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
 
@@ -124,7 +125,7 @@ namespace SME.SGP.Aplicacao
                     if (componenteCurricular.TerritorioSaber)
                         componenteCurricular.Nome = disciplinas.First(d => d.CodigoComponenteCurricular == componenteCurricular.CodigoComponenteCurricular).Nome;
 
-                    var componenteCurricularDto = await MapearDto(frequenciaAluno, componenteCurricular, bimestre, registrosFrequencia, turma.ModalidadeCodigo);
+                    var componenteCurricularDto = await MapearDto(frequenciaAluno, componenteCurricular, bimestre, registrosFrequencia, turma.ModalidadeCodigo, turma.AnoLetivo);
                     grupoMatriz.ComponenteSinteses.Add(componenteCurricularDto);
                 }
 
@@ -411,22 +412,17 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private ConselhoDeClasseComponenteSinteseDto MapearConselhoDeClasseComponenteSinteseDto(DisciplinaResposta componenteCurricular, IEnumerable<FrequenciaAluno> frequenciaDisciplina, string percentualFrequencia, SinteseDto parecerFinal)
+        private ConselhoDeClasseComponenteSinteseDto MapearConselhoDeClasseComponenteSinteseDto(DisciplinaResposta componenteCurricular, FrequenciaAluno frequenciaDisciplina, string percentualFrequencia, SinteseDto parecerFinal)
         {
             return new ConselhoDeClasseComponenteSinteseDto
             {
                 Codigo = componenteCurricular.CodigoComponenteCurricular,
                 Nome = componenteCurricular.Nome,
-                TotalFaltas = frequenciaDisciplina != null && frequenciaDisciplina.Any() ?  frequenciaDisciplina.Sum(x => x.TotalAusencias) : (int?)null,
+                TotalFaltas = frequenciaDisciplina?.TotalAusencias,
                 PercentualFrequencia = !String.IsNullOrEmpty(percentualFrequencia) ? $"{percentualFrequencia}%" : "",
                 ParecerFinal = parecerFinal?.Valor ?? string.Empty,
                 ParecerFinalId = (int)(parecerFinal?.Id ?? default)
             };
-        }
-
-        private IEnumerable<FrequenciaAluno> ObterFrequenciaPorDisciplina(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular)
-        {
-            return frequenciaAluno.Where(x => x.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString());
         }
 
         private string ObterPercentualDeFrequencia(IEnumerable<FrequenciaAluno> frequenciaDisciplina)
@@ -435,22 +431,26 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia, Modalidade modalidade)
+        private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia, Modalidade modalidade, int anoLetivo)
         {
-            var frequenciaDisciplina = ObterFrequenciaPorDisciplina(frequenciaAluno, componenteCurricular);
-
-            var percentualFrequencia = ObterPercentualDeFrequencia(frequenciaDisciplina);
-            if (!frequenciaDisciplina.Any() && registrosFrequencia.Where(a => a.CodigoComponenteCurricular == componenteCurricular.CodigoComponenteCurricular).Any())
-                percentualFrequencia = "100";
-
             var dto = MapearDisciplinasDto(componenteCurricular);
+
+            var frequenciaComponente = frequenciaAluno.FirstOrDefault(a => a.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString());
+            var percentualFrequencia = CalcularPercentualFrequenciaComponente(frequenciaComponente, componenteCurricular, anoLetivo);
 
             var parecerFinal = bimestre == 0 && EhEjaCompartilhada(componenteCurricular, modalidade) == false
                                         ? await consultasFrequencia.ObterSinteseAluno(String.IsNullOrEmpty(percentualFrequencia) ? 0 : double.Parse(percentualFrequencia), dto)
                                         : null;
 
-            var componenteSinteseAdicionar = MapearConselhoDeClasseComponenteSinteseDto(componenteCurricular, frequenciaDisciplina, percentualFrequencia, parecerFinal);
+            var componenteSinteseAdicionar = MapearConselhoDeClasseComponenteSinteseDto(componenteCurricular, frequenciaComponente, percentualFrequencia, parecerFinal);
             return componenteSinteseAdicionar;
+        }
+
+        private string CalcularPercentualFrequenciaComponente(FrequenciaAluno frequenciaComponente, DisciplinaResposta componenteCurricular, int anoLetivo)
+        {
+            return anoLetivo == 2020 ?
+                frequenciaComponente?.PercentualFrequenciaFinal.ToString() ?? "0" :
+                frequenciaComponente?.PercentualFrequencia.ToString() ?? "0";
         }
 
         private bool EhEjaCompartilhada(DisciplinaResposta componenteCurricular, Modalidade modalidade)

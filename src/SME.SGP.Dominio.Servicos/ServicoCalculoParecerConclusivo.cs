@@ -115,20 +115,12 @@ namespace SME.SGP.Dominio.Servicos
             // Filtra componentes que lançam frequência
             var componentesCurriculareslancaFrequencia = componentesCurriculares.Where(c => c.RegistraFrequencia);
             var componentesCurricularesCodigos = componentesCurriculareslancaFrequencia.Select(c => c.CodigoComponenteCurricular.ToString()).ToArray();
-            
-            var frequencias = await mediator.Send(new ObterFrequenciasAlunosPorCodigoAlunoCodigoComponentesTurmaQuery(alunoCodigo, turmasCodigos, componentesCurricularesCodigos));
-            var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
-            var percentualFreqPorPeriodo = new List<(string disciplina, int bimestre, double percentual)>();
-            foreach (var disciplinaCodigo in componentesCurricularesCodigos)
-            {
-                periodos.ToList().ForEach(p =>
-                {
-                    var frequenciaEquivalente = frequencias.SingleOrDefault(f => f.DisciplinaId.Equals(disciplinaCodigo) && f.Bimestre == p.Bimestre && f.TurmaId.Equals(turma.CodigoTurma));
-                    percentualFreqPorPeriodo.Add((disciplinaCodigo, p.Bimestre, frequenciaEquivalente?.PercentualFrequencia ?? 100));
-                });
-            }
 
-            if (FrequenciaAnualPorComponenteCritica(percentualFreqPorPeriodo, parametroFrequenciaBaseNacional)) 
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+            var frequenciasAluno = await mediator.Send(new ObterFrequenciasAlunoComponentePorTurmasQuery(alunoCodigo, turmasCodigos, tipoCalendarioId));
+            var frequencias = frequenciasAluno.Where(a => componentesCurricularesCodigos.Contains(a.DisciplinaId));
+
+            if (FrequenciaAnualPorComponenteCritica(frequencias, parametroFrequenciaBaseNacional)) 
                 return false;
 
             return true;
@@ -139,10 +131,9 @@ namespace SME.SGP.Dominio.Servicos
                 await mediator.Send(
                     new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional, anoLetivo)));
 
-        private bool FrequenciaAnualPorComponenteCritica(List<(string disciplina, int bimestre, double percentual)> percentualFreqPorPeriodo, double parametroFrequenciaBaseNacional)
-            => percentualFreqPorPeriodo
-            .GroupBy(f => f.disciplina)
-            .Any(f => (f.Sum(p => p.percentual) / f.Count()) < parametroFrequenciaBaseNacional);
+        private bool FrequenciaAnualPorComponenteCritica(IEnumerable<FrequenciaAluno> frequenciasComponentes, double parametroFrequenciaBaseNacional)
+            => frequenciasComponentes
+            .Any(f => f.PercentualFrequencia < parametroFrequenciaBaseNacional);
 
         private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
