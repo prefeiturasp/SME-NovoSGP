@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -141,6 +142,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ReprocessarSituacaoConselhoClasseAluno(int dreId, [FromServices] IServicoConselhoClasse servicoConselhoClasse)
         {
             await servicoConselhoClasse.ConsolidaConselhoClasse(dreId);
+            return Ok();
+        }
+
+        [HttpPost("turmas/anos-letivos/{anoLetivo}/parecer/reprocessar")]
+        [Permissao(Permissao.CC_I, Policy = "Bearer")]
+        public async Task<IActionResult> ReprocessarParecerConclusivo(int anoLetivo, [FromServices] IReprocessarParecerConclusivoPorAnoUseCase useCase)
+        {
+            await useCase.Executar(anoLetivo);
             return Ok();
         }
     }
