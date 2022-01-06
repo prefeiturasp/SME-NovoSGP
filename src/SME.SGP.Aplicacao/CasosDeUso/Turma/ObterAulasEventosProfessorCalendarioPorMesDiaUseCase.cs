@@ -61,11 +61,13 @@ namespace SME.SGP.Aplicacao
 
             string[] componentesCurricularesDoProfessor = new string[0];
 
+            var realizarAgrupamentoComponente = usuarioLogado.EhProfessorInfantil() || usuarioLogado.EhProfessorCjInfantil();
+
             if (usuarioLogado.EhProfessor())
                 componentesCurricularesDoProfessor = await mediator
                                                           .Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, 
                                                                                                                            usuarioLogado.PerfilAtual, 
-                                                                                                                           filtroAulasEventosCalendarioDto.TurmaCodigo));
+                                                                                                                           filtroAulasEventosCalendarioDto.TurmaCodigo, realizarAgrupamentoComponente));
 
             IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
 
