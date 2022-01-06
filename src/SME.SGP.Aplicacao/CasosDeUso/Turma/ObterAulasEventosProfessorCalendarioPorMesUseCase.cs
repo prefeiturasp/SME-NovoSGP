@@ -37,7 +37,22 @@ namespace SME.SGP.Aplicacao
             string[] componentesCurricularesDoProfessor = new string[0];
             
             if (usuarioLogado.EhProfessor())
-                componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));
+                componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, 
+                    usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));
+
+            if (usuarioLogado.EhProfessorCjInfantil())
+            {
+                //verificar a questão do ano, para barrar esse tratamento para anos anteriores... (vigência)
+                var professoresTitularesComponentesCJ = new List<ProfessorTitularDisciplinaEol>();
+
+                var componentesAtribuidosCJ = await mediator.Send(new ObterAtribuicaoCJPorDreUeTurmaRFQuery(filtroAulasEventosCalendarioDto.TurmaCodigo, 
+                    filtroAulasEventosCalendarioDto.DreCodigo, filtroAulasEventosCalendarioDto.UeCodigo, usuarioLogado.CodigoRf));
+
+                foreach (var dados in componentesAtribuidosCJ)
+                    professoresTitularesComponentesCJ.Add(await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(filtroAulasEventosCalendarioDto.TurmaCodigo, 
+                        dados.DisciplinaId.ToString())));
+
+            }
 
             IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
 
