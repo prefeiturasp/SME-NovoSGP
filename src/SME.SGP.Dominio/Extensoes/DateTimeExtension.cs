@@ -64,5 +64,10 @@ namespace SME.SGP.Dominio
 
             return dataRetorno;
         }
+
+        public static bool EhAnoAtual(int anoLetivo)
+        {
+            return anoLetivo == HorarioBrasilia().Year;
+        }
     }
 }

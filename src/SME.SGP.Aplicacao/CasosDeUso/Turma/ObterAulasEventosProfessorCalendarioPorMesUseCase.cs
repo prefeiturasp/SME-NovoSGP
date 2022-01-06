@@ -48,17 +48,9 @@ namespace SME.SGP.Aplicacao
             IEnumerable<Aula> aulasParaVisualizar = null;
 
             string[] componentesCurricularesDoProfessor = new string[0];
-            
-            if (usuarioLogado.EhProfessor())
+ 
+            if (usuarioLogado.EhProfessorCjInfantil() && DateTimeExtension.EhAnoAtual(filtroAulasEventosCalendarioDto.AnoLetivo))
             {
-                componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf,usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));
-                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
-                avaliacoes = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, componentesCurricularesDoProfessor);
-            }                
-
-            if (usuarioLogado.EhProfessorCjInfantil())
-            {
-                //verificar a questão do ano, para barrar esse tratamento para anos anteriores... (vigência)
                 var professoresTitularesComponentesCJ = new List<ProfessorTitularDisciplinaEol>();
 
                 var componentesAtribuidosCJ = await mediator.Send(new ObterAtribuicaoCJPorDreUeTurmaRFQuery(filtroAulasEventosCalendarioDto.TurmaCodigo, 
@@ -74,18 +66,20 @@ namespace SME.SGP.Aplicacao
                                       on new { DisciplinaId = long.Parse(aula.DisciplinaId), aula.ProfessorRf } equals new { profTitular.DisciplinaId, profTitular.ProfessorRf }
                                       select aula;
 
-                var disciplinasDasAvaliacoes = from avaliacao in avaliacoes
+                avaliacoes = from avaliacao in avaliacoes
                                                join profTitular in professoresTitularesComponentesCJ
                                                on avaliacao.ProfessorRf equals profTitular.ProfessorRf
                                                where avaliacao.Disciplinas.Select(s => long.Parse(s.DisciplinaId)).Contains(profTitular.DisciplinaId)
-                                               select avaliacao.Disciplinas;
+                                               select avaliacao;
 
-                //avaliacoes = from disciplina in disciplinasDasAvaliacoes
-                //             join profTitular in professoresTitularesComponentesCJ
-                //             on new { disciplina. } equals new { profTitular.ProfessorRf }
-                //             select disciplina.Disciplinas;
-
-                                                //avaliacoes.Where(a => (componentesCurricularesProfessor.Intersect(a.Disciplinas.Select(d => d.DisciplinaId)).Any() && !a.EhCj || a.Disciplinas.Select(item => item.DisciplinaId).Any() && a.EhCj) || a.ProfessorRf == CodigoRf);
+            }
+            else
+            {
+                if (usuarioLogado.EhProfessor())
+                    componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));  
+                
+                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
+                avaliacoes = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, componentesCurricularesDoProfessor);
             }
 
             return await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery()
