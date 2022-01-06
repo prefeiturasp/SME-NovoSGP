@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -184,6 +185,32 @@ namespace SME.SGP.Dados.Repositorios
                               and aluno_codigo = @alunoCodigo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { conselhoClasseId, alunoCodigo });
+        }
+
+        public Task<IEnumerable<ConselhoClasseFechamentoAlunoDto>> ObterConselhoClasseAlunosPorTurma(string turmaCodigo)
+        {
+            string sqlQuery = @";with tmp_conselhos_ajuste_parecer as
+                                (select distinct cca.conselho_classe_id,
+			                        cc.fechamento_turma_id,
+				                    cca.aluno_codigo
+	                            from conselho_classe_aluno cca
+		                        inner join conselho_classe cc
+			                        on cca.conselho_classe_id = cc.id
+		                        inner join fechamento_turma ft
+			                        on cc.fechamento_turma_id = ft.id
+		                        inner join turma t
+			                        on ft.turma_id = t.id
+		                        inner join ue
+			                        on t.ue_id = ue.id
+                                where not cca.excluido
+                                  and t.turma_id = @turmaCodigo)
+
+                            select conselho_classe_id as ConselhoClasseId,
+                                fechamento_turma_id as FechamentoTurmaId,
+                                aluno_codigo as AlunoCodigo
+                            from tmp_conselhos_ajuste_parecer";
+
+            return database.Conexao.QueryAsync<ConselhoClasseFechamentoAlunoDto>(sqlQuery, new { turmaCodigo });
         }
     }
 }
