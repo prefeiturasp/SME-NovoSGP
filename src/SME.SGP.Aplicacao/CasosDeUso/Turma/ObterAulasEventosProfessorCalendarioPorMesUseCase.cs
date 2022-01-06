@@ -74,17 +74,18 @@ namespace SME.SGP.Aplicacao
                                       on new { DisciplinaId = long.Parse(aula.DisciplinaId), aula.ProfessorRf } equals new { profTitular.DisciplinaId, profTitular.ProfessorRf }
                                       select aula;
 
-                //var disciplinasDasAvaliacoes = from avaliacao in avaliacoes
-                //             join profTitular in professoresTitularesComponentesCJ
-                //             on new { avaliacao.ProfessorRf } equals new { profTitular.ProfessorRf }
-                //             select avaliacao.Disciplinas.;
+                var disciplinasDasAvaliacoes = from avaliacao in avaliacoes
+                                               join profTitular in professoresTitularesComponentesCJ
+                                               on avaliacao.ProfessorRf equals profTitular.ProfessorRf
+                                               where avaliacao.Disciplinas.Select(s => long.Parse(s.DisciplinaId)).Contains(profTitular.DisciplinaId)
+                                               select avaliacao.Disciplinas;
 
                 //avaliacoes = from disciplina in disciplinasDasAvaliacoes
                 //             join profTitular in professoresTitularesComponentesCJ
                 //             on new { disciplina. } equals new { profTitular.ProfessorRf }
                 //             select disciplina.Disciplinas;
 
-                //avaliacoes.Where(a => (componentesCurricularesProfessor.Intersect(a.Disciplinas.Select(d => d.DisciplinaId)).Any() && !a.EhCj || a.Disciplinas.Select(item => item.DisciplinaId).Any() && a.EhCj) || a.ProfessorRf == CodigoRf);
+                                                //avaliacoes.Where(a => (componentesCurricularesProfessor.Intersect(a.Disciplinas.Select(d => d.DisciplinaId)).Any() && !a.EhCj || a.Disciplinas.Select(item => item.DisciplinaId).Any() && a.EhCj) || a.ProfessorRf == CodigoRf);
             }
 
             return await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery()
