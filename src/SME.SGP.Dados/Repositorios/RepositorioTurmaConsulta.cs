@@ -524,7 +524,7 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join tipo_calendario tc on a.tipo_calendario_id = tc.id 
                                 inner join periodo_escolar pe on pe.tipo_calendario_id  = tc.id 
                                     where t.ano_letivo  = @anoLetivo   
-                                    and pe.periodo_inicio < @dataReferencia
+                                    and pe.periodo_inicio::data <= @dataReferencia
                                 group by a.turma_id, a.disciplina_id, a.tipo_calendario_id, pe.periodo_fim ";
 
 
