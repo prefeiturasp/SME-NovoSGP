@@ -8,9 +8,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulasEventosProfessorCalendarioPorMesDiaUseCase
+    public class ObterAulasEventosProfessorCalendarioPorMesDiaUseCase : AbstractUseCase, IObterAulasEventosProfessorCalendarioPorMesDiaUseCase
     {
-        public static async Task<EventosAulasNoDiaCalendarioDto> Executar(IMediator mediator, FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId, int mes, int dia, int anoLetivo)
+        public ObterAulasEventosProfessorCalendarioPorMesDiaUseCase(IMediator mediator) : base(mediator)
+        {
+        }
+
+        public async Task<EventosAulasNoDiaCalendarioDto> Executar(FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId, int mes, int dia, int anoLetivo)
         {
             var dataConsulta = new DateTime(anoLetivo, mes, dia);
 
@@ -71,31 +75,14 @@ namespace SME.SGP.Aplicacao
                 DataReferencia = dataConsulta
             });
 
-            if (usuarioLogado.EhProfessorCjInfantil() && DateTimeExtension.EhAnoAtual(filtroAulasEventosCalendarioDto.AnoLetivo))
+            bool podeEditarRegistroTitular = await VerificaCJPodeEditarRegistroTitular(anoLetivo);
+
+            if (usuarioLogado.EhProfessorCjInfantil() && podeEditarRegistroTitular)
             {
-                var professoresTitularesComponentesCJ = new List<ProfessorTitularDisciplinaEol>();
-
-                var componentesAtribuidosCJ = await mediator.Send(new ObterAtribuicaoCJPorDreUeTurmaRFQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
-                    filtroAulasEventosCalendarioDto.DreCodigo, filtroAulasEventosCalendarioDto.UeCodigo, usuarioLogado.CodigoRf));
-
-                foreach (var dados in componentesAtribuidosCJ)
-                    professoresTitularesComponentesCJ.Add(await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
-                        dados.DisciplinaId.ToString())));
-
-
-                aulasParaVisualizar = from aula in aulasDoDia
-                                      join profTitular in professoresTitularesComponentesCJ
-                                      on new { DisciplinaId = long.Parse(aula.DisciplinaId), aula.ProfessorRf } equals new { profTitular.DisciplinaId, profTitular.ProfessorRf }
-                                      select aula;
-
-                atividadesAvaliativas = from avaliacao in atividadesAvaliativas
-                                        join profTitular in professoresTitularesComponentesCJ
-                                        on avaliacao.ProfessorRf equals profTitular.ProfessorRf
-                                        where avaliacao.Disciplinas.Select(s => long.Parse(s.DisciplinaId)).Contains(profTitular.DisciplinaId)
-                                        select avaliacao;
-
+                aulasParaVisualizar = aulasDoDia;
                 retorno.PodeCadastrarAula = false;
             }
+                     
             else
             {
                 if (usuarioLogado.EhProfessor())
@@ -106,7 +93,7 @@ namespace SME.SGP.Aplicacao
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
                 atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor);
             }
-            
+
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
 
             if (aulasParaVisualizar.Any())
@@ -133,6 +120,13 @@ namespace SME.SGP.Aplicacao
             });
 
             return retorno;
+        }
+
+        public async Task<bool> VerificaCJPodeEditarRegistroTitular(int anoLetivo)
+        {
+            var dadosParametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.CJInfantilPodeEditarAulaTitular, anoLetivo));
+
+            return dadosParametro?.Ativo ?? false;
         }
     }
 }

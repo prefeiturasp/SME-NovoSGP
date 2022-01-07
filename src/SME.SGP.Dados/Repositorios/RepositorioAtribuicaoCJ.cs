@@ -149,13 +149,13 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.ExecuteScalarAsync<bool>(sql.ToString(), new { turmaCodigo, dreCodigo, ueCodigo, professorRf, disciplinaId });
         }
 
-        public async Task<IEnumerable<AtribuicaoCJ>> ObterAtribuicaoCJPorDreUeTurmaRF(string turmaId, string dreCodigo, string ueCodigo, string professorRf)
+        public Task<IEnumerable<AtribuicaoCJ>> ObterAtribuicaoCJPorDreUeTurmaRF(string turmaId, string dreCodigo, string ueCodigo, string professorRf)
         {
             StringBuilder sql = new StringBuilder();
 
             sql.AppendLine(@"select * from atribuicao_cj where dre_id = @dreCodigo and ue_id = @ueCodigo and professor_rf = @professorRf and turma_id = @turmaId;");
 
-            return await database.Conexao.QueryAsync<AtribuicaoCJ>(sql.ToString(), new { turmaId, dreCodigo, ueCodigo, professorRf });
+            return database.Conexao.QueryAsync<AtribuicaoCJ>(sql.ToString(), new { turmaId, dreCodigo, ueCodigo, professorRf });
         }
 
     }
