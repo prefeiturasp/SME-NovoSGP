@@ -15,11 +15,11 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IMediator mediator;
-        private readonly ConsultasPeriodoFechamento consultasPeriodoFechamento;
+        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
         public ObterPodeCadastrarAulaPorDataQueryHandler(IRepositorioEvento repositorioEvento, IRepositorioTipoCalendario repositorioTipoCalendario,
             IRepositorioPeriodoFechamento repositorioPeriodoFechamento, IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IMediator mediator,
-            ConsultasPeriodoFechamento consultasPeriodoFechamento)
+            IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
