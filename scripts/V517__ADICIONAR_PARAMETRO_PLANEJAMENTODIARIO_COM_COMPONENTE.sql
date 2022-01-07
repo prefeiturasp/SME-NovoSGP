@@ -32,4 +32,4 @@ where
 	from
 		parametros_sistema
 	where
-		tipo = 85 and ano 2022);
+		tipo = 85 and ano = 2022);
