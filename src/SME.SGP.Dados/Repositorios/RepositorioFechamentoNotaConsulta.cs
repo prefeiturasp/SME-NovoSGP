@@ -25,8 +25,8 @@ namespace SME.SGP.Dados.Repositorios
                          inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                          inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
                          inner join componente_curricular cc on cc.id = fn.disciplina_id
-                         where cc.permite_lancamento_nota 
-                         ";
+                         where not ft.excluido
+                           and cc.permite_lancamento_nota ";
 
         const string queryNotasConceitoFechamento = @"select fn.disciplina_id as ComponenteCurricularCodigo, fn.conceito_id as ConceitoId, fn.nota, pe.bimestre, cv.valor as conceito
                                                         from fechamento_turma ft
