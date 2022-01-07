@@ -1017,7 +1017,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterPendenciasParaFechamentoConsolidadoUseCase, ObterPendenciasParaFechamentoConsolidadoUseCase>();
             services.TryAddScoped<IObterDetalhamentoPendenciaFechamentoConsolidadoUseCase, ObterDetalhamentoPendenciaFechamentoConsolidadoUseCase>();
             services.TryAddScoped<IObterDetalhamentoPendenciaAulaUseCase, ObterDetalhamentoPendenciaAulaUseCase>();
-
+            services.TryAddScoped<IObterAulasEventosProfessorCalendarioPorMesDiaUseCase, ObterAulasEventosProfessorCalendarioPorMesDiaUseCase>();
+            services.TryAddScoped<IObterAulasEventosProfessorCalendarioPorMesUseCase, ObterAulasEventosProfessorCalendarioPorMesUseCase>();
 
             services.TryAddScoped<IObterFrequenciasPreDefinidasUseCase, ObterFrequenciasPreDefinidasUseCase>();
             services.TryAddScoped<IObterTiposFrequenciasUseCase, ObterTiposFrequenciasUseCase>();
