@@ -1,6 +1,6 @@
 insert
 	into
-	public.parametros_sistema
+	parametros_sistema
 (nome,
 	tipo,
 	descricao,
@@ -30,6 +30,6 @@ where
 	select
 		1
 	from
-		public.parametros_sistema
+		parametros_sistema
 	where
 		tipo = 85 and ano 2022);
