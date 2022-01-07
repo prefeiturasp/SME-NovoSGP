@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente e data.");
             }
 
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(dto.CodigoAluno, aula.DataAula.Year, aula.TurmaId));
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(dto.CodigoAluno, aula.DataAula.Year, codigoTurma: aula.TurmaId));
             if (aluno == null)
                 throw new NegocioException($"{(dto.EhInfantil ? "Criança não encontrada" : "Aluno não encontrado")}.");
 
