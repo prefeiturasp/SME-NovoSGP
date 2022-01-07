@@ -72,11 +72,10 @@ namespace SME.SGP.Dados.Repositorios
 	                        plano_aula pa
                         inner join aula a on a.Id = pa.aula_id
                         where not a.excluido 
-                            and pa.excluido 
+                            and not pa.excluido 
                             and DATE(a.data_aula) = @data
                             and a.turma_id = @turmaId
-                            and a.disciplina_id = @disciplinaId
-                            and pa.excluido ";
+                            and a.disciplina_id = @disciplinaId";
 
             return database.Conexao.Query<bool>(query, new { data = data.Date, turmaId, disciplinaId }).SingleOrDefault();
         }
