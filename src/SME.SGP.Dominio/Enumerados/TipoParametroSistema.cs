@@ -150,6 +150,7 @@ namespace SME.SGP.Dominio
 
         CJInfantilPodeEditarAulaTitular = 84,
 
+        ControlePlanejamentoDiarioInfantilComComponente = 85,
         //Sistema
         HabilitarServicosEmBackground = 100,
         ProcessarDeadletter = 101,

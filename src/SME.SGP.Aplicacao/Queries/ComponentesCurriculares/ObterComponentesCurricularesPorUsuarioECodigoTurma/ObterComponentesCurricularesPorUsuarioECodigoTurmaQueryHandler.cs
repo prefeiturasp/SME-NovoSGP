@@ -29,11 +29,13 @@ namespace SME.SGP.Aplicacao
             if (request.UsuarioLogado.EhProfessorCj())
                 return await ObterComponentesAtribuicaoCj(request.TurmaCodigo, request.UsuarioLogado.CodigoRf);
             else
-                return await ObterComponentesCurricularesUsuario(request.TurmaCodigo, request.UsuarioLogado.CodigoRf, request.UsuarioLogado.PerfilAtual, request.RealizarAgrupamentoComponente);
+                return await ObterComponentesCurricularesUsuario(request.TurmaCodigo, request.UsuarioLogado.CodigoRf, request.UsuarioLogado.PerfilAtual);
         }
 
-        private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesUsuario(string turmaCodigo, string codigoRf, Guid perfilAtual, bool realizarAgrupamentoComponente)
+        private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesUsuario(string turmaCodigo, string codigoRf, Guid perfilAtual)
         {
+            var obterTurma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
+            bool realizarAgrupamentoComponente = obterTurma.AnoLetivo != DateTimeExtension.HorarioBrasilia().Year;
             var componentesCurricularesEol = await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, codigoRf, perfilAtual, realizarAgrupamentoComponente);
 
             if (componentesCurricularesEol == null || !componentesCurricularesEol.Any())
@@ -41,6 +43,7 @@ namespace SME.SGP.Aplicacao
 
             return (await ObterComponentesCurricularesRepositorioSgp(componentesCurricularesEol))?
                 .OrderBy(c => c.Nome)?.ToList();
+
         }
 
         private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesRepositorioSgp(IEnumerable<ComponenteCurricularEol> componentesCurricularesEol)
@@ -74,6 +77,12 @@ namespace SME.SGP.Aplicacao
                         {
                             Codigo = componenteEol.CodigoComponenteTerritorioSaber.ToString(),
                             Nome = componenteEol.Descricao
+                        };
+                    else if (componenteEol.ExibirComponenteEOL)
+                        yield return new DisciplinaNomeDto()
+                        {
+                            Codigo = componenteSgp.Id.ToString(),
+                            Nome = componenteSgp.NomeComponenteInfantil
                         };
                     else
                         yield return new DisciplinaNomeDto()

@@ -212,34 +212,37 @@ namespace SME.SGP.Aplicacao
 
             var aulasRetorno = new List<DataAulasProfessorDto>();
 
-            periodosEscolares.Periodos.ForEach(p =>
+            var aulas = repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodosEscolares.Periodos.Select(p=> p.Id).Distinct(), anoLetivo, turmaCodigo, disciplinaCodigo, string.Empty, null, null);
+
+            aulas.ToList().ForEach(aula =>
             {
-                var aulas = repositorio
-                    .ObterDatasDeAulasPorAnoTurmaEDisciplina(p.Id, anoLetivo, turmaCodigo, disciplinaCodigo, string.Empty, usuarioLogado.EhProfessorCj(), usuarioLogado.EhProfessor() || usuarioLogado.EhProfessorCj());
+                var bimestre = ObterBimestre(periodosEscolares.Periodos, aula);
 
-                aulas.ToList().ForEach(aula =>
-                {
-                    if (!disciplina.Regencia)
-                        aulasRetorno.Add(MapearParaDto(aula, p.Bimestre));
+                if (!disciplina.Regencia)
+                    aulasRetorno.Add(MapearParaDto(aula, bimestre));
 
-                    var rfsOrnedadosPorDataCriacaoAula = aulas.OrderBy(a => a.CriadoEm)
-                        .Select(a => a.ProfessorRf).Distinct();
+                var rfsOrnedadosPorDataCriacaoAula = aulas.OrderBy(a => a.CriadoEm)
+                    .Select(a => a.ProfessorRf).Distinct();
 
-                    var ultimoRegente = rfsOrnedadosPorDataCriacaoAula.Last();
+                var ultimoRegente = rfsOrnedadosPorDataCriacaoAula.Last();
 
-                    // se regente atual, titular anterior ou professor anterior visualiza a aula
-                    if (ultimoRegente.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
-                        aula.ProfessorRf.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
-                        aula.Turma.EhTurmaInfantil ||
-                        usuarioLogado.PerfilAtual != Perfis.PERFIL_PROFESSOR ||
-                        usuarioLogado.PerfilAtual != Perfis.PERFIL_CJ ||
-                        usuarioLogado.PerfilAtual != Perfis.PERFIL_CJ_INFANTIL
-                        )
-                        aulasRetorno.Add(MapearParaDto(aula, p.Bimestre));
-                });
-            });            
+                // se regente atual, titular anterior ou professor anterior visualiza a aula
+                if (ultimoRegente.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
+                    aula.ProfessorRf.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
+                    aula.Turma.EhTurmaInfantil ||
+                    usuarioLogado.PerfilAtual != Perfis.PERFIL_PROFESSOR ||
+                    usuarioLogado.PerfilAtual != Perfis.PERFIL_CJ ||
+                    usuarioLogado.PerfilAtual != Perfis.PERFIL_CJ_INFANTIL
+                    )
+                    aulasRetorno.Add(MapearParaDto(aula, bimestre));
+            });
 
             return aulasRetorno.OrderBy(a => a.Data);
+        }
+
+        private int ObterBimestre(List<PeriodoEscolarDto> periodos, Aula aula)
+        {
+            return periodos.FirstOrDefault(w=> w.PeriodoInicio <= aula.DataAula && w.PeriodoFim>= aula.DataAula).Bimestre;
         }
 
         private async Task<string> ObterDisciplinaIdAulaEOL(Usuario usuarioLogado, Aula aula, bool ehCJ)

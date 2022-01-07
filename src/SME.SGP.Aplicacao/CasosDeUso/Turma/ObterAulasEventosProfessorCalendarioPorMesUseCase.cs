@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             });
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            
+
             if (usuarioLogado == null)
                 throw new NegocioException("Não foi possível localizar o Usuário logado.");
 
