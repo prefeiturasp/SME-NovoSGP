@@ -115,7 +115,8 @@ namespace SME.SGP.Dados.Repositorios
                                    INNER JOIN fechamento_nota fn
                                            ON fn.fechamento_aluno_id = fa.id
                                    inner join componente_curricular ccr on fn.disciplina_id = ccr.id
-                            WHERE  t.turma_id = ANY(@turmasCodigos)
+                            WHERE  not ft.excluido 
+                                   AND t.turma_id = ANY(@turmasCodigos)
                                    AND fa.aluno_codigo = @alunoCodigo
                                    AND pe.bimestre IS NULL
                                    and ccr.permite_lancamento_nota
@@ -144,7 +145,8 @@ namespace SME.SGP.Dados.Repositorios
                                    LEFT JOIN fechamento_nota fn
                                           ON fn.fechamento_aluno_id = fa.id
                                              AND ccn.componente_curricular_codigo = fn.disciplina_id
-                            WHERE  t.turma_id = ANY(@turmasCodigos)
+                            WHERE  not ft.excluido 
+                                   AND t.turma_id = ANY(@turmasCodigos)
                                    AND cca.aluno_codigo = @alunoCodigo
                                    AND bimestre IS NULL 
                                    and ccr.permite_lancamento_nota)  x";
