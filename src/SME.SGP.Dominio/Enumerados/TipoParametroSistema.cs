@@ -148,6 +148,7 @@ namespace SME.SGP.Dominio
 
         PermiteCompensacaoForaPeriodo = 83,
 
+        ControlePlanejamentoDiarioInfantilComComponente = 85,
         //Sistema
         HabilitarServicosEmBackground = 100,
         ProcessarDeadletter = 101,
