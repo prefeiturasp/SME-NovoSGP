@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -13,21 +14,58 @@ namespace SME.SGP.Aplicacao
     {
 
         private readonly IServicoEol servicoEOL;
-        public ObterProfessoresTitularesECjsUseCase(IMediator mediator, IServicoEol servicoEOL) : base(mediator)
+        private readonly IConsultasDisciplina consultasDisciplina;
+        public ObterProfessoresTitularesECjsUseCase(IMediator mediator, IServicoEol servicoEOL, IConsultasDisciplina consultasDisciplina) : base(mediator)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
         }
 
         public async Task<AtribuicaoCJTitularesRetornoDto> Executar(string ueId, string turmaId,
                     string professorRf, Modalidade modalidadeId, int anoLetivo)
         {
-            IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaId, professorRf);
+            var dataReferencia = anoLetivo == DateTimeExtension.HorarioBrasilia().Year
+                ? DateTimeExtension.HorarioBrasilia().Date
+                : new DateTime(anoLetivo, 12, 31, 0, 0, 0, DateTimeKind.Utc);
+
+            IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaId, dataReferencia, professorRf, false);
 
             var listaAtribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(modalidadeId, turmaId, ueId, 0, professorRf, string.Empty, null, "", null, anoLetivo));
 
             if (professoresTitularesDisciplinasEol != null && professoresTitularesDisciplinasEol.Any())
                 return TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(listaAtribuicoes, professoresTitularesDisciplinasEol);
             else return null;
+        }
+
+        public List<ProfessorTitularDisciplinaEol> VerificaTitularidadeDisciplinaInfantil(IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesEol, List<DisciplinaDto> disciplinas)
+        {
+            var listaProfessorDisciplina = new List<ProfessorTitularDisciplinaEol>();
+            foreach (var disciplina in disciplinas)
+            {
+                if (professoresTitularesEol.Any(p => p.DisciplinaId == disciplina.CodigoComponenteCurricular))
+                {
+                    var dadosProfessorTitular = professoresTitularesEol.FirstOrDefault(p => p.DisciplinaId == disciplina.CodigoComponenteCurricular);
+                    listaProfessorDisciplina.Add(new ProfessorTitularDisciplinaEol()
+                    {
+                        DisciplinaId = disciplina.Id,
+                        DisciplinaNome = disciplina.NomeComponenteInfantil,
+                        ProfessorNome = dadosProfessorTitular.ProfessorNome,
+                        ProfessorRf = dadosProfessorTitular.ProfessorRf
+                    });
+                }
+                else
+                {
+                    listaProfessorDisciplina.Add(new ProfessorTitularDisciplinaEol()
+                    {
+                        DisciplinaId = disciplina.Id,
+                        DisciplinaNome = disciplina.NomeComponenteInfantil,
+                        ProfessorNome = "Não há professor titular",
+                        ProfessorRf = ""
+                    });
+                }
+            }
+
+            return listaProfessorDisciplina;
         }
 
         private AtribuicaoCJTitularesRetornoDto TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(IEnumerable<AtribuicaoCJ> listaAtribuicoes, IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol)

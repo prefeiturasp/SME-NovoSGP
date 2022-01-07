@@ -40,9 +40,20 @@ namespace SME.SGP.Aplicacao
             datasAulas.ToList()
                 .ForEach(da => aulas.Add(repositorioAula.ObterPorId(da.IdAula)));
 
-            var aulasPermitidas = usuarioLogado
-                .ObterAulasQuePodeVisualizar(aulas, new string[] { request.ComponenteCurricularCodigo })
-                .Select(a => a.Id);
+            var aulasPermitidas = new List<long>();
+            bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(turma.AnoLetivo);
+
+            if (usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)
+            {
+                aulasPermitidas = aulas.Where(a => a.DisciplinaId == request.ComponenteCurricularCodigo)
+                                       .Select(a=> a.Id).ToList();
+            }
+            else
+            {
+                aulasPermitidas = usuarioLogado
+               .ObterAulasQuePodeVisualizar(aulas, new string[] { request.ComponenteCurricularCodigo })
+               .Select(a => a.Id).ToList();
+            }
 
             return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data)
                 .Select(x => new DatasAulasDto()
@@ -52,13 +63,21 @@ namespace SME.SGP.Aplicacao
                     {
                         AulaId = a.IdAula,
                         AulaCJ = a.AulaCJ,
-                        PodeEditar = (usuarioLogado.EhProfessorCj() && a.AulaCJ) || (!a.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar())),
+                        PodeEditar = (usuarioLogado.EhProfessorCj() && a.AulaCJ || usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar) || (!a.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar())),
                         ProfessorRf = a.ProfessorRf,
                         CriadoPor = a.CriadoPor,
                         PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula)),
                         TipoAula = a.TipoAula
                     }).Select(a => a.Result)
                 });
+        }
+
+
+        public async Task<bool> VerificaCJPodeEditarRegistroTitular(int anoLetivo)
+        {
+            var dadosParametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.CJInfantilPodeEditarAulaTitular, anoLetivo));
+
+            return dadosParametro?.Ativo ?? false;
         }
 
         private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId)

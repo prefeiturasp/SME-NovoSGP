@@ -9,6 +9,7 @@ namespace SME.SGP.Infra
         public DateTime Data { get; set; }
         public string DescricaoPlanejamento { get; set; }
         public string DescricaoReflexoes { get; set; }
+        public bool InseridoCJ { get; set; }
         public string Descricao { get; set; }
         public string Planejamento
         {

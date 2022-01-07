@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<DiarioBordo> ObterPorAulaId(long aulaId,long componenteCurricularId)
         {
             var sql = @"select id, aula_id, devolutiva_id, planejamento, reflexoes_replanejamento,
-                    criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
+                    criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf, inserido_cj
                     from diario_bordo where aula_id = @aulaId and componente_curricular_id  = @componenteCurricularId; ";
 
             var parametros = new { aulaId ,componenteCurricularId};
@@ -148,6 +148,7 @@ namespace SME.SGP.Dados.Repositorios
                             , db.reflexoes_replanejamento as DescricaoReflexoes
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data
+                            , db.inserido_cj 
                             ,d.descricao
                         from diario_bordo db
                        inner join aula a on a.id = db.aula_id
@@ -245,7 +246,7 @@ namespace SME.SGP.Dados.Repositorios
                 condicao.AppendLine(" and a.data_aula::date <= @periodoFim ");
 
             condicao.AppendLine(@"union all
-                           select null id, a.data_aula DataAula, null CodigoRf, null Nome, null Tipo, a.id AulaId, true Pendente 
+                           select null id, a.data_aula DataAula, null CodigoRf, null Nome, null Tipo, a.id AulaId, null InseridoCJ, true Pendente 
                          from aula a
                          inner join turma t on a.turma_id = t.turma_id
                          where t.id = @turmaId
@@ -262,14 +263,14 @@ namespace SME.SGP.Dados.Repositorios
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
-            var query = $"select count(0) from (select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, false Pendente {condicao}) as DiarioBordo";
+            var query = $"select count(0) from (select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, db.inserido_cj InseridoCJ, false Pendente {condicao}) as DiarioBordo";
 
              var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
                 new { turmaId, componenteCurricularPaiCodigo, componenteCurricularFilhoCodigo, periodoInicio, periodoFim });
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
-            query = $"select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, false Pendente {condicao} order by dataaula desc {offSet} ";
+            query = $"select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, db.inserido_cj InseridoCJ, false Pendente {condicao} order by dataaula desc {offSet} ";
 
             return new PaginacaoResultadoDto<DiarioBordoResumoDto>()
             {

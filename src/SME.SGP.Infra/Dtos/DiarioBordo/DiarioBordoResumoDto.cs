@@ -5,7 +5,7 @@ namespace SME.SGP.Infra
 {
     public class DiarioBordoResumoDto
     {
-        public DiarioBordoResumoDto(long id, DateTime dataAula, string codigoRf, string nome, int tipo, long aulaId, bool pendente)
+        public DiarioBordoResumoDto(long id, DateTime dataAula, string codigoRf, string nome, int tipo, long aulaId, bool inseridoCJ, bool pendente)
         {
             Id = id;
             CodigoRf = codigoRf;
@@ -14,6 +14,7 @@ namespace SME.SGP.Infra
             Pendente = pendente;
             Tipo = tipo;
             AulaId = aulaId;
+            InseridoCJ = inseridoCJ;
         }
 
         public long Id { get; set; }
@@ -27,9 +28,12 @@ namespace SME.SGP.Infra
         public bool Pendente { get; set; }
         public int Tipo { get; set; }
         public long AulaId { get; set; }
+        public bool InseridoCJ { get; set; }
 
         public string DescricaoComNome => string.IsNullOrEmpty(Nome) ? $"{DataAula:dd/MM/yyyy}" : $"{DataAula:dd/MM/yyyy} - {Nome} ({CodigoRf})";
 
-        public string Descricao => Tipo == (int)TipoAula.Reposicao ? $"{DescricaoComNome} - Reposição" : DescricaoComNome;
+        public string DescricaoCJ => InseridoCJ ? $"{DescricaoComNome} - CJ" : DescricaoComNome;
+
+        public string Descricao => Tipo == (int)TipoAula.Reposicao ? $"{DescricaoCJ} - Reposição" : DescricaoCJ;
     }
 }

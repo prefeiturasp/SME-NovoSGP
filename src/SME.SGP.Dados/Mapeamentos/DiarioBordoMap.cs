@@ -11,6 +11,7 @@ namespace SME.SGP.Dados
             Map(a => a.DevolutivaId).ToColumn("devolutiva_id");
             Map(a => a.ReflexoesReplanejamento).ToColumn("reflexoes_replanejamento");
             Map(a => a.ComponenteCurricularId).ToColumn("componente_curricular_id");
+            Map(a => a.InseridoCJ).ToColumn("inserido_cj");
         }
     }
 }
