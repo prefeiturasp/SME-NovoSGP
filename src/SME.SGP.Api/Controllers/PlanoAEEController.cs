@@ -57,9 +57,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPlanoAee(long? planoAeeId, [FromQuery] string turmaCodigo, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
+        public async Task<IActionResult> ObterPlanoAee(long? planoAeeId, [FromQuery] string turmaCodigo, [FromQuery] bool? historico, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeId, turmaCodigo)));
+            return Ok(await useCase.Executar(new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeId, turmaCodigo, historico ?? false)));
         }
 
         [HttpGet]

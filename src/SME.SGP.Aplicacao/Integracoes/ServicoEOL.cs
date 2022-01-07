@@ -283,13 +283,14 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol, bool historico = false)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
             var url = $"alunos/ues/{codigoUe}/anosLetivos/{anoLetivo}/autocomplete"
                 + (codigoTurma > 0 ? $"?codigoTurma={codigoTurma}" : null)
                 + (codigoEol.HasValue ? $"{(codigoTurma > 0 ? "&" : "?") + $"codigoEol={codigoEol}"}" : "")
-                + (nome != null ? $"{(codigoEol != null || codigoTurma > 0 ? "&" : "?") + $"nomeAluno={nome}"}" : "");
+                + (nome != null ? $"{(codigoEol != null || codigoTurma > 0 ? "&" : "?") + $"nomeAluno={nome}"}" : "")
+                +$"{(String.IsNullOrEmpty(nome) ? "?" : "&") + $"ehHistorico={historico}" }";
 
             var resposta = await httpClient.GetAsync(url);
 
@@ -330,11 +331,11 @@ namespace SME.SGP.Aplicacao.Integracoes
            return await ObterComponentesCurriculares(url);
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo,bool historico = false)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
 
-            var resposta = await httpClient.GetAsync($"alunos/{codidoAluno}/turmas/anosLetivos/{anoLetivo}");
+            var resposta = await httpClient.GetAsync($"alunos/{codidoAluno}/turmas/anosLetivos/{anoLetivo}?ehHistorico={historico}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

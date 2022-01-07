@@ -12,7 +12,9 @@ namespace SME.SGP.Aplicacao
             AnoLetivo = filtroEstudante.AnoLetivo;
             CodigoEOL = filtroEstudante.Codigo;
             Nome = filtroEstudante.Nome;
-            CodigoTurma = filtroEstudante.CodigoTurma; ;
+            Historico = filtroEstudante.Historico;
+            CodigoTurma = filtroEstudante.CodigoTurma;
+            ;
         }
 
         public string CodigoUe { get; set; }
@@ -20,5 +22,6 @@ namespace SME.SGP.Aplicacao
         public long? CodigoEOL { get; set; }
         public long CodigoTurma { get; set; }
         public string Nome { get; set; }
+        public bool Historico { get; set; }
     }
 }
