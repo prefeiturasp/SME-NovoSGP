@@ -1,6 +1,6 @@
 insert
 	into
-	parametros_sistema
+	public.parametros_sistema
 (nome,
 	tipo,
 	descricao,
