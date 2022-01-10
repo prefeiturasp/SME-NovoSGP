@@ -308,7 +308,7 @@ namespace SME.SGP.Dados
                 });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaComponentesAlunoPorTurmas(string alunoCodigo, string[] codigosTurmas, long tipoCalendarioId)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaComponentesAlunoPorTurmas(string alunoCodigo, string[] codigosTurmas, long tipoCalendarioId, int bimestre = 0)
         {
             var query = new StringBuilder($@"select fa.* 
                             from frequencia_aluno fa
@@ -322,6 +322,9 @@ namespace SME.SGP.Dados
                 and t.turma_id = any(@codigosTurmas)
                 and t.tipo_turma in(1,2,7) ");
 
+            if (bimestre > 0)
+                query.AppendLine(" and fa.bimestre = @bimestre");
+
             if (tipoCalendarioId > 0)
                 query.AppendLine(" and pe.tipo_calendario_id = @tipoCalendarioId");
 
@@ -330,7 +333,8 @@ namespace SME.SGP.Dados
                 {
                     alunoCodigo,
                     codigosTurmas,
-                    tipoCalendarioId
+                    tipoCalendarioId,
+                    bimestre
                 });
         }
 
