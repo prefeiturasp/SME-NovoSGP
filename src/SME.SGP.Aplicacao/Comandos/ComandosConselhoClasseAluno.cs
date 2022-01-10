@@ -26,8 +26,8 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, bool consideraHistorico)
-            => await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo, consideraHistorico);
+        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
+            => await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
 
         public async Task<ConselhoClasseAluno> SalvarAsync(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto)
             => await servicoConselhoClasse.SalvarConselhoClasseAluno(await MapearParaEntidade(conselhoClasseAlunoDto));

@@ -75,13 +75,13 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, bool consideraHistorico, [FromServices] IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
             => Ok(await consultasConselhoClasseAluno.ObterParecerConclusivo(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, consideraHistorico));
 
-        [HttpPost("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/parecer/consideraHistorico/{consideraHistorico}")]
+        [HttpPost("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/parecer")]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
-        public async Task<IActionResult> GerarParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, bool consideraHistorico, [FromServices] IComandosConselhoClasseAluno comandosConselhoClasseAluno)
-            => Ok(await comandosConselhoClasseAluno.GerarParecerConclusivoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo, consideraHistorico));
+        public async Task<IActionResult> GerarParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices] IComandosConselhoClasseAluno comandosConselhoClasseAluno)
+            => Ok(await comandosConselhoClasseAluno.GerarParecerConclusivoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
 
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/bimestres/{bimestre}/sintese")]
         [ProducesResponseType(typeof(IEnumerable<ConselhoDeClasseGrupoMatrizDto>), 200)]
