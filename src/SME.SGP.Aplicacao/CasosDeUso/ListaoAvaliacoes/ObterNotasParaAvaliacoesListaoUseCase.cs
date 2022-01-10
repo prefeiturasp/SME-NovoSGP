@@ -181,8 +181,6 @@ namespace SME.SGP.Aplicacao
                                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
                                                     notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
-                    var frequenciaAluno = frequenciasDosAlunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
-
                     listaAlunosDoBimestre.Add(notaConceitoAluno);
                 }
 
