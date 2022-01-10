@@ -23,8 +23,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ConsultasConselhoClasseRecomendacaoConsultaDto), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRecomendacoesAlunoFamilia([FromServices] IConsultasConselhoClasseRecomendacao consultasConselhoClasseRecomendacao,
-            long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromQuery]bool consideraHistorico = false)
-        { 
+            long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromQuery] bool consideraHistorico = false)
+        {
             var retorno = await consultasConselhoClasseRecomendacao.ObterRecomendacoesAlunoFamilia(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre, consideraHistorico);
             return Ok(retorno);
         }
@@ -37,7 +37,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
         public async Task<IActionResult> SalvarRecomendacoesAlunoFamilia(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto, [FromServices] IComandosConselhoClasseAluno comandosConselhoClasseAluno)
         {
-            return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto)); 
+            return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto));
         }
 
         [HttpPost("{conselhoClasseId}/notas/alunos/{codigoAluno}/turmas/{codigoTurma}/bimestres/{bimestre}/fechamento-turma/{fechamentoTurmaId}")]

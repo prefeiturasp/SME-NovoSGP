@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                     .OrderBy(mat => mat.DataSituacao)
                     .FirstOrDefault();
 
-                var dataSituacao = primeiroRegistroMatriculaAtiva?.DataSituacao ?? aluno.DataSituacao;
+                var dataSituacao = primeiroRegistroMatriculaAtiva != null && !primeiroRegistroMatriculaAtiva.DataSituacao.Equals(DateTime.MinValue) ? primeiroRegistroMatriculaAtiva.DataSituacao : aluno.DataSituacao;
 
                 var matriculadoDepois = !aluno.Inativo ?
                     periodosEscolares.FirstOrDefault(p => dataSituacao > p.PeriodoFim.Date)?.Bimestre : null;
@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
 
                 try
                 {
-                    var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(aluno.CodigoAluno, consolidacaoTurmaConselhoClasse.TurmaId, consolidacaoTurmaConselhoClasse.Bimestre);
+                    var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(aluno.CodigoAluno, consolidacaoTurmaConselhoClasse.TurmaId, consolidacaoTurmaConselhoClasse.Bimestre, aluno.Inativo);
 
                     var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemConsolidacaoConselhoClasseAluno);
 
