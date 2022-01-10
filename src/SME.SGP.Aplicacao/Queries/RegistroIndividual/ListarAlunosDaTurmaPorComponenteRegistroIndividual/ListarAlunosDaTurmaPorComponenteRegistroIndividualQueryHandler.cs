@@ -28,8 +28,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoDadosBasicosDto>> Handle(ListarAlunosDaTurmaPorComponenteRegistroIndividualQuery request, CancellationToken cancellationToken)
         {
-
-
             var periodosAberto = await repositorioEventoFechamento.ObterPeriodosFechamentoEmAberto(request.Turma.UeId, DateTime.Now.Date);
 
             PeriodoEscolar periodoEscolar;

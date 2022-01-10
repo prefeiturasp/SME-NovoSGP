@@ -3,6 +3,7 @@ using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,7 +67,7 @@ namespace SME.SGP.Dados.Repositorios
                      inner join periodo_escolar e on e.id = b.periodo_escolar_id
                      inner join tipo_calendario t on t.id = e.tipo_calendario_id
                      where not t.excluido
-                       and e.bimestre = @bimestre
+                       and e.bimestre {BimestreConstants.ObterCondicaoBimestre(bimestre, modalidadeTipoCalendario == ModalidadeTipoCalendario.Infantil)}
                        and t.modalidade = @modalidade
                        and b.inicio_fechamento = @dataInicio 
                        and {filtroDre} 

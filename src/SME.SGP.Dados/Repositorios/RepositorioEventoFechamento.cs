@@ -8,6 +8,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Globalization;
+using SME.SGP.Infra.Consts;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -53,37 +54,24 @@ namespace SME.SGP.Dados.Repositorios
                 , new { fechamentoId }).FirstOrDefault();
         }
 
-        public async Task<bool> SmeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, int bimestre)
+        public async Task<bool> UeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, bool ehModalidadeInfantil, int bimestre)
         {
-            var query = new StringBuilder();
-            var consultaObterBimestreFinal = "(select pe2.bimestre from periodo_escolar pe2 where pe.tipo_calendario_id = pe2.tipo_calendario_id order by pe2.bimestre desc limit 1)";
-
-            query.AppendLine(@"select count(pf.id) from periodo_fechamento pf 
-                        inner join periodo_fechamento_bimestre pfb on pf.id = pfb.periodo_fechamento_id 
-                        inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
-                        where pe.tipo_calendario_id = @tipoCalendarioId
-                        and pf.ue_id is null
-                        and pf.dre_id is null
-                        and TO_DATE(pfb.inicio_fechamento::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
-                        and TO_DATE(pfb.final_fechamento::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')");
-
-
-            query.AppendLine($"and pe.bimestre =  {(bimestre > 0 ? "@bimestre" : consultaObterBimestreFinal)}");
-
-            return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new
-            {
-                dataReferencia = dataReferencia.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
-                bimestre,
-                tipoCalendarioId
-            }) > 0;
+            var retorno = (await UeEmFechamentoBimestre(dataReferencia, tipoCalendarioId, ehModalidadeInfantil, bimestre));
+            return retorno != null;
         }
 
-        public async Task<bool> UeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, int bimestre)
+        public async Task<PeriodoFechamentoBimestre> UeEmFechamentoVigente(DateTime dataReferencia, long tipoCalendarioId, bool ehModalidadeInfantil, int bimestre)
+        {
+            return await UeEmFechamentoBimestre(dataReferencia, tipoCalendarioId, ehModalidadeInfantil, bimestre);
+        }
+
+        public async Task<PeriodoFechamentoBimestre> UeEmFechamentoBimestre(DateTime dataReferencia, long tipoCalendarioId, bool ehModalidadeInfantil, int bimestre)
         {
             var query = new StringBuilder();
-            var consultaObterBimestreFinal = "(select pe2.bimestre from periodo_escolar pe2 where pe.tipo_calendario_id = pe2.tipo_calendario_id order by pe2.bimestre desc limit 1)";
 
-            query.AppendLine(@"select count(pf.id) from periodo_fechamento pf 
+            var consultaObterBimestreFinal = "(select pe2.bimestre from periodo_escolar pe2 where @tipoCalendarioId = pe2.tipo_calendario_id order by pe2.bimestre desc limit 1)";
+
+            query.AppendLine(@"select pfb.* from periodo_fechamento pf 
 				inner join periodo_fechamento_bimestre pfb on pf.id = pfb.periodo_fechamento_id 
 				inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
 				where pe.tipo_calendario_id = @tipoCalendarioId
@@ -92,15 +80,18 @@ namespace SME.SGP.Dados.Repositorios
 				and TO_DATE(pfb.inicio_fechamento::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
 				and TO_DATE(pfb.final_fechamento::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')");
 
+            if (bimestre > 0)
+                query.AppendLine($"and pe.bimestre {BimestreConstants.ObterCondicaoBimestre(bimestre, ehModalidadeInfantil)}");
 
-            query.AppendLine($"and pe.bimestre =  {(bimestre > 0 ? "@bimestre" : consultaObterBimestreFinal)}");
+            else
+                query.AppendLine($"and pe.bimestre =  {consultaObterBimestreFinal}");
 
-            return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query.ToString(), new
             {
                 dataReferencia = dataReferencia.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
                 bimestre,
                 tipoCalendarioId
-            }) > 0;
+            });
         }
     }
 }
