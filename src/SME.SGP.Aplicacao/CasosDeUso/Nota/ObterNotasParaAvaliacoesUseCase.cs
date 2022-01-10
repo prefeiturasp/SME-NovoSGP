@@ -40,6 +40,8 @@ namespace SME.SGP.Aplicacao
             if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
                 throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
 
+            var periodoFechamentoBimestre = await mediator.Send(new ObterPeriodoFechamentoPorTurmaBimestrePeriodoEscolarQuery(turmaCompleta, filtro.Bimestre, filtro.PeriodoEscolarId));
+
             var periodoInicio = new DateTime(filtro.PeriodoInicioTicks);
             var periodoFim = new DateTime(filtro.PeriodoFimTicks);
 
@@ -146,6 +148,8 @@ namespace SME.SGP.Aplicacao
                                    select a;
             }
 
+
+
             var alunosAtivosCodigos = alunosAtivos
                 .Select(a => a.CodigoAluno).Distinct().ToArray();
 
@@ -204,11 +208,9 @@ namespace SME.SGP.Aplicacao
                     notasAvaliacoes.Add(notaAvaliacao);
                 }
 
-                var temPeriodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turmaCompleta, aluno.DataSituacao, filtro.Bimestre);
-
                 notaConceitoAluno.PodeEditar =
                         (notasAvaliacoes.Any(na => na.PodeEditar) || (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any())) &&
-                        (aluno.Inativo == false || (aluno.Inativo && temPeriodoAberto));
+                        (aluno.Inativo == false || (aluno.Inativo && aluno.DataSituacao >= periodoFechamentoBimestre?.InicioDoFechamento.Date));
 
                 notaConceitoAluno.Marcador = await mediator
                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
