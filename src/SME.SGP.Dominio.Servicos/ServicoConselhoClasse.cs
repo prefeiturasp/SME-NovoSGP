@@ -433,7 +433,7 @@ namespace SME.SGP.Dominio.Servicos
             return componentesTurma;
         }
 
-        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, bool consideraHistorico = false)
+        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
             var conselhoClasseAluno = await ObterConselhoClasseAluno(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
@@ -443,9 +443,9 @@ namespace SME.SGP.Dominio.Servicos
                 return new ParecerConclusivoDto();
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(alunoCodigo, turma.AnoLetivo, consideraHistorico, false, turma.CodigoTurma));
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(alunoCodigo, turma.AnoLetivo, turma.Historica, false, turma.CodigoTurma));
 
-            var parecerConclusivo = aluno.Inativo ? null : await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma, consideraHistorico);
+            var parecerConclusivo = aluno.Inativo ? null : await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma, turma.Historica);
             conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo?.Id;
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
