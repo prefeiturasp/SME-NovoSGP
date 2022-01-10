@@ -7,7 +7,6 @@ namespace SME.SGP.Infra
         public NotasConceitosAlunoListaoRetornoDto()
         {
             NotasAvaliacoes = new List<NotasConceitosNotaAvaliacaoListaoRetornoDto>();
-            NotasBimestre = new List<FechamentoNotaListaoRetornoDto>();
         }
 
         public string Id { get; set; }
@@ -15,9 +14,7 @@ namespace SME.SGP.Infra
         public string Nome { get; set; }
         public MarcadorFrequenciaDto Marcador { get; set; }
         public List<NotasConceitosNotaAvaliacaoListaoRetornoDto> NotasAvaliacoes { get; set; }
-        public List<FechamentoNotaListaoRetornoDto> NotasBimestre { get; set; }
         public int NumeroChamada { get; set; }
         public bool EhAtendidoAEE { get; set; }
-        public string PercentualFrequencia { get; set; }
     }
 }
