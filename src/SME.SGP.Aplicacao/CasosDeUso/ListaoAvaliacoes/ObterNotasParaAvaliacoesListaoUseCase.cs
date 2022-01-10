@@ -16,11 +16,13 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEol servicoEOL;
-        public ObterNotasParaAvaliacoesListaoUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL)
+        private readonly IConsultasPeriodoFechamento consultaPeriodoFechamento;
+        public ObterNotasParaAvaliacoesListaoUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL, IConsultasPeriodoFechamento consultaPeriodoFechamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.consultaPeriodoFechamento = consultaPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultaPeriodoFechamento));
         }
         public async Task<NotasConceitosListaoRetornoDto> Executar(ListaNotasConceitosBimestreRefatoradaDto filtro)
         {
@@ -40,8 +42,6 @@ namespace SME.SGP.Aplicacao
 
                 if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
                     throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
-
-                var periodoFechamentoBimestre = await mediator.Send(new ObterPeriodoFechamentoPorTurmaBimestrePeriodoEscolarQuery(turmaCompleta, filtro.Bimestre, filtro.PeriodoEscolarId));
 
                 var periodoInicio = new DateTime(filtro.PeriodoInicioTicks);
                 var periodoFim = new DateTime(filtro.PeriodoFimTicks);
@@ -173,9 +173,11 @@ namespace SME.SGP.Aplicacao
                         notasAvaliacoes.Add(notaAvaliacao);
                     }
 
+                    var temPeriodoAberto = await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turmaCompleta, aluno.DataSituacao, filtro.Bimestre);
+
                     notaConceitoAluno.PodeEditar =
                             (notasAvaliacoes.Any(na => na.PodeEditar) || (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any())) &&
-                            (aluno.Inativo == false || (aluno.Inativo && aluno.DataSituacao >= periodoFechamentoBimestre?.InicioDoFechamento.Date));
+                            (aluno.Inativo == false || (aluno.Inativo && temPeriodoAberto));
 
                     notaConceitoAluno.Marcador = await mediator
                                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
