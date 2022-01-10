@@ -19,10 +19,10 @@ namespace SME.SGP.Aplicacao
         public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(request.CodigoTurma))
-                return (await servicoEol.ObterDadosAluno(request.CodigoAluno, request.AnoLetivo)).OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
+                return (await servicoEol.ObterDadosAluno(request.CodigoAluno, request.AnoLetivo, request.ConsideraHistorico, request.FiltrarSituacao)).OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
             else
             {
-                var retorno = (await servicoEol.ObterDadosAluno(request.CodigoAluno, request.AnoLetivo)).OrderByDescending(a => a.DataSituacao);
+                var retorno = (await servicoEol.ObterDadosAluno(request.CodigoAluno, request.AnoLetivo, request.ConsideraHistorico, request.FiltrarSituacao)).OrderByDescending(a => a.DataSituacao);
                 return retorno?.FirstOrDefault(da => da.CodigoTurma.ToString().Equals(request.CodigoTurma));
             }
         }
