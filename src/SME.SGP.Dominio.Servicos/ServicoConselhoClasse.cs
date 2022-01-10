@@ -443,9 +443,10 @@ namespace SME.SGP.Dominio.Servicos
                 return new ParecerConclusivoDto();
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(alunoCodigo, turma.AnoLetivo, consideraHistorico, false, turma.CodigoTurma));
 
-            var parecerConclusivo = await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma, consideraHistorico);
-            conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
+            var parecerConclusivo = aluno.Inativo ? null : await servicoCalculoParecerConclusivo.Calcular(alunoCodigo, turma.CodigoTurma, pareceresDaTurma, consideraHistorico);
+            conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo?.Id;
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
             var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar != null ?
@@ -453,11 +454,11 @@ namespace SME.SGP.Dominio.Servicos
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
 
-            return new ParecerConclusivoDto()
+            return parecerConclusivo != null ? new ParecerConclusivoDto()
             {
                 Id = parecerConclusivo.Id,
                 Nome = parecerConclusivo.Nome
-            };
+            } : new ParecerConclusivoDto();
         }
 
         private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(long turmaId)
