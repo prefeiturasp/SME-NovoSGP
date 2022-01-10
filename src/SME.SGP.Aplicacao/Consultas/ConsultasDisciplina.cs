@@ -111,10 +111,6 @@ namespace SME.SGP.Aplicacao
             {
                 var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
                 disciplinasDto = MapearParaDto(disciplinas, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
-                disciplinasDto.ForEach(d =>
-                {
-                    d.NomeComponenteInfantil = d.NomeComponenteInfantil != null ? d.NomeComponenteInfantil : d.Nome;
-                });
             }
 
             else
@@ -443,6 +439,7 @@ namespace SME.SGP.Aplicacao
             Compartilhada = disciplinaEol.Compartilhada,
             RegistroFrequencia = disciplinaEol.RegistraFrequencia,
             LancaNota = disciplinaEol.LancaNota,
+            NomeComponenteInfantil = disciplinaEol.NomeComponenteInfantil
         };
 
         private List<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false, bool ensinoEspecial = false)
@@ -464,6 +461,7 @@ namespace SME.SGP.Aplicacao
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
             Nome = disciplina.Nome,
+            NomeComponenteInfantil = disciplina.NomeComponenteInfantil,
             Regencia = disciplina.Regencia,
             TerritorioSaber = disciplina.TerritorioSaber,
             Compartilhada = disciplina.Compartilhada,
