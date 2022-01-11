@@ -201,6 +201,9 @@ namespace SME.SGP.Aplicacao
                 notaConceitoAluno.Marcador = await mediator
                                 .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
                                                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
+               
+                notaConceitoAluno.EhAtendidoAEE = await mediator
+                                .Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, filtro.AnoLetivo));
 
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }
