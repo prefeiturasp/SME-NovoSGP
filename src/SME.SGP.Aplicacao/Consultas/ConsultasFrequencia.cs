@@ -134,13 +134,7 @@ namespace SME.SGP.Aplicacao
             // Busca periodo
             var periodo = await BuscaPeriodo(turma, bimestre);
 
-            //var alunosEOL = await servicoEOL.ObterAlunosPorTurma(turmaId);
-
             var alunosEOL = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(turmaId, periodo.PeriodoFim));
-            if (alunosEOL == null || !alunosEOL.Any())
-                throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
-
-
             if (alunosEOL == null || !alunosEOL.Any())
                 throw new NegocioException("Não foram localizados alunos para a turma selecionada.");
 
