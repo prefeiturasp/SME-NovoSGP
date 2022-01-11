@@ -97,6 +97,27 @@ namespace SME.SGP.Aplicacao
 
                 var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == filtro.DisciplinaCodigo);
 
+                IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
+                if (componenteReferencia.Regencia)
+                {
+                    var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                    if (usuario.EhProfessorCj())
+                    {
+                        IEnumerable<DisciplinaDto> disciplinasRegenciaCJ = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(filtro.DisciplinaCodigo, filtro.TurmaCodigo, false, componenteReferencia.Regencia);
+                        if (disciplinasRegenciaCJ == null || !disciplinasRegenciaCJ.Any())
+                            throw new NegocioException("Não foram encontradas as disciplinas de regência");
+                        disciplinasRegencia = MapearParaDto(disciplinasRegenciaCJ);
+                    }
+                    else
+                    {
+                        IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(filtro.TurmaCodigo, usuario.CodigoRf, usuario.PerfilAtual);
+                        if (disciplinasRegenciaEol == null || !disciplinasRegenciaEol.Any(d => !d.TerritorioSaber && d.Regencia))
+                            throw new NegocioException("Não foram encontradas disciplinas de regência no EOL");
+                        disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia));
+                    }
+
+                }
+
                 IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
                 if (filtro.TurmaHistorico)
                 {
@@ -228,7 +249,7 @@ namespace SME.SGP.Aplicacao
                 bimestreParaAdicionar.QtdAvaliacoesBimestrais = atividadesAvaliativasdoBimestre
                     .Count(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id);
 
-                await ValidaMinimoAvaliacoesBimestrais(componenteReferencia, null, tipoAvaliacaoBimestral, bimestreParaAdicionar, atividadesAvaliativaEBimestres, filtro.Bimestre);
+                await ValidaMinimoAvaliacoesBimestrais(componenteReferencia, disciplinasRegencia, tipoAvaliacaoBimestral, bimestreParaAdicionar, atividadesAvaliativaEBimestres, filtro.Bimestre);
                 if (atividadeAvaliativaParaObterTipoNota != null)
                 {
                     var notaTipo = await mediator.Send(new ObterTipoNotaPorTurmaQuery(turmaCompleta, new DateTime(filtro.AnoLetivo, 3, 1)));
@@ -244,9 +265,47 @@ namespace SME.SGP.Aplicacao
                 return retorno;
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
+            }
+        }
+
+        private IEnumerable<DisciplinaResposta> MapearParaDto(IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol)
+        {
+            foreach (var disciplina in disciplinasRegenciaEol)
+            {
+                yield return new DisciplinaResposta()
+                {
+                    CodigoComponenteCurricular = disciplina.Codigo,
+                    Compartilhada = disciplina.Compartilhada,
+                    CodigoComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
+                    Nome = disciplina.Descricao,
+                    Regencia = disciplina.Regencia,
+                    RegistroFrequencia = disciplina.RegistraFrequencia,
+                    TerritorioSaber = disciplina.TerritorioSaber,
+                    LancaNota = disciplina.LancaNota,
+                    BaseNacional = disciplina.BaseNacional,
+                    GrupoMatriz = new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatriz.Id, Nome = disciplina.GrupoMatriz.Nome }
+                };
+            }
+        }
+        private IEnumerable<DisciplinaResposta> MapearParaDto(IEnumerable<DisciplinaDto> disciplinasRegenciaCJ)
+        {
+            foreach (var disciplina in disciplinasRegenciaCJ)
+            {
+                yield return new DisciplinaResposta()
+                {
+                    CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
+                    Compartilhada = disciplina.Compartilhada,
+                    CodigoComponenteCurricularPai = disciplina.CdComponenteCurricularPai,
+                    Nome = disciplina.Nome,
+                    Regencia = disciplina.Regencia,
+                    RegistroFrequencia = disciplina.RegistraFrequencia,
+                    TerritorioSaber = disciplina.TerritorioSaber,
+                    LancaNota = disciplina.LancaNota,
+                    GrupoMatriz = new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatrizId, Nome = disciplina.GrupoMatrizNome }
+                };
             }
         }
 
