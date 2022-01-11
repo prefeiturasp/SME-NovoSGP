@@ -26,249 +26,241 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<NotasConceitosListaoRetornoDto> Executar(ListaNotasConceitosBimestreRefatoradaDto filtro)
         {
-            try
+
+            var retorno = new NotasConceitosListaoRetornoDto();
+
+            var turmaCompleta = await mediator
+                .Send(new ObterTurmaComUeEDrePorCodigoQuery(filtro.TurmaCodigo));
+
+            if (turmaCompleta == null)
+                throw new NegocioException("Não foi possível obter a turma.");
+
+
+            var disciplinasDoProfessorLogado = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(filtro.TurmaCodigo, true);
+
+            if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
+                throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
+
+            var periodoInicio = new DateTime(filtro.PeriodoInicioTicks);
+            var periodoFim = new DateTime(filtro.PeriodoFimTicks);
+
+            var componentesCurriculares = ObterComponentesCurricularesParaConsulta(filtro.DisciplinaCodigo, disciplinasDoProfessorLogado);
+            var atividadesAvaliativaEBimestres = await mediator
+                .Send(new ObterAtividadesAvaliativasPorCCTurmaPeriodoQuery(componentesCurriculares.Select(a => a.ToString()).ToArray(), filtro.TurmaCodigo, periodoInicio, periodoFim));
+
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(filtro.TurmaCodigo));
+
+            if (alunos == null || !alunos.Any())
+                throw new NegocioException("Não foi encontrado alunos para a turma informada");
+
+            var tipoAvaliacaoBimestral = await mediator.Send(new ObterTipoAvaliacaoBimestralQuery());
+
+            retorno.BimestreAtual = filtro.Bimestre;
+            retorno.PercentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
+
+            DateTime? dataUltimaNotaConceitoInserida = null;
+            DateTime? dataUltimaNotaConceitoAlterada = null;
+            var usuarioRfUltimaNotaConceitoInserida = string.Empty;
+            var usuarioRfUltimaNotaConceitoAlterada = string.Empty;
+            var nomeAvaliacaoAuditoriaInclusao = string.Empty;
+            var nomeAvaliacaoAuditoriaAlteracao = string.Empty;
+
+            AtividadeAvaliativa atividadeAvaliativaParaObterTipoNota = null;
+
+            var bimestreParaAdicionar = new NotasConceitosBimestreListaoRetornoDto()
             {
+                Descricao = $"{filtro.Bimestre}º Bimestre",
+                Numero = filtro.Bimestre,
+                PeriodoInicio = periodoInicio,
+                PeriodoFim = periodoFim
+            };
+            var listaAlunosDoBimestre = new List<NotasConceitosAlunoListaoRetornoDto>();
+            var atividadesAvaliativasdoBimestre = atividadesAvaliativaEBimestres
+                                    .Where(a => a.DataAvaliacao.Date >= periodoInicio && periodoFim >= a.DataAvaliacao.Date)
+                                    .OrderBy(a => a.DataAvaliacao)
+                                    .ToList();
 
-                var retorno = new NotasConceitosListaoRetornoDto();
+            var alunosIds = alunos.Select(a => a.CodigoAluno).Distinct().ToArray();
+            IEnumerable<NotaConceito> notas = null;
+            IEnumerable<AusenciaAlunoDto> ausenciasDasAtividadesAvaliativas = null;
 
-                var turmaCompleta = await mediator
-                    .Send(new ObterTurmaComUeEDrePorCodigoQuery(filtro.TurmaCodigo));
+            long[] atividadesAvaliativasId = atividadesAvaliativasdoBimestre.Select(a => a.Id)?.Distinct().ToArray() ?? new long[0];
+            notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString()));
+            var datasDasAtividadesAvaliativas = atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray();
+            ausenciasDasAtividadesAvaliativas = await mediator.Send(new ObterAusenciasDaAtividadesAvaliativasQuery(filtro.TurmaCodigo, datasDasAtividadesAvaliativas, filtro.DisciplinaCodigo.ToString(), alunosIds));
 
-                if (turmaCompleta == null)
-                    throw new NegocioException("Não foi possível obter a turma.");
+            var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.DisciplinaCodigo }));
+            if (componentesCurricularesCompletos == null || !componentesCurricularesCompletos.Any())
+                throw new NegocioException("Componente curricular informado não encontrado no EOL");
 
+            var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == filtro.DisciplinaCodigo);
 
-                var disciplinasDoProfessorLogado = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(filtro.TurmaCodigo, true);
-
-                if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
-                    throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
-
-                var periodoInicio = new DateTime(filtro.PeriodoInicioTicks);
-                var periodoFim = new DateTime(filtro.PeriodoFimTicks);
-
-                var componentesCurriculares = ObterComponentesCurricularesParaConsulta(filtro.DisciplinaCodigo, disciplinasDoProfessorLogado);
-                var atividadesAvaliativaEBimestres = await mediator
-                    .Send(new ObterAtividadesAvaliativasPorCCTurmaPeriodoQuery(componentesCurriculares.Select(a => a.ToString()).ToArray(), filtro.TurmaCodigo, periodoInicio, periodoFim));
-
-                var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(filtro.TurmaCodigo));
-
-                if (alunos == null || !alunos.Any())
-                    throw new NegocioException("Não foi encontrado alunos para a turma informada");
-
-                var tipoAvaliacaoBimestral = await mediator.Send(new ObterTipoAvaliacaoBimestralQuery());
-
-                retorno.BimestreAtual = filtro.Bimestre;
-                retorno.PercentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
-
-                DateTime? dataUltimaNotaConceitoInserida = null;
-                DateTime? dataUltimaNotaConceitoAlterada = null;
-                var usuarioRfUltimaNotaConceitoInserida = string.Empty;
-                var usuarioRfUltimaNotaConceitoAlterada = string.Empty;
-                var nomeAvaliacaoAuditoriaInclusao = string.Empty;
-                var nomeAvaliacaoAuditoriaAlteracao = string.Empty;
-
-                AtividadeAvaliativa atividadeAvaliativaParaObterTipoNota = null;
-
-                var bimestreParaAdicionar = new NotasConceitosBimestreListaoRetornoDto()
+            IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
+            if (componenteReferencia.Regencia)
+            {
+                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                if (usuario.EhProfessorCj())
                 {
-                    Descricao = $"{filtro.Bimestre}º Bimestre",
-                    Numero = filtro.Bimestre,
-                    PeriodoInicio = periodoInicio,
-                    PeriodoFim = periodoFim
+                    IEnumerable<DisciplinaDto> disciplinasRegenciaCJ = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(filtro.DisciplinaCodigo, filtro.TurmaCodigo, false, componenteReferencia.Regencia);
+                    if (disciplinasRegenciaCJ == null || !disciplinasRegenciaCJ.Any())
+                        throw new NegocioException("Não foram encontradas as disciplinas de regência");
+                    disciplinasRegencia = MapearParaDto(disciplinasRegenciaCJ);
+                }
+                else
+                {
+                    IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(filtro.TurmaCodigo, usuario.CodigoRf, usuario.PerfilAtual);
+                    if (disciplinasRegenciaEol == null || !disciplinasRegenciaEol.Any(d => !d.TerritorioSaber && d.Regencia))
+                        throw new NegocioException("Não foram encontradas disciplinas de regência no EOL");
+                    disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia));
+                }
+
+            }
+
+            IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
+            if (filtro.TurmaHistorico)
+            {
+                alunosAtivos = from a in alunos
+                                where a.EstaAtivo(periodoFim) ||
+                                        (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date && a.DataSituacao.Date <= periodoFim.Date) &&
+                                        (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido)
+                                orderby a.NomeValido(), a.NumeroAlunoChamada
+                                select a;
+            }
+            else
+            {
+                alunosAtivos = from a in alunos
+                                where (a.EstaAtivo(periodoFim) ||
+                                        (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
+                                        a.DataMatricula.Date <= periodoFim.Date
+                                orderby a.NomeValido(), a.NumeroAlunoChamada
+                                select a;
+            }
+
+            var alunosAtivosCodigos = alunosAtivos.Select(a => a.CodigoAluno).Distinct().ToArray();
+
+            var frequenciasDosAlunos = await mediator
+                .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(alunosAtivosCodigos, periodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString()));
+
+            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString(), filtro.PeriodoEscolarId));
+
+            foreach (var aluno in alunosAtivos)
+            {
+                var notaConceitoAluno = new NotasConceitosAlunoListaoRetornoDto()
+                {
+                    Id = aluno.CodigoAluno,
+                    Nome = aluno.NomeValido(),
+                    NumeroChamada = aluno.NumeroAlunoChamada
                 };
-                var listaAlunosDoBimestre = new List<NotasConceitosAlunoListaoRetornoDto>();
-                var atividadesAvaliativasdoBimestre = atividadesAvaliativaEBimestres
-                                        .Where(a => a.DataAvaliacao.Date >= periodoInicio && periodoFim >= a.DataAvaliacao.Date)
-                                        .OrderBy(a => a.DataAvaliacao)
-                                        .ToList();
 
-                var alunosIds = alunos.Select(a => a.CodigoAluno).Distinct().ToArray();
-                IEnumerable<NotaConceito> notas = null;
-                IEnumerable<AusenciaAlunoDto> ausenciasDasAtividadesAvaliativas = null;
+                var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoListaoRetornoDto>();
+                foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)
+                {
+                    var notaDoAluno = ObterNotaParaVisualizacao(notas, aluno, atividadeAvaliativa);
+                    var notaParaVisualizar = string.Empty;
 
-                long[] atividadesAvaliativasId = atividadesAvaliativasdoBimestre.Select(a => a.Id)?.Distinct().ToArray() ?? new long[0];
-                notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString()));
-                var datasDasAtividadesAvaliativas = atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray();
-                ausenciasDasAtividadesAvaliativas = await mediator.Send(new ObterAusenciasDaAtividadesAvaliativasQuery(filtro.TurmaCodigo, datasDasAtividadesAvaliativas, filtro.DisciplinaCodigo.ToString(), alunosIds));
+                    if (notaDoAluno != null)
+                    {
+                        notaParaVisualizar = notaDoAluno.ObterNota();
 
-                var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.DisciplinaCodigo }));
-                if (componentesCurricularesCompletos == null || !componentesCurricularesCompletos.Any())
-                    throw new NegocioException("Componente curricular informado não encontrado no EOL");
+                        if (!dataUltimaNotaConceitoInserida.HasValue || notaDoAluno.CriadoEm > dataUltimaNotaConceitoInserida.Value)
+                        {
+                            usuarioRfUltimaNotaConceitoInserida = $"{notaDoAluno.CriadoPor}({notaDoAluno.CriadoRF})";
+                            dataUltimaNotaConceitoInserida = notaDoAluno.CriadoEm;
+                            nomeAvaliacaoAuditoriaInclusao = atividadeAvaliativa.NomeAvaliacao;
+                        }
 
-                var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == filtro.DisciplinaCodigo);
+                        if (notaDoAluno.AlteradoEm.HasValue && (!dataUltimaNotaConceitoAlterada.HasValue || notaDoAluno.AlteradoEm.Value > dataUltimaNotaConceitoAlterada.Value))
+                        {
+                            usuarioRfUltimaNotaConceitoAlterada = $"{notaDoAluno.AlteradoPor}({notaDoAluno.AlteradoRF})";
+                            dataUltimaNotaConceitoAlterada = notaDoAluno.AlteradoEm;
+                            nomeAvaliacaoAuditoriaAlteracao = atividadeAvaliativa.NomeAvaliacao;
+                        }
+                    }
 
-                IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
+                    var ausente = ausenciasDasAtividadesAvaliativas
+                        .Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
+
+                    var notaAvaliacao = new NotasConceitosNotaAvaliacaoListaoRetornoDto()
+                    {
+                        AtividadeAvaliativaId = atividadeAvaliativa.Id,
+                        NotaConceito = notaParaVisualizar,
+                        Ausente = ausente,
+                        PodeEditar = aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) ||
+                                        (aluno.EstaInativo(atividadeAvaliativa.DataAvaliacao) && atividadeAvaliativa.DataAvaliacao.Date <= aluno.DataSituacao.Date),
+                    };
+
+                    notasAvaliacoes.Add(notaAvaliacao);
+                }
+
+                var temPeriodoAberto = await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turmaCompleta, aluno.DataSituacao, filtro.Bimestre);
+
+                notaConceitoAluno.PodeEditar =
+                        (notasAvaliacoes.Any(na => na.PodeEditar) || (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any())) &&
+                        (aluno.Inativo == false || (aluno.Inativo && temPeriodoAberto));
+
+                notaConceitoAluno.Marcador = await mediator
+                                .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
+                                                notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
+
+                listaAlunosDoBimestre.Add(notaConceitoAluno);
+            }
+
+            foreach (var avaliacao in atividadesAvaliativasdoBimestre)
+            {
+                var avaliacaoDoBimestre = new NotasConceitosAvaliacaoListaoRetornoDto()
+                {
+                    Id = avaliacao.Id,
+                    Data = avaliacao.DataAvaliacao,
+                    Descricao = avaliacao.DescricaoAvaliacao,
+                    Nome = avaliacao.NomeAvaliacao,
+                    EhCJ = avaliacao.EhCj
+                };
+
+                avaliacaoDoBimestre.EhInterdisciplinar = avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar);
+
                 if (componenteReferencia.Regencia)
                 {
-                    var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-                    if (usuario.EhProfessorCj())
-                    {
-                        IEnumerable<DisciplinaDto> disciplinasRegenciaCJ = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(filtro.DisciplinaCodigo, filtro.TurmaCodigo, false, componenteReferencia.Regencia);
-                        if (disciplinasRegenciaCJ == null || !disciplinasRegenciaCJ.Any())
-                            throw new NegocioException("Não foram encontradas as disciplinas de regência");
-                        disciplinasRegencia = MapearParaDto(disciplinasRegenciaCJ);
-                    }
+                    var atividadeDisciplinas = await ObterDisciplinasAtividadeAvaliativa(avaliacao.Id, avaliacao.EhRegencia);
+                    var idsDisciplinas = atividadeDisciplinas?.Select(a => long.Parse(a.DisciplinaId)).ToArray();
+                    IEnumerable<DisciplinaDto> disciplinas;
+                    if (idsDisciplinas != null && idsDisciplinas.Any())
+                        disciplinas = await ObterDisciplinasPorIds(idsDisciplinas);
                     else
                     {
-                        IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(filtro.TurmaCodigo, usuario.CodigoRf, usuario.PerfilAtual);
-                        if (disciplinasRegenciaEol == null || !disciplinasRegenciaEol.Any(d => !d.TerritorioSaber && d.Regencia))
-                            throw new NegocioException("Não foram encontradas disciplinas de regência no EOL");
-                        disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia));
+                        disciplinas = await consultasDisciplina
+                            .ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(componenteReferencia.CodigoComponenteCurricular,
+                                                                                            turmaCompleta.CodigoTurma,
+                                                                                            turmaCompleta.TipoTurma == TipoTurma.Programa,
+                                                                                            componenteReferencia.Regencia);
                     }
-
+                    var nomesDisciplinas = disciplinas?.Select(d => d.Nome).ToArray();
+                    avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
                 }
 
-                IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
-                if (filtro.TurmaHistorico)
-                {
-                    alunosAtivos = from a in alunos
-                                   where a.EstaAtivo(periodoFim) ||
-                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date && a.DataSituacao.Date <= periodoFim.Date) &&
-                                          (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido)
-                                   orderby a.NomeValido(), a.NumeroAlunoChamada
-                                   select a;
-                }
-                else
-                {
-                    alunosAtivos = from a in alunos
-                                   where (a.EstaAtivo(periodoFim) ||
-                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
-                                         a.DataMatricula.Date <= periodoFim.Date
-                                   orderby a.NomeValido(), a.NumeroAlunoChamada
-                                   select a;
-                }
+                bimestreParaAdicionar.Avaliacoes.Add(avaliacaoDoBimestre);
 
-                var alunosAtivosCodigos = alunosAtivos.Select(a => a.CodigoAluno).Distinct().ToArray();
-
-                var frequenciasDosAlunos = await mediator
-                    .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(alunosAtivosCodigos, periodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString()));
-
-                var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString(), filtro.PeriodoEscolarId));
-
-                foreach (var aluno in alunosAtivos)
-                {
-                    var notaConceitoAluno = new NotasConceitosAlunoListaoRetornoDto()
-                    {
-                        Id = aluno.CodigoAluno,
-                        Nome = aluno.NomeValido(),
-                        NumeroChamada = aluno.NumeroAlunoChamada
-                    };
-
-                    var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoListaoRetornoDto>();
-                    foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)
-                    {
-                        var notaDoAluno = ObterNotaParaVisualizacao(notas, aluno, atividadeAvaliativa);
-                        var notaParaVisualizar = string.Empty;
-
-                        if (notaDoAluno != null)
-                        {
-                            notaParaVisualizar = notaDoAluno.ObterNota();
-
-                            if (!dataUltimaNotaConceitoInserida.HasValue || notaDoAluno.CriadoEm > dataUltimaNotaConceitoInserida.Value)
-                            {
-                                usuarioRfUltimaNotaConceitoInserida = $"{notaDoAluno.CriadoPor}({notaDoAluno.CriadoRF})";
-                                dataUltimaNotaConceitoInserida = notaDoAluno.CriadoEm;
-                                nomeAvaliacaoAuditoriaInclusao = atividadeAvaliativa.NomeAvaliacao;
-                            }
-
-                            if (notaDoAluno.AlteradoEm.HasValue && (!dataUltimaNotaConceitoAlterada.HasValue || notaDoAluno.AlteradoEm.Value > dataUltimaNotaConceitoAlterada.Value))
-                            {
-                                usuarioRfUltimaNotaConceitoAlterada = $"{notaDoAluno.AlteradoPor}({notaDoAluno.AlteradoRF})";
-                                dataUltimaNotaConceitoAlterada = notaDoAluno.AlteradoEm;
-                                nomeAvaliacaoAuditoriaAlteracao = atividadeAvaliativa.NomeAvaliacao;
-                            }
-                        }
-
-                        var ausente = ausenciasDasAtividadesAvaliativas
-                            .Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
-
-                        var notaAvaliacao = new NotasConceitosNotaAvaliacaoListaoRetornoDto()
-                        {
-                            AtividadeAvaliativaId = atividadeAvaliativa.Id,
-                            NotaConceito = notaParaVisualizar,
-                            Ausente = ausente,
-                            PodeEditar = aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) ||
-                                         (aluno.EstaInativo(atividadeAvaliativa.DataAvaliacao) && atividadeAvaliativa.DataAvaliacao.Date <= aluno.DataSituacao.Date),
-                        };
-
-                        notasAvaliacoes.Add(notaAvaliacao);
-                    }
-
-                    var temPeriodoAberto = await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turmaCompleta, aluno.DataSituacao, filtro.Bimestre);
-
-                    notaConceitoAluno.PodeEditar =
-                            (notasAvaliacoes.Any(na => na.PodeEditar) || (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any())) &&
-                            (aluno.Inativo == false || (aluno.Inativo && temPeriodoAberto));
-
-                    notaConceitoAluno.Marcador = await mediator
-                                    .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
-                                                    notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
-
-                    listaAlunosDoBimestre.Add(notaConceitoAluno);
-                }
-
-                foreach (var avaliacao in atividadesAvaliativasdoBimestre)
-                {
-                    var avaliacaoDoBimestre = new NotasConceitosAvaliacaoListaoRetornoDto()
-                    {
-                        Id = avaliacao.Id,
-                        Data = avaliacao.DataAvaliacao,
-                        Descricao = avaliacao.DescricaoAvaliacao,
-                        Nome = avaliacao.NomeAvaliacao,
-                        EhCJ = avaliacao.EhCj
-                    };
-
-                    avaliacaoDoBimestre.EhInterdisciplinar = avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar);
-
-                    if (componenteReferencia.Regencia)
-                    {
-                        var atividadeDisciplinas = await ObterDisciplinasAtividadeAvaliativa(avaliacao.Id, avaliacao.EhRegencia);
-                        var idsDisciplinas = atividadeDisciplinas?.Select(a => long.Parse(a.DisciplinaId)).ToArray();
-                        IEnumerable<DisciplinaDto> disciplinas;
-                        if (idsDisciplinas != null && idsDisciplinas.Any())
-                            disciplinas = await ObterDisciplinasPorIds(idsDisciplinas);
-                        else
-                        {
-                            disciplinas = await consultasDisciplina
-                                .ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(componenteReferencia.CodigoComponenteCurricular,
-                                                                                                turmaCompleta.CodigoTurma,
-                                                                                                turmaCompleta.TipoTurma == TipoTurma.Programa,
-                                                                                                componenteReferencia.Regencia);
-                        }
-                        var nomesDisciplinas = disciplinas?.Select(d => d.Nome).ToArray();
-                        avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
-                    }
-
-                    bimestreParaAdicionar.Avaliacoes.Add(avaliacaoDoBimestre);
-
-                    if (atividadeAvaliativaParaObterTipoNota == null)
-                        atividadeAvaliativaParaObterTipoNota = avaliacao;
-                }
-
-                bimestreParaAdicionar.Alunos = listaAlunosDoBimestre;
-                bimestreParaAdicionar.QtdAvaliacoesBimestrais = atividadesAvaliativasdoBimestre
-                    .Count(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id);
-
-                await ValidaMinimoAvaliacoesBimestrais(componenteReferencia, disciplinasRegencia, tipoAvaliacaoBimestral, bimestreParaAdicionar, atividadesAvaliativaEBimestres, filtro.Bimestre);
-                if (atividadeAvaliativaParaObterTipoNota != null)
-                {
-                    var notaTipo = await mediator.Send(new ObterTipoNotaPorTurmaQuery(turmaCompleta, new DateTime(filtro.AnoLetivo, 3, 1)));
-                    retorno.NotaTipo = notaTipo;
-                    ObterValoresDeAuditoria(dataUltimaNotaConceitoInserida, dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoAlterada, notaTipo, retorno, nomeAvaliacaoAuditoriaInclusao, nomeAvaliacaoAuditoriaAlteracao);
-                }
-                else
-                {
-                    var tipoNota = await mediator.Send(new ObterTipoNotaPorTurmaQuery(turmaCompleta, new DateTime(filtro.AnoLetivo, 3, 1)));
-                    retorno.NotaTipo = tipoNota;
-                }
-                retorno.Bimestres.Add(bimestreParaAdicionar);
-                return retorno;
-
+                if (atividadeAvaliativaParaObterTipoNota == null)
+                    atividadeAvaliativaParaObterTipoNota = avaliacao;
             }
-            catch (Exception ex)
+
+            bimestreParaAdicionar.Alunos = listaAlunosDoBimestre;
+            bimestreParaAdicionar.QtdAvaliacoesBimestrais = atividadesAvaliativasdoBimestre
+                .Count(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id);
+
+            await ValidaMinimoAvaliacoesBimestrais(componenteReferencia, disciplinasRegencia, tipoAvaliacaoBimestral, bimestreParaAdicionar, atividadesAvaliativaEBimestres, filtro.Bimestre);
+            if (atividadeAvaliativaParaObterTipoNota != null)
             {
-                throw ex;
+                var notaTipo = await mediator.Send(new ObterTipoNotaPorTurmaQuery(turmaCompleta, new DateTime(filtro.AnoLetivo, 3, 1)));
+                retorno.NotaTipo = notaTipo;
+                ObterValoresDeAuditoria(dataUltimaNotaConceitoInserida, dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoAlterada, notaTipo, retorno, nomeAvaliacaoAuditoriaInclusao, nomeAvaliacaoAuditoriaAlteracao);
             }
+            else
+            {
+                var tipoNota = await mediator.Send(new ObterTipoNotaPorTurmaQuery(turmaCompleta, new DateTime(filtro.AnoLetivo, 3, 1)));
+                retorno.NotaTipo = tipoNota;
+            }
+            retorno.Bimestres.Add(bimestreParaAdicionar);
+            return retorno;
         }
 
         private IEnumerable<DisciplinaResposta> MapearParaDto(IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol)
