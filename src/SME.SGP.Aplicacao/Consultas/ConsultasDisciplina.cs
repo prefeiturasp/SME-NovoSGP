@@ -110,7 +110,10 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.EhProfessorCj())
             {
                 var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
-                disciplinasDto = MapearParaDto(disciplinas, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
+
+                var disciplinasEolTratadas = realizarAgrupamentoComponente ? disciplinas.DistinctBy(s => s.Nome) : disciplinas;
+
+                disciplinasDto = MapearParaDto(disciplinasEolTratadas, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
             }
 
             else
