@@ -1,9 +1,7 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,8 +18,8 @@ namespace SME.SGP.Api.Controllers
 
         public EventosAulasCalendarioController(IConsultasEventosAulasCalendario consultasEventosAulasCalendario)
         {
-            this.consultasEventosAulasCalendario = consultasEventosAulasCalendario ??
-              throw new System.ArgumentNullException(nameof(consultasEventosAulasCalendario));
+            this.consultasEventosAulasCalendario = consultasEventosAulasCalendario 
+                                                ?? throw new System.ArgumentNullException(nameof(consultasEventosAulasCalendario));
         }
 
         [HttpPost]
@@ -67,11 +65,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{tipoCalendarioId}/meses/{mes}/dias/{dia}/eventos-aulas")]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterEventosAulasNoDiaPorCalendario(long tipoCalendarioId, int mes, int dia, 
-            [FromQuery]FiltroAulasEventosCalendarioDto filtro, [FromServices] IObterAulasEventosProfessorCalendarioPorMesDiaUseCase obterAulasPorMesDia,
-            [FromServices] IObterAulasEventosProfessorCalendarioPorMesUseCase obterAulasPorMes)
+        public async Task<IActionResult> ObterEventosAulasNoDiaPorCalendario(long tipoCalendarioId, 
+                                                                             int mes, 
+                                                                             int dia,
+                                                                             [FromQuery]FiltroAulasEventosCalendarioDto filtro, 
+                                                                             [FromServices] IObterAulasEventosProfessorCalendarioPorMesDiaUseCase obterAulasPorMesDia,
+                                                                             [FromServices] IObterAulasEventosProfessorCalendarioPorMesUseCase obterAulasPorMes)
         {            
             var retorno = await obterAulasPorMesDia.Executar(filtro, tipoCalendarioId, mes, dia, filtro.AnoLetivo);
+            
             retorno.EventosAulasMes = await obterAulasPorMes.Executar(filtro, tipoCalendarioId, mes);
             
             return Ok(retorno);
