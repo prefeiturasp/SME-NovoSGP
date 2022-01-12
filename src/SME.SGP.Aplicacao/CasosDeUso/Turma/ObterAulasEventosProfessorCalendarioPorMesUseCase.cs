@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -48,20 +46,26 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = filtroAulasEventosCalendarioDto.AnoLetivo
             });
 
-            IEnumerable<Aula> aulasParaVisualizar = null;
-
             string[] componentesCurricularesDoProfessor = new string[0];
 
             bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(filtroAulasEventosCalendarioDto.AnoLetivo);
 
-            if (usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)           
-                aulasParaVisualizar = aulas;         
+            IEnumerable<Aula> aulasParaVisualizar;
+            
+            if (usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)
+                aulasParaVisualizar = aulas;
+
             else
             {
                 if (usuarioLogado.EhProfessor())
-                    componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));  
-                
+                    componentesCurricularesDoProfessor = await mediator
+                                                               .Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf,
+                                                                                                                                usuarioLogado.PerfilAtual,
+                                                                                                                                filtroAulasEventosCalendarioDto.TurmaCodigo,
+                                                                                                                                usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
+
                 avaliacoes = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, componentesCurricularesDoProfessor);
             }
 

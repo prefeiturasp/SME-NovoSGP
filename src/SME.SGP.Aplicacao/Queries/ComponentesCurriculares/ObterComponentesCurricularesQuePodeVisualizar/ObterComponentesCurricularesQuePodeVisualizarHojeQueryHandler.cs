@@ -21,15 +21,16 @@ namespace SME.SGP.Aplicacao
         {
             var componentesCurricularesParaVisualizar = new List<string>();
 
-            var componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo, request.RfLogado, request.PerfilAtual, request.RealizarAgrupamentoComponente);
+            var componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo, 
+                                                                                                       request.RfLogado, 
+                                                                                                       request.PerfilAtual, 
+                                                                                                       request.RealizarAgrupamentoComponente);
             
             var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado?.Select(b => b.Codigo.ToString());            
 
             foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
-            {
                 if (await PodePersistirTurmaDisciplina(request.RfLogado, request.TurmaCodigo, componenteParaVerificarAtribuicao))
                     componentesCurricularesParaVisualizar.Add(componenteParaVerificarAtribuicao);
-            }
 
             return componentesCurricularesParaVisualizar.ToArray();
         }
