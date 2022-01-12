@@ -153,40 +153,47 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<PaginacaoResultadoDto<JustificativaAlunoDto>> ObterPorTurmaAlunoComponenteCurricularBimestrePaginado(long turmaId, long alunoCodigo, long componenteCurricularId, int bimestre, Paginacao paginacao)
-        {            StringBuilder sql = new StringBuilder();
+        public async Task<PaginacaoResultadoDto<JustificativaAlunoDto>> ObterPorTurmaAlunoComponenteCurricularBimestrePaginado(long turmaId, long alunoCodigo, long componenteCurricularId, int bimestre, Paginacao paginacao, int? semestre)
+        {   
+            StringBuilder sql = new StringBuilder();
 
-            MontaQueryObterPorTurmaAlunoComponenteCurricularBimestrePaginado(paginacao, sql, false, componenteCurricularId, bimestre);
+            var bimestres = bimestre > 0 
+                            ? new int[] { bimestre } 
+                            : semestre.HasValue ? semestre.Value <= 2 ? new int[] { 1, 2 } : new int[] { 3, 4 } : null;
+
+            MontaQueryObterPorTurmaAlunoComponenteCurricularBimestrePaginado(paginacao, sql, false, componenteCurricularId, bimestres);
 
             sql.AppendLine(";");
 
-            MontaQueryObterPorTurmaAlunoComponenteCurricularBimestrePaginado(paginacao, sql, true, componenteCurricularId, bimestre);
+            MontaQueryObterPorTurmaAlunoComponenteCurricularBimestrePaginado(paginacao, sql, true, componenteCurricularId, bimestres);
 
-            var parametros = new { turmaId, alunoCodigo = alunoCodigo.ToString(), componenteCurricularId = componenteCurricularId.ToString(), bimestre };
+            var parametros = new { turmaId, alunoCodigo = alunoCodigo.ToString(), componenteCurricularId = componenteCurricularId.ToString(), bimestres };
 
             var retorno = new PaginacaoResultadoDto<JustificativaAlunoDto>();
 
-            using (var multi = await database.Conexao.QueryMultipleAsync(sql.ToString(), parametros))
+            try
             {
-                retorno.Items = multi.Read<JustificativaAlunoDto>();
-                retorno.TotalRegistros = multi.ReadFirst<int>();
+                using (var multi = await database.Conexao.QueryMultipleAsync(sql.ToString(), parametros))
+                {
+                    retorno.Items = multi.Read<JustificativaAlunoDto>();
+                    retorno.TotalRegistros = multi.ReadFirst<int>();
+                }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
 
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
         }
 
-        private void MontaQueryObterPorTurmaAlunoComponenteCurricularBimestrePaginado(Paginacao paginacao, StringBuilder sql, bool contador, long componenteCurricularId, int bimestre)
+        private void MontaQueryObterPorTurmaAlunoComponenteCurricularBimestrePaginado(Paginacao paginacao, StringBuilder sql, bool contador, long componenteCurricularId, int[] bimestres)
         {
-            if(contador)
-            {
-                sql.AppendLine(" select count(n.id) ");
-            }
-            else
-            {
-                sql.AppendLine(" select n.* ");
-            }
+            sql.AppendLine(contador ? " select count(n.id) " : " select n.* ");
+
             sql.AppendLine(@" from (
                             select 
                                 an.id,
@@ -198,10 +205,11 @@ namespace SME.SGP.Dados.Repositorios
                             left join motivo_ausencia ma on an.motivo_ausencia_id = ma.id  
                             inner join aula a on a.id = an.aula_id 
                             inner join turma t on t.turma_id = a.turma_id ");
-            if (bimestre > 0)
-            {
-                sql.AppendLine(" inner join periodo_escolar pe on a.tipo_calendario_id = pe.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim and pe.bimestre = @bimestre");
-            }
+
+            
+            if (bimestres != null)
+                sql.AppendLine(" inner join periodo_escolar pe on a.tipo_calendario_id = pe.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim and pe.bimestre = any(@bimestres)");
+
             sql.AppendLine(@" where not an.excluido 
                             and t.id = @turmaId 
                             and an.codigo_aluno = @alunoCodigo ");

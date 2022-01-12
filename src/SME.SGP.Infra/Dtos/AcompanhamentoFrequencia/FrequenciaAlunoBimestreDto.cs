@@ -9,5 +9,6 @@
         public int Compensacoes { get; set; }
         public double? Frequencia { get; set; }
         public bool PossuiJustificativas { get; set; }
+        public int Semestre { get; set; }
     }
 }

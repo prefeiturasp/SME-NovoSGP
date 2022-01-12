@@ -28,7 +28,8 @@ namespace SME.SGP.Aplicacao
                 request.AlunoCodigo, 
                 request.ComponenteCurricularId, 
                 request.Bimestre, 
-                Paginacao));
+                Paginacao,
+                request.Semestre));
         }
 
         private PaginacaoResultadoDto<JustificativaAlunoDto> MapearParaDto(PaginacaoResultadoDto<JustificativaAlunoDto> resultadoDto)
