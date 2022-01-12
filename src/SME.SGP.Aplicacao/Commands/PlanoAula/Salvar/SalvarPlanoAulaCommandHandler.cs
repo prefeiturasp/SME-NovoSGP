@@ -128,6 +128,8 @@ namespace SME.SGP.Aplicacao
                 planoAulaDto.DesenvolvimentoAula = planoAula.DesenvolvimentoAula;
                 planoAulaDto.RecuperacaoAula = planoAula.RecuperacaoAula;
                 planoAulaDto.LicaoCasa = planoAula.LicaoCasa;
+                planoAulaDto.Id = planoAula.Id;
+
                 return planoAulaDto;
             }
             catch (Exception ex)
