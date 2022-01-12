@@ -89,7 +89,8 @@ namespace SME.SGP.Aplicacao
                     componentesCurricularesDoProfessor = await mediator
                                                               .Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf,
                                                                                                                                usuarioLogado.PerfilAtual,
-                                                                                                                               filtroAulasEventosCalendarioDto.TurmaCodigo));
+                                                                                                                               filtroAulasEventosCalendarioDto.TurmaCodigo,
+                                                                                                                               usuarioLogado.EhProfessorInfantilOuCjInfantil()));
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
                 atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor);
             }
