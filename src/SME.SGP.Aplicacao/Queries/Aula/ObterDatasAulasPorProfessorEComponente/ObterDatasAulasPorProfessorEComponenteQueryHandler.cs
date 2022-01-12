@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
                         CriadoPor = a.CriadoPor,
                         PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula)),
                         TipoAula = a.TipoAula
-                    }).Select(a => a.Result)
+                    }).DistinctBy(a => a.Result.AulaId).Select(a => a.Result)
                 });
         }
 

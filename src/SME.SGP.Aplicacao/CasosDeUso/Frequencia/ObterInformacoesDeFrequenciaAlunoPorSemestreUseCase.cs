@@ -104,7 +104,9 @@ namespace SME.SGP.Aplicacao
             {
                 Frequencia = mediaFrequencia,
                 Ausencias = somatorioAusencias,
-                AulasRealizadas = somatorioAulasRealizadas
+                AulasRealizadas = somatorioAulasRealizadas,
+                Semestre = int.Parse(dados1.Bimestre.ToString()) <= 2 ? 1 : 2,
+                Bimestre = "0",
             });
 
             return bimestres;
@@ -115,8 +117,7 @@ namespace SME.SGP.Aplicacao
         {
             FrequenciaAlunoBimestreDto dto = new FrequenciaAlunoBimestreDto();
 
-            if(turma.ModalidadeCodigo != Modalidade.EducacaoInfantil) 
-                dto.Bimestre = periodoEscolar.Bimestre.ToString();
+            dto.Bimestre = periodoEscolar.Bimestre.ToString();
 
             var frequenciasRegistradas = await mediator.Send(new ObterFrequenciaBimestresQuery(alunoCodigo,
                 periodoEscolar.Bimestre, turma.CodigoTurma, TipoFrequenciaAluno.Geral));
