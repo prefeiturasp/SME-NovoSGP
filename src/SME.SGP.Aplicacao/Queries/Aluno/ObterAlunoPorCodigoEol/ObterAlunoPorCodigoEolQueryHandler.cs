@@ -41,15 +41,14 @@ namespace SME.SGP.Aplicacao
                 .OrderByDescending(a => a.DataSituacao);
 
             var retorno = response
-                .Where(da => da.CodigoTurma.ToString().Equals(codigoTurma))
-                .FirstOrDefault(a => a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo);
-            
-            if (retorno == null)
+                .Where(da => da.CodigoTurma.ToString().Equals(codigoTurma));
+
+            if (!retorno.Any())
             {
                 return await ObterAluno(codigoAluno, anoLetivo, !historica, filtrarSituacao, codigoTurma);
             }
 
-            return retorno;
+            return retorno.FirstOrDefault(a => a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo);
         }
     }
 }
