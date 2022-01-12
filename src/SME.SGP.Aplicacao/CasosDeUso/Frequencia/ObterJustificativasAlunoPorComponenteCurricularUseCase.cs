@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<JustificativaAlunoDto>> Executar(FiltroJustificativasAlunoPorComponenteCurricular dto)
         {
-            return await mediator.Send(new ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQuery(dto.TurmaId, dto.ComponenteCurricularCodigo, dto.AlunoCodigo, dto.Bimestre));
+            return await mediator.Send(new ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQuery(dto.TurmaId, dto.ComponenteCurricularCodigo, dto.AlunoCodigo, dto.Bimestre, dto.Semestre));
         }
     }
 }
