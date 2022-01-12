@@ -38,8 +38,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(EventosAulasCalendarioDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("meses/eventos-aulas")]
-        [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]        
         public async Task<IActionResult> ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro)
         {
             var retorno = await consultasEventosAulasCalendario.ObterEventosAulasMensais(filtro);
@@ -55,11 +54,14 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{tipoCalendarioId}/meses/{mes}/eventos-aulas")]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterEventosAulasMensaisPorCalendario(long tipoCalendarioId, int mes, [FromQuery]FiltroAulasEventosCalendarioDto filtro, 
-            [FromServices]IObterAulasEventosProfessorCalendarioPorMesUseCase obterAulasPorMes)
+        public async Task<IActionResult> ObterEventosAulasMensaisPorCalendario(long tipoCalendarioId, 
+                                                                               int mes, 
+                                                                               [FromQuery]FiltroAulasEventosCalendarioDto filtro,
+                                                                               [FromServices]IObterAulasEventosProfessorCalendarioPorMesUseCase obterAulasPorMes)
         {
             return Ok(await obterAulasPorMes.Executar(filtro, tipoCalendarioId, mes));            
         }
+
         [HttpGet]
         [ProducesResponseType(typeof(EventosAulasNoDiaCalendarioDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
