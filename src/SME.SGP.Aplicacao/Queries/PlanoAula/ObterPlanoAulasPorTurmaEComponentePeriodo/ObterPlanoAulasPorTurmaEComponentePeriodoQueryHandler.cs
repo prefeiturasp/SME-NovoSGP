@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
 
             var planoAulaDto = await MapearParaDto(planoAulas, aulas, temPlanoAnual, request.ComponenteCurricularCodigo, turma.UeId);            
 
-            return planoAulaDto;
+            return planoAulaDto.OrderBy(x => x.DataAula);
         }
 
         private async Task<bool> ValidarPlanoAnual(Turma turma, IEnumerable<PeriodoEscolar> periodosEscolaresAulasInicioFim, string ComponenteCurricularId, Usuario usuarioLogado)
