@@ -23,14 +23,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public void AtualizaAbrangenciaHistorica(IEnumerable<long> ids)
         {
-            var dtFimVinculo = DateTime.Today;
+            var dtFimVinculo = DateTimeExtension.HorarioBrasilia().Date;
 
-            string comando = $"update public.abrangencia set historico = true , dt_fim_vinculo = '{dtFimVinculo.Year}-{dtFimVinculo.Month}-{dtFimVinculo.Day}'  where id in (#ids)";
+            string comando = $@" update abrangencia as a
+                                    set historico = true, dt_fim_vinculo = '{dtFimVinculo.Year}-{dtFimVinculo.Month}-{dtFimVinculo.Day}'
+                                 from abrangencia ab
+                                 join turma t on t.id = ab.turma_id
+                                 where a.id = ab.id
+                                   and a.historico <> t.historica
+                                   and t.historica
+                                   and t.ano_letivo = {dtFimVinculo.Year} 
+                                   and a.id in (#ids) ";
 
             for (int i = 0; i < ids.Count(); i = i + 900)
             {
                 var iteracao = ids.Skip(i).Take(900);
-
                 database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
