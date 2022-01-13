@@ -70,6 +70,7 @@ namespace SME.SGP.Dados.Repositorios
                             , db.reflexoes_replanejamento as DescricaoReflexoes
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data 
+                            , db.inserido_cj as InseridoCJ
                             {condicao} 
                             order by a.data_aula {offSet} ";
 
