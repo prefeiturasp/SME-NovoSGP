@@ -663,9 +663,9 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (dataReferencia != null)
                 if (!string.IsNullOrEmpty(professorRf))
-                    url.Append($"&dataReferencia={dataReferencia.Value.ToString("dd/MM/yyyy")}");
+                    url.Append($"&dataReferencia={dataReferencia.Value.ToString("yyyy-MM-dd")}");
                 else
-                    url.Append($"?dataReferencia={dataReferencia.Value.ToString("dd/MM/yyyy")}");
+                    url.Append($"?dataReferencia={dataReferencia.Value.ToString("yyyy-MM-dd")}");
 
             var resposta = await httpClient.GetAsync(url.ToString());
             if (!resposta.IsSuccessStatusCode)
