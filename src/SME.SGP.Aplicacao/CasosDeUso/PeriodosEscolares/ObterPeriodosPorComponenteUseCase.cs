@@ -21,7 +21,8 @@ namespace SME.SGP.Aplicacao
 
             var listaPeriodos = new List<PeriodoEscolarComponenteDto>();
 
-            listaPeriodos = ehRegencia ? SepararSemanasRegencia(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim, exibirDataFutura)
+            if(periodoEscolar.Any())
+                listaPeriodos = ehRegencia ? SepararSemanasRegencia(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim, exibirDataFutura)
                                        : SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula), exibirDataFutura);
 
             return listaPeriodos;
@@ -48,7 +49,11 @@ namespace SME.SGP.Aplicacao
             domingo = domingo.AddDays(7);
             sabado = sabado.AddDays(7);
 
-            dataFim = exibirDataFutura ? dataFim : DateTimeExtension.HorarioBrasilia();
+            dataFim = exibirDataFutura
+                ? dataFim
+                : dataFim < DateTimeExtension.HorarioBrasilia()
+                                    ? dataFim
+                                    : DateTimeExtension.HorarioBrasilia();
 
             while (domingo < dataFim)
             {
@@ -68,6 +73,7 @@ namespace SME.SGP.Aplicacao
                 domingo = domingo.AddDays(7);
                 sabado = sabado.AddDays(7);
             }
+
 
             return retornaListaPeriodoSeparado;
         }
