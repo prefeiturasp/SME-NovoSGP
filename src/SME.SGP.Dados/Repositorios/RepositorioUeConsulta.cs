@@ -2,6 +2,7 @@
 using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -226,7 +227,7 @@ namespace SME.SGP.Dados.Repositorios
             new { dreCodigo, modalidade }));
         }
 
-        public async Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades)
+        public async Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades, DateTime dataReferencia)
         {
             var query = @" select distinct ue.*, dre.*
                                from ue 
@@ -237,8 +238,10 @@ namespace SME.SGP.Dados.Repositorios
                                 and not exists (select 1
     		                            from periodo_fechamento pf
     		                            inner join periodo_fechamento_bimestre pb on pb.periodo_fechamento_id = pf.id
-    		                            where pf.ue_id = ue.id
-    		                             and pb.periodo_escolar_id = @periodoEscolarId)";
+    		                            where pb.periodo_escolar_id = @periodoEscolarId
+                                            and TO_DATE(pf.inicio::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
+                                            and TO_DATE(pf.fim::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
+                            )";
 
             return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query,
                 (ue, dre) =>
@@ -246,7 +249,7 @@ namespace SME.SGP.Dados.Repositorios
                     ue.AdicionarDre(dre);
 
                     return ue;
-                }, new { periodoEscolarId, ano, modalidades });
+                }, new { periodoEscolarId, ano, modalidades, dataReferencia });
         }
 
         public async Task<int> ObterQuantidadeTurmasSeriadas(long ueId, int ano)
@@ -316,6 +319,43 @@ namespace SME.SGP.Dados.Repositorios
                              and t.ano_letivo = @anoLetivo";
             var modalidadeInt = (int)modalidade;
             return await contexto.Conexao.QueryAsync<string>(query, new { modalidadeInt, anoLetivo });
+        }
+
+        public Task<DreUeDto> ObterCodigosDreUePorId(long ueId)
+        {
+            var query = @"select ue.ue_id as UeCodigo
+                                , dre.dre_id as DreCodigo
+                          from ue 
+                        inner join dre on dre.id = ue.dre_id
+                        where ue.id = @ueId";
+
+            return contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDto>(query, new { ueId });
+        }
+
+        public Task<IEnumerable<long>> ObterTodosIds()
+        {
+            var query = @"select id from ue";
+
+            return contexto.Conexao.QueryAsync<long>(query);
+        }
+
+        public async Task<IEnumerable<Ue>> ObterUEsComDREsPorModalidadeTipoCalendarioQuery(int[] modalidades, int anoLetivo = 0)
+        {
+            var query = @"select distinct ue.*, dre.*
+                          from turma t
+                         inner join ue on ue.id = t.ue_id
+                         inner join dre on dre.id = ue.dre_id
+                         where t.modalidade_codigo = ANY(@modalidades) ";
+
+            if (anoLetivo > 0)
+                query += "and ano_letivo = @anoLetivo";
+
+            return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.Dre = dre;
+
+                return ue;
+            }, new { modalidades, anoLetivo });
         }
     }
 }

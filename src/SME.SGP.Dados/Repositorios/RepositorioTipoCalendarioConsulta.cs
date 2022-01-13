@@ -256,7 +256,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstAsync<string>(query, new { tipoCalendarioId });
         }
 
-        public async Task<IEnumerable<TipoCalendarioBuscaDto>> ListarPorAnosLetivoEModalidades(int[] anosLetivo, int[] modalidades)
+        public async Task<IEnumerable<TipoCalendarioBuscaDto>> ListarPorAnosLetivoEModalidades(int[] anosLetivo, int[] modalidades, string nome)
         {
             StringBuilder query = new StringBuilder();
 
@@ -265,10 +265,15 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where not excluido");
             query.AppendLine("and ano_letivo = any(@anosLetivo)");
             query.AppendLine("and modalidade = any(@modalidades)");
+
+            if (!string.IsNullOrEmpty(nome))
+                query.Append($"and upper(f_unaccent(nome)) like UPPER('%{nome}%')");
+
             query.AppendLine("order by ano_letivo desc");
 
-            return await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query.ToString(), new { anosLetivo, modalidades });
+            return await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query.ToString(), new { anosLetivo, modalidades, nome });
         }
+
         public async Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, int modalidadeTipoCalendarioId, int semestre = 0)
         {
             var query = @"select
@@ -332,5 +337,23 @@ namespace SME.SGP.Dados.Repositorios
                     modalidadeTipoCalendario
                 });
         }
+
+        public async Task<IEnumerable<GestoresDreUePorTipoModalidadeCalendarioDto>> ObterGestoresUePorTipoCalendarioModalidade(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendarioId)
+        {
+            var query = @"select distinct ue.ue_id as Ue, dre.dre_id as Dre from tipo_calendario tc 
+                                inner join turma t on t.modalidade_codigo = tc.modalidade
+                                inner join ue ue on ue.id = t.ue_id 
+                                inner join dre dre on dre.id = ue.dre_id
+                                where tc.modalidade = @modalidadeTipoCalendarioId and tc.ano_letivo = @anoLetivo and tc.excluido = false";
+
+            var parametros = new
+            {
+                anoLetivo,
+                modalidadeTipoCalendarioId,
+            };
+
+            return await database.Conexao.QueryAsync<GestoresDreUePorTipoModalidadeCalendarioDto>(query, parametros);
+        }
+
     }
 }

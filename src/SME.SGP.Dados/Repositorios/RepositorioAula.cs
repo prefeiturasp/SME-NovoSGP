@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Npgsql;
 using NpgsqlTypes;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;

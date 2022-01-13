@@ -250,6 +250,7 @@ namespace SME.SGP.Aplicacao
 
                         var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
                         FrequenciaAluno frequenciaAluno;
+                        var percentualFrequenciaPadrao = false;
                         if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
                             frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
                         else if (frequenciasAlunoParaTratar.Count() == 1)
@@ -265,6 +266,7 @@ namespace SME.SGP.Aplicacao
                             frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
                             frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
                             frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
+                            percentualFrequenciaPadrao = true;
                             frequenciasAlunoParaTratar
                                 .ToList()
                                 .ForEach(f =>
@@ -298,7 +300,8 @@ namespace SME.SGP.Aplicacao
                                                                                                                 notasConselhoClasseAluno,
                                                                                                                 notasFechamentoAluno,
                                                                                                                 turmaPossuiRegistroFrequencia,
-                                                                                                                disciplina.LancaNota));
+                                                                                                                disciplina.LancaNota,
+                                                                                                                percentualFrequenciaPadrao));
                         }
                     }
                 }

@@ -172,7 +172,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasPorUeModalidadesAno(long ueId, int[] modalidades, int ano)
+        public async Task<IEnumerable<Turma>> ObterTurmasPorUeModalidadesAno(long? ueId, int[] modalidades, int ano)
         {
             var query = @"select turma.*, ue.*, dre.* 
                          from turma
@@ -748,6 +748,18 @@ namespace SME.SGP.Dados.Repositorios
                            and ue.ue_id = @ueCodigo ";
 
             return contexto.Conexao.QueryAsync<string>(query, new { anoLetivo, ueCodigo });
+        }
+
+        public Task<IEnumerable<TurmaNaoHistoricaDto>> ObterTurmasPorUsuarioEAnoLetivo(long usuarioId, int anoLetivo)
+        {
+            var query = @"select distinct t.id as Id, a.turma_id as Codigo, a.modalidade_codigo as CodigoModalidade, 
+                            t.nome as Nome, t.nome_filtro as nomeFiltro
+                                from v_abrangencia a
+                                inner join turma t on t.turma_id = a.turma_id
+                                where a.usuario_id = @usuarioId
+                                and a.turma_ano_letivo = @anoLetivo and not t.historica order by t.nome";
+
+            return contexto.QueryAsync<TurmaNaoHistoricaDto>(query, new { usuarioId, anoLetivo });
         }
     }
 }

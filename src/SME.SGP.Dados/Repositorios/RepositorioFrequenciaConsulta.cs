@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;

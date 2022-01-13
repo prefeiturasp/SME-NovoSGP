@@ -11,15 +11,15 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IRepositorioDre repositorioDre;
-        private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioDreConsulta repositorioDre;
+        private readonly IRepositorioUeConsulta repositorioUe;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioUsuario repositorioUsuario;
         public BoletimEscolaAquiUseCase(IMediator mediator,
                               IUnitOfWork unitOfWork,
-                              IRepositorioUe repositorioUe,
-                              IRepositorioDre repositorioDre,
-                              IRepositorioTurma repositorioTurma,
+                              IRepositorioUeConsulta repositorioUe,
+                              IRepositorioDreConsulta repositorioDre,
+                              IRepositorioTurmaConsulta repositorioTurma,
                               IRepositorioUsuario repositorioUsuario)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

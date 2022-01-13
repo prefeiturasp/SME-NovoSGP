@@ -9,14 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTodasUesIdsQueryHandler : IRequestHandler<ObterTodasUesIdsQuery, IEnumerable<long>>
     {
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
 
-        public ObterTodasUesIdsQueryHandler(IRepositorioUe repositorioUe)
+        public ObterTodasUesIdsQueryHandler(IRepositorioUeConsulta repositorioUe)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }
 
-        public async Task<IEnumerable<long>> Handle(ObterTodasUesIdsQuery request, CancellationToken cancellationToken)
-            => await repositorioUe.ObterTodosIds();
+        public Task<IEnumerable<long>> Handle(ObterTodasUesIdsQuery request, CancellationToken cancellationToken)
+            => repositorioUe.ObterTodosIds();
     }
 }

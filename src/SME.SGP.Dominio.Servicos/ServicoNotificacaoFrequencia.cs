@@ -29,7 +29,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasFeriadoCalendario consultasFeriadoCalendario;
         private readonly IMediator mediator;
 
-
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                             IRepositorioFrequenciaConsulta repositorioFrequencia,
@@ -57,7 +56,7 @@ namespace SME.SGP.Dominio.Servicos
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasFeriadoCalendario = consultasFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(consultasFeriadoCalendario));
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));            
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         #region Metodos Publicos
@@ -95,7 +94,7 @@ namespace SME.SGP.Dominio.Servicos
             //await NotificaAlunosFaltososCargo(DiaRetroativo(dataReferencia, quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
         }
 
-        public async Task VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId)
+        public async Task VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm)
         {
             int anoAtual = DateTime.Now.Year;
 
@@ -558,10 +557,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
             else
-            {
-                var mensagem = $"Não foi possível obter os dados do Eol para notificação do registro de frequência";
-                await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, Enumerados.LogNivel.Negocio, Enumerados.LogContexto.Frequencia));
-            }
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível obter o componente curricular pois o EOL não respondeu", Enumerados.LogNivel.Critico, Enumerados.LogContexto.Frequencia));
         }
 
         private async Task<string> ObterNomeDisciplina(string codigoDisciplina)

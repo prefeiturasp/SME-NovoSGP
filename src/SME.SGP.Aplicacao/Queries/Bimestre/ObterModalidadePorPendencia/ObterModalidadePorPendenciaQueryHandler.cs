@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,8 +10,8 @@ namespace SME.SGP.Aplicacao
     public class ObterModalidadePorPendenciaQueryHandler : IRequestHandler<ObterModalidadePorPendenciaQuery, int>
     {
         private readonly IRepositorioPendencia repositorioPendencia;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        public ObterModalidadePorPendenciaQueryHandler(IRepositorioPendencia repositorioPendencia, IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        public ObterModalidadePorPendenciaQueryHandler(IRepositorioPendencia repositorioPendencia, IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));

@@ -48,7 +48,6 @@ namespace SME.SGP.IoC
             RegistrarConsultas(services);
             RegistrarServicos(services);
             RegistrarCasosDeUso(services);
-            services.AddRabbit();
             RegistrarMapeamentos.Registrar();
         }
 
@@ -1214,7 +1213,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificacaoFrequencia, NotificacaoFrequenciaUseCase>();
             services.TryAddScoped<IExecutarTipoCalendario, ExecutarTipoCalendarioUseCase>();
             services.TryAddScoped<IExecutarGravarRecorrencia, ExecutarGravarRecorrenciaUseCase>();
-            services.TryAddScoped<INotificarCompensacaoAusencia, NotificarCompensacaoAusenciaUseCase>();
             services.TryAddScoped<IGerarNotificacaoAlteracaoLimiteDias, GerarNotificacaoAlteracaoLimiteDiasUseCase>();
             services.TryAddScoped<IVerificarPendenciasFechamentoTurmaDisciplina, VerificarPendenciasFechamentoTurmaDisciplinaUseCase>();
             services.TryAddScoped<IAlterarPeriodosComHierarquiaInferiorFechamento, AlterarPeriodosComHierarquiaInferiorFechamentoUseCase>();

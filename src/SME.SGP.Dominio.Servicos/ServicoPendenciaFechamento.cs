@@ -172,18 +172,6 @@ namespace SME.SGP.Dominio.Servicos
             return aulasSemFrequencia;
         }
 
-        private IEnumerable<Usuario> CarregaListaProfessores(IEnumerable<string> listaRFs)
-        {
-            foreach (var professorRF in listaRFs)
-            {
-                var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(professorRF);
-                if (professor == null)
-                    throw new NegocioException($"Professor com RF {professorRF} não encontrado.");
-
-                yield return professor;
-            }
-        }
-
         public async Task<int> ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int bimestre)
         {
             var registrosAulasSemPlanoAula = repositorioAula.ObterAulasSemPlanoAulaNaDataAtual(turma.CodigoTurma,

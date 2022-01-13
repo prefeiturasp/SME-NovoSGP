@@ -454,7 +454,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     try
                     {
-                        usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdicionaAsync(string.Empty, funcionario.Id, buscaLogin: true));
+                        usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(string.Empty, funcionario.Id, buscaLogin: true));
                     }
                     catch (Exception e)
                     {

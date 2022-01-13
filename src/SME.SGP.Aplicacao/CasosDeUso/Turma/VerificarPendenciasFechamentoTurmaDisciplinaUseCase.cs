@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificarPendenciasFechamentoTurmaDisciplinaUseCase : AbstractUseCase, IVerificarPendenciasFechamentoTurmaDisciplina
     {
-        private readonly IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina;
+        private readonly IServicoPendenciaFechamento servicoFechamentoTurmaDisciplina;
 
-        public VerificarPendenciasFechamentoTurmaDisciplinaUseCase(IMediator mediator, IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina) : base(mediator)
+        public VerificarPendenciasFechamentoTurmaDisciplinaUseCase(IMediator mediator, IServicoPendenciaFechamento servicoFechamentoTurmaDisciplina) : base(mediator)
         {
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina;
         }

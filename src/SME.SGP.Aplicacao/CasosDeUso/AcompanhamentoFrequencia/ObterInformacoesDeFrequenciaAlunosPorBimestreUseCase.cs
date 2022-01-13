@@ -218,8 +218,8 @@ namespace SME.SGP.Aplicacao
                 TotalAulas = frequenciasAluno.Sum(y => y.TotalAulas),
                 TotalAusencias = frequenciasAluno.Sum(y => y.TotalAusencias),
                 TotalCompensacoes = frequenciasAluno.Sum(y => y.TotalCompensacoes),
-                TotalPresencas = x.Sum(y => y.TotalPresencas),
-                TotalRemotos = x.Sum(y => y.TotalRemotos),
+                TotalPresencas = frequenciasAluno.Sum(y => y.TotalPresencas),
+                TotalRemotos = frequenciasAluno.Sum(y => y.TotalRemotos),
             };
         }
 

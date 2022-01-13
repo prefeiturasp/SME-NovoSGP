@@ -429,5 +429,4 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryAsync<PeriodoEscolarVerificaRegenciaDto>(query, new { turmaCodigo, componenteCurricularId, bimestre});
         }
     }
-    }
 }
