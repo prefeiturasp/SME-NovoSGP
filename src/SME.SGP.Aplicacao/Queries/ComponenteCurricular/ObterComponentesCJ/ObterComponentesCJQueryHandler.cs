@@ -15,10 +15,10 @@ namespace SME.SGP.Aplicacao
     {
         private static readonly long[] IDS_COMPONENTES_REGENCIA = { 2, 7, 8, 89, 138 };
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
 
         public ObterComponentesCJQueryHandler(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-                                              IRepositorioComponenteCurricular repositorioComponenteCurricular)
+                                              IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));

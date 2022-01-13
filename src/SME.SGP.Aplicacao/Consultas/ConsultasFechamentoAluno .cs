@@ -12,12 +12,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasFechamentoAluno : IConsultasFechamentoAluno
     {
-        private readonly IRepositorioFechamentoAluno repositorio;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioFechamentoAlunoConsulta repositorio;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
 
-        public ConsultasFechamentoAluno(IRepositorioFechamentoAluno repositorio,                                         
-                                        IRepositorioComponenteCurricular repositorioComponenteCurricular,
+        public ConsultasFechamentoAluno(IRepositorioFechamentoAlunoConsulta repositorio,
+                                        IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                         IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));

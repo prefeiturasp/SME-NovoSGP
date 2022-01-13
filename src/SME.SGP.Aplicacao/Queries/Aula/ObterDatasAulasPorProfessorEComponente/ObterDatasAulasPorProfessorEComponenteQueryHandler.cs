@@ -13,19 +13,17 @@ namespace SME.SGP.Aplicacao
     public class ObterDatasAulasPorProfessorEComponenteQueryHandler : IRequestHandler<ObterDatasAulasPorProfessorEComponenteQuery, IEnumerable<DatasAulasDto>>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioAula repositorio;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioAulaConsulta repositorioConsulta;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
 
-        private readonly IRepositorioAula repositorioAula;
 
-        public ObterDatasAulasPorProfessorEComponenteQueryHandler(IMediator mediator, IRepositorioAula repositorio, IRepositorioTurma repositorioTurma, IRepositorioAula repositorioAula)
+        public ObterDatasAulasPorProfessorEComponenteQueryHandler(IMediator mediator, IRepositorioAulaConsulta repositorioConsulta, IRepositorioTurmaConsulta repositorioTurma)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.repositorioConsulta = repositorioConsulta ?? throw new ArgumentNullException(nameof(repositorioConsulta));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-
-            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }
+
 
         public async Task<IEnumerable<DatasAulasDto>> Handle(ObterDatasAulasPorProfessorEComponenteQuery request, CancellationToken cancellationToken)
         {
@@ -38,8 +36,9 @@ namespace SME.SGP.Aplicacao
                 string.Empty, request.EhProfessorCj, request.EhProfessor);
 
             var aulas = new List<Aula>();
-            datasAulas.ToList()
-                .ForEach(da => aulas.Add(repositorioAula.ObterPorId(da.IdAula)));
+            foreach (var item in datasAulas)
+                aulas.Add(await mediator.Send(new ObterAulaPorIdQuery(item.IdAula)));
+            
 
             var aulasPermitidas = usuarioLogado
                 .ObterAulasQuePodeVisualizar(aulas, new string[] { request.ComponenteCurricularCodigo })
@@ -82,7 +81,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 
@@ -93,7 +92,7 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var periodoEscolar in periodosEscolares)
             {
-                foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, componenteCurricularCodigo, professorRf, ehProfessorCj, ehProfessor))
+                foreach (var aula in repositorioConsulta.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, componenteCurricularCodigo, professorRf, ehProfessorCj, ehProfessor))
                 {
                     yield return new DataAulasProfessorDto
                     {

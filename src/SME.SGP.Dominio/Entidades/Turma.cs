@@ -64,7 +64,7 @@ namespace SME.SGP.Dominio
         public int ObterHorasGradeRegencia()
             => EhEJA() ? 5 : 1;
 
-        public int AnoTurmaInteiro => int.Parse(Ano);
+        public int AnoTurmaInteiro => Ano.ToCharArray().All(a => char.IsDigit(a)) ? int.Parse(Ano) : 1;
 
         public bool EhTurmaFund1 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 1 && AnoTurmaInteiro <= 5);
         public bool EhTurmaFund2 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 6 && AnoTurmaInteiro <= 9);
@@ -89,6 +89,9 @@ namespace SME.SGP.Dominio
         }
         public string NomeComModalidade()
                  => $"{ModalidadeCodigo.ObterNomeCurto()}-{Nome}";
+
+        public string AnoComModalidade()
+                 => $"{ModalidadeCodigo.ObterNomeCurto()}-{Ano}";
 
         public bool EhTurmaEdFisicaOuItinerario()
         {

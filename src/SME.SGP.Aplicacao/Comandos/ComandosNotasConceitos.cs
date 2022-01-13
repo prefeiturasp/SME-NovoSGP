@@ -11,13 +11,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosNotasConceitos : IComandosNotasConceitos
     {
-        private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
+        private readonly IRepositorioNotasConceitosConsulta repositorioNotasConceitos;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IServicoDeNotasConceitos servicosDeNotasConceitos;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
-        public ComandosNotasConceitos(IServicoDeNotasConceitos servicosDeNotasConceitos, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa, IRepositorioNotasConceitos repositorioNotasConceitos, IServicoUsuario servicoUsuario,
+        public ComandosNotasConceitos(IServicoDeNotasConceitos servicosDeNotasConceitos, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa, IRepositorioNotasConceitosConsulta repositorioNotasConceitos, IServicoUsuario servicoUsuario,
             IMediator mediator)
         {
             this.servicosDeNotasConceitos = servicosDeNotasConceitos ?? throw new System.ArgumentNullException(nameof(servicosDeNotasConceitos));

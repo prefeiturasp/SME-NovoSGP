@@ -15,13 +15,13 @@ namespace SME.SGP.Aplicacao
     {
         protected IEnumerable<ConselhoClasseParecerConclusivo> pareceresDoServico;
 
-        private readonly IRepositorioConceito repositorioConceito;
+        private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IMediator mediator;
 
-        public ObterParecerConclusivoAlunoQueryHandler(IRepositorioConceito repositorioConceito,
-                                                            IConsultasFrequencia consultasFrequencia,
-                                                            IMediator mediator)
+        public ObterParecerConclusivoAlunoQueryHandler(IRepositorioConceitoConsulta repositorioConceito,
+                                                       IConsultasFrequencia consultasFrequencia,
+                                                       IMediator mediator)
         {
             this.repositorioConceito = repositorioConceito ?? throw new System.ArgumentNullException(nameof(repositorioConceito));
             this.consultasFrequencia = consultasFrequencia ?? throw new System.ArgumentNullException(nameof(consultasFrequencia));
@@ -60,14 +60,15 @@ namespace SME.SGP.Aplicacao
 
             if (turma.DeveVerificarRegraRegulares())
             {
-                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };                
+                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, turmasCodigosParaConsulta));
             }
             else
-            {
                 turmasCodigos = new string[1] { turma.CodigoTurma };
-            }
+
+            if (!turmasCodigos.Any())
+                turmasCodigos = new string[] { turma.CodigoTurma };
 
             // Frequencia
             Filtrar(request.PareceresDaTurma.Where(c => c.Frequencia), "Frequência");
@@ -80,13 +81,13 @@ namespace SME.SGP.Aplicacao
             if (!Filtrar(request.PareceresDaTurma.Where(c => c.Nota), "Nota"))
                 return parecerFrequencia;
 
-            var parecerNota = ObterParecerValidacao(await ValidarParecerPorNota(request.AlunoCodigo, turmasCodigos));
+            var parecerNota = ObterParecerValidacao(await ValidarParecerPorNota(request.AlunoCodigo, turmasCodigos, turma.AnoLetivo));
 
             // Conselho
             if (!Filtrar(request.PareceresDaTurma.Where(c => c.Conselho), "Conselho"))
                 return parecerNota;
 
-            var validacaoConselho = await ValidarParecerPorConselho(request.AlunoCodigo, turmasCodigos);
+            var validacaoConselho = await ValidarParecerPorConselho(request.AlunoCodigo, turmasCodigos, turma.AnoLetivo);
             if (!validacaoConselho.ExisteNotaConselho)
                 return parecerNota;
 
@@ -101,10 +102,10 @@ namespace SME.SGP.Aplicacao
         #region Frequência
         private async Task<bool> ValidarParecerPorFrequencia(string alunoCodigo, Turma turma, string[] turmasCodigos)
         {
-            if (!await ValidarFrequenciaGeralAluno(alunoCodigo, turma.CodigoTurma))
+            if (!await ValidarFrequenciaGeralAluno(alunoCodigo, turmasCodigos, turma.AnoLetivo))
                 return false;
 
-            var parametroFrequenciaBaseNacional = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional, DateTime.Today.Year)));
+            var parametroFrequenciaBaseNacional = await ObterFrequenciaBaseNacional(turma.AnoLetivo);
 
             Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
 
@@ -113,27 +114,39 @@ namespace SME.SGP.Aplicacao
             var componentesCurriculareslancaFrequencia = componentesCurriculares.Where(c => c.RegistraFrequencia);
             var componentesCurricularesCodigos = componentesCurriculareslancaFrequencia.Select(c => c.CodigoComponenteCurricular.ToString()).ToArray();
 
-            var frequencias = await mediator.Send(new ObterFrequenciasAlunosPorCodigoAlunoCodigoComponentesTurmaQuery(alunoCodigo, turmasCodigos, componentesCurricularesCodigos));
-            if (frequencias.Any(f => f.PercentualFrequencia < parametroFrequenciaBaseNacional)) return false;
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+            var frequenciasAluno = await mediator.Send(new ObterFrequenciasAlunoComponentePorTurmasQuery(alunoCodigo, turmasCodigos, tipoCalendarioId));
+            var frequencias = frequenciasAluno.Where(a => componentesCurricularesCodigos.Contains(a.DisciplinaId));
+
+            if (FrequenciaAnualPorComponenteCritica(frequencias, parametroFrequenciaBaseNacional)) 
+                return false;
 
             return true;
         }
 
-        private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo)
+        private async Task<double> ObterFrequenciaBaseNacional(int anoLetivo)
+            => double.Parse(
+                await mediator.Send(
+                    new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional, anoLetivo)));
+
+        private bool FrequenciaAnualPorComponenteCritica(IEnumerable<FrequenciaAluno> frequenciasComponentes, double parametroFrequenciaBaseNacional)
+            => frequenciasComponentes
+            .Any(f => f.PercentualFrequencia < parametroFrequenciaBaseNacional);
+
+        private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
-            var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo);
+            var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAlunoPorTurmas(alunoCodigo, turmasCodigos);
             double valorFrequenciaAluno = 0;
             if (frequenciaAluno != "")
                 valorFrequenciaAluno = Convert.ToDouble(frequenciaAluno);
 
-
-            var parametroFrequenciaGeral = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, DateTime.Today.Year)));
+            var parametroFrequenciaGeral = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, anoLetivo)));
             return !(valorFrequenciaAluno < parametroFrequenciaGeral);
         }
         #endregion
 
         #region Nota
-        private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string[] turmasCodigos)
+        private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
             var notasFechamentoAluno = await mediator.Send(new ObterNotasFinaisPorAlunoTurmasQuery(alunoCodigo, turmasCodigos));
             if (notasFechamentoAluno == null || !notasFechamentoAluno.Any())
@@ -141,13 +154,13 @@ namespace SME.SGP.Aplicacao
 
             var tipoNota = notasFechamentoAluno.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
             return tipoNota == TipoNota.Nota ?
-                await ValidarParecerPorNota(notasFechamentoAluno) :
+                await ValidarParecerPorNota(notasFechamentoAluno, anoLetivo) :
                 await ValidarParecerPorConceito(notasFechamentoAluno);
         }
 
-        private async Task<bool> ValidarParecerPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
+        private async Task<bool> ValidarParecerPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, int anoLetivo)
         {
-            var notaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
+            var notaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, anoLetivo)));
             foreach (var notaFechamentoAluno in notasFechamentoAluno)
                 if (notaFechamentoAluno.Nota < notaMedia)
                     return false;
@@ -170,7 +183,7 @@ namespace SME.SGP.Aplicacao
         #endregion
 
         #region Conselho
-        private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string[] turmasCodigos)
+        private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
             var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo));
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
@@ -178,13 +191,13 @@ namespace SME.SGP.Aplicacao
 
             var tipoNota = notasConselhoClasse.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
             return (true, tipoNota == TipoNota.Nota ?
-               await ValidarParecerConselhoPorNota(notasConselhoClasse) :
+               await ValidarParecerConselhoPorNota(notasConselhoClasse, anoLetivo) :
                await ValidarParecerConselhoPorConceito(notasConselhoClasse));
         }
 
-        private async Task<bool> ValidarParecerConselhoPorNota(IEnumerable<NotaConceitoFechamentoConselhoFinalDto> notasConselhoClasse)
+        private async Task<bool> ValidarParecerConselhoPorNota(IEnumerable<NotaConceitoFechamentoConselhoFinalDto> notasConselhoClasse, int anoLetivo)
         {
-            var notaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
+            var notaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, anoLetivo)));
             foreach (var notaConcelhoClasse in notasConselhoClasse)
             {
                 var nota = notaConcelhoClasse.Nota;

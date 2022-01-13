@@ -14,12 +14,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioAula repositorioAula;
-        private readonly IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno;
+        private readonly IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         
         public ExcluirAulaUnicaCommandHandler(IMediator mediator,
-                                              IRepositorioAula repositorioAula,IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno,IRepositorioDiarioBordo repositorioDiarioBordo
+                                              IRepositorioAula repositorioAula,IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno,IRepositorioDiarioBordo repositorioDiarioBordo
                                               ,IRepositorioPlanoAula repositorioPlanoAula)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -84,6 +84,10 @@ namespace SME.SGP.Aplicacao
             if(diarioDeBordo?.Planejamento != null)
             {
                 await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
+            }
+            if (diarioDeBordo?.ReflexoesReplanejamento != null)
+            {
+                await ExcluirArquivo(diarioDeBordo.ReflexoesReplanejamento, TipoArquivo.DiarioBordo);
             }
         }
         private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)

@@ -12,10 +12,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterValorParametroSistemaTipoEAnoQueryHandler : IRequestHandler<ObterValorParametroSistemaTipoEAnoQuery, string>
     {
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IRepositorioCache repositorioCache;
 
-        public ObterValorParametroSistemaTipoEAnoQueryHandler(IRepositorioParametrosSistema repositorioParametrosSistema, IRepositorioCache repositorioCache)
+        public ObterValorParametroSistemaTipoEAnoQueryHandler(IRepositorioParametrosSistemaConsulta repositorioParametrosSistema, IRepositorioCache repositorioCache)
         {
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));

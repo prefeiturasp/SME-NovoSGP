@@ -8,11 +8,11 @@ namespace SME.SGP.Dominio
 {
     public class ServicoPeriodoEscolar : IServicoPeriodoEscolar
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IUnitOfWork unitOfWork;
 
-        public ServicoPeriodoEscolar(IUnitOfWork unitOfWork, IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioTipoCalendario repositorioTipoCalendario)
+        public ServicoPeriodoEscolar(IUnitOfWork unitOfWork, IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioTipoCalendario repositorioTipoCalendario)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));

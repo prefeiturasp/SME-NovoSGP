@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -23,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRecomendacoesAlunoFamilia([FromServices] IConsultasConselhoClasseRecomendacao consultasConselhoClasseRecomendacao,
             long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromQuery]bool consideraHistorico = false)
-        {
+        { 
             var retorno = await consultasConselhoClasseRecomendacao.ObterRecomendacoesAlunoFamilia(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre, consideraHistorico);
             return Ok(retorno);
         }
@@ -36,7 +37,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
         public async Task<IActionResult> SalvarRecomendacoesAlunoFamilia(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto, [FromServices] IComandosConselhoClasseAluno comandosConselhoClasseAluno)
         {
-            return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto));
+            return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto)); 
         }
 
         [HttpPost("{conselhoClasseId}/notas/alunos/{codigoAluno}/turmas/{codigoTurma}/bimestres/{bimestre}/fechamento-turma/{fechamentoTurmaId}")]
@@ -149,6 +150,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ReprocessarSituacaoConselhoClasseAluno(int dreId, [FromServices] IServicoConselhoClasse servicoConselhoClasse)
         {
             await servicoConselhoClasse.ConsolidaConselhoClasse(dreId);
+            return Ok();
+        }
+
+        [HttpPost("turmas/anos-letivos/{anoLetivo}/parecer/reprocessar")]
+        [Permissao(Permissao.CC_I, Policy = "Bearer")]
+        public async Task<IActionResult> ReprocessarParecerConclusivo(int anoLetivo, [FromServices] IReprocessarParecerConclusivoPorAnoUseCase useCase)
+        {
+            await useCase.Executar(anoLetivo);
             return Ok();
         }
     }

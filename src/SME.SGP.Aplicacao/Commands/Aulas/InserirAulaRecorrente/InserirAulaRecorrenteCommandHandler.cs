@@ -313,7 +313,7 @@ namespace SME.SGP.Aplicacao
         private async Task<(IEnumerable<DateTime> datasValidas, IEnumerable<string> mensagensValidacao)> ValidarAulaExistenteNaData(IEnumerable<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, long componenteCurricularCodigo, bool professorCJ)
         {
             var mensagensValidacao = new List<string>();
-            var datasComRegistro = await repositorioAula.ObterDatasAulasExistentes(diasParaIncluirRecorrencia.ToList(), turmaCodigo, componenteCurricularCodigo.ToString(), professorCJ);
+            var datasComRegistro = await mediator.Send(new ObterAulaPorDataAulasExistentesQuery(diasParaIncluirRecorrencia.ToList(), turmaCodigo, componenteCurricularCodigo.ToString(), professorCJ));
 
             if (datasComRegistro != null && datasComRegistro.Any())
             {

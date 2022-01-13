@@ -15,18 +15,18 @@ namespace SME.SGP.Aplicacao
 {
     public class CalcularFrequenciaPorTurmaCommandHandler : IRequestHandler<CalcularFrequenciaPorTurmaCommand, bool>
     {
-        public readonly IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno;
         public readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
-        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
+        private readonly IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAluno;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IAsyncPolicy policy;
 
-        public CalcularFrequenciaPorTurmaCommandHandler(IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno,
-            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
-            IUnitOfWork unitOfWork, IMediator mediator, IReadOnlyPolicyRegistry<string> registry)
+        public CalcularFrequenciaPorTurmaCommandHandler(IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
+                                                        IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAluno,
+                                                        IUnitOfWork unitOfWork,
+                                                        IMediator mediator,
+                                                        IReadOnlyPolicyRegistry<string> registry)
         {
-            this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -37,29 +37,28 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(CalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
 
-            if (request.Alunos == null || !request.Alunos.Any())
+            if (request.ConsideraTodosAlunos)
             {
                 var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaId));
                 if (alunosDaTurma == null || !alunosDaTurma.Any())
                     throw new NegocioException($"Não localizados alunos para turma [{request.TurmaId}] no EOL");
 
-                request.Alunos = alunosDaTurma.Select(a => a.CodigoAluno).Distinct().ToList();
+                request.Alunos = request.Alunos.Union(alunosDaTurma.Select(a => a.CodigoAluno)).ToArray();
             }
 
             var registroFreqAlunos = (await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId))).ToList();
 
             var periodosEscolaresParaFiltro = registroFreqAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
 
-            var frequenciaDosAlunos = (await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunosAsync(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId)).ToList();
+            var frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId))).ToList();
 
             var frequenciasParaRemover = new List<FrequenciaAluno>();
             var frequenciasParaPersistir = new List<FrequenciaAluno>();
 
             if (registroFreqAlunos.Any())
             {
-                var aulasNaDisciplina = (await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, request.DisciplinaId, request.TurmaId)).ToList();
-                var totalAulasDaDisciplina = aulasNaDisciplina.Where(w => w.DisciplinaId == long.Parse(request.DisciplinaId)).Sum(s => s.Total);
-                var totalAulasDaTurmaGeral = aulasNaDisciplina.Sum(s => s.Total);
+                var totalAulasDaDisciplina = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.TurmaId, request.TurmaId));
+                var totalAulasDaTurmaGeral = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, string.Empty, request.TurmaId));
 
                 var alunosComFrequencia = registroFreqAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
                 var bimestresParaFiltro = registroFreqAlunos.Select(a => a.Bimestre).Distinct().ToList();
@@ -177,7 +176,7 @@ namespace SME.SGP.Aplicacao
                         total + (frequencia.TotalPresencas + frequencia.TotalAusencias + frequencia.TotalPresencas));
 
             var frequenciaDisciplinaAluno = TrataFrequenciaPorDisciplinaAluno(codigoAluno,
-                totalAulasNaDisciplinaPorAluno == 0 ? totalAulasNaDisciplina : totalAulasNaDisciplinaPorAluno, 
+                totalAulasNaDisciplinaPorAluno == 0 ? totalAulasNaDisciplina : totalAulasNaDisciplinaPorAluno,
                                                                               registroFrequenciaAluno,
                                                                               frequenciaDosAlunos,
                                                                               totalCompensacoesDisciplinaAlunos,

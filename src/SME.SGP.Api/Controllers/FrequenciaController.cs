@@ -166,6 +166,18 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpPost("frequencias/turmas/conciliar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> ConciliarFrequenciaTurmas([FromQuery] DateTime dataReferencia, string[] turmasCodigos, [FromServices] IConciliacaoFrequenciaTurmasCronUseCase useCase)
+        {
+            foreach(var turmaCodigo in turmasCodigos)
+                await useCase.ProcessarNaData(dataReferencia, turmaCodigo);
+
+            return Ok();
+        }
+
         [HttpPost("frequencias/consolidar")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
@@ -175,6 +187,15 @@ namespace SME.SGP.Api.Controllers
             await useCase.Executar(ano);
            
             return Ok();
+        }
+
+        [HttpPost("frequencias/anoLetivo/{anoLetivo}/ue/{ueId}/consolidar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> ConsolidarFrequenciaAnoUe(int anoLetivo, long ueId, [FromServices] IConsolidarFrequenciaPorAnoUeUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo, ueId));
         }
 
         [HttpGet("migracao")]

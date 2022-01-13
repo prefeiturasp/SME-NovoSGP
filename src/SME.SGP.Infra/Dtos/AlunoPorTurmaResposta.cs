@@ -49,10 +49,12 @@ namespace SME.SGP.Infra
         }
         public bool Maioridade => Idade > 18;
 
-        private SituacaoMatriculaAluno[] SituacoesAtiva => new[] { SituacaoMatriculaAluno.Ativo,
-                        SituacaoMatriculaAluno.Rematriculado,
-                        SituacaoMatriculaAluno.PendenteRematricula,
-                        SituacaoMatriculaAluno.SemContinuidade
+        private SituacaoMatriculaAluno[] SituacoesAtiva => new[] {
+            SituacaoMatriculaAluno.Concluido,
+            SituacaoMatriculaAluno.Ativo,
+            SituacaoMatriculaAluno.Rematriculado,
+            SituacaoMatriculaAluno.PendenteRematricula,
+            SituacaoMatriculaAluno.SemContinuidade
     };
 
         public bool PossuiSituacaoAtiva()

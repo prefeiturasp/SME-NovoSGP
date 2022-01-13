@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Enumerados;
@@ -17,6 +18,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IServicoJurema servicoJurema;
+        private readonly IMediator mediator;
 
         public ServicoObjetivosAprendizagem(IServicoJurema servicoJurema,
                                             IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem,
@@ -33,7 +35,8 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task SincronizarObjetivosComJurema()
         {
-            var parametrosDataUltimaAtualizacao = await repositorioParametrosSistema.ObterUnicoChaveEValorPorTipo(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema);
+            var parametrosDataUltimaAtualizacao = await mediator.Send(new ObterParametroSistemaUnicoChaveEValorPorTipoQuery(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema));
+
             if (parametrosDataUltimaAtualizacao.HasValue)
             {
                 var dataUltimaAtualizacao = DateTime.Parse(parametrosDataUltimaAtualizacao.Value.Value);
