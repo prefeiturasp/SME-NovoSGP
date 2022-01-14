@@ -18,12 +18,14 @@ namespace SME.SGP.Aplicacao
         {
 
             var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, componenteCodigo, bimestre));
-
+            var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
+            var periodoBimestre = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(dadosTurma, bimestre));
             var listaPeriodos = new List<PeriodoEscolarComponenteDto>();
 
-            if(periodoEscolar.Any())
-                listaPeriodos = ehRegencia ? SepararSemanasRegencia(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim, exibirDataFutura)
-                                       : SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula), exibirDataFutura);
+            if (periodoEscolar.Any() && !ehRegencia)
+                listaPeriodos = SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula), exibirDataFutura);
+            else
+                listaPeriodos = SepararSemanasRegencia(periodoBimestre.PeriodoInicio, periodoBimestre.PeriodoFim, exibirDataFutura);
 
             return listaPeriodos;
         }
