@@ -16,7 +16,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<PeriodoEscolarComponenteDto>> Executar(string turmaCodigo, long componenteCodigo, bool ehRegencia, int bimestre, bool exibirDataFutura = false)
         {
-
             var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, componenteCodigo, bimestre));
             var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             var periodoBimestre = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(dadosTurma, bimestre));
@@ -24,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
             if (periodoEscolar.Any() && !ehRegencia)
                 listaPeriodos = SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula), exibirDataFutura);
-            else
+            else if(periodoBimestre != null)
                 listaPeriodos = SepararSemanasRegencia(periodoBimestre.PeriodoInicio, periodoBimestre.PeriodoFim, exibirDataFutura);
 
             return listaPeriodos;
