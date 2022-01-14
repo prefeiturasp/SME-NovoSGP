@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
 {
-    public class SolicitaRelatorioDevolutivasCommandHandler : IRequestHandler<SolicitaRelatorioDevolutivasCommand, Guid>
+    public class SolicitaRelatorioDevolutivasCommandHandler : IRequestHandler<SolicitaRelatorioDevolutivasCommand, string>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
-        public async Task<Guid> Handle(SolicitaRelatorioDevolutivasCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(SolicitaRelatorioDevolutivasCommand request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoServidorRelatorios");
             var filtro = JsonConvert.SerializeObject(request.Filtro);
@@ -26,9 +26,9 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<Guid>(json);
+                return JsonConvert.DeserializeObject<string>(json);
             }
-            return Guid.Empty;
+            return $"\n Falha ao gerar o relatório, IsSuccessStatusCode: {resposta.IsSuccessStatusCode} {resposta.StatusCode}";
         }
     }
 }
