@@ -30,9 +30,8 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
                 return JsonConvert.DeserializeObject<Guid>(json);
             }
             else
-                new NegocioException($"Falha Na conexão, Status Code: {resposta.IsSuccessStatusCode}, Resposta:{resposta.StatusCode}");
+               throw new NegocioException($"Falha Na conexão, Status Code: {resposta.IsSuccessStatusCode}, Resposta:{resposta.StatusCode}");
 
-            return Guid.Empty;
         }
     }
 }
