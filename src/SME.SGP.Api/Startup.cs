@@ -38,6 +38,7 @@ namespace SME.SGP.Api
 
         }
 
+        private ConfiguracaoRabbitOptions configuracaoRabbitOptions;
         public IConfiguration Configuration { get; }
         private IHostingEnvironment _env;
 
@@ -135,7 +136,7 @@ namespace SME.SGP.Api
             ConfiguraRabbitParaLogs(services);
             var telemetriaOptions = ConfiguraTelemetria(services);
 
-            RegistraDependencias.Registrar(services);
+            RegistraDependencias.Registrar(services, configuracaoRabbitOptions);
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -173,7 +174,7 @@ namespace SME.SGP.Api
 
         private void ConfiguraVariaveisAmbiente(IServiceCollection services)
         {
-            var configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
+            configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
             Configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
 
             services.AddSingleton(configuracaoRabbitOptions);

@@ -39,13 +39,12 @@ namespace SME.SGP.Worker.Rabbbit
         {
             services.AddHttpContextAccessor();
 
-            RegistraDependencias.Registrar(services);
-
             RegistrarHttpClients(services, configuration);
             services.AddApplicationInsightsTelemetry(configuration);
             services.AddPolicies();
 
             ConfiguraVariaveisAmbiente(services);
+            RegistraDependencias.Registrar(services, configuracaoRabbitOptions);
             ConfiguraGoogleClassroomSync(services);
             ConfiguraRabbitParaLogs(services);
 
