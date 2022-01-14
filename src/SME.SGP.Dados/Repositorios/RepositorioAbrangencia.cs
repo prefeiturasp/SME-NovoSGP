@@ -26,14 +26,11 @@ namespace SME.SGP.Dados.Repositorios
             var dtFimVinculo = DateTimeExtension.HorarioBrasilia().Date;
 
             string comando = $@" update abrangencia as a
-                                    set historico = true, dt_fim_vinculo = '{dtFimVinculo.Year}-{dtFimVinculo.Month}-{dtFimVinculo.Day}'
-                                 from abrangencia ab
-                                 join turma t on t.id = ab.turma_id
-                                 where a.id = ab.id
-                                   and a.historico <> t.historica
-                                   and t.historica
-                                   and t.ano_letivo = {dtFimVinculo.Year} 
-                                   and a.id in (#ids) ";
+                                set historico = true, dt_fim_vinculo = '{dtFimVinculo.Year}-{dtFimVinculo.Month}-{dtFimVinculo.Day}'
+                                from abrangencia ab
+                                left join turma t on t.id = ab.turma_id
+                                where (a.turma_id is null Or (a.id = ab.id and t.ano_letivo = {dtFimVinculo.Year}))                                    
+                                and a.id in (#ids) ";
 
             for (int i = 0; i < ids.Count(); i = i + 900)
             {
