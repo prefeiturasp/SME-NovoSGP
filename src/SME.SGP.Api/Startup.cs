@@ -88,20 +88,6 @@ namespace SME.SGP.Api
             Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
 
-            if (_env.EnvironmentName != "teste-integrado")
-            {
-                var diretorio = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Arquivos");
-                if (!Directory.Exists(diretorio))
-                    Directory.CreateDirectory(diretorio);
-
-                app.UseStaticFiles(new StaticFileOptions()
-                {
-                    FileProvider = new PhysicalFileProvider(diretorio),
-                    RequestPath = new PathString("/arquivos"),
-                    ServeUnknownFileTypes = true
-                });
-            }
-
             app.UseHealthChecks("/healthz", new HealthCheckOptions()
             {
                 Predicate = _ => true,
