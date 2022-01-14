@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQuery : IRequest<IEnumerable<(long fechamentoTurmaDisciplinaId, int bimestre, string codigoRf)>>
+    public class ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQuery : IRequest<IEnumerable<(long fechamentoTurmaDisciplinaId, long periodoEscolarId, string codigoRf)>>
     {
         public ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQuery(DateTime? dataInicio, int? tempoConsideradoExpiradoEmMinutos)
         {

@@ -11,10 +11,10 @@ namespace SME.SGP.Aplicacao
         : IRequestHandler<ObterNotaTipoPorAnoModalidadeDataReferenciaQuery, NotaTipoValor>
     {
         private readonly IRepositorioCiclo _repositorioCiclo;
-        private readonly IRepositorioNotaTipoValor _repositorioNotaTipoValor;
+        private readonly IRepositorioNotaTipoValorConsulta _repositorioNotaTipoValor;
 
         public ObterNotaTipoPorAnoModalidadeDataReferenciaQueryHandler(IRepositorioCiclo repositorioCiclo,
-            IRepositorioNotaTipoValor repositorioNotaTipoValor)
+            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor)
         {
             _repositorioNotaTipoValor = repositorioNotaTipoValor;
             _repositorioCiclo = repositorioCiclo;

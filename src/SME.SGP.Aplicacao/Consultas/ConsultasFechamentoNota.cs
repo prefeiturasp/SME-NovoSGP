@@ -1,5 +1,4 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -9,8 +8,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasFechamentoNota : IConsultasFechamentoNota
     {
-        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
-        public ConsultasFechamentoNota(IRepositorioFechamentoNota repositorioFechamentoNota)
+        private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNota;
+        public ConsultasFechamentoNota(IRepositorioFechamentoNotaConsulta repositorioFechamentoNota)
         {
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
         }

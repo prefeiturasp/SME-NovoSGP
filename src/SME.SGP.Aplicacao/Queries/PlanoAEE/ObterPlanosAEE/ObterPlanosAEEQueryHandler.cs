@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
     public class ObterPlanosAEEQueryHandler : ConsultasBase, IRequestHandler<ObterPlanosAEEQuery, PaginacaoResultadoDto<PlanoAEEResumoDto>>
     {
         public IMediator mediator { get; }
-        public IRepositorioPlanoAEE repositorioPlanoAEE { get; }
+        public IRepositorioPlanoAEEConsulta repositorioPlanoAEE { get; }
 
-        public ObterPlanosAEEQueryHandler(IContextoAplicacao contextoAplicacao, IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE) : base(contextoAplicacao)
+        public ObterPlanosAEEQueryHandler(IContextoAplicacao contextoAplicacao, IMediator mediator, IRepositorioPlanoAEEConsulta repositorioPlanoAEE) : base(contextoAplicacao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));

@@ -4,8 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,14 +13,14 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioDevolutiva repositorioDevolutiva;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
 
         public InserirDevolutivaCommandHandler(IMediator mediator,
-                                                IRepositorioDevolutiva repositorioDevolutiva, IRepositorioTurma repositorioTurma)
+                                                IRepositorioDevolutiva repositorioDevolutiva, IRepositorioTurmaConsulta repositorioTurmaConsulta)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioDevolutiva = repositorioDevolutiva ?? throw new ArgumentNullException(nameof(repositorioDevolutiva));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
         }
 
         public async Task<AuditoriaDto> Handle(InserirDevolutivaCommand request, CancellationToken cancellationToken)
@@ -31,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             await repositorioDevolutiva.SalvarAsync(devolutiva);
 
-            var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(request.TurmaId);
+            var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(request.TurmaId);
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 

@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulasPorDataPeriodoQueryHandler : IRequestHandler<ObterAulasPorDataPeriodoQuery, IEnumerable<Aula>>
     {
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
 
-        public ObterAulasPorDataPeriodoQueryHandler(IRepositorioAula repositorioAula)
+        public ObterAulasPorDataPeriodoQueryHandler(IRepositorioAulaConsulta repositorioAula)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }

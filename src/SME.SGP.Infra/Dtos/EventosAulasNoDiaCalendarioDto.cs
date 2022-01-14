@@ -10,7 +10,7 @@ namespace SME.SGP.Infra
         }
 
         public bool PodeCadastrarAula { get; set; }
-        
+        public bool SomenteAulaReposicao { get; set; }
         public IEnumerable<EventoAulaDto> EventosAulas { get; set; }        
         
         public string MensagemPeriodoEncerrado { get; set; }

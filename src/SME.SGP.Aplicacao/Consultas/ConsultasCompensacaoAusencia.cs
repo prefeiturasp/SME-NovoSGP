@@ -14,25 +14,25 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasCompensacaoAusencia : ConsultasBase, IConsultasCompensacaoAusencia
     {
-        private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
+        private readonly IRepositorioCompensacaoAusenciaConsulta repositorioCompensacaoAusencia;
         private readonly IConsultasCompensacaoAusenciaAluno consultasCompensacaoAusenciaAluno;
         private readonly IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasProfessor consultasProfessor;
         private readonly IConsultasUe consultasUe;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IServicoEol servicoEOL;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
-        public ConsultasCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia, 
+        public ConsultasCompensacaoAusencia(IRepositorioCompensacaoAusenciaConsulta repositorioCompensacaoAusencia, 
                                             IConsultasCompensacaoAusenciaAluno consultasCompensacaoAusenciaAluno,
                                             IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia,
                                             IConsultasFrequencia consultasFrequencia,
-                                            IRepositorioComponenteCurricular repositorioComponenteCurricular,
-                                            IRepositorioTurma repositorioTurma,
+                                            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
+                                            IRepositorioTurmaConsulta repositorioTurmaConsulta,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IServicoEol servicoEOL, 
                                             IServicoUsuario servicoUsuario,
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
             this.consultasCompensacaoAusenciaDisciplinaRegencia = consultasCompensacaoAusenciaDisciplinaRegencia ?? throw new ArgumentNullException(nameof(consultasCompensacaoAusenciaDisciplinaRegencia));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.consultasProfessor = consultasProfessor ?? throw new ArgumentNullException(nameof(consultasProfessor));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
             compensacao.Alunos = await consultasCompensacaoAusenciaAluno.ObterPorCompensacao(compensacao.Id);
 
             // Busca os nomes de alunos do EOL por turma
-            var turma = await repositorioTurma.ObterPorId(compensacao.TurmaId);
+            var turma = await repositorioTurmaConsulta.ObterPorId(compensacao.TurmaId);
             compensacaoDto.TurmaId = turma.CodigoTurma;
 
             var alunos = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
@@ -216,7 +216,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasParaCopia(string turmaOrigemId)
         {
             var professorRf = servicoUsuario.ObterRf();
-            var turmaOrigem = await repositorioTurma.ObterPorCodigo(turmaOrigemId);
+            var turmaOrigem = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaOrigemId));
 
             var ue = consultasUe.ObterPorId(turmaOrigem.UeId);
             var turmas = servicoEOL.ObterListaTurmasPorProfessor(professorRf);

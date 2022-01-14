@@ -12,43 +12,37 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasConselhoClasse : IConsultasConselhoClasse
     {
-        private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
-        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
-        private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IMediator mediator;
 
-        public ConsultasConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
-                                       IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                       IRepositorioParametrosSistema repositorioParametrosSistema,
-                                       IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
-                                       IRepositorioTipoCalendario repositorioTipoCalendario,
-                                       IRepositorioFechamentoTurma repositorioFechamentoTurma,
+        public ConsultasConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta,
+                                       IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
+                                       IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+                                       IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
+                                       IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                        IConsultasTurma consultasTurma,
                                        IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                        IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                        IConsultasFechamentoTurma consultasFechamentoTurma,
-                                       IServicoDeNotasConceitos servicoDeNotasConceitos,
                                        IMediator mediator)
         {
-            this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
+            this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
-            this.servicoDeNotasConceitos = servicoDeNotasConceitos ?? throw new ArgumentNullException(nameof(servicoDeNotasConceitos));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -59,9 +53,10 @@ namespace SME.SGP.Aplicacao
             if (turma.EhTurmaEdFisicaOuItinerario())
             {
                 var tipos = new List<TipoTurma>() {
-                        TipoTurma.Regular
+                        TipoTurma.Regular, TipoTurma.Itinerarios2AAno, TipoTurma.EdFisica
                     };
                 var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
+
                 turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
             }
 
@@ -83,7 +78,7 @@ namespace SME.SGP.Aplicacao
             if (fechamentoTurma == null && !turma.EhAnoAnterior())
                 throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
 
-            var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id) : null;
+            var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
 
             var periodoEscolarId = fechamentoTurma?.PeriodoEscolarId;
 
@@ -110,8 +105,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
 
-            var mediaAprovacao = double.Parse(await repositorioParametrosSistema
-                .ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            var mediaAprovacao = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
             var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
 
@@ -169,7 +163,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public ConselhoClasse ObterPorId(long conselhoClasseId)
-            => repositorioConselhoClasse.ObterPorId(conselhoClasseId);
+            => repositorioConselhoClasseConsulta.ObterPorId(conselhoClasseId);
 
         public async Task<(int, bool)> ValidaConselhoClasseUltimoBimestre(Turma turma)
         {

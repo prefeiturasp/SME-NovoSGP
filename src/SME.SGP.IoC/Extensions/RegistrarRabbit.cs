@@ -16,7 +16,10 @@ namespace SME.SGP.IoC
                 VirtualHost = configuracaoRabbitOptions.VirtualHost
             };
 
-            services.AddSingleton(factory);
+            var conexaoRabbit = factory.CreateConnection();
+            IModel _channel = conexaoRabbit.CreateModel();            
+            services.AddSingleton(conexaoRabbit);
+            services.AddSingleton(_channel);
         }
     }
 }

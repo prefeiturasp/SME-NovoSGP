@@ -11,21 +11,23 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirTurmasComplementaresCommandHandler : IRequestHandler<InserirTurmasComplementaresCommand, bool>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioConselhoClasseAlunoTurmaComplementar repositorioCCAlunoTurmaComplementar;
         private readonly IMediator mediator;
 
-        public InserirTurmasComplementaresCommandHandler(IRepositorioTurma repositorioTurma, IMediator mediator,
-            IRepositorioConselhoClasseAlunoTurmaComplementar repositorioCCAlunoTurmaComplementar)
+        public InserirTurmasComplementaresCommandHandler(
+            IRepositorioTurmaConsulta repositorioTurmaConsulta,
+            IRepositorioConselhoClasseAlunoTurmaComplementar repositorioCCAlunoTurmaComplementar,
+            IMediator mediator)
         {
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioCCAlunoTurmaComplementar = repositorioCCAlunoTurmaComplementar ?? throw new ArgumentNullException(nameof(repositorioCCAlunoTurmaComplementar));
         }
 
         public async Task<bool> Handle(InserirTurmasComplementaresCommand request, CancellationToken cancellationToken)
         {
-            var turmaRegular = await repositorioTurma.ObterPorId(request.TurmaId);
+            var turmaRegular = await repositorioTurmaConsulta.ObterPorId(request.TurmaId);
 
             if (turmaRegular.DeveVerificarRegraRegulares())
             {
@@ -37,7 +39,7 @@ namespace SME.SGP.Aplicacao
 
                 if (turmasCodigos != null && turmasCodigos.Any())
                 {
-                    var turmasNaoRegulares = (await repositorioTurma.ObterPorCodigosAsync(turmasCodigos))?.Where(t => !t.EhTurmaRegular());
+                    var turmasNaoRegulares = (await repositorioTurmaConsulta.ObterPorCodigosAsync(turmasCodigos))?.Where(t => !t.EhTurmaRegular());
 
                     if (turmasNaoRegulares != null && turmasNaoRegulares.Any())
                     {

@@ -2,11 +2,9 @@
 using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -17,25 +15,25 @@ namespace SME.SGP.Aplicacao.Teste.Queries
     {
         private readonly ObterDatasAulasPorProfessorEComponenteQueryHandler query;
         private readonly Mock<IMediator> mediator;
-        private readonly Mock<IRepositorioAula> repositorio;
-        private readonly Mock<IRepositorioTurma> repositorioTurma;
+        private readonly Mock<IRepositorioAulaConsulta> repositorioAulaConsulta;
+        private readonly Mock<IRepositorioTurmaConsulta> repositorioTurmaConsulta;
         private readonly Mock<IRepositorioAula> repositorioAula;
 
         public ObterDatasAulasPorProfessorEComponenteQueryHandlerTeste()
         {
             mediator = new Mock<IMediator>();
-            repositorio = new Mock<IRepositorioAula>();
-            repositorioTurma = new Mock<IRepositorioTurma>();
+            repositorioAulaConsulta = new Mock<IRepositorioAulaConsulta>();
+            repositorioTurmaConsulta = new Mock<IRepositorioTurmaConsulta>();
             repositorioAula = new Mock<IRepositorioAula>();
 
-            query = new ObterDatasAulasPorProfessorEComponenteQueryHandler(mediator.Object, repositorio.Object, repositorioTurma.Object, repositorioAula.Object);
+            query = new ObterDatasAulasPorProfessorEComponenteQueryHandler(mediator.Object, repositorioAulaConsulta.Object, repositorioTurmaConsulta.Object);
         }
 
         [Fact]
         public async Task Deve_Obter_Datas_Aulas()
         {
             //Arrange
-            repositorioTurma.Setup(x => x.ObterPorCodigo(It.IsAny<string>()))
+            repositorioTurmaConsulta.Setup(x => x.ObterPorCodigo(It.IsAny<string>()))
                 .ReturnsAsync(new Dominio.Turma()
                 {
                     AnoLetivo = 2020,
@@ -46,7 +44,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             var aula2 = new Aula() { DataAula = new DateTime(2020, 08, 05), Id = 2 };
             var aula3 = new Aula() { DataAula = new DateTime(2020, 08, 06), Id = 3 };
 
-            repositorio.Setup(x => x.ObterDatasDeAulasPorAnoTurmaEDisciplina(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
+            repositorioAulaConsulta.Setup(x => x.ObterDatasDeAulasPorAnoTurmaEDisciplina(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
                 .Returns(new List<Aula>()
                 {
                     aula1, aula2, aula3

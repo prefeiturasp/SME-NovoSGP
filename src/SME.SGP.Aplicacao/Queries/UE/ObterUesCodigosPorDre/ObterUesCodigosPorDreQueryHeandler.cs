@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUesCodigosPorDreQueryHeandler : IRequestHandler<ObterUesCodigosPorDreQuery, IEnumerable<string>>
     {
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
 
-        public ObterUesCodigosPorDreQueryHeandler(IRepositorioUe repositorioUe)
+        public ObterUesCodigosPorDreQueryHeandler(IRepositorioUeConsulta repositorioUe)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }

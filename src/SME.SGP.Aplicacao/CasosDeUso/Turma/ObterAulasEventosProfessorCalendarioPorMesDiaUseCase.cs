@@ -54,9 +54,9 @@ namespace SME.SGP.Aplicacao
                 Turma = turma
             });
 
-            retorno.PodeCadastrarAula = podeCadastrarAulaEMensagem.PodeCadastrar;
-
-            retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
+                retorno.PodeCadastrarAula = podeCadastrarAulaEMensagem.PodeCadastrar;
+                retorno.SomenteAulaReposicao = podeCadastrarAulaEMensagem.SomenteReposicao;
+                retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
 
 
             string[] componentesCurricularesDoProfessor = new string[0];

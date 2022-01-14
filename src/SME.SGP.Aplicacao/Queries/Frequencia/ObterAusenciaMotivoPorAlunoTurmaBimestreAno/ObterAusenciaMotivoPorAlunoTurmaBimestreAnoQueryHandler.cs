@@ -1,9 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAusenciaMotivoPorAlunoTurmaBimestreAnoQueryHandler : IRequestHandler<ObterAusenciaMotivoPorAlunoTurmaBimestreAnoQuery, IEnumerable<AusenciaMotivoDto>>
     {
-        private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
 
-        public ObterAusenciaMotivoPorAlunoTurmaBimestreAnoQueryHandler(IRepositorioFrequencia repositorioFrequencia)
+        public ObterAusenciaMotivoPorAlunoTurmaBimestreAnoQueryHandler(IRepositorioFrequenciaConsulta repositorioFrequencia)
         {
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
         }

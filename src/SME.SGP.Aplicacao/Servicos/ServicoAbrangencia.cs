@@ -24,11 +24,11 @@ namespace SME.SGP.Aplicacao.Servicos
         private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
-        private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IRepositorioUsuarioConsulta repositorioUsuario;
 
         public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEol servicoEOL, IConsultasSupervisor consultasSupervisor,
             IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma, IRepositorioCicloEnsino repositorioCicloEnsino, IRepositorioTipoEscola repositorioTipoEscola,
-            IMediator mediator, IRepositorioUsuario repositorioUsuario)
+            IMediator mediator, IRepositorioUsuarioConsulta repositorioUsuario)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 foreach (AbrangenciaTurmaRetornoEolDto turma in turmasHistoricasEOL)
                 {
                     Abrangencia abrangencia = new Abrangencia();
-                    var turmaSGP = await repositorioTurma.ObterTurmaCompletaPorCodigo(turma.Codigo);
+                    var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(turma.Codigo));
 
                     if (turmaSGP == null)
                         throw new NegocioException($"Turma não encontrada no SGP - [{turma.Codigo} - {turma.NomeTurma}]");
@@ -207,8 +207,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         public async Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false)
         {
-            var ue = repositorioUe
-                .ObterPorId(ueId);
+            var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
 
             if (ue == null)
                 throw new NegocioException("UE não localizada.");
@@ -284,6 +283,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 if (turmasEol != null)
                     await SincronizarEstruturaInstitucional(turmasEol);
             }
+
             return repositorioTurma.MaterializarCodigosTurma(codigosNaoEncontrados, out codigosNaoEncontrados);
         }
 
@@ -292,10 +292,18 @@ namespace SME.SGP.Aplicacao.Servicos
             string[] codigosNaoEncontrados;
 
             if (abrangenciaEol.IdDres != null && abrangenciaEol.IdDres.Length > 0)
-                dres = repositorioDre.MaterializarCodigosDre(abrangenciaEol.IdDres, out codigosNaoEncontrados);
-
+            {
+                var retorno = await mediator.Send(new ObterDreMaterializarCodigosQuery(abrangenciaEol.IdDres));
+                dres = retorno.Item1;
+                codigosNaoEncontrados = retorno.Item2;
+            }
+                
             if (abrangenciaEol.IdUes != null && abrangenciaEol.IdUes.Length > 0)
-                ues = repositorioUe.MaterializarCodigosUe(abrangenciaEol.IdUes, out codigosNaoEncontrados);
+            {
+                var retorno = await mediator.Send(new ObterUeMaterializarCodigosQuery(abrangenciaEol.IdUes));
+                ues = retorno.Item1;
+                codigosNaoEncontrados = retorno.Item2;
+            }
 
             if (abrangenciaEol.IdTurmas != null && abrangenciaEol.IdTurmas.Length > 0)
             {

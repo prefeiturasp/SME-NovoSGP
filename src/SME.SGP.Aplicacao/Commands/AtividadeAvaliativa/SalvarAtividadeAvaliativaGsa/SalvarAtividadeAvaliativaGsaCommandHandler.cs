@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new SalvarAtividadeAvaliativaDisciplinaCommand(atividadeId, componenteCurricularId.ToString()));
         }
 
-        private AtividadeAvaliativa MapearEntidade(SalvarAtividadeAvaliativaGsaCommand request, long tipoAvaliacaoId, DreUeDto turma)
+        private AtividadeAvaliativa MapearEntidade(SalvarAtividadeAvaliativaGsaCommand request, long tipoAvaliacaoId, DreUeDaTurmaDto turma)
         {
             return new AtividadeAvaliativa()
             {

@@ -16,14 +16,14 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioNotificacao repositorioNotificacao;
-        private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
+        private readonly IRepositorioUsuarioConsulta repositorioUsuario;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IServicoEol servicoEOL;
         public NotificarAprovacaoNotaConselhoCommandHandler(IMediator mediator, 
                                                             IRepositorioNotificacao repositorioNotificacao,
-                                                            IRepositorioTurma repositorioTurma,
-                                                            IRepositorioUsuario repositorioUsuario,
+                                                            IRepositorioTurmaConsulta repositorioTurma,
+                                                            IRepositorioUsuarioConsulta repositorioUsuario,
                                                             IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                                             IServicoEol servicoEOL)
         {

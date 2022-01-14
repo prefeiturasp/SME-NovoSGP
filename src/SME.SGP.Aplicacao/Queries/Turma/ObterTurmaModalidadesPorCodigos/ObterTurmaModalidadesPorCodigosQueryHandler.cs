@@ -5,15 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaModalidadesPorCodigosQueryHandler : IRequestHandler<ObterTurmaModalidadesPorCodigosQuery, IEnumerable<TurmaModalidadeCodigoDto>>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
 
-        public ObterTurmaModalidadesPorCodigosQueryHandler(IRepositorioTurma repositorioTurma)
+        public ObterTurmaModalidadesPorCodigosQueryHandler(IRepositorioTurmaConsulta repositorioTurma)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
