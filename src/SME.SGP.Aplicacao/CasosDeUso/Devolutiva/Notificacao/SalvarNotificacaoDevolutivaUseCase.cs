@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
             var titularEol = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turma.CodigoTurma, devolutiva.CodigoComponenteCurricular.ToString()));
             var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinaPorId(devolutiva.CodigoComponenteCurricular);
 
-            var codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id, turma.UeId, turma.CodigoTurma, usuarioLogado);
+            Guid codigoRelatorio = await SolicitarRelatorioDevolutiva(devolutiva.Id, turma.UeId, turma.CodigoTurma, usuarioLogado);
 
             var botaoDownload = MontarBotaoDownload(codigoRelatorio);
 
@@ -88,13 +88,13 @@ namespace SME.SGP.Aplicacao
             return false;
         }
 
-        private string MontarBotaoDownload(string codigoRelatorio)
+        private string MontarBotaoDownload(Guid codigoRelatorio)
         {
             var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
             var urlNotificacao = $"{urlRedirecionamentoBase}api/v1/downloads/sgp/pdfsincrono/RelatorioDevolutiva.pdf/{codigoRelatorio}";
             return $"<br/><br/><a href='{urlNotificacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>";
         }
-        private async Task<string> SolicitarRelatorioDevolutiva(long devolutivaId, long ueId, string codigoTurma, Usuario usuarioLogado)
+        private async Task<Guid> SolicitarRelatorioDevolutiva(long devolutivaId, long ueId, string codigoTurma, Usuario usuarioLogado)
         {
             var turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
             var filtro = new FiltroRelatorioDevolutivasSincrono()
