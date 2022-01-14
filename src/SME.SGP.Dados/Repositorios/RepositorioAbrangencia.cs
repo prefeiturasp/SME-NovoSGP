@@ -29,7 +29,8 @@ namespace SME.SGP.Dados.Repositorios
                                 set historico = true, dt_fim_vinculo = '{dtFimVinculo.Year}-{dtFimVinculo.Month}-{dtFimVinculo.Day}'
                                 from abrangencia ab
                                 left join turma t on t.id = ab.turma_id
-                                where (a.turma_id is null Or (a.id = ab.id and t.ano_letivo = {dtFimVinculo.Year}))                                    
+                                where a.id = ab.id
+                                and (ab.turma_id is null Or (t.id = ab.turma_id and t.ano_letivo = {dtFimVinculo.Year}))                                    
                                 and a.id in (#ids) ";
 
             for (int i = 0; i < ids.Count(); i = i + 900)
