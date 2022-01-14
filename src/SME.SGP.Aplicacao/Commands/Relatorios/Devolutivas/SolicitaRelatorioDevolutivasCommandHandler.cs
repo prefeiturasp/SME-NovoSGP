@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
 {
-    public class SolicitaRelatorioDevolutivasCommandHandler : IRequestHandler<SolicitaRelatorioDevolutivasCommand, Guid>
+    public class SolicitaRelatorioDevolutivasCommandHandler : IRequestHandler<SolicitaRelatorioDevolutivasCommand, string>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -18,27 +18,18 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
-        public async Task<Guid> Handle(SolicitaRelatorioDevolutivasCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(SolicitaRelatorioDevolutivasCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var httpClient = httpClientFactory.CreateClient("servicoServidorRelatorios");
-                var filtro = JsonConvert.SerializeObject(request.Filtro);
-                HttpResponseMessage resposta = await httpClient.PostAsync($"api/v1/relatorios/sincronos/devolutivas", new StringContent(filtro, Encoding.UTF8, "application/json-patch+json"));
+            var httpClient = httpClientFactory.CreateClient("servicoServidorRelatorios");
+            var filtro = JsonConvert.SerializeObject(request.Filtro);
+            HttpResponseMessage resposta = await httpClient.PostAsync($"api/v1/relatorios/sincronos/devolutivas", new StringContent(filtro, Encoding.UTF8, "application/json-patch+json"));
 
-                if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
-                {
-                    var json = await resposta.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<Guid>(json);
-                }
-                else
-                    throw new NegocioException($"Falha Na conexão, Status Code: {resposta.IsSuccessStatusCode}, Resposta:{resposta.StatusCode}");
-            }
-            catch (Exception ex)
+            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
-                throw new NegocioException($"Falha Na conexão, Status Code: {ex.Message}");
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<string>(json);
             }
-
+            return $"{resposta.IsSuccessStatusCode} {resposta.StatusCode}";
         }
     }
 }
