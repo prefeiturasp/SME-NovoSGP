@@ -20,17 +20,24 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
         }
         public async Task<Guid> Handle(SolicitaRelatorioDevolutivasCommand request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoServidorRelatorios");
-            var filtro = JsonConvert.SerializeObject(request.Filtro);
-            HttpResponseMessage resposta = await httpClient.PostAsync($"api/v1/relatorios/sincronos/devolutivas", new StringContent(filtro, Encoding.UTF8, "application/json-patch+json"));
-
-            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
+            try
             {
-                var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<Guid>(json);
+                var httpClient = httpClientFactory.CreateClient("servicoServidorRelatorios");
+                var filtro = JsonConvert.SerializeObject(request.Filtro);
+                HttpResponseMessage resposta = await httpClient.PostAsync($"api/v1/relatorios/sincronos/devolutivas", new StringContent(filtro, Encoding.UTF8, "application/json-patch+json"));
+
+                if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
+                {
+                    var json = await resposta.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<Guid>(json);
+                }
+                else
+                    throw new NegocioException($"Falha Na conexão, Status Code: {resposta.IsSuccessStatusCode}, Resposta:{resposta.StatusCode}");
             }
-            else
-               throw new NegocioException($"Falha Na conexão, Status Code: {resposta.IsSuccessStatusCode}, Resposta:{resposta.StatusCode}");
+            catch (Exception ex)
+            {
+                throw new NegocioException($"Falha Na conexão, Status Code: {ex.Message}");
+            }
 
         }
     }
