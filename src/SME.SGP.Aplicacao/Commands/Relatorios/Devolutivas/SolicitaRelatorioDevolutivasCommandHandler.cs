@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -28,6 +29,9 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<Guid>(json);
             }
+            else
+                new NegocioException($"Falha Na conexão, Status Code: {resposta.IsSuccessStatusCode}, Resposta:{resposta.StatusCode}");
+
             return Guid.Empty;
         }
     }
