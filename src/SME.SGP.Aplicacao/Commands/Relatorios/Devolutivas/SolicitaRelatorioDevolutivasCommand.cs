@@ -5,7 +5,7 @@ using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SolicitaRelatorioDevolutivasCommand : IRequest<string>
+    public class SolicitaRelatorioDevolutivasCommand : IRequest<Guid>
     {
         public SolicitaRelatorioDevolutivasCommand(FiltroRelatorioDevolutivasSincrono filtro)
         {

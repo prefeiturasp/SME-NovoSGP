@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Dominio;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
 {
-    public class SolicitaRelatorioDevolutivasCommandHandler : IRequestHandler<SolicitaRelatorioDevolutivasCommand, string>
+    public class SolicitaRelatorioDevolutivasCommandHandler : IRequestHandler<SolicitaRelatorioDevolutivasCommand, Guid>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -18,7 +17,7 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
-        public async Task<string> Handle(SolicitaRelatorioDevolutivasCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(SolicitaRelatorioDevolutivasCommand request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoServidorRelatorios");
             var filtro = JsonConvert.SerializeObject(request.Filtro);
@@ -27,9 +26,9 @@ namespace SME.SGP.Aplicacao.Commands.Relatorios.Devolutivas
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<string>(json);
+                return JsonConvert.DeserializeObject<Guid>(json);
             }
-            return $"{resposta.IsSuccessStatusCode} {resposta.StatusCode}";
+            return Guid.Empty;
         }
     }
 }
