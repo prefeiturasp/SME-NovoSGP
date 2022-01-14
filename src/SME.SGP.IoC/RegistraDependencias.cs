@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
@@ -32,12 +33,14 @@ using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
+using SME.SGP.Infra.Utilitarios;
+using System;
 
 namespace SME.SGP.IoC
 {
     public static class RegistraDependencias
     {
-        public static void Registrar(IServiceCollection services)
+        public static void Registrar(IServiceCollection services, ConfiguracaoRabbitOptions configRabbit)
         {
             services.AdicionarMediatr();
             services.AdicionarValidadoresFluentValidation();
@@ -48,7 +51,13 @@ namespace SME.SGP.IoC
             RegistrarConsultas(services);
             RegistrarServicos(services);
             RegistrarCasosDeUso(services);
+            RegistrarRabbit(services, configRabbit);
             RegistrarMapeamentos.Registrar();
+        }
+
+        private static void RegistrarRabbit(IServiceCollection services, ConfiguracaoRabbitOptions configRabbit)
+        {
+            services.AddRabbit(configRabbit);
         }
 
         private static void RegistrarComandos(IServiceCollection services)
