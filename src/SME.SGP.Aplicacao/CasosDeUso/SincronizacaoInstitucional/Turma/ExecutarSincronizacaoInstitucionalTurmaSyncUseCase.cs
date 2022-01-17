@@ -23,7 +23,11 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a sincronização das turmas. O codígo da Ue não foi informado", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
             }
 
-            var codigosTurma = await mediator.Send(new ObterCodigosTurmasEOLPorUeIdParaSyncEstruturaInstitucionalQuery(ueId));
+            
+            var anosComTurmasVigentes = await mediator.Send(new ObterAnoLetivoTurmasVigentesQuery(ueId));
+
+            var codigosTurma = await mediator.Send(new ObterCodigosTurmasEOLPorUeIdParaSyncEstruturaInstitucionalQuery(ueId, anosComTurmasVigentes.ToArray()));
+
             if (!codigosTurma?.Any() ?? true) return true;
 
             foreach (var codigoTurma in codigosTurma)
@@ -37,12 +41,12 @@ namespace SME.SGP.Aplicacao
                     var publicarFilaIncluirTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalTurmaTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null));
                     if (!publicarFilaIncluirTurma)
                     {
-                        await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir a turma de codígo : {codigoTurma} na fila de inclusão.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));                        
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir a turma de codígo : {codigoTurma} na fila de inclusão.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
                     }
                 }
                 catch (Exception)
                 {
-                    
+
                 }
             }
             return true;

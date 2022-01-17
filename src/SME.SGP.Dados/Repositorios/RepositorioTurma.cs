@@ -1357,5 +1357,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<TurmaNaoHistoricaDto>(query, new { usuarioId, anoLetivo });
         }
+
+        public async Task<IEnumerable<int>> BuscarAnosLetivosComTurmasVigentes(string codigoUe)
+        {
+            var query = @"select distinct ano_letivo
+                        from turma
+                        inner join ue u on u.ue_id = @codigoUe
+                        where historica = false";
+
+            return await contexto.QueryAsync<int>(query, new {codigoUe});
+        }
     }
 }
