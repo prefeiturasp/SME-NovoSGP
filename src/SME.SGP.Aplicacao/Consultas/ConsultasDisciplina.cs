@@ -412,6 +412,7 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = componenteCurricular.TerritorioSaber,
                     Compartilhada = componenteCurricular.Compartilhada,
                     LancaNota = componenteCurricular.LancaNota,
+                    
                 };
         }
 
@@ -442,7 +443,8 @@ namespace SME.SGP.Aplicacao
             Compartilhada = disciplinaEol.Compartilhada,
             RegistroFrequencia = disciplinaEol.RegistraFrequencia,
             LancaNota = disciplinaEol.LancaNota,
-            NomeComponenteInfantil = disciplinaEol.NomeComponenteInfantil
+            NomeComponenteInfantil = disciplinaEol.NomeComponenteInfantil,
+            Id = disciplinaEol.Id
         };
 
         private List<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false, bool ensinoEspecial = false)
@@ -461,6 +463,7 @@ namespace SME.SGP.Aplicacao
 
         private DisciplinaDto MapearParaDto(DisciplinaResposta disciplina, bool turmaPrograma = false, bool ensinoEspecial = false) => new DisciplinaDto()
         {
+            Id = disciplina.Id,
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
             Nome = disciplina.Nome,

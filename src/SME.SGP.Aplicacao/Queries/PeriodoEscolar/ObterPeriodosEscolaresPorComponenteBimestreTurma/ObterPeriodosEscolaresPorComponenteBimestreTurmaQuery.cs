@@ -12,12 +12,14 @@ namespace SME.SGP.Aplicacao
         public string TurmaCodigo { get; set; }
         public long ComponenteCodigo { get; set; }
         public int Bimestre { get; set; }
+        public bool AulaCj { get; set; }
 
-        public ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(string turmaCodigo, long componenteCodigo, int bimestre)
+        public ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(string turmaCodigo, long componenteCodigo, int bimestre, bool aulaCj)
         {
             TurmaCodigo = turmaCodigo;
             ComponenteCodigo = componenteCodigo;
             Bimestre = bimestre;
+            AulaCj = aulaCj;
         }
     }
 

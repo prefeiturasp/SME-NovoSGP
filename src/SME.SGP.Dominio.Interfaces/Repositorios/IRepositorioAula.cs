@@ -73,7 +73,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, bool aulaCJ, long? aulaPaiId = null);
         IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF);
-        IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim);
+        IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim,bool aulaCj);
 
         Aula ObterPorWorkflowId(long workflowId);
 

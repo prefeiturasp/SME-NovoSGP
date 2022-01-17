@@ -212,7 +212,7 @@ namespace SME.SGP.Aplicacao
 
             var aulasRetorno = new List<DataAulasProfessorDto>();
 
-            var aulas = repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodosEscolares.Periodos.Select(p=> p.Id).Distinct(), anoLetivo, turmaCodigo, disciplinaCodigo, string.Empty, null, null);
+            var aulas = repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodosEscolares.Periodos.Select(p=> p.Id).Distinct(), anoLetivo, turmaCodigo, disciplinaCodigo, string.Empty, null, null,false);
 
             aulas.ToList().ForEach(aula =>
             {
