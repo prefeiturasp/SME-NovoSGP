@@ -8,6 +8,8 @@ services:
     ports:
       - 9200:9200
     environment:
+      - xpack.monitoring.enabled=true
+      - xpack.watcher.enabled=false
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - discovery.type=single-node
@@ -21,6 +23,8 @@ services:
       - 5601:5601
     depends_on: 
       - elasticsearch
+    environment:
+      - ELASTICSEARCH_URL=http://localhost:9200
     networks:
       - elastic
 
