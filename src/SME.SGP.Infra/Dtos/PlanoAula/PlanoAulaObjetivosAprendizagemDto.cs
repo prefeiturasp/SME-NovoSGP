@@ -15,6 +15,7 @@ namespace SME.SGP.Infra
         public string RecuperacaoAula { get; set; }
         public string LicaoCasa { get; set; }
         public long AulaId { get; set; }
+        public bool AulaCj { get; set; }
         public string UeId { get; set; }
         public string TurmaId { get; set; }
         public string DisciplinaId { get; set; }

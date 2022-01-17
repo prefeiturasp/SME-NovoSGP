@@ -606,7 +606,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim)
+        public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim,bool aulaCj)
         {
             var query = new StringBuilder("select distinct a.*, t.* ");
             query.AppendLine("from aula a ");
@@ -626,6 +626,9 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrWhiteSpace(usuarioRF))
                 query.AppendLine("and a.professor_rf = @usuarioRF ");
+
+            if (aulaCj)
+                query.AppendLine("and a.aula_cj = true");
 
             return database.Conexao.Query<Aula, Turma, Aula>(query.ToString(), (aula, turma) =>
             {

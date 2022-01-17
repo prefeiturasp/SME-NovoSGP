@@ -104,7 +104,7 @@ namespace SME.SGP.Dados.Repositorios
                            a.id as AulaId, a.ue_id as UeId, a.disciplina_id as DisciplinaId, a.turma_id as TurmaId,
                            a.quantidade, a.tipo_calendario_id as TipoCalendarioId, a.data_aula as DataAula, a.tipo_aula as TipoAula,
                            oaa.componente_curricular_id as id,
-                           oa.id, oa.descricao, oa.codigo, oa.ano_turma as Ano, oa.componente_curricular_id as IdComponenteCurricular
+                           oa.id, oa.descricao, oa.codigo, oa.ano_turma as Ano, oa.componente_curricular_id as IdComponenteCurricular,a.aula_cj  as AulaCj
                       from aula a
                       inner join plano_aula pa on a.id = pa.aula_id
                       left join objetivo_aprendizagem_aula oaa on pa.id = oaa.plano_aula_id
