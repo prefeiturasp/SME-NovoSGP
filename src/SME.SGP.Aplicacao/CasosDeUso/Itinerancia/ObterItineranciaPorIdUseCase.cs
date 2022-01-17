@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             {
                 var CodigosAluno = itinerancia.Alunos.Select(a => a.CodigoAluno).ToArray();
 
-                var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(CodigosAluno.Select(long.Parse).ToArray(), DateTime.Now.Year));
+                var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosQuery(CodigosAluno.Select(long.Parse).ToArray()));
 
                 var turmasIds = itinerancia.Alunos.Select(al => al.TurmaId).Distinct().ToArray();
 
