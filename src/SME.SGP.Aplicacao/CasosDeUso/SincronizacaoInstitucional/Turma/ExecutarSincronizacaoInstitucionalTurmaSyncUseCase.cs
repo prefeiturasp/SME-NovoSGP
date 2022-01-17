@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a sincronização das turmas. O codígo da Ue não foi informado", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
             }
-
             
             var anosComTurmasVigentes = await mediator.Send(new ObterAnoLetivoTurmasVigentesQuery(ueId));
 
