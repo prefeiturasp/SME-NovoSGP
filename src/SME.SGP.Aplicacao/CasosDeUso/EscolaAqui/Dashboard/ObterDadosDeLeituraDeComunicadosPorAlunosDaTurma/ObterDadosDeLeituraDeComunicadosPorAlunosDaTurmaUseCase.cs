@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
             var dadosLeituraAlunosComunicadoPorTurmaComMarcador = new List<DadosLeituraAlunosComunicadoPorTurmaDto>();
             foreach (var item in dadosLeituraAlunosComunicadoPorTurmaDto)
             {
-                var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(item.CodigoAluno.ToString(), turma.AnoLetivo, string.Empty));
+                var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(item.CodigoAluno.ToString(), turma.AnoLetivo));
 
                 if (aluno == null)
                     throw new Exception("Não foi possível localizar o aluno");
