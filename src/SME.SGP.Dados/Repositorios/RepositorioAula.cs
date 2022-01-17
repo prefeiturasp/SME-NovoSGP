@@ -573,7 +573,7 @@ namespace SME.SGP.Dados.Repositorios
             }));
         }
 
-        
+
         public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF)
         {
             var query = new StringBuilder("select distinct a.*, t.* ");
@@ -606,7 +606,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim,bool aulaCj)
+        public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj)
         {
             var query = new StringBuilder("select distinct a.*, t.* ");
             query.AppendLine("from aula a ");
@@ -1097,16 +1097,18 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<DataAulaDto>(query, new { turmaId, componenteCurricularId, dataCriacao = dataCriacao.Date });
         }
 
-        public async Task<IEnumerable<Aula>> ObterAulasPorDataPeriodo(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId)
+        public async Task<IEnumerable<Aula>> ObterAulasPorDataPeriodo(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId, bool aulaCj)
         {
-            var query = @"select *
+            var query = new StringBuilder(@"select *
                  from aula
                 where not excluido
                   and DATE(data_aula) between Date(@dataInicio) and Date(@dataFim)
                   and turma_id = @turmaId
-                  and disciplina_id = @disciplinaId";
+                  and disciplina_id = @disciplinaId");
 
-            return await database.Conexao.QueryAsync<Aula>(query, new
+            if (aulaCj)
+                query.AppendLine(" and  aula_cj = true ");
+            return await database.Conexao.QueryAsync<Aula>(query.ToString(), new
             {
                 dataInicio = dataInicio.Date,
                 dataFim = dataFim.Date,
