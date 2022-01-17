@@ -15,5 +15,6 @@ namespace SME.SGP.Infra
         public bool ListarDataFutura { get; set; }
         public bool ExibirDetalhamento { get; set; }
         public string UsuarioNome { get; set; }
+        public long[] ComponentesCurricularesDisponiveis { get; set; }
     }
 }
