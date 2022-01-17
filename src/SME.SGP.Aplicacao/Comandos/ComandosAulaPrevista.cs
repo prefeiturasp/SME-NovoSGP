@@ -12,29 +12,27 @@ namespace SME.SGP.Aplicacao
     public class ComandosAulaPrevista : IComandosAulaPrevista
     {
         private readonly IRepositorioAulaPrevista repositorio;
-        private readonly IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre;
-        private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
+        private readonly IRepositorioAulaPrevistaBimestreConsulta repositorioAulaPrevistaBimestreConsulta;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendarioConsulta;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
 
         public ComandosAulaPrevista(IRepositorioAulaPrevista repositorio,
-                                    IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre,
-                                    IRepositorioTurma repositorioTurma,
-                                     IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
-                                    IUnitOfWork unitOfWork)
+                                    IRepositorioAulaPrevistaBimestreConsulta repositorioAulaPrevistaBimestreConsulta,
+                                    IRepositorioTipoCalendarioConsulta repositorioTipoCalendarioConsulta,
+                                    IUnitOfWork unitOfWork,
+                                    IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
-            this.repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.repositorioAulaPrevistaBimestreConsulta = repositorioAulaPrevistaBimestreConsulta ?? throw new ArgumentNullException(nameof(repositorioAulaPrevistaBimestreConsulta));
+            this.repositorioTipoCalendarioConsulta = repositorioTipoCalendarioConsulta ?? throw new ArgumentNullException(nameof(repositorioTipoCalendarioConsulta));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<string> Alterar(AulaPrevistaDto dto, long id)
         {
-            IEnumerable<AulaPrevistaBimestre> aulasPrevistasBimestre = await repositorioBimestre.ObterBimestresAulasPrevistasPorId(id);
+            IEnumerable<AulaPrevistaBimestre> aulasPrevistasBimestre = await repositorioAulaPrevistaBimestreConsulta.ObterBimestresAulasPrevistasPorId(id);
 
             unitOfWork.IniciarTransacao();
 
@@ -45,7 +43,7 @@ namespace SME.SGP.Aplicacao
             {
                 AulaPrevistaBimestre aulaPrevistaBimestre = aulasPrevistasBimestre.FirstOrDefault(b => b.Bimestre == bimestre.Bimestre);
                 aulaPrevistaBimestre = MapearParaDominio(id, bimestre, aulaPrevistaBimestre);
-                repositorioBimestre.Salvar(aulaPrevistaBimestre);
+                repositorioAulaPrevistaBimestreConsulta.Salvar(aulaPrevistaBimestre);
             }
 
             unitOfWork.PersistirTransacao();
@@ -82,7 +80,7 @@ namespace SME.SGP.Aplicacao
 
             if (aulaPrevistaDto.BimestresQuantidade != null)
                 foreach (var bimestreQuantidadeDto in aulaPrevistaDto.BimestresQuantidade)
-                    await repositorioBimestre.SalvarAsync(new AulaPrevistaBimestre()
+                    await repositorioAulaPrevistaBimestreConsulta.SalvarAsync(new AulaPrevistaBimestre()
                     {
                         AulaPrevistaId = aulaPrevistaDto.Id,
                         Bimestre = bimestreQuantidadeDto.Bimestre,
@@ -104,7 +102,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<TipoCalendario> ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade, int semestre)
         {
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade), semestre);
+            var tipoCalendario = await repositorioTipoCalendarioConsulta.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade), semestre);
 
             if (tipoCalendario == null)
                 throw new NegocioException("Tipo calendário não encontrado!");
