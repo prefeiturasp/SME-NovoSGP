@@ -407,7 +407,8 @@ namespace SME.SGP.Dados.Repositorios
                                    pe.periodo_inicio as DataInicio,    
                                    pe.periodo_fim as DataFim, 
                                    pe.bimestre as Bimestre,
-                                   a.data_aula as DataAula
+                                   a.data_aula as DataAula,
+                                   a.aula_cj as AulaCj
                             from periodo_escolar pe 
                                 inner join aula a on a.tipo_calendario_id = pe.tipo_calendario_id 
                                 where a.turma_id = @turmaCodigo
