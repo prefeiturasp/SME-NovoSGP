@@ -47,8 +47,8 @@ namespace SME.SGP.Aplicacao
 
             return new ParecerConclusivoDto()
             {
-                Id = parecerConclusivo.Id,
-                Nome = parecerConclusivo.Nome
+                Id = parecerConclusivo?.Id ?? 0,
+                Nome = parecerConclusivo?.Nome
             };
         }
 
