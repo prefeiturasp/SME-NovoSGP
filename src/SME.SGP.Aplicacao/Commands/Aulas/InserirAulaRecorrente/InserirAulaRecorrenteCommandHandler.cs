@@ -19,11 +19,9 @@ namespace SME.SGP.Aplicacao
     public class InserirAulaRecorrenteCommandHandler : IRequestHandler<InserirAulaRecorrenteCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoLog servicoLog;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IPodeCadastrarAulaUseCase podeCadastrarAulaUseCase;
 
         private const String MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA = "Você não pode criar aulas para essa Turma.";
 
@@ -31,18 +29,14 @@ namespace SME.SGP.Aplicacao
             "Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.";
 
         public InserirAulaRecorrenteCommandHandler(IMediator mediator,
-                                                   IServicoLog servicoLog,
                                                    IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
-                                                   IUnitOfWork unitOfWork,
-                                                   IPodeCadastrarAulaUseCase podeCadastrarAulaUseCase)
+                                                   IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.podeCadastrarAulaUseCase = podeCadastrarAulaUseCase ?? throw new ArgumentNullException(nameof(podeCadastrarAulaUseCase));
         }
 
         public async Task<bool> Handle(InserirAulaRecorrenteCommand request, CancellationToken cancellationToken)
@@ -381,12 +375,8 @@ namespace SME.SGP.Aplicacao
             {
                 if (aula.Id == 0)
                 {
-                    var retornoPodeCadastrarAula = await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(0,
-                                                                                                aula.TurmaId,
-                                                                                                long.Parse(aula.DisciplinaId),
-                                                                                                dia,
-                                                                                                ehRegencia,
-                                                                                                aulaRecorrente.TipoAula));
+                    var retornoPodeCadastrarAula = await PodeCadastrarAula(0,aula.TurmaId,long.Parse(aula.DisciplinaId),dia,ehRegencia,aulaRecorrente.TipoAula, usuario.CodigoRf);
+
                     if (retornoPodeCadastrarAula.PodeCadastrarAula)
                         await repositorioAula.SalvarAsync(aula);
                     else
@@ -405,12 +395,34 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception ex)
                 {
-                    servicoLog.Registrar(ex);
                     aulasQueDeramErro.Add((dia, $"Erro Interno: {ex.Message}"));
                 }
             }
 
             return (aula, aulasQueDeramErro);
+        }
+
+        private async Task<CadastroAulaDto> PodeCadastrarAula(int aulaId, string turmaCodigo, long disciplinaId, DateTime dataAula, bool ehRegencia, TipoAula tipoAula, string codigoRf)
+        {
+            if (CriandoAula(aulaId) || await AlterandoDataAula(aulaId, dataAula))
+            {
+                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(dataAula, turmaCodigo, disciplinaId, codigoRf, tipoAula)))
+                    throw new NegocioException($"Não é possível cadastrar aula do tipo '{tipoAula.Name()}' para o dia selecionado!");
+            }
+
+            return new CadastroAulaDto()
+            {
+                PodeCadastrarAula = true,
+                Grade = tipoAula == TipoAula.Reposicao ? null : await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, disciplinaId, dataAula, ehRegencia: ehRegencia))
+            };
+        }
+
+        private static bool CriandoAula(long aulaId) => aulaId == 0;
+
+        private async Task<bool> AlterandoDataAula(long aulaId, DateTime dataAula)
+        {
+            var dataOriginalAula = await mediator.Send(new ObterDataAulaQuery(aulaId));
+            return dataAula != dataOriginalAula;
         }
 
         private Aula GerarNovaAula(InserirAulaRecorrenteCommand aulaRecorrente, Usuario usuario)
