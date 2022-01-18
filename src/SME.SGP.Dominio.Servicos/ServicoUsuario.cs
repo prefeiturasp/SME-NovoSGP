@@ -171,6 +171,8 @@ namespace SME.SGP.Dominio
                 if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
                     usuario.CodigoRf = codigoRf;
 
+                usuario.Nome = usuario?.Nome ?? "";
+
                 if (!usuario.Nome.Equals(nome) || !usuario.CodigoRf.Equals(codigoRf))
                     await repositorioUsuario.SalvarAsync(usuario);
 
