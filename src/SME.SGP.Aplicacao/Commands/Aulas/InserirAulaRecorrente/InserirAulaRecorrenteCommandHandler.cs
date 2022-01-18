@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoLog servicoLog;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
-        private readonly IServicoNotificacao servicoNotificacao;
         private readonly IUnitOfWork unitOfWork;
         private readonly IPodeCadastrarAulaUseCase podeCadastrarAulaUseCase;
 
@@ -35,7 +34,6 @@ namespace SME.SGP.Aplicacao
                                                    IServicoLog servicoLog,
                                                    IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
-                                                   IServicoNotificacao servicoNotificacao,
                                                    IUnitOfWork unitOfWork,
                                                    IPodeCadastrarAulaUseCase podeCadastrarAulaUseCase)
         {
@@ -43,7 +41,6 @@ namespace SME.SGP.Aplicacao
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.podeCadastrarAulaUseCase = podeCadastrarAulaUseCase ?? throw new ArgumentNullException(nameof(podeCadastrarAulaUseCase));
         }
@@ -183,29 +180,24 @@ namespace SME.SGP.Aplicacao
                 {
                     mensagemUsuario.Append($"<br /> {aulaComErro.dataAula.ToString("dd/MM/yyyy")} - {aulaComErro.errorMessage};");
                 }
-            }
-
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = turma.Ue.Dre.CodigoDre,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuario.Id,
-                Tipo = NotificacaoTipo.Calendario,
-                Titulo = tituloMensagem,
-                TurmaId = turma.CodigoTurma,
-                UeId = turma.Ue.CodigoUe,
-            };
+            } 
 
             unitOfWork.IniciarTransacao();
             try
             {
                 // Salva Notificação
-                await servicoNotificacao.SalvarAsync(notificacao);
+                var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(tituloMensagem,
+                                                               mensagemUsuario.ToString(),
+                                                               usuario.CodigoRf,
+                                                               NotificacaoCategoria.Aviso,
+                                                               NotificacaoTipo.Calendario,
+                                                               turma.Ue.Dre.CodigoDre,
+                                                               turma.Ue.CodigoUe,
+                                                               turma.CodigoTurma,
+                                                               DateTime.Now.Year));
 
                 // Gera vinculo Notificacao x Aula
-                await repositorioNotificacaoAula.Inserir(notificacao.Id, aula.Id);
+                await repositorioNotificacaoAula.Inserir(notificacaoId, aula.Id);
 
                 unitOfWork.PersistirTransacao();
             }
