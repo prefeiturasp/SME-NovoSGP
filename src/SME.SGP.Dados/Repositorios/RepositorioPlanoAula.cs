@@ -78,6 +78,25 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<bool>(query, new { data = data.Date, turmaId, disciplinaId }).SingleOrDefault();
         }
 
+        public async Task<bool> ValidarPendenciaPlanoPorTurmaDataEPeriodo(DateTime data, string turmaId, string disciplinaId, int anoLetivo, short bimestre)
+        {
+            var query = @"select 
+                                1
+                          from plano_aula pa
+                          inner join aula a on a.Id = pa.aula_id
+                          inner join tipo_calendario tc on tc.id = a.tipo_calendario_id 
+                          inner join periodo_escolar pe on pe.tipo_calendario_id  = tc.id
+                          where not a.excluido 
+                            and not pa.excluido
+                            and DATE(a.data_aula) < @data
+                            and a.turma_id = @tumaId
+                            and a.disciplina_id = @disciplinaId
+                            and tc.ano_letivo = @anoLetivo 
+                            and pe.bimestre = @bimestre";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { data = data.Date, turmaId, disciplinaId, anoLetivo, bimestre });
+        }
+
         public async Task<PlanoAulaObjetivosAprendizagemDto> ObterPlanoAulaEObjetivosAprendizagem(long aulaId)
         {
             var query = ObterQueryPlanoAula();

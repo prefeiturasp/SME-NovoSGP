@@ -415,6 +415,23 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<RegistroFrequenciaAlunoPorAulaDto>(query, new { turmaCodigo, componenteCurricularId, codigosAlunos, dataInicio, dataFim });
         }
 
+        public async Task<bool> ObterPendenciaFrequencias(string turmaCodigo, string componenteCurricularId, DateTime dataLimite, int anoLetivo, short bimestre)
+        {
+            var query = @"select 1
+                       from registro_frequencia rf
+                       inner join aula a on a.id = rf.aula_id
+                       inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
+                       inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
+                       where a.turma_id = @turmaCodigo
+                        and a.disciplina_id = @componenteCurricularId
+                        and not a.excluido
+                        and tc.ano_letivo = @anoLetivo
+                        and pe.bimestre = @bimestre
+                        and a.data_aula < @dataLimite";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { turmaCodigo, componenteCurricularId, anoLetivo, bimestre, dataLimite });
+        }
+
         public async Task<bool> RegistraFrequencia(long componenteCurricularId)
         {
             var query = "select permite_registro_frequencia from componente_curricular where id = @componenteCurricularId";
