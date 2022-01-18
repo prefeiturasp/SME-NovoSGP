@@ -19,9 +19,9 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             
-            var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, componenteCodigo, bimestre,usuarioLogado.EhProfessorCj()));
+            var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, componenteCodigo, bimestre,usuarioLogado.EhProfessorSomenteCj()));
             var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            var periodoBimestre = await mediator.Send(new ObterPeriodoEscolaresPorTurmaBimestresAulaCjQuery(dadosTurma, bimestre,usuarioLogado.EhProfessorCj()));
+            var periodoBimestre = await mediator.Send(new ObterPeriodoEscolaresPorTurmaBimestresAulaCjQuery(dadosTurma, bimestre,usuarioLogado.EhProfessorSomenteCj()));
             var listaPeriodos = new List<PeriodoEscolarComponenteDto>();
 
             if (periodoEscolar.Any() && !ehRegencia)
