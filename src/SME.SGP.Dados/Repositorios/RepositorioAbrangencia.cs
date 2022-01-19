@@ -40,6 +40,25 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
+        public void AtualizaAbrangenciaHistoricaAnosAnteriores(IEnumerable<long> ids, int anoLetivo)
+        {
+            var dtFimVinculo = DateTimeExtension.HorarioBrasilia().Date;
+
+            string comando = $@" update abrangencia as a
+                                set historico = true, dt_fim_vinculo = '{dtFimVinculo.Year}-{dtFimVinculo.Month}-{dtFimVinculo.Day}'
+                                from abrangencia ab
+                                left join turma t on t.id = ab.turma_id
+                                where a.id = ab.id
+                                and (ab.turma_id is null Or (t.id = ab.turma_id and t.ano_letivo = {anoLetivo}))                                    
+                                and a.id in (#ids) ";
+
+            for (int i = 0; i < ids.Count(); i += 900)
+            {
+                var iteracao = ids.Skip(i).Take(900);
+                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+            }
+        }
+
         public void ExcluirAbrangencias(IEnumerable<long> ids)
         {
             const string comando = @"delete from public.abrangencia where id in (#ids) and historico = false";

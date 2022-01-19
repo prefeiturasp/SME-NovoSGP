@@ -15,7 +15,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IMediator mediator;
 
-        public TrataSincronizacaoInstitucionalTurmaCommandHandler(IRepositorioTurma repositorioTurma, IMediator mediator)
+        public TrataSincronizacaoInstitucionalTurmaCommandHandler(IRepositorioTurma repositorioTurma,
+                                                                  IMediator mediator)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -25,12 +26,18 @@ namespace SME.SGP.Aplicacao
         {
             var turmaEOL = request.TurmaEOL;
 
+            var codigoRf = "7941706";
+            //var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
             if (request.TurmaSGP == null)
                 return await IncluirTurmaAsync(turmaEOL, request.TurmaSGP);
 
             if (turmaEOL.Situacao == "C")
             {
-                return await AtualizarTurmaParaHistoricaAsync(turmaEOL.Codigo.ToString());
+                var turmaAtualizadaComSucesso = await AtualizarTurmaParaHistoricaAsync(turmaEOL.Codigo.ToString());
+
+                if (turmaAtualizadaComSucesso)
+                    return await mediator.Send(new TrataAbrangenciaHistoricaTurmaCommand(request.TurmaSGP.AnoLetivo,codigoRf));
             }
 
             if (turmaEOL.Situacao == "E")
@@ -40,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 return await IncluirTurmaAsync(turmaEOL, request.TurmaSGP);
 
             return true;
-        }
+        }              
 
         private async Task<bool> VerificarTurmaExtintaAsync(TurmaParaSyncInstitucionalDto turma, long turmaSgpId)
         {
@@ -84,9 +91,10 @@ namespace SME.SGP.Aplicacao
             if (!turmaAtualizada)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao atualizar a turma para histórica.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, "Atualizar Turma Para Historica Async"));
-                return false;
+                return turmaAtualizada;
             }
-            return true;
+
+            return turmaAtualizada;
         }
 
         private async Task<bool> IncluirTurmaAsync(TurmaParaSyncInstitucionalDto turmaEol, Turma turmaSgp)
