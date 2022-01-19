@@ -12,18 +12,21 @@ namespace SME.SGP.Aplicacao
     public class ComandosAulaPrevista : IComandosAulaPrevista
     {
         private readonly IRepositorioAulaPrevista repositorio;
+        private readonly IRepositorioAulaPrevistaBimestre repositorioAulaPrevistaBimestre;
         private readonly IRepositorioAulaPrevistaBimestreConsulta repositorioAulaPrevistaBimestreConsulta;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendarioConsulta;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
 
         public ComandosAulaPrevista(IRepositorioAulaPrevista repositorio,
+                                    IRepositorioAulaPrevistaBimestre repositorioAulaPrevistaBimestre,
                                     IRepositorioAulaPrevistaBimestreConsulta repositorioAulaPrevistaBimestreConsulta,
                                     IRepositorioTipoCalendarioConsulta repositorioTipoCalendarioConsulta,
                                     IUnitOfWork unitOfWork,
                                     IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.repositorioAulaPrevistaBimestre = repositorioAulaPrevistaBimestre ?? throw new ArgumentNullException(nameof(repositorioAulaPrevistaBimestre));
             this.repositorioAulaPrevistaBimestreConsulta = repositorioAulaPrevistaBimestreConsulta ?? throw new ArgumentNullException(nameof(repositorioAulaPrevistaBimestreConsulta));
             this.repositorioTipoCalendarioConsulta = repositorioTipoCalendarioConsulta ?? throw new ArgumentNullException(nameof(repositorioTipoCalendarioConsulta));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -43,7 +46,7 @@ namespace SME.SGP.Aplicacao
             {
                 AulaPrevistaBimestre aulaPrevistaBimestre = aulasPrevistasBimestre.FirstOrDefault(b => b.Bimestre == bimestre.Bimestre);
                 aulaPrevistaBimestre = MapearParaDominio(id, bimestre, aulaPrevistaBimestre);
-                repositorioAulaPrevistaBimestreConsulta.Salvar(aulaPrevistaBimestre);
+                repositorioAulaPrevistaBimestre.Salvar(aulaPrevistaBimestre);
             }
 
             unitOfWork.PersistirTransacao();
@@ -80,7 +83,7 @@ namespace SME.SGP.Aplicacao
 
             if (aulaPrevistaDto.BimestresQuantidade != null)
                 foreach (var bimestreQuantidadeDto in aulaPrevistaDto.BimestresQuantidade)
-                    await repositorioAulaPrevistaBimestreConsulta.SalvarAsync(new AulaPrevistaBimestre()
+                    await repositorioAulaPrevistaBimestre.SalvarAsync(new AulaPrevistaBimestre()
                     {
                         AulaPrevistaId = aulaPrevistaDto.Id,
                         Bimestre = bimestreQuantidadeDto.Bimestre,
