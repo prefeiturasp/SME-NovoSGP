@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasFechamentoTurma.Setup(a => a.ObterCompletoPorIdAsync(It.IsAny<long>())).Returns(Task.FromResult(new FechamentoTurma() { Turma = new Turma() { CodigoTurma = "1234" } }));
             consultasPeriodoEscolar.Setup(a => a.ObterUltimoPeriodoAsync(It.IsAny<int>(), It.IsAny<ModalidadeTipoCalendario>(), It.IsAny<int>())).Returns(Task.FromResult(new PeriodoEscolar()));
             repositorioConselhoClasseAluno.Setup(a => a.ObterPorPeriodoAsync(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
-            servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>())).Returns(Task.FromResult(true));
+            servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>(), It.IsAny<bool>())).Returns(Task.FromResult(true));
             servicoUsuario.Setup(a => a.ObterUsuarioLogado()).Returns(Task.FromResult(new Usuario()));
             servicoEOL.Setup(a => a.ObterDisciplinasPorCodigoTurma(It.IsAny<string>())).Returns(Task.FromResult(Enumerable.Empty<DisciplinaResposta>()));
             repositorioFrequenciaAlunoDisciplinaPeriodo.Setup(a => a.ObterFrequenciaBimestresAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<TipoFrequenciaAluno>())).Returns(Task.FromResult(Enumerable.Empty<FrequenciaAluno>()));
@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
             consultasPeriodoEscolar.Setup(a => a.ObterUltimoPeriodoAsync(It.IsAny<int>(), It.IsAny<ModalidadeTipoCalendario>(), It.IsAny<int>())).Returns(Task.FromResult(new PeriodoEscolar()));
             repositorioConselhoClasseAluno.Setup(a => a.ObterPorPeriodoAsync(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
-            servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>())).Returns(Task.FromResult(false));
+            servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>(), It.IsAny<bool>())).Returns(Task.FromResult(false));
             consultasFechamentoTurma.Setup(a => a.ObterCompletoPorIdAsync(It.IsAny<long>())).Returns(Task.FromResult(
                 new FechamentoTurma()
                 {
@@ -140,7 +140,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             }));
             consultasPeriodoEscolar.Setup(a => a.ObterUltimoPeriodoAsync(It.IsAny<int>(), It.IsAny<ModalidadeTipoCalendario>(), It.IsAny<int>())).Returns(Task.FromResult(new PeriodoEscolar()));
             repositorioConselhoClasseAluno.Setup(a => a.ObterPorPeriodoAsync(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
-            servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>())).Returns(Task.FromResult(false));
+            servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>(), It.IsAny<bool>())).Returns(Task.FromResult(false));
             await Assert.ThrowsAsync<NegocioException>(() => consultasConselhoClasseAluno.ObterParecerConclusivo(0, 0, "", ""));
         }
     }
