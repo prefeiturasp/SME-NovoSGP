@@ -199,7 +199,7 @@ namespace SME.SGP.Dominio.Servicos
             var id = repositorioPeriodoFechamento.Salvar(fechamento);
             repositorioPeriodoFechamento.SalvarBimestres(fechamento.FechamentosBimestre, id);
             unitOfWork.PersistirTransacao();
-            CriarEventoFechamento(fechamento);
+            await CriarEventoFechamento(fechamento);
         }
 
         private static Notificacao MontaNotificacao(string nomeEntidade, string tipoEntidade, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, string codigoUe, string codigoDre)
@@ -262,26 +262,22 @@ namespace SME.SGP.Dominio.Servicos
             });
         }
 
-        private async void CriarEventoFechamento(PeriodoFechamento fechamento)
+        private async Task CriarEventoFechamento(PeriodoFechamento fechamento)
         {
             var tipoEvento = repositorioTipoEvento.ObterTipoEventoPorTipo(TipoEvento.FechamentoBimestre);
+        
             if (tipoEvento == null)
-            {
                 throw new NegocioException("Tipo de evento de fechamento de bimestre não encontrado na base de dados.");
-            }
 
                 foreach (var bimestre in fechamento.FechamentosBimestre)
                 {
                     EventoFechamento fechamentoExistente = await mediator.Send(new ObterEventoFechamenoPorIdQuery(bimestre.Id));
 
                 if (fechamentoExistente != null)
-                {
                     AtualizaEventoDeFechamento(bimestre, fechamentoExistente);
-                }
+                
                 else
-                {
                     CriaEventoDeFechamento(fechamento, tipoEvento, bimestre);
-                }
             }
         }
 
