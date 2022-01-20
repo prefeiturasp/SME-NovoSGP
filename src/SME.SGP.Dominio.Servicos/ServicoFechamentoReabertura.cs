@@ -115,8 +115,14 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<string> ExcluirAsync(FechamentoReabertura fechamentoReabertura)
         {
-            unitOfWork.IniciarTransacao();
+            var fechamentoReaberturasParaExcluir = Enumerable.Empty<FechamentoReabertura>();
+            if (fechamentoReabertura.EhParaUe())
+            {
+                var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, fechamentoReabertura.DreId, fechamentoReabertura.UeId, null);
+                fechamentoReaberturasParaExcluir = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id && fechamentoReabertura.Inicio >= a.Inicio || a.Fim >= fechamentoReabertura.Fim);
+            }
 
+            unitOfWork.IniciarTransacao();
             try
             {
                 fechamentoReabertura.Excluir();
@@ -126,14 +132,9 @@ namespace SME.SGP.Dominio.Servicos
                     await ExcluirVinculosAysnc(fechamentoReabertura);
                 else
                 {
-                    var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, fechamentoReabertura.DreId, fechamentoReabertura.UeId, null);
-                    var fechamentoReaberturasParaExcluir = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id && fechamentoReabertura.Inicio >= a.Inicio || a.Fim >= fechamentoReabertura.Fim);
-
                     if (fechamentoReaberturasParaExcluir != null && fechamentoReaberturasParaExcluir.Any())
-                    {
                         foreach (var fechamentoReaberturaParaExcluir in fechamentoReaberturasParaExcluir)
                             await ExcluirVinculosAysnc(fechamentoReaberturaParaExcluir);
-                    }
                 }
                 unitOfWork.PersistirTransacao();
             }
