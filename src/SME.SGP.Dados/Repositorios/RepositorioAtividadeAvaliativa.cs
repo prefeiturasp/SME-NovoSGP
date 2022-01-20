@@ -145,6 +145,32 @@ namespace SME.SGP.Dados.Repositorios
             return database.Query<AtividadeAvaliativa>(sql.ToString(), parametros);
         }
 
+        public async Task<bool> VerificaAtividadesAvaliativasSemNotaParaNenhumAlunoNoBimestre(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int tipoAtividadeAvaliativa)
+        {
+            var sql = @"select 1
+                        from atividade_avaliativa av
+                       inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = av.id
+                       inner join tipo_avaliacao ta on ta.id = av.tipo_avaliacao_id
+                        left join notas_conceito n on n.atividade_avaliativa = av.id
+                       where not av.excluido
+                         and av.turma_id = @turmaCodigo
+	                     and aad.disciplina_id = @disciplinaId
+                         and av.data_avaliacao::date between @inicioPeriodo::date and @fimPeriodo::date
+                         and n.id is null
+                         and ta.codigo = @tipoAtividadeAvaliativa";
+
+            var parametros = new
+            {
+                turmaCodigo,
+                disciplinaId,
+                inicioPeriodo,
+                fimPeriodo,
+                tipoAtividadeAvaliativa
+            };
+
+            return await database.QueryFirstOrDefaultAsync<bool>(sql.ToString(), parametros);
+        }
+
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesPorDia(string dreId, string ueId, DateTime dataAvaliacao, string professorRf, string turmaId)
         {
             StringBuilder query = new StringBuilder();

@@ -87,6 +87,50 @@ namespace SME.SGP.Dados.Repositorios
             return listaRetorno;
         }
 
+        public async Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, int anoLetivo)
+        {
+            var sqlQuery = new StringBuilder();
+
+            sqlQuery.AppendLine("select 1");
+            sqlQuery.AppendLine("  	from aula a");
+            sqlQuery.AppendLine("  		inner join tipo_calendario tc");
+            sqlQuery.AppendLine("  			on tc.ano_letivo = @anoLetivo and a.tipo_calendario_id = tc.id and a.disciplina_id = @disciplinaId");
+            if (tipoPendenciaAula == TipoPendencia.Frequencia)
+            {
+                sqlQuery.AppendLine("  		inner join componente_curricular cc");
+                sqlQuery.AppendLine("            on cc.permite_registro_frequencia and a.disciplina_id::int8 = cc.id");
+            }
+            sqlQuery.AppendLine("  		inner join turma t");
+            sqlQuery.AppendLine("  			on tc.ano_letivo = t.ano_letivo and t.modalidade_codigo = any(@modalidades) and a.turma_id = t.turma_id and t.turma_id = @turmaId");
+            sqlQuery.AppendLine("  		inner join ue");
+            sqlQuery.AppendLine("  			on t.ue_id = ue.id");
+            sqlQuery.AppendLine("  		inner join dre");
+            sqlQuery.AppendLine("  			on dre.dre_id = @dre and ue.dre_id = dre.id");
+            sqlQuery.AppendLine("  where not a.excluido and");
+            sqlQuery.AppendLine("	a.data_aula < @hoje and");
+            sqlQuery.AppendLine("	not exists (select 1");
+            sqlQuery.AppendLine("			    from pendencia_aula pa");
+            sqlQuery.AppendLine("			    	inner join pendencia p");
+            sqlQuery.AppendLine("			    		on pa.pendencia_id = p.id");
+            sqlQuery.AppendLine("			    where not p.excluido and");
+            sqlQuery.AppendLine("			    	p.tipo = @tipo and");
+            sqlQuery.AppendLine("			    	pa.aula_id = a.id) and");
+            sqlQuery.AppendLine("	not exists (select 1");
+            sqlQuery.AppendLine($"				from {tabelaReferencia} tf");
+            sqlQuery.AppendLine("				where tf.aula_id = a.id);");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(), 
+                new 
+                {
+                    disciplinaId,
+                    turmaId,
+                    anoLetivo,
+                    hoje = DateTime.Today.Date,
+                    tipo = tipoPendenciaAula,
+                    modalidades
+                }, commandTimeout: 60);
+        }
+
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(int anoLetivo)
         {
             var listaRetorno = new List<Aula>();
@@ -134,6 +178,46 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return listaRetorno;
+        }
+
+        public async Task<bool> PossuiPendenciasAtividadeAvaliativa(string disciplinaId, string turmaId, int anoLetivo)
+        {
+            var sqlQuery = new StringBuilder();
+
+            sqlQuery.AppendLine("select 1");
+            sqlQuery.AppendLine("	from atividade_avaliativa aa");
+            sqlQuery.AppendLine("		inner join atividade_avaliativa_disciplina aad");
+            sqlQuery.AppendLine("			on extract(year from aa.data_avaliacao) = @anoLetivo and");
+            sqlQuery.AppendLine("			   aa.id = aad.atividade_avaliativa_id");
+            sqlQuery.AppendLine("		inner join aula a");
+            sqlQuery.AppendLine("			on extract(year from a.data_aula) = @anoLetivo and");
+            sqlQuery.AppendLine("			   a.disciplina_id = @disciplinaId and");
+            sqlQuery.AppendLine("			   a.turma_id = @turmaId and");
+            sqlQuery.AppendLine("			   aa.turma_id = a.turma_id and");
+            sqlQuery.AppendLine("			   aa.data_avaliacao::date = a.data_aula::date and");
+            sqlQuery.AppendLine("			   aad.disciplina_id = a.disciplina_id");
+            sqlQuery.AppendLine("where not aa.excluido and");
+            sqlQuery.AppendLine("	not a.excluido and");
+            sqlQuery.AppendLine("	a.data_aula::date < @hoje and");
+            sqlQuery.AppendLine("	not exists (select 1");
+            sqlQuery.AppendLine("				from pendencia_aula pa");
+            sqlQuery.AppendLine("					inner join pendencia p");
+            sqlQuery.AppendLine("						on pa.pendencia_id = p.id");
+            sqlQuery.AppendLine("				where not p.excluido and");
+            sqlQuery.AppendLine("					p.tipo = @tipo) and");
+            sqlQuery.AppendLine("	not exists (select 1");
+            sqlQuery.AppendLine("				from notas_conceito nc");
+            sqlQuery.AppendLine("				where nc.atividade_avaliativa = aa.id);");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
+                new
+                {
+                    disciplinaId,
+                    turmaId,
+                    anoLetivo,
+                    hoje = DateTime.Today.Date,
+                    tipo = TipoPendencia.Avaliacao
+                }, commandTimeout: 60);
         }
 
         public async Task Excluir(long pendenciaId, long aulaId)
