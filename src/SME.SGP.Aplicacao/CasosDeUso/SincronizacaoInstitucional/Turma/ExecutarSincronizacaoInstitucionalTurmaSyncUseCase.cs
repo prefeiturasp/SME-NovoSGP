@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var ueId = mensagemRabbit.Mensagem.ToString();
+
             if (string.IsNullOrEmpty(ueId))
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a sincronização das turmas. O codígo da Ue não foi informado", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
