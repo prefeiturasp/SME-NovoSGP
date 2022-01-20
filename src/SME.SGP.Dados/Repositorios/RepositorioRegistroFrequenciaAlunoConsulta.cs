@@ -125,8 +125,7 @@ namespace SME.SGP.Dados.Repositorios
 	                p.periodo_fim as PeriodoFim,
 	                p.bimestre,
                     rfa.codigo_aluno as AlunoCodigo,
-                    a.disciplina_id as ComponenteCurricularId,
-                    rfa.valor as TipoFrequencia
+                    a.disciplina_id as ComponenteCurricularId
                 from
 	                registro_frequencia_aluno rfa
                 inner join registro_frequencia rf on
@@ -151,8 +150,7 @@ namespace SME.SGP.Dados.Repositorios
 	                p.periodo_fim,
 	                p.bimestre,
                     rfa.codigo_aluno,
-                    a.disciplina_id,
-                    rfa.valor";
+                    a.disciplina_id";
 
             return await database.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmasId });
         }

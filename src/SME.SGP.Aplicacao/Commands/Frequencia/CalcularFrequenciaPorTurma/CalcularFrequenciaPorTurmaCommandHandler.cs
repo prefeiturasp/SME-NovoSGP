@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
             if (registroFreqAlunos.Any())
             {
-                var totalAulasDaDisciplina = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.TurmaId, request.TurmaId));
+                var totalAulasDaDisciplina = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.DisciplinaId, request.TurmaId));
                 var totalAulasDaTurmaGeral = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, string.Empty, request.TurmaId));
 
                 var alunosComFrequencia = registroFreqAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
                                                                    !registroFrequenciaAlunos.Any(a => a.AlunoCodigo == f.CodigoAluno &&
                                                                                                 a.ComponenteCurricularId == f.DisciplinaId &&
                                                                                                 a.PeriodoEscolarId == f.PeriodoEscolarId &&
-                                                                                                a.TipoFrequencia == (int)TipoFrequencia.F
+                                                                                                a.TotalAusencias > 0
                                                                                                 )).ToList();
 
             if (alunosSemAusencia != null && alunosSemAusencia.Any())
@@ -173,7 +173,7 @@ namespace SME.SGP.Aplicacao
                 .Where(aluno => aluno.AlunoCodigo == codigoAluno)
                 .Aggregate(0,
                     (total, frequencia) =>
-                        total + (frequencia.TotalPresencas + frequencia.TotalAusencias + frequencia.TotalPresencas));
+                        total + (frequencia.TotalPresencas + frequencia.TotalAusencias + frequencia.TotalRemotos));
 
             var frequenciaDisciplinaAluno = TrataFrequenciaPorDisciplinaAluno(codigoAluno,
                 totalAulasNaDisciplinaPorAluno == 0 ? totalAulasNaDisciplina : totalAulasNaDisciplinaPorAluno,
