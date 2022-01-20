@@ -56,11 +56,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task CriarEvento(Itinerancia itinerancia, IEnumerable<ItineranciaObjetivoDescricaoDto> objetivos)
         {
-            var ue = await mediator.Send(new ObterUePorIdQuery(itinerancia.UeId));
             await mediator.Send(new CriarEventoItineranciaPAAICommand(
                 itinerancia.Id,
-                ue.Dre.CodigoDre,
-                ue.CodigoUe,
+                itinerancia.Dre.CodigoDre,
+                itinerancia.Ue.CodigoUe,
                 itinerancia.DataRetornoVerificacao.Value,
                 itinerancia.DataVisita,
                 objetivos));
