@@ -42,7 +42,52 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute(query, new { fechamentoId, tipoPendencia });
         }
 
-        public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, int[] tiposPendencias, string tituloPendencia, string turmaCodigo, Paginacao paginacao, int? tipoGrupo)
+        public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId, Paginacao paginacao)
+        {
+            var situacao = SituacaoPendencia.Pendente;
+
+            var query = @" select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo 
+		                            from pendencia p 
+		                            inner join pendencia_perfil pp on pp.pendencia_id  = p.id 
+		                            inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id
+		                            where not p.excluido 
+		                            and ppu.usuario_id = @usuarioId 
+		                            and situacao = @situacao
+                            union all 
+                            select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo 
+		                            from pendencia p 
+		                            inner join pendencia_usuario pu on pu.pendencia_id = p.id
+		                            where not p.excluido 
+		                            and pu.usuario_id = @usuarioId 
+		                            and situacao = @situacao";
+
+            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+                paginacao = new Paginacao(1, 10);
+
+            var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
+            var queryPendencias = await database.Conexao.QueryAsync<Pendencia>(query, new { usuarioId, situacao });
+            var totalRegistrosDaQuery = queryPendencias.Count();
+
+            var queryPendenciasPaginado = $@"{query} offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;";
+
+            var parametros = new
+            {
+                usuarioId,
+                qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados,
+                qtde_registros = paginacao.QuantidadeRegistros,
+                situacao
+            };
+
+            retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendenciasPaginado, parametros);
+            retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
+            retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            retornoPaginado.Items = retornoPaginado.Items.Count() > 0 ? retornoPaginado.Items.OrderByDescending(rp => rp.CriadoEm) : retornoPaginado.Items;
+
+            return retornoPaginado;
+        }
+
+        public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioComFiltro(long usuarioId, int[] tiposPendencias, string tituloPendencia, string turmaCodigo, Paginacao paginacao, int? tipoGrupo)
         {
             var situacao = SituacaoPendencia.Pendente;
             bool queryMontadaParaTurma = false;
