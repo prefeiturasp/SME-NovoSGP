@@ -226,20 +226,20 @@ namespace SME.SGP.Dados.Repositorios
 	                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
 	                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
                                 LEFT JOIN pendencia_professor ppf ON ppf.pendencia_id = p.id
-                                LEFT JOIN turma t ON t.id = coalesce(ft.turma_id, ppf.turma_id) ";
+                                INNER JOIN turma t ON t.id = coalesce(ft.turma_id, ppf.turma_id) ";
                     break;
 
                 case TipoPendenciaGrupo.Calendario:
                     query = @"  LEFT JOIN pendencia_aula pa ON pa.pendencia_id = p.id
                                 LEFT JOIN pendencia_calendario_ue pcu on pcu.pendencia_id = p.id
                                 LEFT JOIN tipo_calendario tc on tc.id = pcu.tipo_calendario_id
-                                LEFT JOIN aula a on a.tipo_calendario_id = tc.id
-                                LEFT JOIN turma t on t.turma_id = a.turma_id ";
+                                INNER JOIN aula a on a.tipo_calendario_id = tc.id or a.id = pa.aula_id
+                                INNER JOIN turma t on t.turma_id = a.turma_id ";
                     break;
 
                 case TipoPendenciaGrupo.DiarioClasse:
                     query = @"  LEFT JOIN pendencia_registro_individual pri ON pri.pendencia_id = p.id
-                                LEFT JOIN turma t ON t.id = pri.turma_id ";
+                                INNER JOIN turma t ON t.id = pri.turma_id ";
                     break;
             }
 
