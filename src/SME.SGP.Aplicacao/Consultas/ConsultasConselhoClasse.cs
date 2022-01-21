@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
             }
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);
 
-            if (bimestre == 0 && !consideraHistorico && turma.AnoLetivo != 2020)
+            if (bimestre == 0 && !consideraHistorico && turma.AnoLetivo == DateTime.Now.Year)
             {
                 var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreTurmaQuery(turma));
                 if (!retornoConselhoBimestre.possuiConselho)
