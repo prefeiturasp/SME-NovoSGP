@@ -6,5 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioComponenteCurricular
     {
         void SalvarVarias(IEnumerable<ComponenteCurricularDto> componentesCurriculares);
+        void AtualizarVarios(IEnumerable<ComponenteCurricularDto> componentesCurriculares);
     }
 }

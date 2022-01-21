@@ -1,8 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurricularesPorAnosEModalidade;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,10 +15,14 @@ namespace SME.SGP.Aplicacao
         {
             var componentesEol = await mediator.Send(new ObterComponentesCurricularesEolQuery());
             var componentesSGP = await mediator.Send(new ObterComponentesCurricularesQuery());
-            var naoExiste = componentesEol.Where(c => !componentesSGP.Any(x => x.Codigo == c.Codigo));
+            var inserirComponentes = componentesEol.Where(c => !componentesSGP.Any(x => x.Codigo == c.Codigo));
+            var atualizarComponentes = componentesEol.Where(c => componentesSGP.Any(x => x.Codigo == c.Codigo && !c.Descricao.Equals(x.Descricao) ));
 
-            if (naoExiste.Any())
-                await mediator.Send(new InserirVariosComponentesCurricularesCommand(naoExiste));
+            if (inserirComponentes.Any())
+                await mediator.Send(new InserirVariosComponentesCurricularesCommand(inserirComponentes));
+
+            if (atualizarComponentes.Any())
+                await mediator.Send(new AtualizarVariosComponentesCurricularesCommand(atualizarComponentes));
 
             return true;
         }
