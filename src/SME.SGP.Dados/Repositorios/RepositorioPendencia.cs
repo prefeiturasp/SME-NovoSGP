@@ -121,7 +121,7 @@ namespace SME.SGP.Dados.Repositorios
                 if (!string.IsNullOrEmpty(tituloPendencia))
                     query = $"{query} and UPPER(p.titulo) like UPPER('%" + tituloPendencia + "%')";
 
-                if (!string.IsNullOrEmpty(turmaCodigo))
+                if (!string.IsNullOrEmpty(turmaCodigo) && (TipoPendenciaGrupo)tipoGrupo.Value != TipoPendenciaGrupo.AEE)
                     query += $" AND t.turma_id = '{turmaCodigo}'";
 
                 var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
