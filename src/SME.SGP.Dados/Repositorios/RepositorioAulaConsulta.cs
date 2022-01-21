@@ -590,13 +590,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and t.ano_letivo = @anoLetivo");
 
             if (!string.IsNullOrWhiteSpace(usuarioRF))
-                query.AppendLine("and a.professor_rf = @usuarioRF ");
-
-            if (ehProfessor)
-            {
-                var filtroAulaCJ = aulaCJ ? "" : "not";
-                query.AppendLine($"and {filtroAulaCJ} a.aula_cj ");
-            }
+                query.AppendLine("and a.professor_rf = @usuarioRF ");            
 
             return database.Conexao.Query<Aula, Turma, Aula>(query.ToString(), (aula, turma) =>
             {
