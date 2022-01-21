@@ -66,23 +66,32 @@ namespace SME.SGP.Worker.RabbitMQ
         {
             DeclararFilasPorRota(typeof(RotasRabbitSgp), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
             DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
+            DeclararFilasPorRota(typeof(RotasLog), ExchangeSgpRabbit.SgpLogs, null, false);
         }
 
-        private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter)
+        private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter, bool deveDeclararDeadLetter = true)
         {
-            foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
+            var args = new Dictionary<string, object>();
+
+            if (deveDeclararDeadLetter)
             {
-                var args = new Dictionary<string, object>()
+                args = new Dictionary<string, object>()
                     {
                         { "x-dead-letter-exchange", exchangeDeadLetter }
                     };
+            }
 
+            foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
+            {
                 canalRabbit.QueueDeclare(fila, true, false, false, args);
                 canalRabbit.QueueBind(fila, exchange, fila, null);
 
-                var filaDeadLetter = $"{fila}.deadletter";
-                canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
-                canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
+                if (deveDeclararDeadLetter)
+                {
+                    var filaDeadLetter = $"{fila}.deadletter";
+                    canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
+                    canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
+                }
             }
         }
         private void RegistrarFilaComErro()
@@ -124,7 +133,7 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.PendenciasGeraisEventos, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisEventosUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula, new ComandoRabbit("Executa exclusão de pendências da aula", typeof(IExecutarExclusaoPendenciasAulaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes, new ComandoRabbit("Executa exclusão de pendências de dias letivos insuficientes", typeof(IExecutarExclusaoPendenciaDiasLetivosInsuficientes)));
-            
+
             comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciaParametroEvento, new ComandoRabbit("Executa exclusão de pendências de eventos por parâmetro", typeof(IExecutarExclusaoPendenciaParametroEvento)));
             comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAusenciaAvaliacao, new ComandoRabbit("Executa exclusão de pendências de ausencia de avaliação", typeof(IExecutarExclusaoPendenciasAusenciaAvaliacaoUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaVerificacaoPendenciasProfessor, new ComandoRabbit("Executa verificação de pendências de avaliação do professor", typeof(IExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase)));
