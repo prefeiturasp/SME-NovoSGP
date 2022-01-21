@@ -55,9 +55,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/{codigoTurma}/disciplinas/")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDisciplinas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices] IConsultasDisciplina consultasDisciplina)
+        public async Task<IActionResult> ObterDisciplinas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices] IConsultasDisciplina consultasDisciplina, [FromQuery] bool realizarAgrupamentoComponente = false)
         {
-            var retorno = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(codigoTurma, turmaPrograma);
+            var retorno = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(codigoTurma, turmaPrograma, realizarAgrupamentoComponente);
 
             return Ok(retorno);
         }
@@ -65,9 +65,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("disciplinas/turmas")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDisciplinas([FromBody] string[] codigosTurmas, [FromServices] IObterComponentesCurricularesPorProfessorETurmasCodigosUseCase useCase)
+        public async Task<IActionResult> ObterDisciplinas([FromBody] string[] codigosTurmas, [FromServices] IObterComponentesCurricularesPorProfessorETurmasCodigosUseCase useCase, [FromQuery] bool realizarAgrupamentoComponente = false)
         {
-            var retorno = await useCase.Executar(codigosTurmas);
+            var retorno = await useCase.Executar(codigosTurmas, realizarAgrupamentoComponente);
 
             return Ok(retorno);
         }

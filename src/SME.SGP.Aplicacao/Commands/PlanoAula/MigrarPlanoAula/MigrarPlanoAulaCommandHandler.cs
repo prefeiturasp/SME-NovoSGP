@@ -61,7 +61,6 @@ namespace SME.SGP.Aplicacao
                     Id = planoTurma.Sobreescrever ? request.PlanoAulaMigrar.PlanoAulaId : 0,
                     AulaId = aulaConsultaDto.Id,
                     Descricao = planoAulaDto.Descricao,
-                    DesenvolvimentoAula = planoAulaDto.DesenvolvimentoAula,
                     LicaoCasa = request.PlanoAulaMigrar.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
                     ObjetivosAprendizagemComponente = !usuario.EhProfessorCj() ||
                                                    request.PlanoAulaMigrar.MigrarObjetivos ?

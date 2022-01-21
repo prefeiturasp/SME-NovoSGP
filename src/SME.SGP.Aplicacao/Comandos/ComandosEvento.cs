@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -6,12 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SME.SGP.Aplicacao.CasosDeUso.ExecutarGravarRecorrenciaUseCase;
 
 namespace SME.SGP.Aplicacao
 {
     public class ComandosEvento : IComandosEvento
     {
         private readonly IRepositorioComunicado repositorioComunicado;
+        private readonly IMediator mediator;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoEvento servicoEvento;
@@ -25,11 +28,13 @@ namespace SME.SGP.Aplicacao
                               IServicoWorkflowAprovacao servicoWorkflowAprovacao,
                               IServicoUsuario servicoUsuario,
                               IServicoAbrangencia servicoAbrangencia,
-                              IRepositorioComunicado repositorioComunicado)
+                              IRepositorioComunicado repositorioComunicado,
+                              IMediator mediator)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
+            this.mediator = mediator;
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
@@ -183,7 +188,7 @@ namespace SME.SGP.Aplicacao
             {
                 new RetornoCopiarEventoDto(retornoCadasradoEvento, true)
             };
-            Background.Core.Cliente.Executar<IComandosEvento>(a => a.GravarRecorrencia(eventoDto, evento));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarGravarRecorrencia, new ExecutarGravarRecorrenciaParametro() { Dto = eventoDto, Evento = evento }, Guid.NewGuid(), null));
             mensagens.AddRange(await CopiarEventos(eventoDto));
 
             return mensagens;

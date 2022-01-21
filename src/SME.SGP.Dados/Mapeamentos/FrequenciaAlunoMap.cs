@@ -20,6 +20,8 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(a => a.Bimestre).ToColumn("bimestre");
             Map(a => a.PercentualFrequencia).Ignore();
             Map(a => a.NumeroFaltasNaoCompensadas).Ignore();
+            Map(a => a.TotalRemotos).ToColumn("total_remotos");
+            Map(a => a.TotalPresencas).ToColumn("total_presencas");
         }
     }
 }

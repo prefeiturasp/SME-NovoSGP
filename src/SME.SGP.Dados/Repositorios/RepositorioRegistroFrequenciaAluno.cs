@@ -22,6 +22,12 @@ namespace SME.SGP.Dados
                 new { registroFrequenciaId });
         }
 
+        public async Task RemoverPorRegistroFrequenciaIdENumeroAula(long registroFrequenciaId, int numeroAula, string codigoAluno)
+        {
+            await database.Conexao.ExecuteAsync("DELETE FROM registro_frequencia_aluno WHERE registro_frequencia_id = @registroFrequenciaId AND numero_aula = @numeroAula AND codigo_aluno = @codigoAluno",
+                new { registroFrequenciaId, numeroAula, codigoAluno });
+        }
+
         public async Task<bool> InserirVarios(IEnumerable<RegistroFrequenciaAluno> registros)
         {
             var sql = @"copy registro_frequencia_aluno (                                         
@@ -52,6 +58,24 @@ namespace SME.SGP.Dados
             }
 
             return true;
+        }
+
+        public async Task ExcluirVarios(List<long> idsParaExcluir)
+        {
+            var query = "delete from registro_frequencia_aluno where = any(@idsParaExcluir)";
+
+            using (var conexao = (NpgsqlConnection)database.Conexao)
+            {
+                await conexao.OpenAsync();
+                await conexao.ExecuteAsync(
+                    query,
+                    new
+                    {
+                        idsParaExcluir
+
+                    });
+                conexao.Close();
+            }
         }
     }
 }

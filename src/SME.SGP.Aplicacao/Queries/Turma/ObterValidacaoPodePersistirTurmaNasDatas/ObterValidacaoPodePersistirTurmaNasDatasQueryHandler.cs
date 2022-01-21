@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -15,10 +15,12 @@ namespace SME.SGP.Aplicacao
     public class ObterValidacaoPodePersistirTurmaNasDatasQueryHandler : IRequestHandler<ObterValidacaoPodePersistirTurmaNasDatasQuery, List<PodePersistirNaDataRetornoEolDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IMediator mediator;
 
-        public ObterValidacaoPodePersistirTurmaNasDatasQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterValidacaoPodePersistirTurmaNasDatasQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<List<PodePersistirNaDataRetornoEolDto>> Handle(ObterValidacaoPodePersistirTurmaNasDatasQuery request, CancellationToken cancellationToken)
         {
@@ -32,10 +34,10 @@ namespace SME.SGP.Aplicacao
                 return JsonConvert.DeserializeObject<List<PodePersistirNaDataRetornoEolDto>>(json);
             }
             else
-            {                
-                var erro = $"Não foi possível validar datas para a atribuição do professor no EOL - HttpCode {(int)resposta.StatusCode} - {string.Join("-", request.DateTimes)}";
+            {
+                string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - HttpCode {(int)resposta.StatusCode} - {string.Join("-", request.DateTimes)} - erro: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
+                await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, string.Empty));
 
-                SentrySdk.CaptureMessage(resposta.RequestMessage.ToString());
                 throw new NegocioException(erro);
             }
         }

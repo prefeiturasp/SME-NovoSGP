@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<DisciplinaNomeDto>> Executar(IEnumerable<string> turmasCodigos)
+        public async Task<IEnumerable<DisciplinaNomeDto>> Executar(IEnumerable<string> turmasCodigos,bool realizarAgrupamentoComponente)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var turmaCodigo in turmasCodigos)
             {
-                var componentesNaTurma = await mediator.Send(new ObterComponentesCurricularesPorUsuarioECodigoTurmaQuery(usuarioLogado, turmaCodigo));
+                var componentesNaTurma = await mediator.Send(new ObterComponentesCurricularesPorUsuarioECodigoTurmaQuery(usuarioLogado, turmaCodigo, realizarAgrupamentoComponente));
                 if ((componentesNaTurma != null) && componentesNaTurma.Any())
                     componetesCurriculares.AddRange(componentesNaTurma);
             }

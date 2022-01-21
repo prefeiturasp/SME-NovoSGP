@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
@@ -31,9 +30,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AulaConsultaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public async Task<IActionResult> BuscarPorId(long id, [FromServices] IMediator mediator)
+        public async Task<IActionResult> BuscarPorId(long id, [FromServices] IObterAulaPorIdUseCase obterAulaPorIdUseCase)
         {
-            return Ok(await ObterAulaPorIdUseCase.Executar(mediator, id));
+            return Ok(await obterAulaPorIdUseCase.Executar(id));
         }
 
         [HttpDelete("{id}/recorrencias/{recorrencia}/disciplinaNome/{disciplinaNome}")]
@@ -67,8 +66,13 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterRecorrenciaDaSerie(long aulaId, [FromServices] IConsultasAula consultas, [FromServices] IObterFrequenciaOuPlanoNaRecorrenciaUseCase obterFrequenciaOuPlanoNaRecorrenciaUseCase)
         {
             var recorrencia = consultas.ObterRecorrenciaDaSerie(aulaId);
-            var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica ? 1
-                : await consultas.ObterQuantidadeAulasRecorrentes(aulaId, RecorrenciaAula.RepetirTodosBimestres);
+            
+            var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica 
+                                                ? 1
+                                                : await consultas
+                                                        .ObterQuantidadeAulasRecorrentes(aulaId, 
+                                                                                         RecorrenciaAula.RepetirTodosBimestres);
+            
             var existeFrequenciaPlanoAula = await obterFrequenciaOuPlanoNaRecorrenciaUseCase.Executar(aulaId);
 
             var retorno = new AulaRecorrenciaDto()
@@ -90,6 +94,5 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(aulaId, turmaCodigo, componenteCurricular, dataAula, ehRegencia, tipoAula)));
         }
-
     }
 }

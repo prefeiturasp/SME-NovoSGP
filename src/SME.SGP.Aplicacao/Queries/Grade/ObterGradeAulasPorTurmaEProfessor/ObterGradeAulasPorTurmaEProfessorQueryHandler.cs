@@ -69,8 +69,7 @@ namespace SME.SGP.Aplicacao
             if (componenteCurricularId == 1030)
                 return 4;
 
-            int ano;
-            int.TryParse(turma.Ano, out ano);
+            int.TryParse(turma.Ano, out int ano);
 
             // Busca grade a partir dos dados da abrangencia da turma
             var grade = await mediator.Send(new ObterGradePorTipoEscolaModalidadeDuracaoAnoQuery(turma.Ue.TipoEscola, turma.ModalidadeCodigo, turma.QuantidadeDuracaoAula, ano));

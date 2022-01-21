@@ -18,7 +18,6 @@ namespace SME.SGP.Infra
         public string CriadoPor { get; set; }
         public string CriadoRf { get; set; }
         public string Descricao { get; set; }
-        public string DesenvolvimentoAula { get; set; }
         public long Id { get; set; }
         public long? IdAtividadeAvaliativa { get; set; }
         public string LicaoCasa { get; set; }

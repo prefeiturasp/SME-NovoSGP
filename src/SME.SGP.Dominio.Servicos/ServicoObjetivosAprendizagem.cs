@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
@@ -13,10 +13,10 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoObjetivosAprendizagem : IServicoObjetivosAprendizagem
     {
         private readonly IRepositorioCache repositorioCache;
+        private readonly IMediator mediator;
         private readonly IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IServicoJurema servicoJurema;
-        private readonly IMediator mediator;
 
         public ServicoObjetivosAprendizagem(IServicoJurema servicoJurema,
                                             IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem,
@@ -103,7 +103,10 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
             else
-                SentrySdk.CaptureException(new NegocioException("Parâmetro 'DataUltimaAtualizacaoObjetivosJurema' não encontrado na base de dados, os objetivos de aprendizagem não serão atualizados."));
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand("Parâmetro 'DataUltimaAtualizacaoObjetivosJurema' não encontrado na base de dados, os objetivos de aprendizagem não serão atualizados.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
+            }
+                
         }
 
         private static void MapearParaObjetivoDominio(ObjetivoAprendizagemResposta objetivo, ObjetivoAprendizagem objetivoBase)

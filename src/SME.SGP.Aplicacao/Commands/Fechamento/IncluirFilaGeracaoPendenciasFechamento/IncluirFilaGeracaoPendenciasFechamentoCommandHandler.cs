@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
 using System;
 using System.Threading;
@@ -34,7 +33,6 @@ namespace SME.SGP.Aplicacao
                                                             , request.RegistraFrequencia);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaGeracaoPendenciasFechamento, command, Guid.NewGuid(), request.Usuario));
-            SentrySdk.AddBreadcrumb($"Incluir fila Geração de Pendências do Fechamento", "RabbitMQ");
 
             return true;
         }

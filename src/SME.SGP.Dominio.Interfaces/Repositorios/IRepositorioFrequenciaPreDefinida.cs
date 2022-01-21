@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task RemoverPorCCIdETurmaId(long componenteCurricularId, long turmaId);
         Task Salvar(FrequenciaPreDefinida frequenciaPreDefinida);
         Task<FrequenciaPreDefinidaDto> ObterPorTurmaECCEAlunoCodigo(long turmaId, long componenteCurricularId, string alunoCodigo);
+        Task<IEnumerable<FrequenciaPreDefinidaDto>> ObterPorTurmaEComponente(long turmaId, long componenteCurricularId);
     }
 }

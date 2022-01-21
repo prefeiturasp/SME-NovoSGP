@@ -5,6 +5,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioBase<T> where T : EntidadeBase
     {
+        Task<IEnumerable<T>> ListarAsync();
         IEnumerable<T> Listar();
 
         T ObterPorId(long id);

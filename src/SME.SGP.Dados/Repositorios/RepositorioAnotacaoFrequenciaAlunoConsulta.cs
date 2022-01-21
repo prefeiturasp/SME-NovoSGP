@@ -196,5 +196,19 @@ namespace SME.SGP.Dados.Repositorios
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
+
+        public async Task<IEnumerable<AnotacaoAlunoAulaDto>> ListarAlunosComAnotacaoFrequenciaPorPeriodo(string turmaCodigo, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select afa.codigo_aluno as alunoCodigo
+                          , afa.aula_id as aulaId
+                      from anotacao_frequencia_aluno afa
+                     inner join aula a on a.id = afa.aula_id
+                     where not afa.excluido
+                       and not a.excluido
+                       and a.turma_id = @turmaCodigo
+                       and a.data_aula between @dataInicio and @dataFim";
+
+            return await database.Conexao.QueryAsync<AnotacaoAlunoAulaDto>(query, new { turmaCodigo, dataInicio, dataFim });
+        }
     }
 }
