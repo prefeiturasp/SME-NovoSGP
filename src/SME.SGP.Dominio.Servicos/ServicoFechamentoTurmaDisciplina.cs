@@ -221,7 +221,7 @@ namespace SME.SGP.Dominio.Servicos
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();           
 
             // Valida Permissão do Professor na Turma/Disciplina            
-            if (!turmaFechamento.EhTurmaEdFisicaOuItinerario() && !usuarioLogado.EhGestorEscolar())
+            if (!turmaFechamento.EhTurmaEdFisicaOuItinerario() && !usuarioLogado.EhGestorEscolar() && !usuarioLogado.EhPerfilSME() && !usuarioLogado.EhPerfilDRE())
                 await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim, periodos.periodoFechamento);
 
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
