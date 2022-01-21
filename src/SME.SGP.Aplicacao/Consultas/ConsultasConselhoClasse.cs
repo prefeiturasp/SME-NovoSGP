@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurmaFinal(string turmaCodigo, string alunoCodigo, bool ehFinal = false, bool consideraHistorico = false)
+        public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurmaFinal(string turmaCodigo, string alunoCodigo, bool consideraHistorico = false)
         {
             var turma = await ObterTurma(turmaCodigo);
             var bimestreFinal = 0;

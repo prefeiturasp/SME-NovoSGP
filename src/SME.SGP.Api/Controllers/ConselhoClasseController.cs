@@ -67,14 +67,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterConselhoClasseTurma(string turmaCodigo, int bimestre, string alunoCodigo, bool ehFinal, bool consideraHistorico, [FromServices] IConsultasConselhoClasse consultasConselhoClasse)
             => Ok(await consultasConselhoClasse.ObterConselhoClasseTurma(turmaCodigo, alunoCodigo, bimestre, ehFinal, consideraHistorico));
 
-        [HttpGet("turmas/{turmaCodigo}/alunos/{alunoCodigo}/final/{ehFinal}/consideraHistorico/{consideraHistorico}")]
+        [HttpGet("turmas/{turmaCodigo}/alunos/{alunoCodigo}/consideraHistorico/{consideraHistorico}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(ConselhoClasseAlunoResumoDto), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterConselhoClasseTurmaFinal(string turmaCodigo, string alunoCodigo, bool ehFinal, bool consideraHistorico, [FromServices] IConsultasConselhoClasse consultasConselhoClasse)
+        public async Task<IActionResult> ObterConselhoClasseTurmaFinal(string turmaCodigo, string alunoCodigo, bool consideraHistorico, [FromServices] IConsultasConselhoClasse consultasConselhoClasse)
         {
-            var retorno = (await consultasConselhoClasse.ObterConselhoClasseTurmaFinal(turmaCodigo, alunoCodigo, ehFinal, consideraHistorico));
+            var retorno = (await consultasConselhoClasse.ObterConselhoClasseTurmaFinal(turmaCodigo, alunoCodigo, consideraHistorico));
 
             if (retorno == null)
                 return NoContent();
