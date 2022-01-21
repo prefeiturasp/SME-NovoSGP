@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -54,6 +55,16 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { }));
         }
+        public async Task<IEnumerable<ComponenteCurricularSgp>> ListarComponentesCurricularesSgp()
+        {
+            var query = $@"select id,componente_curricular_pai_id,grupo_matriz_id,area_conhecimento_id,
+                                  descricao,eh_regencia,eh_compartilhada,eh_territorio,eh_base_nacional,
+                                  permite_registro_frequencia,permite_lancamento_nota,descricao_sgp,descricao_infantil 
+                           from componente_curricular cc ";
+
+            return (await database.Conexao.QueryAsync<ComponenteCurricularSgp>(query, new { }));
+        }
+
         public async Task<long[]> ListarCodigosJuremaPorComponenteCurricularId(long id)
         {
             var query = $@"select

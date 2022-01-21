@@ -16,5 +16,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, long turmaId, int bimestre, string codigoAluno);
         Task<string> ObterDescricaoPorId(long id);
         Task<IEnumerable<ComponenteCurricularSimplesDto>> ObterDescricaoPorIds(long[] ids);
+        Task<IEnumerable<ComponenteCurricularSgp>> ListarComponentesCurricularesSgp();
     }
 }

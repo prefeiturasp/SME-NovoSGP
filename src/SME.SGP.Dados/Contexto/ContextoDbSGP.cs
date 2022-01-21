@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SME.SGP.Dados.Mapeamentos.Entity;
 using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Contexto
@@ -9,13 +10,12 @@ namespace SME.SGP.Dados.Contexto
          : base(options)
         { }
 
-        public DbSet<ComponenteCurricular> ComponentesCurriculares { get; set; }
+        public DbSet<ComponenteCurricularSgp> ComponentesCurricularesSgp { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-            //modelBuilder.Entity<ComponenteCurricular>().
-            //modelBuilder.ApplyConfiguration(new ComponenteCurricularEntityMap());
+            base.OnModelCreating(modelBuilder);            
+            modelBuilder.ApplyConfiguration(new ComponenteCurricularSgpEntityMap());
         }
     }
 }

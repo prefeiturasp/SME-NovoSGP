@@ -10,10 +10,13 @@
     <PackageReference Include="Dommel" Version="1.11.0" />
     <PackageReference Include="Elastic.Apm.NetCoreAll" Version="1.11.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.22" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.22" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.22" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Npgsql" Version="5.0.1.1" />
+    <PackageReference Include="Npgsql.Bulk" Version="0.10.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.18" />
     <PackageReference Include="StackExchange.Redis" Version="2.1.58" />
   </ItemGroup>
 
@@ -21,6 +24,10 @@
     <ProjectReference Include="..\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
     <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Repositorios\Interface\" />
   </ItemGroup>
 
 </Project>

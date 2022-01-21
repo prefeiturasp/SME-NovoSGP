@@ -8,16 +8,16 @@ namespace SME.SGP.Aplicacao.Commands
     {
         public class AtualizarVariosComponentesCurricularesCommandHandler : IRequestHandler<AtualizarVariosComponentesCurricularesCommand, bool>
         {
-            private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+            private readonly IRepositorioComponenteCurricularEntity repositorioComponenteCurricular;
 
-            public AtualizarVariosComponentesCurricularesCommandHandler(IRepositorioComponenteCurricular repositorioComponenteCurricular)
+            public AtualizarVariosComponentesCurricularesCommandHandler(IRepositorioComponenteCurricularEntity repositorioComponenteCurricular)
             {
                 this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             }
 
             public async Task<bool> Handle(AtualizarVariosComponentesCurricularesCommand request, CancellationToken cancellationToken)
             {
-                repositorioComponenteCurricular.AtualizarVarios(request.ComponentesCurriculares);
+                await repositorioComponenteCurricular.AlterarVariosAsync(request.ComponentesCurriculares);
 
                 return true;
             }

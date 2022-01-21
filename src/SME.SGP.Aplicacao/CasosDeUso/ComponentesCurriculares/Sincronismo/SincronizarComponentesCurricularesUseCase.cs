@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var componentesEol = await mediator.Send(new ObterComponentesCurricularesEolQuery());
-            var componentesSGP = await mediator.Send(new ObterComponentesCurricularesQuery());
-            var inserirComponentes = componentesEol.Where(c => !componentesSGP.Any(x => x.Codigo == c.Codigo));
-            var atualizarComponentes = componentesEol.Where(c => componentesSGP.Any(x => x.Codigo == c.Codigo && !c.Descricao.Equals(x.Descricao) ));
+            var componentesSGP = await mediator.Send(new ObterComponentesCurricularesSgpQuery());
+            var inserirComponentes = componentesEol.Where(c => !componentesSGP.Any(x => x.Id == int.Parse(c.Codigo)));
+            var atualizarComponentes = componentesSGP.Where(x => componentesEol.Any(c => int.Parse(c.Codigo) == x.Id && !c.Descricao.Equals(x.DescricaoSGP)));
 
             if (inserirComponentes.Any())
                 await mediator.Send(new InserirVariosComponentesCurricularesCommand(inserirComponentes));

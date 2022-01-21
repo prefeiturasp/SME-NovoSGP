@@ -1,5 +1,6 @@
 ﻿using Dapper.FluentMap;
 using Dapper.FluentMap.Dommel;
+using SME.SGP.Dados.Mapeamentos.Entity;
 using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
@@ -198,7 +199,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PendenciaPerfilUsuarioMap());
                config.AddMap(new AtividadeInfantilMap());
                config.AddMap(new ConsolidacaoDashBoardFrequenciaMap());
-
+               
                config.ForDommel();
            });
         }

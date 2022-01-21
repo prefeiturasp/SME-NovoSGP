@@ -1,0 +1,18 @@
+﻿namespace SME.SGP.Dominio
+{
+    public class ComponenteCurricularSgp : EntidadeBase
+    {
+        public long? AreaConhecimentoId { get; set; }
+        public long ComponenteCurricularPaiId { get; set; }
+        public string Descricao { get; set; }
+        public bool EhBaseNacional { get; set; }
+        public bool EhCompatilhada { get; set; }
+        public bool EhRegenciaClasse { get; set; }
+        public bool EhTerritorio { get; set; }
+        public long? GrupoMatrizId { get; set; }
+        public bool PermiteLancamentoNota { get; set; }
+        public bool PermiteRegistroFrequencia { get; set; }
+        public string DescricaoSGP { get; set; }
+        public string DescricaoInfantil { get; set; }
+    }
+}
