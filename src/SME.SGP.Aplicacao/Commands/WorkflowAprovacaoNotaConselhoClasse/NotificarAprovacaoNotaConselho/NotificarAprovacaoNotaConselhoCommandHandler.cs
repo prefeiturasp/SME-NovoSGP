@@ -17,20 +17,17 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
-        private readonly IRepositorioUsuarioConsulta repositorioUsuario;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IServicoEol servicoEOL;
         public NotificarAprovacaoNotaConselhoCommandHandler(IMediator mediator, 
                                                             IRepositorioNotificacao repositorioNotificacao,
                                                             IRepositorioTurmaConsulta repositorioTurma,
-                                                            IRepositorioUsuarioConsulta repositorioUsuario,
                                                             IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                                             IServicoEol servicoEOL)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
