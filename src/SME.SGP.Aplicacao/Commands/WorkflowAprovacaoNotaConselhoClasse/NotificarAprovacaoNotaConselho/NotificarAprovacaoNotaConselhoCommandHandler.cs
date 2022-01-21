@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(NotificarAprovacaoNotaConselhoCommand request, CancellationToken cancellationToken)
         {
             var usuarioRf = await mediator.Send(new ObterCriadorWorkflowQuery(request.WorkFlowId));
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(usuarioRf, "");
+            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(usuarioRf));
 
             if(usuario != null)
             {
