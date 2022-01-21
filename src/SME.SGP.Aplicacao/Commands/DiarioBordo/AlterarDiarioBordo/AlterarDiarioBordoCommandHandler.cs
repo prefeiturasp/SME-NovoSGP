@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             }
 
 
-            var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId);
+            var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId,request.ComponenteCurricularId);
             if (diarioBordo == null)
                 throw new NegocioException($"Diário de Bordo para a aula {request.AulaId} não encontrado!");
 
@@ -86,6 +86,7 @@ namespace SME.SGP.Aplicacao
         {
             entidade.Planejamento = request.Planejamento;
             entidade.ReflexoesReplanejamento = request.ReflexoesReplanejamento;
+            entidade.ComponenteCurricularId = request.ComponenteCurricularId;
         }
     }
 }

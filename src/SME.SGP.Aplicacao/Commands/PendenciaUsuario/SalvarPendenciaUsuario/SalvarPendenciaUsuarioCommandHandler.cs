@@ -21,11 +21,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(SalvarPendenciaUsuarioCommand request, CancellationToken cancellationToken)
         {
-            //await repositorioPendenciaUsuario.SalvarVarias(request.PendenciaId, request.UsuarioId);
             await repositorioPendenciaUsuario.SalvarAsync(new Dominio.PendenciaUsuario
             {
                 UsuarioId = request.UsuarioId,
-                PendenciaId = request.PendenciaId   
+                PendenciaId = request.PendenciaId
             });
             return true;
         }

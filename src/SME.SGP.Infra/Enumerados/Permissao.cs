@@ -673,5 +673,19 @@
         [PermissaoMenu(Menu = "Atas", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 4, EhConsulta = true, Url = "/relatorios/atas/ata-bimestral", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Ata bimestral")]
         ABR_C = 226,
 
+        [PermissaoMenu(Menu = "Gestão", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/gestao/acompanhamento-registros", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Acompanhamento dos registros")]
+        RRP_C = 227,
+
+        [PermissaoMenu(Menu = "Listão", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 8, EhConsulta = true, Url = "/diario-classe/listao")]
+        L_C = 228,
+
+        [PermissaoMenu(Menu = "Listão", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 8, EhInclusao = true, Url = "/diario-classe/listao")]
+        L_I = 229,
+
+        [PermissaoMenu(Menu = "Listão", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 8, EhExclusao = true, Url = "/diario-classe/listao")]
+        L_E = 230,
+
+        [PermissaoMenu(Menu = "Listão", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 8, EhAlteracao = true, Url = "/diario-classe/listao")]
+        L_A = 231,
     }
 }

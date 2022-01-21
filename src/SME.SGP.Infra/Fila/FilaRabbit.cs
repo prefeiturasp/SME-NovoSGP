@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
-using Sentry;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -22,9 +21,7 @@ namespace SME.SGP.Infra
         {
             byte[] body = FormataBodyWorker(adicionaFilaDto);
 
-            rabbitChannel.BasicPublish(ExchangeSgpRabbit.ServidorRelatorios, adicionaFilaDto.Fila, null, body);
-
-            SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
+            rabbitChannel.BasicPublish(ExchangeSgpRabbit.ServidorRelatorios, adicionaFilaDto.Fila, null, body);            
         }
 
         public void PublicaFilaWorkerSgp(PublicaFilaSgpDto publicaFilaSgpDto)

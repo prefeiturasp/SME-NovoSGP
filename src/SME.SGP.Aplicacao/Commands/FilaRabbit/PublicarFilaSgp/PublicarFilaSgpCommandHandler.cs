@@ -16,21 +16,25 @@ namespace SME.SGP.Aplicacao
     public class PublicarFilaSgpCommandHandler : IRequestHandler<PublicarFilaSgpCommand, bool>
     {
         private readonly IConfiguration configuration;
+        private readonly IServicoTelemetria servicoTelemetria;
         private readonly IAsyncPolicy policy;
+        private readonly IMediator mediator;
 
-        public PublicarFilaSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry)
+        public PublicarFilaSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry, IServicoTelemetria servicoTelemetria, IMediator mediator)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
             this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
         {
             var request = new MensagemRabbit(command.Filtros,
                                              command.CodigoCorrelacao,
-                                             command.UsuarioLogadoNomeCompleto,
-                                             command.UsuarioLogadoRF,
-                                             command.PerfilUsuario,
+                                             command.Usuario?.Nome,
+                                             command.Usuario?.CodigoRf,
+                                             command.Usuario?.PerfilAtual,
                                              command.NotificarErroUsuario);
 
             var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
@@ -39,7 +43,9 @@ namespace SME.SGP.Aplicacao
             });
             var body = Encoding.UTF8.GetBytes(mensagem);
 
-            await policy.ExecuteAsync(() => PublicarMensagem(command.Rota, body));
+            servicoTelemetria.Registrar(() => 
+                    policy.ExecuteAsync(() => PublicarMensagem(command.Rota, body)), 
+                            "RabbitMQ", "PublicarFilaSgp", command.Rota);
 
             return true;
         }

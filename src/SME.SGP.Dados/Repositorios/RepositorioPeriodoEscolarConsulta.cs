@@ -337,6 +337,27 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { anoLetivo, modalidadeTipoCalendario, dataReferencia, ueId });
         }
 
+        public async Task<int> ObterBimestreAtualComAberturaPorAnoModalidade(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataReferencia)
+        {
+            var query = @"select
+	                        pe.bimestre 
+                        from
+	                        periodo_fechamento pf
+                        inner join periodo_fechamento_bimestre pfb on
+	                        pfb.periodo_fechamento_id = pf.id
+                        inner join periodo_escolar pe on
+	                        pfb.periodo_escolar_id = pe.id
+                        inner join tipo_calendario tc on
+	                        pe.tipo_calendario_id = tc.id
+                        where
+	                        tc.modalidade = @modalidadeTipoCalendario
+	                        and tc.ano_letivo = @anoLetivo
+	                        and not excluido
+	                        and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { anoLetivo, modalidadeTipoCalendario, dataReferencia });
+        }
+
         public async Task<IEnumerable<PeriodoEscolarModalidadeDto>> ObterPeriodosPassadosNoAno(DateTime data)
         {
             var query = @"select tc.modalidade
@@ -371,6 +392,41 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select bimestre from periodo_escolar where tipo_calendario_id = @tipoCalendarioId";
 
             return await database.Conexao.QueryAsync<int>(query, new { tipoCalendarioId });
+        }
+
+        public async Task<int> ObterBimestre(long periodoEscolarId)
+        {
+            var query = @"select bimestre from periodo_escolar where id = @periodoEscolarId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { periodoEscolarId });
+        }
+
+        public Task<int> ObterBimestrePorDataPendenciaEModalidade(DateTime dataPendenciaCriada, int modalidadeTipoCalendario)
+        {
+            var query = @"select pe.bimestre from periodo_escolar pe 
+                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                where tc.modalidade = @modalidadeTipoCalendario 
+                                and @dataPendenciaCriada between pe.periodo_inicio and pe.periodo_fim";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { dataPendenciaCriada, modalidadeTipoCalendario });
+        }
+
+        public Task<IEnumerable<PeriodoEscolarVerificaRegenciaDto>> ObterPeriodoEscolaresPorTurmaComponenteBimestre(string turmaCodigo, long componenteCurricularId, int bimestre)
+        {
+            var query = @"select distinct pe.id as Id,
+                                   pe.periodo_inicio as DataInicio,    
+                                   pe.periodo_fim as DataFim, 
+                                   pe.bimestre as Bimestre,
+                                   a.data_aula as DataAula
+                            from periodo_escolar pe 
+                                inner join aula a on a.tipo_calendario_id = pe.tipo_calendario_id 
+                                where a.turma_id = @turmaCodigo
+                                and pe.bimestre = @bimestre
+                                and a.disciplina_id = cast(@componenteCurricularId as varchar)
+                                and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
+                                and not a.excluido 
+                                order by a.data_aula";
+            return database.Conexao.QueryAsync<PeriodoEscolarVerificaRegenciaDto>(query, new { turmaCodigo, componenteCurricularId, bimestre});
         }
     }
 }

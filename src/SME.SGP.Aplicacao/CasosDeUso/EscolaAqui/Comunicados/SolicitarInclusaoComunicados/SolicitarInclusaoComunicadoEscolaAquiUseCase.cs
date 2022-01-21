@@ -18,42 +18,50 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Executar(ComunicadoInserirDto comunicado)
         {
-            await ValidarInsercao(comunicado);
+            try
+            {
+                await ValidarInsercao(comunicado);
 
-            if (comunicado.Modalidades.Any() && comunicado.Modalidades.Any(c => c == -99))
-                comunicado.Modalidades = Enum.GetValues(typeof(Modalidade))
-                        .Cast<Modalidade>()
-                        .Select(d => (int)d)
-                        .ToArray();
+                if (comunicado.Modalidades.Any() && comunicado.Modalidades.Any(c => c == -99))
+                    comunicado.Modalidades = Enum.GetValues(typeof(Modalidade))
+                            .Cast<Modalidade>()
+                            .Select(d => (int)d)
+                            .ToArray();
 
-            if (comunicado.TiposEscolas.Any() && comunicado.TiposEscolas.Any(c => c == -99))
-                comunicado.TiposEscolas = Enum.GetValues(typeof(TipoEscola))
-                        .Cast<TipoEscola>()
-                        .Select(d => (int)d)
-                        .ToArray();
+                if (comunicado.TiposEscolas.Any() && comunicado.TiposEscolas.Any(c => c == -99))
+                    comunicado.TiposEscolas = Enum.GetValues(typeof(TipoEscola))
+                            .Cast<TipoEscola>()
+                            .Select(d => (int)d)
+                            .ToArray();
 
-            var retorno = await mediator.Send(new InserirComunicadoCommand(comunicado.Titulo,
-                                                                           comunicado.Descricao,
-                                                                           comunicado.DataEnvio,
-                                                                           comunicado.DataExpiracao,
-                                                                           comunicado.AnoLetivo,
-                                                                           comunicado.CodigoDre,
-                                                                           comunicado.CodigoUe,
-                                                                           comunicado.Turmas,
-                                                                           comunicado.AlunoEspecificado,
-                                                                           comunicado.Modalidades,
-                                                                           comunicado.Semestre,
-                                                                           comunicado.Alunos,
-                                                                           comunicado.SeriesResumidas,
-                                                                           comunicado.TiposEscolas,
-                                                                           comunicado.AnosEscolares,
-                                                                           comunicado.TipoCalendarioId,
-                                                                           comunicado.EventoId));
+                var retorno = await mediator.Send(new InserirComunicadoCommand(comunicado.Titulo,
+                                                                               comunicado.Descricao,
+                                                                               comunicado.DataEnvio,
+                                                                               comunicado.DataExpiracao,
+                                                                               comunicado.AnoLetivo,
+                                                                               comunicado.CodigoDre,
+                                                                               comunicado.CodigoUe,
+                                                                               comunicado.Turmas,
+                                                                               comunicado.AlunoEspecificado,
+                                                                               comunicado.Modalidades,
+                                                                               comunicado.Semestre,
+                                                                               comunicado.Alunos,
+                                                                               comunicado.SeriesResumidas,
+                                                                               comunicado.TiposEscolas,
+                                                                               comunicado.AnosEscolares,
+                                                                               comunicado.TipoCalendarioId,
+                                                                               comunicado.EventoId));
 
-            if (!retorno)
-                throw new NegocioException("Erro ao criar o comunicado");
+                if (!retorno)
+                    throw new NegocioException("Erro ao criar o comunicado");
 
-            return "Comunicado criado com sucesso!";
+                return "Comunicado criado com sucesso!";
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+                
+            }           
         }
 
         private async Task ValidarInsercao(ComunicadoInserirDto comunicado)

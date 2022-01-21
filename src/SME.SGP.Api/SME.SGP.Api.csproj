@@ -16,6 +16,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="2.2.1" />
     <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="2.2.4" />
     <PackageReference Include="AspNetCore.HealthChecks.UI" Version="2.2.35" />
+    <PackageReference Include="Elastic.Apm.NetCoreAll" Version="1.11.1" />
     <PackageReference Include="MediatR" Version="8.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />
@@ -30,13 +31,10 @@
     <PackageReference Include="Polly" Version="7.1.0" />
     <PackageReference Include="prometheus-net.AspNetCore" Version="3.1.4" />
     <PackageReference Include="RabbitMQ.Client" Version="6.0.0" />
-    <PackageReference Include="Sentry.AspNetCore" Version="1.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bibliotecas\SME.Background.Core\SME.Background.Core.csproj" />
-    <ProjectReference Include="..\Bibliotecas\SME.Background.Hangfire\SME.Background.Hangfire.csproj" />
     <ProjectReference Include="..\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
     <ProjectReference Include="..\SME.SGP.Dados\SME.SGP.Dados.csproj" />
     <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />

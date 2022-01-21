@@ -11,12 +11,12 @@ namespace SME.SGP.Aplicacao
 {
     public class AlterarAulaFrequenciaTratarCommandHandler : IRequestHandler<AlterarAulaFrequenciaTratarCommand, bool>
     {
-        private readonly IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno;
+        private readonly IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno;
         private readonly IMediator mediator;
 
-        public AlterarAulaFrequenciaTratarCommandHandler(IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno, IMediator mediator)
+        public AlterarAulaFrequenciaTratarCommandHandler(IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno, IMediator mediator)
         {
-            this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
+            this.repositorioRegistroFrequenciaAluno = repositorioRegistroFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroFrequenciaAluno));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<bool> Handle(AlterarAulaFrequenciaTratarCommand request, CancellationToken cancellationToken)
@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             if (quantidadeAtual > quantidadeOriginal)
             {
-                var ausenciasParaAdicionar = new List<RegistroAusenciaAluno>();
+                var ausenciasParaAdicionar = new List<RegistroFrequenciaAluno>();
 
                 // Replicar o ultimo registro de frequencia
                 ausencias.Where(a => a.NumeroAula == quantidadeOriginal).ToList()
@@ -37,14 +37,14 @@ namespace SME.SGP.Aplicacao
                     {
                         for (var n = quantidadeOriginal + 1; n <= quantidadeAtual; n++)
                         {
-                            var clone = (RegistroAusenciaAluno)ausencia.Clone();
+                            var clone = (RegistroFrequenciaAluno)ausencia.Clone();
                             clone.NumeroAula = n;
                             ausenciasParaAdicionar.Add(clone);
                         }
                     });
 
                 if (ausenciasParaAdicionar.Any())
-                    await repositorioRegistroAusenciaAluno.SalvarVarios(ausenciasParaAdicionar);
+                    await repositorioRegistroFrequenciaAluno.InserirVarios(ausenciasParaAdicionar);
 
             }
             else
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
                 //TODO: Criar método genérico com Auditoria
                 if (idsParaExcluir.Count > 0)
-                    await repositorioRegistroAusenciaAluno.ExcluirVarios(idsParaExcluir);                
+                    await repositorioRegistroFrequenciaAluno.ExcluirVarios(idsParaExcluir);                
 
             }
 

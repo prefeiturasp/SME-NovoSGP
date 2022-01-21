@@ -16,8 +16,11 @@ namespace SME.SGP.Aplicacao
         public async Task<PlanoAulaRetornoDto> Executar(FiltroObterPlanoAulaDto filtro)
         {
             var aulaDto = await mediator.Send(new ObterAulaPorIdQuery(filtro.AulaId));
+            
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var planoAula = await mediator.Send(new ObterPlanoAulaEObjetivosAprendizagemQuery(filtro.AulaId));            
+            
+            var planoAula = await mediator.Send(new ObterPlanoAulaEObjetivosAprendizagemQuery(filtro.AulaId));
+            
             var planoAulaDto = MapearParaDto(planoAula) ?? new PlanoAulaRetornoDto();
 
             DisciplinaDto disciplinaDto = null;
@@ -35,7 +38,10 @@ namespace SME.SGP.Aplicacao
 
             var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(filtro.TurmaId, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.Id : long.Parse(aulaDto.DisciplinaId)));
             
-            if (planejamentoAnualPeriodoId == 0 && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year) && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ) && !(disciplinaDto != null && disciplinaDto.TerritorioSaber))
+            if (planejamentoAnualPeriodoId == 0 
+                && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year) 
+                && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ)
+                && !(disciplinaDto != null && disciplinaDto.TerritorioSaber))
                 throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
 
             var atividadeAvaliativa = await mediator.Send(new ObterAtividadeAvaliativaQuery(aulaDto.DataAula.Date, aulaDto.DisciplinaId, aulaDto.TurmaId, aulaDto.UeId));
@@ -52,7 +58,6 @@ namespace SME.SGP.Aplicacao
             {
                 Id = plano.Id,
                 Descricao = plano.Descricao,
-                DesenvolvimentoAula = plano.DesenvolvimentoAula,
                 RecuperacaoAula = plano.RecuperacaoAula,
                 LicaoCasa = plano.LicaoCasa,
                 AulaId = plano.AulaId,

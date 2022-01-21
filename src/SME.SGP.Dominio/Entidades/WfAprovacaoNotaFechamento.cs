@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public class WfAprovacaoNotaFechamento
     {
@@ -14,6 +10,6 @@ namespace SME.SGP.Dominio
 
         public double? Nota { get; set; }
         public long? ConceitoId { get; set; }
-        public Conceito Conceito { get; set; }
+        public Conceito Conceito { get; set; }        
     }
 }

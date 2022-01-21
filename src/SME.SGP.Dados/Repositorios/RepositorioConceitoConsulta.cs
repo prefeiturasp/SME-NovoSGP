@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<Conceito>> ObterPorData(DateTime dataAvaliacao)
+        public Task<IEnumerable<Conceito>> ObterPorData(DateTime dataAvaliacao)
         {
             var sql = @"select id, valor, descricao, aprovado, ativo, inicio_vigencia, fim_vigencia,
                     criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
@@ -22,7 +22,8 @@ namespace SME.SGP.Dados.Repositorios
 
             var parametros = new { dataAvaliacao = dataAvaliacao.Date };
 
-            return await database.QueryAsync<Conceito>(sql, parametros);
+            return database.QueryAsync<Conceito>(sql, parametros);
         }
+
     }
 }

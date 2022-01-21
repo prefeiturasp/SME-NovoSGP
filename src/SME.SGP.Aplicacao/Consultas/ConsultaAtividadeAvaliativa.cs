@@ -43,16 +43,16 @@ namespace SME.SGP.Aplicacao
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
             IConsultasPeriodoFechamento consultasPeriodoFechamento, IMediator mediator) : base(contextoAplicacao)
         {
-            this.consultasProfessor = consultasProfessor ?? throw new System.ArgumentNullException(nameof(consultasProfessor));
-            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
-            this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
-            this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
-            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
-            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new System.ArgumentNullException(nameof(repositorioAtribuicaoCJ));
-            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.consultasProfessor = consultasProfessor ?? throw new ArgumentNullException(nameof(consultasProfessor));
+            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
+            this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
+            this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
+            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
@@ -61,15 +61,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>> ListarPaginado(FiltroAtividadeAvaliativaDto filtro)
         {
-            return MapearParaDtoComPaginacao(await repositorioAtividadeAvaliativa
-                .Listar(filtro.DataAvaliacao.HasValue ? filtro.DataAvaliacao.Value.Date : filtro.DataAvaliacao,
-                        filtro.DreId,
-                        filtro.UeID,
-                        filtro.Nome,
-                        filtro.TipoAvaliacaoId,
-                        filtro.TurmaId,
-                        Paginacao
-                        ));
+            return MapearParaDtoComPaginacao(await repositorioAtividadeAvaliativa.Listar(filtro.DataAvaliacao.HasValue
+                                                                                               ? filtro.DataAvaliacao.Value.Date
+                                                                                               : filtro.DataAvaliacao,
+                                                                                         filtro.DreId,
+                                                                                         filtro.UeID,
+                                                                                         filtro.Nome,
+                                                                                         filtro.TipoAvaliacaoId,
+                                                                                         filtro.TurmaId,
+                                                                                         Paginacao));
         }
 
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAvaliacoesNoBimestre(string turmaCodigo, string disciplinaId, DateTime periodoInicio, DateTime periodoFim)
@@ -77,6 +77,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
         {
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+
             var atividade = await repositorioAtividadeAvaliativa.ObterPorIdAsync(id);
 
             if (atividade is null)
@@ -86,12 +88,14 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<AtividadeAvaliativaDisciplina> atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(id);
 
+            var podeEditarAvaliacao = usuarioLogado.EhProfessorCj() && atividade.EhCj || usuarioLogado.EhProfessor() && !atividade.EhCj;
+            
             if (atividade.EhRegencia)
                 atividadeRegencias = await repositorioAtividadeAvaliativaRegencia.Listar(id);
 
             var dentroPeriodo = await AtividadeAvaliativaDentroPeriodo(atividade);
 
-            return MapearParaDto(atividade, atividadeRegencias, atividadeDisciplinas, dentroPeriodo);
+            return MapearParaDto(atividade, atividadeRegencias, atividadeDisciplinas, dentroPeriodo, podeEditarAvaliacao);
         }
 
         public async Task<bool> AtividadeAvaliativaDentroPeriodo(AtividadeAvaliativa atividadeAvaliativa)
@@ -124,6 +128,7 @@ namespace SME.SGP.Aplicacao
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId.ToString()));
             var usuario = await servicoUsuario.ObterUsuarioLogado();
+
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(usuario.CodigoRf);
 
             var lstTurmasCJ = await repositorioAtribuicaoCJ.ObterPorFiltros(turma.ModalidadeCodigo, null, null,
@@ -137,8 +142,8 @@ namespace SME.SGP.Aplicacao
             if (turmasTitular != null && turmasTitular.Any())
             {
                 retorno.AddRange(turmasTitular
-                  .Select(x => new TurmaRetornoDto() { Codigo = x.CodTurma.ToString(), Nome = x.NomeTurma })
-                  .ToList());
+                       .Select(x => new TurmaRetornoDto() { Codigo = x.CodTurma.ToString(), Nome = x.NomeTurma })
+                       .ToList());
             }
 
             var turmasCJ = lstTurmasCJ.Where(t => t.Turma.AnoLetivo == turma.AnoLetivo &&
@@ -227,7 +232,7 @@ namespace SME.SGP.Aplicacao
             return items?.Select(c => MapearParaDto(c));
         }
 
-        private AtividadeAvaliativaCompletaDto MapearParaDto(AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AtividadeAvaliativaRegencia> regencias = null, IEnumerable<AtividadeAvaliativaDisciplina> disciplinas = null, bool dentroPeriodo = true)
+        private AtividadeAvaliativaCompletaDto MapearParaDto(AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AtividadeAvaliativaRegencia> regencias = null, IEnumerable<AtividadeAvaliativaDisciplina> disciplinas = null, bool dentroPeriodo = true, bool podeEditarAvaliacao = false)
         {
             return atividadeAvaliativa == null ? null : new AtividadeAvaliativaCompletaDto
             {
@@ -250,6 +255,7 @@ namespace SME.SGP.Aplicacao
                 Categoria = atividadeAvaliativa.TipoAvaliacao?.Descricao,
                 EhRegencia = atividadeAvaliativa.EhRegencia,
                 Importado = atividadeAvaliativa.AtividadeClassroomId.HasValue,
+                PodeEditarAvaliacao = podeEditarAvaliacao,
                 AtividadesRegencia = regencias?.Select(x => new AtividadeAvaliativaRegenciaDto
                 {
                     AtividadeAvaliativaId = x.AtividadeAvaliativaId,

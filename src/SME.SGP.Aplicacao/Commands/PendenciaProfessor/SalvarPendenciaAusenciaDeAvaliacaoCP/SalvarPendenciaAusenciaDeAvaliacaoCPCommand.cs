@@ -6,19 +6,19 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaAusenciaDeAvaliacaoCPCommand : IRequest<bool>
     {
-        public SalvarPendenciaAusenciaDeAvaliacaoCPCommand(long pendenciaId, long turmaId, long periodoEscolarId, string ueCodigo, IEnumerable<(long componenteCurricularId, string professorRf)> pendenciasProfessores)
+        public SalvarPendenciaAusenciaDeAvaliacaoCPCommand(long pendenciaId, long turmaId, long periodoEscolarId, long ueId, IEnumerable<(long componenteCurricularId, string professorRf)> pendenciasProfessores)
         {
             PendenciaId = pendenciaId;
             TurmaId = turmaId;
             PendenciasProfessores = pendenciasProfessores;
             PeriodoEscolarId = periodoEscolarId;
-            UeCodigo = ueCodigo;
+            UeId = ueId;
         }
 
         public long PendenciaId { get; set; }
         public long TurmaId { get; set; }
         public long PeriodoEscolarId { get; set; }
-        public string UeCodigo { get; set; }
+        public long UeId { get; set; }
         public IEnumerable<(long componenteCurricularId, string professorRf)> PendenciasProfessores { get; set; }
     }
 
@@ -38,9 +38,9 @@ namespace SME.SGP.Aplicacao
                .NotEmpty()
                .WithMessage("O periodo escolar deve ser informado para geração da pendência do CP.");
 
-            RuleFor(c => c.UeCodigo)
+            RuleFor(c => c.UeId)
                .NotEmpty()
-               .WithMessage("O código da UE deve ser informado para geração da pendência do CP.");
+               .WithMessage("O id da UE deve ser informado para geração da pendência do CP.");
 
             RuleFor(c => c.PendenciasProfessores)
                .NotEmpty()

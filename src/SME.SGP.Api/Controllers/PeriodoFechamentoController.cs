@@ -20,7 +20,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PFA_C, Policy = "Bearer")]
         public async Task<IActionResult> Get([FromQuery]FiltroFechamentoDto fechamentoDto, [FromServices] IConsultasPeriodoFechamento consultasFechamento)
         {
-            return Ok(await consultasFechamento.ObterPorTipoCalendarioDreEUe(fechamentoDto));
+            return Ok(await consultasFechamento.ObterPorTipoCalendarioSme(fechamentoDto));
         }
 
         [HttpPost]

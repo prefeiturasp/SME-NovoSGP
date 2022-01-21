@@ -73,7 +73,6 @@ namespace SME.SGP.Aplicacao
             if (plano != null)
             {
                 await ExcluirArquivo(plano.Descricao, TipoArquivo.PlanoAula);
-                await ExcluirArquivo(plano.DesenvolvimentoAula, TipoArquivo.PlanoAulaDesenvolvimento);
                 await ExcluirArquivo(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
                 await ExcluirArquivo(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa); 
             }

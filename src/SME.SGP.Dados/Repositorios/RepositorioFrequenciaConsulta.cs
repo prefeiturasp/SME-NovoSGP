@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -131,17 +130,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        and a.turma_id = @turmaId
 	                        and a.disciplina_id = @disciplinaId";
 
-            IEnumerable<AulasPorTurmaDisciplinaDto> lista = new List<AulasPorTurmaDisciplinaDto>();
-            try
-            {
-                lista = database.Conexao.Query<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId, tipoNotificacao });
-            }
-            catch (Exception ex)
-            {
-                SentrySdk.CaptureEvent(new SentryEvent(ex));
-                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"ObterAulasSemRegistroFrequencia - {turmaId} - {disciplinaId}")));
-            }
-            return lista;
+            return database.Conexao.Query<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId, tipoNotificacao });
         }
 
         public async Task<IEnumerable<AusenciaAlunoDto>> ObterAusencias(string turmaCodigo, string disciplinaCodigo, DateTime[] datas, string[] alunoCodigos)
@@ -178,7 +167,20 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<RecuperacaoParalelaFrequenciaDto>(query.ToString(), new { CodigoAlunos, CodigoDisciplina = CodigoDisciplina.ToArray(), Ano });
         }
 
-        public async Task<IEnumerable<RegistroAusenciaAluno>> ObterListaFrequenciaPorAula(long aulaId)
+        public Task<IEnumerable<RegistroFrequencia>> ObterRegistroFrequenciaPorDataEAulaId(string disciplina, string turmaId, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select rf.*
+                            from registro_frequencia rf
+                            inner join aula a on rf.aula_id  = a.id 
+                          where DATE(a.data_aula) between Date(@dataInicio) and Date(@dataFim)
+                                and a.disciplina_id = @disciplina
+                                and a.turma_id = @turmaId
+                            order by rf.criado_em desc";
+
+            return database.Conexao.QueryAsync<RegistroFrequencia>(query, new { disciplina, turmaId, dataInicio, dataFim });
+        }
+
+        public Task<IEnumerable<RegistroAusenciaAluno>> ObterListaFrequenciaPorAula(long aulaId)
         {
             var query = @"select ra.*
                         from
@@ -191,7 +193,7 @@ namespace SME.SGP.Dados.Repositorios
                         where ra.excluido = false and
 	                        a.id = @aulaId";
 
-            return await database.Conexao.QueryAsync<RegistroAusenciaAluno>(query, new { aulaId });
+            return database.Conexao.QueryAsync<RegistroAusenciaAluno>(query, new { aulaId });
         }
 
         public async Task<RegistroFrequencia> ObterRegistroFrequenciaPorAulaId(long aulaId)
@@ -357,6 +359,39 @@ namespace SME.SGP.Dados.Repositorios
                 datafim,
                 mes
             });
+        }
+
+        public Task<IEnumerable<RegistroFrequenciaAlunoPorAulaDto>> ObterFrequenciasDetalhadasPorData(string turmaCodigo, string componenteCurricularId, string[] codigosAlunos, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select a.id as AulaId
+                            , rf.id as RegistroFrequenciaId
+                            , rfa.codigo_aluno as AlunoCodigo
+                            , rfa.numero_aula as NumeroAula
+                            , rfa.valor as TipoFrequencia
+                            , rf.criado_em as CriadoEm
+                            , rf.criado_por as CriadoPor
+                            , rf.criado_rf as CriadoRf
+                            , rf.alterado_em as AlteradoEm
+                            , rf.alterado_por as AlteradoPor
+                            , rf.alterado_rf as AlteradoRf
+                       from registro_frequencia_aluno rfa 
+                       inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
+                       inner join aula a on a.id = rf.aula_id 
+                       where rfa.codigo_aluno = any(@codigosAlunos)
+                        and not rfa.excluido
+                        and not a.excluido 
+                        and a.turma_id = @turmaCodigo
+                        and a.disciplina_id = @componenteCurricularId
+                        and a.data_aula between @dataInicio and @dataFim ";
+
+            return database.Conexao.QueryAsync<RegistroFrequenciaAlunoPorAulaDto>(query, new { turmaCodigo, componenteCurricularId, codigosAlunos, dataInicio, dataFim });
+        }
+
+        public Task<bool> RegistraFrequencia(long componenteCurricularId)
+        {
+            var query = "select permite_registro_frequencia from componente_curricular where id = @componenteCurricularId";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { componenteCurricularId });
         }
     }
 }
