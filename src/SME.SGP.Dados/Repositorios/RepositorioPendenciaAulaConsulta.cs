@@ -261,7 +261,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and a.data_aula::date < @hoje
                                 and aa.data_avaliacao::date = a.data_aula::date
                                 inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = aa.id
-                                and aad.disciplina_id = a.disciplina_id
+                                and aad.disciplina_id = a.disciplina_id and not aad.excluido 
                                 left join notas_conceito n on aa.id = n.atividade_avaliativa
                                 group by a.id,aad.atividade_avaliativa_id) a where a.nota_id is null;";
 
