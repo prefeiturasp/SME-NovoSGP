@@ -125,6 +125,36 @@ namespace SME.SGP.Aplicacao
             };
         }
 
+        public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurmaFinal(string turmaCodigo, string alunoCodigo, bool ehFinal = false, bool consideraHistorico = false)
+        {
+            var turma = await ObterTurma(turmaCodigo);
+            var bimestreFinal = 0;
+
+            if (turma.EhTurmaEdFisicaOuItinerario())
+            {
+                var tipos = new List<TipoTurma>() { TipoTurma.Regular, TipoTurma.Itinerarios2AAno, TipoTurma.EdFisica};
+                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
+
+                turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
+            }
+                        
+            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestreFinal);
+
+            if (fechamentoTurma == null && !turma.EhAnoAnterior())
+                return default;
+
+            var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
+
+            var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
+
+            return new ConselhoClasseAlunoResumoDto()
+            {
+                FechamentoTurmaId = fechamentoTurma?.Id,
+                ConselhoClasseId = conselhoClasse?.Id,
+                ConselhoClasseAlunoId = conselhoClasseAluno?.Id,
+            };
+        }
+
         private async Task<TipoNota> ObterTipoNota(Turma turma, PeriodoFechamentoBimestre periodoFechamentoBimestre, bool consideraHistorico = false)
         {
             var dataReferencia = periodoFechamentoBimestre != null ?
