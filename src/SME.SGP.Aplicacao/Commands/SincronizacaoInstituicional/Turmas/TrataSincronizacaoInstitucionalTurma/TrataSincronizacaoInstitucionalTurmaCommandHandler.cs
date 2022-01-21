@@ -26,6 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var turmaEOL = request.TurmaEOL;
 
+            //TODO: BUSCAR DADOS DO USUÁRIO LOGADO PARA PODER PASSAR O RF DO PROFESSOR NO COMMAND DA LINHA 41.
             var codigoRf = "7941706";
             //var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
