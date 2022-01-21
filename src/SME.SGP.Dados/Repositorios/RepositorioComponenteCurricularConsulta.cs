@@ -48,7 +48,8 @@ namespace SME.SGP.Dados.Repositorios
                             case
 		                        when descricao_sgp is not null then descricao_sgp
 		                        else descricao
-	                        end as descricao
+	                        end as descricao,
+                            descricao as DescricaoEol
                         from
 	                        componente_curricular";
 
