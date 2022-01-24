@@ -1367,5 +1367,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<int>(query, new {codigoUe});
         }
+
+        public Task<bool> VerificaSeVirouHistorica(long turmaId)
+        {
+            var query = @"select historica from turma where id = @turmaId";
+
+            return contexto.QueryFirstOrDefaultAsync<bool>(query, new { turmaId });
+        }
     }
 }

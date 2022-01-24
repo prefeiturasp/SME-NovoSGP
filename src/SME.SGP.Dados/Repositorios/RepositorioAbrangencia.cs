@@ -702,7 +702,7 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<IEnumerable<Abrangencia>> ObterAbrangenciaGeralPorUsuarioId(long usuarioId)
         {
-            var query = @"select id,usuario_id,dre_id,ue_id,turma_id,perfil from abrangencia where usuario_id = @usuarioId";
+            var query = @"select id,usuario_id,dre_id,ue_id,turma_id,perfil,historico from abrangencia where usuario_id = @usuarioId";
             return await database.Conexao.QueryAsync<Abrangencia>(query, new { usuarioId });
         }
 

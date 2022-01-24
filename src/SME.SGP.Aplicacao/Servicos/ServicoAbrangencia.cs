@@ -206,7 +206,19 @@ namespace SME.SGP.Aplicacao.Servicos
                 if (anoLetivo == DateTimeExtension.HorarioBrasilia().Year)
                     repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar.Select(x => x.Id));
                 else
-                    repositorioAbrangencia.AtualizaAbrangenciaHistoricaAnosAnteriores(paraAtualizar.Select(x => x.Id), anoLetivo);
+                {
+                    var paraAtualizarAbrangencia = paraAtualizar.ToList();
+                    foreach (var turma in abrangenciaGeralSGP.Where(a=> a.TurmaId != null))
+                    {
+                        
+                        var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turma.TurmaId.Value));
+                        if (virouHistorica && !turma.Historico)
+                            paraAtualizarAbrangencia.Add(turma);
+                    }
+
+                    repositorioAbrangencia.AtualizaAbrangenciaHistoricaAnosAnteriores(paraAtualizarAbrangencia.Select(x => x.Id), anoLetivo);
+                }
+                   
 
                 return true;
             }
