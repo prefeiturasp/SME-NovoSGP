@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             }
             if (!string.IsNullOrEmpty(anotacao.Anotacao))
             {
-                var deletarArquivosNaoUtilziados = await mediator.Send(new RemoverArquivosExcluidosCommand(anotacao.Anotacao, anotacaoAluno.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(anotacao.Anotacao, anotacaoAluno.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
             }
         }
         private async Task<bool> AtualizarAnotacaoFrequenciaAluno(AnotacaoFrequenciaAluno anotacao, AlterarAnotacaoFrequenciaAlunoDto param)

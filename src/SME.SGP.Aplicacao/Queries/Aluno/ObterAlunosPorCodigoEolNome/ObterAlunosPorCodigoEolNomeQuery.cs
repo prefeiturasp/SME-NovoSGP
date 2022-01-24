@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
             AnoLetivo = filtroEstudante.AnoLetivo;
             CodigoEOL = filtroEstudante.Codigo;
             Nome = filtroEstudante.Nome;
-            CodigoTurma = filtroEstudante.CodigoTurma; ;
+            CodigoTurma = filtroEstudante.CodigoTurma;
             SomenteAtivos = true;
         }
 

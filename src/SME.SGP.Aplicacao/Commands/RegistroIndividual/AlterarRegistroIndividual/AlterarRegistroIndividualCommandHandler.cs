@@ -39,22 +39,21 @@ namespace SME.SGP.Aplicacao
 
             var regristroAtual = registroIndividual.Registro;
             MapearAlteracoes(registroIndividual, request);
-            MoverRemoverExcluidos(request, regristroAtual);
+            await MoverRemoverExcluidos(request, regristroAtual);
             registroIndividual.Registro = request.Registro;
             await repositorioRegistroIndividual.SalvarAsync(registroIndividual);
 
             return registroIndividual;
         }
-        private void MoverRemoverExcluidos(AlterarRegistroIndividualCommand novo, string atual)
+        private async Task MoverRemoverExcluidos(AlterarRegistroIndividualCommand novo, string atual)
         {
             if (!string.IsNullOrEmpty(novo.Registro))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroIndividual, atual, novo.Registro));
-                novo.Registro = moverArquivo.Result;
+                novo.Registro = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroIndividual, atual, novo.Registro));
             }
             if (!string.IsNullOrEmpty(atual))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo.Registro, TipoArquivo.RegistroIndividual.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo.Registro, TipoArquivo.RegistroIndividual.Name()));
             }
         }
         private void MapearAlteracoes(RegistroIndividual entidade, AlterarRegistroIndividualCommand request)

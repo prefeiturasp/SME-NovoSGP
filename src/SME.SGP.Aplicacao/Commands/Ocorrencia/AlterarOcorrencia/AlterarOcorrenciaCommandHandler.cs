@@ -42,8 +42,7 @@ namespace SME.SGP.Aplicacao
                     if (ocorrenciaTipo is null)
                         throw new NegocioException("O tipo da ocorrência informado não foi encontrado.");
 
-                    var descricaoAtual = ocorrencia.Descricao;
-                    MapearAlteracoes(ocorrencia, request, ocorrenciaTipo);
+                    await MapearAlteracoes(ocorrencia, request, ocorrenciaTipo);
                     await repositorioOcorrencia.SalvarAsync(ocorrencia);
 
                     var alunosParaSeremDeletados = ocorrencia.Alunos.Where(x => !request.CodigosAlunos.Contains(x.CodigoAluno)).Select(x => x.Id);
@@ -58,7 +57,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     unitOfWork.PersistirTransacao();
-                    MoverRemoverExcluidos(request.Descricao, descricaoAtual);
+                    
                     return (AuditoriaDto)ocorrencia;
                 }
                 catch
@@ -68,23 +67,24 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
-        private void MoverRemoverExcluidos(string novo, string atual)
+        private async Task<string> MoverRemoverExcluidos(string novo, string atual)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(novo))
-            {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, atual, novo));
-            }
+                caminho = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, atual, novo));
+
             if (!string.IsNullOrEmpty(atual))
-            {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.Ocorrencia.Name()));
-            }
+                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.Ocorrencia.Name()));
+
+            return caminho;
         }
-        private void MapearAlteracoes(Ocorrencia entidade, AlterarOcorrenciaCommand request, OcorrenciaTipo ocorrenciaTipo)
+        private async Task MapearAlteracoes(Ocorrencia entidade, AlterarOcorrenciaCommand request, OcorrenciaTipo ocorrenciaTipo)
         {
             entidade.DataOcorrencia = request.DataOcorrencia;
             entidade.SetHoraOcorrencia(request.HoraOcorrencia);
             entidade.Titulo = request.Titulo;
-            entidade.Descricao = request.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.Ocorrencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            entidade.Descricao = await MoverRemoverExcluidos(request.Descricao, entidade.Descricao);
             entidade.SetOcorrenciaTipo(ocorrenciaTipo);
         }
     }

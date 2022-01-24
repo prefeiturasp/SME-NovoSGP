@@ -18,17 +18,17 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public void Atualizar(RegistroPoaDto registroPoaDto)
+        public async Task Atualizar(RegistroPoaDto registroPoaDto)
         {
             if (registroPoaDto.Id <= 0)
                 throw new NegocioException("O id informado para edição tem que ser maior que 0");
 
-            repositorioRegistroPoa.Salvar(MapearParaAtualizacao(registroPoaDto));
+            repositorioRegistroPoa.Salvar(await MapearParaAtualizacao(registroPoaDto));
         }
 
-        public void Cadastrar(RegistroPoaDto registroPoaDto)
+        public async Task Cadastrar(RegistroPoaDto registroPoaDto)
         {
-            repositorioRegistroPoa.Salvar(MapearParaEntidade(registroPoaDto));
+            repositorioRegistroPoa.Salvar(await MapearParaEntidade(registroPoaDto));
         }
 
         public async Task Excluir(long id)
@@ -36,48 +36,47 @@ namespace SME.SGP.Aplicacao
             if (id <= 0)
                 throw new NegocioException("O id informado para edição tem que ser maior que 0");
 
-            var entidadeBanco = repositorioRegistroPoa.ObterPorId(id);
+            var entidadeBanco = await repositorioRegistroPoa.ObterPorIdAsync(id);
 
             if (entidadeBanco == null || entidadeBanco.Excluido)
                 throw new NegocioException($"Não foi encontrado o registro de código {id}");
 
             entidadeBanco.Excluido = true;
 
-            repositorioRegistroPoa.Salvar(entidadeBanco);
+            await repositorioRegistroPoa.SalvarAsync(entidadeBanco);
             if (entidadeBanco?.Descricao != null)
             {
                 await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(entidadeBanco.Descricao, TipoArquivo.RegistroPOA.Name()));
             }
         }
 
-        private RegistroPoa MapearParaAtualizacao(RegistroPoaDto registroPoaDto)
+        private async Task<RegistroPoa> MapearParaAtualizacao(RegistroPoaDto registroPoaDto)
         {
             var entidade = repositorioRegistroPoa.ObterPorId(registroPoaDto.Id);
 
             if (entidade == null || entidade.Excluido)
                 throw new NegocioException("Registro para atualização não encontrado na base de dados");
-            MoverRemoverExcluidos(registroPoaDto, entidade);
+            await MoverRemoverExcluidos(registroPoaDto, entidade);
             entidade.Titulo = registroPoaDto.Titulo;
             entidade.Descricao = registroPoaDto.Descricao;
             entidade.Bimestre = registroPoaDto.Bimestre;
 
             return entidade;
         }
-        private void MoverRemoverExcluidos(RegistroPoaDto registroPoaDto, RegistroPoa entidade)
+        private async Task MoverRemoverExcluidos(RegistroPoaDto registroPoaDto, RegistroPoa entidade)
         {
             if (!string.IsNullOrEmpty(registroPoaDto.Descricao))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroPOA, entidade.Descricao, registroPoaDto.Descricao));
-                registroPoaDto.Descricao = moverArquivo.Result;
+                registroPoaDto.Descricao = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroPOA, entidade.Descricao, registroPoaDto.Descricao));
             }
             if (!string.IsNullOrEmpty(entidade.Descricao))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(entidade.Descricao, registroPoaDto.Descricao, TipoArquivo.RegistroPOA.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(entidade.Descricao, registroPoaDto.Descricao, TipoArquivo.RegistroPOA.Name()));
             }
         }
-        private RegistroPoa MapearParaEntidade(RegistroPoaDto registroPoaDto)
+        private async Task<RegistroPoa> MapearParaEntidade(RegistroPoaDto registroPoaDto)
         {
-            MoverRemoverExcluidos(registroPoaDto, new RegistroPoa() {Descricao = string.Empty });
+            await MoverRemoverExcluidos(registroPoaDto, new RegistroPoa() {Descricao = string.Empty });
             return new RegistroPoa
             {
                 Descricao = registroPoaDto.Descricao,

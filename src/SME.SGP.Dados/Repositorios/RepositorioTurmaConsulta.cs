@@ -80,8 +80,7 @@ namespace SME.SGP.Dados.Repositorios
                             where
 	                            t.modalidade_codigo = :modalidade
 	                            and t.historica = false
-	                            and t.ano_letivo = :anoLetivo
-	                            and ano ~ E'^[0-9\.]+$'
+	                            and t.ano_letivo = :anoLetivo	                            
                                 {(!string.IsNullOrEmpty(codigoTurma) ? " and t.turma_id = :codigoTurma" : string.Empty)}";
 
             await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
@@ -526,7 +525,7 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join tipo_calendario tc on a.tipo_calendario_id = tc.id 
                                 inner join periodo_escolar pe on pe.tipo_calendario_id  = tc.id 
                                     where t.ano_letivo  = @anoLetivo   
-                                    and pe.periodo_inicio < @dataReferencia
+                                    and pe.periodo_inicio::data <= @dataReferencia
                                 group by a.turma_id, a.disciplina_id, a.tipo_calendario_id, pe.periodo_fim ";
 
 

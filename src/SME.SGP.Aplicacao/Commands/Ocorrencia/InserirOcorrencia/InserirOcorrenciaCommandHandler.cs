@@ -43,8 +43,8 @@ namespace SME.SGP.Aplicacao
 
                     var ocorrencia = new Ocorrencia(request.DataOcorrencia, 
                                                     request.HoraOcorrencia,
-                                                    request.Titulo, 
-                                                    request.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.Ocorrencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/"),
+                                                    request.Titulo,
+                                                    await MoverArquivos(request.Descricao),
                                                     ocorrenciaTipo,
                                                     turma);
                     ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);
@@ -56,7 +56,6 @@ namespace SME.SGP.Aplicacao
                     }
 
                     unitOfWork.PersistirTransacao();
-                    MoverArquivos(request);
                     return (AuditoriaDto)ocorrencia;
                 }
                 catch
@@ -66,12 +65,14 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
-        private void MoverArquivos(InserirOcorrenciaCommand novo)
+        private async Task<string> MoverArquivos(string descricao)
         {
-            if (!string.IsNullOrEmpty(novo.Descricao))
-            {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, string.Empty, novo.Descricao));
-            }
+            var caminho = string.Empty;
+
+            if (!string.IsNullOrEmpty(descricao))
+                caminho = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, string.Empty, descricao));
+
+            return caminho;
         }
     }
 }

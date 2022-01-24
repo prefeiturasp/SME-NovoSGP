@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                     LicaoCasaAtual = planoAula?.LicaoCasa ?? string.Empty,
                     RecuperacaoAulaAtual = planoAula?.RecuperacaoAula ?? string.Empty
                 };
-                planoAula = MapearParaDominio(planoAulaDto, planoAula);
+                planoAula = await MapearParaDominio(planoAulaDto, planoAulaResumidoDto, planoAula);
 
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
                 if (periodoEscolar == null)
@@ -116,10 +116,6 @@ namespace SME.SGP.Aplicacao
                     }
                 unitOfWork.PersistirTransacao();
 
-                MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual,TipoArquivo.PlanoAula);
-                MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual,TipoArquivo.PlanoAulaRecuperacao);
-                MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
-
                 planoAulaDto.Descricao = planoAula.Descricao;
                 planoAulaDto.RecuperacaoAula = planoAula.RecuperacaoAula;
                 planoAulaDto.LicaoCasa = planoAula.LicaoCasa;
@@ -134,28 +130,30 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private PlanoAula MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
+        private async Task<PlanoAula> MapearParaDominio(PlanoAulaDto planoDto, PlanoAulaResumidoDto planoAulaResumidoDto, PlanoAula planoAula = null)
         {
             if (planoAula == null)
                 planoAula = new PlanoAula();
 
             planoAula.AulaId = planoDto.AulaId;
-            planoAula.Descricao = planoDto.Descricao?.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAula.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
-            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula?.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAulaRecuperacao.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
-            planoAula.LicaoCasa = planoDto.LicaoCasa?.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAulaLicaoCasa.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAula.Descricao = await MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual, TipoArquivo.PlanoAula); 
+            planoAula.DesenvolvimentoAula = await MoverRemoverExcluidos(planoAulaResumidoDto.DesenvolvimentoAulaNovo, planoAulaResumidoDto.DesenvolvimentoAulaAtual, TipoArquivo.PlanoAulaDesenvolvimento);
+            planoAula.RecuperacaoAula = await MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual, TipoArquivo.PlanoAulaRecuperacao);
+            planoAula.LicaoCasa = await MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
 
             return planoAula;
         }
-        private void MoverRemoverExcluidos(string novo, string atual, TipoArquivo tipo)
+        private async Task<string> MoverRemoverExcluidos(string novo, string atual, TipoArquivo tipo)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(novo))
-            {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(tipo, atual, novo));
-            }
+                caminho = await mediator.Send(new MoverArquivosTemporariosCommand(tipo, atual, novo));
+
             if (!string.IsNullOrEmpty(atual))
-            {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
-            }
+                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
+
+            return caminho;
         }
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
