@@ -654,6 +654,10 @@ namespace SME.SGP.Aplicacao
             if (componentesRegencia == null || !componentesRegencia.Any())
                 throw new NegocioException("Não foram encontrados componentes curriculares para a regência informada.");
 
+            // Excessão de disciplina ED. Fisica para modalidade EJA
+            if (turma.EhEJA())
+                componentesRegencia = componentesRegencia.Where(a => a.CodigoComponenteCurricular != 6);
+
             var percentualFrequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 0 : 0);
 
             // Cálculo de frequência particular do ano de 2020
