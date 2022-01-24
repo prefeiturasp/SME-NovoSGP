@@ -24,17 +24,17 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(string[]), 200)]
+        [ProducesResponseType(typeof(AuditoriaPersistenciaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_I, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromBody]FechamentoFinalSalvarDto fechamentoFinalSalvarDto, [FromServices]IComandosFechamentoFinal comandosFechamentoFinal)
         {
-            var mensagens = await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto);
-            if (mensagens != null && mensagens.Any())
-                return StatusCode(601, new RetornoBaseDto() { Mensagens = mensagens.ToList() });
+            var auditoria = await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto);
+            if (auditoria != null && auditoria.Mensagens.Any())
+                return StatusCode(601, new RetornoBaseDto() { Mensagens = auditoria.Mensagens.ToList() });
 
-            return Ok();
+            return Ok(auditoria);
         }
     }
 }
