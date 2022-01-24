@@ -137,7 +137,6 @@ namespace SME.SGP.Aplicacao
 
             planoAula.AulaId = planoDto.AulaId;
             planoAula.Descricao = await MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual, TipoArquivo.PlanoAula); 
-            planoAula.DesenvolvimentoAula = await MoverRemoverExcluidos(planoAulaResumidoDto.DesenvolvimentoAulaNovo, planoAulaResumidoDto.DesenvolvimentoAulaAtual, TipoArquivo.PlanoAulaDesenvolvimento);
             planoAula.RecuperacaoAula = await MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual, TipoArquivo.PlanoAulaRecuperacao);
             planoAula.LicaoCasa = await MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
 
