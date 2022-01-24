@@ -32,31 +32,41 @@ namespace SME.SGP.Aplicacao
                         var dreUe = await ObterCodigoDREUE(filtro.UeId);
                         var funcionarios = await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(dreUe.UeCodigo, pendenciaPerfil.PerfilCodigo.ObterCargoPorPerfil()));
 
-                        foreach (var funcionario in funcionarios)
+                        if (dreUe.UeCodigo.Equals("095451"))
                         {
-                            var usuarioId = await ObterUsuarioId(funcionario.FuncionarioRF);
-                            await AtribuirPerfilUsuario(usuarioId, funcionario.CargoId.ObterPerfilPorCargo(), pendenciaPerfil.Id);
+                            var x = dreUe.UeCodigo;
                         }
 
+                        if (funcionarios != null && funcionarios.Any())
+                        {
+                            foreach (var funcionario in funcionarios)
+                            {
+                                var usuarioId = await ObterUsuarioId(funcionario.FuncionarioRF);
+                                await AtribuirPerfilUsuario(usuarioId, funcionario.CargoId.ObterPerfilPorCargo(), pendenciaPerfil.Id);
+                            }
+                        }
                         break;
+
                     case Dominio.PerfilUsuario.CEFAI:
                         var dre = await ObterCodigoDREUE(filtro.UeId);
                         var CEFAIs = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dre.DreCodigo));
 
-                        foreach(var cefai in CEFAIs)
+                        if (CEFAIs != null && CEFAIs.Any())
                         {
-                            await AtribuirPerfilUsuario(cefai, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
+                            foreach (var cefai in CEFAIs)
+                                await AtribuirPerfilUsuario(cefai, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
                         }
-
                         break;
+
                     case Dominio.PerfilUsuario.ADMUE:
                         var ue = await ObterCodigoDREUE(filtro.UeId);
                         var admsUE = await ObterAdministradoresPorUE(ue.UeCodigo);
 
-                        foreach(var adm in admsUE)
+                        if (admsUE != null && admsUE.Any())
                         {
-                            await AtribuirPerfilUsuario(adm, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
-                        }
+                            foreach (var adm in admsUE)
+                                await AtribuirPerfilUsuario(adm, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
+                        }                            
 
                         break;
                     case Dominio.PerfilUsuario.ADMSME:
