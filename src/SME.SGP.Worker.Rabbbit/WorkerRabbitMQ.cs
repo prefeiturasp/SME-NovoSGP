@@ -55,6 +55,7 @@ namespace SME.SGP.Worker.RabbitMQ
 
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.Sgp, ExchangeType.Direct, true, false);
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
+            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpLogs, ExchangeType.Direct, true, false);
 
             DeclararFilasSgp();
 
@@ -64,25 +65,29 @@ namespace SME.SGP.Worker.RabbitMQ
 
         private void DeclararFilasSgp()
         {
+            DeclararFilasPorRota(typeof(RotasRabbitLogs), ExchangeSgpRabbit.SgpLogs);
             DeclararFilasPorRota(typeof(RotasRabbitSgp), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
             DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
         }
 
-        private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter)
+        private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter = "")
         {
             foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
             {
-                var args = new Dictionary<string, object>()
-                    {
-                        { "x-dead-letter-exchange", exchangeDeadLetter }
-                    };
+                var args = new Dictionary<string, object>();
+
+                if (!string.IsNullOrEmpty(exchangeDeadLetter))
+                    args.Add("x-dead-letter-exchange", exchangeDeadLetter);
 
                 canalRabbit.QueueDeclare(fila, true, false, false, args);
                 canalRabbit.QueueBind(fila, exchange, fila, null);
 
-                var filaDeadLetter = $"{fila}.deadletter";
-                canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
-                canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
+                if (!string.IsNullOrEmpty(exchangeDeadLetter))
+                {
+                    var filaDeadLetter = $"{fila}.deadletter";
+                    canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
+                    canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
+                }
             }
         }
         private void RegistrarFilaComErro()

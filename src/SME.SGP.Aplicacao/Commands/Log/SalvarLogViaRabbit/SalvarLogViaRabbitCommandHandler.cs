@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
 
                 var body = Encoding.UTF8.GetBytes(mensagem);
 
-                servicoTelemetria.Registrar(() => PublicarMensagem(body), "RabbitMQ", "Salvar Log Via Rabbit", RotasRabbitSgp.RotaLogs);
+                servicoTelemetria.Registrar(() => PublicarMensagem(body), "RabbitMQ", "Salvar Log Via Rabbit", RotasRabbitLogs.RotaLogs);
 
                 return await Task.FromResult(true);
             }
@@ -58,8 +58,8 @@ namespace SME.SGP.Aplicacao
                     var props = _channel.CreateBasicProperties();
 
                     //TODO: Trocar a fila para direct;
-                    _channel.QueueBind(RotasRabbitSgp.RotaLogs, ExchangeSgpRabbit.SgpLogs, RotasRabbitSgp.RotaLogs);
-                    _channel.BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasRabbitSgp.RotaLogs, props, body);
+                    //_channel.QueueBind(RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, RotasRabbitLogs.RotaLogs);
+                    _channel.BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasRabbitLogs.RotaLogs, props, body);
                 }                
             }            
         }
