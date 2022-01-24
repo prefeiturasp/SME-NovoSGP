@@ -32,11 +32,6 @@ namespace SME.SGP.Aplicacao
                         var dreUe = await ObterCodigoDREUE(filtro.UeId);
                         var funcionarios = await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(dreUe.UeCodigo, pendenciaPerfil.PerfilCodigo.ObterCargoPorPerfil()));
 
-                        if (dreUe.UeCodigo.Equals("095451"))
-                        {
-                            var x = dreUe.UeCodigo;
-                        }
-
                         if (funcionarios != null && funcionarios.Any())
                         {
                             foreach (var funcionario in funcionarios)
