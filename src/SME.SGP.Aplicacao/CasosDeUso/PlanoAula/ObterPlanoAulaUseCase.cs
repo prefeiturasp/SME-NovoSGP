@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
                 LicaoCasa = plano.LicaoCasa,
                 AulaId = plano.AulaId,
                 QtdAulas = plano.Quantidade,
-
+                AulaCj = plano.AulaCj,
                 Migrado = plano.Migrado,
                 CriadoEm = plano.CriadoEm,
                 CriadoPor = plano.CriadoPor,
