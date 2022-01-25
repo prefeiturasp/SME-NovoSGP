@@ -53,7 +53,9 @@ namespace SME.SGP.Aplicacao
 
             var componentesRetorno = await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(componentesCodigos));
 
-            return MapearParaDtoComPaginacao(turmasPaginadas, componentesRetorno);
+            var componentes = MapearParaDtoComPaginacao(turmasPaginadas, componentesRetorno);
+
+            return await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.Bimestre);
         }
 
         private PaginacaoResultadoDto<TurmaComComponenteDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
@@ -80,6 +82,7 @@ namespace SME.SGP.Aplicacao
         private TurmaComComponenteDto MapearParaDto(RetornoConsultaListagemTurmaComponenteDto turmas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
         {
             var nomeComponente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo)?.Descricao ?? turmas.NomeComponenteCurricular;
+            //var pende = ObtemPendenciasTurma(turmas.TurmaCodigo, turmas.ComponenteCurricularCodigo);
             return turmas == null ? null : new TurmaComComponenteDto
             {
                 Id = turmas.Id,
@@ -88,6 +91,24 @@ namespace SME.SGP.Aplicacao
                 ComponenteCurricularCodigo = turmas.ComponenteCurricularCodigo,
                 Turno = turmas.Turno.ObterNome()
             };
+        }
+
+        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre)
+        {
+            foreach (var turmaComponente in turmasComponentes.Items)
+            {
+                var pendencias = await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.TurmaCodigo.ToString(), turmaComponente.ComponenteCurricularCodigo.ToString()));
+
+                var pendenciaFechamento = await mediator.Send(new ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(turmaComponente.TurmaCodigo, bimestre, turmaComponente.ComponenteCurricularCodigo));
+
+                turmaComponente.PendenciaDiarioBordo = pendencias.PendenciaDiarioBordo;
+                turmaComponente.PendenciaAvaliacoes = pendencias.PendenciaAvaliacoes;
+                turmaComponente.PendenciaFrequencia = pendencias.PendenciaFrequencia;
+                turmaComponente.PendenciaPlanoAula = pendencias.PendenciaPlanoAula;
+                turmaComponente.PendenciaFechamento = pendenciaFechamento;
+            }
+
+            return turmasComponentes;
         }
     }
 }
