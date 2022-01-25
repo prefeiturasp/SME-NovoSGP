@@ -135,7 +135,7 @@ namespace SME.SGP.Dominio
          => PerfilAtual == Dominio.Perfis.PERFIL_CJ
                 || PerfilAtual == Dominio.Perfis.PERFIL_CJ_INFANTIL;
 
-        public bool EhProfessorSomenteCj()
+        public bool EhSomenteProfessorCj()
                  => PerfilAtual == Dominio.Perfis.PERFIL_CJ;
 
         public bool EhGestorEscolar()

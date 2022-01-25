@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
             var planoAulas = await mediator.Send(new ObterPlanosAulaEObjetivosAprendizagemQuery(aulas.Select(s=> s.Id)));
 
-            var planoAulaDto = await MapearParaDto(planoAulas, aulas, temPlanoAnual, request.ComponenteCurricularCodigo, turma.UeId);            
+            var planoAulaDto = await MapearParaDto(planoAulas, aulas, temPlanoAnual, request.ComponenteCurricularCodigo, turma.UeId,usuarioLogado.EhSomenteProfessorCj());            
 
             return planoAulaDto;
         }
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
             return temPlanoAnual.Any(s => s > 0);
         }
 
-        private async Task<IEnumerable<PlanoAulaRetornoDto>> MapearParaDto(IEnumerable<PlanoAulaObjetivosAprendizagemDto> planoAulas, IEnumerable<Aula> aulas, bool temPlanoAnual, string componenteCurricularCodigo, long ueId)
+        private async Task<IEnumerable<PlanoAulaRetornoDto>> MapearParaDto(IEnumerable<PlanoAulaObjetivosAprendizagemDto> planoAulas, IEnumerable<Aula> aulas, bool temPlanoAnual, string componenteCurricularCodigo, long ueId, bool professorCJ)
         {
             var planosAulaRetorno = new List<PlanoAulaRetornoDto>();
 
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
             foreach (var plano in planoAulas)
             {
                 var atividadeAvaliativa = await mediator.Send(new ObterAtividadeAvaliativaQuery(plano.DataAula.Date, componenteCurricularCodigo, plano.TurmaId, ue.CodigoUe));
-
+                
                 planosAulaRetorno.Add(new PlanoAulaRetornoDto()
                 {
                     Id = plano.Id,
@@ -103,6 +103,7 @@ namespace SME.SGP.Aplicacao
                     AlteradoRf = plano.AlteradoRf,
                     PossuiPlanoAnual = temPlanoAnual,
                     ObjetivosAprendizagemComponente = plano.ObjetivosAprendizagemComponente,
+                    ObjetivosAprendizagemOpcionais = professorCJ || plano?.ObjetivosAprendizagemComponente?.Count()==0 ? true : false,
                     IdAtividadeAvaliativa = atividadeAvaliativa?.Id,
                     PodeLancarNota = atividadeAvaliativa != null && plano.DataAula.Date <= DateTimeExtension.HorarioBrasilia().Date,                    
                     EhReposicao = plano.TipoAula == (int)TipoAula.Reposicao
