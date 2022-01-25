@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
 
-        public ListarTurmasComComponentesUseCase(IContextoAplicacao contextoAplicacao, IMediator mediator, IUnitOfWork unitOfWork) : base(contextoAplicacao)
+        public ListarTurmasComComponentesUseCase(IContextoAplicacao contextoAplicacao, IMediator mediator) : base(contextoAplicacao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
