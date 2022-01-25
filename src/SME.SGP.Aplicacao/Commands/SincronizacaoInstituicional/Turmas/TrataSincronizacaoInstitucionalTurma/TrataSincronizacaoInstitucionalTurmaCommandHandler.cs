@@ -88,10 +88,7 @@ namespace SME.SGP.Aplicacao
             var turmaAtualizada = await repositorioTurma.AtualizarTurmaParaHistorica(turmaId);
 
             if (!turmaAtualizada)
-            {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao atualizar a turma para histórica.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, "Atualizar Turma Para Historica Async"));
-                return turmaAtualizada;
-            }
+                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao atualizar a turma para histórica.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, "Atualizar Turma Para Historica Async"));  
 
             return turmaAtualizada;
         }
