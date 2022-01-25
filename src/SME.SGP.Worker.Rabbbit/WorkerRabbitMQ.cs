@@ -371,7 +371,7 @@ namespace SME.SGP.Worker.RabbitMQ
         {
             var mensagem = $"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - ERRO - {ea.RoutingKey}";
 
-            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerRabbit, observacao));
+            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerRabbit, observacao, rastreamento: ex.StackTrace));
         }
 
         private static void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)
@@ -444,7 +444,7 @@ namespace SME.SGP.Worker.RabbitMQ
                 }
                 catch (Exception ex)
                 {
-                    _ = mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message)).Result;
+                    _ = await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message));
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }
             };
