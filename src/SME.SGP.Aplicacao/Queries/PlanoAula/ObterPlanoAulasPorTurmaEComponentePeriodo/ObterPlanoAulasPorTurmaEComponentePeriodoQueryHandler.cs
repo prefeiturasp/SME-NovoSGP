@@ -117,6 +117,7 @@ namespace SME.SGP.Aplicacao
                 DataAula = aula.DataAula,
                 AulaId = aula.Id,
                 QtdAulas = aula.Quantidade,
+                AulaCj = aula.AulaCJ,
                 EhReposicao = aula.EhReposicao()
             }));
 
