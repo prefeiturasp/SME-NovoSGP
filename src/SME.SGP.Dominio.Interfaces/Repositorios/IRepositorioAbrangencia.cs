@@ -11,6 +11,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         void AtualizaAbrangenciaHistorica(IEnumerable<long> paraAtualizar);
 
+        void AtualizaAbrangenciaHistoricaAnosAnteriores(IEnumerable<long> paraAtualizar, int anoLetivo);
+
         void ExcluirAbrangencias(IEnumerable<long> ids);
 
         void ExcluirAbrangenciasHistoricas(IEnumerable<long> ids);

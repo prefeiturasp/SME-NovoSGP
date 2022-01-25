@@ -82,6 +82,7 @@ namespace SME.SGP.Aplicacao.Servicos
             if (idsRemover.Any())
                 RemoverAbrangenciasHistoricas(idsRemover);
         }
+
         public async Task<IEnumerable<AbrangenciaHistoricaDto>> ObterAbrangenciaHistorica(string login)
         {
             return await repositorioAbrangencia.ObterAbrangenciaHistoricaPorLogin(login);
@@ -165,15 +166,20 @@ namespace SME.SGP.Aplicacao.Servicos
             try
             {
                 var turmasHistoricasEOL = await mediator.Send(new ObterTurmasAbrangenciaHistoricaEOLAnoProfessorQuery(anoLetivo, professorRf));
+
                 var usuario = await repositorioUsuario.ObterUsuarioPorCodigoRfAsync(professorRf);
+
                 if (usuario == null)
                     throw new NegocioException("Usuário não encontrado no SGP");
 
                 var abrangenciaGeralSGP = await repositorioAbrangencia.ObterAbrangenciaGeralPorUsuarioId(usuario.Id);
+
                 List<Abrangencia> abrangenciaTurmasHistoricasEOL = new List<Abrangencia>();
+
                 foreach (AbrangenciaTurmaRetornoEolDto turma in turmasHistoricasEOL)
                 {
                     Abrangencia abrangencia = new Abrangencia();
+
                     var turmaSGP = await repositorioTurma.ObterTurmaCompletaPorCodigo(turma.Codigo);
 
                     if (turmaSGP == null)
@@ -190,10 +196,29 @@ namespace SME.SGP.Aplicacao.Servicos
                 }
 
                 var novas = abrangenciaTurmasHistoricasEOL.Where(ath => !abrangenciaGeralSGP.Any(x => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
+
                 repositorioAbrangencia.InserirAbrangencias(novas, usuario.Login);
+
                 abrangenciaGeralSGP = await repositorioAbrangencia.ObterAbrangenciaGeralPorUsuarioId(usuario.Id);
+
                 var paraAtualizar = abrangenciaGeralSGP.Where(x => abrangenciaTurmasHistoricasEOL.Any(ath => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
-                repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar.Select(x => x.Id));
+
+                if (anoLetivo == DateTimeExtension.HorarioBrasilia().Year)
+                    repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar.Select(x => x.Id));
+                else
+                {
+                    var paraAtualizarAbrangencia = paraAtualizar.ToList();
+                    foreach (var turma in abrangenciaGeralSGP.Where(a=> a.TurmaId != null))
+                    {                       
+                        var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turma.TurmaId.Value));
+                        if (virouHistorica && !turma.Historico)
+                            paraAtualizarAbrangencia.Add(turma);
+                    }
+
+                    repositorioAbrangencia.AtualizaAbrangenciaHistoricaAnosAnteriores(paraAtualizarAbrangencia.Select(x => x.Id), anoLetivo);
+                }
+                   
+
                 return true;
             }
             catch (Exception e)
