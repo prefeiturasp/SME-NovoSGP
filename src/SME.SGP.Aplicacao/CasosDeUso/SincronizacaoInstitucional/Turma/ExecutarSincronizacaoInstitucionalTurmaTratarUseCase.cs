@@ -15,8 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            //var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemSyncTurmaDto>();
-            var filtro = new MensagemSyncTurmaDto("094668", 2256236);
+            var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemSyncTurmaDto>();
 
             if (filtro.CodigoTurma == 0) return true;
 

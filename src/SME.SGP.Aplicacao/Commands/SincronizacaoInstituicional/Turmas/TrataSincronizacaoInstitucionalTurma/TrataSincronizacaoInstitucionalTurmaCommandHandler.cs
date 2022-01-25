@@ -26,9 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var turmaEOL = request.TurmaEOL;
 
-            //TODO: BUSCAR DADOS DO USUÁRIO LOGADO PARA PODER PASSAR O RF DO PROFESSOR NO COMMAND DA LINHA 41.
-            var codigoRf = "7941706";
-            //var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             if (request.TurmaSGP == null)
                 return await IncluirTurmaAsync(turmaEOL, request.TurmaSGP);
@@ -38,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 var turmaAtualizadaComSucesso = await AtualizarTurmaParaHistoricaAsync(turmaEOL.Codigo.ToString());
 
                 if (turmaAtualizadaComSucesso)
-                    return await mediator.Send(new TrataAbrangenciaHistoricaTurmaCommand(request.TurmaSGP.AnoLetivo,codigoRf));
+                    return await mediator.Send(new TrataAbrangenciaHistoricaTurmaCommand(request.TurmaSGP.AnoLetivo, usuarioLogado.CodigoRf));
             }
 
             if (turmaEOL.Situacao == "E")

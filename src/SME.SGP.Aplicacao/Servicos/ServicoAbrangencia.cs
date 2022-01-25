@@ -209,8 +209,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 {
                     var paraAtualizarAbrangencia = paraAtualizar.ToList();
                     foreach (var turma in abrangenciaGeralSGP.Where(a=> a.TurmaId != null))
-                    {
-                        
+                    {                       
                         var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turma.TurmaId.Value));
                         if (virouHistorica && !turma.Historico)
                             paraAtualizarAbrangencia.Add(turma);
