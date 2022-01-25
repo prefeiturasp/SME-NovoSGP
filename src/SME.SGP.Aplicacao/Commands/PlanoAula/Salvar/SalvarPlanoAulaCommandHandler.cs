@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -65,12 +64,10 @@ namespace SME.SGP.Aplicacao
                 var planoAulaResumidoDto = new PlanoAulaResumidoDto()
                 {
                     DescricaoNovo = request.PlanoAula.Descricao,
-                    DesenvolvimentoAulaNovo = request.PlanoAula.DesenvolvimentoAula,
                     RecuperacaoAulaNovo = request.PlanoAula.RecuperacaoAula,
                     LicaoCasaNovo = request.PlanoAula.LicaoCasa,
 
                     DescricaoAtual = planoAula?.Descricao ?? string.Empty,
-                    DesenvolvimentoAulaAtual = planoAula?.DesenvolvimentoAula ?? string.Empty,
                     LicaoCasaAtual = planoAula?.LicaoCasa ?? string.Empty,
                     RecuperacaoAulaAtual = planoAula?.RecuperacaoAula ?? string.Empty
                 };
@@ -120,7 +117,6 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.PersistirTransacao();
 
                 planoAulaDto.Descricao = planoAula.Descricao;
-                planoAulaDto.DesenvolvimentoAula = planoAula.DesenvolvimentoAula;
                 planoAulaDto.RecuperacaoAula = planoAula.RecuperacaoAula;
                 planoAulaDto.LicaoCasa = planoAula.LicaoCasa;
                 planoAulaDto.Id = planoAula.Id;
@@ -141,7 +137,6 @@ namespace SME.SGP.Aplicacao
 
             planoAula.AulaId = planoDto.AulaId;
             planoAula.Descricao = await MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual, TipoArquivo.PlanoAula); 
-            planoAula.DesenvolvimentoAula = await MoverRemoverExcluidos(planoAulaResumidoDto.DesenvolvimentoAulaNovo, planoAulaResumidoDto.DesenvolvimentoAulaAtual, TipoArquivo.PlanoAulaDesenvolvimento);
             planoAula.RecuperacaoAula = await MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual, TipoArquivo.PlanoAulaRecuperacao);
             planoAula.LicaoCasa = await MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
 

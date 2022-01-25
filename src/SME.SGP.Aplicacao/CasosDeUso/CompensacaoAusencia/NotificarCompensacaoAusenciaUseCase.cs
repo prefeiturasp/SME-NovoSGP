@@ -183,7 +183,6 @@ namespace SME.SGP.Aplicacao
 
         }
 
-
         private async Task<long> NotificarCompensacaoAusencia(string professor, string professorRf, string disciplina,
             string codigoTurma, string turma, string modalidade, string codigoUe, string escola, string tipoEscola, string codigoDre, string dre,
             int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos, Cargo[] cargos)

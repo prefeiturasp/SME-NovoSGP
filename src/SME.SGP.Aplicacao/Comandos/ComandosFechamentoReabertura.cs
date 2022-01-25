@@ -27,25 +27,22 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
         }
 
-        public async Task<string> Alterar(FechamentoReaberturaAlteracaoDto fechamentoReaberturaPersistenciaDto, long id, bool alteracaoHierarquicaConfirmacao)
+        public async Task<string> Alterar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto, long id)
         {
             var fechamentoReabertura = repositorioFechamentoReabertura.ObterCompleto(id, 0);
             if (fechamentoReabertura == null)
                 throw new NegocioException("Não foi possível localizar esta Reabertura de Fechamento.");
 
-            var dataInicioAnterior = fechamentoReabertura.Inicio;
-            var dataFimAnterior = fechamentoReabertura.Fim;
+            fechamentoReabertura = TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto, fechamentoReabertura);
 
-            AtualizarEntidadeComDto(fechamentoReabertura, fechamentoReaberturaPersistenciaDto);
-
-            return await servicoFechamentoReabertura.AlterarAsync(fechamentoReabertura, dataInicioAnterior, dataFimAnterior, alteracaoHierarquicaConfirmacao);
+            return await servicoFechamentoReabertura.AlterarAsync(fechamentoReabertura, fechamentoReaberturaPersistenciaDto.Bimestres);
         }
 
         public async Task<string> Excluir(long[] ids)
         {
             var Mensagens = new List<string>();
 
-            var fechamentos = await repositorioFechamentoReabertura.Listar(0, 0, 0, ids);
+            var fechamentos = await repositorioFechamentoReabertura.ObterPorIds(ids);
             if (fechamentos == null || !fechamentos.Any())
                 throw new NegocioException("Não foram localizados fechamento(s) válido(s) para exclusão.");
             else
@@ -63,17 +60,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Salvar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
         {
-            FechamentoReabertura entidade = TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto);
+            FechamentoReabertura entidade = TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto, null);
             return await servicoFechamentoReabertura.SalvarAsync(entidade);
         }
 
-        private void AtualizarEntidadeComDto(FechamentoReabertura fechamentoReabertura, FechamentoReaberturaAlteracaoDto fechamentoReaberturaPersistenciaDto)
-        {
-            fechamentoReabertura.Inicio = fechamentoReaberturaPersistenciaDto.Inicio;
-            fechamentoReabertura.Fim = fechamentoReaberturaPersistenciaDto.Fim;
-        }
 
-        private FechamentoReabertura TransformarDtoEmEntidadeParaPersistencia(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
+        private FechamentoReabertura TransformarDtoEmEntidadeParaPersistencia(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto, FechamentoReabertura fechamentoReaberturaExistenteDto)
         {
             Dre dre = null;
             Ue ue = null;
@@ -96,24 +88,30 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi possível localizar o Tipo de Calendário.");
 
-            var fechamentoReabertura = new FechamentoReabertura()
+            FechamentoReabertura fechamentoReabertura;          
+
+            if (fechamentoReaberturaExistenteDto != null)
+                fechamentoReabertura = fechamentoReaberturaExistenteDto;
+            else
             {
-                Descricao = fechamentoReaberturaPersistenciaDto.Descricao,
-                Fim = fechamentoReaberturaPersistenciaDto.Fim,
-                Inicio = fechamentoReaberturaPersistenciaDto.Inicio
-            };
+                fechamentoReabertura = new FechamentoReabertura();
+
+                fechamentoReaberturaPersistenciaDto.Bimestres.ToList().ForEach(bimestre =>
+                {
+                    fechamentoReabertura.Adicionar(new FechamentoReaberturaBimestre()
+                    {
+                        Bimestre = bimestre
+                    });
+                });
+            }
+
+            fechamentoReabertura.Descricao = fechamentoReaberturaPersistenciaDto.Descricao;
+            fechamentoReabertura.Fim = fechamentoReaberturaPersistenciaDto.Fim;
+            fechamentoReabertura.Inicio = fechamentoReaberturaPersistenciaDto.Inicio;
 
             fechamentoReabertura.AtualizarDre(dre);
             fechamentoReabertura.AtualizarUe(ue);
             fechamentoReabertura.AtualizarTipoCalendario(tipoCalendario);
-
-            fechamentoReaberturaPersistenciaDto.Bimestres.ToList().ForEach(bimestre =>
-            {
-                fechamentoReabertura.Adicionar(new FechamentoReaberturaBimestre()
-                {
-                    Bimestre = bimestre
-                });
-            });
 
             return fechamentoReabertura;
         }

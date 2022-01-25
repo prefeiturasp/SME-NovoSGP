@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(Dominio.TipoPendencia.AusenciaDeAvaliacaoProfessor, request.Mensagem, request.Instrucao, request.Titulo));
+                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(Dominio.TipoPendencia.AusenciaDeAvaliacaoProfessor, request.UeId, request.Mensagem, request.Instrucao, request.Titulo));
                 await mediator.Send(new SalvarPendenciaProfessorCommand(pendenciaId, request.TurmaId, request.ComponenteCurricularId, request.ProfessorRf, request.PeriodoEscolarId));
                 await GerarPendenciaUsuario(pendenciaId, request.ProfessorRf);
 

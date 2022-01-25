@@ -7,7 +7,7 @@ namespace SME.SGP.Infra
     public class PlanoAEEAlunoTurmaDto
     {
         public long Id { get; set; }
-        public string AlunoNumero { get; set; }
+        public int AlunoNumero { get; set; }
         public string AlunoCodigo { get; set; }
         public string AlunoNome { get; set; }
         public string TurmaCodigo { get; set; }

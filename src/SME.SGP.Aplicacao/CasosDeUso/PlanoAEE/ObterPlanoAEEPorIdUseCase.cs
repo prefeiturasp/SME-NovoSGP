@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             if (filtro.PlanoAEEId.HasValue && filtro.PlanoAEEId > 0)
             {
                 var entidadePlano = await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
-                var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, filtro.Historico));
+                var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, entidadePlano.Turma.Historica));
 
                 if (alunoPorTurmaResposta == null)
                     throw new NegocioException("Aluno não localizado");

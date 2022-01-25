@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterRegistrosAusenciaPorAulaQuery : IRequest<IEnumerable<RegistroAusenciaAluno>>
+    public class ObterRegistrosAusenciaPorAulaQuery : IRequest<IEnumerable<RegistroFrequenciaAluno>>
     {
         public long AulaId { get; set; }
 

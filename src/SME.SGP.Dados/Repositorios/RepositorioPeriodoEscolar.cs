@@ -6,6 +6,6 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPeriodoEscolar : RepositorioBase<PeriodoEscolar>, IRepositorioPeriodoEscolar
     {
-        public RepositorioPeriodoEscolar(ISgpContext conexao) : base(conexao) { }
+        public RepositorioPeriodoEscolar(ISgpContext conexao) : base(conexao) { }        
     }
 }

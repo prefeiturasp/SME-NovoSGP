@@ -20,12 +20,11 @@ namespace SME.SGP.Infra.Contexto
 
         public T ObterVariavel<T>(string nome)
         {
-            object valor = null;
 
-            if (Variaveis.TryGetValue(nome, out valor))
+            if (Variaveis.TryGetValue(nome, out object valor))
                 return (T)valor;
 
-            return default(T);
+            return default;
         }
     }
 }

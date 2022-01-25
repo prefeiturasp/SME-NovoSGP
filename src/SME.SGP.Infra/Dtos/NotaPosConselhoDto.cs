@@ -6,5 +6,6 @@
         public double? Nota { get; set; }
         public string NotaConceito { get; set; }
         public bool? PodeEditar { get; set; }
+        public bool EmAprovacao { get; set; }
     }
 }

@@ -57,10 +57,9 @@ namespace SME.SGP.Aplicacao
                         $"Você não possui permissão para inserir registro de diário de bordo, pois não está mais atribuído(a) a turma.");
                 }
             }
-            
 
             await MoverRemoverExcluidos(request);
-            var diarioBordo = MapearParaEntidade(request);
+            var diarioBordo = MapearParaEntidade(request, turma.Id);
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
 
@@ -80,12 +79,14 @@ namespace SME.SGP.Aplicacao
                 diario.ReflexoesReplanejamento = moverArquivo;
             }
         }
-        private DiarioBordo MapearParaEntidade(InserirDiarioBordoCommand request)
+        private DiarioBordo MapearParaEntidade(InserirDiarioBordoCommand request, long turmaId)
             => new DiarioBordo()
             { 
                 AulaId = request.AulaId,
                 Planejamento = request.Planejamento,
-                ReflexoesReplanejamento = request.ReflexoesReplanejamento
+                ReflexoesReplanejamento = request.ReflexoesReplanejamento,
+                ComponenteCurricularId = request.ComponenteCurricularId,
+                TurmaId = turmaId
             };
     }
 }

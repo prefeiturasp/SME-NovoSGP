@@ -213,20 +213,27 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil)
         {
+            var sql = ehInfantil ? $@"select 1
+                        from aula
+                        inner join turma on aula.turma_id = turma.turma_id
+	                    left join registro_frequencia rf on aula.id = rf.aula_id
+                        where not aula.excluido
+	                        and aula.id = ANY(@aulas)
+                            and aula.data_aula::date < @hoje
+                            and (rf.id is null)
+	                        " :
+                               $@"select 1
+                        from aula
+                        inner join turma on aula.turma_id = turma.turma_id
+                        inner join componente_curricular cc on cc.id = aula.disciplina_id::bigint
+	                    left join registro_frequencia rf on aula.id = rf.aula_id
+                        where not aula.excluido
+	                        and aula.id = ANY(@aulas)
+                            and aula.data_aula::date < @hoje
+                            and rf.id is null 
+                            and cc.permite_registro_frequencia";
 
-            var sql = $@" select 1
-                          from aula
-                           inner join turma on aula.turma_id = turma.turma_id
-                           inner join componente_curricular cc on 
-                           aula.disciplina_id = cc.id::varchar
-                           left join registro_frequencia rf on aula.id = rf.aula_id
-                          where not aula.excluido
-                           and aula.id = ANY(@aulas)
-                           and aula.data_aula::date < @hoje
-                           and rf.id is null
-                           and cc.permite_registro_frequencia";
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date });
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
@@ -254,7 +261,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and a.data_aula::date < @hoje
                                 and aa.data_avaliacao::date = a.data_aula::date
                                 inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = aa.id
-                                and aad.disciplina_id = a.disciplina_id
+                                and aad.disciplina_id = a.disciplina_id and not aad.excluido 
                                 left join notas_conceito n on aa.id = n.atividade_avaliativa
                                 group by a.id,aad.atividade_avaliativa_id) a where a.nota_id is null;";
 

@@ -45,19 +45,20 @@ namespace SME.SGP.Aplicacao
                 .Select(a => a.Id);
 
             return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data)
-                    .Select(x => new DatasAulasDto()
+                .Select(x => new DatasAulasDto()
+                {
+                    Data = x.Key,
+                    Aulas = x.OrderBy(a => a.AulaCJ).Select(async a => new AulaSimplesDto()
                     {
-                        Data = x.Key,
-                        Aulas = x.OrderBy(a => a.AulaCJ).Select(async a => new AulaSimplesDto()
-                        {
-                            AulaId = a.IdAula,
-                            AulaCJ = a.AulaCJ,
-                            ProfessorRf = a.ProfessorRf,
-                            CriadoPor = a.CriadoPor,
-                            PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula)),
-                            TipoAula = a.TipoAula
-                        }).Select(a => a.Result)
-                    });
+                        AulaId = a.IdAula,
+                        AulaCJ = a.AulaCJ,
+                        PodeEditar = (usuarioLogado.EhProfessorCj() && a.AulaCJ) || (!a.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar())),
+                        ProfessorRf = a.ProfessorRf,
+                        CriadoPor = a.CriadoPor,
+                        PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula)),
+                        TipoAula = a.TipoAula
+                    }).Select(a => a.Result)
+                });
         }
 
         private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId)

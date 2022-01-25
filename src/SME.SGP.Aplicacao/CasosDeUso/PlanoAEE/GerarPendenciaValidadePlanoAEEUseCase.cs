@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -27,18 +26,10 @@ namespace SME.SGP.Aplicacao
             var dataFim = DateTime.Today.AddDays(-1);
             var planosEncerrados = await mediator.Send(new ObterPlanosAEEPorDataFimQuery(dataFim));
 
-            foreach(var planoEncerrado in planosEncerrados)
+            foreach (var planoEncerrado in planosEncerrados)
             {
-                try
-                {
-                    await ExpirarPlano(planoEncerrado);
-                    await GerarPendenciaValidadePlano(planoEncerrado, dataFim);
-                }
-                catch (Exception e)
-                {
-                    SentrySdk.CaptureException(e);
-                    throw;
-                }
+                await ExpirarPlano(planoEncerrado);
+                await GerarPendenciaValidadePlano(planoEncerrado, dataFim);
             }
 
             return true;
@@ -71,7 +62,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioId = await ObterUsuarioPorRF(planoEncerrado.CriadoRF);
 
-            await mediator.Send(new GerarPendenciaPlanoAEECommand(planoEncerrado.Id, usuarioId, titulo, descricao));
+            await mediator.Send(new GerarPendenciaPlanoAEECommand(planoEncerrado.Id, usuarioId, titulo, descricao, turma.UeId));
         }
 
         private async Task<long> ObterUsuarioPorRF(string criadoRF)

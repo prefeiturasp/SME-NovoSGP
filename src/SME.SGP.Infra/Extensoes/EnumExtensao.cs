@@ -37,6 +37,40 @@ namespace SME.SGP.Infra
             }
         }
 
+        public static Cargo ObterCargoPorPerfil(this PerfilUsuario perfilCodigo)
+        {
+            switch (perfilCodigo)
+            {
+                case PerfilUsuario.CP:
+                    return Cargo.CP;
+                case PerfilUsuario.AD:
+                    return Cargo.AD;
+                case PerfilUsuario.DIRETOR:
+                    return Cargo.Diretor;
+                default:
+                    throw new NegocioException("Perfil não relacionado com Cargo");
+            }
+        }
+
+        public static PerfilUsuario ObterPerfilPorCargo(this Cargo cargoId)
+        {
+            switch (cargoId)
+            {
+                case Cargo.CP:
+                    return PerfilUsuario.CP;
+                case Cargo.AD:
+                    return PerfilUsuario.AD;
+                case Cargo.Diretor:
+                    return PerfilUsuario.DIRETOR;
+                case Cargo.Supervisor:
+                    return PerfilUsuario.SUPERVISOR;
+                case Cargo.SupervisorTecnico:
+                    return PerfilUsuario.SUPERVISOR_TECNICO;
+                default:
+                    throw new NegocioException("Cargo não relacionado a um Perfil");
+            }
+        }
+
         public static IEnumerable<EnumeradoRetornoDto> ListarDto<TEnum>()
             where TEnum : struct
         {

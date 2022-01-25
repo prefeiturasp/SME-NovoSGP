@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -15,18 +14,23 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQueryHandler(IMediator mediator)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<IEnumerable<EventoAulaDto>> Handle(ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery request, CancellationToken cancellationToken)
         {
             var retorno = new List<EventoAulaDto>();
+
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
             var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(request.TurmaCodigo));
+
             if (request.Aulas.Any())
             {
                 foreach (var aulaParaVisualizar in request.Aulas)
                 {
                     var componenteCurricular = request.ComponentesCurricularesParaVisualizacao.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId));
-                    var professorTitular = professoresTitulares != null ? professoresTitulares.FirstOrDefault(p => p.DisciplinaId == long.Parse(aulaParaVisualizar.DisciplinaId)) : null;
+            
+                    var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinaId == long.Parse(aulaParaVisualizar.DisciplinaId));
 
                     var eventoAulaDto = new EventoAulaDto()
                     {
@@ -36,6 +40,8 @@ namespace SME.SGP.Aplicacao
                         EhReposicao = aulaParaVisualizar.TipoAula == TipoAula.Reposicao,
                         EstaAguardandoAprovacao = aulaParaVisualizar.Status == EntidadeStatus.AguardandoAprovacao,
                         EhAulaCJ = aulaParaVisualizar.AulaCJ,
+                        PodeEditarAula = professorTitular != null && !aulaParaVisualizar.AulaCJ 
+                                      || usuarioLogado.EhProfessorCj() && aulaParaVisualizar.AulaCJ,
                         Quantidade = aulaParaVisualizar.Quantidade,
                         ComponenteCurricularId = long.Parse(aulaParaVisualizar.DisciplinaId)
                     };
@@ -44,7 +50,7 @@ namespace SME.SGP.Aplicacao
                                                        from disciplina in avaliacao.Disciplinas
                                                        where avaliacao.EhCj == aulaParaVisualizar.AulaCJ &&
                                                              disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId &&
-                                                             (avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf || 
+                                                             (avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf ||
                                                              (professorTitular != null && professorTitular.ProfessorRf == avaliacao.ProfessorRf && !avaliacao.EhCj))
                                                        select avaliacao);
 
@@ -79,11 +85,14 @@ namespace SME.SGP.Aplicacao
                         Descricao = evento.Descricao
                     };
 
-                    if (evento.TipoEvento.TipoData == EventoTipoData.InicioFim)
+                    if (evento.DataInicio.Date != evento.DataFim.Date)
                     {
                         eventoParaAdicionar.DataInicio = evento.DataInicio;
                         eventoParaAdicionar.DataFim = evento.DataFim;
                     }
+
+                    eventoParaAdicionar.Dre = evento.EhEventoSME() ? "Todas" : evento.Dre.Abreviacao;
+                    eventoParaAdicionar.Ue = (evento.EhEventoSME() || evento.EhEventoDRE()) ? "Todas" : evento.Ue.Nome;
 
                     retorno.Add(eventoParaAdicionar);
                 }

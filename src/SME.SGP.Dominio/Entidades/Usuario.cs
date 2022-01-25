@@ -44,40 +44,30 @@ namespace SME.SGP.Dominio
         public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, string[] componentesCurricularesProfessor)
         {
             if (TemPerfilGestaoUes() || TemPerfilAdmUE())
-            {
                 return aulas;
-            }
+            
             else
             {
                 if (EhProfessorCj())
-                {
                     return aulas.Where(a => a.ProfessorRf == CodigoRf);
-                }
+            
                 else
-                {
-                    return aulas.Where(a => (componentesCurricularesProfessor.Contains(a.DisciplinaId) && !a.AulaCJ) || a.ProfessorRf == CodigoRf);
-                }
-
+                    return aulas.Where(a => (componentesCurricularesProfessor.Contains(a.DisciplinaId)) || a.ProfessorRf == CodigoRf);
             }
         }
 
         public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasQuePodeVisualizar(IEnumerable<AtividadeAvaliativa> atividades, string[] componentesCurricularesProfessor)
         {
             if (TemPerfilGestaoUes())
-            {
                 return atividades;
-            }
+            
             else
             {
                 if (EhProfessorCj())
-                {
                     return atividades.Where(a => a.ProfessorRf == CodigoRf);
-                }
+            
                 else
-                {
-                    return atividades.Where(a => (componentesCurricularesProfessor.Intersect(a.Disciplinas.Select(d => d.DisciplinaId)).Any() && !a.EhCj) || a.ProfessorRf == CodigoRf);
-                }
-
+                    return atividades.Where(a => (componentesCurricularesProfessor.Intersect(a.Disciplinas.Select(d => d.DisciplinaId)).Any() && !a.EhCj || a.Disciplinas.Select(item => item.DisciplinaId).Any() && a.EhCj) || a.ProfessorRf == CodigoRf);
             }
         }
 
@@ -145,6 +135,11 @@ namespace SME.SGP.Dominio
         public bool EhAbrangenciaUEECP()
         {
             return Perfis.Any(x => x.Tipo == TipoPerfil.UE && x.CodigoPerfil == Dominio.Perfis.PERFIL_CP);
+        }
+
+        public bool EhAbrangenciaSomenteUE()
+        {
+            return Perfis.Any(x => x.Tipo == TipoPerfil.UE) && !PossuiPerfilSmeOuDre();
         }
 
         public bool EhProfessorCj()
@@ -244,15 +239,18 @@ namespace SME.SGP.Dominio
                 if (string.IsNullOrEmpty(evento.DreId) && string.IsNullOrEmpty(evento.UeId) && !PossuiPerfilSme())
                     throw new NegocioException("Evento da SME só pode ser editado por usuario com perfil SME.");
 
-                if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE)
+                if (!PossuiPerfilSme())
                 {
-                    if (evento.TipoPerfilCadastro == TipoPerfil.SME)
+                    if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE)
                     {
-                        if (evento.TipoPerfilCadastro != ObterTipoPerfilAtual())
+                        if (evento.TipoPerfilCadastro == TipoPerfil.SME)
+                        {
+                            if (evento.TipoPerfilCadastro != ObterTipoPerfilAtual())
+                                throw new NegocioException("Você não tem permissão para alterar este evento.");
+                        }
+                        else if (PerfilAtual != Dominio.Perfis.PERFIL_DIRETOR && PerfilAtual != Dominio.Perfis.PERFIL_AD && PerfilAtual != Dominio.Perfis.PERFIL_CP)
                             throw new NegocioException("Você não tem permissão para alterar este evento.");
                     }
-                    else if (PerfilAtual != Dominio.Perfis.PERFIL_DIRETOR && PerfilAtual != Dominio.Perfis.PERFIL_AD && PerfilAtual != Dominio.Perfis.PERFIL_CP)
-                        throw new NegocioException("Você não tem permissão para alterar este evento.");
                 }
             }
         }

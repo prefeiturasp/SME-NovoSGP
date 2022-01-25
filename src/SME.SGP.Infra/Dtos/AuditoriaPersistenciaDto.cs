@@ -14,6 +14,7 @@ namespace SME.SGP.Infra
 
         public bool Sucesso { get; set; }
         public string MensagemConsistencia { get; set; }
+        public bool EmAprovacao { get; set; }
 
         public static explicit operator AuditoriaPersistenciaDto(EntidadeBase entidade)
             => new AuditoriaPersistenciaDto()

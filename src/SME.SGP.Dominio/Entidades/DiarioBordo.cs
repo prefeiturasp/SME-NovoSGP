@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public class DiarioBordo: EntidadeBase
     {
         public long AulaId { get; set; }
+        public long ComponenteCurricularId { get; set; }
+        public long TurmaId { get; set; }
         public Aula Aula { get; set; }
         public long? DevolutivaId { get; set; }
         public Devolutiva Devolutiva { get; set; }
