@@ -120,9 +120,21 @@ namespace SME.SGP.Aplicacao
                 MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual,TipoArquivo.PlanoAulaRecuperacao);
                 MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
 
+                planoAulaDto.Id = planoAula.Id;
                 planoAulaDto.Descricao = planoAula.Descricao;
                 planoAulaDto.RecuperacaoAula = planoAula.RecuperacaoAula;
                 planoAulaDto.LicaoCasa = planoAula.LicaoCasa;
+
+                //Se houver plano para copiar
+                if (planoAulaDto.CopiarConteudo != null)
+                {
+                    var migrarPlanoAula = planoAulaDto.CopiarConteudo;
+
+                    migrarPlanoAula.PlanoAulaId = planoAula.Id;
+
+                    await mediator.Send(new MigrarPlanoAulaCommand(migrarPlanoAula, usuario));
+                }
+
                 return planoAulaDto;
             }
             catch (Exception ex)
