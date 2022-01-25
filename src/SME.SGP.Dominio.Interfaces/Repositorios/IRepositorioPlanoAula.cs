@@ -12,7 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PlanoAula> ObterPlanoAulaPorAulaRegistroExcluido(long aulaId);
         Task<PlanoAula> ObterPlanoAulaPorDataDisciplina(DateTime data, string turmaId, string disciplinaId);
         bool ValidarPlanoExistentePorTurmaDataEDisciplina(DateTime data, string turmaId, string disciplinaId);
-        Task<bool> ValidarPendenciaPlanoPorTurmaDataEPeriodo(DateTime data, string turmaId, string disciplinaId, int anoLetivo, short bimestre);
         Task ExcluirPlanoDaAula(long aulaId);
         Task<bool> PlanoAulaRegistradoAsync(long aulaId);
         Task<PlanoAulaObjetivosAprendizagemDto> ObterPlanoAulaEObjetivosAprendizagem(long aulaId);

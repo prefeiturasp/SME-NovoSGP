@@ -105,19 +105,22 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirst<int>(query, new { fechamentoId }) > 0;
         }
 
-        public async Task<bool> PossuiPendenciasAbertoPorTurmaDisciplina(string turmaId, int bimestre, string disciplinaId)
+        public async Task<bool> PossuiPendenciasAbertoPorTurmaDisciplina(long turmaId, int bimestre, long disciplinaId)
         {
-            var query = @"select 1
-                                  from pendencia_fechamento pf
-                                 inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id
-                                 inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
-                                 inner join turma t on t.id = ft.turma_id
-                                 inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
-                                 inner join pendencia p on p.id = pf.pendencia_id
-                                  where not p.excluido
-                                    and t.turma_id = @turmaCodigo
-                                    and pe.bimestre = @bimestre
-                                    and ftd.disciplina_id = @componenteCurricularId";
+
+            var query = @"select 1  
+                            from pendencia_fechamento pf
+                           inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id
+                           inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
+                           inner join turma t on t.id = ft.turma_id
+                           inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                           inner join pendencia p on p.id = pf.pendencia_id
+                           where not p.excluido
+                             and P.situacao = 1
+                             and t.id = @turmaId
+                             and pe.bimestre = @bimestre
+                             and ftd.disciplina_id = @disciplinaId
+                           order by p.criado_em";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { turmaId, bimestre, disciplinaId });
         }

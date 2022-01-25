@@ -105,7 +105,7 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("  		inner join ue");
             sqlQuery.AppendLine("  			on t.ue_id = ue.id");
             sqlQuery.AppendLine("  		inner join dre");
-            sqlQuery.AppendLine("  			on dre.dre_id = @dre and ue.dre_id = dre.id");
+            sqlQuery.AppendLine("  			on ue.dre_id = dre.id");
             sqlQuery.AppendLine("  where not a.excluido and");
             sqlQuery.AppendLine("	a.data_aula < @hoje and");
             sqlQuery.AppendLine("	not exists (select 1");
@@ -119,15 +119,15 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine($"				from {tabelaReferencia} tf");
             sqlQuery.AppendLine("				where tf.aula_id = a.id);");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(), 
-                new 
+            return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sqlQuery.ToString(),
+                new
                 {
-                    disciplinaId,
-                    turmaId,
                     anoLetivo,
+                    disciplinaId,
+                    modalidades,
+                    turmaId,
                     hoje = DateTime.Today.Date,
-                    tipo = tipoPendenciaAula,
-                    modalidades
+                    tipo = tipoPendenciaAula
                 }, commandTimeout: 60);
         }
 
@@ -210,14 +210,14 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("				where nc.atividade_avaliativa = aa.id);");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
-                new
-                {
-                    disciplinaId,
-                    turmaId,
-                    anoLetivo,
-                    hoje = DateTime.Today.Date,
-                    tipo = TipoPendencia.Avaliacao
-                }, commandTimeout: 60);
+                    new
+                    {
+                        anoLetivo,
+                        disciplinaId,
+                        turmaId,
+                        hoje = DateTime.Today.Date,
+                        tipo = TipoPendencia.Avaliacao
+                    }, commandTimeout: 120);
         }
 
         public async Task Excluir(long pendenciaId, long aulaId)
