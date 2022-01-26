@@ -174,42 +174,45 @@ namespace SME.SGP.Aplicacao.Servicos
 
                 var abrangenciaGeralSGP = await repositorioAbrangencia.ObterAbrangenciaGeralPorUsuarioId(usuario.Id);
 
-                List<Abrangencia> abrangenciaTurmasHistoricasEOL = new List<Abrangencia>();
-
-                foreach (AbrangenciaTurmaRetornoEolDto turma in turmasHistoricasEOL)
-                {
-                    Abrangencia abrangencia = new Abrangencia();
-
-                    var turmaSGP = await repositorioTurma.ObterTurmaCompletaPorCodigo(turma.Codigo);
-
-                    if (turmaSGP == null)
-                        throw new NegocioException($"Turma não encontrada no SGP - [{turma.Codigo} - {turma.NomeTurma}]");
-
-                    abrangencia.DreId = turmaSGP.Ue.DreId;
-                    abrangencia.UeId = turmaSGP.Ue.Id;
-                    abrangencia.UsuarioId = usuario.Id;
-                    abrangencia.TurmaId = turmaSGP.Id;
-                    abrangencia.Perfil = ((Modalidade)int.Parse(turma.CodigoModalidade) == Modalidade.EducacaoInfantil) ?
-                        Perfis.PERFIL_PROFESSOR_INFANTIL : Perfis.PERFIL_PROFESSOR;
-
-                    abrangenciaTurmasHistoricasEOL.Add(abrangencia);
-                }
-
-                var novas = abrangenciaTurmasHistoricasEOL.Where(ath => !abrangenciaGeralSGP.Any(x => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
-
-                repositorioAbrangencia.InserirAbrangencias(novas, usuario.Login);
-
-                abrangenciaGeralSGP = await repositorioAbrangencia.ObterAbrangenciaGeralPorUsuarioId(usuario.Id);
-
-                var paraAtualizar = abrangenciaGeralSGP.Where(x => abrangenciaTurmasHistoricasEOL.Any(ath => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
-
                 if (anoLetivo == DateTimeExtension.HorarioBrasilia().Year)
+                {
+                    List<Abrangencia> abrangenciaTurmasHistoricasEOL = new List<Abrangencia>();
+
+                    foreach (AbrangenciaTurmaRetornoEolDto turma in turmasHistoricasEOL)
+                    {
+                        Abrangencia abrangencia = new Abrangencia();
+
+                        var turmaSGP = await repositorioTurma.ObterTurmaCompletaPorCodigo(turma.Codigo);
+
+                        if (turmaSGP == null)
+                            throw new NegocioException($"Turma não encontrada no SGP - [{turma.Codigo} - {turma.NomeTurma}]");
+
+                        abrangencia.DreId = turmaSGP.Ue.DreId;
+                        abrangencia.UeId = turmaSGP.Ue.Id;
+                        abrangencia.UsuarioId = usuario.Id;
+                        abrangencia.TurmaId = turmaSGP.Id;
+                        abrangencia.Perfil = ((Modalidade)int.Parse(turma.CodigoModalidade) == Modalidade.EducacaoInfantil) ?
+                            Perfis.PERFIL_PROFESSOR_INFANTIL : Perfis.PERFIL_PROFESSOR;
+
+                        abrangenciaTurmasHistoricasEOL.Add(abrangencia);
+                    }
+
+                    var novas = abrangenciaTurmasHistoricasEOL.Where(ath => !abrangenciaGeralSGP.Any(x => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
+
+                    repositorioAbrangencia.InserirAbrangencias(novas, usuario.Login);
+
+                    abrangenciaGeralSGP = await repositorioAbrangencia.ObterAbrangenciaGeralPorUsuarioId(usuario.Id);
+
+                    var paraAtualizar = abrangenciaGeralSGP.Where(x => abrangenciaTurmasHistoricasEOL.Any(ath => ath.DreId == x.DreId && ath.UeId == x.UeId && ath.TurmaId == x.TurmaId && ath.UsuarioId == x.UsuarioId));
+
+
                     repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar.Select(x => x.Id));
+                }
                 else
                 {
-                    var paraAtualizarAbrangencia = paraAtualizar.ToList();
-                    foreach (var turma in abrangenciaGeralSGP.Where(a=> a.TurmaId != null))
-                    {                       
+                    var paraAtualizarAbrangencia = new List<Abrangencia>();
+                    foreach (var turma in abrangenciaGeralSGP.Where(a => a.TurmaId != null && !a.Historico))
+                    {
                         var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turma.TurmaId.Value));
                         if (virouHistorica && !turma.Historico)
                             paraAtualizarAbrangencia.Add(turma);
@@ -217,7 +220,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
                     repositorioAbrangencia.AtualizaAbrangenciaHistoricaAnosAnteriores(paraAtualizarAbrangencia.Select(x => x.Id), anoLetivo);
                 }
-                   
+
 
                 return true;
             }
