@@ -102,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
                            pa.id, pa.descricao, pa.recuperacao_aula as RecuperacaoAula, pa.licao_casa as LicaoCasa, pa.migrado,
                            pa.criado_em as CriadoEm, pa.alterado_em as AlteradoEm, pa.criado_por as CriadoPor, pa.alterado_por as AlteradoPor, pa.criado_rf as CriadoRf, pa.alterado_rf as AlteradoRf,
                            a.id as AulaId, a.ue_id as UeId, a.disciplina_id as DisciplinaId, a.turma_id as TurmaId,
-                           a.quantidade, a.tipo_calendario_id as TipoCalendarioId, a.data_aula as DataAula, a.tipo_aula as TipoAula,
+                           a.quantidade, a.tipo_calendario_id as TipoCalendarioId, a.data_aula as DataAula, a.tipo_aula as TipoAula, a.aula_cj as AulaCj,
                            oaa.componente_curricular_id as id,
                            oa.id, oa.descricao, oa.codigo, oa.ano_turma as Ano, oa.componente_curricular_id as IdComponenteCurricular
                       from aula a

@@ -1,14 +1,12 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
-{ 
+{
     public class ObterPeriodosEscolaresPorComponenteBimestreTurmaQueryHandler : IRequestHandler<ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery, IEnumerable<PeriodoEscolarVerificaRegenciaDto>>
     {
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
@@ -19,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<PeriodoEscolarVerificaRegenciaDto>> Handle(ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery request, CancellationToken cancellationToken)
-         => await repositorioPeriodoEscolar.ObterPeriodoEscolaresPorTurmaComponenteBimestre(request.TurmaCodigo, request.ComponenteCodigo, request.Bimestre);
+         => await repositorioPeriodoEscolar.ObterPeriodoEscolaresPorTurmaComponenteBimestre(request.TurmaCodigo, request.ComponenteCodigo, request.Bimestre,request.AulaCj);
     }
 }

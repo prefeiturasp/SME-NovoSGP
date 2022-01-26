@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
         {
             var codigoTurma = long.Parse(request.Turma.CodigoTurma);
             var registrosFrequencias = new RegistroFrequenciaPorDataPeriodoDto();
-
-            registrosFrequencias.CarregarAulas(request.Aulas, request.RegistrosFrequenciaAlunos);
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            registrosFrequencias.CarregarAulas(request.Aulas, request.RegistrosFrequenciaAlunos,usuarioLogado.EhSomenteProfessorCj());
             registrosFrequencias.CarregarAuditoria(request.RegistrosFrequenciaAlunos);
 
             foreach (var aluno in request.AlunosDaTurma
