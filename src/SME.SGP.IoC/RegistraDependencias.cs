@@ -219,7 +219,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioDre, RepositorioDre>();
             services.TryAddScoped<IRepositorioUe, RepositorioUe>();
             services.TryAddScoped<IRepositorioTurma, RepositorioTurma>();
-            services.TryAddScoped<IRepositorioTipoTurmaItinerario, RepositorioTipoTurmaItinerario>();
             services.TryAddScoped<IRepositorioAtividadeAvaliativaRegencia, RepositorioAtividadeAvaliativaRegencia>();
             services.TryAddScoped<IRepositorioNotasConceitos, RepositorioNotasConceitos>();
             services.TryAddScoped<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
