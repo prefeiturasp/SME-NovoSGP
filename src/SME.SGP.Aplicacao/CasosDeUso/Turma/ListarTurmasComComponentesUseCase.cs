@@ -96,6 +96,7 @@ namespace SME.SGP.Aplicacao
         {
             List<TurmaComComponenteDto> itensComPendencias = new List<TurmaComComponenteDto>();
             var possuiFechamento = false;
+            var periodoFechamentoAberto = false;
 
             foreach (var turmaComponente in turmasComponentes.Items)
             {
