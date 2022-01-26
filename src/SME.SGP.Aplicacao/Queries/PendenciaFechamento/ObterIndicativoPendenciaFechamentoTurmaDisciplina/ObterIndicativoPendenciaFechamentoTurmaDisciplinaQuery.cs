@@ -1,22 +1,18 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery : IRequest<bool>
     {
-        public ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(string turmaId, int bimestre, long disciplinaId)
+        public ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(long turmaId, int bimestre, long disciplinaId)
         {
             TurmaId = turmaId;
             Bimestre = bimestre;
             DisciplinaId = disciplinaId;
         }
 
-        public string TurmaId { get; set; }
+        public long TurmaId { get; set; }
         public int Bimestre { get; set; }
         public long DisciplinaId { get; set; }
     }

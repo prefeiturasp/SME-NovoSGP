@@ -17,9 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioPendenciaFechamento = repositorioPendenciaFechamento ?? throw new ArgumentNullException(nameof(repositorioPendenciaFechamento));
         }
 
-        public async Task<bool> Handle(ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery request, CancellationToken cancellationToken)
-        {
-            return await repositorioPendenciaFechamento.PossuiPendenciasAbertoPorTurmaDisciplina(request.TurmaId, request.Bimestre, request.DisciplinaId);
-        }
+        public Task<bool> Handle(ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery request, CancellationToken cancellationToken)
+            => repositorioPendenciaFechamento.PossuiFechamentoPorTurmaComponenteBimestre(request.TurmaId, request.Bimestre, request.DisciplinaId);
     }
 }
