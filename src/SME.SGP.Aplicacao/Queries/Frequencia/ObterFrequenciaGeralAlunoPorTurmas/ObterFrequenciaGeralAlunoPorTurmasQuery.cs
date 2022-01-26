@@ -4,7 +4,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFrequenciaGeralAlunoPorTurmasQuery : IRequest<FrequenciaAluno>
+    public class ObterFrequenciaGeralAlunoPorTurmasQuery : IRequest<string>
     {
         public ObterFrequenciaGeralAlunoPorTurmasQuery(string codigoAluno, string[] codigosTurmas, long tipoCalendarioId = 0)
         {

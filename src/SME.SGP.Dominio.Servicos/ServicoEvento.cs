@@ -605,9 +605,7 @@ namespace SME.SGP.Dominio.Servicos
                                     if (temEventoFeriado)
                                         throw new NegocioException("Não é possível cadastrar o evento pois há feriado na data selecionada.");
                                     else if (temEventoSuspensaoAtividades)
-                                        throw new NegocioException("Não é possível cadastrar o evento pois há evento de suspensão de atividades na data informada.");
-                                    else if (evento.DataInicio.DayOfWeek == DayOfWeek.Sunday)
-                                        throw new NegocioException("Não é possível cadastrar o evento letivo no domingo.");
+                                        throw new NegocioException("Não é possível cadastrar o evento pois há evento de suspensão de atividades na data informada.");                                    
                                 }
                             }
                         }

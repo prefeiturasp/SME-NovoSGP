@@ -131,9 +131,7 @@ namespace SME.SGP.Aplicacao
             // Busca periodo
             var periodo = await BuscaPeriodo(turma, bimestre);
 
-            var alunosEOL = await servicoEOL.ObterAlunosPorTurma(turmaId);
-            if (alunosEOL == null || !alunosEOL.Any())
-                throw new NegocioException("Não foram localizados alunos para a turma selecionada.");
+            var alunosEOL = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(turmaId, periodo.PeriodoFim));
 
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(disciplinaId) });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
@@ -142,7 +140,7 @@ namespace SME.SGP.Aplicacao
             var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
             var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
 
-            var alunosAtivos = alunosEOL.Where(a => a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.RemanejadoSaida && a.DataMatricula.Date <= periodo.PeriodoFim);
+            var alunosAtivos = alunosEOL.Where(a => a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.RemanejadoSaida);
             foreach (var alunoEOL in alunosAtivos)
             {
                 var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(alunoEOL.CodigoAluno, disciplinaId, periodo.PeriodoFim, turma.CodigoTurma);
@@ -270,23 +268,8 @@ namespace SME.SGP.Aplicacao
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
 
-            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(alunoCodigo, turmasCodigos, tipoCalendarioId));
+            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(alunoCodigo, turmasCodigos, tipoCalendarioId));
 
-            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(new string[] { turma.CodigoTurma }, tipoCalendarioId, new string[] { }, new int[] { }));
-
-            if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada == null || turmaPossuiFrequenciaRegistrada.Count() == 0)
-                return "0";
-
-            else if (frequenciaAluno?.PercentualFrequencia > 0)
-                return frequenciaAluno.PercentualFrequencia.ToString();
-
-            else if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)
-                return "0";
-
-            else if (turmaPossuiFrequenciaRegistrada.Any())
-                return "100";
-
-            return "0";
         }
 
         private async Task<Turma> ObterTurma(string[] turmasCodigos)

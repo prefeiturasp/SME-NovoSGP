@@ -262,6 +262,10 @@ namespace SME.SGP.Aplicacao
 
                             if (notasConceitoBimestre.Any())
                                 alunoDto.Notas = new List<FechamentoNotaRetornoDto>();
+                            
+                            // Excessão de disciplina ED. Fisica para modalidade EJA
+                            if (turma.EhEJA() && notasConceitoBimestre != null)
+                                notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != 6);
 
                             if (fechamentoBimestre.EhSintese)
                             {

@@ -23,7 +23,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ConsultasConselhoClasseRecomendacaoConsultaDto), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRecomendacoesAlunoFamilia([FromServices] IConsultasConselhoClasseRecomendacao consultasConselhoClasseRecomendacao,
-            long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromQuery]bool consideraHistorico = false)
+            long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromQuery] bool consideraHistorico = false)
         { 
             var retorno = await consultasConselhoClasseRecomendacao.ObterRecomendacoesAlunoFamilia(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre, consideraHistorico);
             return Ok(retorno);
@@ -66,6 +66,21 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterConselhoClasseTurma(string turmaCodigo, int bimestre, string alunoCodigo, bool ehFinal, bool consideraHistorico, [FromServices] IConsultasConselhoClasse consultasConselhoClasse)
             => Ok(await consultasConselhoClasse.ObterConselhoClasseTurma(turmaCodigo, alunoCodigo, bimestre, ehFinal, consideraHistorico));
+
+        [HttpGet("turmas/{turmaCodigo}/alunos/{alunoCodigo}/consideraHistorico/{consideraHistorico}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(ConselhoClasseAlunoResumoDto), 200)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterConselhoClasseTurmaFinal(string turmaCodigo, string alunoCodigo, bool consideraHistorico, [FromServices] IConsultasConselhoClasse consultasConselhoClasse)
+        {
+            var retorno = (await consultasConselhoClasse.ObterConselhoClasseTurmaFinal(turmaCodigo, alunoCodigo, consideraHistorico));
+
+            if (retorno == null)
+                return NoContent();
+
+            return Ok(retorno);
+        }
 
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/parecer/consideraHistorico/{consideraHistorico}")]
         [ProducesResponseType(401)]

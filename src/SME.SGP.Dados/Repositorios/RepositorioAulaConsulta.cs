@@ -590,13 +590,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and t.ano_letivo = @anoLetivo");
 
             if (!string.IsNullOrWhiteSpace(usuarioRF))
-                query.AppendLine("and a.professor_rf = @usuarioRF ");
-
-            if (ehProfessor)
-            {
-                var filtroAulaCJ = aulaCJ ? "" : "not";
-                query.AppendLine($"and {filtroAulaCJ} a.aula_cj ");
-            }
+                query.AppendLine("and a.professor_rf = @usuarioRF ");            
 
             return database.Conexao.Query<Aula, Turma, Aula>(query.ToString(), (aula, turma) =>
             {
@@ -917,15 +911,12 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<int> ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolar(long turmaId, long componenteCurricularId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds)
+        public async Task<int> ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolar(string turmaCodigo, long componenteCurricularId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds)
         {
             const string sql = @"select 
 	                                sum(a.quantidade)
                                 from 
 	                                aula a 
-                                inner join
-	                                turma t
-	                                on a.turma_id = t.turma_id
                                 inner join 
 	                                periodo_escolar pe 
 	                                on a.data_aula BETWEEN pe.periodo_inicio AND pe.periodo_fim
@@ -934,12 +925,12 @@ namespace SME.SGP.Dados.Repositorios
 	                                on a.id = rf.aula_id
                                 where 
 	                                not a.excluido
-	                                and t.id = @turmaId
+	                                and a.turma_id = @turmaCodigo
 	                                and a.disciplina_id = @componenteCurricularId
                                     and a.tipo_calendario_id = @tipoCalendarioId
 	                                and pe.id = any(@periodosEscolaresIds)";
 
-            var parametros = new { turmaId, componenteCurricularId = componenteCurricularId.ToString(), tipoCalendarioId, periodosEscolaresIds = periodosEscolaresIds.ToList() };
+            var parametros = new { turmaCodigo, componenteCurricularId = componenteCurricularId.ToString(), tipoCalendarioId, periodosEscolaresIds = periodosEscolaresIds.ToList() };
             return await database.Conexao.QuerySingleOrDefaultAsync<int?>(sql, parametros) ?? default;
         }
 

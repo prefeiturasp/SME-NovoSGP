@@ -13,10 +13,13 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoConselhoClasse : IServicoConselhoClasse
     {
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
-        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasse;
-        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
+        private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
+        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
+        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
-        private readonly IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota;
+        private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
+        private readonly IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNotaConsulta;
+        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IRepositorioDreConsulta repositorioDre;
@@ -24,27 +27,33 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
 
-        public ServicoConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasse,
-                                     IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
+        public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
+                                     IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta,
+                                     IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta,
                                      IRepositorioFechamentoTurma repositorioFechamentoTurma,
                                      IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                      IRepositorioUeConsulta repositorioUe,
                                      IRepositorioDreConsulta repositorioDre,
                                      IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                      IConsultasConselhoClasse consultasConselhoClasse,
-                                     IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota,
+                                     IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
+                                     IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNotaConsulta,
+                                     IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                      IUnitOfWork unitOfWork,
                                      IMediator mediator)
 
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
-            this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
+            this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
+            this.repositorioConselhoClasseAlunoConsulta = repositorioConselhoClasseAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAlunoConsulta));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
+            this.repositorioConselhoClasseNotaConsulta = repositorioConselhoClasseNotaConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNotaConsulta));
+            this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -110,7 +119,7 @@ namespace SME.SGP.Dominio.Servicos
             // TODO Verificar se o fechamentoTurma.Turma carregou UE
             if (await VerificaNotasTodosComponentesCurriculares(alunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
             {
-                var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorIdAsync(conselhoClasseNotaRetorno.ConselhoClasseAlunoId);
+                var conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta.ObterPorIdAsync(conselhoClasseNotaRetorno.ConselhoClasseAlunoId);
                 await VerificaRecomendacoesAluno(conselhoClasseAluno);
             }
 
@@ -121,7 +130,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<ConselhoClasseNotaRetornoDto> AlterarConselhoClasse(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, Turma turma, ConselhoClasseNotaDto conselhoClasseNotaDto, int? bimestre, Usuario usuarioLogado)
         {
-            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
+            var conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
             AuditoriaDto auditoria = null;
             long conselhoClasseAlunoId = 0;
             bool enviarAprovacao = false;
@@ -135,7 +144,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 await mediator.Send(new InserirTurmasComplementaresCommand(turma.Id, conselhoClasseAlunoId, alunoCodigo));
 
-                var conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
+                var conselhoClasseNota = await repositorioConselhoClasseNotaConsulta.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
 
                 double? notaAnterior = null;
                 long? conceitoIdAnterior = null;
@@ -432,7 +441,7 @@ namespace SME.SGP.Dominio.Servicos
             return conselhoClasseAluno;
         }
 
-        public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
+        public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId, bool? historico = false)
         {
             int bimestre;
             long[] conselhosClassesIds;
@@ -441,7 +450,7 @@ namespace SME.SGP.Dominio.Servicos
             if (turma.DeveVerificarRegraRegulares())
             {
                 turmasCodigos = await mediator
-                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes()));
+                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes(), historico));
 
                 turmasCodigos = turmasCodigos
                     .Concat(new string[] { turma.CodigoTurma }).ToArray();
@@ -517,7 +526,7 @@ namespace SME.SGP.Dominio.Servicos
             return componentesTurma;
         }
 
-        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, bool consideraHistorico = false)
+        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
             var solicitanteId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
             var conselhoClasseAluno = await ObterConselhoClasseAluno(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
@@ -527,7 +536,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<ConselhoClasseAluno> ObterConselhoClasseAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
         {
-            ConselhoClasseAluno conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
+            ConselhoClasseAluno conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
             if (conselhoClasseAluno == null)
             {
                 ConselhoClasse conselhoClasse = null;
@@ -537,7 +546,7 @@ namespace SME.SGP.Dominio.Servicos
                     await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
                 }
                 else
-                    conselhoClasse = repositorioConselhoClasse.ObterPorId(conselhoClasseId);
+                    conselhoClasse = repositorioConselhoClasseConsulta.ObterPorId(conselhoClasseId);
 
                 conselhoClasseAluno = new ConselhoClasseAluno() { AlunoCodigo = alunoCodigo, ConselhoClasse = conselhoClasse, ConselhoClasseId = conselhoClasse.Id };
                 await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);

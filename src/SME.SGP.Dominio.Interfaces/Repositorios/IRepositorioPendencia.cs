@@ -10,9 +10,9 @@ namespace SME.SGP.Dominio.Interfaces
         
         void ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia);
 
-        Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuario(long usuarioId, int[] tiposPendencias, string tituloPendencia, string turmaCodigo, Paginacao paginacao, int? tipoGrupo);
+        Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioComFiltro(long usuarioId, int[] tiposPendencias, string tituloPendencia, string turmaCodigo, Paginacao paginacao, int? tipoGrupo);
 
-
+        Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId, Paginacao paginacao);
         Task<Pendencia> FiltrarListaPendenciasUsuario(string turmaCodigo, Pendencia pendencia);
         
         Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId);

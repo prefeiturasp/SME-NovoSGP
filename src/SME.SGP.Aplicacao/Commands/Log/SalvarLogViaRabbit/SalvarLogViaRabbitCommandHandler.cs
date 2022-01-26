@@ -62,8 +62,6 @@ namespace SME.SGP.Aplicacao
                 {
                     var props = _channel.CreateBasicProperties();
 
-                    //TODO: Trocar a fila para direct;
-                    //_channel.QueueBind(RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, RotasRabbitLogs.RotaLogs);
                     _channel.BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasRabbitLogs.RotaLogs, props, body);
                 }                
             }            

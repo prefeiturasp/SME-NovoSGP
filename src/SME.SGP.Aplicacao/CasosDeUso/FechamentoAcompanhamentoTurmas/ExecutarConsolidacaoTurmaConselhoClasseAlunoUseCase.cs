@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             SituacaoConselhoClasse statusNovo = SituacaoConselhoClasse.NaoIniciado;
 
             var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado
-                .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo);
+                    .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo);
 
             if (consolidadoTurmaAluno == null)
             {
@@ -44,52 +44,55 @@ namespace SME.SGP.Aplicacao
                 consolidadoTurmaAluno.Status = statusNovo;
             }
 
-            var componentesDoAluno = await mediator
-                .Send(new ObterComponentesParaFechamentoAcompanhamentoCCAlunoQuery(filtro.AlunoCodigo, filtro.Bimestre, filtro.TurmaId));
-
-            if (componentesDoAluno != null && componentesDoAluno.Any())
+            if (!filtro.Inativo)
             {
-                var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
+                var componentesDoAluno = await mediator
+                    .Send(new ObterComponentesParaFechamentoAcompanhamentoCCAlunoQuery(filtro.AlunoCodigo, filtro.Bimestre, filtro.TurmaId));
 
-                if (filtro.Bimestre == 0)
+                if (componentesDoAluno != null && componentesDoAluno.Any())
                 {
-                    var fechamento = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = filtro.TurmaId });
-                    var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamento.Id));
-                    var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, filtro.AlunoCodigo));
-                    consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno != null ? conselhoClasseAluno.ConselhoClasseParecerId : null;
+                    var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
+
+                    if (filtro.Bimestre == 0)
+                    {
+                        var fechamento = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = filtro.TurmaId });
+                        var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamento.Id));
+                        var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, filtro.AlunoCodigo));
+                        consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno != null ? conselhoClasseAluno.ConselhoClasseParecerId : null;
+                    }
+
+                    var turmasCodigos = new string[] { };
+                    if (turma.DeveVerificarRegraRegulares())
+                    {
+                        List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
+                        turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
+                        turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, filtro.AlunoCodigo, turmasCodigosParaConsulta));
+                    }
+
+                    if (turmasCodigos.Length == 0)
+                        turmasCodigos = new string[1] { turma.CodigoTurma };
+
+                    var componentesComNotaFechamentoOuConselho = await mediator
+                        .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo));
+
+                    var componentesDaTurmaEol = await mediator
+                        .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
+
+                    var possuiComponentesSemNotaConceito = componentesDaTurmaEol
+                        .Where(ct => ct.LancaNota && !ct.TerritorioSaber)
+                        .Select(ct => ct.Codigo)
+                        .Except(componentesComNotaFechamentoOuConselho.Select(cn => cn.Codigo))
+                        .Any();
+
+                    if (possuiComponentesSemNotaConceito)
+                        statusNovo = SituacaoConselhoClasse.EmAndamento;
+                    else
+                        statusNovo = SituacaoConselhoClasse.Concluido;
                 }
 
-                var turmasCodigos = new string[] { };
-                if (turma.DeveVerificarRegraRegulares())
-                {
-                    List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
-                    turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                    turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, filtro.AlunoCodigo, turmasCodigosParaConsulta));
-                }
-
-                if (turmasCodigos.Length == 0)
-                    turmasCodigos = new string[1] { turma.CodigoTurma };
-
-                var componentesComNotaFechamentoOuConselho = await mediator
-                    .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo));
-
-                var componentesDaTurmaEol = await mediator
-                    .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
-
-                var possuiComponentesSemNotaConceito = componentesDaTurmaEol
-                    .Where(ct => ct.LancaNota && !ct.TerritorioSaber)
-                    .Select(ct => ct.Codigo)
-                    .Except(componentesComNotaFechamentoOuConselho.Select(cn => cn.Codigo))
-                    .Any();
-
-                if (possuiComponentesSemNotaConceito)
-                    statusNovo = SituacaoConselhoClasse.EmAndamento;
-                else
+                if (consolidadoTurmaAluno.ParecerConclusivoId != null)
                     statusNovo = SituacaoConselhoClasse.Concluido;
             }
-
-            if (consolidadoTurmaAluno.ParecerConclusivoId != null)
-                statusNovo = SituacaoConselhoClasse.Concluido;
 
             consolidadoTurmaAluno.Status = statusNovo;
 

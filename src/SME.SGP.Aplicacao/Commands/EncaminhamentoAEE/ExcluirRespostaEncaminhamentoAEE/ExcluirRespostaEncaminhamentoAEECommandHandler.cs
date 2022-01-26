@@ -29,6 +29,7 @@ namespace SME.SGP.Aplicacao
                 await RemoverArquivo(arquivoId);
 
             return true;
+
         }
 
         private async Task RemoverArquivo(long? arquivoId)

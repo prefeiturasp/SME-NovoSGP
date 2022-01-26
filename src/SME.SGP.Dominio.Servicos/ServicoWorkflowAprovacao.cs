@@ -161,7 +161,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.Fechamento_Reabertura)
                 {
-                    AprovarUltimoNivelDeEventoFechamentoReabertura(codigoDaNotificacao, workflow.Id, nivel.Id);
+                    await AprovarUltimoNivelDeEventoFechamentoReabertura(codigoDaNotificacao, workflow.Id, nivel.Id);
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaFechamento)
                 {
@@ -227,7 +227,8 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId)
         {
-            var fechamentoTurmaDisciplinaId = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplinaId;
+            var fechamentoAluno = notasEmAprovacao.First().FechamentoNota.FechamentoAluno;
+            var fechamentoTurmaDisciplinaId = fechamentoAluno.FechamentoTurmaDisciplinaId;
 
             // Resolve a pendencia de fechamento
             repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
@@ -253,6 +254,11 @@ namespace SME.SGP.Dominio.Servicos
 
                 repositorioFechamentoNota.Salvar(fechamentoNota);
             }
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaFechamentoSync,
+                                               new ConsolidacaoTurmaDto(fechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.TurmaId, 0),
+                                               Guid.NewGuid(),
+                                               null));
         }
 
         private async Task AprovarUltimoNivelDaReposicaoAula(long codigoDaNotificacao, long workflowId)
@@ -281,7 +287,7 @@ namespace SME.SGP.Dominio.Servicos
             NotificarDiretorUeEventoDataPassadaAprovado(evento, codigoDaNotificacao);
         }
 
-        private void AprovarUltimoNivelDeEventoFechamentoReabertura(long codigoDaNotificacao, long workflowId, long nivelId)
+        private async Task AprovarUltimoNivelDeEventoFechamentoReabertura(long codigoDaNotificacao, long workflowId, long nivelId)
         {
             FechamentoReabertura fechamentoReabertura = repositorioFechamentoReabertura.ObterCompleto(0, workflowId);
             if (fechamentoReabertura == null)
@@ -291,7 +297,7 @@ namespace SME.SGP.Dominio.Servicos
 
             repositorioFechamentoReabertura.Salvar(fechamentoReabertura);
 
-            NotificarCriadorFechamentoReaberturaAprovado(fechamentoReabertura, codigoDaNotificacao, nivelId);
+            await NotificarCriadorFechamentoReaberturaAprovado(fechamentoReabertura, codigoDaNotificacao, nivelId);
 
             NotificarFechamentoReaberturaUEUseCase(fechamentoReabertura);
         }
@@ -522,7 +528,7 @@ namespace SME.SGP.Dominio.Servicos
                     Titulo = $"Alteração em {notaConceitoTitulo} final - {componenteCurricularNome} - Turma {turma.Nome} ({turma.AnoLetivo})",
                     Tipo = NotificacaoTipo.Notas,
                     Codigo = codigoDaNotificacao,
-                    Mensagem = MontaMensagemAprovacaoNotaFechamento(turma, usuario, periodoEscolar.Bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa, componenteCurricularNome)
+                    Mensagem = MontaMensagemAprovacaoNotaFechamento(turma, periodoEscolar?.Bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa, componenteCurricularNome)
                 });
 
             }
@@ -534,11 +540,11 @@ namespace SME.SGP.Dominio.Servicos
                 await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoCommand(notaEmAprovacao));
         }
 
-        private string MontaMensagemAprovacaoNotaFechamento(Turma turma, Usuario usuario, int bimestre, string notaConceitoTitulo, IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, bool aprovado, string justificativa, string componenteCurricularNome)
+        private string MontaMensagemAprovacaoNotaFechamento(Turma turma, int? bimestre, string notaConceitoTitulo, IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, bool aprovado, string justificativa, string componenteCurricularNome)
         {
             var aprovadaRecusada = aprovado ? "aprovada" : "recusada";
             var motivo = aprovado ? "" : $"Motivo: {justificativa}.";
-            var bimestreFormatado = bimestre == 0 ? "bimestre final" : $"{bimestre}º bimestre";
+            var bimestreFormatado = !bimestre.HasValue ? "bimestre final" : $"{bimestre}º bimestre";
 
             var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) final(is) do {bimestreFormatado} do componente curricular {componenteCurricularNome} 
 da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo} para o(s) estudante(s) abaixo foi {aprovadaRecusada}. {motivo}</p>");
@@ -601,10 +607,11 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
         private async Task<string> ObterComponente(long componenteCurricularCodigo)
             => await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(componenteCurricularCodigo));
 
-        private void NotificarCriadorFechamentoReaberturaAprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, long nivelId)
+        private async Task NotificarCriadorFechamentoReaberturaAprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, long nivelId)
         {
             string criadorRf = fechamentoReabertura.CriadoRF;
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(criadorRf);
+
+            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(criadorRf));
             bool isAnoAnterior = fechamentoReabertura.TipoCalendario.AnoLetivo < DateTime.Now.Year;
 
             var notificacao = new Notificacao()
@@ -627,12 +634,13 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
             repositorioNotificacao.Salvar(notificacao);
 
             repositorioWorkflowAprovacaoNivelNotificacao.Salvar(new WorkflowAprovacaoNivelNotificacao() { NotificacaoId = notificacao.Id, WorkflowAprovacaoNivelId = nivelId });
+
         }
 
-        private void NotificarCriadorFechamentoReaberturaReprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, string motivo, long nivelId)
+        private async Task NotificarCriadorFechamentoReaberturaReprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, string motivo, long nivelId)
         {
             string criadorRF = fechamentoReabertura.CriadoRF;
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(criadorRF);
+            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(criadorRF));
             bool isAnoAnterior = fechamentoReabertura.TipoCalendario.AnoLetivo < DateTime.Now.Year;
             var notificacao = new Notificacao()
             {
@@ -645,9 +653,9 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
                 Tipo = NotificacaoTipo.Calendario,
                 Codigo = codigoDaNotificacao,
                 Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi reprovado pela supervisão escolar. Motivo: {motivo} <br/>
-                                  Descrição: { fechamentoReabertura.Descricao} < br />
-                                  Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} < br />
-                                  Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} < br />
+                                  Descrição: { fechamentoReabertura.Descricao} <br/>
+                                  Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
+                                  Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
                                   Bimestres: { fechamentoReabertura.ObterBimestresNumeral()}"
             };
             repositorioNotificacao.Salvar(notificacao);
@@ -864,7 +872,7 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
             }
             else if (workflow.Tipo == WorkflowAprovacaoTipo.Fechamento_Reabertura)
             {
-                TrataReprovacaoFechamentoReabertura(workflow, codigoDaNotificacao, motivo, nivel.Id);
+                await TrataReprovacaoFechamentoReabertura(workflow, codigoDaNotificacao, motivo, nivel.Id);
             }
             else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaFechamento)
             {
@@ -953,7 +961,7 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
             NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuario, motivo, escola.Nome);
         }
 
-        private void TrataReprovacaoFechamentoReabertura(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, long nivelId)
+        private async Task TrataReprovacaoFechamentoReabertura(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, long nivelId)
         {
             FechamentoReabertura fechamentoReabertura = repositorioFechamentoReabertura.ObterCompleto(0, workflow.Id);
             if (fechamentoReabertura == null)
@@ -963,7 +971,7 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
 
             repositorioFechamentoReabertura.Salvar(fechamentoReabertura);
 
-            NotificarCriadorFechamentoReaberturaReprovado(fechamentoReabertura, codigoDaNotificacao, motivo, nivelId);
+            await NotificarCriadorFechamentoReaberturaReprovado(fechamentoReabertura, codigoDaNotificacao, motivo, nivelId);
         }
 
         private async Task TrataReprovacaoReposicaoAula(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
@@ -984,7 +992,7 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
             if (!await repositorioAula.VerificarAulaPorWorkflowId(workflowId))
             {
                 Notificacao notificacao = await mediator.Send(new ObterNotificacaoPorCodigoQuery(codigoDaNotificacao));
-                    
+
                 await servicoNotificacao.ExcluirPeloSistemaAsync(new long[notificacao.Id]);
                 await ExcluirWorkflowNotificacoes(workflowId);
                 return "Não existe aula para esse fluxo de aprovação. A notificação foi excluída.";
