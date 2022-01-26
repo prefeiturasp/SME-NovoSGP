@@ -105,6 +105,7 @@ namespace SME.SGP.Dados.Repositorios
                            and p.tipo = @tipo
                            and pe.bimestre = @bimestre
                            and a.turma_id = @turmaId
+                           and a.tipo_aula = @tipoAula
                            and a.disciplina_id = @disciplinaId ");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
@@ -113,7 +114,8 @@ namespace SME.SGP.Dados.Repositorios
                     turmaId,
                     disciplinaId,
                     tipo = (int)tipoPendenciaAula,
-                    bimestre
+                    bimestre,
+                    tipoAula = (int)TipoAula.Normal
                 }, commandTimeout: 60);
         }
 
