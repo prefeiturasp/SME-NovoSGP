@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
                 var pendencias = await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.TurmaCodigo.ToString(), turmaComponente.ComponenteCurricularCodigo.ToString()));
 
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaComponente.TurmaCodigo.ToString()));
-                var periodoFechamentoAberto = turma.EhTurmaInfantil &&
+                periodoFechamentoAberto = turma.EhTurmaInfantil &&
                     await mediator.Send(new TurmaEmPeriodoFechamentoQuery(turma, bimestre, DateTime.Today));
 
                 if (periodoFechamentoAberto)
