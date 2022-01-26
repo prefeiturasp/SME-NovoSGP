@@ -21,13 +21,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PendenciaPaginaInicialListao> Handle(ObterIndicativoPendenciasAulasPorTipoQuery request, CancellationToken cancellationToken)
         {
-            var temPendenciaDiarioBordo = await repositorioPendenciaAula.PossuiPendenciasPorTipo(request.DisciplinaId, request.TurmaId, TipoPendencia.DiarioBordo, request.Bimestre);
+            var temPendenciaDiarioBordo = request.VerificaDiarioBordo &&
+                await repositorioPendenciaAula.PossuiPendenciasPorTipo(request.DisciplinaId, request.TurmaId, TipoPendencia.DiarioBordo, request.Bimestre);
 
-            var temPendenciaAvaliacao = await repositorioPendenciaAula.PossuiPendenciasPorTipo(request.DisciplinaId, request.TurmaId, TipoPendencia.Avaliacao, request.Bimestre);
+            var temPendenciaAvaliacao = request.VerificaAvaliacao &&
+                await repositorioPendenciaAula.PossuiPendenciasPorTipo(request.DisciplinaId, request.TurmaId, TipoPendencia.Avaliacao, request.Bimestre);
 
-            var temPendenciaFrequencia = await repositorioPendenciaAula.PossuiPendenciasPorTipo(request.DisciplinaId, request.TurmaId, TipoPendencia.Frequencia, request.Bimestre);
+            var temPendenciaFrequencia = request.VerificaFrequencia &&
+                await repositorioPendenciaAula.PossuiPendenciasPorTipo(request.DisciplinaId, request.TurmaId, TipoPendencia.Frequencia, request.Bimestre);
 
-            var temPendenciaPlanoAula =  await repositorioPendenciaAula.PossuiPendenciasPorTipo(request.DisciplinaId, request.TurmaId, TipoPendencia.PlanoAula, request.Bimestre);
+            var temPendenciaPlanoAula = request.VerificaPlanoAula &&
+                await repositorioPendenciaAula.PossuiPendenciasPorTipo(request.DisciplinaId, request.TurmaId, TipoPendencia.PlanoAula, request.Bimestre);
 
 
             return new PendenciaPaginaInicialListao
