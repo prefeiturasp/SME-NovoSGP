@@ -86,47 +86,34 @@ namespace SME.SGP.Dados.Repositorios
             return listaRetorno;
         }
 
-        public async Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, int anoLetivo)
+        public async Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, int bimestre)
         {
-            var sqlQuery = new StringBuilder();
+            var sqlQuery = new StringBuilder(@"select 1 
+                          from pendencia_aula pa
+                         inner join pendencia p on p.id = pa.pendencia_id 
+                         inner join aula a on a.id = pa.aula_id 
+                         inner join tipo_calendario tc on tc.id = a.tipo_calendario_id 
+                         inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id ");
 
-            sqlQuery.AppendLine("select 1");
-            sqlQuery.AppendLine("  	from aula a");
-            sqlQuery.AppendLine("  		inner join tipo_calendario tc");
-            sqlQuery.AppendLine("  			on tc.ano_letivo = @anoLetivo and a.tipo_calendario_id = tc.id and a.disciplina_id = @disciplinaId");
             if (tipoPendenciaAula == TipoPendencia.Frequencia)
             {
-                sqlQuery.AppendLine("  		inner join componente_curricular cc");
-                sqlQuery.AppendLine("            on cc.permite_registro_frequencia and a.disciplina_id::int8 = cc.id");
+                sqlQuery.AppendLine(" inner join componente_curricular cc ");
+                sqlQuery.AppendLine("    on cc.permite_registro_frequencia and a.disciplina_id::int8 = cc.id ");
             }
-            sqlQuery.AppendLine("  		inner join turma t");
-            sqlQuery.AppendLine("  			on tc.ano_letivo = t.ano_letivo and t.modalidade_codigo = any(@modalidades) and a.turma_id = t.turma_id and t.turma_id = @turmaId");
-            sqlQuery.AppendLine("  		inner join ue");
-            sqlQuery.AppendLine("  			on t.ue_id = ue.id");
-            sqlQuery.AppendLine("  		inner join dre");
-            sqlQuery.AppendLine("  			on ue.dre_id = dre.id");
-            sqlQuery.AppendLine("  where not a.excluido and");
-            sqlQuery.AppendLine("	a.data_aula < @hoje and");
-            sqlQuery.AppendLine("	not exists (select 1");
-            sqlQuery.AppendLine("			    from pendencia_aula pa");
-            sqlQuery.AppendLine("			    	inner join pendencia p");
-            sqlQuery.AppendLine("			    		on pa.pendencia_id = p.id");
-            sqlQuery.AppendLine("			    where not p.excluido and");
-            sqlQuery.AppendLine("			    	p.tipo = @tipo and");
-            sqlQuery.AppendLine("			    	pa.aula_id = a.id) and");
-            sqlQuery.AppendLine("	not exists (select 1");
-            sqlQuery.AppendLine($"				from {tabelaReferencia} tf");
-            sqlQuery.AppendLine("				where tf.aula_id = a.id);");
 
-            return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sqlQuery.ToString(),
+            sqlQuery.AppendLine(@" where not p.excluido 
+                           and p.tipo = @tipo
+                           and pe.bimestre = @bimestre
+                           and a.turma_id = @turmaId
+                           and a.disciplina_id = @disciplinaId ");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
                 new
                 {
-                    anoLetivo,
-                    disciplinaId,
-                    modalidades,
                     turmaId,
-                    hoje = DateTime.Today.Date,
-                    tipo = tipoPendenciaAula
+                    disciplinaId,
+                    tipo = (int)tipoPendenciaAula,
+                    bimestre
                 }, commandTimeout: 60);
         }
 

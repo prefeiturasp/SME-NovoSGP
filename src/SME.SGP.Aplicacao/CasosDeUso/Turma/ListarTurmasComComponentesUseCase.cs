@@ -100,9 +100,12 @@ namespace SME.SGP.Aplicacao
 
             foreach (var turmaComponente in turmasComponentes.Items)
             {
-                var pendencias = await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.TurmaCodigo.ToString(), turmaComponente.ComponenteCurricularCodigo.ToString()));
-
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaComponente.TurmaCodigo.ToString()));
+
+                var pendencias = await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.ComponenteCurricularCodigo.ToString(),
+                                                                                                    turma.CodigoTurma,
+                                                                                                    bimestre));
+
                 periodoFechamentoAberto = turma.EhTurmaInfantil &&
                     await mediator.Send(new TurmaEmPeriodoFechamentoQuery(turma, bimestre, DateTime.Today));
 
