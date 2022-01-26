@@ -9,14 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery : IRequest<bool>
     {
-        public ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(long turmaId, int bimestre, long disciplinaId)
+        public ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(string turmaId, int bimestre, long disciplinaId)
         {
             TurmaId = turmaId;
             Bimestre = bimestre;
             DisciplinaId = disciplinaId;
         }
 
-        public long TurmaId { get; set; }
+        public string TurmaId { get; set; }
         public int Bimestre { get; set; }
         public long DisciplinaId { get; set; }
     }

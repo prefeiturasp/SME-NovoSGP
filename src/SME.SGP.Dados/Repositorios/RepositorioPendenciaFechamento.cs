@@ -105,24 +105,29 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirst<int>(query, new { fechamentoId }) > 0;
         }
 
-        public async Task<bool> PossuiPendenciasAbertoPorTurmaDisciplina(long turmaId, int bimestre, long disciplinaId)
+        public async Task<bool> PossuiPendenciasAbertoPorTurmaDisciplina(string turmaId, int bimestre, long disciplinaId)
         {
+            bool teste = false;
+            var query = @"select 1 
+                                 from fechamento_turma_disciplina ftd
+                                 inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
+                                 inner join turma t on t.id = ft.turma_id
+                                 inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                                 inner join periodo_fechamento_bimestre pfb on pfb.periodo_escolar_id = pe.id 
+                                    and t.turma_id = @turmaId
+                                    and pe.bimestre = @bimestre
+                                    and current_date between pfb.inicio_fechamento and pfb.final_fechamento 
+                                    and ftd.disciplina_id = @disciplinaId";
+            try
+            {
+                teste = await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { turmaId, bimestre, disciplinaId });
+            }
+            catch (Exception ex)
+            {
 
-            var query = @"select 1  
-                            from pendencia_fechamento pf
-                           inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id
-                           inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
-                           inner join turma t on t.id = ft.turma_id
-                           inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
-                           inner join pendencia p on p.id = pf.pendencia_id
-                           where not p.excluido
-                             and P.situacao = 1
-                             and t.id = @turmaId
-                             and pe.bimestre = @bimestre
-                             and ftd.disciplina_id = @disciplinaId
-                           order by p.criado_em";
+            }
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { turmaId, bimestre, disciplinaId });
+            return teste;
         }
 
         private string MontaQuery(Paginacao paginacao, int bimestre, long componenteCurricularId, bool contador = false, bool ordenar = false)

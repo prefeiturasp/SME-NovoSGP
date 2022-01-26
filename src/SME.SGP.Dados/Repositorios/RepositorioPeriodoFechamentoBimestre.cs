@@ -96,5 +96,18 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { periodoEscolarId, dataReferencia });
         }
+
+        public async Task<bool> ExistePeriodoFechamentoPorDataPeriodoIdEscolar(long periodoEscolarId, DateTime dataReferencia)
+        {
+            var query = @"select 1
+                          from periodo_fechamento p 
+                         inner join periodo_fechamento_bimestre b on b.periodo_fechamento_id = p.Id
+                        where b.periodo_escolar_id = @periodoEscolarId
+                            and b.inicio_fechamento <= @dataReferencia
+                            and b.final_fechamento >= @dataReferencia 
+                        ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { periodoEscolarId, dataReferencia });
+        }
     }
 }
