@@ -95,28 +95,26 @@ namespace SME.SGP.Aplicacao
         private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre)
         {
             List<TurmaComComponenteDto> itensComPendencias = new List<TurmaComComponenteDto>();
-
             var possuiFechamento = false;
 
             foreach (var turmaComponente in turmasComponentes.Items)
             {
-
                 var pendencias = await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.TurmaCodigo.ToString(), turmaComponente.ComponenteCurricularCodigo.ToString()));
 
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaComponente.TurmaCodigo.ToString()));
-
-                var periodo = await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turma, DateTime.Now));
-
-                var periodoFechamentoAberto = await mediator.Send(new ExistePeriodoFechamentoPorDataPeriodoQuery(periodo.Id, DateTime.Now));
+                var periodoFechamentoAberto = turma.EhTurmaInfantil &&
+                    await mediator.Send(new TurmaEmPeriodoFechamentoQuery(turma, bimestre, DateTime.Today));
 
                 if (periodoFechamentoAberto)
-                    possuiFechamento = await mediator.Send(new ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(turmaComponente.TurmaCodigo.ToString(), bimestre, turmaComponente.ComponenteCurricularCodigo));
+                    possuiFechamento = await mediator.Send(new ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(turma.Id,
+                                                                                                                      bimestre,
+                                                                                                                      turmaComponente.ComponenteCurricularCodigo));
 
                 turmaComponente.PendenciaDiarioBordo = pendencias.PendenciaDiarioBordo;
                 turmaComponente.PendenciaAvaliacoes = pendencias.PendenciaAvaliacoes;
                 turmaComponente.PendenciaFrequencia = pendencias.PendenciaFrequencia;
                 turmaComponente.PendenciaPlanoAula = pendencias.PendenciaPlanoAula;
-                turmaComponente.PendenciaFechamento = possuiFechamento ? false : true;
+                turmaComponente.PendenciaFechamento = periodoFechamentoAberto && !possuiFechamento;
 
                 itensComPendencias.Add(turmaComponente);
             }

@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<PendenciaFechamentoResumoDto>> ListarPaginada(Paginacao paginacao, string turmaCodigo, int bimestre, long componenteCurricularId);
         Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId);
         bool VerificaPendenciasAbertoPorFechamento(long fechamentoId);
-        Task<bool> PossuiPendenciasAbertoPorTurmaDisciplina(string turmaId, int bimestre, long disciplinaId);
+        Task<bool> PossuiFechamentoPorTurmaComponenteBimestre(long turmaId, int bimestre, long componenteCurricularId);
         Task<Turma> ObterTurmaPorPendenciaId(long pendenciaId);
         Task<IEnumerable<PendenciaFechamento>> ObterPorFechamentoIdDisciplinaId(long fechamentoId, long disciplinaId);
         Task RemoverAsync(PendenciaFechamento pendencia);
