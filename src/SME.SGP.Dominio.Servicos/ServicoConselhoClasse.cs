@@ -13,10 +13,12 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoConselhoClasse : IServicoConselhoClasse
     {
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
-        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasse;
+        private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
+        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
         private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
-        private readonly IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota;
+        private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
+        private readonly IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNotaConsulta;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioUeConsulta repositorioUe;
@@ -25,7 +27,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
 
-        public ServicoConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasse,
+        public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
+                                     IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta,
                                      IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta,
                                      IRepositorioFechamentoTurma repositorioFechamentoTurma,
                                      IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
@@ -33,13 +36,15 @@ namespace SME.SGP.Dominio.Servicos
                                      IRepositorioDreConsulta repositorioDre,
                                      IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                      IConsultasConselhoClasse consultasConselhoClasse,
-                                     IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota,
+                                     IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
+                                     IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNotaConsulta,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                      IUnitOfWork unitOfWork,
                                      IMediator mediator)
 
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
+            this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
             this.repositorioConselhoClasseAlunoConsulta = repositorioConselhoClasseAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAlunoConsulta));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
@@ -47,6 +52,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
+            this.repositorioConselhoClasseNotaConsulta = repositorioConselhoClasseNotaConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNotaConsulta));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -138,7 +144,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 await mediator.Send(new InserirTurmasComplementaresCommand(turma.Id, conselhoClasseAlunoId, alunoCodigo));
 
-                var conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
+                var conselhoClasseNota = await repositorioConselhoClasseNotaConsulta.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
 
                 double? notaAnterior = null;
                 long? conceitoIdAnterior = null;
@@ -540,7 +546,7 @@ namespace SME.SGP.Dominio.Servicos
                     await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
                 }
                 else
-                    conselhoClasse = repositorioConselhoClasse.ObterPorId(conselhoClasseId);
+                    conselhoClasse = repositorioConselhoClasseConsulta.ObterPorId(conselhoClasseId);
 
                 conselhoClasseAluno = new ConselhoClasseAluno() { AlunoCodigo = alunoCodigo, ConselhoClasse = conselhoClasse, ConselhoClasseId = conselhoClasse.Id };
                 await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
