@@ -97,6 +97,7 @@ namespace SME.SGP.Aplicacao
             List<TurmaComComponenteDto> itensComPendencias = new List<TurmaComComponenteDto>();
 
             var possuiFechamento = false;
+            var periodoFechamentoAberto = false;
 
             foreach (var turmaComponente in turmasComponentes.Items)
             {
@@ -107,7 +108,8 @@ namespace SME.SGP.Aplicacao
 
                 var periodo = await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turma, DateTime.Now));
 
-                var periodoFechamentoAberto = await mediator.Send(new ExistePeriodoFechamentoPorDataPeriodoQuery(periodo.Id, DateTime.Now));
+                if (periodo != null)
+                    periodoFechamentoAberto = await mediator.Send(new ExistePeriodoFechamentoPorDataPeriodoQuery(periodo.Id, DateTime.Now));
 
                 if (periodoFechamentoAberto)
                     possuiFechamento = await mediator.Send(new ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(turmaComponente.TurmaCodigo.ToString(), bimestre, turmaComponente.ComponenteCurricularCodigo));
