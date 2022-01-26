@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Aplicacao
 {
@@ -37,18 +38,16 @@ namespace SME.SGP.Aplicacao
             bool historica, bool filtrarSituacao, string codigoTurma)
         {
             var response =
-                (await servicoEol.ObterDadosAluno(codigoAluno, anoLetivo, historica, filtrarSituacao))
+                (servicoEol.ObterDadosAluno(codigoAluno, anoLetivo, historica, filtrarSituacao).Result)
                 .OrderByDescending(a => a.DataSituacao);
 
             var retorno = response
                 .Where(da => da.CodigoTurma.ToString().Equals(codigoTurma));
 
             if (!retorno.Any())
-            {
                 return await ObterAluno(codigoAluno, anoLetivo, !historica, filtrarSituacao, codigoTurma);
-            }
 
-            return retorno.FirstOrDefault(a => a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo);
+            return retorno.FirstOrDefault(a => a.EstaAtivo(DateTime.Today.Date));
         }
     }
 }
