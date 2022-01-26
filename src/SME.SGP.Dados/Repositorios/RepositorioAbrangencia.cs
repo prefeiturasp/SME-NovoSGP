@@ -740,5 +740,19 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<string>(sqlQuery, new { ueId, perfil, historica });
         }
+
+        public async Task<IEnumerable<string>> ObterProfessoresTurmaPorAbrangencia(string turmaCodigo)
+        {
+            var sqlQuery = @"select distinct (u.rf_codigo) from usuario u 
+                            inner join abrangencia a on a.usuario_id = u.id 
+                            inner join turma t on t.id = a.turma_id 
+                            where t.turma_id = @turmaCodigo 
+                            and (a.perfil = @professor or a.perfil = @professorInfantil);";
+
+            Guid professor = Guid.Parse(PerfilUsuario.PROFESSOR.Name());
+            Guid professorInfantil = Guid.Parse(PerfilUsuario.PROFESSOR_INFANTIL.Name());
+
+            return await database.Conexao.QueryAsync<string>(sqlQuery, new { turmaCodigo, professor, professorInfantil });
+        }
     }
 }
