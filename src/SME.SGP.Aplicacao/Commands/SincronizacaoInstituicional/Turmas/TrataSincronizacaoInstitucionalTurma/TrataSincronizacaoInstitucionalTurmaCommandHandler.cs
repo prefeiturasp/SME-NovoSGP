@@ -26,8 +26,6 @@ namespace SME.SGP.Aplicacao
         {
             var turmaEOL = request.TurmaEOL;
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
             if (request.TurmaSGP == null)
                 return await IncluirTurmaAsync(turmaEOL, request.TurmaSGP);
 
@@ -36,7 +34,20 @@ namespace SME.SGP.Aplicacao
                 var turmaAtualizadaComSucesso = await AtualizarTurmaParaHistoricaAsync(turmaEOL.Codigo.ToString());
 
                 if (turmaAtualizadaComSucesso)
-                    return await mediator.Send(new TrataAbrangenciaHistoricaTurmaCommand(request.TurmaSGP.AnoLetivo, usuarioLogado.CodigoRf));
+                {
+                    var professoresComAbragenciaTurma = await mediator.Send(new ObterProfessoresTurmaAbrangenciaQuery(request.TurmaSGP.CodigoTurma));
+
+                    if (professoresComAbragenciaTurma.Any())
+                    {
+                        foreach (var professorRf in professoresComAbragenciaTurma)
+                        {
+                            await mediator.Send(new TrataAbrangenciaHistoricaTurmaCommand(request.TurmaSGP.AnoLetivo, professorRf));
+                        }
+                    }
+                   
+                    return true;
+                }
+
             }
 
             if (turmaEOL.Situacao == "E")
@@ -46,7 +57,7 @@ namespace SME.SGP.Aplicacao
                 return await IncluirTurmaAsync(turmaEOL, request.TurmaSGP);
 
             return true;
-        }              
+        }
 
         private async Task<bool> VerificarTurmaExtintaAsync(TurmaParaSyncInstitucionalDto turma, long turmaSgpId)
         {
@@ -88,7 +99,7 @@ namespace SME.SGP.Aplicacao
             var turmaAtualizada = await repositorioTurma.AtualizarTurmaParaHistorica(turmaId);
 
             if (!turmaAtualizada)
-                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao atualizar a turma para histórica.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, "Atualizar Turma Para Historica Async"));  
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao atualizar a turma para histórica.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, "Atualizar Turma Para Historica Async"));
 
             return turmaAtualizada;
         }
