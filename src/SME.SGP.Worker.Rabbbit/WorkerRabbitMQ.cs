@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Elastic.Apm;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,6 +30,8 @@ namespace SME.SGP.Worker.RabbitMQ
         private readonly IModel canalRabbit;
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
+        private readonly IServicoTelemetria servicoTelemetria;
+        private readonly TelemetriaOptions telemetriaOptions;
         private IMediator mediator;
 
         /// <summary>
@@ -37,9 +40,14 @@ namespace SME.SGP.Worker.RabbitMQ
         /// </summary>
         private readonly Dictionary<string, ComandoRabbit> comandos;
 
-        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, ConnectionFactory factory)
+        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory,
+                              ServicoTelemetria servicoTelemetria,
+                              TelemetriaOptions telemetriaOptions,
+                              ConnectionFactory factory)
         {
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException("Service Scope Factory não localizado");
+            this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
+            this.telemetriaOptions = telemetriaOptions ?? throw new ArgumentNullException(nameof(telemetriaOptions));
             //this.mediator = mediator;
 
             ////TODO: REVER
@@ -325,13 +333,21 @@ namespace SME.SGP.Worker.RabbitMQ
                 var comandoRabbit = comandos[rota];
                 try
                 {
+                    if (telemetriaOptions.Apm)
+                        Agent.Tracer.StartTransaction("TratarMensagem", "WorkerRabbitSGP");
+
                     using (var scope = serviceScopeFactory.CreateScope())
                     {
                         AtribuirContextoAplicacao(mensagemRabbit, scope);
 
                         var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
-                        await ObterMetodo(comandoRabbit.TipoCasoUso, "Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
+                        var metodo = ObterMetodo(comandoRabbit.TipoCasoUso, "Executar");
+                        await servicoTelemetria.RegistrarAsync(async () =>
+                            await metodo.InvokeAsync(casoDeUso, new object[] { mensagemRabbit }),
+                                                    "RabbitMQ",
+                                                    "TratarMensagem",
+                                                    rota);
 
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
                     }
