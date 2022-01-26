@@ -107,7 +107,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> PossuiPendenciasAbertoPorTurmaDisciplina(string turmaId, int bimestre, long disciplinaId)
         {
-            bool teste = false;
             var query = @"select 1 
                                  from fechamento_turma_disciplina ftd
                                  inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
@@ -118,16 +117,8 @@ namespace SME.SGP.Dados.Repositorios
                                     and pe.bimestre = @bimestre
                                     and current_date between pfb.inicio_fechamento and pfb.final_fechamento 
                                     and ftd.disciplina_id = @disciplinaId";
-            try
-            {
-                teste = await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { turmaId, bimestre, disciplinaId });
-            }
-            catch (Exception ex)
-            {
 
-            }
-
-            return teste;
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { turmaId, bimestre, disciplinaId });
         }
 
         private string MontaQuery(Paginacao paginacao, int bimestre, long componenteCurricularId, bool contador = false, bool ordenar = false)
