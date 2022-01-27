@@ -82,12 +82,8 @@ namespace SME.SGP.Worker.RabbitMQ
         {
             var args = new Dictionary<string, object>();
 
-            if (deveDeclararDeadLetter)
-            {
-                var args = new Dictionary<string, object>();
-
-                if (!string.IsNullOrEmpty(exchangeDeadLetter))
-                    args.Add("x-dead-letter-exchange", exchangeDeadLetter);
+            if (!string.IsNullOrEmpty(exchangeDeadLetter))
+                args.Add("x-dead-letter-exchange", exchangeDeadLetter);
 
             foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
             {
