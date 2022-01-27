@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
 
             var componentes = MapearParaDtoComPaginacao(turmasPaginadas, componentesRetorno);
 
-            return await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.Bimestre);
+            return await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.Bimestre, usuario);
         }
 
         private PaginacaoResultadoDto<TurmaComComponenteDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre)
+        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre,Usuario usuario)
         {
             List<TurmaComComponenteDto> itensComPendencias = new List<TurmaComComponenteDto>();
             var possuiFechamento = false;
@@ -106,10 +106,13 @@ namespace SME.SGP.Aplicacao
                 var pendencias = await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.ComponenteCurricularCodigo.ToString(),
                                                                                                     turma.CodigoTurma,
                                                                                                     bimestre,
-                                                                                                    verificaDiarioBordo: ehTurmaInfantil,
+                                                                                                    verificaDiarioBordo: ehTurmaInfantil && !usuario.EhProfessorCjInfantil(),
                                                                                                     verificaAvaliacao: !ehTurmaInfantil,
                                                                                                     verificaPlanoAula: !ehTurmaInfantil,
-                                                                                                    verificaFrequencia: true));
+                                                                                                    verificaFrequencia: !ehTurmaInfantil || !usuario.EhProfessorCjInfantil(),
+                                                                                                    professorCj: usuario.EhProfessorCj(),
+                                                                                                    professorNaoCj:usuario.EhProfessor(),
+                                                                                                    professorRf: usuario.CodigoRf));;
 
                 periodoFechamentoAberto = !ehTurmaInfantil &&
                     await mediator.Send(new TurmaEmPeriodoFechamentoQuery(turma, bimestre, DateTime.Today));

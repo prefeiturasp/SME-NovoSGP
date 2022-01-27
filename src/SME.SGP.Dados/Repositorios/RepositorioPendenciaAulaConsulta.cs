@@ -85,7 +85,7 @@ namespace SME.SGP.Dados.Repositorios
             return listaRetorno;
         }
 
-        public async Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, int bimestre)
+        public async Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, int bimestre, bool professorCj,bool professorTitular,string professorRf="")
         {
             var sqlQuery = new StringBuilder(@"select 1 
                           from pendencia_aula pa
@@ -93,6 +93,12 @@ namespace SME.SGP.Dados.Repositorios
                          inner join aula a on a.id = pa.aula_id 
                          inner join tipo_calendario tc on tc.id = a.tipo_calendario_id 
                          inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id ");
+
+
+            if (professorTitular)
+                sqlQuery.AppendLine(" and not a.aula_cj ");
+            else if (professorCj)
+                sqlQuery.AppendLine(" and a.aula_cj  and  a.professor_rf =@professorRf");
 
             if (tipoPendenciaAula == TipoPendencia.Frequencia)
             {
@@ -114,7 +120,8 @@ namespace SME.SGP.Dados.Repositorios
                     disciplinaId,
                     tipo = (int)tipoPendenciaAula,
                     bimestre,
-                    tipoAula = (int)TipoAula.Normal
+                    tipoAula = (int)TipoAula.Normal,
+                    professorRf 
                 }, commandTimeout: 60);
         }
 
@@ -125,7 +132,7 @@ namespace SME.SGP.Dados.Repositorios
             var dres = repositorioDre.ObterTodas()
                 .OrderBy(dre => dre.CodigoDre);
 
-            sqlQuery.AppendLine("select distinct a.id");
+            sqlQuery.AppendLine("select distinct a.id,a.turma_id , a.disciplina_id,a.professor_rf");
             sqlQuery.AppendLine("	from atividade_avaliativa aa");
             sqlQuery.AppendLine("		inner join atividade_avaliativa_disciplina aad");
             sqlQuery.AppendLine("			on extract(year from aa.data_avaliacao) = @anoLetivo and");

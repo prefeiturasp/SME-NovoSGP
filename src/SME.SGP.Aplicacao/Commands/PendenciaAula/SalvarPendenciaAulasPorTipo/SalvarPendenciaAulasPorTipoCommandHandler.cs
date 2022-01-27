@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(SalvarPendenciaAulasPorTipoCommand request, CancellationToken cancellationToken)
         {
-            var aulasAgrupadas = request.Aulas.GroupBy(x => new { x.TurmaId, x.ComponenteCurricularEol });
+            var aulasAgrupadas = request.Aulas.GroupBy(x => new { x.TurmaId, x.DisciplinaId });
             foreach (var item in aulasAgrupadas)
             {
                 unitOfWork.IniciarTransacao();
