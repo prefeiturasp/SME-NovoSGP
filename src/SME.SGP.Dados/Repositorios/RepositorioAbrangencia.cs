@@ -748,7 +748,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join turma t on t.id = a.turma_id 
                             where t.turma_id = @turmaCodigo and not a.historico 
                             and (a.perfil = @professor or a.perfil = @professorInfantil or 
-                            a.perfil = @professorCJ or a.perfil = @professorCJProfessor);";
+                            a.perfil = @professorCJ or a.perfil = @professorCJInfantil);";
 
             Guid professor = Guid.Parse(PerfilUsuario.PROFESSOR.Name());
             Guid professorInfantil = Guid.Parse(PerfilUsuario.PROFESSOR_INFANTIL.Name());
