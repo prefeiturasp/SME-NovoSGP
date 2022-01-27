@@ -12,11 +12,13 @@ namespace SME.SGP.Aplicacao
     public class ObterDiarioDeBordoPorIdQueryHandler : IRequestHandler<ObterDiarioDeBordoPorIdQuery, DiarioBordoDetalhesDto>
     {
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
+        private readonly IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao;
         private readonly IMediator mediator;
 
-        public ObterDiarioDeBordoPorIdQueryHandler(IRepositorioDiarioBordo repositorioDiarioBordo, IMediator mediator)
+        public ObterDiarioDeBordoPorIdQueryHandler(IRepositorioDiarioBordo repositorioDiarioBordo, IMediator mediator, IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao)
         {
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
+            this.repositorioDiarioBordoObservacao = repositorioDiarioBordoObservacao ?? throw new ArgumentNullException(nameof(repositorioDiarioBordoObservacao));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -26,10 +28,23 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(new ObterUsuarioLogadoIdQuery());
 
             var observacoes = await mediator.Send(new ListarObservacaoDiarioBordoQuery(diarioBordo.Id, usuario));
-
-            return MapearParaDto(diarioBordo, observacoes);
+            var observacoesComUsuariosNotificados = await ObterUsuariosNotificados(observacoes);
+            return MapearParaDto(diarioBordo, observacoesComUsuariosNotificados);
         }
 
+        private async Task<IEnumerable<ListarObservacaoDiarioBordoDto>> ObterUsuariosNotificados(IEnumerable<ListarObservacaoDiarioBordoDto> observacoes)
+        {
+            var listaObservacoes = new List<ListarObservacaoDiarioBordoDto>();
+            foreach (var item in observacoes)
+            {
+                var usuariosNotificados = await repositorioDiarioBordoObservacao.ObterNomeUsuariosNotificadosObservacao(item.Id);
+                var observacao = item;
+                observacao.NomeUsuariosNotificados = string.Join(",", usuariosNotificados);
+                listaObservacoes.Add(observacao);
+            }
+
+            return listaObservacoes;
+        }
         private DiarioBordoDetalhesDto MapearParaDto(Dominio.DiarioBordo diarioBordo, IEnumerable<ListarObservacaoDiarioBordoDto> observacoes)
         {
             return new DiarioBordoDetalhesDto()
@@ -50,10 +65,12 @@ namespace SME.SGP.Aplicacao
                         Id = obs.Id,
                         Observacao = obs.Observacao,
                         QtdUsuariosNotificacao = obs.QtdUsuariosNotificados,
+                        NomeUsuariosNotificados = obs.NomeUsuariosNotificados,
                         Proprietario = obs.Proprietario
                     };
                 })
             };
         }
     }
+}
 }
