@@ -109,5 +109,21 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { periodoEscolarId, dataReferencia });
         }
+
+        public Task<PeriodoFechamentoBimestre> ObterPeriodoFechamanentoPorCalendarioDreUeBimestre(long tipoCalendarioId, int bimestre, long dreId, long ueId)
+        {
+            var query = @"select pfb.* 
+                      from periodo_fechamento_bimestre pfb 
+                     inner join periodo_fechamento pf on pf.id = pfb.periodo_fechamento_id 
+                     inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id 
+                     where pe.tipo_calendario_id = @tipoCalendarioId
+                       and pe.bimestre = @bimestre
+                       and (pf.dre_id is null
+                         or (pf.dre_id = @dreId
+                         and (pf.ue_id is null or pf.ue_id = @ueId)
+                         ))";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { tipoCalendarioId, bimestre, dreId, ueId });
+        }
     }
 }
