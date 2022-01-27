@@ -46,11 +46,14 @@ namespace SME.SGP.Aplicacao
                 await TratarInclusaoEdicaoNotas(notasConceitosDto, notasBanco, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId);
 
 
-            var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterPorIdAsync(notasConceitosDto.Select(x => x.AtividadeAvaliativaId).FirstOrDefault());
-            var aula = await mediator.Send(new ObterAulaPorComponenteCurricularIdTurmaIdEDataQuery(notaConceitoLista.DisciplinaId, notaConceitoLista.TurmaId, atividadeAvaliativa.DataAvaliacao));
-
-            if(aula != null)
-                await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Avaliacao));
+            var atividades =  repositorioAtividadeAvaliativa.ListarAtividadesIds(notasConceitosDto.Select(x => x.AtividadeAvaliativaId));
+            foreach (var item in atividades)
+            {
+                var aulaId = await mediator.Send(new ObterAulaIdPorComponenteCurricularIdTurmaIdEDataProfessorQuery(notaConceitoLista.DisciplinaId, notaConceitoLista.TurmaId, item.DataAvaliacao, professorRf));
+                if (aulaId != null)
+                    await mediator.Send(new ExcluirPendenciaAulaCommand((long)aulaId, TipoPendencia.Avaliacao));
+            }
+            
         }
 
         private async Task IncluirTodasNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, string professorRf, string turmaId, string disiplinaId)

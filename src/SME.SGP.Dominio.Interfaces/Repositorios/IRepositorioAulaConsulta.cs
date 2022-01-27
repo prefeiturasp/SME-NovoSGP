@@ -68,6 +68,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<Aula> ObterCompletoPorIdAsync(long id);
         Task<Aula> ObterAulaPorComponenteCurricularIdTurmaIdEData(string componenteCurricularId, string turmaId, DateTime data);
+        Task<long?> ObterAulaIdPorComponenteCurricularIdTurmaIdEDataProfessor(string componenteCurricularId, string turmaId, DateTime data,string professorRf);
 
         Task<DateTime> ObterDataAula(long aulaId);
 
