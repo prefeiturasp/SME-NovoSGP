@@ -149,7 +149,7 @@ namespace SME.SGP.Aplicacao
             var ultimoBimestre = (await ObterPeriodoUltimoBimestre(turma));
 
             var periodoFechamentoBimestre = await consultasPeriodoFechamento
-                .ObterPeriodoFechamentoTurmaAsync(turma, ultimoBimestre.Bimestre, ultimoBimestre.Id);
+                .TurmaEmPeriodoDeFechamentoVigente(turma, DateTimeExtension.HorarioBrasilia().Date, ultimoBimestre.Bimestre);
 
             var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
 
