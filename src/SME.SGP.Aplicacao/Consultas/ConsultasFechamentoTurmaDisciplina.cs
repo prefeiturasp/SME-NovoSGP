@@ -155,18 +155,16 @@ namespace SME.SGP.Aplicacao
             if (periodoAtual == null)
                 throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
 
-            // Carrega alunos
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaId));
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaId, turma.AnoLetivo));
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
-            // DTO de retorno
             var fechamentoBimestre = new FechamentoTurmaDisciplinaBimestreDto()
             {
                 Bimestre = bimestreAtual.Value,
                 Periodo = tipoCalendario.Periodo,
-                TotalAulasDadas = 0, // Carregar
-                TotalAulasPrevistas = 0, // Carregar
+                TotalAulasDadas = 0,
+                TotalAulasPrevistas = 0,
                 Alunos = new List<NotaConceitoAlunoBimestreDto>()
             };
 
@@ -196,7 +194,9 @@ namespace SME.SGP.Aplicacao
                 var alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
                                                              a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
                                                              a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido)) &&
-                                                             a.DataMatricula.Date <= bimestreDoPeriodo.PeriodoFim.Date)
+                                                             a.DataSituacao.Date <= bimestreDoPeriodo.PeriodoFim.Date)
+                                                       .GroupBy(a => a.CodigoAluno)
+                                                       .Select(a => a.OrderByDescending(i => i.DataSituacao).First())
                                                        .OrderBy(a => a.NumeroAlunoChamada)
                                                        .ThenBy(a => a.NomeValido());
 
