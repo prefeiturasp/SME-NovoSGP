@@ -17,12 +17,12 @@ namespace SME.SGP.Aplicacao
         private readonly IConfiguration configuration;
         private readonly IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva;
         private readonly IServicoNotificacao servicoNotificacao;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
 
 
         public SalvarNotificacaoDevolutivaUseCase(IMediator mediator, IConfiguration configuration, IServicoNotificacao servicoNotificacao,
-            IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva, IRepositorioComponenteCurricular repositorioComponenteCurricular, IRepositorioTurma repositorioTurma)
+            IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva, IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IRepositorioTurmaConsulta repositorioTurma)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));

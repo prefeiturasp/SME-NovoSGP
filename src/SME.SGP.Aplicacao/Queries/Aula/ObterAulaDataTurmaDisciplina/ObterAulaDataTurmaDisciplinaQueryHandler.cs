@@ -2,8 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulaDataTurmaDisciplinaQueryHandler : IRequestHandler<ObterAulaDataTurmaDisciplinaQuery, AulaConsultaDto>
     {
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
 
-        public ObterAulaDataTurmaDisciplinaQueryHandler(IRepositorioAula repositorioAula)
+        public ObterAulaDataTurmaDisciplinaQueryHandler(IRepositorioAulaConsulta repositorioAula)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }

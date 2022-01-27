@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDadosDashboardAusenciasComJustificativaQueryHandler : IRequestHandler<ObterDadosDashboardAusenciasComJustificativaQuery, IEnumerable<GraficoAusenciasComJustificativaResultadoDto>>
     {
-        private readonly IRepositorioConsolidacaoFrequenciaTurma repositorioConsolidacaoFrequenciaTurma;
+        private readonly IRepositorioConsolidacaoFrequenciaTurmaConsulta repositorioConsolidacaoFrequenciaTurma;
 
-        public ObterDadosDashboardAusenciasComJustificativaQueryHandler(IRepositorioConsolidacaoFrequenciaTurma repositorioConsolidacaoFrequenciaTurma)
+        public ObterDadosDashboardAusenciasComJustificativaQueryHandler(IRepositorioConsolidacaoFrequenciaTurmaConsulta repositorioConsolidacaoFrequenciaTurma)
         {
             this.repositorioConsolidacaoFrequenciaTurma = repositorioConsolidacaoFrequenciaTurma ?? throw new ArgumentNullException(nameof(repositorioConsolidacaoFrequenciaTurma));
         }

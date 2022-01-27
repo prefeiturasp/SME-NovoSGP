@@ -9,8 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task Reprocessar(long fechamentoId, Usuario usuario = null);
 
-        void VerificaPendenciasFechamento(long fechamentoId);
-
         void GerarNotificacaoAlteracaoLimiteDias(Turma turma, Usuario usuarioLogado, Ue ue, int bimestre, string alunosComNotaAlterada);
     }
 }

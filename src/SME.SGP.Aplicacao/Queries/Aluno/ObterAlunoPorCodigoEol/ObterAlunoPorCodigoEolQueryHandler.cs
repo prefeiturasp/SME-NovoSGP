@@ -4,10 +4,13 @@ using SME.SGP.Infra;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAlunoPorCodigoEolQueryHandler : IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>
+    public class
+        ObterAlunoPorCodigoEolQueryHandler : IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>
     {
         private readonly IServicoEol servicoEol;
 
@@ -16,15 +19,35 @@ namespace SME.SGP.Aplicacao
             this.servicoEol = servicoEol ?? throw new System.ArgumentNullException(nameof(servicoEol));
         }
 
-        public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request, CancellationToken cancellationToken)
+        public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request,
+            CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(request.CodigoTurma))
-                return (await servicoEol.ObterDadosAluno(request.CodigoAluno, request.AnoLetivo)).OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
-            else
             {
-                var retorno = (await servicoEol.ObterDadosAluno(request.CodigoAluno, request.AnoLetivo)).OrderByDescending(a => a.DataSituacao);
-                return retorno?.FirstOrDefault(da => da.CodigoTurma.ToString().Equals(request.CodigoTurma));
+                return (await servicoEol.ObterDadosAluno(request.CodigoAluno, request.AnoLetivo,
+                        request.ConsideraHistorico, request.FiltrarSituacao))
+                    .OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
             }
+
+            return await ObterAluno(request.CodigoAluno, request.AnoLetivo, request.ConsideraHistorico,
+                request.FiltrarSituacao, request.CodigoTurma);
+        }
+
+
+        public async Task<AlunoPorTurmaResposta> ObterAluno(string codigoAluno, int anoLetivo,
+            bool historica, bool filtrarSituacao, string codigoTurma)
+        {
+            var response =
+                (servicoEol.ObterDadosAluno(codigoAluno, anoLetivo, historica, filtrarSituacao).Result)
+                .OrderByDescending(a => a.DataSituacao);
+
+            var retorno = response
+                .Where(da => da.CodigoTurma.ToString().Equals(codigoTurma));
+
+            if (!retorno.Any())
+                return await ObterAluno(codigoAluno, anoLetivo, !historica, filtrarSituacao, codigoTurma);
+
+            return retorno.FirstOrDefault(a => a.EstaAtivo(DateTime.Today.Date));
         }
     }
 }

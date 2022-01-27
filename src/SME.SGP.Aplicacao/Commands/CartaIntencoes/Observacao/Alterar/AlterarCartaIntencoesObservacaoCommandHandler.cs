@@ -12,13 +12,13 @@ namespace SME.SGP.Aplicacao
     public class AlterarCartaIntencoesObservacaoCommandHandler : IRequestHandler<AlterarCartaIntencoesObservacaoCommand, AuditoriaDto>
     {
         private readonly IRepositorioCartaIntencoesObservacao repositorioCartaIntencoesObservacao;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IMediator mediator;
 
-        public AlterarCartaIntencoesObservacaoCommandHandler(IRepositorioCartaIntencoesObservacao repositorioCartaIntencoesObservacao, IRepositorioTurma repositorioTurma, IMediator mediator)
+        public AlterarCartaIntencoesObservacaoCommandHandler(IRepositorioCartaIntencoesObservacao repositorioCartaIntencoesObservacao, IRepositorioTurmaConsulta repositorioTurmaConsulta, IMediator mediator)
         {
             this.repositorioCartaIntencoesObservacao = repositorioCartaIntencoesObservacao ?? throw new System.ArgumentNullException(nameof(repositorioCartaIntencoesObservacao));
-            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             if (cartaIntencoesObservacao == null)
                 throw new NegocioException("Observação da carta de intenção não encontrada.");
 
-            var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(cartaIntencoesObservacao.TurmaId);
+            var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(cartaIntencoesObservacao.TurmaId);
 
             cartaIntencoesObservacao.ValidarUsuarioAlteracao(request.UsuarioId);
 

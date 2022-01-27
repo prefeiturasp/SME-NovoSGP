@@ -11,13 +11,11 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     public class ConsultasConselhoClasseTeste
     {
         private readonly ConsultasConselhoClasse consultasConselhoClasse;
-        private readonly Mock<IConsultasDisciplina> consultasDisciplinas;
-        private readonly Mock<IRepositorioConselhoClasse> repositorioConselhoClasse;
-        private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
-        private readonly Mock<IRepositorioParametrosSistema> repositorioParametrosSistema;
-        private readonly Mock<IRepositorioConselhoClasseAluno> repositorioConselhoClasseAluno;
-        private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
-        private readonly Mock<IRepositorioFechamentoTurma> repositorioFechamentoTurma;
+        private readonly Mock<IRepositorioConselhoClasseConsulta> repositorioConselhoClasseConsulta;
+        private readonly Mock<IRepositorioPeriodoEscolarConsulta> repositorioPeriodoEscolar;
+        private readonly Mock<IRepositorioConselhoClasseAlunoConsulta> repositorioConselhoClasseAluno;
+        private readonly Mock<IRepositorioParametrosSistemaConsulta> repositorioParametrosSistema;
+        private readonly Mock<IRepositorioTipoCalendarioConsulta> repositorioTipoCalendario;
         private readonly Mock<IConsultasTurma> consultasTurma;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
@@ -27,31 +25,27 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
         public ConsultasConselhoClasseTeste()
         {
-            consultasDisciplinas = new Mock<IConsultasDisciplina>();
-            repositorioConselhoClasse = new Mock<IRepositorioConselhoClasse>();
-            repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
-            repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
-            repositorioConselhoClasseAluno = new Mock<IRepositorioConselhoClasseAluno>();
-            repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
-            repositorioFechamentoTurma = new Mock<IRepositorioFechamentoTurma>();
+            repositorioConselhoClasseConsulta = new Mock<IRepositorioConselhoClasseConsulta>();
+            repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolarConsulta>();
+            repositorioConselhoClasseAluno = new Mock<IRepositorioConselhoClasseAlunoConsulta>();
+            repositorioParametrosSistema = new Mock<IRepositorioParametrosSistemaConsulta>();
+            repositorioTipoCalendario = new Mock<IRepositorioTipoCalendarioConsulta>();
             consultasTurma = new Mock<IConsultasTurma>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
             consultasFechamentoTurma = new Mock<IConsultasFechamentoTurma>();
             servicoDeNotasConceitos = new Mock<IServicoDeNotasConceitos>();
             mediator = new Mock<IMediator>();
-            consultasConselhoClasse = new ConsultasConselhoClasse(repositorioConselhoClasse.Object, 
-                                       repositorioPeriodoEscolar.Object,
-                                       repositorioParametrosSistema.Object,
-                                       repositorioConselhoClasseAluno.Object,
-                                       repositorioTipoCalendario.Object,
-                                       repositorioFechamentoTurma.Object,
-                                       consultasTurma.Object,
-                                       consultasPeriodoEscolar.Object,
-                                       consultasPeriodoFechamento.Object,
-                                       consultasFechamentoTurma.Object,
-                                       servicoDeNotasConceitos.Object,
-                                       mediator.Object);
+            consultasConselhoClasse = new ConsultasConselhoClasse(repositorioConselhoClasseConsulta.Object,
+                                                                  repositorioConselhoClasseAluno.Object,
+                                                                  repositorioPeriodoEscolar.Object,
+                                                                  repositorioParametrosSistema.Object,
+                                                                  repositorioTipoCalendario.Object,
+                                                                  consultasTurma.Object,
+                                                                  consultasPeriodoEscolar.Object,
+                                                                  consultasPeriodoFechamento.Object,
+                                                                  consultasFechamentoTurma.Object,
+                                                                  mediator.Object);
         }
 
         [Fact]

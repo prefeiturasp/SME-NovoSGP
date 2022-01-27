@@ -3,8 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterIndicativoPendenciasAulasPorTipoQueryHandler : IRequestHandler<ObterIndicativoPendenciasAulasPorTipoQuery, PendenciaPaginaInicialListao>
     {
-        private readonly IRepositorioPendenciaAula repositorioPendenciaAula;
+        private readonly IRepositorioPendenciaAulaConsulta repositorioPendenciaAula;
 
-        public ObterIndicativoPendenciasAulasPorTipoQueryHandler(IRepositorioPendenciaAula repositorioPendenciaAula)
+        public ObterIndicativoPendenciasAulasPorTipoQueryHandler(IRepositorioPendenciaAulaConsulta repositorioPendenciaAula)
         {
             this.repositorioPendenciaAula = repositorioPendenciaAula ?? throw new ArgumentNullException(nameof(repositorioPendenciaAula));
         }

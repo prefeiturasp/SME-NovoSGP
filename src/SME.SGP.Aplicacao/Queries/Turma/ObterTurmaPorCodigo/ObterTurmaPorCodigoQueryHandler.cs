@@ -9,15 +9,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaPorCodigoQueryHandler : IRequestHandler<ObterTurmaPorCodigoQuery, Turma>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
 
-        public ObterTurmaPorCodigoQueryHandler(IRepositorioTurma repositorioTurma)
+        public ObterTurmaPorCodigoQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta)
         {
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
         }
         public async Task<Turma> Handle(ObterTurmaPorCodigoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTurma.ObterPorCodigo(request.TurmaCodigo);
+            return await repositorioTurmaConsulta.ObterPorCodigo(request.TurmaCodigo);
         }
     }
 }

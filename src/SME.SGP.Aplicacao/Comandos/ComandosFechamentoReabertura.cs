@@ -10,13 +10,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosFechamentoReabertura : IComandosFechamentoReabertura
     {
-        public readonly IRepositorioDre repositorioDre;
+        public readonly IRepositorioDreConsulta repositorioDre;
         public readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        public readonly IRepositorioUe repositorioUe;
+        public readonly IRepositorioUeConsulta repositorioUe;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IServicoFechamentoReabertura servicoFechamentoReabertura;
 
-        public ComandosFechamentoReabertura(IRepositorioDre repositorioDre, IRepositorioUe repositorioUe,
+        public ComandosFechamentoReabertura(IRepositorioDreConsulta repositorioDre, IRepositorioUeConsulta repositorioUe,
                                             IRepositorioTipoCalendario repositorioTipoCalendario, IServicoFechamentoReabertura servicoFechamentoReabertura,
                                             IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {

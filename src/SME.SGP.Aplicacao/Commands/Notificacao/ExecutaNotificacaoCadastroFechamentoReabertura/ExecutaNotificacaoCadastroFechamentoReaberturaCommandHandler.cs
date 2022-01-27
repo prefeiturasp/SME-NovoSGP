@@ -18,17 +18,19 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IServicoNotificacao servicoNotificacao;
+        private readonly IMediator mediator;
 
-        public ExecutaNotificacaoCadastroFechamentoReaberturaCommandHandler(IServicoUsuario servicoUsuario, IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IServicoNotificacao servicoNotificacao)
+        public ExecutaNotificacaoCadastroFechamentoReaberturaCommandHandler(IServicoUsuario servicoUsuario, IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IServicoNotificacao servicoNotificacao, IMediator mediator)
         {
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
+            this.mediator = mediator ?? throw new ArgumentException(nameof(mediator));
         }
 
         public async Task<bool> Handle(ExecutaNotificacaoCadastroFechamentoReaberturaCommand request, CancellationToken cancellationToken)
         {
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(request.FechamentoReabertura.CodigoRf);
+            var usuario = await mediator.Send(new ObterUsuarioPorRfOuCriaQuery(request.FechamentoReabertura.CodigoRf));
             var notificacao = CriaNotificacaoCadastro(request.FechamentoReabertura, usuario.Id);
             await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = request.FechamentoReabertura.Id, NotificacaoId = notificacao.Id });
 

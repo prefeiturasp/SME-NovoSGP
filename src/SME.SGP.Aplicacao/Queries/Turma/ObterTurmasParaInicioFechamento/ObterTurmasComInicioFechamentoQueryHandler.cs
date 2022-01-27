@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasComInicioFechamentoQueryHandler : IRequestHandler<ObterTurmasComInicioFechamentoQuery, IEnumerable<Turma>>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
 
-        public ObterTurmasComInicioFechamentoQueryHandler(IRepositorioTurma repositorioTurma)
+        public ObterTurmasComInicioFechamentoQueryHandler(IRepositorioTurmaConsulta repositorioTurma)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }

@@ -115,9 +115,9 @@ namespace SME.SGP.Aplicacao
             return notificacao;
         }
 
-        private void TrataUsuario(Notificacao notificacao, string usuarioRf)
+        private async void TrataUsuario(Notificacao notificacao, string usuarioRf)
         {
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioRf);
+            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioRf);
             notificacao.Usuario = usuario;
             notificacao.UsuarioId = usuario.Id;
         }

@@ -3,7 +3,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDatasDiarioBordoPorPeriodoQueryHandler : IRequestHandler<ObterDatasDiarioBordoPorPeriodoQuery, IEnumerable<DiarioBordoPorPeriodoDto>>
     {
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
 
-        public ObterDatasDiarioBordoPorPeriodoQueryHandler(IRepositorioAula repositorioAula)
+        public ObterDatasDiarioBordoPorPeriodoQueryHandler(IRepositorioAulaConsulta repositorioAula)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }

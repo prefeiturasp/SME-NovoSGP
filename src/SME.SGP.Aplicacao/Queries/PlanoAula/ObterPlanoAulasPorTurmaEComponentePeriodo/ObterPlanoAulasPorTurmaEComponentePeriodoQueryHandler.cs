@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
     public class ObterPlanoAulasPorTurmaEComponentePeriodoQueryHandler : IRequestHandler<ObterPlanoAulasPorTurmaEComponentePeriodoQuery, IEnumerable<PlanoAulaRetornoDto>>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
 
-        public ObterPlanoAulasPorTurmaEComponentePeriodoQueryHandler(IMediator mediator, IRepositorioAula repositorioAula)
+        public ObterPlanoAulasPorTurmaEComponentePeriodoQueryHandler(IMediator mediator, IRepositorioAulaConsulta repositorioAula)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));

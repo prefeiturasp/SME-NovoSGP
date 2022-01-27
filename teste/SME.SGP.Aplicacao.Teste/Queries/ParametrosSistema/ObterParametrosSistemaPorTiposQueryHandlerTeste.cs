@@ -10,12 +10,12 @@ namespace SME.SGP.Aplicacao.Teste
     public class ObterParametrosSistemaPorTiposQueryHandlerTeste
     {
         private readonly ObterParametrosSistemaPorTiposQueryHandler query;
-        private readonly Mock<IRepositorioParametrosSistema> repositorioParametrosSistema;
+        private readonly Mock<IRepositorioParametrosSistemaConsulta> repositorioParametrosSistema;
 
 
         public ObterParametrosSistemaPorTiposQueryHandlerTeste()
         {
-            repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
+            repositorioParametrosSistema = new Mock<IRepositorioParametrosSistemaConsulta>();
             query = new ObterParametrosSistemaPorTiposQueryHandler(repositorioParametrosSistema.Object);
         }
         [Fact]

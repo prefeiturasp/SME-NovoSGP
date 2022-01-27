@@ -15,15 +15,15 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoPeriodoFechamento : IServicoPeriodoFechamento
     {
-        private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioDreConsulta repositorioDre;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IRepositorioPeriodoFechamentoBimestre repositorioPeriodoFechamentoBimestre;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioEventoTipo repositorioTipoEvento;
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IServicoEol servicoEol;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -35,9 +35,9 @@ namespace SME.SGP.Dominio.Servicos
                                  IRepositorioPeriodoFechamentoBimestre repositorioPeriodoFechamentoBimestre,
                                  IServicoUsuario servicoUsuario,
                                  IRepositorioTipoCalendario repositorioTipoCalendario,
-                                 IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                 IRepositorioDre repositorioDre,
-                                 IRepositorioUe repositorioUe,
+                                 IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+                                 IRepositorioDreConsulta repositorioDre,
+                                 IRepositorioUeConsulta repositorioUe,
                                  IRepositorioEventoFechamento repositorioEventoFechamento,
                                  IRepositorioEvento repositorioEvento,
                                  IRepositorioEventoTipo repositorioTipoEvento,
@@ -106,7 +106,8 @@ namespace SME.SGP.Dominio.Servicos
                             AtualizaDatasInicioEFim(periodoFechamentoBimestreDre, periodoFechamentoBimestreUe);
                             await repositorioPeriodoFechamentoBimestre.SalvarAsync(periodoFechamentoBimestreUe);
 
-                            EventoFechamento fechamentoExistente = repositorioEventoFechamento.ObterPorIdFechamento(periodoFechamentoBimestreUe.Id);
+                            EventoFechamento fechamentoExistente = await mediator.Send(new ObterEventoFechamenoPorIdQuery(periodoFechamentoBimestreUe.Id));
+                            
                             if (fechamentoExistente != null)
                                 AtualizaEventoDeFechamento(periodoFechamentoBimestreUe, fechamentoExistente);
 
@@ -198,7 +199,7 @@ namespace SME.SGP.Dominio.Servicos
             var id = repositorioPeriodoFechamento.Salvar(fechamento);
             repositorioPeriodoFechamento.SalvarBimestres(fechamento.FechamentosBimestre, id);
             unitOfWork.PersistirTransacao();
-            CriarEventoFechamento(fechamento);
+            await CriarEventoFechamento(fechamento);
         }
 
         private static Notificacao MontaNotificacao(string nomeEntidade, string tipoEntidade, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, string codigoUe, string codigoDre)
@@ -261,26 +262,22 @@ namespace SME.SGP.Dominio.Servicos
             });
         }
 
-        private void CriarEventoFechamento(PeriodoFechamento fechamento)
+        private async Task CriarEventoFechamento(PeriodoFechamento fechamento)
         {
             var tipoEvento = repositorioTipoEvento.ObterTipoEventoPorTipo(TipoEvento.FechamentoBimestre);
+        
             if (tipoEvento == null)
-            {
                 throw new NegocioException("Tipo de evento de fechamento de bimestre não encontrado na base de dados.");
-            }
 
-            foreach (var bimestre in fechamento.FechamentosBimestre)
-            {
-                EventoFechamento fechamentoExistente = repositorioEventoFechamento.ObterPorIdFechamento(bimestre.Id);
+                foreach (var bimestre in fechamento.FechamentosBimestre)
+                {
+                    EventoFechamento fechamentoExistente = await mediator.Send(new ObterEventoFechamenoPorIdQuery(bimestre.Id));
 
                 if (fechamentoExistente != null)
-                {
                     AtualizaEventoDeFechamento(bimestre, fechamentoExistente);
-                }
+                
                 else
-                {
                     CriaEventoDeFechamento(fechamento, tipoEvento, bimestre);
-                }
             }
         }
 

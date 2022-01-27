@@ -26,7 +26,7 @@ namespace SME.SGP.Dados
                                  pp.perfil_codigo as PerfilCodigo,
                                  p.id as PendenciaId,
                                  p.ue_id as UeId,
-                                 u.rf_codigo as CodigoRf
+                                 coalesce(u.rf_codigo, u.login) as CodigoRf
                             from pendencia_perfil_usuario ppu 
                                 join pendencia_perfil pp on ppu.pendencia_perfil_id = pp.id 
                                 join pendencia p on p.id = pp.pendencia_id 

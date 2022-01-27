@@ -13,10 +13,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFechamentoTurmaPorIdAlunoCodigoQueryHandler : IRequestHandler<ObterFechamentoTurmaPorIdAlunoCodigoQuery, FechamentoTurma>
     {
-        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IMediator mediator;
 
-        public ObterFechamentoTurmaPorIdAlunoCodigoQueryHandler(IRepositorioFechamentoTurma repositorioFechamentoTurma, IMediator mediator)
+        public ObterFechamentoTurmaPorIdAlunoCodigoQueryHandler(IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma, IMediator mediator)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

@@ -11,8 +11,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterJuremaIdsPorComponentesCurricularIdQueryHandler : IRequestHandler<ObterJuremaIdsPorComponentesCurricularIdQuery, long[]>
     {
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        public ObterJuremaIdsPorComponentesCurricularIdQueryHandler(IRepositorioComponenteCurricular repositorioComponenteCurricular)
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        public ObterJuremaIdsPorComponentesCurricularIdQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular)
         {
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
         }

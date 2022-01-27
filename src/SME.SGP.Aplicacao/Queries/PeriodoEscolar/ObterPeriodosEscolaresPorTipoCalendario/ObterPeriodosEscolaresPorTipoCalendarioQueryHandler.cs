@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodosEscolaresPorTipoCalendarioQueryHandler : IRequestHandler<ObterPeriodosEscolaresPorTipoCalendarioQuery, IEnumerable<PeriodoEscolar>>
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
 
-        public ObterPeriodosEscolaresPorTipoCalendarioQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+        public ObterPeriodosEscolaresPorTipoCalendarioQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }

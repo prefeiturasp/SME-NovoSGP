@@ -15,30 +15,30 @@ namespace SME.SGP.Aplicacao
     public class ExcluirAulaRecorrenteCommandHandler : IRequestHandler<ExcluirAulaRecorrenteCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
-        private readonly IServicoNotificacao servicoNotificacao;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
-        private readonly IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno;
+        private readonly IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno;
+        private readonly IRepositorioDevolutiva repositorioDevolutiva;
 
         public ExcluirAulaRecorrenteCommandHandler(IMediator mediator,
-                                                   IRepositorioAula repositorioAula,
+                                                   IRepositorioAulaConsulta repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
-                                                   IServicoNotificacao servicoNotificacao,
                                                    IRepositorioPlanoAula repositorioPlanoAula,
                                                    IRepositorioDiarioBordo repositorioDiarioBordo,
-                                                   IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno,
+                                                   IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno,
+                                                   IRepositorioDevolutiva repositorioDevolutiva,
                                                    IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
+            this.repositorioDevolutiva = repositorioDevolutiva ?? throw new ArgumentNullException(nameof(repositorioDevolutiva));
             this.repositorioAnotacaoFrequenciaAluno = repositorioAnotacaoFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFrequenciaAluno));
         }
 
@@ -93,6 +93,10 @@ namespace SME.SGP.Aplicacao
             if(diarioDeBordo?.Planejamento != null)
             {
                 await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
+            }
+            if (diarioDeBordo?.ReflexoesReplanejamento != null)
+            {
+                await ExcluirArquivo(diarioDeBordo.ReflexoesReplanejamento, TipoArquivo.DiarioBordo);
             }
         }
         private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)
@@ -220,27 +224,22 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = turma.Ue.Dre.CodigoDre,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuario.Id,
-                Tipo = NotificacaoTipo.Calendario,
-                Titulo = tituloMensagem,
-                TurmaId = turma.CodigoTurma,
-                UeId = turma.Ue.CodigoUe,
-            };
-
             unitOfWork.IniciarTransacao();
             try
             {
                 // Salva Notificação
-                servicoNotificacao.Salvar(notificacao);
+                var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(tituloMensagem, 
+                                                               mensagemUsuario.ToString(), 
+                                                               usuario.CodigoRf, 
+                                                               NotificacaoCategoria.Aviso, 
+                                                               NotificacaoTipo.Calendario, 
+                                                               turma.Ue.Dre.CodigoDre,
+                                                               turma.Ue.CodigoUe, 
+                                                               turma.CodigoTurma, 
+                                                               DateTime.Now.Year));
 
                 // Gera vinculo Notificacao x Aula
-                await repositorioNotificacaoAula.Inserir(notificacao.Id, aulaId);
+                await repositorioNotificacaoAula.Inserir(notificacaoId, aulaId);
 
                 unitOfWork.PersistirTransacao();
             }

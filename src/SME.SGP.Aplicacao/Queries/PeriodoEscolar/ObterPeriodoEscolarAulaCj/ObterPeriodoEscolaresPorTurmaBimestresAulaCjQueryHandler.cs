@@ -8,8 +8,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodoEscolaresPorTurmaBimestresAulaCjQueryHandler : IRequestHandler<ObterPeriodoEscolaresPorTurmaBimestresAulaCjQuery, PeriodoEscolarBimestreDto>
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        public ObterPeriodoEscolaresPorTurmaBimestresAulaCjQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        public ObterPeriodoEscolaresPorTurmaBimestresAulaCjQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar;
         }

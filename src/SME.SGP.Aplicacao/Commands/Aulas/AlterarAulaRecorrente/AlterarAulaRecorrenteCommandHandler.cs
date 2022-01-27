@@ -18,19 +18,16 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
-        private readonly IServicoNotificacao servicoNotificacao;
         private readonly IUnitOfWork unitOfWork;
 
         public AlterarAulaRecorrenteCommandHandler(IMediator mediator,
                                                    IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
-                                                   IServicoNotificacao servicoNotificacao,
                                                    IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
@@ -78,7 +75,8 @@ namespace SME.SGP.Aplicacao
 
             var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(request.TipoCalendarioId, dataAula, request.RecorrenciaAula));
 
-            var aulasDaRecorrencia = await repositorioAula.ObterAulasRecorrencia(aulaPaiIdOrigem, aulaOrigem.Id, fimRecorrencia);
+            var aulasDaRecorrencia = await mediator.Send(new ObterRepositorioAulaPorAulaRecorrenteQuery(aulaPaiIdOrigem, aulaOrigem.Id, fimRecorrencia));
+                
             var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasDaRecorrencia);
 
             try
@@ -256,27 +254,22 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = turma.Ue.Dre.CodigoDre,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuario.Id,
-                Tipo = NotificacaoTipo.Calendario,
-                Titulo = tituloMensagem,
-                TurmaId = turma.CodigoTurma,
-                UeId = turma.Ue.CodigoUe,
-            };
-
             unitOfWork.IniciarTransacao();
             try
             {
                 // Salva Notificação
-                servicoNotificacao.Salvar(notificacao);
+                var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(tituloMensagem,
+                                                              mensagemUsuario.ToString(),
+                                                              usuario.CodigoRf,
+                                                              NotificacaoCategoria.Aviso,
+                                                              NotificacaoTipo.Calendario,
+                                                              turma.Ue.Dre.CodigoDre,
+                                                              turma.Ue.CodigoUe,
+                                                              turma.CodigoTurma,
+                                                              DateTime.Now.Year));
 
                 // Gera vinculo Notificacao x Aula
-                await repositorioNotificacaoAula.Inserir(notificacao.Id, aulaId);
+                await repositorioNotificacaoAula.Inserir(notificacaoId, aulaId);
 
                 unitOfWork.PersistirTransacao();
             }

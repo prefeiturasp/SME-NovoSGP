@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao.Queries.UE.ObterModalidadesPorUeEAnoLetivo
 {
     public class ObterModalidadesPorUeEAnoLetivoQueryHandler : IRequestHandler<ObterModalidadesPorUeEAnoLetivoQuery, IEnumerable<ModalidadeRetornoDto>>
     {
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
 
-        public ObterModalidadesPorUeEAnoLetivoQueryHandler(IRepositorioUe repositorioUe)
+        public ObterModalidadesPorUeEAnoLetivoQueryHandler(IRepositorioUeConsulta repositorioUe)
         {
             this.repositorioUe = repositorioUe;
         }

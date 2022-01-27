@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotaEmAprovacaoQueryHandler : IRequestHandler<ObterNotaEmAprovacaoQuery, double>
     {
-        private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
+        private readonly IRepositorioNotasConceitosConsulta repositorioNotasConceitos;
 
-        public ObterNotaEmAprovacaoQueryHandler(IRepositorioNotasConceitos repositorioNotasConceitos)
+        public ObterNotaEmAprovacaoQueryHandler(IRepositorioNotasConceitosConsulta repositorioNotasConceitos)
         {
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
         }

@@ -25,31 +25,40 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<PendenciaDto>> Handle(ObterPendenciasPorUsuarioQuery request, CancellationToken cancellationToken)
         {
-            int[] tiposPendenciasAFiltrar = request.TipoPendencia > 0 ? RetornaTiposPendenciaGrupo((TipoPendenciaGrupo)request.TipoPendencia).ToArray() : new int[] { };
+            var pendencias = new PaginacaoResultadoDto<Pendencia>();
 
-            var pendencias = await repositorioPendencia.ListarPendenciasUsuario(request.UsuarioId,
-                                                                                tiposPendenciasAFiltrar.ToArray(),
-                                                                                request.TituloPendencia,
-                                                                                request.TurmaCodigo,
-                                                                                Paginacao,
-                                                                                request.TipoPendencia);
-
-            var itensDaLista = pendencias.Items.ToList();
-
-            if (!string.IsNullOrEmpty(request.TurmaCodigo) && request.TipoPendencia == 0)
+            if (!string.IsNullOrEmpty(request.TurmaCodigo) || !string.IsNullOrEmpty(request.TituloPendencia) || request.TipoPendencia > 0)
             {
-                foreach (var pendencia in pendencias.Items)
+                int[] tiposPendenciasAFiltrar = request.TipoPendencia > 0 ? RetornaTiposPendenciaGrupo((TipoPendenciaGrupo)request.TipoPendencia).ToArray() : new int[] { };
+                pendencias = await repositorioPendencia.ListarPendenciasUsuarioComFiltro(request.UsuarioId,
+                                                                                             tiposPendenciasAFiltrar.ToArray(),
+                                                                                             request.TituloPendencia,
+                                                                                             request.TurmaCodigo,
+                                                                                             Paginacao,
+                                                                                             request.TipoPendencia);
+
+                var itensDaLista = pendencias.Items.ToList();
+
+                if (!string.IsNullOrEmpty(request.TurmaCodigo) && request.TipoPendencia == 0)
                 {
-                    var pendenciaFiltrada = await repositorioPendencia
-                                                   .FiltrarListaPendenciasUsuario(request.TurmaCodigo,
-                                                                                  pendencia);
+                    foreach (var pendencia in pendencias.Items)
+                    {
+                        var pendenciaFiltrada = await repositorioPendencia
+                                                       .FiltrarListaPendenciasUsuario(request.TurmaCodigo,
+                                                                                      pendencia);
 
-                    if (pendenciaFiltrada == null)
-                        itensDaLista.Remove(pendencia);
+                        if (pendenciaFiltrada == null)
+                            itensDaLista.Remove(pendencia);
+                    }
                 }
-            }
 
-            pendencias.Items = itensDaLista;
+                pendencias.Items = itensDaLista;
+            }
+            else
+            {
+                pendencias = await repositorioPendencia.ListarPendenciasUsuarioSemFiltro(request.UsuarioId,
+                                                                                             Paginacao);
+            }        
 
             return await MapearParaDtoPaginado(pendencias);
         }

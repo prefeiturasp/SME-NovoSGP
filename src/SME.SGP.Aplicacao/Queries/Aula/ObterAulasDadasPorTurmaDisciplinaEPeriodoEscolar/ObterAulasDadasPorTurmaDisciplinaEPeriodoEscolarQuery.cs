@@ -6,26 +6,26 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery : IRequest<int>
     {
-        public long TurmaId { get; set; }
+        public string TurmaCodigo { get; set; }
         public long ComponenteCurricularId { get; set; }
         public IEnumerable<long> PeriodosEscolaresIds { get; set; }
         public long TipoCalendarioId { get; set; }
 
-        private ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(long turmaId, long componenteCurricularId, long tipoCalendarioId)
+        private ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(string turmaCodigo, long componenteCurricularId, long tipoCalendarioId)
         {
-            TurmaId = turmaId;
+            TurmaCodigo = turmaCodigo;
             ComponenteCurricularId = componenteCurricularId;
             TipoCalendarioId = tipoCalendarioId;
         }
 
-        public ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(long turmaId, long componenteCurricularId, long tipoCalendarioId, long periodoEscolarId)
-            :this(turmaId, componenteCurricularId, tipoCalendarioId)
+        public ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(string turmaCodigo, long componenteCurricularId, long tipoCalendarioId, long periodoEscolarId)
+            :this(turmaCodigo, componenteCurricularId, tipoCalendarioId)
         {
             PeriodosEscolaresIds = new List<long> { periodoEscolarId };
         }
 
-        public ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(long turmaId, long componenteCurricularId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds)
-            : this(turmaId, componenteCurricularId, tipoCalendarioId)
+        public ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(string turmaCodigo, long componenteCurricularId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds)
+            : this(turmaCodigo, componenteCurricularId, tipoCalendarioId)
         {
             PeriodosEscolaresIds = periodosEscolaresIds;
         }
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
     {
         public ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQueryValidator()
         {
-            RuleFor(x => x.TurmaId)
+            RuleFor(x => x.TurmaCodigo)
                 .NotEmpty()
                 .WithMessage("A turma deve ser informada para a consulta de aulas dadas.");
 

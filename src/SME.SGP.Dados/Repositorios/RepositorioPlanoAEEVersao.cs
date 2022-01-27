@@ -43,7 +43,15 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PlanoAEEVersaoDto>> ObterVersoesPorPlanoId(long planoId)
         {
-            var query = @"select pav.Id, pav.numero, pav.criado_em as CriadoEm 
+            var query = @"select 
+                            pav.Id, 
+	                        pav.numero, 
+	                        pav.criado_em as CriadoEm, 
+	                        pav.criado_por as CriadoPor, 
+	                        pav.criado_rf as CriadoRF, 
+	                        pav.alterado_em as AlteradoEm,
+	                        pav.alterado_por as AlteradoPor,
+	                        pav.alterado_rf as AlteradoRf
                           from plano_aee_versao pav 
                           where pav.plano_aee_id = @planoId 
                           order by pav.numero desc";

@@ -10,11 +10,11 @@ namespace SME.SGP.Aplicacao
     public class TurmaEmPeriodoFechamentoQueryHandler : IRequestHandler<TurmaEmPeriodoFechamentoQuery, bool>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
+        private readonly IRepositorioEventoFechamentoConsulta repositorioEventoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
 
         public TurmaEmPeriodoFechamentoQueryHandler(IMediator mediator,
-                                                    IRepositorioEventoFechamento repositorioEventoFechamento,
+                                                    IRepositorioEventoFechamentoConsulta repositorioEventoFechamento,
                                                     IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

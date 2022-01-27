@@ -135,6 +135,8 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new MigrarPlanoAulaCommand(migrarPlanoAula, usuario));
                 }
 
+                planoAulaDto.Id = planoAula.Id;
+
                 return planoAulaDto;
             }
             catch (Exception ex)
