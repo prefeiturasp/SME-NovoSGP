@@ -31,9 +31,6 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O ano letivo deve ser informado.");
 
-            RuleFor(c => c.TurmaHistorica)
-                .NotEmpty()
-                .WithMessage("O Turma Historica deve ser informado.");
         }
     }
 }
