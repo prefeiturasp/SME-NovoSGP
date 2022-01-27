@@ -146,10 +146,9 @@ namespace SME.SGP.Aplicacao
             {
                  alunosAtivos = from a in alunos
                                    where (a.EstaAtivo(periodoFim) ||
-                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
-                                         a.DataMatricula.Date <= periodoFim.Date
+                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date && a.DataMatricula.Date <= periodoFim.Date)) 
                                    orderby a.NomeValido(), a.NumeroAlunoChamada
-                                   select a;
+                                   select a;           
             }
 
 
