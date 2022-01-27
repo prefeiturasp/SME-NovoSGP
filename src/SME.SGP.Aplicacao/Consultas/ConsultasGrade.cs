@@ -1,10 +1,8 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -13,17 +11,19 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasAula consultasAula;
         private readonly IRepositorioGrade repositorioGrade;
-        private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
+        
 
-        public ConsultasGrade(IRepositorioGrade repositorioGrade,
-                              IConsultasAula consultasAula, IServicoUsuario servicoUsuario, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma)
+        public ConsultasGrade(IRepositorioGrade repositorioGrade,IConsultasAula consultasAula, IServicoUsuario servicoUsuario, IRepositorioUeConsulta repositorioUe, IRepositorioTurmaConsulta repositorioTurma, IMediator mediator)
         {
             this.repositorioGrade = repositorioGrade ?? throw new System.ArgumentNullException(nameof(repositorioGrade));
             this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             if (ue == null)
                 throw new NegocioException("Ue não localizada.");
 
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             if (turma == null)
                 throw new NegocioException("Turma não localizada.");
 

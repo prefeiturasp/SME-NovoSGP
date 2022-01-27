@@ -7,14 +7,13 @@ using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ConsultasTurma : ConsultasBase, IConsultasTurma
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
@@ -22,7 +21,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAluno servicoAluno;
         private readonly IMediator mediator;
 
-        public ConsultasTurma(IRepositorioTurma repositorioTurma,
+        public ConsultasTurma(IRepositorioTurmaConsulta repositorioTurma,
                                 IConsultasTipoCalendario consultasTipoCalendario,
                                 IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
@@ -74,7 +73,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<Turma> ObterPorCodigo(string codigoTurma)
-            => await repositorioTurma.ObterPorCodigo(codigoTurma);
+            => await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
 
         public async Task<Turma> ObterComUeDrePorCodigo(string codigoTurma)
             => await repositorioTurma.ObterTurmaComUeEDrePorCodigo(codigoTurma);
@@ -123,7 +122,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, PeriodoEscolar periodoEscolar = null, bool ehInfantil = false)
         {
-            var dadosAlunos = await servicoEOL.ObterAlunosPorTurma(turmaCodigo);
+            var dadosAlunos = await servicoEOL.ObterAlunosPorTurma(turmaCodigo, true);
             if (dadosAlunos == null || !dadosAlunos.Any())
                 throw new NegocioException($"Não foram localizados dados dos alunos para turma {turmaCodigo} no EOL para o ano letivo {anoLetivo}");
 

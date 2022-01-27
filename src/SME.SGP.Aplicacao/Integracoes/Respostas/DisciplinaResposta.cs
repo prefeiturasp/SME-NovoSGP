@@ -15,6 +15,8 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
 
         [JsonProperty("codDisciplinaPai")]
         public long? CodigoComponenteCurricularPai { get; set; }
+        [JsonProperty("CodCompTerritorioSaber")]
+        public long? CodigoComponenteTerritorioSaber { get; set; }
 
         [JsonProperty("disciplina")]
         public string Nome { get; set; }

@@ -51,8 +51,6 @@ namespace SME.SGP.Aplicacao
 
                 var aulas = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId, criadoPor)))?.ToList();
 
-                aulas.AddRange(await mediator.Send(new ObterAulasExcluidasComDiarioDeBordoAtivosQuery(turma.CodigoTurma, tipoCalendarioId)));
-
                 if (aulas == null || !aulas.Any())
                 {
                     var periodoTurmaConsiderado = diasParaCriarAula

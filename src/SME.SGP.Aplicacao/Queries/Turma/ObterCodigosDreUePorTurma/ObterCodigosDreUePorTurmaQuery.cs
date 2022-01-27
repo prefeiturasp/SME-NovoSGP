@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCodigosDreUePorTurmaQuery : IRequest<DreUeDto>
+    public class ObterCodigosDreUePorTurmaQuery : IRequest<DreUeDaTurmaDto>
     {
         public ObterCodigosDreUePorTurmaQuery(string turmaCodigo)
         {

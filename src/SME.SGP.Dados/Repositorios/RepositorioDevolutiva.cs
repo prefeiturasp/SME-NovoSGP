@@ -15,6 +15,12 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioDevolutiva(ISgpContext conexao) : base(conexao) { }
 
+        public async Task<Devolutiva> ObterPorIdRegistroExcluido(long? devolutivaId)
+        {
+            string query = $"select * from devolutiva d where d.id = @devolutivaId";
+            return await database.Conexao.QueryFirstOrDefaultAsync<Devolutiva>(query, new { devolutivaId });
+        }
+
         public async Task<PaginacaoResultadoDto<DevolutivaResumoDto>> ListarDevolutivasPorTurmaComponentePaginado(string turmaCodigo, long componenteCurricularCodigo, DateTime? dataReferencia, Paginacao paginacao)
         {
             var query = $"select count(distinct d.id) {ObterQuery(dataReferencia)}";

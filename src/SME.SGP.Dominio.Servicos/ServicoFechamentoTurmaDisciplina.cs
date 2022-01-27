@@ -16,32 +16,27 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoFechamentoTurmaDisciplina : IServicoFechamentoTurmaDisciplina
     {
-        private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasSupervisor consultasSupervisor;
-        private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
-        private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
-        private readonly IRepositorioConceito repositorioConceito;
-        private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
+        private readonly IRepositorioFechamentoAlunoConsulta repositorioFechamentoAlunoConsulta;
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurmaConsulta;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
-        private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IUnitOfWork unitOfWork;
         private List<FechamentoNotaDto> notasEnvioWfAprovacao;
         private Turma turmaFechamento;
@@ -49,28 +44,21 @@ namespace SME.SGP.Dominio.Servicos
 
         public ServicoFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                                 IRepositorioFechamentoTurma repositorioFechamentoTurma,
+                                                IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurmaConsulta,
+                                                IRepositorioFechamentoAlunoConsulta repositorioFechamentoAlunoConsulta,
                                                 IRepositorioFechamentoAluno repositorioFechamentoAluno,
                                                 IRepositorioFechamentoNota repositorioFechamentoNota,
-                                                IRepositorioDre repositorioDre,
-                                                IRepositorioComponenteCurricular repositorioComponenteCurricular,
-                                                IRepositorioTurma repositorioTurma,
-                                                IRepositorioUe repositorioUe,
+                                                IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
+                                                IRepositorioTurmaConsulta repositorioTurma,
                                                 IServicoPeriodoFechamento servicoPeriodoFechamento,
-                                                IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                                IRepositorioTipoCalendario repositorioTipoCalendario,
-                                                IRepositorioTipoAvaliacao repositorioTipoAvaliacao,
-                                                IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
-                                                IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
-                                                IRepositorioParametrosSistema repositorioParametrosSistema,
-                                                IRepositorioConceito repositorioConceito,
-                                                IRepositorioWfAprovacaoNotaFechamento repositorioWfAprovacaoNotaFechamento,
+                                                IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+                                                IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
+                                                IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                                 IConsultasDisciplina consultasDisciplina,
                                                 IConsultasFrequencia consultasFrequencia,
                                                 IServicoNotificacao servicoNotificacao,
-                                                IServicoPendenciaFechamento servicoPendenciaFechamento,
                                                 IServicoEol servicoEOL,
                                                 IServicoUsuario servicoUsuario,
-                                                IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                                                 IUnitOfWork unitOfWork,
                                                 IConsultasSupervisor consultasSupervisor,
                                                 IRepositorioEvento repositorioEvento,
@@ -79,14 +67,14 @@ namespace SME.SGP.Dominio.Servicos
                                                 IMediator mediator)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
+            this.repositorioFechamentoTurmaConsulta = repositorioFechamentoTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaConsulta));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioFechamentoAluno));
+            this.repositorioFechamentoAlunoConsulta = repositorioFechamentoAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioFechamentoAlunoConsulta));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new ArgumentNullException(nameof(servicoPeriodoFechamento));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
-            this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
@@ -97,13 +85,8 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
-            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
-            this.repositorioWfAprovacaoNotaFechamento = repositorioWfAprovacaoNotaFechamento ?? throw new ArgumentNullException(nameof(repositorioWfAprovacaoNotaFechamento));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-            this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
-            this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
@@ -167,7 +150,8 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task Reprocessar(long fechamentoTurmaDisciplinaId, Usuario usuario = null)
         {
-            var fechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina.ObterPorId(fechamentoTurmaDisciplinaId);
+            var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorIdQuery(fechamentoTurmaDisciplinaId));
+                
             if (fechamentoTurmaDisciplina == null)
                 throw new NegocioException("Fechamento ainda não realizado para essa turma.");
 
@@ -230,9 +214,9 @@ namespace SME.SGP.Dominio.Servicos
             var parametroAlteracaoNotaFechamento = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaFechamento, turmaFechamento.AnoLetivo));
 
             // Valida Permissão do Professor na Turma/Disciplina            
-            if (!turmaFechamento.EhTurmaEdFisicaOuItinerario() && !usuarioLogado.EhGestorEscolar())
-                await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim, periodos.periodoFechamento);
-
+            if (!turmaFechamento.EhTurmaEdFisicaOuItinerario() && !usuarioLogado.EhGestorEscolar() && !usuarioLogado.EhPerfilSME() && !usuarioLogado.EhPerfilDRE())
+                await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim, periodos.periodoFechamento, entidadeDto.DisciplinaId.ToString(), usuarioLogado);
+            
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
 
             DisciplinaDto disciplinaEOL = await consultasDisciplina.ObterDisciplina(fechamentoTurmaDisciplina.DisciplinaId);
@@ -241,7 +225,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (componenteSemNota && id > 0)
-                fechamentoAlunos = await AtualizaSinteseAlunos(id, periodoEscolar.PeriodoFim, disciplinaEOL);
+                fechamentoAlunos = await AtualizaSinteseAlunos(id, periodoEscolar.PeriodoFim, disciplinaEOL, turmaFechamento.AnoLetivo);
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento);
 
@@ -254,7 +238,10 @@ namespace SME.SGP.Dominio.Servicos
             unitOfWork.IniciarTransacao();
             try
             {
-                var fechamentoTurmaId = await repositorioFechamentoTurma.SalvarAsync(fechamentoTurmaDisciplina.FechamentoTurma);
+                var fechamentoTurmaId = fechamentoTurmaDisciplina.FechamentoTurma.Id > 0 ?
+                    fechamentoTurmaDisciplina.FechamentoTurma.Id :
+                    await repositorioFechamentoTurma.SalvarAsync(fechamentoTurmaDisciplina.FechamentoTurma);
+
                 fechamentoTurmaDisciplina.FechamentoTurmaId = fechamentoTurmaId;
 
                 await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
@@ -262,6 +249,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     fechamentoAluno.FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id;
                     await repositorioFechamentoAluno.SalvarAsync(fechamentoAluno);
+
                     foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                     {
                         fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
@@ -279,7 +267,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
                 }
 
-                await EnviarNotasWfAprovacao(fechamentoTurmaDisciplina.Id, fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar, usuarioLogado, disciplinaEOL);
+                await EnviarNotasWfAprovacao(fechamentoTurmaDisciplina.Id, fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar, usuarioLogado, disciplinaEOL, turmaFechamento);
 
                 unitOfWork.PersistirTransacao();
 
@@ -323,28 +311,16 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public void VerificaPendenciasFechamento(long fechamentoId)
+        private async Task<IEnumerable<FechamentoAluno>> AtualizaSinteseAlunos(long fechamentoTurmaDisciplinaId, DateTime dataReferencia, DisciplinaDto disciplina, int anoLetivo)
         {
-            // Verifica existencia de pendencia em aberto
-            if (!servicoPendenciaFechamento.VerificaPendenciasFechamento(fechamentoId))
-            {
-                var fechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina.ObterPorId(fechamentoId);
-                // Atualiza situação do fechamento
-                fechamentoTurmaDisciplina.Situacao = SituacaoFechamento.ProcessadoComSucesso;
-                repositorioFechamentoTurmaDisciplina.Salvar(fechamentoTurmaDisciplina);
-            }
-        }
-
-        private async Task<IEnumerable<FechamentoAluno>> AtualizaSinteseAlunos(long fechamentoTurmaDisciplinaId, DateTime dataReferencia, DisciplinaDto disciplina)
-        {
-            var fechamentoAlunos = await repositorioFechamentoAluno.ObterPorFechamentoTurmaDisciplina(fechamentoTurmaDisciplinaId);
+            var fechamentoAlunos = await repositorioFechamentoAlunoConsulta.ObterPorFechamentoTurmaDisciplina(fechamentoTurmaDisciplinaId);
             foreach (var fechamentoAluno in fechamentoAlunos)
             {
                 foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                 {
                     var frequencia = consultasFrequencia.ObterPorAlunoDisciplinaData(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia);
                     var percentualFrequencia = frequencia == null ? 100 : frequencia.PercentualFrequencia;
-                    var sinteseDto = await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplina);
+                    var sinteseDto = await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplina, anoLetivo);
 
                     fechamentoNota.SinteseId = (long)sinteseDto.Id;
                 }
@@ -368,7 +344,7 @@ namespace SME.SGP.Dominio.Servicos
                 // Incluindo registro de fechamento turma disciplina
 
                 // Busca registro existente de fechamento da turma
-                var fechamentoTurma = await repositorioFechamentoTurma.ObterPorTurmaPeriodo(turma.Id, periodoEscolar.Id);
+                var fechamentoTurma = await repositorioFechamentoTurmaConsulta.ObterPorTurmaPeriodo(turma.Id, periodoEscolar.Id);
                 if (fechamentoTurma == null)
                     fechamentoTurma = new FechamentoTurma(turma, periodoEscolar);
 
@@ -381,7 +357,7 @@ namespace SME.SGP.Dominio.Servicos
             var fechamentoAlunos = new List<FechamentoAluno>();
 
             if (fechamentoTurmaDisciplinaId > 0)
-                fechamentoAlunos = (await repositorioFechamentoAluno.ObterPorFechamentoTurmaDisciplina(fechamentoTurmaDisciplinaId)).ToList();
+                fechamentoAlunos = (await repositorioFechamentoAlunoConsulta.ObterPorFechamentoTurmaDisciplina(fechamentoTurmaDisciplinaId)).ToList();
 
             foreach (var agrupamentoNotasAluno in fechamentoNotasDto.GroupBy(g => g.CodigoAluno))
             {
@@ -438,48 +414,10 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Turma com código [{turmaCodigo}] não localizada!");
         }
 
-        private async Task EnviarNotasWfAprovacao(long fechamentoTurmaDisciplinaId, PeriodoEscolar periodoEscolar, Usuario usuarioLogado, DisciplinaDto disciplinaEOL)
+        private async Task EnviarNotasWfAprovacao(long fechamentoTurmaDisciplinaId, PeriodoEscolar periodoEscolar, Usuario usuarioLogado, DisciplinaDto componenteCurricular, Turma turma)
         {
             if (notasEnvioWfAprovacao.Any())
-            {
-                var lancaNota = !notasEnvioWfAprovacao.First().ConceitoId.HasValue;
-                var notaConceitoMensagem = lancaNota ? "nota(s)" : "conceito(s)";
-
-                var componentes = await mediator.Send(new ObterComponentesCurricularesQuery());
-                var componenteSgp = componentes.FirstOrDefault(a => a.Codigo == disciplinaEOL.Id.ToString());
-
-                var mensagem = await MontaMensagemWfAprovacao(lancaNota, periodoEscolar, usuarioLogado, componenteSgp, componentes, disciplinaEOL.Regencia);
-
-                var wfAprovacaoNota = new WorkflowAprovacaoDto()
-                {
-                    Ano = DateTime.Today.Year,
-                    NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
-                    EntidadeParaAprovarId = fechamentoTurmaDisciplinaId,
-                    Tipo = WorkflowAprovacaoTipo.AlteracaoNotaFechamento,
-                    TurmaId = turmaFechamento.CodigoTurma,
-                    UeId = turmaFechamento.Ue.CodigoUe,
-                    DreId = turmaFechamento.Ue.Dre.CodigoDre,
-                    NotificacaoTitulo = $"Alteração em {notaConceitoMensagem} final - {componenteSgp.Descricao} - {turmaFechamento.Nome} ({turmaFechamento.AnoLetivo})",
-                    NotificacaoTipo = NotificacaoTipo.Notas,
-                    NotificacaoMensagem = mensagem
-                };
-
-                wfAprovacaoNota.AdicionarNivel(Cargo.CP);
-                wfAprovacaoNota.AdicionarNivel(Cargo.Supervisor);
-
-                var idWorkflow = await comandosWorkflowAprovacao.Salvar(wfAprovacaoNota);
-                foreach (var notaFechamento in notasEnvioWfAprovacao)
-                {
-                    await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoPorNotaCommand(notaFechamento.Id));
-                    await repositorioWfAprovacaoNotaFechamento.SalvarAsync(new WfAprovacaoNotaFechamento()
-                    {
-                        WfAprovacaoId = idWorkflow,
-                        FechamentoNotaId = notaFechamento.Id,
-                        Nota = notaFechamento.Nota,
-                        ConceitoId = notaFechamento.ConceitoId
-                    });
-                }
-            }
+                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEnvioWfAprovacao, fechamentoTurmaDisciplinaId, periodoEscolar, usuarioLogado, componenteCurricular, turma));
         }
 
         private bool EnviarWfAprovacao(Usuario usuarioLogado)
@@ -504,110 +442,16 @@ namespace SME.SGP.Dominio.Servicos
         {
             var fechamento = new FechamentoTurmaDisciplina();
             if (id > 0)
+            {
                 fechamento = repositorioFechamentoTurmaDisciplina.ObterPorId(id);
+                fechamento.FechamentoTurma = repositorioFechamentoTurmaConsulta.ObterPorId(fechamento.FechamentoTurmaId);
+            }                
 
             fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
             fechamento.DisciplinaId = fechamentoDto.DisciplinaId;
             fechamento.Justificativa = fechamentoDto.Justificativa;
 
             return fechamento;
-        }
-
-        private async Task<string> MontaMensagemWfAprovacao(bool lancaNota, PeriodoEscolar periodoEscolar, Usuario usuarioLogado, ComponenteCurricularDto componenteSgp, IEnumerable<ComponenteCurricularDto> componentes, bool regencia)
-        {
-            var notaConceitoMensagem = lancaNota ? "A(s) nota(s)" : "O(s) conceito(s)";
-
-            var mensagem = new StringBuilder();
-            var bimestre = periodoEscolar.Bimestre == 0 ? "bimestre final" : $"{periodoEscolar.Bimestre}º bimestre";
-            mensagem.Append($"<p>{notaConceitoMensagem} do {bimestre} do componente curricular {componenteSgp.Descricao} da turma {turmaFechamento.Nome} da ");
-            mensagem.Append($"{turmaFechamento.Ue.TipoEscola.ObterNomeCurto()} {turmaFechamento.Ue.Nome} ({turmaFechamento.Ue.Dre.Abreviacao}) ");
-            mensagem.Append($"de {turmaFechamento.AnoLetivo} foram alterados pelo Professor {usuarioLogado.Nome} ");
-            mensagem.Append($"({usuarioLogado.CodigoRf}) em {DateTime.Now.ToString("dd/MM/yyyy")} às {DateTime.Now.ToString("HH:mm")} para o(s) seguinte(s) estudantes(s):</p>");
-
-            var alunosTurma = await servicoEOL.ObterAlunosPorTurma(turmaFechamento.CodigoTurma);
-
-            mensagem.AppendLine(regencia ?
-                MontarTabelaNotasRegencia(alunosTurma, componentes) :
-                MontarTabelaNotas(alunosTurma));
-            return mensagem.ToString();
-        }
-
-        private string MontarTabelaNotasRegencia(IEnumerable<AlunoPorTurmaResposta> alunosTurma, IEnumerable<ComponenteCurricularDto> componentes)
-        {
-            var mensagem = new StringBuilder();
-            mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
-            mensagem.AppendLine("<tr>");
-            mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Estudante</b></td>");
-            mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Componente Curricular</b></td>");
-            mensagem.AppendLine("<td style='padding: 5px; text-align:left;'><b>Valor anterior</b></td>");
-            mensagem.AppendLine("<td style='padding: 5px; text-align:left;'><b>Novo valor</b></td>");
-            mensagem.AppendLine("</tr>");
-
-            foreach (var notaAprovacao in notasEnvioWfAprovacao)
-            {
-                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.CodigoAluno);
-
-                mensagem.AppendLine("<tr>");
-                mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.CodigoAluno})</td>");
-
-                if (!notaAprovacao.ConceitoId.HasValue)
-                {
-                    mensagem.Append($"<td style='padding: 5px; text-align:left;'>{ObterNomeComponente(componentes, notaAprovacao.DisciplinaId)}</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior.Value)}</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.Nota.Value)}</td>");
-                }
-                else
-                {
-                    mensagem.Append($"<td style='padding: 5px; text-align:left;'>{ObterNomeComponente(componentes, notaAprovacao.DisciplinaId)}</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoIdAnterior)}</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoId)}</td>");
-                }
-
-                mensagem.AppendLine("</tr>");
-            }
-            mensagem.AppendLine("</table>");
-            mensagem.AppendLine("<p>Você precisa aceitar esta notificação para que a alteração seja considerada válida.</p>");
-
-            return mensagem.ToString();
-        }
-
-        private string ObterNomeComponente(IEnumerable<ComponenteCurricularDto> componentes, long disciplinaId)
-            => componentes.FirstOrDefault(a => a.Codigo == disciplinaId.ToString()).Descricao;
-
-        private string MontarTabelaNotas(IEnumerable<AlunoPorTurmaResposta> alunosTurma)
-        {
-            var mensagem = new StringBuilder();
-            mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
-            mensagem.AppendLine("<tr>");
-            mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Estudante</b></td>");
-            mensagem.AppendLine("<td style='padding: 5px; text-align:left;'><b>Valor anterior</b></td>");
-            mensagem.AppendLine("<td style='padding: 5px; text-align:left;'><b>Novo valor</b></td>");
-            mensagem.AppendLine("</tr>");
-
-            foreach (var notaAprovacao in notasEnvioWfAprovacao)
-            {
-                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.CodigoAluno);
-
-                mensagem.AppendLine("<tr>");
-                mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.CodigoAluno})</td>");
-
-                if (!notaAprovacao.ConceitoId.HasValue)
-                {
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior)}</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.Nota)}</td>");
-                }
-                else
-                {
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoIdAnterior)}</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoId)}</td>");
-                }
-
-                mensagem.AppendLine("</tr>");
-            }
-            mensagem.AppendLine("</table>");
-            mensagem.AppendLine("<p>Você precisa aceitar esta notificação para que a alteração seja considerada válida.</p>");
-
-            return mensagem.ToString();
         }
 
         private async Task<(PeriodoEscolar periodoEscolar, PeriodoDto periodoFechamento)> ObterPeriodoEscolarFechamentoReabertura(long tipoCalendarioId, Ue ue, int bimestre)
@@ -645,12 +489,15 @@ namespace SME.SGP.Dominio.Servicos
             return tipoEvento;
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime data, PeriodoDto periodoFechamento)
+        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula, PeriodoDto periodoFechamento,string disciplinaId, Usuario usuario = null)
         {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            if (usuario == null)
+                usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            if (!usuario.EhProfessorCj() && !await VerificarAtribuicao(codigoRf, turmaId, data, periodoFechamento))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+            var podePersistir = await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula);
+
+            if (!usuario.EhProfessorCj() && !podePersistir)
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
         }
 
         private async Task<bool> VerificarAtribuicao(string codigoRf, string turmaId, DateTime data, PeriodoDto periodoFechamento)
@@ -669,25 +516,5 @@ namespace SME.SGP.Dominio.Servicos
             return true;
         }
 
-        private string ObterNota(double? nota)
-        {
-            if (!nota.HasValue)
-                return string.Empty;
-
-            return nota.ToString();
-        }
-
-        private string ObterConceito(long? conceitoId)
-        {
-            if (!conceitoId.HasValue)
-                return string.Empty;
-
-            if (conceitoId == (int)ConceitoValores.P)
-                return ConceitoValores.P.ToString();
-            else if (conceitoId == (int)ConceitoValores.S)
-                return ConceitoValores.S.ToString();
-            else
-                return ConceitoValores.NS.ToString();
-        }
     }
 }

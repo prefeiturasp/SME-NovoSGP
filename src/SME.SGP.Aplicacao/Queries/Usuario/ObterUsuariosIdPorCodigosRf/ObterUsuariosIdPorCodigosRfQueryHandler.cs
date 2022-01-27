@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUsuariosIdPorCodigosRfQueryHandler : IRequestHandler<ObterUsuariosIdPorCodigosRfQuery, IEnumerable<long>>
     {
-        private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IRepositorioUsuarioConsulta repositorioUsuario;
 
-        public ObterUsuariosIdPorCodigosRfQueryHandler(IRepositorioUsuario repositorioUsuario)
+        public ObterUsuariosIdPorCodigosRfQueryHandler(IRepositorioUsuarioConsulta repositorioUsuario)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
         }

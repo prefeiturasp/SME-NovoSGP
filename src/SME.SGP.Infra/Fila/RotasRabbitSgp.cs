@@ -36,8 +36,6 @@
         public const string RotaExecutaVerificacaoPendenciasAusenciaFechamento = "sgp.pendencias.bimestre.ausencia.fechamento.verificacao";
         public const string RotaExecutaExclusaoPendenciasAusenciaAvaliacao = "sgp.pendencias.professor.avaliacao.excluir";
         public const string RotaExecutaExclusaoPendenciasAusenciaFechamento = "sgp.pendencias.bimestre.ausencia.fechamento.excluir";
-        public const string RotaPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual";
-        public const string RotaAtualizarPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual.atualizar";
 
         public const string RotaTratarAtribuicaoPendenciaUsuarios = "sgp.pendencias.atribuicao.tratar";
         public const string RotaCargaAtribuicaoPendenciaPerfilUsuario = "sgp.pendencia.perfil.usuario.atribuicao.carga";
@@ -47,6 +45,11 @@
         
 
         public const string RotaTrataNotificacoesNiveis = "sgp.notificacao.tratamento.niveiscargos";
+
+        public const string RotaAtualizarParecerConclusivoAlunoPorDre = "sgp.conselho.classe.aluno.parecer.atualizar.dre";
+        public const string RotaAtualizarParecerConclusivoAlunoPorUe = "sgp.conselho.classe.aluno.parecer.atualizar.ue";
+        public const string RotaAtualizarParecerConclusivoAlunoPorTurma = "sgp.conselho.classe.aluno.parecer.atualizar.turma";
+        public const string RotaAtualizarParecerConclusivoAluno = "sgp.conselho.classe.aluno.parecer.atualizar";
 
         public const string RotaExecutaAtualizacaoSituacaoConselhoClasse = "sgp.conselho.classe.situacao.atualizar";
         public const string RotaNotificacaoAndamentoFechamento = "sgp.fechamento.andamento.notificar";
@@ -66,6 +69,9 @@
         public const string RotaNotificacaoFrequenciaUe = "sgp.frequencia.ue.notificar";
 
         public const string RotaValidacaoAusenciaConciliacaoFrequenciaTurma = "sgp.frequencia.turma.conciliacao.validar";        
+
+        public const string RotaPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual";
+        public const string RotaAtualizarPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual.atualizar";
 
         public const string RotaNotificacaoRegistroConclusaoEncaminhamentoAEE = "notificacao.registro.conclusao.encaminhamentoaee";
         public const string RotaNotificacaoEncerramentoEncaminhamentoAEE = "notificacao.encerramento.encaminhamentoaee";
@@ -93,6 +99,8 @@
         public const string SincronizaEstruturaInstitucionalCicloSync = "sgp.sincronizacao.institucional.ciclo.sync";
         public const string SincronizaEstruturaInstitucionalCicloTratar = "sgp.sincronizacao.institucional.ciclo.tratar";
 
+        public const string NotificarCompensacaoAusencia = "sgp.compensacao.ausencia.notificar";
+
         public const string ConsolidacaoFrequenciasTurmasCarregar = "sgp.frequencia.turma.carregar";
         public const string ConsolidarFrequenciasTurmasNoAno = "sgp.frequencia.turma.ano.consolidar";
         public const string ConsolidarFrequenciasPorTurma = "sgp.frequencia.turma.consolidar";
@@ -110,6 +118,10 @@
         public const string ConsolidarTurmaConselhoClasseAlunoTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.tratar";
 
         public const string RotaConciliacaoFrequenciaTurmasSync = "sgp.frequencia.turma.conciliacao.sync";
+        public const string RotaConciliacaoFrequenciaTurmaPorPeriodo = "sgp.frequencia.turma.conciliacao.periodo";
+        public const string RotaConciliacaoCalculoFrequenciaPorTurmaComponente = "sgp.frequencia.turma.conciliacao.componente";
+
+
         public const string RotaConciliacaoFrequenciaTurmasAlunosSync = "sgp.frequencia.turma.alunos.conciliacao.sync";
         public const string RotaConciliacaoFrequenciaTurmasAlunosBuscar = "sgp.frequencia.turma.alunos.buscar.sync";
         public const string RotaCalcularFrequenciaGeralSync = "sgp.frequencia.calcular.geral.sync";
@@ -208,12 +220,16 @@
         public const string PlanoAulaDaAulaExcluir = "sgp.plano.aula.excluir";
         public const string AnotacoesFrequenciaDaAulaExcluir = "sgp.anotacoes.frequencia.aula.excluir";
         public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";
+        public const string RotaConsolidacaoDashBoardFrequencia = "sgp.consolidacao.frequencia.dashboard";
+
+        public const string RotaConsolidacaoDiariaDashBoardFrequencia = "sgp.consolidacao.diaria.frequencia.dashboard";
+        public const string RotaConsolidacaoSemanalDashBoardFrequencia = "sgp.consolidacao.semanal.frequencia.dashboard";
+        public const string RotaConsolidacaoMensalDashBoardFrequencia = "sgp.consolidacao.mensal.frequencia.dashboard";
 
         public const string VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes = "sgp.fechamento.turma.disciplina.processamento.varredura";
         public const string NotificacaoFrequencia = "sgp.notificacoes.frequencia";
         public const string ExecutarTipoCalendario = "sgp.executar.tipo.calendario";
         public const string ExecutarGravarRecorrencia = "sgp.executar.gravar.recorrencia";
-        public const string NotificarCompensacaoAusencia = "sgp.notificar.compensacao.ausencia";
         public const string GerarNotificacaoAlteracaoLimiteDias = "sgp.gerar.notificacao.alteracao.limite.dias";
         public const string VerificarPendenciasFechamentoTurmaDisciplina = "sgp.verificar.pendencias.fechamento.turma.disciplina";
         public const string AlterarPeriodosComHierarquiaInferiorFechamento = "sgp.alterar.periodo.hierarquia.inferior.fechamento";
@@ -238,7 +254,7 @@
         public const string NotificacaoPeriodoFechamentoReaberturaIniciando = "sgp.periodo.fechamento.reabertura.iniciando";
         public const string NotificacaoPeriodoFechamentoReaberturaEncerrando = "sgp.periodo.fechamento.reabertura.encerrando";
         public const string NotificacaoPeriodoFechamentoReaberturaUE = "sgp.periodo.fechamento.reabertura.ue";
-        public const string RotaLogs = "ApplicationLog";
+        public const string VerificaPendenciasFechamentoTurma = "sgp.fechamento.turma.pendencia.verificar";
 
         public const string AjusteImagesAcompanhamentoAprendizagemAlunoCarregar = "sgp.acompanhamento.aprendizado.aluno.imagens.ajuste.carregar";
         public const string AjusteImagesAcompanhamentoAprendizagemAlunoSync = "sgp.acompanhamento.aprendizado.aluno.imagens.ajuste.sync";

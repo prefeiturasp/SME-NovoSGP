@@ -9,13 +9,18 @@ namespace SME.SGP.Dominio
     public class ServicoPeriodoEscolar : IServicoPeriodoEscolar
     {
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolarConsulta;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IUnitOfWork unitOfWork;
 
-        public ServicoPeriodoEscolar(IUnitOfWork unitOfWork, IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioTipoCalendario repositorioTipoCalendario)
+        public ServicoPeriodoEscolar(IUnitOfWork unitOfWork,
+                                     IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                     IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolarConsulta,
+                                     IRepositorioTipoCalendario repositorioTipoCalendario)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioPeriodoEscolarConsulta = repositorioPeriodoEscolarConsulta ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolarConsulta));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
@@ -108,7 +113,7 @@ namespace SME.SGP.Dominio
         {
             if (periodos.Any(x => x.Id == 0))
             {
-                var periodoEscolar = (await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipo.Id)).ToList();
+                var periodoEscolar = (await repositorioPeriodoEscolarConsulta.ObterPorTipoCalendario(tipo.Id)).ToList();
 
                 if (periodoEscolar != null && periodoEscolar.Any())
                     throw new NegocioException("Não é possível inserir mais de um período escolar para o tipo de calendário informado");

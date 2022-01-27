@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponenteRegistraFrequenciaQueryHandler : IRequestHandler<ObterComponenteRegistraFrequenciaQuery, bool>
     {
-        private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
 
-        public ObterComponenteRegistraFrequenciaQueryHandler(IRepositorioFrequencia repositorioFrequencia)
+        public ObterComponenteRegistraFrequenciaQueryHandler(IRepositorioFrequenciaConsulta repositorioFrequencia)
         {
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
         }

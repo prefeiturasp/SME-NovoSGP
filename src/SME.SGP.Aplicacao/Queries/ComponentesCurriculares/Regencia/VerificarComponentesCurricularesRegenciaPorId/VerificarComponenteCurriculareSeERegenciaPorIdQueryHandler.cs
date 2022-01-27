@@ -14,8 +14,8 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificarComponenteCurriculareSeERegenciaPorIdQueryHandler : IRequestHandler<VerificarComponenteCurriculareSeERegenciaPorIdQuery, bool>
     {
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        public VerificarComponenteCurriculareSeERegenciaPorIdQueryHandler(IRepositorioComponenteCurricular repositorioComponenteCurricular)
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        public VerificarComponenteCurriculareSeERegenciaPorIdQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular)
         {
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }

@@ -15,43 +15,35 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     public class ConsultasConselhoClasseAlunoTeste
     {
         private readonly ConsultasConselhoClasseAluno consultasConselhoClasseAluno;
-        private readonly Mock<IConsultasAulaPrevista> consultasAulaPrevista;
         private readonly Mock<IConsultasConselhoClasseNota> consultasConselhoClasseNota;
         private readonly Mock<IConsultasDisciplina> consultasDisciplina;
-        private readonly Mock<IConsultasFechamentoNota> consultasFechamentoNota;
         private readonly Mock<IConsultasFechamentoTurma> consultasFechamentoTurma;
         private readonly Mock<IConsultasFrequencia> consultasFrequencia;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
-        private readonly Mock<IConsultasTipoCalendario> consultasTipoCalendario;
-        private readonly Mock<IRepositorioConselhoClasseAluno> repositorioConselhoClasseAluno;
+        private readonly Mock<IRepositorioConselhoClasseAlunoConsulta> repositorioConselhoClasseAluno;
         private readonly Mock<IRepositorioTurma> repositorioTurma;
-        private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
-        private readonly Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodo> repositorioFrequenciaAlunoDisciplinaPeriodo;
+        private readonly Mock<IRepositorioTipoCalendarioConsulta> repositorioTipoCalendario;
+        private readonly Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta> repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly Mock<IServicoConselhoClasse> servicoConselhoClasse;
         private readonly Mock<IServicoEol> servicoEOL;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IMediator> mediator;
-        private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
 
         public ConsultasConselhoClasseAlunoTeste()
         {
-            repositorioConselhoClasseAluno = new Mock<IRepositorioConselhoClasseAluno>();
-            repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
+            repositorioConselhoClasseAluno = new Mock<IRepositorioConselhoClasseAlunoConsulta>();
+            repositorioTipoCalendario = new Mock<IRepositorioTipoCalendarioConsulta>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             consultasDisciplina = new Mock<IConsultasDisciplina>();
-            consultasTipoCalendario = new Mock<IConsultasTipoCalendario>();
             consultasFechamentoTurma = new Mock<IConsultasFechamentoTurma>();
-            consultasAulaPrevista = new Mock<IConsultasAulaPrevista>();
             consultasConselhoClasseNota = new Mock<IConsultasConselhoClasseNota>();
-            consultasFechamentoNota = new Mock<IConsultasFechamentoNota>();
             servicoEOL = new Mock<IServicoEol>();
             servicoUsuario = new Mock<IServicoUsuario>();
-            repositorioFrequenciaAlunoDisciplinaPeriodo = new Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodo>();
+            repositorioFrequenciaAlunoDisciplinaPeriodo = new Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta>();
             consultasFrequencia = new Mock<IConsultasFrequencia>();
             servicoConselhoClasse = new Mock<IServicoConselhoClasse>();
             mediator = new Mock<IMediator>();
-            repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             repositorioTurma = new Mock<IRepositorioTurma>();
             consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
 
@@ -76,7 +68,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasFechamentoTurma.Setup(a => a.ObterCompletoPorIdAsync(It.IsAny<long>())).Returns(Task.FromResult(new FechamentoTurma() { Turma = new Turma() { CodigoTurma = "1234" } }));
             consultasPeriodoEscolar.Setup(a => a.ObterUltimoPeriodoAsync(It.IsAny<int>(), It.IsAny<ModalidadeTipoCalendario>(), It.IsAny<int>())).Returns(Task.FromResult(new PeriodoEscolar()));
             repositorioConselhoClasseAluno.Setup(a => a.ObterPorPeriodoAsync(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
-            servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>())).Returns(Task.FromResult(true));
+            servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>(), It.IsAny<bool>())).Returns(Task.FromResult(true));
             servicoUsuario.Setup(a => a.ObterUsuarioLogado()).Returns(Task.FromResult(new Usuario()));
             servicoEOL.Setup(a => a.ObterDisciplinasPorCodigoTurma(It.IsAny<string>())).Returns(Task.FromResult(Enumerable.Empty<DisciplinaResposta>()));
             repositorioFrequenciaAlunoDisciplinaPeriodo.Setup(a => a.ObterFrequenciaBimestresAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<TipoFrequenciaAluno>())).Returns(Task.FromResult(Enumerable.Empty<FrequenciaAluno>()));
@@ -96,7 +88,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
             consultasPeriodoEscolar.Setup(a => a.ObterUltimoPeriodoAsync(It.IsAny<int>(), It.IsAny<ModalidadeTipoCalendario>(), It.IsAny<int>())).Returns(Task.FromResult(new PeriodoEscolar()));
             repositorioConselhoClasseAluno.Setup(a => a.ObterPorPeriodoAsync(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
-            servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>())).Returns(Task.FromResult(false));
+            servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>(), It.IsAny<bool>())).Returns(Task.FromResult(false));
             consultasFechamentoTurma.Setup(a => a.ObterCompletoPorIdAsync(It.IsAny<long>())).Returns(Task.FromResult(
                 new FechamentoTurma()
                 {
@@ -148,7 +140,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             }));
             consultasPeriodoEscolar.Setup(a => a.ObterUltimoPeriodoAsync(It.IsAny<int>(), It.IsAny<ModalidadeTipoCalendario>(), It.IsAny<int>())).Returns(Task.FromResult(new PeriodoEscolar()));
             repositorioConselhoClasseAluno.Setup(a => a.ObterPorPeriodoAsync(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
-            servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>())).Returns(Task.FromResult(false));
+            servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>(), It.IsAny<bool>())).Returns(Task.FromResult(false));
             await Assert.ThrowsAsync<NegocioException>(() => consultasConselhoClasseAluno.ObterParecerConclusivo(0, 0, "", ""));
         }
     }

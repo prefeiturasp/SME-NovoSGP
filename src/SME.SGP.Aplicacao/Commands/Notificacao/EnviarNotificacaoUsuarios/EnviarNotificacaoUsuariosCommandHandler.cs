@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,10 +11,12 @@ namespace SME.SGP.Aplicacao
     public class EnviarNotificacaoUsuariosCommandHandler : IRequestHandler<EnviarNotificacaoUsuariosCommand, IEnumerable<long>>
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
+        private readonly IMediator mediator;
 
-        public EnviarNotificacaoUsuariosCommandHandler(IRepositorioNotificacao repositorioNotificacao)
+        public EnviarNotificacaoUsuariosCommandHandler(IRepositorioNotificacao repositorioNotificacao, IMediator mediator)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<long>> Handle(EnviarNotificacaoUsuariosCommand request, CancellationToken cancellationToken)
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
             {
                 var notificacao = new Notificacao()
                 {
-                    Codigo = ObtemNovoCodigo(),
+                    Codigo = await mediator.Send(new ObterNotificacaoUltimoCodigoPorAnoQuery(DateTime.Now.Year)) + 1,
                     Ano = DateTime.Today.Year,
                     Categoria = request.CategoriaNotificacao,
                     Tipo = request.TipoNotificacao,
@@ -42,10 +43,5 @@ namespace SME.SGP.Aplicacao
 
             return notificacoes;
         }
-        public long ObtemNovoCodigo()
-        {
-            return repositorioNotificacao.ObterUltimoCodigoPorAno(DateTime.Now.Year) + 1;
-        }
-
     }
 }

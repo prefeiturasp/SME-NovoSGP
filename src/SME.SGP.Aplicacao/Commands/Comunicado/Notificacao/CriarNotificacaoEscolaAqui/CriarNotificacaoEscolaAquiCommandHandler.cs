@@ -39,7 +39,10 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 return true;
             else
+            {
+                Console.WriteLine($">>>> {resposta.Content.ReadAsStringAsync().Result}");
                 throw new Exception($"Não foi possivel criar a notificação para o comunucado de id : {request.Comunicado.Id}");
+            }
 
         }
         private void MapearParaEntidadeServico(ComunicadoInserirAeDto comunicadoServico, Comunicado comunicado)

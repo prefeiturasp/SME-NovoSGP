@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -16,11 +17,11 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioAula repositorioAula;
-        private readonly IRepositorioFrequencia repositorioFrequencia;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
+        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoAluno servicoAluno;
         private readonly IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase obterInformacoesDeFrequenciaAlunoPorSemestreUseCase;
         private readonly IServicoEol servicoEOL;
@@ -31,13 +32,13 @@ namespace SME.SGP.Aplicacao
         public ConsultasFrequencia(IMediator mediator,
                                    IServicoEol servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                                    IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                    IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                    IConsultasTipoCalendario consultasTipoCalendario,
                                    IConsultasTurma consultasTurma,
                                    IRepositorioAula repositorioAula,
-                                   IRepositorioFrequencia repositorioFrequencia,
+                                   IRepositorioFrequenciaConsulta repositorioFrequencia,
                                    IRepositorioTurma repositorioTurma,
-                                   IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
+                                   IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo,
                                    IRepositorioParametrosSistema repositorioParametrosSistema,
                                    IServicoAluno servicoAluno,
                                    IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase obterInformacoesDeFrequenciaAlunoPorSemestreUseCase)
@@ -64,40 +65,21 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
 
-            if (turma == null)
-                throw new NegocioException("Turma não localizada.");
+            string[] turmasCodigos;
 
-            //Particularidade de 2020
-            if (turma.AnoLetivo.Equals(2020))
-                return await CalculoFrequenciaGlobal2020(alunoCodigo, turma);
-
-            if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
+            if (turma.DeveVerificarRegraRegulares())
             {
-                var frequenciaAcompanhamento = await obterInformacoesDeFrequenciaAlunoPorSemestreUseCase
-                    .Executar(new FiltroTurmaAlunoSemestreDto(turma.Id, Convert.ToInt64(alunoCodigo), semestre ?? 1));
-
-                return (frequenciaAcompanhamento.Sum(fa => fa.Frequencia ?? 0) / frequenciaAcompanhamento.Count()).ToString();
+                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
+                turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, false));
             }
+            else
+                turmasCodigos = new string[1] { turma.CodigoTurma };
 
-            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+            if (!turmasCodigos.Any())
+                turmasCodigos = new string[] { turma.CodigoTurma };
 
-            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
-
-            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(new string[] { turma.CodigoTurma }, tipoCalendarioId, new string[] { }, new int[] { }));
-
-            if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada == null || turmaPossuiFrequenciaRegistrada.Count() == 0 )
-                return "0";
-            
-            else if(frequenciaAluno?.PercentualFrequencia > 0)
-                return frequenciaAluno.PercentualFrequencia.ToString();
-
-            else if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)
-                return "0";
-            
-            else if (turmaPossuiFrequenciaRegistrada.Any())
-                return "100";
-
-            return "0";
+            return await ObterFrequenciaGeralAlunoPorTurmas(alunoCodigo, turmasCodigos, componenteCurricularCodigo, turma);
         }
 
         public async Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
@@ -114,7 +96,7 @@ namespace SME.SGP.Aplicacao
                 TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
             };
 
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
 
@@ -127,14 +109,14 @@ namespace SME.SGP.Aplicacao
             return frequenciaAluno;
         }
 
-        public async Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina)
+        public async Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina, int anoLetivo)
         {
             if (_mediaFrequencia == 0)
             {
                 if (disciplina.Regencia || !disciplina.LancaNota)
-                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse, DateTime.Today.Year)));
+                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse, anoLetivo)));
                 else
-                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
+                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualFund2, anoLetivo)));
             }
 
             return _mediaFrequencia;
@@ -149,9 +131,7 @@ namespace SME.SGP.Aplicacao
             // Busca periodo
             var periodo = await BuscaPeriodo(turma, bimestre);
 
-            var alunosEOL = await servicoEOL.ObterAlunosPorTurma(turmaId);
-            if (alunosEOL == null || !alunosEOL.Any())
-                throw new NegocioException("Não foram localizados alunos para a turma selecionada.");
+            var alunosEOL = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(turmaId, periodo.PeriodoFim));
 
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(disciplinaId) });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
@@ -163,7 +143,7 @@ namespace SME.SGP.Aplicacao
             var alunosAtivos = alunosEOL.Where(a => a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.RemanejadoSaida);
             foreach (var alunoEOL in alunosAtivos)
             {
-                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(alunoEOL.CodigoAluno, disciplinaId, periodo.PeriodoFim);
+                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(alunoEOL.CodigoAluno, disciplinaId, periodo.PeriodoFim, turma.CodigoTurma);
                 if (frequenciaAluno == null || frequenciaAluno.NumeroFaltasNaoCompensadas <= 0 || frequenciaAluno.PercentualFrequencia == 100)
                     continue;
 
@@ -183,14 +163,14 @@ namespace SME.SGP.Aplicacao
             return alunosAusentesDto;
         }
 
-        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
-            => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual);
+        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual, string turmaId)
+            => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual, turmaId);
 
-        public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina)
+        public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina, int anoLetivo)
         {
             var sintese = percentualFrequencia == null ?
                 SinteseEnum.NaoFrequente :
-                percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
+                percentualFrequencia >= await ObterFrequenciaMedia(disciplina, anoLetivo) ?
                 SinteseEnum.Frequente :
                 SinteseEnum.NaoFrequente;
 
@@ -220,7 +200,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> BuscaTurma(string turmaId)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaId);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
             if (turma == null)
                 throw new NegocioException("Turma não localizada!");
 
@@ -276,5 +256,30 @@ namespace SME.SGP.Aplicacao
                     anoLetivo
                     )
             );
+
+        public async Task<string> ObterFrequenciaGeralAlunoPorTurmas(string alunoCodigo, string[] turmasCodigos, string componenteCurricularCodigo = "", Turma turmaConsultada = null)
+        {
+            var turma = turmaConsultada ??
+                await ObterTurma(turmasCodigos);
+
+            //Particularidade de 2020
+            if (turma.AnoLetivo.Equals(2020))
+                return await CalculoFrequenciaGlobal2020(alunoCodigo, turma);
+
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+
+            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(alunoCodigo, turmasCodigos, tipoCalendarioId));
+
+        }
+
+        private async Task<Turma> ObterTurma(string[] turmasCodigos)
+        {
+            var turmaCodigo = turmasCodigos.First();
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
+            if (turma == null)
+                throw new NegocioException("Turma não localizada.");
+
+            return turma;
+        }
     }
 }

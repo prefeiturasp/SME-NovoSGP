@@ -10,25 +10,31 @@ namespace SME.SGP.Aplicacao
     public class ConsultasPeriodoFechamento : IConsultasPeriodoFechamento
     {
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
-        private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
+        private readonly IRepositorioUeConsulta repositorioUe;
+        private readonly IRepositorioDreConsulta repositorioDre;
+        private readonly IRepositorioEventoFechamentoConsulta repositorioEventoFechamento;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
 
         public ConsultasPeriodoFechamento(IServicoPeriodoFechamento servicoPeriodoFechamento,
-                                          IRepositorioTurma repositorioTurma,
-                                          IConsultasTipoCalendario consultasTipoCalendario,
-                                          IRepositorioEventoFechamento repositorioEventoFechamento,
-                                          IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
-                                          IRepositorioPeriodoFechamento repositorioPeriodoFechamento)
+                                IRepositorioTurmaConsulta repositorioTurma,
+                                IRepositorioUeConsulta repositorioUe,
+                                IRepositorioDreConsulta repositorioDre,
+                                IConsultasTipoCalendario consultasTipoCalendario,
+                                IRepositorioEventoFechamentoConsulta repositorioEventoFechamento,
+                                IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
+                                IRepositorioPeriodoFechamento repositorioPeriodoFechamento)
         {
-            this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new ArgumentNullException(nameof(servicoPeriodoFechamento));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
-            this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new ArgumentNullException(nameof(repositorioEventoFechamento));
-            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
-            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamento));
+            this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new System.ArgumentNullException(nameof(servicoPeriodoFechamento));
+            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioUe = repositorioUe ?? throw new System.ArgumentNullException(nameof(repositorioUe));
+            this.repositorioDre = repositorioDre ?? throw new System.ArgumentNullException(nameof(repositorioDre));
+            this.consultasTipoCalendario = consultasTipoCalendario ?? throw new System.ArgumentNullException(nameof(consultasTipoCalendario));
+            this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new System.ArgumentNullException(nameof(repositorioEventoFechamento));
+            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
+            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoFechamento));
         }
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosComFechamentoEmAberto(long ueId)

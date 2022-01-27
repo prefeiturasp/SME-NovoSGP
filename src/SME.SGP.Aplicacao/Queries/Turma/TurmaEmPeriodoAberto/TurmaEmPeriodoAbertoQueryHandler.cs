@@ -10,12 +10,12 @@ namespace SME.SGP.Aplicacao
     public class TurmaEmPeriodoAbertoQueryHandler : IRequestHandler<TurmaEmPeriodoAbertoQuery, bool>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
 
         public TurmaEmPeriodoAbertoQueryHandler(IMediator mediator,
-                                                IRepositorioTipoCalendario repositorioTipoCalendario,
-                                                IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+                                                IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
+                                                IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));

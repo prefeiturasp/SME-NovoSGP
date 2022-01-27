@@ -11,5 +11,6 @@ namespace SME.SGP.Infra
         public double? Nota { get; set; }
         public string Conceito { get; set; }
         public bool NotaAcimaMedia { get; set; }
+        public int Linha { get; set; }
     }
 }

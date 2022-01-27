@@ -45,9 +45,9 @@ namespace SME.SGP.Aplicacao.Commands
                 try
                 {
                     // Salva Plano
-                    if (plano?.Situacao == SituacaoPlanoAEE.Devolvido || 
+                    if (plano?.Situacao == SituacaoPlanoAEE.Devolvido ||
                        (plano?.Situacao == SituacaoPlanoAEE.Expirado && plano?.CriadoEm.Date < new DateTime(2021, 9, 16)) ||  /* regra conforme bug 52143 */
-                       (plano?.Situacao == SituacaoPlanoAEE.Expirado && string.IsNullOrWhiteSpace(plano.ParecerCoordenacao)))
+                       ((plano?.Situacao == SituacaoPlanoAEE.Expirado || plano?.Situacao == SituacaoPlanoAEE.Validado) && string.IsNullOrWhiteSpace(plano.ParecerCoordenacao)))
                     {
                         plano.Situacao = SituacaoPlanoAEE.ParecerCP;
                     }
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao.Commands
                     {
                         await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
                         plano.Situacao = SituacaoPlanoAEE.Validado;
-                    }                    
+                    }
 
                     planoId = await repositorioPlanoAEE.SalvarAsync(plano);
 

@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,9 +8,9 @@ namespace SME.SGP.Aplicacao.Queries.PeriodoEscolar.PeriodoEscolarEmAberto
 {
     public class PeriodoEscolarEmAbertoQueryHandler : IRequestHandler<PeriodoEscolarEmAbertoQuery, bool>
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
 
-        public PeriodoEscolarEmAbertoQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+        public PeriodoEscolarEmAbertoQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }

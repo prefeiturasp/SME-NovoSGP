@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesComNotaDeFechamentoOuConselhoQueryHandler : IRequestHandler<ObterComponentesComNotaDeFechamentoOuConselhoQuery, IEnumerable<ComponenteCurricularDto>>
     {
-        IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
 
-        public ObterComponentesComNotaDeFechamentoOuConselhoQueryHandler(IRepositorioComponenteCurricular repositorioComponenteCurricular)
+        public ObterComponentesComNotaDeFechamentoOuConselhoQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular)
         {
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }

@@ -48,7 +48,8 @@ namespace SME.SGP.Dominio
 
         public async Task AlterarEmailUsuarioPorLogin(string login, string novoEmail)
         {
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
+            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(string.Empty, login));
+            
             if (usuario == null)
                 throw new NegocioException("Usuário não encontrado.");
 
@@ -63,7 +64,7 @@ namespace SME.SGP.Dominio
         {
             unitOfWork.IniciarTransacao();
 
-            var usuario = ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
+            var usuario = await ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
             await AlterarEmail(usuario, novoEmail);
 
             unitOfWork.PersistirTransacao();
@@ -140,8 +141,7 @@ namespace SME.SGP.Dominio
         public async Task<Usuario> ObterUsuarioLogado()
         {
             var login = ObterLoginAtual();
-            
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
+            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(string.Empty, login));
 
             if (usuario == null)
                 throw new NegocioException("Usuário não encontrado.");
@@ -155,70 +155,32 @@ namespace SME.SGP.Dominio
             return usuario;
         }
 
-        public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
+        public async Task<Usuario> ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
         {
             var eNumero = long.TryParse(codigoRf, out long n);
 
             codigoRf = eNumero ? codigoRf : null;
 
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(buscaLogin ? null : codigoRf, login);
+            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));            
 
             if (usuario != null)
             {
                 if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
-                {
                     usuario.Nome = nome;
-                    repositorioUsuario.Salvar(usuario);
-                }
 
                 if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
-                {
                     usuario.CodigoRf = codigoRf;
-                    repositorioUsuario.Salvar(usuario);
-                }
+
+                usuario.Nome = usuario?.Nome ?? "";
+
+                if (!usuario.Nome.Equals(nome) || !usuario.CodigoRf.Equals(codigoRf))
+                    await repositorioUsuario.SalvarAsync(usuario);
 
                 return usuario;
             }
 
             if (string.IsNullOrEmpty(login))
-                login = codigoRf;
-                      
-
-            usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
-
-            repositorioUsuario.Salvar(usuario);
-
-            return usuario;
-        }
-
-        public async Task<Usuario> ObterUsuarioPorCodigoRfLoginOuAdicionaAsync(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
-        {
-            var eNumero = long.TryParse(codigoRf, out long n);
-
-            codigoRf = eNumero ? codigoRf : null;
-
-            var usuario = await repositorioUsuario.ObterPorCodigoRfLoginAsync(buscaLogin ? null : codigoRf, login);
-
-            if (usuario != null)
-            {
-                if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
-                {
-                    usuario.Nome = nome;
-                    await repositorioUsuario.SalvarAsync(usuario);
-                }
-
-                if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
-                {
-                    usuario.CodigoRf = codigoRf;
-                    await repositorioUsuario.SalvarAsync(usuario);
-                }
-
-                return usuario;
-            }
-
-            if (string.IsNullOrEmpty(login))
-                login = codigoRf;
-
+                login = codigoRf;                     
 
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
 
@@ -252,7 +214,7 @@ namespace SME.SGP.Dominio
         public async Task<bool> PodePersistirTurmaNasDatas(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
         {
             if (usuario == null)
-                usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, string.Empty);
+                usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(codigoRf, string.Empty));
 
             if (!usuario.EhProfessorCj())
             {

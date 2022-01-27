@@ -10,10 +10,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUsuarioLogadoIdQueryHandler : IRequestHandler<ObterUsuarioLogadoIdQuery, long>
     {
-        private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IRepositorioUsuarioConsulta repositorioUsuario;
         private readonly IMediator mediator;
 
-        public ObterUsuarioLogadoIdQueryHandler(IRepositorioUsuario repositorioUsuario, IMediator mediator)
+        public ObterUsuarioLogadoIdQueryHandler(IRepositorioUsuarioConsulta repositorioUsuario, IMediator mediator)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             if (string.IsNullOrWhiteSpace(login))
                 throw new NegocioException("Usuário não encontrado.");
 
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
+            var usuario = await repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
 
             if (usuario == null)
             {

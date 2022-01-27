@@ -32,10 +32,7 @@ namespace SME.SGP.Aplicacao
                     .WithMessage("Necessário informar o ano letivo para obter os componententes.");
                 RuleFor(a => a.TurmaId)
                    .NotEmpty()
-                   .WithMessage("Necessário informar o código do aluno para  obter os componententes.");
-                RuleFor(a => a.Bimestre)
-                    .NotEmpty()
-                    .WithMessage("Necessário informar o  bimestre para  obter os componententes.");
+                   .WithMessage("Necessário informar o código do aluno para  obter os componententes.");                
                 RuleFor(a => a.CodigoAluno)
                   .NotEmpty()
                   .WithMessage("Necessário informar o código do aluno para obter os componententes.");

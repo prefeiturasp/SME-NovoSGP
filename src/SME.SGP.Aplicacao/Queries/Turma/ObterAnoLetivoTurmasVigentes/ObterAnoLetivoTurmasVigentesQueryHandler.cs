@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAnoLetivoTurmasVigentesQueryHandler : IRequestHandler<ObterAnoLetivoTurmasVigentesQuery, IEnumerable<int>>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
 
-        public ObterAnoLetivoTurmasVigentesQueryHandler(IRepositorioTurma repositorioTurma)
+        public ObterAnoLetivoTurmasVigentesQueryHandler(IRepositorioTurmaConsulta repositorioTurma)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }

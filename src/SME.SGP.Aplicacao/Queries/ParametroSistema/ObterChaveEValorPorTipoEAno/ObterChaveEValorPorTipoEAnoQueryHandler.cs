@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterChaveEValorPorTipoEAnoQueryHandler : IRequestHandler<ObterChaveEValorPorTipoEAnoQuery, IEnumerable<KeyValuePair<string, string>>>
     {
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
 
-        public ObterChaveEValorPorTipoEAnoQueryHandler(IRepositorioParametrosSistema repositorioParametrosSistema)
+        public ObterChaveEValorPorTipoEAnoQueryHandler(IRepositorioParametrosSistemaConsulta repositorioParametrosSistema)
         {
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }

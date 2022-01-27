@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             if (request.ConsideraRegencia)
             {
-                var codigosTurmas = request.ComponentesCurriculares
+                var codigosTurmas = request.ComponentesCurriculares.Where(c => !string.IsNullOrEmpty(c.TurmaCodigo))
                     .Select(cc => cc.TurmaCodigo)
                     .Where(codigoTurma => codigoTurma != null)
                     .Distinct();

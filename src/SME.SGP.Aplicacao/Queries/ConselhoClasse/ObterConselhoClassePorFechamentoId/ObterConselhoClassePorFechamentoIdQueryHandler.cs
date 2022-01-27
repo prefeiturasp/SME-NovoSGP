@@ -9,16 +9,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterConselhoClassePorFechamentoIdQueryHandler : IRequestHandler<ObterConselhoClassePorFechamentoIdQuery, ConselhoClasse>
     {
-        private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
+        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
 
-        public ObterConselhoClassePorFechamentoIdQueryHandler(IRepositorioConselhoClasse repositorioConselhoClasse)
+        public ObterConselhoClassePorFechamentoIdQueryHandler(IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta)
         {
-            this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
+            this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
         }
 
         public async Task<ConselhoClasse> Handle(ObterConselhoClassePorFechamentoIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasse.ObterPorFechamentoId(request.FechamentoId);
+            return await repositorioConselhoClasseConsulta.ObterPorFechamentoId(request.FechamentoId);
         }
     }
 }

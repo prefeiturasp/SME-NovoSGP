@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
     public class ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQueryHandler : ConsultasBase, IRequestHandler<ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQuery, PaginacaoResultadoDto<JustificativaAlunoDto>>
     {
         public IMediator mediator { get; }
-        private readonly IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno;
+        private readonly IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno;
 
-        public ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQueryHandler(IContextoAplicacao contextoAplicacao, IMediator mediator, IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno) : base(contextoAplicacao)
+        public ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQueryHandler(IContextoAplicacao contextoAplicacao, IMediator mediator, IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno) : base(contextoAplicacao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioAnotacaoFrequenciaAluno = repositorioAnotacaoFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFrequenciaAluno));

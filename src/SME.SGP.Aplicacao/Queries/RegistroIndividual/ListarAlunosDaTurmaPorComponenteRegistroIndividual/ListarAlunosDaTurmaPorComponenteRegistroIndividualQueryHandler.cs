@@ -14,11 +14,11 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioRegistroIndividual repositorioRegistroIndividual;
-        private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioEventoFechamentoConsulta repositorioEventoFechamento;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
 
         public ListarAlunosDaTurmaPorComponenteRegistroIndividualQueryHandler(IRepositorioRegistroIndividual repositorioRegistroIndividual, IMediator mediator,
-                                                            IRepositorioEventoFechamento repositorioEventoFechamento, IRepositorioTipoCalendario repositorioTipoCalendario)
+                                                            IRepositorioEventoFechamentoConsulta repositorioEventoFechamento, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario)
         {
             this.repositorioRegistroIndividual = repositorioRegistroIndividual ?? throw new System.ArgumentNullException(nameof(repositorioRegistroIndividual));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
@@ -28,7 +28,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoDadosBasicosDto>> Handle(ListarAlunosDaTurmaPorComponenteRegistroIndividualQuery request, CancellationToken cancellationToken)
         {
+
+            var dadosAlunosDto = new List<AlunoDadosBasicosDto>();
+
             var periodosAberto = await repositorioEventoFechamento.ObterPeriodosFechamentoEmAberto(request.Turma.UeId, DateTime.Now.Date);
+
+            // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(request.Turma.AnoLetivo, request.Turma.ModalidadeTipoCalendario, request.Turma.Semestre);
+            if (tipoCalendario == null)
+                throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
+            var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
+            if (periodosEscolares == null)
+                throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
 
             PeriodoEscolar periodoEscolar;
             if (periodosAberto != null && periodosAberto.Any())
@@ -38,14 +49,6 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
-                var tipoCalendario =   await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(request.Turma.AnoLetivo, request.Turma.ModalidadeTipoCalendario, request.Turma.Semestre);
-                if (tipoCalendario == null)
-                    throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
-                var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
-                if (periodosEscolares == null)
-                    throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
-
                 periodoEscolar = periodosEscolares?.FirstOrDefault(p => p.DataDentroPeriodo(DateTime.Today));
                 if (periodoEscolar == null)
                     periodoEscolar = periodosEscolares.OrderByDescending(o => o.PeriodoInicio).FirstOrDefault(p => p.PeriodoFim <= DateTime.Today);
@@ -53,7 +56,19 @@ namespace SME.SGP.Aplicacao
 
             var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(request.Turma.CodigoTurma, request.Turma.AnoLetivo, periodoEscolar));
 
-            return dadosAlunos.OrderBy(w => w.Nome);
+            var dadosAlunosAgrupados = dadosAlunos.GroupBy(x => x.CodigoEOL).SelectMany(y => y.OrderBy(a => a.SituacaoCodigo).Take(1));
+
+            var periodoEscolarInicio = periodosEscolares.FirstOrDefault();
+
+            foreach (var dadoAluno in dadosAlunosAgrupados.OrderBy(w => w.Nome))
+            {
+                if (dadoAluno.SituacaoCodigo == SituacaoMatriculaAluno.Ativo 
+                    || dadoAluno.SituacaoCodigo == SituacaoMatriculaAluno.Rematriculado
+                    || dadoAluno.DataSituacao.Date >= periodoEscolarInicio.PeriodoInicio.Date)
+                    dadosAlunosDto.Add(dadoAluno);
+            }
+
+            return dadosAlunosDto;
         }
     }
 }
