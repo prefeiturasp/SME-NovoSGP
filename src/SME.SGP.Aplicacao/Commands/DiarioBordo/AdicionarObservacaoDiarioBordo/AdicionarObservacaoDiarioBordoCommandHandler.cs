@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoNovaObservacaoDiarioBordo,
-                  new NotificarDiarioBordoObservacaoDto(request.DiarioBordoId, request.Observacao, usuario, observacaoId, usuariosNotificacao), Guid.NewGuid(), null));
+                  new NotificarDiarioBordoObservacaoDto(request.DiarioBordoId, request.Observacao, usuario, observacaoId, usuariosNotificacao.Select(u=> u.CodigoRf)), Guid.NewGuid(), null));
             }
             else
             {

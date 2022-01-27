@@ -46,18 +46,16 @@ namespace SME.SGP.Aplicacao
 
             if (dadosMensagem.UsuariosNotificacao != null && dadosMensagem.UsuariosNotificacao.Any())
             {
-                foreach (var usuario in dadosMensagem.UsuariosNotificacao)
+                foreach (var usuarioRf in dadosMensagem.UsuariosNotificacao)
                 {
-                    var codigoRf = usuario.CodigoRf;
-
-                    if (codigoRf != usuarioLogado.CodigoRf)
+                    if (usuarioRf != usuarioLogado.CodigoRf)
                     {
                         //if (usuario != null)
                         {
                             unitOfWork.IniciarTransacao();
                             var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
                                                                              mensagem.ToString(),
-                                                                             codigoRf,
+                                                                             usuarioRf,
                                                                              NotificacaoCategoria.Aviso,
                                                                              NotificacaoTipo.Planejamento));
 
