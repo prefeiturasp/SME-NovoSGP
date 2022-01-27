@@ -747,12 +747,15 @@ namespace SME.SGP.Dados.Repositorios
                             inner join abrangencia a on a.usuario_id = u.id 
                             inner join turma t on t.id = a.turma_id 
                             where t.turma_id = @turmaCodigo and not a.historico 
-                            and (a.perfil = @professor or a.perfil = @professorInfantil);";
+                            and (a.perfil = @professor or a.perfil = @professorInfantil or 
+                            a.perfil = @professorCJ or a.perfil = @professorCJProfessor);";
 
             Guid professor = Guid.Parse(PerfilUsuario.PROFESSOR.Name());
             Guid professorInfantil = Guid.Parse(PerfilUsuario.PROFESSOR_INFANTIL.Name());
+            Guid professorCJ = Guid.Parse(PerfilUsuario.CJ.Name());
+            Guid professorCJInfantil = Guid.Parse(PerfilUsuario.CJ_INFANTIL.Name()); 
 
-            return await database.Conexao.QueryAsync<string>(sqlQuery, new { turmaCodigo, professor, professorInfantil });
+            return await database.Conexao.QueryAsync<string>(sqlQuery, new { turmaCodigo, professor, professorInfantil, professorCJ, professorCJInfantil });
         }
     }
 }
