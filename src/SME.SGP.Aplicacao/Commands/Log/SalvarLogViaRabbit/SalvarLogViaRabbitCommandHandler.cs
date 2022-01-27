@@ -20,11 +20,16 @@ namespace SME.SGP.Aplicacao
             this.configuracaoRabbitOptions = configuracaoRabbitOptions ?? throw new System.ArgumentNullException(nameof(configuracaoRabbitOptions));
             this.servicoTelemetria = servicoTelemetria ?? throw new System.ArgumentNullException(nameof(servicoTelemetria));
         }
-        public async Task<bool> Handle(SalvarLogViaRabbitCommand request, CancellationToken cancellationToken)
+        public Task<bool> Handle(SalvarLogViaRabbitCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var mensagem = JsonConvert.SerializeObject(new LogMensagem(request.Mensagem, request.Nivel.ToString(), request.Contexto.ToString(), request.Observacao, request.Projeto), new JsonSerializerSettings
+                var mensagem = JsonConvert.SerializeObject(new LogMensagem(request.Mensagem,
+                                                                           request.Nivel.ToString(),
+                                                                           request.Contexto.ToString(),
+                                                                           request.Observacao,
+                                                                           request.Projeto,
+                                                                           request.Rastreamento), new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore
 
@@ -32,13 +37,13 @@ namespace SME.SGP.Aplicacao
 
                 var body = Encoding.UTF8.GetBytes(mensagem);
 
-                servicoTelemetria.Registrar(() => PublicarMensagem(body), "RabbitMQ", "Salvar Log Via Rabbit", RotasLog.RotaLogs);
+                servicoTelemetria.Registrar(() => PublicarMensagem(body), "RabbitMQ", "Salvar Log Via Rabbit", RotasRabbitLogs.RotaLogs);
 
-                return await Task.FromResult(true);
+                return Task.FromResult(true);
             }
             catch (System.Exception)
             {
-                return false;
+                return Task.FromResult(false);
             }
         }
         private void PublicarMensagem(byte[] body)
@@ -56,20 +61,22 @@ namespace SME.SGP.Aplicacao
                 using (IModel _channel = conexaoRabbit.CreateModel())
                 {
                     var props = _channel.CreateBasicProperties();
-                    _channel.BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasLog.RotaLogs, props, body);
+
+                    _channel.BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasRabbitLogs.RotaLogs, props, body);
                 }                
             }            
         }
     }
     public class LogMensagem
     {
-        public LogMensagem(string mensagem, string nivel, string contexto, string observacao, string projeto)
+        public LogMensagem(string mensagem, string nivel, string contexto, string observacao, string projeto, string rastreamento)
         {
             Mensagem = mensagem;
             Nivel = nivel;
             Contexto = contexto;
             Observacao = observacao;
             Projeto = projeto;
+            Rastreamento = rastreamento;
             DataHora = DateTime.Now;
         }
 
@@ -78,6 +85,7 @@ namespace SME.SGP.Aplicacao
         public string Contexto { get; set; }
         public string Observacao { get; set; }
         public string Projeto { get; set; }
+        public string Rastreamento { get; set; }
         public DateTime DataHora { get; set; }
 
     }
