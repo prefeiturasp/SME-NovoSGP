@@ -38,9 +38,9 @@ namespace SME.SGP.Aplicacao
             foreach (var item in observacoes)
             {
                 var usuariosNotificados = await repositorioDiarioBordoObservacao.ObterNomeUsuariosNotificadosObservacao(item.Id);
-                var observacao = item;
-                observacao.NomeUsuariosNotificados = string.Join(",", usuariosNotificados);
-                listaObservacoes.Add(observacao);
+                item.QtdUsuariosNotificados = usuariosNotificados.Count();
+                item.NomeUsuariosNotificados = string.Join(",", usuariosNotificados);
+                listaObservacoes.Add(item);
             }
 
             return listaObservacoes;
@@ -73,4 +73,4 @@ namespace SME.SGP.Aplicacao
         }
     }
 }
-}
+
