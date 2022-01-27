@@ -5,16 +5,18 @@ namespace SME.SGP.Aplicacao
 {
     public class TrataAbrangenciaHistoricaTurmaCommand : IRequest<bool>
     {
-        public TrataAbrangenciaHistoricaTurmaCommand(int anoLetivo, string codigoRf)
+        public TrataAbrangenciaHistoricaTurmaCommand(int anoLetivo, string codigoRf, long turmaId)
         {
             AnoLetivo = anoLetivo;
 
             ProfessorRf = codigoRf;
+            TurmaId = turmaId;
         }
 
         public int AnoLetivo { get; set; }
 
         public string ProfessorRf { get; set; }
+        public long TurmaId { get; set; }
     }
 
     public class TrataAbrangenciaHistoricaTurmaCommandValidator : AbstractValidator<TrataAbrangenciaHistoricaTurmaCommand>

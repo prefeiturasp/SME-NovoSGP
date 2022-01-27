@@ -161,7 +161,7 @@ namespace SME.SGP.Aplicacao.Servicos
             return ues.Any(dre => dre.Codigo.Equals(codigoUE, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public async Task<bool> SincronizarAbrangenciaHistorica(int anoLetivo, string professorRf)
+        public async Task<bool> SincronizarAbrangenciaHistorica(int anoLetivo, string professorRf, long turmaId = 0)
         {
             try
             {
@@ -211,14 +211,19 @@ namespace SME.SGP.Aplicacao.Servicos
                 else
                 {
                     var paraAtualizarAbrangencia = new List<Abrangencia>();
-                    foreach (var turma in abrangenciaGeralSGP.Where(a => a.TurmaId != null && !a.Historico))
-                    {
-                        var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(turma.TurmaId.Value));
-                        if (virouHistorica && !turma.Historico)
-                            paraAtualizarAbrangencia.Add(turma);
-                    }
 
-                    repositorioAbrangencia.AtualizaAbrangenciaHistoricaAnosAnteriores(paraAtualizarAbrangencia.Select(x => x.Id), anoLetivo);
+                    if (turmaId > 0)
+                    {
+                        var abragenciaSGP = abrangenciaGeralSGP.Where(a => a.TurmaId == turmaId && !a.Historico).FirstOrDefault();
+                        if (abragenciaSGP != null)
+                        {
+                            var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(abragenciaSGP.TurmaId.Value));
+                            if (virouHistorica && !abragenciaSGP.Historico)
+                                paraAtualizarAbrangencia.Add(abragenciaSGP);
+                        }
+
+                        repositorioAbrangencia.AtualizaAbrangenciaHistoricaAnosAnteriores(paraAtualizarAbrangencia.Select(x => x.Id), anoLetivo);
+                    }                  
                 }
 
 
