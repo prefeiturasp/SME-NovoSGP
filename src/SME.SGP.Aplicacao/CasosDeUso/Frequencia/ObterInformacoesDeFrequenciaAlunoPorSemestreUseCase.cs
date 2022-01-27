@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("A Turma informada não foi encontrada");
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(dto.AlunoCodigo.ToString(),
-                turma.AnoLetivo));
+                turma.AnoLetivo, turma.Historica));
             if (aluno == null)
                 throw new NegocioException("O Aluno informado não foi encontrado");
 

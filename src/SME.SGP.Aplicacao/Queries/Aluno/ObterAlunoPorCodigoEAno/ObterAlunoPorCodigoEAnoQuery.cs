@@ -6,14 +6,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunoPorCodigoEAnoQuery : IRequest<AlunoReduzidoDto>
     {
-        public ObterAlunoPorCodigoEAnoQuery(string codigoAluno, int anoLetivo)
+        public ObterAlunoPorCodigoEAnoQuery(string codigoAluno, int anoLetivo, bool turmaHistorica  = false)
         {
             CodigoAluno = codigoAluno;
             AnoLetivo = anoLetivo;
+            TurmaHistorica = turmaHistorica;
         }
 
         public string CodigoAluno { get; set; }
         public int AnoLetivo { get; set; }
+        public bool TurmaHistorica { get; set; }
     }
 
     public class ObterAlunoPorCodigoEAnoQueryValidator : AbstractValidator<ObterAlunoPorCodigoEAnoQuery>
@@ -28,6 +30,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.AnoLetivo)
                .NotEmpty()
                .WithMessage("O ano letivo deve ser informado.");
+            
+            RuleFor(c => c.TurmaHistorica)
+                .NotEmpty()
+                .WithMessage("O Turma Historica deve ser informado.");
         }
     }
 }
