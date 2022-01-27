@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                     {
                         foreach (var professorRf in professoresComAbragenciaTurma)
                         {
-                            await mediator.Send(new TrataAbrangenciaHistoricaTurmaCommand(request.TurmaSGP.AnoLetivo, professorRf));
+                            await mediator.Send(new TrataAbrangenciaHistoricaTurmaCommand(request.TurmaSGP.AnoLetivo, professorRf, request.TurmaSGP.Id));
                         }
                     }
                    

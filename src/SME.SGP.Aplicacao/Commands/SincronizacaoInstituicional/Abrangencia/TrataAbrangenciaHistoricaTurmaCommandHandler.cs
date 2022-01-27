@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(TrataAbrangenciaHistoricaTurmaCommand request, CancellationToken cancellationToken)
         {
-            return await servicoAbrangencia.SincronizarAbrangenciaHistorica(request.AnoLetivo, request.ProfessorRf);
+            return await servicoAbrangencia.SincronizarAbrangenciaHistorica(request.AnoLetivo, request.ProfessorRf, request.TurmaId);
         }
     }
 }
