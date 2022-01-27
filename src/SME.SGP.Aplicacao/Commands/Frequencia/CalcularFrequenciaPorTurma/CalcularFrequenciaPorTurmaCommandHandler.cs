@@ -170,7 +170,8 @@ namespace SME.SGP.Aplicacao
         {
 
             var totalAulasNaDisciplinaPorAluno = registroFrequenciaAluno
-                .Where(aluno => aluno.AlunoCodigo == codigoAluno)
+                .Where(aluno => aluno.AlunoCodigo == codigoAluno
+                            && aluno.ComponenteCurricularId == request.DisciplinaId)
                 .Aggregate(0,
                     (total, frequencia) =>
                         total + (frequencia.TotalPresencas + frequencia.TotalAusencias + frequencia.TotalRemotos));

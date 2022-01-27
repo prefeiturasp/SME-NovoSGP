@@ -150,9 +150,7 @@ namespace SME.SGP.Dominio.Servicos
                 long? conceitoIdAnterior = null;
 
                 if (conselhoClasseNota == null)
-                {
                     conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
-                }
                 else
                 {
                     notaAnterior = conselhoClasseNota.Nota;

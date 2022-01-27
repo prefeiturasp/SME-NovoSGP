@@ -43,9 +43,11 @@ namespace SME.SGP.Aplicacao
                     FuncionarioCargoDTO funcionarioAtual = null;
                     if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CP || pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.AD || pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.DIRETOR)
                     {
-                        funcionarioAtual = dicUePerfilCodigoFuncionarios.FirstOrDefault(w => w.Key == $"{pendenciaFuncionario.UeId}_{pendenciaFuncionario.PerfilCodigo}")
-                                                                                                   .Value
-                                                                                                   .FirstOrDefault(s => s.FuncionarioRF.Equals(pendenciaFuncionario.CodigoRf));
+                        funcionarioAtual = (dicUePerfilCodigoFuncionarios != null && dicUePerfilCodigoFuncionarios.Any()) 
+                                            ? dicUePerfilCodigoFuncionarios.FirstOrDefault(w => w.Key == $"{pendenciaFuncionario.UeId}_{pendenciaFuncionario.PerfilCodigo}")
+                                                                                                    .Value
+                                                                                                    .FirstOrDefault(s => s.FuncionarioRF.Equals(pendenciaFuncionario.CodigoRf))
+                                                                                                    : null;
                     }
                     else if(pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CEFAI)
                     {
@@ -129,15 +131,26 @@ namespace SME.SGP.Aplicacao
                     case PerfilUsuario.AD:
                     case PerfilUsuario.DIRETOR:
                         var funcionarios = await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(dreUe.UeCodigo, EnumHelper.ObterCargoPorPerfil(uePerfilCodigo.PerfilCodigo)));
-                        dicUePerfilCodigoFuncionarios.Add($"{uePerfilCodigo.UeId}_{uePerfilCodigo.PerfilCodigo}", funcionarios);
+    
+                        if (funcionarios != null && funcionarios.Any())
+                            dicUePerfilCodigoFuncionarios.Add($"{uePerfilCodigo.UeId}_{uePerfilCodigo.PerfilCodigo}", funcionarios);
+                        
                         break;
 
                     case PerfilUsuario.CEFAI:
-                        lstCefais.AddRange(await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dreUe.DreCodigo)));
+                        var cefais = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dreUe.DreCodigo));
+
+                        if (cefais != null && cefais.Any())
+                            lstCefais.AddRange(cefais);
+
                         break;
 
                     case PerfilUsuario.ADMUE:
-                        lstAdmUes.AddRange(await ObterAdministradoresPorUE(dreUe.UeCodigo));
+                        var admUes = await ObterAdministradoresPorUE(dreUe.UeCodigo);
+
+                        if (admUes != null && admUes.Any())
+                            lstAdmUes.AddRange(admUes);
+
                         break;
                 }
             }
