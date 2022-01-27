@@ -23,14 +23,38 @@ namespace SME.SGP.Dados.Repositorios
 
         public void AtualizaAbrangenciaHistorica(IEnumerable<long> ids)
         {
-            var dtFimVinculo = DateTime.Today;
+            var dtFimVinculo = DateTimeExtension.HorarioBrasilia().Date;
 
-            string comando = $"update public.abrangencia set historico = true , dt_fim_vinculo = '{dtFimVinculo.Year}-{dtFimVinculo.Month}-{dtFimVinculo.Day}'  where id in (#ids)";
+            string comando = $@" update abrangencia as a
+                                set historico = true, dt_fim_vinculo = '{dtFimVinculo.Year}-{dtFimVinculo.Month}-{dtFimVinculo.Day}'
+                                from abrangencia ab
+                                left join turma t on t.id = ab.turma_id
+                                where a.id = ab.id
+                                and (ab.turma_id is null Or (t.id = ab.turma_id and t.ano_letivo = {dtFimVinculo.Year}))                                    
+                                and a.id in (#ids) ";
 
             for (int i = 0; i < ids.Count(); i = i + 900)
             {
                 var iteracao = ids.Skip(i).Take(900);
+                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+            }
+        }
 
+        public void AtualizaAbrangenciaHistoricaAnosAnteriores(IEnumerable<long> ids, int anoLetivo)
+        {
+            var dtFimVinculo = DateTimeExtension.HorarioBrasilia().Date;
+
+            string comando = $@" update abrangencia as a
+                                set historico = true, dt_fim_vinculo = '{dtFimVinculo.Year}-{dtFimVinculo.Month}-{dtFimVinculo.Day}'
+                                from abrangencia ab
+                                left join turma t on t.id = ab.turma_id
+                                where a.id = ab.id
+                                and (ab.turma_id is null Or (t.id = ab.turma_id and t.ano_letivo = {anoLetivo}))                                    
+                                and a.id in (#ids) ";
+
+            for (int i = 0; i < ids.Count(); i += 900)
+            {
+                var iteracao = ids.Skip(i).Take(900);
                 database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
@@ -678,7 +702,7 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<IEnumerable<Abrangencia>> ObterAbrangenciaGeralPorUsuarioId(long usuarioId)
         {
-            var query = @"select id,usuario_id,dre_id,ue_id,turma_id,perfil from abrangencia where usuario_id = @usuarioId";
+            var query = @"select id,usuario_id,dre_id,ue_id,turma_id,perfil,historico from abrangencia where usuario_id = @usuarioId";
             return await database.Conexao.QueryAsync<Abrangencia>(query, new { usuarioId });
         }
 
@@ -715,6 +739,20 @@ namespace SME.SGP.Dados.Repositorios
 	                               a.perfil = @perfil;";
 
             return await database.Conexao.QueryAsync<string>(sqlQuery, new { ueId, perfil, historica });
+        }
+
+        public async Task<IEnumerable<string>> ObterProfessoresTurmaPorAbrangencia(string turmaCodigo)
+        {
+            var sqlQuery = @"select distinct (u.rf_codigo) from usuario u 
+                            inner join abrangencia a on a.usuario_id = u.id 
+                            inner join turma t on t.id = a.turma_id 
+                            where t.turma_id = @turmaCodigo and not a.historico 
+                            and (a.perfil = @professor or a.perfil = @professorInfantil);";
+
+            Guid professor = Guid.Parse(PerfilUsuario.PROFESSOR.Name());
+            Guid professorInfantil = Guid.Parse(PerfilUsuario.PROFESSOR_INFANTIL.Name());
+
+            return await database.Conexao.QueryAsync<string>(sqlQuery, new { turmaCodigo, professor, professorInfantil });
         }
     }
 }

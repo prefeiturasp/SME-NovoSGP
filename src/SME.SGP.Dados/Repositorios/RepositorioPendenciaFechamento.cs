@@ -105,6 +105,23 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirst<int>(query, new { fechamentoId }) > 0;
         }
 
+        public async Task<bool> PossuiFechamentoPorTurmaComponenteBimestre(long turmaId, int bimestre, long componenteCurricularId)
+        {
+            var condicaoBimestre = bimestre > 0 ? "pe.bimestre = @bimestre" : "pe.id is null";
+
+            var query = $@"select 1 
+                                 from fechamento_turma_disciplina ftd
+                                 inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
+                                  left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                                where not ftd.excluido
+                                    and not ft.excluido
+                                    and ft.turma_id = @turmaId
+                                    and {condicaoBimestre}
+                                    and ftd.disciplina_id = @componenteCurricularId ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { turmaId, bimestre, componenteCurricularId });
+        }
+
         private string MontaQuery(Paginacao paginacao, int bimestre, long componenteCurricularId, bool contador = false, bool ordenar = false)
         {
             var fields = contador ? "count(p.id)" : "p.id as PendenciaId, p.titulo as descricao, p.situacao, ftd.disciplina_id as DisciplinaId";

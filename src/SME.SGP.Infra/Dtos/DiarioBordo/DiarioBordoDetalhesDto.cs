@@ -17,6 +17,7 @@ namespace SME.SGP.Infra
         public bool Migrado { get; set; }
 
         public bool TemPeriodoAberto { get; set; }
+        public bool InseridoCJ { get; set; }
 
         public AuditoriaDto Auditoria { get; set; }
 

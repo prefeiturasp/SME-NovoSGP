@@ -10,5 +10,6 @@ namespace SME.SGP.Infra
         public DateTime DataInicio { get; set; }
         public DateTime DataFim { get; set; }
         public string PeriodoEscolar { get; set; }
+        public bool AulaCj { get; set; }
     }
 }

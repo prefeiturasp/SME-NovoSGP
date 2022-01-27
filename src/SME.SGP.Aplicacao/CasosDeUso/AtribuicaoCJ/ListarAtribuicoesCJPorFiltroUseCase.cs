@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -55,13 +56,17 @@ namespace SME.SGP.Aplicacao
 
                 var professorDisciplina = a.FirstOrDefault();
 
+                var exibeNomeTurmaNovoInfantil = professorDisciplina.Turma.ModalidadeCodigo == Modalidade.EducacaoInfantil && professorDisciplina.Turma.AnoLetivo >= DateTime.Now.Year;
+
                 var atribuicaoDto = new AtribuicaoCJListaRetornoDto()
                 {
                     Modalidade = a.Key.Modalidade.GetAttribute<DisplayAttribute>().Name,
                     ModalidadeId = (int)a.Key.Modalidade,
                     Turma = professorDisciplina.Turma.Nome,
                     TurmaId = professorDisciplina.TurmaId,
-                    Disciplinas = disciplinasDescricoes.Select(d => d.Nome).ToArray()
+                    Disciplinas = exibeNomeTurmaNovoInfantil
+                    ? disciplinasDescricoes.Select(d => d.NomeComponenteInfantil).ToArray() 
+                    : disciplinasDescricoes.Select(d => d.Nome).ToArray()
                 };
 
                 listRetorno.Add(atribuicaoDto);

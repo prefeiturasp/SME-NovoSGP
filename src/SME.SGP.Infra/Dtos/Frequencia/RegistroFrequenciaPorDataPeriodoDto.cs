@@ -17,13 +17,20 @@ namespace SME.SGP.Infra
         public IList<AulaFrequenciaDto> Aulas { get; set; }
         public IList<AlunoRegistroFrequenciaDto> Alunos { get; set; }
 
-        public void CarregarAulas(IEnumerable<Aula> aulas, IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos)
+        public void CarregarAulas(IEnumerable<Aula> aulas, IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos, bool professorCj)
         {
             foreach (var aula in aulas.OrderBy(a => a.DataAula))
             {
+                bool podeEditar = false;
+                if (!aula.AulaCJ && !professorCj) 
+                    podeEditar = true;
+                else if (aula.AulaCJ && professorCj) 
+                    podeEditar = true;
+                else podeEditar = false;
+
                 var frequenciaId = registrosFrequenciaAlunos.FirstOrDefault(a => a.AulaId == aula.Id)?.RegistroFrequenciaId;
                 bool ehReposicao = TipoAula.Reposicao == aula.TipoAula;
-                Aulas.Add(new AulaFrequenciaDto(aula.Id, aula.DataAula, aula.Quantidade, ehReposicao, frequenciaId));
+                Aulas.Add(new AulaFrequenciaDto(aula.Id, aula.DataAula, aula.Quantidade, ehReposicao, frequenciaId, aula.AulaCJ, podeEditar));
             }
         }
 
@@ -35,7 +42,7 @@ namespace SME.SGP.Infra
 
             if (ultimoRegistro != null)
                 Auditoria = new AuditoriaDto()
-                { 
+                {
                     Id = ultimoRegistro.RegistroFrequenciaId,
                     CriadoEm = ultimoRegistro.CriadoEm,
                     CriadoPor = ultimoRegistro.CriadoPor,

@@ -259,6 +259,30 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre });
         }
 
+        public async Task<PeriodoEscolarBimestreDto> ObterPeriodoEscolarPorTurmaBimestreAulaCj(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre, bool aulaCj)
+        {
+
+            var sql = new StringBuilder(@"select 
+				                distinct pe.id 
+				                ,pe.tipo_calendario_id as TipoCalendarioId
+				                ,pe.bimestre
+				                ,pe.periodo_inicio as PeriodoInicio
+				                ,pe.periodo_fim as PeriodoFim
+				                ,pe.migrado
+				                ,a.aula_cj  as AulaCj
+                                from periodo_escolar pe
+                                inner join aula a on a.tipo_calendario_id = pe.tipo_calendario_id 
+                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                inner join turma t on t.ano_letivo = tc.ano_letivo and t.turma_id = @turmaCodigo
+                                where tc.modalidade = @modalidade
+                                and pe.bimestre = @bimestre
+                                and not tc.excluido");
+            if (aulaCj)
+                sql.AppendLine(" and a.aula_cj = true ");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarBimestreDto>(sql.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre });
+        }
+
         public async Task<PeriodoEscolar> ObterPeriodoEscolarPorTurmaBimestre(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre)
         {
             const string sql = @"select pe.*
@@ -411,22 +435,27 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { dataPendenciaCriada, modalidadeTipoCalendario });
         }
 
-        public Task<IEnumerable<PeriodoEscolarVerificaRegenciaDto>> ObterPeriodoEscolaresPorTurmaComponenteBimestre(string turmaCodigo, long componenteCurricularId, int bimestre)
+        public Task<IEnumerable<PeriodoEscolarVerificaRegenciaDto>> ObterPeriodoEscolaresPorTurmaComponenteBimestre(string turmaCodigo, long componenteCurricularId, int bimestre, bool aulaCj)
         {
-            var query = @"select distinct pe.id as Id,
+            var query = new StringBuilder(@"select distinct pe.id as Id,
                                    pe.periodo_inicio as DataInicio,    
                                    pe.periodo_fim as DataFim, 
                                    pe.bimestre as Bimestre,
-                                   a.data_aula as DataAula
+                                   a.data_aula as DataAula,
+                                   a.aula_cj as AulaCj
                             from periodo_escolar pe 
                                 inner join aula a on a.tipo_calendario_id = pe.tipo_calendario_id 
                                 where a.turma_id = @turmaCodigo
                                 and pe.bimestre = @bimestre
                                 and a.disciplina_id = cast(@componenteCurricularId as varchar)
                                 and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
-                                and not a.excluido 
-                                order by a.data_aula";
-            return database.Conexao.QueryAsync<PeriodoEscolarVerificaRegenciaDto>(query, new { turmaCodigo, componenteCurricularId, bimestre});
+                                and not a.excluido ");
+
+            if (aulaCj)
+                query.AppendLine("and a.aula_cj = true");
+
+            query.AppendLine("order by a.data_aula");
+            return database.Conexao.QueryAsync<PeriodoEscolarVerificaRegenciaDto>(query.ToString(), new { turmaCodigo, componenteCurricularId, bimestre });
         }
     }
 }

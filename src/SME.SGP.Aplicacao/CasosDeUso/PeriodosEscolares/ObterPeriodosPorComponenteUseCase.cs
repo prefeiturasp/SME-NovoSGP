@@ -1,11 +1,9 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -14,50 +12,58 @@ namespace SME.SGP.Aplicacao
     {
         public ObterPeriodosPorComponenteUseCase(IMediator mediator) : base(mediator)
         {
+
         }
 
-        public async Task<IEnumerable<PeriodoEscolarComponenteDto>> Executar(string turmaCodigo, long componenteCodigo, bool ehRegencia, int bimestre)
+        public async Task<IEnumerable<PeriodoEscolarComponenteDto>> Executar(string turmaCodigo, long componenteCodigo, bool ehRegencia, int bimestre, bool exibirDataFutura = false)
         {
-
-            var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, componenteCodigo, bimestre));
-
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            
+            var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, componenteCodigo, bimestre,usuarioLogado.EhSomenteProfessorCj()));
+            var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
+            var periodoBimestre = await mediator.Send(new ObterPeriodoEscolaresPorTurmaBimestresAulaCjQuery(dadosTurma, bimestre,usuarioLogado.EhSomenteProfessorCj()));
             var listaPeriodos = new List<PeriodoEscolarComponenteDto>();
 
-            if (ehRegencia)
-                listaPeriodos = SepararSemanasRegencia(periodoEscolar.FirstOrDefault().DataInicio, periodoEscolar.FirstOrDefault().DataFim);
-            else
-                listaPeriodos = SepararPeriodosAulas(periodoEscolar
-                                                    .OrderBy(x => x.DataAula));
+            if (periodoEscolar.Any() && !ehRegencia)
+                listaPeriodos = SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula), exibirDataFutura);
+            else if(periodoBimestre != null)
+                listaPeriodos = SepararSemanasRegencia(periodoBimestre, exibirDataFutura);
 
             return listaPeriodos;
-
         }
 
-        public List<PeriodoEscolarComponenteDto> SepararSemanasRegencia(DateTime dataInicio, DateTime dataFim)
+        private List<PeriodoEscolarComponenteDto> SepararSemanasRegencia(PeriodoEscolarBimestreDto periodoBimestre, bool exibirDataFutura)
         {
             long id = 1;
-            var domingo = DateTimeExtension.ObterDomingo(dataInicio);
-            var sabado = DateTimeExtension.ObterSabado(dataInicio);
+            var domingo = DateTimeExtension.ObterDomingo(periodoBimestre.PeriodoInicio);
+            var sabado = DateTimeExtension.ObterSabado(periodoBimestre.PeriodoInicio);
 
             var retornaListaPeriodoSeparado = new List<PeriodoEscolarComponenteDto>();
-            string formataDataInicio = dataInicio.Date.ToString("dd/MM/yy");
+            string formataDataInicio = periodoBimestre.PeriodoInicio.Date.ToString("dd/MM/yy");
             string formataDataFim = sabado.Date.ToString("dd/MM/yy");
 
             retornaListaPeriodoSeparado.Add(new PeriodoEscolarComponenteDto
             {
                 Id = id++,
-                DataInicio = dataInicio,
+                DataInicio = periodoBimestre.PeriodoInicio,
                 DataFim = sabado,
-                PeriodoEscolar = $"{formataDataInicio} - {formataDataFim}"
+                PeriodoEscolar = $"{formataDataInicio} - {formataDataFim}",
+                AulaCj = periodoBimestre.AulaCj
             });
 
             domingo = domingo.AddDays(7);
             sabado = sabado.AddDays(7);
 
-            while (domingo < dataFim)
+            periodoBimestre.PeriodoFim = exibirDataFutura
+                ? periodoBimestre.PeriodoFim
+                : periodoBimestre.PeriodoFim < DateTimeExtension.HorarioBrasilia()
+                                    ? periodoBimestre.PeriodoFim
+                                    : DateTimeExtension.HorarioBrasilia();
+
+            while (domingo < periodoBimestre.PeriodoFim)
             {
-                if (sabado > dataFim)
-                    sabado = dataFim;
+                if (sabado > periodoBimestre.PeriodoFim)
+                    sabado = periodoBimestre.PeriodoFim;
 
                 formataDataInicio = domingo.Date.ToString("dd/MM/yy");
                 formataDataFim = sabado.Date.ToString("dd/MM/yy");
@@ -67,16 +73,18 @@ namespace SME.SGP.Aplicacao
                     Id = id++,
                     DataInicio = domingo,
                     DataFim = sabado,
-                    PeriodoEscolar = $"{formataDataInicio} - {formataDataFim}"
+                    PeriodoEscolar = $"{formataDataInicio} - {formataDataFim}",
+                    AulaCj = periodoBimestre.AulaCj
                 });
                 domingo = domingo.AddDays(7);
                 sabado = sabado.AddDays(7);
             }
 
+
             return retornaListaPeriodoSeparado;
         }
 
-        public List<PeriodoEscolarComponenteDto> SepararPeriodosAulas(IEnumerable<PeriodoEscolarVerificaRegenciaDto> periodosAulas)
+        private List<PeriodoEscolarComponenteDto> SepararPeriodosAulas(IEnumerable<PeriodoEscolarVerificaRegenciaDto> periodosAulas, bool exibirDataFutura)
         {
             DateTime dataInicioPeriodo = DateTime.MinValue;
 
@@ -84,6 +92,8 @@ namespace SME.SGP.Aplicacao
             int qtdeDiasAulas = 0;
             long id = 1;
             int contador = 1;
+
+            periodosAulas = exibirDataFutura ? periodosAulas : periodosAulas.Where(w => w.DataAula <= DateTimeExtension.HorarioBrasilia());
 
             foreach (var periodo in periodosAulas)
             {
@@ -103,7 +113,9 @@ namespace SME.SGP.Aplicacao
                         Id = id++,
                         DataInicio = dataInicioPeriodo,
                         DataFim = periodo.DataAula,
-                        PeriodoEscolar = $"{formataDataInicio} - {formataDataFim}"
+                        PeriodoEscolar = $"{formataDataInicio} - {formataDataFim}",
+                        AulaCj = periodo.AulaCj
+                        
                     });
 
                     dataInicioPeriodo = DateTime.MinValue;

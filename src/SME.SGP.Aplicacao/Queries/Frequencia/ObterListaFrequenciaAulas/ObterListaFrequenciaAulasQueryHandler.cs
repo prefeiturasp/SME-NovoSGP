@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
         {
             var codigoTurma = long.Parse(request.Turma.CodigoTurma);
             var registrosFrequencias = new RegistroFrequenciaPorDataPeriodoDto();
-
-            registrosFrequencias.CarregarAulas(request.Aulas, request.RegistrosFrequenciaAlunos);
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            registrosFrequencias.CarregarAulas(request.Aulas, request.RegistrosFrequenciaAlunos,usuarioLogado.EhSomenteProfessorCj());
             registrosFrequencias.CarregarAuditoria(request.RegistrosFrequenciaAlunos);
 
             foreach (var aluno in request.AlunosDaTurma
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             {
                 // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
                 // se a matrícula foi ativada após a data da aula                
-                if (aluno.EstaInativo(request.DataInicio) || 
+                if (aluno.EstaInativo(request.DataInicio) ||
                    (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataMatricula > request.DataFim))
                     continue;
 
@@ -63,25 +63,28 @@ namespace SME.SGP.Aplicacao
                 // Indicativo de Frequencia (%)
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, request.PercentualAlerta, request.PercentualCritico, request.TurmaPossuiFrequenciaRegistrada);
 
-                if (RegistraFrequencia(request.RegistraFrequencia, request.Aulas, request.Turma))
+                if (request.Aulas.Any())
                 {
-                    var registrosFrequenciaAluno = request.RegistrosFrequenciaAlunos.Where(a => a.AlunoCodigo == aluno.CodigoAluno);
-                    var anotacoesAluno = request.AnotacoesTurma.Where(a => a.AlunoCodigo == aluno.CodigoAluno);
+                    if (RegistraFrequencia(request.RegistraFrequencia, request.Aulas, request.Turma))
+                    {
+                        var registrosFrequenciaAluno = request.RegistrosFrequenciaAlunos.Where(a => a.AlunoCodigo == aluno.CodigoAluno);
+                        var anotacoesAluno = request.AnotacoesTurma.Where(a => a.AlunoCodigo == aluno.CodigoAluno);
 
-                    registroFrequenciaAluno.CarregarAulas(request.Aulas, registrosFrequenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida);
+                        registroFrequenciaAluno.CarregarAulas(request.Aulas, registrosFrequenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida);
+                    }
+
+                    registrosFrequencias.Alunos.Add(registroFrequenciaAluno);
                 }
-
-                registrosFrequencias.Alunos.Add(registroFrequenciaAluno);
             }
 
-            return registrosFrequencias;
+            return registrosFrequencias.Aulas.Any() ? registrosFrequencias : null;
         }
 
         private bool RegistraFrequencia(bool registraFrequencia, IEnumerable<Aula> aulas, Turma turma)
         {
             var aula = aulas.First();
 
-            return registraFrequencia 
+            return registraFrequencia
                 && aula.PermiteRegistroFrequencia(turma);
         }
 

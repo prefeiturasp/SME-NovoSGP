@@ -57,6 +57,7 @@ namespace SME.SGP.Aplicacao
                 Migrado = diarioBordo.Migrado,
                 Planejamento = diarioBordo.Planejamento,
                 ReflexoesReplanejamento = diarioBordo.ReflexoesReplanejamento,
+                InseridoCJ = diarioBordo.InseridoCJ,
                 Observacoes = observacoes.Select(obs =>
                 {
                     return new ObservacaoNotificacoesDiarioBordoDto()

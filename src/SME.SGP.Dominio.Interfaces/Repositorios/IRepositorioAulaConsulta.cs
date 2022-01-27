@@ -35,7 +35,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<AulaCompletaDto>> ObterAulasCompleto(long tipoCalendarioId, string turmaId, string ueId, DateTime data, Guid perfil);
 
         Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf);
-        
+
         Task<bool> ObterTurmaInfantilPorAula(long aulaId);
 
         Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorData(long tipoCalendarioId, string turmaCodigo, string ueCodigo, DateTime dataDaAula);
@@ -73,6 +73,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, bool aulaCJ, long? aulaPaiId = null);
 
+        IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj);
         IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehProfessor = false);
 
         Aula ObterPorWorkflowId(long workflowId);
@@ -92,7 +93,9 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<Aula>> ObterAulasExcluidasComDiarioDeBordoAtivos(string codigoTurma, long tipoCalendarioId);
 
-        Task<IEnumerable<Aula>> ObterAulasPorDataPeriodo(DateTime dataInicio, DateTime dataFim, string turmaId, string componenteCurricularId);
+        Task<IEnumerable<Aula>> ObterAulasPorDataPeriodo(DateTime dataInicio, DateTime dataFim, string turmaId, string componenteCurricularId, bool aulaCj);
 
+        Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterDatasAulaDiarioBordoPorPeriodo(string turmaCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim);
+        Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterAulasDiariosPorPeriodo(string turmaCodigo, long componenteCurricularFilhoId, string componenteCurricularPaiCodigo, DateTime dataFim, DateTime dataInicio);
     }
 }

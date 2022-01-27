@@ -1,5 +1,4 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using System.Collections.Generic;
@@ -22,13 +21,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesDoProfessorNaTurmaQuery request, CancellationToken cancellationToken)
         {
-            String nomeChaveCache = $"Componentes-{request.Login}-${request.CodigoTurma}";
+            string nomeChaveCache = $"Componentes-{request.Login}-${request.CodigoTurma}";
             return await repositorioCache.ObterAsync(nomeChaveCache, async () =>
             {
-                return await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(
-                    request.CodigoTurma,
-                    request.Login,
-                    request.PerfilUsuario);
+                return await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(request.CodigoTurma,
+                                                                                               request.Login,
+                                                                                               request.PerfilUsuario,
+                                                                                               request.RealizarAgrupamentoComponente);
             });
         }
     }

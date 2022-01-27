@@ -65,7 +65,8 @@ namespace SME.SGP.Aplicacao
                 Excluido = diarioBordo.Excluido,
                 Migrado = diarioBordo.Migrado,
                 TemPeriodoAberto = aberto,
-                Auditoria = (AuditoriaDto)diarioBordo
+                Auditoria = (AuditoriaDto)diarioBordo,
+                InseridoCJ = diarioBordo.InseridoCJ
             };
         }
     }

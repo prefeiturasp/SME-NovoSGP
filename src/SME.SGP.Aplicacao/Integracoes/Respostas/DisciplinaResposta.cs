@@ -7,6 +7,9 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         [JsonProperty("codDisciplina")]
         public long CodigoComponenteCurricular { get; set; }
 
+        [JsonProperty("id")]
+        public long Id { get; set; }
+
         [JsonProperty("compartilhada")]
         public bool Compartilhada { get; set; }
 
@@ -36,5 +39,8 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         [JsonProperty("grupoMatriz")]
         public GrupoMatriz GrupoMatriz { get; set; }
         public string TurmaCodigo { get; internal set; }
+
+        [JsonProperty("nomeComponenteInfantil")]
+        public string NomeComponenteInfantil { get; internal set; }
     }
 }

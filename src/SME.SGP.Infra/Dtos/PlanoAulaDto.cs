@@ -6,8 +6,8 @@ namespace SME.SGP.Infra
     public class PlanoAulaDto
     {
         public PlanoAulaDto() { }
-
         public long Id { get; set; }
+        public MigrarPlanoAulaDto CopiarConteudo { get; set; }
         public string Descricao { get; set; }
         public string RecuperacaoAula { get; set; }
         public string LicaoCasa { get; set; }

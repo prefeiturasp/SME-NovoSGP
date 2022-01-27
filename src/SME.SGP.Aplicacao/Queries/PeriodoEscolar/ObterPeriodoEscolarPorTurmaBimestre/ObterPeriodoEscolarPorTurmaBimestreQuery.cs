@@ -1,12 +1,13 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodoEscolarPorTurmaBimestreQuery : IRequest<PeriodoEscolar>
     {
-        public ObterPeriodoEscolarPorTurmaBimestreQuery(Turma turma, int bimestre)
+        public ObterPeriodoEscolarPorTurmaBimestreQuery(Turma turma, int bimestre, bool aulaCj=false)
         {
             Turma = turma;
             Bimestre = bimestre;

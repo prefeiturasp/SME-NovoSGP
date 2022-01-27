@@ -1,24 +1,22 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesQuePodeVisualizarHojeQuery : IRequest<string[]>
     {
-        public ObterComponentesCurricularesQuePodeVisualizarHojeQuery(string rfLogado, Guid perfilAtual, string turmaCodigo)
+        public ObterComponentesCurricularesQuePodeVisualizarHojeQuery(string rfLogado, Guid perfilAtual, string turmaCodigo, bool realizarAgrupamentoComponente = false)
         {
             RfLogado = rfLogado;
             PerfilAtual = perfilAtual;
             TurmaCodigo = turmaCodigo;
+            RealizarAgrupamentoComponente = realizarAgrupamentoComponente;
         }
         public string RfLogado { get; set; }
         public Guid PerfilAtual { get; set; }
         public string TurmaCodigo { get; set; }
+        public bool RealizarAgrupamentoComponente { get; set; }
     }
     public class ObterComponentesCurricularesQuePodeVisualizarHojeQueryValidator : AbstractValidator<ObterComponentesCurricularesQuePodeVisualizarHojeQuery>
     {

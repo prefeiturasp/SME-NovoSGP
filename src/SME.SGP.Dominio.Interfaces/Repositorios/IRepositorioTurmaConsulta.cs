@@ -18,6 +18,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo);
         Task<Turma> ObterTurmaComUeEDrePorId(long turmaId);
         Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo);
+
         Task<IEnumerable<string>> ObterCodigosTurmasPorUeAno(int anoLetivo, string ueCodigo);
         Task<DreUeDaTurmaDto> ObterCodigosDreUe(string turmaCodigo);
         Task<IEnumerable<TurmaModalidadeCodigoDto>> ObterModalidadePorCodigos(string[] turmasCodigo);
@@ -46,5 +47,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<long>> ObterTurmasIdsPorUeEAnoLetivo(int anoLetivo, string ueCodigo);
 
         Task<IEnumerable<TurmaNaoHistoricaDto>> ObterTurmasPorUsuarioEAnoLetivo(long usuarioId, int anoLetivo);
+        Task<IEnumerable<int>> BuscarAnosLetivosComTurmasVigentes(string codigoUe);
+        Task<bool> VerificaSeVirouHistorica(long turmaId);
     }
 }

@@ -84,6 +84,40 @@ namespace SME.SGP.Dados.Repositorios
 
             return listaRetorno;
         }
+
+        public async Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, int bimestre)
+        {
+            var sqlQuery = new StringBuilder(@"select 1 
+                          from pendencia_aula pa
+                         inner join pendencia p on p.id = pa.pendencia_id 
+                         inner join aula a on a.id = pa.aula_id 
+                         inner join tipo_calendario tc on tc.id = a.tipo_calendario_id 
+                         inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id ");
+
+            if (tipoPendenciaAula == TipoPendencia.Frequencia)
+            {
+                sqlQuery.AppendLine(" inner join componente_curricular cc ");
+                sqlQuery.AppendLine("    on cc.permite_registro_frequencia and a.disciplina_id::int8 = cc.id ");
+            }
+
+            sqlQuery.AppendLine(@" where not p.excluido 
+                           and p.tipo = @tipo
+                           and pe.bimestre = @bimestre
+                           and a.turma_id = @turmaId
+                           and a.tipo_aula = @tipoAula
+                           and a.disciplina_id = @disciplinaId ");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
+                new
+                {
+                    turmaId,
+                    disciplinaId,
+                    tipo = (int)tipoPendenciaAula,
+                    bimestre,
+                    tipoAula = (int)TipoAula.Normal
+                }, commandTimeout: 60);
+        }
+
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(int anoLetivo)
         {
             var listaRetorno = new List<Aula>();

@@ -14,6 +14,7 @@ namespace SME.SGP.Infra
         public string AlteradoPor { get; set; }
         public string AlteradoRf { get; set; }
         public long AulaId { get; set; }
+        public bool AulaCj { get; set; }
         public DateTime CriadoEm { get; set; }
         public string CriadoPor { get; set; }
         public string CriadoRf { get; set; }
@@ -28,5 +29,7 @@ namespace SME.SGP.Infra
         public string RecuperacaoAula { get; set; }
         public bool PossuiPlanoAnual { get; set; }
         public bool ObjetivosAprendizagemOpcionais { get; set; }
+        public DateTime DataAula { get; set; } //Usado somente no Listão
+        public bool EhReposicao { get; set; }
     }
 }

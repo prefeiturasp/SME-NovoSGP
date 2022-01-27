@@ -9,20 +9,17 @@ namespace SME.SGP.Aplicacao
 {
     public class TurmaEmPeriodoAbertoQueryHandler : IRequestHandler<TurmaEmPeriodoAbertoQuery, bool>
     {
-        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        private readonly IMediator mediator;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IRepositorioEventoFechamentoConsulta repositorioEventoFechamento;
-        private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
 
-        public TurmaEmPeriodoAbertoQueryHandler(IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
-                                                IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-                                                IRepositorioEventoFechamentoConsulta repositorioEventoFechamento,
-                                                IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
+        public TurmaEmPeriodoAbertoQueryHandler(IMediator mediator,
+                                                IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
+                                                IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new ArgumentNullException(nameof(repositorioEventoFechamento));
-            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
         }
 
         public async Task<bool> Handle(TurmaEmPeriodoAbertoQuery request, CancellationToken cancellationToken)
@@ -44,24 +41,6 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, long tipoCalendarioId, DateTime dataReferencia, int bimestre)
-        {
-            var ueEmFechamento = await UeEmFechamento(turma, tipoCalendarioId, bimestre, dataReferencia);
-
-            return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendarioId, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestre, dataReferencia);
-        }
-
-        private async Task<bool> UeEmFechamento(Turma turma, long tipoCalendarioId, int bimestre, DateTime dataReferencia)
-            => await repositorioEventoFechamento.UeEmFechamento(dataReferencia, tipoCalendarioId, bimestre);
-
-        private async Task<bool> UeEmReaberturaDeFechamento(long tipoCalendarioId, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
-        {
-            var reaberturaPeriodo = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(
-                                                            bimestre,
-                                                            dataReferencia,
-                                                            tipoCalendarioId,
-                                                            dreCodigo,
-                                                            ueCodigo);
-            return reaberturaPeriodo != null;
-        }
+            => await mediator.Send(new TurmaEmPeriodoFechamentoQuery(turma, bimestre, dataReferencia, tipoCalendarioId));
     }
 }

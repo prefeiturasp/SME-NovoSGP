@@ -106,7 +106,10 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.EhProfessorCj())
             {
                 var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
-                disciplinasDto = MapearParaDto(disciplinas, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
+
+                var disciplinasEolTratadas = realizarAgrupamentoComponente ? disciplinas.DistinctBy(s => s.Nome) : disciplinas;
+
+                disciplinasDto = MapearParaDto(disciplinasEolTratadas, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
             }
 
             else
@@ -400,6 +403,7 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = componenteCurricular.TerritorioSaber,
                     Compartilhada = componenteCurricular.Compartilhada,
                     LancaNota = componenteCurricular.LancaNota,
+                    
                 };
         }
 
@@ -430,6 +434,8 @@ namespace SME.SGP.Aplicacao
             Compartilhada = disciplinaEol.Compartilhada,
             RegistroFrequencia = disciplinaEol.RegistraFrequencia,
             LancaNota = disciplinaEol.LancaNota,
+            NomeComponenteInfantil = disciplinaEol.NomeComponenteInfantil,
+            Id = disciplinaEol.Id
         };
 
         private List<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false, bool ensinoEspecial = false)
@@ -448,9 +454,11 @@ namespace SME.SGP.Aplicacao
 
         private DisciplinaDto MapearParaDto(DisciplinaResposta disciplina, bool turmaPrograma = false, bool ensinoEspecial = false) => new DisciplinaDto()
         {
+            Id = disciplina.Id,
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
             Nome = disciplina.Nome,
+            NomeComponenteInfantil = disciplina.NomeComponenteInfantil,
             Regencia = disciplina.Regencia,
             TerritorioSaber = disciplina.TerritorioSaber,
             Compartilhada = disciplina.Compartilhada,
