@@ -27,7 +27,6 @@ namespace SME.SGP.Dados.Repositorios
             var listaRetorno = new List<Aula>();
             var sqlQuery = new StringBuilder();
             var dres = repositorioDre.ObterTodas()
-                .Where(x => x.CodigoDre.Equals("108100"))
                 .OrderBy(dre => dre.CodigoDre);
 
             sqlQuery.AppendLine("select distinct a.id as Id,");
