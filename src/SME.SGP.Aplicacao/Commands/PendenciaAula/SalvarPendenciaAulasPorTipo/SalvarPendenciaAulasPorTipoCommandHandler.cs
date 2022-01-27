@@ -20,23 +20,27 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(SalvarPendenciaAulasPorTipoCommand request, CancellationToken cancellationToken)
         {
-            unitOfWork.IniciarTransacao();
-
-            try
+            var aulasAgrupadas = request.Aulas.GroupBy(x => new { x.TurmaId, x.ComponenteCurricularEol });
+            foreach (var item in aulasAgrupadas)
             {
-                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendenciaAula));
+                unitOfWork.IniciarTransacao();
 
-                await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, request.Aulas.Select(a => a.Id)));
-                await SalvarPendenciaUsuario(pendenciaId, request.Aulas.First().ProfessorRf);
+                try
+                {
 
-                unitOfWork.PersistirTransacao();
+                    var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendenciaAula));
+                    await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, item.Select(x => x.Id)));
+                    await SalvarPendenciaUsuario(pendenciaId, item.First().ProfessorRf);
+                    
+                    unitOfWork.PersistirTransacao();
+                }
+                catch (Exception)
+                {
+                    unitOfWork.Rollback();
+
+                    throw;
+                }
             }
-            catch (Exception ex)
-            {
-                unitOfWork.Rollback();
-
-                throw;
-            }        
         }
 
         private async Task SalvarPendenciaUsuario(long pendenciaId, string professorRf)
