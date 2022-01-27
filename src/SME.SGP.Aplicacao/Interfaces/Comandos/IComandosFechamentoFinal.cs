@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosFechamentoFinal
     {
-        Task<string[]> SalvarAsync(FechamentoFinalSalvarDto fechamentoFinalSalvarDto);
+        Task<AuditoriaPersistenciaDto> SalvarAsync(FechamentoFinalSalvarDto fechamentoFinalSalvarDto);
     }
 }

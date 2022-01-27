@@ -29,14 +29,14 @@ namespace SME.SGP.Aplicacao
             if (request.DiarioBordoId > 0)
             {
                 var diarioBordo = await mediator.Send(new ObterDiarioDeBordoPorIdQuery(request.DiarioBordoId));
-                
+
                 if (diarioBordo is null)
                     throw new NegocioException("O diário de bordo informado não foi encontrado.");
 
                 professorRf = diarioBordo.Auditoria.CriadoRF;
                 professorNome = diarioBordo.Auditoria.CriadoPor;
             }
-            else if(request.ObservacaoId.HasValue)
+            else if (request.ObservacaoId.HasValue)
             {
                 var diarioBordoObs = await mediator.Send(new ObterDiarioBordoObservacaoPorObservacaoIdQuery(request.ObservacaoId.Value));
 
@@ -45,12 +45,13 @@ namespace SME.SGP.Aplicacao
 
                 professorRf = diarioBordoObs.UsuarioCodigoRfDiarioBordo;
                 professorNome = diarioBordoObs.UsuarioNomeDiarioBordo;
-            }            
+            }
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            if (!professorRf.Equals(usuarioLogado.CodigoRf))
+            if (professorRf.Equals(usuarioLogado.CodigoRf))
                 return await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(ObterProfessorTitular(professorRf, professorNome)));
+
             else
                 return default;
         }
