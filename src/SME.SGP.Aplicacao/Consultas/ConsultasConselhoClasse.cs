@@ -146,11 +146,19 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
 
+            var ultimoBimestre = (await ObterPeriodoUltimoBimestre(turma));
+
+            var periodoFechamentoBimestre = await consultasPeriodoFechamento
+                .ObterPeriodoFechamentoTurmaAsync(turma, ultimoBimestre.Bimestre, ultimoBimestre.Id);
+
+            var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
+
             return new ConselhoClasseAlunoResumoDto()
             {
                 FechamentoTurmaId = fechamentoTurma?.Id,
                 ConselhoClasseId = conselhoClasse?.Id,
                 ConselhoClasseAlunoId = conselhoClasseAluno?.Id,
+                TipoNota = tipoNota
             };
         }
 
