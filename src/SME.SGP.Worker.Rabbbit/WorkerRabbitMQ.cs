@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Elastic.Apm;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,6 +30,8 @@ namespace SME.SGP.Worker.RabbitMQ
         private readonly IModel canalRabbit;
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
+        private readonly IServicoTelemetria servicoTelemetria;
+        private readonly TelemetriaOptions telemetriaOptions;
         private IMediator mediator;
 
         /// <summary>
@@ -37,9 +40,14 @@ namespace SME.SGP.Worker.RabbitMQ
         /// </summary>
         private readonly Dictionary<string, ComandoRabbit> comandos;
 
-        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, ConnectionFactory factory)
+        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory,
+                              ServicoTelemetria servicoTelemetria,
+                              TelemetriaOptions telemetriaOptions,
+                              ConnectionFactory factory)
         {
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException("Service Scope Factory não localizado");
+            this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
+            this.telemetriaOptions = telemetriaOptions ?? throw new ArgumentNullException(nameof(telemetriaOptions));
             //this.mediator = mediator;
 
             ////TODO: REVER
@@ -65,28 +73,28 @@ namespace SME.SGP.Worker.RabbitMQ
 
         private void DeclararFilasSgp()
         {
+            DeclararFilasPorRota(typeof(RotasRabbitLogs), ExchangeSgpRabbit.SgpLogs);
             DeclararFilasPorRota(typeof(RotasRabbitSgp), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
             DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);            
         }
 
-        private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter, bool deveDeclararDeadLetter = true)
+        private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter = "")
         {
             var args = new Dictionary<string, object>();
 
             if (deveDeclararDeadLetter)
             {
-                args = new Dictionary<string, object>()
-                    {
-                        { "x-dead-letter-exchange", exchangeDeadLetter }
-                    };
-            }
+                var args = new Dictionary<string, object>();
+
+                if (!string.IsNullOrEmpty(exchangeDeadLetter))
+                    args.Add("x-dead-letter-exchange", exchangeDeadLetter);
 
             foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
             {
                 canalRabbit.QueueDeclare(fila, true, false, false, args);
                 canalRabbit.QueueBind(fila, exchange, fila, null);
 
-                if (deveDeclararDeadLetter)
+                if (!string.IsNullOrEmpty(exchangeDeadLetter))
                 {
                     var filaDeadLetter = $"{fila}.deadletter";
                     canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
@@ -329,13 +337,21 @@ namespace SME.SGP.Worker.RabbitMQ
                 var comandoRabbit = comandos[rota];
                 try
                 {
+                    if (telemetriaOptions.Apm)
+                        Agent.Tracer.StartTransaction("TratarMensagem", "WorkerRabbitSGP");
+
                     using (var scope = serviceScopeFactory.CreateScope())
                     {
                         AtribuirContextoAplicacao(mensagemRabbit, scope);
 
                         var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
-                        await ObterMetodo(comandoRabbit.TipoCasoUso, "Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
+                        var metodo = ObterMetodo(comandoRabbit.TipoCasoUso, "Executar");
+                        await servicoTelemetria.RegistrarAsync(async () =>
+                            await metodo.InvokeAsync(casoDeUso, new object[] { mensagemRabbit }),
+                                                    "RabbitMQ",
+                                                    "TratarMensagem",
+                                                    rota);
 
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
                     }
@@ -375,7 +391,7 @@ namespace SME.SGP.Worker.RabbitMQ
         {
             var mensagem = $"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - ERRO - {ea.RoutingKey}";
 
-            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerRabbit, observacao));
+            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerRabbit, observacao, rastreamento: ex.StackTrace));
         }
 
         private static void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)
@@ -448,7 +464,7 @@ namespace SME.SGP.Worker.RabbitMQ
                 }
                 catch (Exception ex)
                 {
-                    _ = mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message)).Result;
+                    _ = await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message));
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }
             };
