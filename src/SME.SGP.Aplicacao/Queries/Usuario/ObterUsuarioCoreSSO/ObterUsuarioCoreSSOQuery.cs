@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.CodigoRf)
                 .NotEmpty()
-                .WithMessage("O código rf deve ser infomado para a consulta de usuário");            
+                .WithMessage("O código rf deve ser informado para a consulta de usuário");            
         }
     }
 }
