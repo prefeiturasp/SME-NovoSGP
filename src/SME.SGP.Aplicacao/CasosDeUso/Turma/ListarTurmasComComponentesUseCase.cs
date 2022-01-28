@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
                     turmaComponente.PendenciaAvaliacoes = pendencias.PendenciaAvaliacoes;
                     turmaComponente.PendenciaFrequencia = pendencias.PendenciaFrequencia;
                     turmaComponente.PendenciaPlanoAula = pendencias.PendenciaPlanoAula;
-                    turmaComponente.PendenciaFechamento = possuiFechamento;
+                    turmaComponente.PendenciaFechamento = periodoFechamentoIniciado && !possuiFechamento;
                     turmaComponente.PeriodoFechamentoIniciado = periodoFechamentoIniciado;
 
                     itensComPendencias.Add(turmaComponente);
