@@ -17,14 +17,14 @@ namespace SME.SGP.Infra
         public IList<AulaFrequenciaDto> Aulas { get; set; }
         public IList<AlunoRegistroFrequenciaDto> Alunos { get; set; }
 
-        public void CarregarAulas(IEnumerable<Aula> aulas, IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos, bool professorCj)
+        public void CarregarAulas(IEnumerable<Aula> aulas, IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos, bool professorCj, bool perfilAD)
         {
             foreach (var aula in aulas.OrderBy(a => a.DataAula))
             {
                 bool podeEditar = false;
                 if (!aula.AulaCJ && !professorCj) 
                     podeEditar = true;
-                else if (aula.AulaCJ && professorCj) 
+                else if (aula.AulaCJ && (professorCj || perfilAD)) 
                     podeEditar = true;
                 else podeEditar = false;
 
