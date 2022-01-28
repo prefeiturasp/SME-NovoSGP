@@ -170,13 +170,9 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
-
             var anosInfantilDesconsiderar = !consideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(anoLetivo, Modalidade.EducacaoInfantil)) : null;
 
-            var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
-            var tiposComItinerario = tipos.Concat(turmasitinerarioEnsinoMedio.Select(s => s.Id).ToArray()).ToArray();
-            
-            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tiposComItinerario.Any() ? tiposComItinerario : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
+            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
 
             return OrdernarTurmasItinerario(result);
         }
