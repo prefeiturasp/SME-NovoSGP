@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class DreUeDto
     {
-        public string DreCodigo { get; set; }
-        public string UeCodigo { get; set; }
+        public DreUeDto(long dreId, long ueId = 0)
+        {
+            DreId = dreId;
+            UeId = ueId;
+        }
+
+        public long DreId { get; set; }
+        public long UeId { get; set; }
     }
 }

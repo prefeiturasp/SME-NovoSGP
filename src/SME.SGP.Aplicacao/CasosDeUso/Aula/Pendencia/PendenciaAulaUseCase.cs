@@ -19,33 +19,39 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            await VerificaPendenciasDiarioDeBordo();
-            await VerificaPendenciasAvaliacao();
-            await VerificaPendenciasFrequencia();
-            await VerificaPendenciasPlanoAula();
+            var dres = await mediator.Send(new ObterIdsDresQuery());
+
+            foreach(var dreId in dres)
+            {
+                await VerificaPendenciasDiarioDeBordo(dreId);
+                await VerificaPendenciasAvaliacao(dreId);
+                await VerificaPendenciasFrequencia(dreId);
+                await VerificaPendenciasPlanoAula(dreId);
+            }
+
             return true;
         }
         #endregion
 
         #region Metodos Privados
-        private async Task VerificaPendenciasDiarioDeBordo()
+        private async Task VerificaPendenciasDiarioDeBordo(long dreId)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordo, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordo, new DreUeDto(dreId)));
         }
 
-        private async Task VerificaPendenciasAvaliacao()
+        private async Task VerificaPendenciasAvaliacao(long dreId)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaAvaliacao, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaAvaliacao, new DreUeDto(dreId)));
         }
 
-        private async Task VerificaPendenciasFrequencia()
+        private async Task VerificaPendenciasFrequencia(long dreId)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaFrequencia, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaFrequencia, new DreUeDto(dreId)));
         }
 
-        private async Task VerificaPendenciasPlanoAula()
+        private async Task VerificaPendenciasPlanoAula(long dreId)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaPlanoAula, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaPlanoAula, new DreUeDto(dreId)));
         }
         #endregion
     }

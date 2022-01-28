@@ -117,7 +117,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(UsuarioReinicioSenhaDto), 601)]
         [AllowAnonymous]
-        public async Task<IActionResult> ReiniciarSenha([FromServices] IReiniciarSenhaUseCase reiniciarSenhaUseCase, string codigoRf, [FromBody] DreUeDto dreUeDto)
+        public async Task<IActionResult> ReiniciarSenha([FromServices] IReiniciarSenhaUseCase reiniciarSenhaUseCase, string codigoRf, [FromBody] DreUeCodigoDto dreUeDto)
         {
             var retorno = await reiniciarSenhaUseCase.ReiniciarSenha(codigoRf, dreUeDto.DreCodigo, dreUeDto.UeCodigo);
 

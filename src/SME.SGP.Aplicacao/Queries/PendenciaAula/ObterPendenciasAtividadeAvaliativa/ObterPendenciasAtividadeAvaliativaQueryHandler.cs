@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<Aula>> Handle(ObterPendenciasAtividadeAvaliativaQuery request, CancellationToken cancellationToken)
-            => await repositorioPendenciaAula.ListarPendenciasAtividadeAvaliativa(request.AnoLetivo);
+            => await repositorioPendenciaAula.ListarPendenciasAtividadeAvaliativa(request.DreId, request.AnoLetivo);
     }
 }
