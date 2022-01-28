@@ -918,6 +918,12 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<Aula>(query, new { ccid = componenteCurricularId, turmaid = turmaId, data = data.Date })).FirstOrDefault();
         }
 
+        public async Task<long?> ObterAulaIdPorComponenteCurricularIdTurmaIdEDataProfessor(string componenteCurricularId, string turmaId, DateTime data, string professorRf)
+        {
+            var query = @"select a.id from aula a
+                                where a.disciplina_id  = @ccid and turma_id = @turmaid and data_aula::date = @data and a.professor_rf = @professorRf";
+            return (await database.Conexao.QueryAsync<long?>(query, new { ccid = componenteCurricularId, turmaid = turmaId, data = data.Date, professorRf })).FirstOrDefault();
+        }
         public async Task<IEnumerable<AulaReduzidaDto>> ObterQuantidadeAulasReduzido(long turmaId, string componenteCurricularId, long tipoCalendarioId, int bimestre, bool professorCJ)
         {
             var query = @"select

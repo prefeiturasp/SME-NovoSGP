@@ -49,12 +49,13 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false, bool consideraHistorico = false)
         {
             var turma = await ObterTurma(turmaCodigo);
+            var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-            if (turma.EhTurmaEdFisicaOuItinerario())
+            if (turma.EhTurmaEdFisicaOuItinerario() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
             {
-                var tipos = new List<TipoTurma>() {
-                        TipoTurma.Regular, TipoTurma.Itinerarios2AAno, TipoTurma.EdFisica
-                    };
+                var tipos = new List<int>();
+                tipos.AddRange(turma.ObterTiposRegularesDiferentes());
+                tipos.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
                 var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
 
                 turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
@@ -128,11 +129,15 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await ObterTurma(turmaCodigo);
             var bimestreFinal = 0;
+            var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-            if (turma.EhTurmaEdFisicaOuItinerario())
+            if (turma.EhTurmaEdFisicaOuItinerario() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
             {
-                var tipos = new List<TipoTurma>() { TipoTurma.Regular, TipoTurma.Itinerarios2AAno, TipoTurma.EdFisica};
-                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
+                var turmasCodigosParaConsulta = new List<int>();
+                turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
+                turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
+
+                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
 
                 turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
             }

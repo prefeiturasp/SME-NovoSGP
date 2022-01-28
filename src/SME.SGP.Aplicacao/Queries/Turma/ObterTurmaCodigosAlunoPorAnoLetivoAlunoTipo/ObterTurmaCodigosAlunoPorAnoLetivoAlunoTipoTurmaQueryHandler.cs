@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string[]> Handle(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery request, CancellationToken cancellationToken)
         {
-            var tiposTurma = String.Join("&tiposTurma=", Enumerable.Cast<int>(request.TiposTurmas));
+            var tiposTurma = String.Join("&tiposTurma=", request.TiposTurmas);
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var data = request.DataReferencia ?? DateTime.Today;
             var resposta = await httpClient.GetAsync($"turmas/anos-letivos/{request.AnoLetivo}/alunos/{request.CodigoAluno}/regulares?tiposTurma={tiposTurma}&consideraHistorico={request.ConsideraHistorico}&dataReferencia={data:yyyy-MM-dd}");
