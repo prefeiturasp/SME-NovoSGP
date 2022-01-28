@@ -12,6 +12,7 @@
         public bool PendenciaAvaliacoes { get; set; }
         public bool PendenciaDiarioBordo { get; set; }
         public bool PendenciaFechamento { get; set; }
+        public bool PeriodoFechamentoIniciado { get; set; }
 
     }
 }

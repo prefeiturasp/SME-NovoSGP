@@ -95,40 +95,42 @@ namespace SME.SGP.Aplicacao
         private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre,Usuario usuario)
         {
             List<TurmaComComponenteDto> itensComPendencias = new List<TurmaComComponenteDto>();
-            var possuiFechamento = false;
-            var periodoFechamentoAberto = false;
 
-            foreach (var turmaComponente in turmasComponentes.Items)
+            foreach (var turmaCodigo in turmasComponentes.Items.GroupBy(a => a.TurmaCodigo))
             {
-                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaComponente.TurmaCodigo.ToString()));
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo.Key.ToString()));
                 var ehTurmaInfantil = turma.EhTurmaInfantil;
 
-                var pendencias = await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.ComponenteCurricularCodigo.ToString(),
-                                                                                                    turma.CodigoTurma,
-                                                                                                    bimestre,
-                                                                                                    verificaDiarioBordo: ehTurmaInfantil && !usuario.EhProfessorCjInfantil(),
-                                                                                                    verificaAvaliacao: !ehTurmaInfantil,
-                                                                                                    verificaPlanoAula: !ehTurmaInfantil,
-                                                                                                    verificaFrequencia: !ehTurmaInfantil || !usuario.EhProfessorCjInfantil(),
-                                                                                                    professorCj: usuario.EhProfessorCj(),
-                                                                                                    professorNaoCj:usuario.EhProfessor(),
-                                                                                                    professorRf: usuario.CodigoRf));;
+                var periodoFechamentoIniciado = !ehTurmaInfantil && !usuario.EhProfessorCj() &&
+                    await mediator.Send(new PeriodoFechamentoTurmaIniciadoQuery(turma, bimestre, DateTime.Today));
 
-                periodoFechamentoAberto = !ehTurmaInfantil &&
-                    await mediator.Send(new TurmaEmPeriodoFechamentoQuery(turma, bimestre, DateTime.Today));
+                foreach (var turmaComponente in turmaCodigo)
+                {
+                    var pendencias = await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.ComponenteCurricularCodigo.ToString(),
+                                                                                                        turma.CodigoTurma,
+                                                                                                        bimestre,
+                                                                                                        verificaDiarioBordo: ehTurmaInfantil && !usuario.EhProfessorCjInfantil(),
+                                                                                                        verificaAvaliacao: !ehTurmaInfantil,
+                                                                                                        verificaPlanoAula: !ehTurmaInfantil,
+                                                                                                        verificaFrequencia: !ehTurmaInfantil || !usuario.EhProfessorCjInfantil(),
+                                                                                                        professorCj: usuario.EhProfessorCj(),
+                                                                                                        professorNaoCj: usuario.EhProfessor(),
+                                                                                                        professorRf: usuario.CodigoRf));
 
-                if (periodoFechamentoAberto)
-                    possuiFechamento = await mediator.Send(new ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(turma.Id,
-                                                                                                                      bimestre,
-                                                                                                                      turmaComponente.ComponenteCurricularCodigo));
+                    var possuiFechamento = periodoFechamentoIniciado &&
+                        await mediator.Send(new ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(turma.Id,
+                                                                                                       bimestre,
+                                                                                                       turmaComponente.ComponenteCurricularCodigo));
 
-                turmaComponente.PendenciaDiarioBordo = pendencias.PendenciaDiarioBordo;
-                turmaComponente.PendenciaAvaliacoes = pendencias.PendenciaAvaliacoes;
-                turmaComponente.PendenciaFrequencia = pendencias.PendenciaFrequencia;
-                turmaComponente.PendenciaPlanoAula = pendencias.PendenciaPlanoAula;
-                turmaComponente.PendenciaFechamento = periodoFechamentoAberto && possuiFechamento;
+                    turmaComponente.PendenciaDiarioBordo = pendencias.PendenciaDiarioBordo;
+                    turmaComponente.PendenciaAvaliacoes = pendencias.PendenciaAvaliacoes;
+                    turmaComponente.PendenciaFrequencia = pendencias.PendenciaFrequencia;
+                    turmaComponente.PendenciaPlanoAula = pendencias.PendenciaPlanoAula;
+                    turmaComponente.PendenciaFechamento = possuiFechamento;
+                    turmaComponente.PeriodoFechamentoIniciado = periodoFechamentoIniciado;
 
-                itensComPendencias.Add(turmaComponente);
+                    itensComPendencias.Add(turmaComponente);
+                }
             }
 
             return new PaginacaoResultadoDto<TurmaComComponenteDto>
