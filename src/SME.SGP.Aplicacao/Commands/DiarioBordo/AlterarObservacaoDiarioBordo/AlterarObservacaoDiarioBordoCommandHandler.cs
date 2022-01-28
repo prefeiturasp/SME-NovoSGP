@@ -37,27 +37,28 @@ namespace SME.SGP.Aplicacao
 
             await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);
 
+            var notificacoes = await repositorioDiarioBordoObservacaoNotificacao.ObterPorDiarioBordoObservacaoId(request.ObservacaoId);
+
             if (request.Observacao.Trim().Length < 200 && (request.UsuariosIdNotificacao == null || !request.UsuariosIdNotificacao.Any()))
-            {
+            {          
+                var usuariosIdNotificacao = notificacoes.Select(n => n.IdUsuario);
+                var usuariosNotificacaoAnterior = usuariosIdNotificacao?.Select(async u => await mediator.Send(new ObterUsuarioPorIdQuery(u)))?.Select(t => t.Result);
+
                 // Excluir Notificação Especifica
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoDiarioBordo,
                       new ExcluirNotificacaoDiarioBordoDto(request.ObservacaoId), Guid.NewGuid(), null));
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoNovaObservacaoDiarioBordo,
-                      new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId), Guid.NewGuid(), null));
+                      new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId, usuariosNotificacaoAnterior.Select(u=> u.CodigoRf)), Guid.NewGuid(), null));
             }
             else if (request.UsuariosIdNotificacao != null && request.UsuariosIdNotificacao.Any())
             {
-                var notificacoes = await repositorioDiarioBordoObservacaoNotificacao.ObterPorDiarioBordoObservacaoId(request.ObservacaoId);
-
-                var usuariosNotificados = notificacoes.Select(n => n.IdUsuario);
-
+                var usuariosNotificados = notificacoes.Select(n => n.IdUsuario);               
                 var usuariosExcluidos = usuariosNotificados.Where(u => !request.UsuariosIdNotificacao.Contains(u) && u != usuario.Id);
-
                 var usuariosNotificacao = request.UsuariosIdNotificacao?.Select(async u => await mediator.Send(new ObterUsuarioPorIdQuery(u)))?.Select(t => t.Result);
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoNovaObservacaoDiarioBordo,
-                        new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId, usuariosNotificacao), Guid.NewGuid(), null));
+                        new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId, usuariosNotificacao.Select(u=> u.CodigoRf)), Guid.NewGuid(), null));
 
                 foreach (var usuarioExcluido in usuariosExcluidos)
                 {

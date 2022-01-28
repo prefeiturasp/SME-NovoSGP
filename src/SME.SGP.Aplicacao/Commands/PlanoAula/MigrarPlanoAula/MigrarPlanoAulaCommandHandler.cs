@@ -96,6 +96,23 @@ namespace SME.SGP.Aplicacao
 
             var turmasAtribuidasAoProfessor = await mediator.Send(new ObterTurmasPorProfessorRfQuery(codigoRf));
 
+            if (ehProfessorCj)
+            {
+                var turmasAtribuidasCJ = turmasAtribuidasAoProfessor.ToList();
+                var professoresAbragenciaTurma = await mediator.Send(new ObterProfessoresTurmaAbrangenciaQuery(turmaCodigo));
+
+                if(professoresAbragenciaTurma.Any(p=> p == codigoRf))
+                {
+                    turmasAtribuidasCJ.Add(new ProfessorTurmaDto()
+                    {
+                        CodTurma = Convert.ToInt32(turmaAula.CodigoTurma),
+                        Ano = turmaAula.Ano
+                    });
+                }
+
+                turmasAtribuidasAoProfessor = turmasAtribuidasCJ;
+            }
+
             await ValidaTurmasProfessor(ehProfessorCj, ueId,
                                   migrarPlanoAulaDto.DisciplinaId,
                                   codigoRf,

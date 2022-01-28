@@ -89,6 +89,16 @@ namespace SME.SGP.Dados.Repositorios
             return database.Query<AtividadeAvaliativa>(sql.ToString(), new { ids = ids.ToArray() });
         }
 
+        public IEnumerable<AtividadeAvaliativa> ListarAtividadesIds(IEnumerable<long> ids)
+        {
+            var sql = new StringBuilder(@"select a.data_avaliacao from atividade_avaliativa a
+                                                inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id
+                                                inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = a.id
+                                                where a.id = ANY(@ids)
+                                                 ");
+            return database.Query<AtividadeAvaliativa>(sql.ToString(), new { ids = ids.ToArray() });
+        }
+
         public async Task<IEnumerable<AtividadeAvaliativa>> ListarPorTurmaDisciplinaPeriodo(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
             var sql = new StringBuilder();
