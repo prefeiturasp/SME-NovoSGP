@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
 
             var temPlanoAnual = await ValidarPlanoAnual(turma, periodosEscolaresAulasInicioFim, request.ComponenteCurricularId, usuarioLogado);
 
-            var aulas = ObterAulas(request, turma, periodosEscolaresAulasInicioFim, usuarioLogado, codigoRf,usuarioLogado.EhProfessorCj());
+            var aulas = await repositorioAula.ObterAulasPorDataPeriodo(request.AulaInicio, request.AulaFim, turma.CodigoTurma, request.ComponenteCurricularId, usuarioLogado.EhProfessorCj());
 
             var planoAulas = await mediator.Send(new ObterPlanosAulaEObjetivosAprendizagemQuery(aulas.Select(s=> s.Id)));
 
@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
                 });
             }            
 
-            var aulasSemPlanoAula = aulas.Where(a => !planoAulas.Select(b => b.DataAula).Contains(a.DataAula)).Select(aula=> aula);
+            var aulasSemPlanoAula = aulas.Where(a => !planoAulas.Select(b => b.AulaId).Contains(a.Id)).Select(aula=> aula);
 
             planosAulaRetorno.AddRange((from aula in aulasSemPlanoAula select new PlanoAulaRetornoDto()
             { 
