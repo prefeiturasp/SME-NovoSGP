@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo.Key.ToString()));
                 var ehTurmaInfantil = turma.EhTurmaInfantil;
 
-                var periodoFechamentoIniciado = !ehTurmaInfantil &&
+                var periodoFechamentoIniciado = !ehTurmaInfantil && !usuario.EhProfessorCj() &&
                     await mediator.Send(new PeriodoFechamentoTurmaIniciadoQuery(turma, bimestre, DateTime.Today));
 
                 foreach (var turmaComponente in turmaCodigo)
