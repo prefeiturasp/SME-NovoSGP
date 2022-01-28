@@ -321,7 +321,7 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryAsync<string>(query, new { modalidadeInt, anoLetivo });
         }
 
-        public Task<DreUeDto> ObterCodigosDreUePorId(long ueId)
+        public Task<DreUeCodigoDto> ObterCodigosDreUePorId(long ueId)
         {
             var query = @"select ue.ue_id as UeCodigo
                                 , dre.dre_id as DreCodigo
@@ -329,7 +329,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join dre on dre.id = ue.dre_id
                         where ue.id = @ueId";
 
-            return contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDto>(query, new { ueId });
+            return contexto.Conexao.QueryFirstOrDefaultAsync<DreUeCodigoDto>(query, new { ueId });
         }
 
         public Task<IEnumerable<long>> ObterTodosIds()

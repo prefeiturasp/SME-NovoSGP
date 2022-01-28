@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCodigoUEDREPorIdQuery : IRequest<DreUeDto>
+    public class ObterCodigoUEDREPorIdQuery : IRequest<DreUeCodigoDto>
     {
         public ObterCodigoUEDREPorIdQuery(long ueId)
         {
