@@ -9,12 +9,11 @@ namespace SME.SGP.Aplicacao
 {
     public class AlterarDiarioBordoCommand  : IRequest<AuditoriaDto>
     {
-        public AlterarDiarioBordoCommand(long id, long aulaId, string planejamento, string reflexoesReplanejamento, long componenteCurricularId)
+        public AlterarDiarioBordoCommand(long id, long aulaId, string planejamento, long componenteCurricularId)
         {
             Id = id;
             AulaId = aulaId;
             Planejamento = planejamento;
-            ReflexoesReplanejamento = reflexoesReplanejamento;
             ComponenteCurricularId = componenteCurricularId;
         }
 
@@ -22,7 +21,6 @@ namespace SME.SGP.Aplicacao
         public long AulaId { get; set; }
         public long ComponenteCurricularId { get; set; }
         public string Planejamento { get; set; }
-        public string ReflexoesReplanejamento { get; set; }
     }
 
     public class AlterarDiarioBordoCommandValidator : AbstractValidator<AlterarDiarioBordoCommand>

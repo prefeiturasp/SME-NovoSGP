@@ -12,7 +12,6 @@ namespace SME.SGP.Infra
         public DateTime DataAula { get; set; }
         public bool Pendente { get; set; }
         public string Planejamento { get; set; }
-        public string ReflexoesReplanejamento { get; set; }
         public AuditoriaDto Auditoria { get; set; }
         public string CodigoRf { get; set; }
         public string Nome { get; set; }

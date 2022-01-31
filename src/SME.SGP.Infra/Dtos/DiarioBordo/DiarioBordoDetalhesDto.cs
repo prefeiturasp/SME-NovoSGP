@@ -11,7 +11,6 @@ namespace SME.SGP.Infra
         public string Devolutivas { get; set; }
 
         public string Planejamento { get; set; }
-        public string ReflexoesReplanejamento { get; set; }
 
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }

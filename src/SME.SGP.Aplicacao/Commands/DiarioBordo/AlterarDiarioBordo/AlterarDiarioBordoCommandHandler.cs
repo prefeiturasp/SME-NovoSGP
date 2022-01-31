@@ -71,21 +71,10 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new RemoverArquivosExcluidosCommand(diarioBordo.Planejamento, diario.Planejamento, TipoArquivo.DiarioBordo.Name()));
             }
-
-            if (!string.IsNullOrEmpty(diario.ReflexoesReplanejamento))
-            {
-                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.DiarioBordo, diarioBordo.ReflexoesReplanejamento, diario.ReflexoesReplanejamento));
-                diario.ReflexoesReplanejamento = moverArquivo;
-            }
-            if (!string.IsNullOrEmpty(diarioBordo.ReflexoesReplanejamento))
-            {
-                await mediator.Send(new RemoverArquivosExcluidosCommand(diarioBordo.ReflexoesReplanejamento, diario.ReflexoesReplanejamento, TipoArquivo.DiarioBordo.Name()));
-            }
         }
         private void MapearAlteracoes(DiarioBordo entidade, AlterarDiarioBordoCommand request)
         {
             entidade.Planejamento = request.Planejamento;
-            entidade.ReflexoesReplanejamento = request.ReflexoesReplanejamento;
             entidade.ComponenteCurricularId = request.ComponenteCurricularId;
         }
     }

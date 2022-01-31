@@ -33,7 +33,6 @@ namespace SME.SGP.Aplicacao
             {
                 Auditoria = (AuditoriaDto)diarioBordo,
                 Planejamento = diarioBordo.Planejamento,
-                ReflexoesReplanejamento = diarioBordo.ReflexoesReplanejamento,
             };
         }
     }

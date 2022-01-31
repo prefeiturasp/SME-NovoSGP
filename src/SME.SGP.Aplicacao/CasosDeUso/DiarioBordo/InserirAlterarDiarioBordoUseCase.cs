@@ -22,12 +22,12 @@ namespace SME.SGP.Aplicacao
             {
                 if(param.Id == 0)    
                 {
-                    dadosAuditoria = await mediator.Send(new InserirDiarioBordoCommand(param.AulaId, param.Planejamento, param.ReflexoesReplanejamento, param.ComponenteCurricularId));
+                    dadosAuditoria = await mediator.Send(new InserirDiarioBordoCommand(param.AulaId, param.Planejamento, param.ComponenteCurricularId));
                     await mediator.Send(new ExcluirPendenciaAulaCommand(param.AulaId, Dominio.TipoPendencia.DiarioBordo));
                 }
                 else
                 {
-                    dadosAuditoria = await mediator.Send(new AlterarDiarioBordoCommand(param.Id, param.AulaId, param.Planejamento, param.ReflexoesReplanejamento, param.ComponenteCurricularId));       
+                    dadosAuditoria = await mediator.Send(new AlterarDiarioBordoCommand(param.Id, param.AulaId, param.Planejamento, param.ComponenteCurricularId));       
                 }
 
                 var valorAuditoria = new AuditoriaDiarioBordoDto(dadosAuditoria, param.AulaId);
