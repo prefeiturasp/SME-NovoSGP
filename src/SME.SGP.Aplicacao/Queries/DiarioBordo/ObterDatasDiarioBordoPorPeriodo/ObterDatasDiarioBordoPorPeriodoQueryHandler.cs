@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }
         public async Task<IEnumerable<DiarioBordoPorPeriodoDto>> Handle(ObterDatasDiarioBordoPorPeriodoQuery request, CancellationToken cancellationToken)
-         => await repositorioAula.ObterAulasDiariosPorPeriodo(request.TurmaCodigo, request.ComponenteCurricularFilhoId, request.ComponenteCurricularPaiCodigo, request.DataFim, request.DataInicio);
+         => await repositorioAula.ObterAulasDiariosPorPeriodo(request.TurmaCodigo, request.ComponenteCurricularPaiCodigo, request.DataFim, request.DataInicio);
     }
 }
