@@ -57,6 +57,23 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<FrequenciaPreDefinidaDto>(query.ToString(), parametros);
         }
 
+        public async Task<IEnumerable<FrequenciaPreDefinidaDto>> ObterPorTurmaEComponente(long turmaId, long componenteCurricularId)
+        {
+            var query = new StringBuilder(@"select fpd.codigo_aluno as CodigoAluno,
+                                                   fpd.tipo_frequencia as Tipo
+                                              from frequencia_pre_definida fpd
+                                             where fpd.turma_id = @turmaId
+                                               and fpd.componente_curricular_id = @componenteCurricularId ");
+
+            var parametros = new
+            {
+                turmaId,
+                componenteCurricularId,
+            };
+
+            return await database.Conexao.QueryAsync<FrequenciaPreDefinidaDto>(query.ToString(), parametros);
+        }
+
         public async Task RemoverPorCCIdETurmaId(long componenteCurricularId, long turmaId)
         {
             await database.Conexao.ExecuteAsync("DELETE FROM frequencia_pre_definida " +

@@ -8,19 +8,22 @@ namespace SME.SGP.Dominio.Servicos.Teste
 {
     public class ServicoPeriodoEscolarTeste
     {
-        private readonly Mock<IRepositorioPeriodoEscolarConsulta> repositorioPeriodoEscolarConsulta;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
+        private readonly Mock<IRepositorioPeriodoEscolarConsulta> repositorioPeriodoEscolarConsulta;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
         private readonly IServicoPeriodoEscolar servicoPeriodoEscolar;
         private readonly Mock<IUnitOfWork> unitOfWork;
 
         public ServicoPeriodoEscolarTeste()
         {
-            repositorioPeriodoEscolarConsulta = new Mock<IRepositorioPeriodoEscolarConsulta>();
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
+            repositorioPeriodoEscolarConsulta = new Mock<IRepositorioPeriodoEscolarConsulta>();
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
             unitOfWork = new Mock<IUnitOfWork>();
-            servicoPeriodoEscolar = new ServicoPeriodoEscolar(unitOfWork.Object, repositorioPeriodoEscolar.Object, repositorioPeriodoEscolarConsulta.Object, repositorioTipoCalendario.Object);
+            servicoPeriodoEscolar = new ServicoPeriodoEscolar(unitOfWork.Object,
+                                                              repositorioPeriodoEscolar.Object,
+                                                              repositorioPeriodoEscolarConsulta.Object,
+                                                              repositorioTipoCalendario.Object);
         }
 
         [Fact]

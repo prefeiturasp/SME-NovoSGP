@@ -20,11 +20,23 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirPendenciaPorIdCommand request, CancellationToken cancellationToken)
         {
             var pendencia = await repositorioPendencia.ObterPorIdAsync(request.PendenciaId);
-            pendencia.Excluido = true;
-            await repositorioPendencia.SalvarAsync(pendencia);
+           
+            if(pendencia != null)
+            {
+                pendencia.Excluido = true;
+                await repositorioPendencia.SalvarAsync(pendencia);
 
-            await mediator.Send(new ExcluirPendenciasUsuariosPorPendenciaIdCommand(request.PendenciaId));
-            return true;
+                var pendenciaPerfilId = await mediator.Send(new ObterPendenciaPerfilPorPendenciaIdQuery(pendencia.Id));
+
+                foreach (var pendencias in pendenciaPerfilId)
+                {
+                    await mediator.Send(new ExcluirPendenciasUsuariosPorPendenciaIdCommand(pendencias.Id));
+                }
+
+                return true;
+            }
+
+            return false;         
         }
     }
 }

@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand : IRequest<bool>
     {
-        public SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand(long turmaId, long componenteCurricularId, long periodoEscolarId, string professorRf, string titulo, string mensagem, string instrucao)
+        public SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand(long turmaId, long componenteCurricularId, long periodoEscolarId, string professorRf, string titulo, string mensagem, string instrucao, long ueId)
         {
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao
             Titulo = titulo;
             Mensagem = mensagem;
             Instrucao = instrucao;
+            UeId = ueId;
         }
 
         public long TurmaId { get; set; }
@@ -24,6 +25,7 @@ namespace SME.SGP.Aplicacao
         public string Titulo { get; set; }
         public string Mensagem { get; set; }
         public string Instrucao { get; set; }
+        public long UeId { get; set; }
     }
 
     public class SalvarPendenciaAusenciaDeAvaliacaoProfessorCommandValidator : AbstractValidator<SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand>
@@ -57,6 +59,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.Instrucao)
                .NotEmpty()
                .WithMessage("A instrução deve ser informada para geração da pendência do professor.");
+
+            RuleFor(c => c.UeId)
+               .NotEmpty()
+               .WithMessage("A UE deve ser informada para geração da pendência do professor.");
         }
     }
 }

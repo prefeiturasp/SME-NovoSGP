@@ -1,14 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
-    public class PendenciaDto
+    public class PendenciaPerfilUsuarioDto
     {
-        public string Tipo { get; set; }
-        public string Turma { get; set; }
-        public string Titulo { get; set; }
-        public string Detalhe { get; set; }
+        public long Id { get; set; }
+        public long PendenciaId { get; set; }
+        public long UsuarioId { get; set; }
+        public int PerfilCodigo { get; set; }
+        public long? UeId { get; set; }
+        public string CodigoRf { get; set; }
+    }
+
+    public class PendenciaPerfilUsuarioUePerfilDto
+    {
+        public int PerfilCodigo { get; set; }
+        public long UeId { get; set; }
     }
 }

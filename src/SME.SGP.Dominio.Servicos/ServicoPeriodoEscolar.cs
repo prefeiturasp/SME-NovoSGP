@@ -8,14 +8,14 @@ namespace SME.SGP.Dominio
 {
     public class ServicoPeriodoEscolar : IServicoPeriodoEscolar
     {
-        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolarConsulta;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolarConsulta;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IUnitOfWork unitOfWork;
 
-        public ServicoPeriodoEscolar(IUnitOfWork unitOfWork, 
+        public ServicoPeriodoEscolar(IUnitOfWork unitOfWork,
                                      IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                     IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolarConsulta, 
+                                     IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolarConsulta,
                                      IRepositorioTipoCalendario repositorioTipoCalendario)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -41,7 +41,9 @@ namespace SME.SGP.Dominio
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 foreach (var periodo in periodos)
+                {
                     await repositorioPeriodoEscolar.SalvarAsync(periodo);
+                }
 
                 unitOfWork.PersistirTransacao();
             }

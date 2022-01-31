@@ -2,8 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IPendenciasGeraisUseCase
+    public interface IPendenciasGeraisUseCase : IRabbitUseCase
     {
-        Task Executar();
     }
 }

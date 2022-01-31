@@ -256,7 +256,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstAsync<string>(query, new { tipoCalendarioId });
         }
 
-        public async Task<IEnumerable<TipoCalendarioBuscaDto>> ListarPorAnosLetivoEModalidades(int[] anosLetivo, int[] modalidades)
+        public async Task<IEnumerable<TipoCalendarioBuscaDto>> ListarPorAnosLetivoEModalidades(int[] anosLetivo, int[] modalidades, string nome)
         {
             StringBuilder query = new StringBuilder();
 
@@ -265,9 +265,13 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where not excluido");
             query.AppendLine("and ano_letivo = any(@anosLetivo)");
             query.AppendLine("and modalidade = any(@modalidades)");
+
+            if (!string.IsNullOrEmpty(nome))
+                query.Append($"and upper(f_unaccent(nome)) like UPPER('%{nome}%')");
+
             query.AppendLine("order by ano_letivo desc");
 
-            return await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query.ToString(), new { anosLetivo, modalidades });
+            return await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query.ToString(), new { anosLetivo, modalidades, nome });
         }
         public async Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, int modalidadeTipoCalendarioId, int semestre = 0)
         {

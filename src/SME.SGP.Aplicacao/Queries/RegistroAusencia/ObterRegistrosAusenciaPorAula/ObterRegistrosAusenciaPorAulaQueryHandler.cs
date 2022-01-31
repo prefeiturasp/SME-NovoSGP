@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterRegistrosAusenciaPorAulaQueryHandler : IRequestHandler<ObterRegistrosAusenciaPorAulaQuery, IEnumerable<RegistroAusenciaAluno>>
+    public class ObterRegistrosAusenciaPorAulaQueryHandler : IRequestHandler<ObterRegistrosAusenciaPorAulaQuery, IEnumerable<RegistroFrequenciaAluno>>
     {
-        private readonly IRepositorioRegistroAusenciaAlunoConsulta repositorioRegistroAusenciaAlunoConsulta;
+        private readonly IRepositorioRegistroFrequenciaAlunoConsulta repositorioRegistroFrequenciaAlunoConsulta;
 
-        public ObterRegistrosAusenciaPorAulaQueryHandler(IRepositorioRegistroAusenciaAlunoConsulta repositorio)
+        public ObterRegistrosAusenciaPorAulaQueryHandler(IRepositorioRegistroFrequenciaAlunoConsulta repositorio)
         {
-            this.repositorioRegistroAusenciaAlunoConsulta = repositorio;
+            this.repositorioRegistroFrequenciaAlunoConsulta = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<RegistroAusenciaAluno>> Handle(ObterRegistrosAusenciaPorAulaQuery request, CancellationToken cancellationToken)
-            => await repositorioRegistroAusenciaAlunoConsulta.ObterRegistrosAusenciaPorAulaAsync(request.AulaId);
+        public Task<IEnumerable<RegistroFrequenciaAluno>> Handle(ObterRegistrosAusenciaPorAulaQuery request, CancellationToken cancellationToken)
+            => repositorioRegistroFrequenciaAlunoConsulta.ObterRegistrosAusenciaPorAula(request.AulaId);
     }
 }
 

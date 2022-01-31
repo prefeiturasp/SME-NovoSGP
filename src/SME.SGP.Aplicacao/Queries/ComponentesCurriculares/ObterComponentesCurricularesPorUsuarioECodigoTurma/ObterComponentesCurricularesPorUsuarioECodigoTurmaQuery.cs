@@ -2,22 +2,22 @@
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesPorUsuarioECodigoTurmaQuery : IRequest<IEnumerable<DisciplinaNomeDto>>
     {
-        public ObterComponentesCurricularesPorUsuarioECodigoTurmaQuery(Usuario usuarioLogado, string turmaCodigo)
+        public ObterComponentesCurricularesPorUsuarioECodigoTurmaQuery(Usuario usuarioLogado, string turmaCodigo, bool realizarAgrupamentoComponente = false)
         {
             UsuarioLogado = usuarioLogado;
             TurmaCodigo = turmaCodigo;
+            RealizarAgrupamentoComponente = realizarAgrupamentoComponente;
         }
 
         public Usuario UsuarioLogado { get; set; }
         public string TurmaCodigo { get; set; }
+        public bool RealizarAgrupamentoComponente { get; set; }
     }
 
     public class ObterComponentesCurricularesPorUsuarioECodigoTurmaQueryValidator : AbstractValidator<ObterComponentesCurricularesPorUsuarioECodigoTurmaQuery>

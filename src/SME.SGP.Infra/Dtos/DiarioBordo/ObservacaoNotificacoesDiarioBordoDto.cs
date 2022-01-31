@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using System.Collections.Generic;
+
+namespace SME.SGP.Infra
 {
     public class ObservacaoNotificacoesDiarioBordoDto
     {
@@ -10,5 +12,6 @@
         public int QtdUsuariosNotificacao { get; set; }
 
         public AuditoriaDto Auditoria { get; set; }
+        public string NomeUsuariosNotificados { get; set; }
     }
 }

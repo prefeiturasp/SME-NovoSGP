@@ -8,6 +8,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<ListarObservacaoDiarioBordoDto>> ListarPorDiarioBordoAsync(long diarioBordoId, long usuarioLogadoId);
         Task<Turma> ObterTurmaDiarioBordoAulaPorObservacaoId(long observacaoId);
-        Task ExcluirObservacoesPorDiarioBordoId(long diarioBordoId, long? usuarioId);
+        Task ExcluirObservacoesPorDiarioBordoId(long diarioBordoObservacaoId);
+        Task<DiarioBordoObservacaoDto> ObterDiarioBordoObservacaoPorObservacaoId(long observacaoId);
+        Task<IEnumerable<string>> ObterNomeUsuariosNotificadosObservacao(long observacaoId);
     }
 }

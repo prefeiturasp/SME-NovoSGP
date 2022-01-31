@@ -18,7 +18,6 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEol servicoEOL;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
-
         public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL, IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -121,7 +120,11 @@ namespace SME.SGP.Aplicacao
                     IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(filtro.TurmaCodigo, usuario.CodigoRf, usuario.PerfilAtual);
                     if (disciplinasRegenciaEol == null || !disciplinasRegenciaEol.Any(d => !d.TerritorioSaber && d.Regencia))
                         throw new NegocioException("Não foram encontradas disciplinas de regência no EOL");
-                    disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia));
+                    // Excessão de disciplina ED. Fisica para modalidade EJA
+                    if (turmaCompleta.EhEJA())
+                        disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia && d.Codigo != 6));
+                    else
+                        disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia));
                 }
             }
 
@@ -143,10 +146,9 @@ namespace SME.SGP.Aplicacao
             {
                  alunosAtivos = from a in alunos
                                    where (a.EstaAtivo(periodoFim) ||
-                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
-                                         a.DataMatricula.Date <= periodoFim.Date
+                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date && a.DataMatricula.Date <= periodoFim.Date)) 
                                    orderby a.NomeValido(), a.NumeroAlunoChamada
-                                   select a;
+                                   select a;           
             }
 
 
@@ -255,6 +257,7 @@ namespace SME.SGP.Aplicacao
                         }
                     }
 
+
                     if (componenteReferencia.Regencia)
                     {
                         // Regencia carrega disciplinas mesmo sem nota de fechamento
@@ -272,21 +275,31 @@ namespace SME.SGP.Aplicacao
                                 nota.EhConceito = notaRegencia.ConceitoId.HasValue;
                             }
 
+                            await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaId, nota);
+
                             notaConceitoAluno.NotasBimestre.Add(nota);
                         }
                     }
                     else
                     {
+
                         foreach (var notaConceitoBimestre in notasConceitoBimestre)
-                            notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
+                        {
+                            var nota = new FechamentoNotaRetornoDto()
                             {
                                 DisciplinaId = notaConceitoBimestre.DisciplinaId,
                                 Disciplina = componenteReferencia.Nome,
                                 NotaConceito = notaConceitoBimestre.ConceitoId.HasValue ?
-                                    notaConceitoBimestre.ConceitoId.Value :
-                                    notaConceitoBimestre.Nota,
+                                   notaConceitoBimestre.ConceitoId.Value :
+                                   notaConceitoBimestre.Nota,
                                 EhConceito = notaConceitoBimestre.ConceitoId.HasValue
-                            });
+                            };
+
+                            await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaId, nota);
+
+                            notaConceitoAluno.NotasBimestre.Add(nota);
+                        }
+                           
                     }
                 }
                 else if (componenteReferencia.Regencia && componenteReferencia != null)
@@ -377,6 +390,21 @@ namespace SME.SGP.Aplicacao
             retorno.Bimestres.Add(bimestreParaAdicionar);
 
             return retorno;
+        }
+
+        private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoNotaRetornoDto notasConceito)
+        {
+            double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
+
+            if(nota > 0)
+            {
+                notasConceito.NotaConceito = nota;
+                notasConceito.EmAprovacao = true;
+            }
+            else
+            {
+                notasConceito.EmAprovacao = false;
+            }
         }
 
         private IEnumerable<DisciplinaResposta> MapearParaDto(IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol)

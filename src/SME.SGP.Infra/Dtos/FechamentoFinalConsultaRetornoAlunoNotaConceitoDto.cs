@@ -6,5 +6,6 @@
         public string Disciplina { get; set; }
         public long DisciplinaCodigo { get; set; }
         public string NotaConceito { get; set; }
+        public bool EmAprovacao { get; set; }
     }
 }

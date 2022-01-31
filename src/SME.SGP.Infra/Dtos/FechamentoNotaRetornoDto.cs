@@ -7,5 +7,6 @@
         public long DisciplinaId { get; set; }
         public bool EhConceito { get; set; }
         public double? NotaConceito { get; set; }
+        public bool EmAprovacao { get; set; }
     }
 }

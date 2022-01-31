@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -116,9 +116,10 @@ namespace SME.SGP.Aplicacao.Servicos
                 await SincronizarEstruturaInstitucional(estruturaInstitucionalVigente);
             else
             {
-                var erro = new NegocioException($"_Não foi possível obter dados de estrutura institucional do EOL. {estruturaInstitucionalVigente?.Dres?.Count}");
-                SentrySdk.CaptureException(erro);
-                throw erro;
+                var erro = $"Não foi possível obter dados de estrutura institucional do EOL. {estruturaInstitucionalVigente?.Dres?.Count}";
+                await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Abrangencia, string.Empty));
+
+                throw new NegocioException(erro);
             }
 
             var tiposEscolas = servicoEOL.BuscarTiposEscola();
@@ -128,9 +129,10 @@ namespace SME.SGP.Aplicacao.Servicos
             }
             else
             {
-                var erro = new NegocioException("Não foi possível obter dados de tipos de escolas do EOL");
-                SentrySdk.CaptureException(erro);
-                throw erro;
+                var erro = "Não foi possível obter dados de tipos de escolas do EOL";
+                await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Abrangencia, string.Empty));
+
+                throw new NegocioException(erro);
             }
             var ciclos = servicoEOL.BuscarCiclos();
             if (ciclos.Any())
@@ -139,9 +141,10 @@ namespace SME.SGP.Aplicacao.Servicos
             }
             else
             {
-                var erro = new NegocioException("Não foi possível obter dados de ciclos de ensino do EOL");
-                SentrySdk.CaptureException(erro);
-                throw erro;
+                var erro = "Não foi possível obter dados de ciclos de ensino do EOL";
+                await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Abrangencia, string.Empty));
+
+                throw new NegocioException(erro);
             }
 
         }
@@ -161,7 +164,6 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             try
             {
-                SentrySdk.AddBreadcrumb($"Sincronizar abrangência histórica SGP com base nas turmas com data disponibilização no EOL - Chamada SincronizarAbrangenciaHistorica - anoLetivo: {anoLetivo}, professorRf {professorRf}", "SGP Api - Negócio");
                 var turmasHistoricasEOL = await mediator.Send(new ObterTurmasAbrangenciaHistoricaEOLAnoProfessorQuery(anoLetivo, professorRf));
                 var usuario = await repositorioUsuario.ObterUsuarioPorCodigoRfAsync(professorRf);
                 if (usuario == null)
@@ -196,8 +198,9 @@ namespace SME.SGP.Aplicacao.Servicos
             }
             catch (Exception e)
             {
-                SentrySdk.AddBreadcrumb($"Erro ao sincronizar abrangência histórica SGP - Chamada SincronizarAbrangenciaHistorica - anoLetivo: {anoLetivo}, professorRf {professorRf} - erro: {e.Message}", "SGP Api - Negócio");
-                SentrySdk.CaptureException(e);
+                var erro = $"Erro ao sincronizar abrangência histórica SGP - Chamada SincronizarAbrangenciaHistorica - anoLetivo: {anoLetivo}, professorRf {professorRf} - erro: {e.Message}";
+                await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Abrangencia, string.Empty));
+
                 throw new NegocioException($"Erro ao sincronizar abrangência histórica - Ano({anoLetivo}), RF({professorRf})");
             }
         }
@@ -215,71 +218,61 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
         {
-            try
+
+            Task<AbrangenciaCompactaVigenteRetornoEOLDTO> consultaEol = null;
+            AbrangenciaCompactaVigenteRetornoEOLDTO abrangenciaEol = null;
+
+            var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
+            var ehProfessorCJ = perfil == Perfis.PERFIL_CJ || perfil == Perfis.PERFIL_CJ_INFANTIL;
+
+            if (ehSupervisor)
             {
-                const string breadcrumb = "SGP API - Tratamento de Abrangência";
-
-                Task<AbrangenciaCompactaVigenteRetornoEOLDTO> consultaEol = null;
-                AbrangenciaCompactaVigenteRetornoEOLDTO abrangenciaEol = null;
-
-                var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
-                var ehProfessorCJ = perfil == Perfis.PERFIL_CJ || perfil == Perfis.PERFIL_CJ_INFANTIL;
-
-                SentrySdk.AddBreadcrumb($"{breadcrumb} - Chamada BuscaAbrangenciaEPersiste - Login: {login}, perfil {perfil} - EhSupervisor: {ehSupervisor}, EhProfessorCJ: {ehProfessorCJ}", "SGP Api - Negócio");
-
-                if (ehSupervisor)
-                {
-                    var uesIds = ObterAbrangenciaEolSupervisor(login);
-                    if (!uesIds.Any())
-                        return;
-                    var abrangenciaSupervisor = await servicoEOL.ObterAbrangenciaParaSupervisor(uesIds.ToArray());
-                    abrangenciaEol = new AbrangenciaCompactaVigenteRetornoEOLDTO()
-                    {
-                        Abrangencia = abrangenciaSupervisor.Abrangencia,
-                        IdUes = abrangenciaSupervisor.Dres.SelectMany(x => x.Ues.Select(y => y.Codigo)).ToArray()
-                    };
-                }
-                else if (ehProfessorCJ)
+                var uesIds = ObterAbrangenciaEolSupervisor(login);
+                if (!uesIds.Any())
                     return;
-                else
-                    consultaEol = servicoEOL.ObterAbrangenciaCompactaVigente(login, perfil);
-
-                if (consultaEol != null || abrangenciaEol != null)
+                var abrangenciaSupervisor = await servicoEOL.ObterAbrangenciaParaSupervisor(uesIds.ToArray());
+                abrangenciaEol = new AbrangenciaCompactaVigenteRetornoEOLDTO()
                 {
-                    // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
-                    var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil, string.Empty);
+                    Abrangencia = abrangenciaSupervisor.Abrangencia,
+                    IdUes = abrangenciaSupervisor.Dres.SelectMany(x => x.Ues.Select(y => y.Codigo)).ToArray()
+                };
+            }
+            else if (ehProfessorCJ)
+                return;
+            else
+                consultaEol = servicoEOL.ObterAbrangenciaCompactaVigente(login, perfil);
 
-                    if (abrangenciaEol == null)
-                        abrangenciaEol = await consultaEol;
-                    var abrangenciaSintetica = await consultaAbrangenciaSintetica;
+            if (consultaEol != null || abrangenciaEol != null)
+            {
+                // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
+                var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil, string.Empty);
 
-                    if (abrangenciaEol != null)
-                    {
-                        IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
-                        IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
-                        IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
+                if (abrangenciaEol == null)
+                    abrangenciaEol = await consultaEol;
+                var abrangenciaSintetica = await consultaAbrangenciaSintetica;
 
-                        // sincronizamos as dres, ues e turmas
-                        var estrutura = await MaterializarEstruturaInstitucional(abrangenciaEol, dres, ues, turmas);
+                if (abrangenciaEol != null)
+                {
+                    IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
+                    IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
+                    IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
 
-                        dres = estrutura.Item1;
-                        ues = estrutura.Item2;
-                        turmas = estrutura.Item3;
+                    // sincronizamos as dres, ues e turmas
+                    var estrutura = await MaterializarEstruturaInstitucional(abrangenciaEol, dres, ues, turmas);
 
-                        // sincronizamos a abrangencia do login + perfil
-                        unitOfWork.IniciarTransacao();
+                    dres = estrutura.Item1;
+                    ues = estrutura.Item2;
+                    turmas = estrutura.Item3;
 
-                        SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia?.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
+                    // sincronizamos a abrangencia do login + perfil
+                    unitOfWork.IniciarTransacao();
 
-                        unitOfWork.PersistirTransacao();
-                    }
+                    SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia?.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
+
+                    unitOfWork.PersistirTransacao();
                 }
             }
-            catch (Exception ex)
-            {
-                SentrySdk.CaptureException(ex);
-                throw;
-            }
+
         }
 
         private async Task<IEnumerable<Turma>> ImportarTurmasNaoEncontradas(string[] codigosNaoEncontrados)

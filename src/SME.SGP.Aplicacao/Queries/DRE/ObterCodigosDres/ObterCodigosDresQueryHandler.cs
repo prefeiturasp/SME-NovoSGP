@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -13,11 +13,13 @@ namespace SME.SGP.Aplicacao
     {
 
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IMediator mediator;
         private const string BaseUrl = "abrangencia/codigos-dres";
 
-        public ObterCodigosDresQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterCodigosDresQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new System.ArgumentNullException(nameof(httpClientFactory));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<string[]> Handle(ObterCodigosDresQuery request, CancellationToken cancellationToken)
@@ -34,7 +36,8 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - URL: {httpClient.BaseAddress}");
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - URL: {httpClient.BaseAddress}", LogNivel.Negocio, LogContexto.Relatorios, string.Empty));
+
                 throw new NegocioException($"Erro ao obter os códigos de DREs no EOL. URL base: {httpClient.BaseAddress}");
             }
         }

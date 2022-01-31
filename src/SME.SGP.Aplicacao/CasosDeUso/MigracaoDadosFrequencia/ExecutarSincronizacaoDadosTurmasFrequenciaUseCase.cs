@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -31,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(dadosAula.DataAula)).OrderBy(c => c.NomeAluno))
                 {
                     if (aluno.EstaInativo(dadosAula.DataAula) ||
-                        (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && 
+                        (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo &&
                          aluno.DataSituacao > dadosAula.DataAula))
                         continue;
 
