@@ -34,9 +34,10 @@ namespace SME.SGP.Aplicacao
                 Mes = mes
             });
 
-                string[] componentesCurricularesDoProfessor = new string[0];
-                if (usuarioLogado.EhProfessor())
-                    componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));
+            string[] componentesCurricularesDoProfessor = new string[0];
+            
+            if (usuarioLogado.EhProfessor())
+                componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));
 
             IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
 
