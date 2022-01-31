@@ -6,18 +6,16 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirDiarioBordoCommand: IRequest<AuditoriaDto>
     {
-        public InserirDiarioBordoCommand(long aulaId, string planejamento, string reflexoesReplanejamento, long componenteCurricularId)
+        public InserirDiarioBordoCommand(long aulaId, string planejamento, long componenteCurricularId)
         {
             AulaId = aulaId;
             Planejamento = planejamento;
-            ReflexoesReplanejamento = reflexoesReplanejamento;
             ComponenteCurricularId = componenteCurricularId;
         }
 
         public long AulaId { get; set; }
         public long ComponenteCurricularId { get; set; }
         public string Planejamento { get; set; }
-        public string ReflexoesReplanejamento { get; set; }
     }
 
     public class InserirDiarioBordoCommandValidator: AbstractValidator<InserirDiarioBordoCommand>

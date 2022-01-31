@@ -1076,8 +1076,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select a.id as AulaId, 
                             db.id as DiarioBordoId, 
                             a.data_aula as DataAula, 
-                            db.planejamento as Planejamento, 
-                            db.reflexoes_replanejamento as ReflexoesReplanejamento 
+                            db.planejamento as Planejamento 
                             from aula a 
                             left join diario_bordo db on db.aula_id = a.id 
                             where a.turma_id = @turmaCodigo 
@@ -1093,7 +1092,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"
                          select db.id as DiarioBordoId, a.data_aula DataAula, a.id as AulaId, db.criado_rf CodigoRf,
-                         db.criado_por Nome, db.planejamento as Planejamento, db.reflexoes_replanejamento as ReflexoesReplanejamento, 
+                         db.criado_por Nome, db.planejamento as Planejamento, 
                          a.tipo_aula as Tipo, db.inserido_cj as InseridoCJ, false Pendente
                          from aula a
                          inner join turma t on a.turma_id = t.turma_id
@@ -1105,7 +1104,7 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula <= @dataFim
                          union all
                          select null DiarioBordoId, a.data_aula DataAula, a.id as AulaId, null CodigoRf, null Nome, 
-                         null Planejamento, null ReflexoesReplanejamento, null Tipo, null InseridoCJ, true Pendente 
+                         null Planejamento, null Tipo, null InseridoCJ, true Pendente 
                          from aula a
                          inner join turma t on a.turma_id = t.turma_id
                          where t.turma_id = @turmaCodigo

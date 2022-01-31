@@ -34,8 +34,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var auditoriaDto = await inserirDiarioBordoUseCase.Executar(new Infra.AlterarDiarioBordoDto()
             {
                 AulaId = 1,
-                Planejamento = "teste",
-                ReflexoesReplanejamento = ""
+                Planejamento = "teste"
             });
 
             //Asert
