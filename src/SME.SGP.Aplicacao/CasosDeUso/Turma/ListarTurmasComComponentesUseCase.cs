@@ -32,10 +32,11 @@ namespace SME.SGP.Aplicacao
                 componentesCurricularesDoProfessorCJ = String.Join(",", atribuicoes.Select(s => s.DisciplinaId.ToString()).Distinct());
             }
 
-            var turmasAbrangencia = await mediator.Send(new ObterCodigosTurmasAbrangenciaPorUeModalidadeAnoQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.Modalidade.Value, periodo: 0, filtroTurmaDto.ConsideraHistorico,
-                                                                                 filtroTurmaDto.AnoLetivo, new int[] { }, desconsideraNovosAnosInfantil: false));
-            if (turmasAbrangencia == null)
-                return default;
+            IEnumerable<long> turmasAbrangencia = null;
+
+            if (filtroTurmaDto.TurmaCodigo == null)
+                turmasAbrangencia = await mediator.Send(new ObterCodigosTurmasAbrangenciaPorUeModalidadeAnoQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.Modalidade.Value, periodo: 0, filtroTurmaDto.ConsideraHistorico,
+                                                                                     filtroTurmaDto.AnoLetivo, new int[] { }, desconsideraNovosAnosInfantil: false));
 
             var turmasPaginadas = await mediator.Send(new ObterTurmasComComponentesQuery(filtroTurmaDto.UeCodigo,
                                                                                          filtroTurmaDto.DreCodigo,
@@ -54,10 +55,14 @@ namespace SME.SGP.Aplicacao
             if (turmasPaginadas == null || turmasPaginadas?.Items == null)
                 return default;
 
-            var componentesCodigos = turmasAbrangencia.Select(c => c).ToArray().Intersect(turmasPaginadas.Items.Select(c => c.TurmaCodigo).ToArray()).ToArray();
+            var componentesCodigos = turmasAbrangencia != null ? turmasAbrangencia.Select(c => c).ToArray().Intersect(turmasPaginadas.Items.Select(c => c.TurmaCodigo).ToArray()).ToArray()
+                                    : turmasPaginadas.Items.Select(c => c.TurmaCodigo).ToArray();
 
-            var turmasItems = turmasPaginadas.Items.Where(o => turmasAbrangencia.Contains(o.TurmaCodigo));
-            turmasPaginadas.Items = turmasItems;
+            if (turmasAbrangencia!=null)
+            {
+                var turmasItems = turmasPaginadas.Items.Where(o => turmasAbrangencia.Contains(o.TurmaCodigo));
+                turmasPaginadas.Items = turmasItems; 
+            }
 
             var componentesRetorno = await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(componentesCodigos));
 
