@@ -32,6 +32,11 @@ namespace SME.SGP.Aplicacao
                 componentesCurricularesDoProfessorCJ = String.Join(",", atribuicoes.Select(s => s.DisciplinaId.ToString()).Distinct());
             }
 
+            var turmasAbrangencia = await mediator.Send(new ObterCodigosTurmasAbrangenciaPorUeModalidadeAnoQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.Modalidade.Value, periodo: 0, filtroTurmaDto.ConsideraHistorico,
+                                                                                 filtroTurmaDto.AnoLetivo, new int[] { }, desconsideraNovosAnosInfantil: false));
+            if (turmasAbrangencia == null)
+                return default;
+
             var turmasPaginadas = await mediator.Send(new ObterTurmasComComponentesQuery(filtroTurmaDto.UeCodigo,
                                                                                          filtroTurmaDto.DreCodigo,
                                                                                          filtroTurmaDto.TurmaCodigo,
@@ -46,10 +51,13 @@ namespace SME.SGP.Aplicacao
                                                                                          filtroTurmaDto.ConsideraHistorico,
                                                                                          componentesCurricularesDoProfessorCJ));
 
-            if (turmasPaginadas == null || !turmasPaginadas.Items.Any())
+            if (turmasPaginadas == null || turmasPaginadas?.Items == null)
                 return default;
-            
-            var componentesCodigos = turmasPaginadas.Items.Select(c => c.ComponenteCurricularCodigo).Distinct().ToArray();
+
+            var componentesCodigos = turmasAbrangencia.Select(c => c).ToArray().Intersect(turmasPaginadas.Items.Select(c => c.TurmaCodigo).ToArray()).ToArray();
+
+            var turmasItems = turmasPaginadas.Items.Where(o => turmasAbrangencia.Contains(o.TurmaCodigo));
+            turmasPaginadas.Items = turmasItems;
 
             var componentesRetorno = await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(componentesCodigos));
 
@@ -92,7 +100,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre,Usuario usuario)
+        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre, Usuario usuario)
         {
             List<TurmaComComponenteDto> itensComPendencias = new List<TurmaComComponenteDto>();
 

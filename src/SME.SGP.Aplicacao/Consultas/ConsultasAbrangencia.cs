@@ -177,6 +177,18 @@ namespace SME.SGP.Aplicacao
             return OrdernarTurmasItinerario(result);
         }
 
+        public async Task<IEnumerable<long>> ObterCodigoTurmasAbrangencia(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool desconsideraNovosAnosInfantil = false)
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfil = servicoUsuario.ObterPerfilAtual();
+            var anosInfantilDesconsiderar = !desconsideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(anoLetivo, Modalidade.EducacaoInfantil)) : null;
+
+            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
+            var ordernarTurmasItinerario = OrdernarTurmasItinerario(result);
+            return ordernarTurmasItinerario.Select(x => long.Parse(x.Codigo)).ToArray();
+        }
+
+
         private IEnumerable<AbrangenciaTurmaRetorno> OrdernarTurmasItinerario(IEnumerable<AbrangenciaTurmaRetorno> result)
         {
             List<AbrangenciaTurmaRetorno> turmasOrdenadas = new List<AbrangenciaTurmaRetorno>();
