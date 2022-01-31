@@ -17,19 +17,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DiarioBordoPorPeriodoDto>> Executar(string turmaCodigo, DateTime dataInicio, DateTime dataFim, long componenteCurricularId)
         {
-            var retorno = new List<DiarioBordoPorPeriodoDto>();
-
             var componentePai = await mediator.Send(new ObterCodigoComponentePaiQuery(componenteCurricularId));
-            var datasComDiarioBordo = await mediator.Send(new ObterDatasDiarioBordoPorPeriodoQuery(turmaCodigo, dataInicio, dataFim, componenteCurricularId, componentePai));
 
-            foreach (var aula in datasComDiarioBordo)
-            {
-                var diarioBordo = await mediator.Send(new ObterDiarioBordoPorAulaIdQuery(aula.AulaId, componenteCurricularId));
-                aula.Auditoria = (AuditoriaDto)diarioBordo;
-                retorno.Add(aula);
-            }
+            var diariosBordo = await mediator.Send(new ObterDatasDiarioBordoPorPeriodoQuery(turmaCodigo, dataInicio, dataFim, componentePai));
 
-            return retorno.OrderByDescending(a => a.DataAula).Distinct();
+            return diariosBordo.OrderByDescending(a => a.DataAula).Distinct();
         }
     }
 }
