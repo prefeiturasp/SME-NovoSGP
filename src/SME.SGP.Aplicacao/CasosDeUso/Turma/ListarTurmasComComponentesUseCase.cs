@@ -32,6 +32,9 @@ namespace SME.SGP.Aplicacao
                 componentesCurricularesDoProfessorCJ = String.Join(",", atribuicoes.Select(s => s.DisciplinaId.ToString()).Distinct());
             }
 
+
+            var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(filtroTurmaDto.Modalidade.Value, filtroTurmaDto.AnoLetivo, 1));
+
             IEnumerable<long> turmasAbrangencia = null;
 
             if (filtroTurmaDto.TurmaCodigo == null)
@@ -50,7 +53,8 @@ namespace SME.SGP.Aplicacao
                                                                                          usuario.EhProfessor(),
                                                                                          usuario.CodigoRf,
                                                                                          filtroTurmaDto.ConsideraHistorico,
-                                                                                         componentesCurricularesDoProfessorCJ));
+                                                                                         componentesCurricularesDoProfessorCJ,
+                                                                                         periodoEscolar.FirstOrDefault().PeriodoInicio));
 
             if (turmasPaginadas == null || turmasPaginadas?.Items == null)
                 return default;
@@ -112,6 +116,7 @@ namespace SME.SGP.Aplicacao
             foreach (var turmaCodigo in turmasComponentes.Items.GroupBy(a => a.TurmaCodigo))
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo.Key.ToString()));
+
                 var ehTurmaInfantil = turma.EhTurmaInfantil;
 
                 var periodoFechamentoIniciado = !ehTurmaInfantil && !usuario.EhProfessorCj() &&
@@ -132,8 +137,8 @@ namespace SME.SGP.Aplicacao
 
                     var possuiFechamento = periodoFechamentoIniciado &&
                         await mediator.Send(new ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(turma.Id,
-                                                                                                       bimestre,
-                                                                                                       turmaComponente.ComponenteCurricularCodigo));
+                                                                                                        bimestre,
+                                                                                                        turmaComponente.ComponenteCurricularCodigo));
 
                     turmaComponente.PendenciaDiarioBordo = pendencias.PendenciaDiarioBordo;
                     turmaComponente.PendenciaAvaliacoes = pendencias.PendenciaAvaliacoes;
