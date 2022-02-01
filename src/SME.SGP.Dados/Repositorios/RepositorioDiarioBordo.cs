@@ -230,10 +230,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<DiarioBordoResumoDto>> ObterListagemDiarioBordoPorPeriodoPaginado(long turmaId, string componenteCurricularPaiCodigo, long componenteCurricularFilhoCodigo, DateTime? periodoInicio, DateTime? periodoFim, Paginacao paginacao)
         {
-            try
-            {
-
-           
             StringBuilder condicao = new StringBuilder();
 
             condicao.AppendLine(@"from aula a
@@ -285,11 +281,6 @@ namespace SME.SGP.Dados.Repositorios
                 TotalRegistros = totalRegistrosDaQuery,
                 TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
             };
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
         }
 
 
