@@ -1098,8 +1098,8 @@ namespace SME.SGP.Dados.Repositorios
                          select db.id as DiarioBordoId, a.data_aula DataAula, a.id as AulaId, db.criado_rf CodigoRf,
                                 db.criado_por Nome, db.planejamento as Planejamento, db.reflexoes_replanejamento as ReflexoesReplanejamento, 
                                 a.tipo_aula as Tipo, db.inserido_cj as InseridoCJ, 
-                                case when db.id is null then false else true end Pendente, 
-                                case when a.tipo_aula = 2 then 1 else 0 end EhReposicao
+                                case when db.id is null then true else false end Pendente
+                                ,db.id, db.alterado_em as AlteradoEm, db.alterado_por as AlteradoPor, db.alterado_rf as AlteradoRF, db.criado_em as CriadoEm, db.criado_por as CriadoPor, db.criado_rf as CriadoRF
                          from aula a
                          inner join turma t on a.turma_id = t.turma_id
                          left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilho
@@ -1109,15 +1109,26 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula >= @dataInicio
                            and a.data_aula <= @dataFim ";
 
-                return await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto>(query,
-                                                        new
-                                                        {
-                                                            turmaCodigo,
-                                                            componenteCurricularFilho = int.Parse(componenteCurricularFilhoCodigo),
-                                                            componenteCurricularPaiCodigo,
-                                                            dataFim,
-                                                            dataInicio
-                                                        });
+                var lookup = new Dictionary<long, DiarioBordoPorPeriodoDto>();
+                await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto, AuditoriaDto, DiarioBordoPorPeriodoDto>(query,(diarioBordoPorPeriodoDto, auditoriaDto) =>
+                    {
+                        if (auditoriaDto != null)
+                            diarioBordoPorPeriodoDto.Auditoria = auditoriaDto;
+
+                        lookup.Add(diarioBordoPorPeriodoDto.AulaId, diarioBordoPorPeriodoDto);
+
+                        return diarioBordoPorPeriodoDto;
+                    }, new
+                    {
+                        turmaCodigo,
+                        componenteCurricularFilho = int.Parse(componenteCurricularFilhoCodigo),
+                        componenteCurricularPaiCodigo,
+                        dataFim,
+                        dataInicio
+                    });
+
+                return lookup.Values;
+
             }
             catch(Exception ex)
             {
