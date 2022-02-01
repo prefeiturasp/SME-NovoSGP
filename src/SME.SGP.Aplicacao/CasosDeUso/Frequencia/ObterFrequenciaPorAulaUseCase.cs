@@ -222,12 +222,10 @@ namespace SME.SGP.Aplicacao
             return registroFrequenciaDto;
         }
 
-        private bool NaoExibirAlunoFrequencia(AlunoPorTurmaResposta aluno, Aula aula, PeriodoEscolar periodoEscolar)
+        public bool NaoExibirAlunoFrequencia(AlunoPorTurmaResposta aluno, Aula aula, PeriodoEscolar periodoEscolar)
         {
             DateTime dataSituacao = DateTime.Parse(aluno.DataSituacao.ToString("dd/MM/yyyy"));
-            DateTime dataMatricula = DateTime.Parse(aluno.DataMatricula.ToString("dd/MM/yyyy"));
-            return (aluno.EstaInativo(aula.DataAula) && (dataSituacao < periodoEscolar.PeriodoInicio || dataSituacao < aula.DataAula)) ||
-                   (aluno.Inativo && (aula.DataAula >= dataMatricula));
+            return (!aluno.DeveMostrarNaChamada(aula.DataAula) || (dataSituacao < periodoEscolar.PeriodoInicio));
         }
     }
 }
