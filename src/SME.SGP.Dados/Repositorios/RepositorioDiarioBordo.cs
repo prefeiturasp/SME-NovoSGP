@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<DiarioBordo> ObterPorAulaId(long aulaId,long componenteCurricularId)
         {
-            var sql = @"select id, aula_id, devolutiva_id, planejamento, reflexoes_replanejamento, turma_id,
+            var sql = @"select id, aula_id, devolutiva_id, planejamento, turma_id,
                     criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf, inserido_cj
                     from diario_bordo where aula_id = @aulaId and componente_curricular_id  = @componenteCurricularId; ";
 
@@ -67,7 +67,6 @@ namespace SME.SGP.Dados.Repositorios
                 var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
                 query = $@"select db.planejamento as DescricaoPlanejamento
-                            , db.reflexoes_replanejamento as DescricaoReflexoes
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data 
                             , db.inserido_cj as InseridoCJ
@@ -146,7 +145,6 @@ namespace SME.SGP.Dados.Repositorios
                 new { devolutivaId });
 
             query = $@"select db.planejamento as DescricaoPlanejamento
-                            , db.reflexoes_replanejamento as DescricaoReflexoes
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data
                             , db.inserido_cj 
@@ -453,48 +451,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QueryAsync<QuantidadeDiariosDeBordoComDevolutivaEDevolutivaPendentePorTurmaAnoDto>(query.ToString(), parametros);
         }
 
-        public async Task<IEnumerable<QuantidadeDiariosDeBordoComESemReflexoesEReplanejamentosPorTurmaAnoDto>> ObterDiariosDeBordoComESemReflexoesEReplanejamentosAsync(int anoLetivo, Modalidade modalidade, DateTime dataAula, long? dreId, long? ueId)
-        {
-            var possuiFiltroUe = ueId.HasValue;
-            var query = new StringBuilder(DefinirSelectQueryDiariosDeBordoComESemReflexoesEReplanejamentos(possuiFiltroUe));
-
-            query.AppendLine(@"
-                from 
-	                diario_bordo db 
-                inner join 
-	                aula a 
-	                on db.aula_id = a.id 
-                inner join 
-	                turma t 
-	                on a.turma_id  = t.turma_id
-                inner join 
-	                ue u 
-	                on t.ue_id  = u.id
-                 where not db.excluido 
-                    and t.ano_letivo = @anoLetivo
-	                and t.modalidade_codigo = @modalidade
-	                and a.data_aula < @dataAula ");
-
-            if (dreId.HasValue)
-                query.AppendLine("and u.dre_id = @dreId ");
-
-            if (ueId.HasValue)
-                query.AppendLine("and u.id = @ueId ");
-
-            query.AppendLine(DefinirAgrupamentoQueryDiariosDeBordoComESemReflexoesEReplanejamentos(possuiFiltroUe));
-
-            var parametros = new
-            {
-                anoLetivo,
-                modalidade,
-                dataAula,
-                dreId,
-                ueId
-            };
-
-            return await database.QueryAsync<QuantidadeDiariosDeBordoComESemReflexoesEReplanejamentosPorTurmaAnoDto>(query.ToString(), parametros);
-        }
-
         private string DefinirSelectQueryDiariosDeBordoComDevolutivaEDevolutivaPendente(bool possuiFiltroDeUe) 
             => possuiFiltroDeUe
                 ? @"select
@@ -507,27 +463,7 @@ namespace SME.SGP.Dados.Repositorios
                         count(*) filter (where db.devolutiva_id is null) as DiariosComDevolutivasPendentes,
 	                    count(*) filter (where db.devolutiva_id is not null) as DiariosComDevolutivas";
 
-        private string DefinirSelectQueryDiariosDeBordoComESemReflexoesEReplanejamentos(bool possuiFiltroDeUe)
-            => possuiFiltroDeUe
-                ? @"select
-                        t.turma_id,
-                        t.nome as TurmaAno,
-                        count(*) filter (where db.reflexoes_replanejamento is null or db.reflexoes_replanejamento = '') as DiariosSemReflexoesEReplanejamento,
-	                    count(*) filter (where db.reflexoes_replanejamento is not null and db.reflexoes_replanejamento != '') as DiariosComReflexoesEReplanejamento"
-                : @"select
-                        t.ano as TurmaAno,
-                        count(*) filter (where db.reflexoes_replanejamento is null or db.reflexoes_replanejamento = '') as DiariosSemReflexoesEReplanejamento,
-	                    count(*) filter (where db.reflexoes_replanejamento is not null and db.reflexoes_replanejamento != '') as DiariosComReflexoesEReplanejamento";
-
         private string DefinirAgrupamentoQueryDiariosDeBordoComDevolutivaEDevolutivaPendente(bool possuiFiltroDeUe) 
-            => possuiFiltroDeUe
-                ? @"group by
-                        t.turma_id,
-	                    t.nome"
-                : @"group by
-                        t.ano";
-
-        private string DefinirAgrupamentoQueryDiariosDeBordoComESemReflexoesEReplanejamentos(bool possuiFiltroDeUe)
             => possuiFiltroDeUe
                 ? @"group by
                         t.turma_id,

@@ -6,7 +6,6 @@ namespace SME.SGP.Infra
     {
         public long AulaId { get; set; }
         public string Planejamento { get; set; }
-        public string ReflexoesReplanejamento { get; set; }
         public long ComponenteCurricularId { get; set; }
     }
 

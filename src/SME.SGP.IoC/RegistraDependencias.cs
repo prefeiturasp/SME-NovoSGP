@@ -708,7 +708,6 @@ namespace SME.SGP.IoC
 
             // Dashboard devolutivas
             services.TryAddScoped<IObterGraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteUseCase, ObterGraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteUseCase>();
-            services.TryAddScoped<IObterDiariosDeBordoComESemReflexoesEReplanejamentosUseCase, ObterDiariosDeBordoComESemReflexoesEReplanejamentosUseCase>();
             services.TryAddScoped<IObterDevolutivasEstimadasEConfirmadasUseCase, ObterDevolutivasEstimadasEConfirmadasUseCase>();
             services.TryAddScoped<IObterPeriodoDeDiasDevolutivaUseCase, ObterPeriodoDeDiasDevolutivaUseCase>();
             services.TryAddScoped<IObterUltimaConsolidacaoDevolutivaUseCase, ObterUltimaConsolidacaoDevolutivaUseCase>();
