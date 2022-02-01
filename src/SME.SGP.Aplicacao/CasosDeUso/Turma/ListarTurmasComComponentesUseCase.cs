@@ -72,7 +72,8 @@ namespace SME.SGP.Aplicacao
 
             var componentes = MapearParaDtoComPaginacao(turmasPaginadas, componentesRetorno);
 
-            return await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.Bimestre, usuario);
+            var retorno = await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.Bimestre, usuario);
+            return retorno;
         }
 
         private PaginacaoResultadoDto<TurmaComComponenteDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
@@ -104,7 +105,7 @@ namespace SME.SGP.Aplicacao
                 Id = turmas.Id,
                 NomeTurma = turmas.NomeTurmaFormatado(nomeComponente),
                 TurmaCodigo = turmas.TurmaCodigo,
-                ComponenteCurricularCodigo = turmas.ComponenteCurricularCodigo,
+                ComponenteCurricularCodigo = turmas.TerritorioSaber ? turmas.ComponenteCurricularTerritorioSaberCodigo : turmas.ComponenteCurricularCodigo,
                 Turno = turmas.Turno.ObterNome()
             };
         }
