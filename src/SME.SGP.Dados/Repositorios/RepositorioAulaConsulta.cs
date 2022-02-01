@@ -1089,7 +1089,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto>(query, new { turmaCodigo, componenteCurricularId, dataInicio, dataFim });
         }
 
-        public async Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterAulasDiariosPorPeriodo(string turmaCodigo, string componenteCurricularPaiCodigo, DateTime dataFim, DateTime dataInicio)
+        public async Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterAulasDiariosPorPeriodo(string turmaCodigo, string componenteCurricularFilhoCodigo, string componenteCurricularPaiCodigo, DateTime dataFim, DateTime dataInicio)
         {
             try
             {
@@ -1102,7 +1102,7 @@ namespace SME.SGP.Dados.Repositorios
                                 case when a.tipo_aula = 2 then 1 else 0 end EhReposicao
                          from aula a
                          inner join turma t on a.turma_id = t.turma_id
-                         left join diario_bordo db on a.id = db.aula_id
+                         left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilho
                          where t.turma_id = @turmaCodigo
                            and a.disciplina_id = @componenteCurricularPaiCodigo 
                            and not a.excluido
@@ -1113,6 +1113,7 @@ namespace SME.SGP.Dados.Repositorios
                                                         new
                                                         {
                                                             turmaCodigo,
+                                                            componenteCurricularFilho = int.Parse(componenteCurricularFilhoCodigo),
                                                             componenteCurricularPaiCodigo,
                                                             dataFim,
                                                             dataInicio

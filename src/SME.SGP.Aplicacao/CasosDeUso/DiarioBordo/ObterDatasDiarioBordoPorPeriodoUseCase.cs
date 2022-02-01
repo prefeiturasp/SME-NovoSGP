@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             var componentePai = await mediator.Send(new ObterCodigoComponentePaiQuery(componenteCurricularId));
 
-            var diariosBordo = await mediator.Send(new ObterDatasDiarioBordoPorPeriodoQuery(turmaCodigo, dataInicio, dataFim, componentePai));
+            var diariosBordo = await mediator.Send(new ObterDatasDiarioBordoPorPeriodoQuery(turmaCodigo, dataInicio, dataFim, componenteCurricularId.ToString(), componentePai));
 
             return diariosBordo.OrderByDescending(a => a.DataAula).Distinct();
         }
