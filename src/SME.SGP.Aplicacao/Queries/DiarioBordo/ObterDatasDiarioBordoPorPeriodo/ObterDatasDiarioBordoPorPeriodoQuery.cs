@@ -13,13 +13,15 @@ namespace SME.SGP.Aplicacao
         public DateTime DataInicio { get; set; }
         public DateTime DataFim { get; set; }
         public string ComponenteCurricularPaiCodigo { get; set; }
+        public string ComponenteCurricularFilhoCodigo { get; set; }
 
-        public ObterDatasDiarioBordoPorPeriodoQuery(string turmaCodigo, DateTime dataInicio, DateTime dataFim, string componenteCurricularPaiCodigo)
+        public ObterDatasDiarioBordoPorPeriodoQuery(string turmaCodigo, DateTime dataInicio, DateTime dataFim, string componenteCurricularFilhoCodigo, string componenteCurricularPaiCodigo)
         {
             TurmaCodigo = turmaCodigo;
             DataInicio = dataInicio;
             DataFim = dataFim;
             ComponenteCurricularPaiCodigo = componenteCurricularPaiCodigo;
+            ComponenteCurricularFilhoCodigo = componenteCurricularFilhoCodigo;
         }
     }
 
@@ -41,7 +43,11 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(a => a.ComponenteCurricularPaiCodigo)
                .NotEmpty()
-               .WithMessage("É necessário informar o componente curricular para consultar as datas das aulas com/sem diário de bordo");
+               .WithMessage("É necessário informar o componente curricular pai para consultar as datas das aulas com/sem diário de bordo");
+
+            RuleFor(a => a.ComponenteCurricularFilhoCodigo)
+               .NotEmpty()
+               .WithMessage("É necessário informar o componente curricular filho para consultar as datas das aulas com/sem diário de bordo");
         }
     }
 }
