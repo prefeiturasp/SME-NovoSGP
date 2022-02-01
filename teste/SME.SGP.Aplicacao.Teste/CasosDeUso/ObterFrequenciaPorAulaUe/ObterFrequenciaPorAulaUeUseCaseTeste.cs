@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         }
 
         [Fact]
-        public async Task Nao_Deve_Exibir_Aluno_Inativo_Durante_Bimestre()
+        public async Task Deve_Exibir_Aluno_Inativo_Durante_Bimestre()
         {
             var aluno = new AlunoPorTurmaResposta
             {
