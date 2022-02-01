@@ -230,30 +230,24 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<DiarioBordoResumoDto>> ObterListagemDiarioBordoPorPeriodoPaginado(long turmaId, string componenteCurricularPaiCodigo, long componenteCurricularFilhoCodigo, DateTime? periodoInicio, DateTime? periodoFim, Paginacao paginacao)
         {
+            try
+            {
+
+           
             StringBuilder condicao = new StringBuilder();
 
             condicao.AppendLine(@"from aula a
                          inner join turma t on a.turma_id = t.turma_id
-                         inner join diario_bordo db on a.id = db.aula_id
+                         left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilhoCodigo
                          where t.id = @turmaId
-                           and db.componente_curricular_id = @componenteCurricularFilhoCodigo 
+                           and a.disciplina_id = @componenteCurricularPaiCodigo 
                            and not a.excluido ");
-
 
             if (periodoInicio.HasValue)
                 condicao.AppendLine(" and a.data_aula::date >= @periodoInicio ");
 
             if (periodoFim.HasValue)
                 condicao.AppendLine(" and a.data_aula::date <= @periodoFim ");
-
-            condicao.AppendLine(@"union all
-                           select null id, a.data_aula DataAula, null CodigoRf, null Nome, null Tipo, a.id AulaId, null InseridoCJ, true Pendente 
-                         from aula a
-                         inner join turma t on a.turma_id = t.turma_id
-                         where t.id = @turmaId
-                           and a.disciplina_id = @componenteCurricularPaiCodigo
-                           and not a.excluido
-                           and not exists (select 1 from diario_bordo db where db.componente_curricular_id = @componenteCurricularFilhoCodigo and db.aula_id = a.id)");
 
             if (periodoInicio.HasValue)
                 condicao.AppendLine(" and a.data_aula::date >= @periodoInicio ");
@@ -271,7 +265,9 @@ namespace SME.SGP.Dados.Repositorios
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
-            query = $"select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, db.inserido_cj InseridoCJ, false Pendente {condicao} order by dataaula desc {offSet} ";
+            query = $"select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, " +
+                    $"db.inserido_cj InseridoCJ, " +
+                    $"case when db.id is null then true else false end Pendente {condicao} order by dataaula desc {offSet} ";
 
             return new PaginacaoResultadoDto<DiarioBordoResumoDto>()
             {
@@ -289,6 +285,11 @@ namespace SME.SGP.Dados.Repositorios
                 TotalRegistros = totalRegistrosDaQuery,
                 TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
             };
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
 
