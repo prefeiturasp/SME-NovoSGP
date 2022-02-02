@@ -3,9 +3,6 @@ using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -26,23 +23,23 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         {
             var aluno = new AlunoPorTurmaResposta
             {
-                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Concluido,
+                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                 DataMatricula = DateTime.Parse("2022-01-01"),
                 DataAtualizacaoContato = DateTime.Parse("2022-01-01"),
                 DataSituacao = DateTime.Parse("2022-01-01"),
             };
             var aula = new Aula
             {
-                DataAula = DateTime.Parse("2022-01-01"),
+                DataAula = DateTime.Parse("2022-01-02"),
             };
             var periodo = new PeriodoEscolar
             {
-                PeriodoInicio = DateTime.Parse("2022-01-02"),
+                PeriodoInicio = DateTime.Parse("2021-12-31"),
             };
 
             var naoExibirAlunoFrequencia  = obterFrequenciaPorAulaUeUseCase.NaoExibirAlunoFrequencia(aluno,aula,periodo);
 
-            Assert.True(naoExibirAlunoFrequencia,"Aluno não está ativo dentro do Bimestre");
+            Assert.False(naoExibirAlunoFrequencia,"Aluno não está ativo dentro do Bimestre");
         }
 
         [Fact]
@@ -70,14 +67,15 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         }
 
         [Fact]
-        public async Task Deve_Exibir_Aluno_Inativo_Durante_Bimestre()
+        public async Task Deve_Exibir_Aluno_Inativo_Antes_Inicio_Aula()
         {
             var aluno = new AlunoPorTurmaResposta
             {
                 CodigoSituacaoMatricula = SituacaoMatriculaAluno.Desistente,
-                DataMatricula = DateTime.Parse("2022-01-11"),
-                DataAtualizacaoContato = DateTime.Parse("2022-01-11"),
-                DataSituacao = DateTime.Parse("2022-01-11"),
+                DataMatricula = DateTime.Parse("2022-01-01"),
+                DataAtualizacaoContato = DateTime.Parse("2022-01-10"),
+                DataSituacao = DateTime.Parse("2022-01-10"),
+                NumeroAlunoChamada = 1
             };
             var aula = new Aula
             {
@@ -90,55 +88,53 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             var naoExibirAlunoFrequencia = obterFrequenciaPorAulaUeUseCase.NaoExibirAlunoFrequencia(aluno, aula, periodo);
 
-            Assert.False(naoExibirAlunoFrequencia, "Aluno está inativo durante o bimestre");
+            Assert.False(naoExibirAlunoFrequencia, "Aluno está Ativo durante o bimestre");
         }
 
         [Fact]
-        public async Task Nao_Deve_Exibir_Aluno_Ativo_Antes_Data_Aula()
+        public async Task Nao_Deve_Exibir_Aluno_Ativo_Depois_Data_Aula()
         {
             var aluno = new AlunoPorTurmaResposta
             {
-                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Concluido,
-                DataMatricula = DateTime.Parse("2022-01-11"),
-                DataAtualizacaoContato = DateTime.Parse("2022-01-11"),
-                DataSituacao = DateTime.Parse("2022-01-11"),
+                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
+                DataMatricula = DateTime.Parse("2022-01-31"),
+                DataSituacao = DateTime.Parse("2022-01-31"),
             };
             var aula = new Aula
             {
-                DataAula = DateTime.Parse("2022-01-10"),
+                DataAula = DateTime.Parse("2022-01-06"),
             };
             var periodo = new PeriodoEscolar
             {
-                PeriodoInicio = DateTime.Parse("2022-01-09"),
+                PeriodoInicio = DateTime.Parse("2022-01-01"),
             };
 
             var naoExibirAlunoFrequencia = obterFrequenciaPorAulaUeUseCase.NaoExibirAlunoFrequencia(aluno, aula, periodo);
 
-            Assert.False(naoExibirAlunoFrequencia, "Aluno está Ativo depois da data da Aula");
+            Assert.True(naoExibirAlunoFrequencia, "Aluno está Ativo depois da data da Aula");
         }
 
         [Fact]
-        public async Task Nao_Deve_Exibir_Aluno_Inativo_Antes_Inicio_Bimeste()
+        public async Task Nao_Deve_Exibir_Aluno_Inativo_Depois_Data_Aula()
         {
             var aluno = new AlunoPorTurmaResposta
             {
                 CodigoSituacaoMatricula = SituacaoMatriculaAluno.Desistente,
-                DataMatricula = DateTime.Parse("2022-01-08"),
-                DataAtualizacaoContato = DateTime.Parse("2022-01-08"),
-                DataSituacao = DateTime.Parse("2022-01-08"),
+                DataMatricula = DateTime.Parse("2022-01-30"),
+                DataSituacao = DateTime.Parse("2022-01-31"),
             };
             var aula = new Aula
             {
-                DataAula = DateTime.Parse("2022-01-10"),
+                DataAula = DateTime.Parse("2022-01-06"),
             };
             var periodo = new PeriodoEscolar
             {
-                PeriodoInicio = DateTime.Parse("2022-01-09"),
+                PeriodoInicio = DateTime.Parse("2022-01-01"),
             };
 
             var naoExibirAlunoFrequencia = obterFrequenciaPorAulaUeUseCase.NaoExibirAlunoFrequencia(aluno, aula, periodo);
 
-            Assert.True(naoExibirAlunoFrequencia, "Aluno está Ativo antes do inicio do bimestre");
+            Assert.True(naoExibirAlunoFrequencia, "Aluno está Ativo depois do inicio do bimestre e depois da data da aula");
         }
 
     }
