@@ -70,10 +70,32 @@ namespace SME.SGP.Aplicacao
 
             var componentesRetorno = await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(componentesCodigos));
 
+            turmasPaginadas = await MapearNomeFiltroTurmas(turmasPaginadas.Items.Select(c => c.TurmaCodigo.ToString()).ToArray(),turmasPaginadas);
+
             var componentes = MapearParaDtoComPaginacao(turmasPaginadas, componentesRetorno);
 
             var retorno = await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.Bimestre, usuario);
             return retorno;
+        }
+
+        private async Task<PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>> MapearNomeFiltroTurmas(string[] turmasCodigos, PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas)
+        {
+            var nomesFiltro = await mediator.Send(new ObterTurmasNomeFiltroPorTurmasCodigosQuery(turmasCodigos));
+            if (nomesFiltro !=null && nomesFiltro.Any())
+            {
+                turmasPaginadas.Items.ToList().ForEach(item =>
+                {
+                    item.NomeFiltro = nomesFiltro?.FirstOrDefault(n => n.TurmaCodigo == item.TurmaCodigo.ToString()).NomeFiltro;
+                    item.SerieEnsino = nomesFiltro?.FirstOrDefault(n => n.TurmaCodigo == item.TurmaCodigo.ToString()).SerieEnsino;
+                }); 
+            }
+
+            return new PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>
+            {
+                Items = turmasPaginadas.Items,
+                TotalPaginas = turmasPaginadas.TotalPaginas,
+                TotalRegistros = turmasPaginadas.TotalRegistros
+            };
         }
 
         private PaginacaoResultadoDto<TurmaComComponenteDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
@@ -103,7 +125,7 @@ namespace SME.SGP.Aplicacao
             return turmas == null ? null : new TurmaComComponenteDto
             {
                 Id = turmas.Id,
-                NomeTurma = turmas.NomeTurmaFormatado(nomeComponente),
+                NomeTurma = (turmas.Ano == null && turmas.SerieEnsino == null && turmas.NomeFiltro != null) ? turmas.NomeTurmaFiltroFormatado(): turmas.NomeTurmaFormatado(nomeComponente),
                 TurmaCodigo = turmas.TurmaCodigo,
                 ComponenteCurricularCodigo = turmas.TerritorioSaber ? turmas.ComponenteCurricularTerritorioSaberCodigo : turmas.ComponenteCurricularCodigo,
                 Turno = turmas.Turno.ObterNome()
