@@ -15,5 +15,6 @@ namespace SME.SGP.Infra
         public string AuditoriaAlteracao { get; set; }
         public string AuditoriaInclusao { get; set; }
         public bool PeriodoAberto { get; set; }
+        public bool EhRegencia { get; set; }
     }
 }
