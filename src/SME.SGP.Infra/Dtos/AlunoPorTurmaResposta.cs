@@ -62,9 +62,9 @@ namespace SME.SGP.Infra
             return SituacoesAtiva.Contains(CodigoSituacaoMatricula);
         }
 
-        public bool DeveMostrarNaChamada(DateTime dataAula)
+        public bool DeveMostrarNaChamada(DateTime dataAula, DateTime periodoInicio)
         {
-            return EstaAtivo(dataAula) || NumeroAlunoChamada > 0;
+            return EstaAtivo(dataAula) || (DataSituacao.Date > periodoInicio.Date && NumeroAlunoChamada > 0);
         }
 
         /// <summary>
