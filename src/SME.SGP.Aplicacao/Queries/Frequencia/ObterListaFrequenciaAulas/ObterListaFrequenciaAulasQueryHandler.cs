@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             registrosFrequencias.CarregarAuditoria(request.RegistrosFrequenciaAlunos);
 
             foreach (var aluno in request.AlunosDaTurma
-                                    .Where(a => a.DeveMostrarNaChamada(request.DataInicio))
+                                    .Where(a => a.DeveMostrarNaChamada(request.DataInicio, request.PeriodoEscolar.PeriodoInicio))
                                     .OrderBy(c => c.NomeAluno))
             {
                 // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou

@@ -138,8 +138,6 @@
         public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
         public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
 
-        public const string SincronizarDadosFrequenciaMigracao = "sgp.migracao.frequencia.sync";
-        public const string SincronizarDadosTurmasFrequenciaMigracao = "sgp.migracao.frequencia.turmas.sync";
         public const string CarregarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.carregar";
         public const string SincronizarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.sync";
       
