@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            var chaveCache = $"Disciplinas-{codigoTurma}-{usuarioLogado.PerfilAtual}";
+            var chaveCache = $"Disciplinas-{codigoTurma}-{usuarioLogado.PerfilAtual}-{realizarAgrupamentoComponente}";
 
             var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
 
