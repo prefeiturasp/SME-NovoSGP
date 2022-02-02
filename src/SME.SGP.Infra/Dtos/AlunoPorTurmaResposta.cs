@@ -72,8 +72,8 @@ namespace SME.SGP.Infra
         /// </summary>
         /// <param name="dataBase">Data a se considerar para verificar a situação do aluno, Ex: Data da aula</param>
         /// <returns></returns>
-        public bool EstaAtivo(DateTime dataBase) => (SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date <= dataBase.Date) || 
-                                                    dataBase.Date <= DataSituacao.Date ||
+        public bool EstaAtivo(DateTime dataBase) => (SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date <= dataBase.Date) ||
+                                                    ((DataSituacao <= dataBase.Date) && SituacoesAtiva.Contains(CodigoSituacaoMatricula)) ||
                                                     CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido;
 
         /// <summary>
