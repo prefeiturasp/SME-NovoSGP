@@ -103,7 +103,8 @@ namespace SME.SGP.Dados.Repositorios
                            and pe.bimestre = @bimestre
                            and a.turma_id = @turmaId
                            and a.tipo_aula = @tipoAula
-                           and a.disciplina_id = @disciplinaId ");
+                           and a.disciplina_id = @disciplinaId 
+                           and a.data_aula between pe.periodo_inicio and pe.periodo_fim ");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
                 new
