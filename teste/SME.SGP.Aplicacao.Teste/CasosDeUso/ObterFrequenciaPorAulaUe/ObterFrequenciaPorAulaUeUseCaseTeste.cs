@@ -3,9 +3,6 @@ using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -70,14 +67,15 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         }
 
         [Fact]
-        public async Task Nao_Deve_Exibir_Aluno_Inativo_Antes_Inicio_Aula()
+        public async Task Deve_Exibir_Aluno_Inativo_Antes_Inicio_Aula()
         {
             var aluno = new AlunoPorTurmaResposta
             {
                 CodigoSituacaoMatricula = SituacaoMatriculaAluno.Desistente,
-                DataMatricula = DateTime.Parse("2022-01-10"),
+                DataMatricula = DateTime.Parse("2022-01-01"),
                 DataAtualizacaoContato = DateTime.Parse("2022-01-10"),
                 DataSituacao = DateTime.Parse("2022-01-10"),
+                NumeroAlunoChamada = 1
             };
             var aula = new Aula
             {
@@ -90,7 +88,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             var naoExibirAlunoFrequencia = obterFrequenciaPorAulaUeUseCase.NaoExibirAlunoFrequencia(aluno, aula, periodo);
 
-            Assert.True(naoExibirAlunoFrequencia, "Aluno está Ativo durante o bimestre");
+            Assert.False(naoExibirAlunoFrequencia, "Aluno está Ativo durante o bimestre");
         }
 
         [Fact]
