@@ -137,5 +137,55 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             Assert.True(naoExibirAlunoFrequencia, "Aluno está Ativo depois do inicio do bimestre e depois da data da aula");
         }
 
+        [Fact]
+        public async Task Deve_Exibir_Aluno_Transferido_Depois_Inicio_Bimestre_Numero_Chamada_Maior_Zero()
+        {
+            var aluno = new AlunoPorTurmaResposta
+            {
+                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Transferido,
+                DataMatricula = DateTime.Parse("2022-01-11"),
+                DataAtualizacaoContato = DateTime.Parse("2022-01-11"),
+                DataSituacao = DateTime.Parse("2022-01-17"),
+                NumeroAlunoChamada = 10,
+            };
+            var aula = new Aula
+            {
+                DataAula = DateTime.Parse("2022-01-14"),
+            };
+            var periodo = new PeriodoEscolar
+            {
+                PeriodoInicio = DateTime.Parse("2022-01-10"),
+            };
+
+            var naoExibirAlunoFrequencia = obterFrequenciaPorAulaUeUseCase.NaoExibirAlunoFrequencia(aluno, aula, periodo);
+
+            Assert.False(naoExibirAlunoFrequencia, "Aluno transferido depois do inicio do bimestre com número de chamada maior que zero");
+        }
+
+        [Fact]
+        public async Task Nao_Deve_Exibir_Aluno_Transferido_Depois_Inicio_Bimestre_Numero_Chamada_Igual_Zero()
+        {
+            var aluno = new AlunoPorTurmaResposta
+            {
+                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Transferido,
+                DataMatricula = DateTime.Parse("2022-01-11"),
+                DataAtualizacaoContato = DateTime.Parse("2022-01-11"),
+                DataSituacao = DateTime.Parse("2022-01-17"),
+                NumeroAlunoChamada = 0,
+            };
+            var aula = new Aula
+            {
+                DataAula = DateTime.Parse("2022-01-14"),
+            };
+            var periodo = new PeriodoEscolar
+            {
+                PeriodoInicio = DateTime.Parse("2022-01-10"),
+            };
+
+            var naoExibirAlunoFrequencia = obterFrequenciaPorAulaUeUseCase.NaoExibirAlunoFrequencia(aluno, aula, periodo);
+
+            Assert.True(naoExibirAlunoFrequencia, "Aluno transferido depois do inicio do bimestre com número de chamada igual a zero");
+        }
+
     }
 }
