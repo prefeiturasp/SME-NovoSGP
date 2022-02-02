@@ -64,7 +64,6 @@ namespace SME.SGP.Aplicacao
 
             if (componenteCurricularSelecionado.Regencia)
             {
-                fechamentoNotaConceitoTurma.EhRegencia = true;
                 disciplinasRegencia = await mediator.Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(turmaCodigo));
 
                 if (disciplinasRegencia == null || !disciplinasRegencia.Any())
