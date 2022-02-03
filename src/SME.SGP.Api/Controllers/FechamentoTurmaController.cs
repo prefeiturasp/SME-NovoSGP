@@ -100,5 +100,15 @@ namespace SME.SGP.Api.Controllers
             await useCase.Executar(turmaCodigo, bimestre);
             return Ok();
         }
+
+        [HttpPost("salvar-fechamento")]
+        [ProducesResponseType(typeof(AuditoriaPersistenciaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> SalvarFechamento([FromBody] FechamentoTurmaDisciplinaDto fechamentoTurma, [FromServices] IInserirFechamentoTurmaDisciplinaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(fechamentoTurma));
+        }
     }
 }
