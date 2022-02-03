@@ -253,6 +253,7 @@ namespace SME.SGP.Dados.Repositorios
                          where t.id = @turmaId
                            and a.disciplina_id = @componenteCurricularPaiCodigo
                            and not a.excluido
+                           and a.data_aula <= NOW()
                            and not exists (select 1 from diario_bordo db where db.componente_curricular_id = @componenteCurricularFilhoCodigo and db.aula_id = a.id)");
 
             if (periodoInicio.HasValue)
