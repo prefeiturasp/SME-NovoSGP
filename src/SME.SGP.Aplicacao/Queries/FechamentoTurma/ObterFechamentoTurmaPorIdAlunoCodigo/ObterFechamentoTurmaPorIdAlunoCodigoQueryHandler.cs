@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public async Task<FechamentoTurma> Handle(ObterFechamentoTurmaPorIdAlunoCodigoQuery request, CancellationToken cancellationToken)
         {
             var fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(request.FechamentoTurmaId);
-            if (fechamentoTurma == null && !request.EhAnoAnterior)
+            if (fechamentoTurma == null)
                 throw new NegocioException("Fechamento da turma não localizado");
 
             var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
