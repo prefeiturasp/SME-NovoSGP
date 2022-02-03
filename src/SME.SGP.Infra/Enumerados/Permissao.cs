@@ -313,7 +313,7 @@
         [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 2, EhAlteracao = true, Url = "/configuracoes/tipo-avaliacao")]
         TA_A = 103,
 
-        [PermissaoMenu(Menu = "Aula prevista X Aula dada", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhInclusao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
+        [PermissaoMenu(Menu = "Aula prevista X Aula dada", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhInclusao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
         ADAP_I = 104,
 
         [PermissaoMenu(Menu = "Aula prevista X Aula dada", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhAlteracao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
