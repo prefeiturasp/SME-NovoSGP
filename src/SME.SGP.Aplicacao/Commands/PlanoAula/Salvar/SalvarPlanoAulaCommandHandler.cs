@@ -116,14 +116,14 @@ namespace SME.SGP.Aplicacao
                     }
                 unitOfWork.PersistirTransacao();
 
-                MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual,TipoArquivo.PlanoAula);
-                MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual,TipoArquivo.PlanoAulaRecuperacao);
-                MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
+                 var planoAulaDescricao = await MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual,TipoArquivo.PlanoAula);
+                 var recuperacaoAula = await MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual,TipoArquivo.PlanoAulaRecuperacao);
+                 var licaoCasa = await MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
 
                 planoAulaDto.Id = planoAula.Id;
-                planoAulaDto.Descricao = planoAula.Descricao;
-                planoAulaDto.RecuperacaoAula = planoAula.RecuperacaoAula;
-                planoAulaDto.LicaoCasa = planoAula.LicaoCasa;
+                planoAulaDto.Descricao = planoAulaDescricao;
+                planoAulaDto.RecuperacaoAula = recuperacaoAula;
+                planoAulaDto.LicaoCasa = licaoCasa;
 
                 //Se houver plano para copiar
                 if (planoAulaDto.CopiarConteudo != null)
@@ -158,16 +158,18 @@ namespace SME.SGP.Aplicacao
 
             return planoAula;
         }
-        private void MoverRemoverExcluidos(string novo, string atual, TipoArquivo tipo)
+        private async Task<string> MoverRemoverExcluidos(string novo, string atual, TipoArquivo tipo)
         {
+            string novaDescricao = string.Empty;
             if (!string.IsNullOrEmpty(novo))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(tipo, atual, novo));
+                 novaDescricao = await mediator.Send(new MoverArquivosTemporariosCommand(tipo, atual, novo));
             }
             if (!string.IsNullOrEmpty(atual))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
+                 await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
             }
+            return novaDescricao;
         }
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
