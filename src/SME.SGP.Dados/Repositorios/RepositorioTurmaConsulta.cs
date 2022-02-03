@@ -382,7 +382,7 @@ namespace SME.SGP.Dados.Repositorios
         {
 
             var query = new StringBuilder(@"select distinct t.id as TurmaId,
-                                                     t.nome_filtro as nome       
+                                                     coalesce(nome_filtro,nome) as nome       
                                                 from turma t 
                                                inner join ue on ue.id = t.ue_id
                                                inner join dre on dre.id = ue.dre_id
@@ -439,7 +439,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and t.ano_letivo = @anoLetivo
                                 and not t.historica 
                                 and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49)
-                            order by t.nome_filtro
+                            order by coalesce(t.nome_filtro,t.nome)
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
 
             query.AppendLine(@"select count(distinct (t.id))
