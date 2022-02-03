@@ -43,6 +43,54 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         }
 
         [Fact]
+        public async Task Deve_Exibir_Aluno_Ativo_No_Bimestre_Entrou_Antes_Aula()
+        {
+            var aluno = new AlunoPorTurmaResposta
+            {
+                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
+                DataMatricula = DateTime.Parse("2022-01-01"),
+                DataAtualizacaoContato = DateTime.Parse("2022-01-01"),
+                DataSituacao = DateTime.Parse("2022-01-19"),
+            };
+            var aula = new Aula
+            {
+                DataAula = DateTime.Parse("2022-01-22"),
+            };
+            var periodo = new PeriodoEscolar
+            {
+                PeriodoInicio = DateTime.Parse("2021-12-31"),
+            };
+
+            var naoExibirAlunoFrequencia = obterFrequenciaPorAulaUeUseCase.NaoExibirAlunoFrequencia(aluno, aula, periodo);
+
+            Assert.False(naoExibirAlunoFrequencia, "Aluno ativo dentro do Bimestre entrou antes da aula");
+        }
+
+        [Fact]
+        public async Task Nao_Deve_Exibir_Aluno_Ativo_Bimestre_Entrou_Depois_Aula()
+        {
+            var aluno = new AlunoPorTurmaResposta
+            {
+                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
+                DataMatricula = DateTime.Parse("2022-01-01"),
+                DataAtualizacaoContato = DateTime.Parse("2022-01-01"),
+                DataSituacao = DateTime.Parse("2022-01-19"),
+            };
+            var aula = new Aula
+            {
+                DataAula = DateTime.Parse("2022-01-18"),
+            };
+            var periodo = new PeriodoEscolar
+            {
+                PeriodoInicio = DateTime.Parse("2021-12-31"),
+            };
+
+            var naoExibirAlunoFrequencia = obterFrequenciaPorAulaUeUseCase.NaoExibirAlunoFrequencia(aluno, aula, periodo);
+
+            Assert.True(naoExibirAlunoFrequencia, "Aluno está Ativo no bimestre e entrou depois da data da aula");
+        }
+
+        [Fact]
         public async Task Deve_Exibir_Aluno_Ativo_Depois_Inicio_Bimestre()
         {
             var aluno = new AlunoPorTurmaResposta
@@ -138,7 +186,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         }
 
         [Fact]
-        public async Task Deve_Exibir_Aluno_Transferido_Depois_Inicio_Bimestre_Numero_Chamada_Maior_Zero()
+        public async Task Deve_Exibir_Aluno_Transferido_No_Bimestre_Com_Numero_De_Chamada()
         {
             var aluno = new AlunoPorTurmaResposta
             {
@@ -159,11 +207,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             var naoExibirAlunoFrequencia = obterFrequenciaPorAulaUeUseCase.NaoExibirAlunoFrequencia(aluno, aula, periodo);
 
-            Assert.False(naoExibirAlunoFrequencia, "Aluno transferido depois do inicio do bimestre com número de chamada maior que zero");
+            Assert.False(naoExibirAlunoFrequencia, "Aluno transferido no bimestre com número de chamada");
         }
 
         [Fact]
-        public async Task Nao_Deve_Exibir_Aluno_Transferido_Depois_Inicio_Bimestre_Numero_Chamada_Igual_Zero()
+        public async Task Nao_Deve_Exibir_Aluno_Transferido_No_Bimestre_Sem_Numero_De_Chamada()
         {
             var aluno = new AlunoPorTurmaResposta
             {
@@ -184,7 +232,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             var naoExibirAlunoFrequencia = obterFrequenciaPorAulaUeUseCase.NaoExibirAlunoFrequencia(aluno, aula, periodo);
 
-            Assert.True(naoExibirAlunoFrequencia, "Aluno transferido depois do inicio do bimestre com número de chamada igual a zero");
+            Assert.True(naoExibirAlunoFrequencia, "Aluno transferido no bimestre sem número de chamada");
         }
 
     }
