@@ -62,9 +62,9 @@ namespace SME.SGP.Infra
             return SituacoesAtiva.Contains(CodigoSituacaoMatricula);
         }
 
-        public bool DeveMostrarNaChamada(DateTime dataAula)
+        public bool DeveMostrarNaChamada(DateTime dataAula, DateTime periodoInicio)
         {
-            return EstaAtivo(dataAula) || NumeroAlunoChamada > 0;
+            return EstaAtivo(dataAula) || (DataSituacao.Date > periodoInicio.Date && NumeroAlunoChamada > 0);
         }
 
         /// <summary>
@@ -72,8 +72,8 @@ namespace SME.SGP.Infra
         /// </summary>
         /// <param name="dataBase">Data a se considerar para verificar a situação do aluno, Ex: Data da aula</param>
         /// <returns></returns>
-        public bool EstaAtivo(DateTime dataBase) => SituacoesAtiva.Contains(CodigoSituacaoMatricula) || 
-                                                    dataBase.Date <= DataSituacao.Date ||
+        public bool EstaAtivo(DateTime dataBase) => (SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date <= dataBase.Date) ||
+                                                    
                                                     CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido;
 
         /// <summary>

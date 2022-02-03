@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
             return AdministradoresUeId;
         }
 
-        private async Task<DreUeDto> ObterCodigoDREUE(long ueId)
+        private async Task<DreUeCodigoDto> ObterCodigoDREUE(long ueId)
             => await mediator.Send(new ObterCodigoUEDREPorIdQuery(ueId));
 
         private async Task AtribuirPerfilUsuario(long usuarioId, PerfilUsuario perfil, long pendenciaPerfilId)

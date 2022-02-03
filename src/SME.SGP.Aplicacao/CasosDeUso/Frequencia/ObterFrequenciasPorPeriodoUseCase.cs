@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             var componenteCurricularId = long.Parse(param.DisciplinaId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turma = await ObterTurma(param.TurmaId);
-            var alunosDaTurma = await ObterAlunos(param.TurmaId.ToString(), param.DataInicio);
+            var alunosDaTurma = await ObterAlunos(param.TurmaId.ToString(), param.DataFim);
             var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj());
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));

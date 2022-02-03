@@ -16,8 +16,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.PlanoAula, "plano_aula",
-                new long[] { (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio }));
+            var filtro = param.ObterObjetoMensagem<DreUeDto>();
+
+            var aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.PlanoAula,
+                                                                                 "plano_aula",
+                                                                                 new long[] { (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio },
+                                                                                 filtro.DreId));
 
             if (aulas != null && aulas.Any())
                 await RegistraPendencia(aulas, TipoPendencia.PlanoAula);

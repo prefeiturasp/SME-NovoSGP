@@ -270,16 +270,16 @@ namespace SME.SGP.Dados.Repositorios
 				                ,pe.periodo_fim as PeriodoFim
 				                ,pe.migrado
 				                ,a.aula_cj  as AulaCj
-                                from periodo_escolar pe
-                                inner join aula a on a.tipo_calendario_id = pe.tipo_calendario_id 
-                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
-                                inner join turma t on t.ano_letivo = tc.ano_letivo and t.turma_id = @turmaCodigo
+                                from tipo_calendario tc
+                                inner join periodo_escolar pe on tc.id = pe.tipo_calendario_id 
+                                inner join aula a  on a.tipo_calendario_id  = tc.id 
+                                and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
                                 where tc.modalidade = @modalidade
+                                and a.turma_id = @turmaCodigo
                                 and pe.bimestre = @bimestre
-                                and not tc.excluido");
+                                and not tc.excluido and not a.excluido ");
             if (aulaCj)
                 sql.AppendLine(" and a.aula_cj = true ");
-
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarBimestreDto>(sql.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre });
         }
 

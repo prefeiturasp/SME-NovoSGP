@@ -380,8 +380,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, string[] turmasCodigo, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
         {
+
             var query = new StringBuilder(@"select distinct t.id as TurmaId,
-                                                     t.nome       
+                                                     coalesce(nome_filtro,nome) as nome       
                                                 from turma t 
                                                inner join ue on ue.id = t.ue_id
                                                inner join dre on dre.id = ue.dre_id
@@ -390,7 +391,7 @@ namespace SME.SGP.Dados.Repositorios
                                                left join periodo_escolar pe
 	                                              on tc.id = pe.tipo_calendario_id
                                                where dre.id = @dreId
-                                                 and ue.id = @ueId and t.tipo_turma in (1,2,7) ");
+                                                 and ue.id = @ueId and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49) ");
 
             if (!listarTodasTurmas)
                 query.AppendLine("and t.turma_id = ANY(@turmasCodigo) ");
@@ -437,8 +438,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(@" and t.modalidade_codigo = @modalidade
                                 and t.ano_letivo = @anoLetivo
                                 and not t.historica 
-                                and t.tipo_turma in (1,2,7)
-                            order by t.nome
+                                and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49)
+                            order by coalesce(t.nome_filtro,t.nome)
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
 
             query.AppendLine(@"select count(distinct (t.id))
@@ -466,7 +467,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(@"and t.modalidade_codigo = @modalidade 
                                and t.ano_letivo = @anoLetivo
                                and not t.historica
-                               and t.tipo_turma in (1,2,7)");
+                               and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49)");
 
 
             var retorno = new PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>();
@@ -803,6 +804,14 @@ namespace SME.SGP.Dados.Repositorios
                            and ue.ue_id = @ueCodigo ";
 
             return contexto.Conexao.QueryAsync<string>(query, new { anoLetivo, ueCodigo });
+        }
+
+        public async Task<IEnumerable<RetornoConsultaTurmaNomeFiltroDto>> ObterTurmasNomeFiltro(string[] turmasCodigos)
+        {
+            var query = @"select t.turma_id as TurmaCodigo,serie_ensino as SerieEnsino,nome_filtro as NomeFiltro from turma t 
+                       where t.turma_id =any(@turmasCodigos);";
+
+            return await contexto.Conexao.QueryAsync<RetornoConsultaTurmaNomeFiltroDto>(query, new { turmasCodigos });
         }
     }
 }

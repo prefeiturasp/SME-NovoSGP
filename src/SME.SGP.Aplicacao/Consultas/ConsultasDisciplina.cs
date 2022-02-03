@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            var chaveCache = $"Disciplinas-{codigoTurma}-{usuarioLogado.PerfilAtual}";
+            var chaveCache = $"Disciplinas-{codigoTurma}-{usuarioLogado.PerfilAtual}-{realizarAgrupamentoComponente}";
 
             var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
 
@@ -129,7 +129,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => (a.TerritorioSaber && a.CodigoComponenteTerritorioSaber > 0) ? a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular : a.Codigo == d.CodigoComponenteCurricular);
                     d.PossuiObjetivos = turma.AnoLetivo < Convert.ToInt32(dataInicioNovoSGP) ? false : componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
-                    d.CodigoComponenteCurricular = componenteEOL.Codigo;
+                    d.CodigoComponenteCurricular = componenteEOL.TerritorioSaber ? d.Id :componenteEOL.Codigo;
                     d.Regencia = componenteEOL.Regencia;
                     if (d.TerritorioSaber)
                         d.Nome = componenteEOL.Descricao;

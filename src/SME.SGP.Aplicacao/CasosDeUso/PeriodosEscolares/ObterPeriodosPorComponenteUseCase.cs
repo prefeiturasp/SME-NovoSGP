@@ -19,16 +19,20 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             
-            var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, componenteCodigo, bimestre,usuarioLogado.EhSomenteProfessorCj()));
-            var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            var periodoBimestre = await mediator.Send(new ObterPeriodoEscolaresPorTurmaBimestresAulaCjQuery(dadosTurma, bimestre,usuarioLogado.EhSomenteProfessorCj()));
             var listaPeriodos = new List<PeriodoEscolarComponenteDto>();
 
-            if (periodoEscolar.Any() && !ehRegencia)
-                listaPeriodos = SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula), exibirDataFutura);
-            else if(periodoBimestre != null)
-                listaPeriodos = SepararSemanasRegencia(periodoBimestre, exibirDataFutura);
-
+            if (ehRegencia)
+            {
+                var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
+                var periodoBimestre = await mediator.Send(new ObterPeriodoEscolaresPorTurmaBimestresAulaCjQuery(dadosTurma, bimestre, usuarioLogado.EhSomenteProfessorCj()));
+                listaPeriodos = periodoBimestre != null ? SepararSemanasRegencia(periodoBimestre, exibirDataFutura) : listaPeriodos;
+            }                
+            else
+            {
+                var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, componenteCodigo, bimestre, usuarioLogado.EhSomenteProfessorCj()));
+                listaPeriodos = periodoEscolar.Any() ? SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula), exibirDataFutura) : listaPeriodos;
+            }
+                
             return listaPeriodos;
         }
 

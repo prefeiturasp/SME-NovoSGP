@@ -77,7 +77,7 @@ namespace SME.SGP.Dados.Repositorios
                             and a.turma_id = @turmaId
                             and a.disciplina_id = @disciplinaId";
 
-            return database.Conexao.Query<bool>(query, new { data = data.Date, turmaId, disciplinaId }).SingleOrDefault();
+            return database.Conexao.Query<bool>(query, new { data = data.Date, turmaId, disciplinaId }).FirstOrDefault();
         }
 
         public async Task<PlanoAulaObjetivosAprendizagemDto> ObterPlanoAulaEObjetivosAprendizagem(long aulaId)

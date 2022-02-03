@@ -16,7 +16,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var aulas = await mediator.Send(new ObterPendenciasAtividadeAvaliativaQuery());
+            var filtro = param.ObterObjetoMensagem<DreUeDto>();
+
+            var aulas = await mediator.Send(new ObterPendenciasAtividadeAvaliativaQuery(filtro.DreId));
             if (aulas != null && aulas.Any())
                 await RegistraPendencia(aulas, TipoPendencia.Avaliacao);
 
