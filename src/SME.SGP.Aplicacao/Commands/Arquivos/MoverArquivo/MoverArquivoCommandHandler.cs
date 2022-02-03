@@ -28,7 +28,8 @@ namespace SME.SGP.Aplicacao
             MoverAquivo(caminhoArquivoTemp, caminhoArquivoFuncionalidade, nomeArquivo);
             await AlterarTipoArquivo(request.Tipo, request.Nome);
 
-            return $@"/{request.Tipo.Name()}/{DateTime.Now.Year}/{DateTime.Now.Month:00}/";
+            var retorno = $@"/{request.Tipo.Name()}/{DateTime.Now.Year}/{DateTime.Now.Month.ToString().PadLeft(2, '0')}/";
+            return retorno;
         }
 
         private async Task AlterarTipoArquivo(TipoArquivo tipo, string nomeArquivo)
