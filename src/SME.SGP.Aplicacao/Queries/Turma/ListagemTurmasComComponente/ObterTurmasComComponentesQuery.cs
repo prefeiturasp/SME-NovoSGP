@@ -2,6 +2,7 @@
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
@@ -21,8 +22,9 @@ namespace SME.SGP.Aplicacao
         public string CodigoRf { get; set; }
         public bool ConsideraHistorico { get; set; }
         public string ComponentesCurricularesDoProfessorCJ { get; set; }
+        public DateTime PeriodoEscolarInicio { get; set; }
 
-        public ObterTurmasComComponentesQuery(string ueCodigo, string dreCodigo, string turmaCodigo, int anoLetivo, int qtdeRegistros, int qtdeRegistrosIgnorados, int? bimestre, Modalidade? modalidade, int? semestre, bool ehProfessor, string codigoRf, bool consideraHistorico, string componentesCurricularesDoProfessorCJ)
+        public ObterTurmasComComponentesQuery(string ueCodigo, string dreCodigo, string turmaCodigo, int anoLetivo, int qtdeRegistros, int qtdeRegistrosIgnorados, int? bimestre, Modalidade? modalidade, int? semestre, bool ehProfessor, string codigoRf, bool consideraHistorico, string componentesCurricularesDoProfessorCJ, DateTime periodoEscolarInicio)
         {
             UeCodigo = ueCodigo;
             DreCodigo = dreCodigo;
@@ -37,6 +39,7 @@ namespace SME.SGP.Aplicacao
             CodigoRf = codigoRf;
             ConsideraHistorico = consideraHistorico;
             ComponentesCurricularesDoProfessorCJ = componentesCurricularesDoProfessorCJ;
+            PeriodoEscolarInicio = periodoEscolarInicio;
         }
 
         public class ObterTurmasComComponentesQueryValidator : AbstractValidator<ObterTurmasComComponentesQuery>
@@ -52,6 +55,9 @@ namespace SME.SGP.Aplicacao
                 RuleFor(c => c.AnoLetivo)
                    .NotEmpty()
                    .WithMessage("O ano letivo deve ser informado.");
+                RuleFor(c => c.PeriodoEscolarInicio)
+                   .NotEmpty()
+                   .WithMessage("O início do período escolar deve ser informado.");
             }
         }
     }

@@ -15,12 +15,18 @@ namespace SME.SGP.Infra
         public TipoTurnoEOL Turno { get; set; }
         public bool TerritorioSaber { get; set; }
         public string ComplementoTurmaEJA { get; set; }
-
+        public string SerieEnsino { get; set; }
+        public string NomeFiltro { get; set; }
         public string NomeTurmaFormatado(string componenteCurricularNome)
         {
             var complementoTurma = string.IsNullOrEmpty(ComplementoTurmaEJA) ? $"{Ano}ºAno" : ComplementoTurmaEJA.TrimEnd();
 
             return $"{Modalidade.ShortName()} - {NomeTurma} - {complementoTurma} - {componenteCurricularNome}";
+        }
+
+        public string NomeTurmaFiltroFormatado()
+        {
+            return $"{Modalidade.ShortName()} - {NomeFiltro}";
         }
 
     }

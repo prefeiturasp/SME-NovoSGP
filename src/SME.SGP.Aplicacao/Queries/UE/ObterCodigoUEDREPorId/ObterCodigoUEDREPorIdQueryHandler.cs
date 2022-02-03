@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCodigoUEDREPorIdQueryHandler : IRequestHandler<ObterCodigoUEDREPorIdQuery, DreUeDto>
+    public class ObterCodigoUEDREPorIdQueryHandler : IRequestHandler<ObterCodigoUEDREPorIdQuery, DreUeCodigoDto>
     {
         private readonly IRepositorioUeConsulta repositorioUe;
 
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }
 
-        public async Task<DreUeDto> Handle(ObterCodigoUEDREPorIdQuery request, CancellationToken cancellationToken)
+        public async Task<DreUeCodigoDto> Handle(ObterCodigoUEDREPorIdQuery request, CancellationToken cancellationToken)
             => await repositorioUe.ObterCodigosDreUePorId(request.UeId);
     }
 }
