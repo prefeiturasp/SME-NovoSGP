@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                                                                                          filtroTurmaDto.Bimestre,
                                                                                          filtroTurmaDto.Modalidade.Value,
                                                                                          filtroTurmaDto.Semestre,
-                                                                                         usuario.EhProfessor(),
+                                                                                         usuario.EhPerfilProfessor(),
                                                                                          usuario.CodigoRf,
                                                                                          filtroTurmaDto.ConsideraHistorico,
                                                                                          componentesCurricularesDoProfessorCJ,
