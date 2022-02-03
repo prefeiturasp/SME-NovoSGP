@@ -27,15 +27,10 @@ namespace SME.SGP.Aplicacao
             registrosFrequencias.CarregarAuditoria(request.RegistrosFrequenciaAlunos);
 
             foreach (var aluno in request.AlunosDaTurma
-                                    .Where(a => a.DeveMostrarNaChamada(request.DataInicio, request.PeriodoEscolar.PeriodoInicio))
+                                    .Where(a => a.DeveMostrarNaChamada(request.DataFim, request.PeriodoEscolar.PeriodoInicio))
                                     .OrderBy(c => c.NomeAluno))
             {
-                // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
-                // se a matrícula foi ativada após a data da aula                
-                if (aluno.EstaInativo(request.DataInicio) ||
-                   (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataMatricula > request.DataFim))
-                    continue;
-
+                
                 var frequenciaPreDefinida = request.FrequenciasPreDefinidas.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
 
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, request.Turma.AnoLetivo));
