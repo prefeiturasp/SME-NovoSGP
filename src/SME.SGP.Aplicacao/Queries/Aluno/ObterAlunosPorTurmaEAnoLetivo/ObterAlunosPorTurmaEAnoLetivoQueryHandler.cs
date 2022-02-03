@@ -21,7 +21,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEAnoLetivoQuery request, CancellationToken cancellationToken)
         {
-            var alunos = await _servicoEol.ObterAlunosPorTurma(request.CodigoTurma);
+            IEnumerable<AlunoPorTurmaResposta> alunos;
+            
+            if (request.AnoLetivo.HasValue)
+                alunos = await _servicoEol.ObterAlunosPorTurma(request.CodigoTurma, request.AnoLetivo.Value);
+            else
+                alunos = await _servicoEol.ObterAlunosPorTurma(request.CodigoTurma);
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException($"Não foi encontrado alunos para a turma {request.CodigoTurma}");

@@ -7,19 +7,21 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery : IRequest<string[]>
     {
-        public ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(int anoLetivo, string codigoAluno, IEnumerable<int> tiposTurmas, bool? consideraHistorico = null, DateTime? dataReferencia = null)
+        public ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(int anoLetivo, string codigoAluno, IEnumerable<int> tiposTurmas, bool? consideraHistorico = null, DateTime? dataReferencia = null, string ueCodigo = null)
         {
             AnoLetivo = anoLetivo;
             CodigoAluno = codigoAluno;
             TiposTurmas = tiposTurmas;
             DataReferencia = dataReferencia;
             ConsideraHistorico = VerificaConsideraHistorico(consideraHistorico);
+            UeCodigo = ueCodigo;
         }
         public int AnoLetivo { get; set; }
         public string CodigoAluno { get; set; }
         public IEnumerable<int> TiposTurmas { get; set; }
         public DateTime? DataReferencia { get; }
         public bool ConsideraHistorico { get; set; }
+        public string UeCodigo { get; set; }
 
         private bool VerificaConsideraHistorico(bool? consideraHistorico)
         {
