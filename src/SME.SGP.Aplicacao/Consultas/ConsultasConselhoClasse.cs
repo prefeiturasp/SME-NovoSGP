@@ -144,9 +144,6 @@ namespace SME.SGP.Aplicacao
                         
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestreFinal);
 
-            if (fechamentoTurma == null && !turma.EhAnoAnterior())
-                return default;
-
             var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
 
             var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
@@ -160,9 +157,9 @@ namespace SME.SGP.Aplicacao
 
             return new ConselhoClasseAlunoResumoDto()
             {
-                FechamentoTurmaId = fechamentoTurma?.Id,
-                ConselhoClasseId = conselhoClasse?.Id,
-                ConselhoClasseAlunoId = conselhoClasseAluno?.Id,
+                FechamentoTurmaId = fechamentoTurma?.Id ?? 0,
+                ConselhoClasseId = conselhoClasse?.Id ?? 0,
+                ConselhoClasseAlunoId = conselhoClasseAluno?.Id ?? 0,
                 TipoNota = tipoNota
             };
         }
