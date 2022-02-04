@@ -18,34 +18,26 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            try
-            {
-                var planosAtivos = await mediator.Send(new ObterPlanosAEEAtivosQuery());
+            var planosAtivos = await mediator.Send(new ObterPlanosAEEAtivosQuery());
 
-                foreach (var planoAEE in planosAtivos)
+            foreach (var planoAEE in planosAtivos)
+            {
+                var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, DateTime.Today.Year));
+                var turma = await ObterTurma(planoAEE.TurmaId);
+                Turma turmaAtual = null;
+                var etapaConcluida = false;
+                AlunoPorTurmaResposta ultimaMatricula = null;
+
+                if (turma.AnoLetivo != DateTime.Today.Year)
+                    etapaConcluida = DeterminaEtapaConcluida(matriculas, planoAEE.AlunoCodigo, turma, turmaAtual, ref ultimaMatricula);
+
+                if (matriculas.Any() && (!matriculas.Any(a => a.EstaAtivo(DateTime.Today)) || etapaConcluida))
                 {
-                    var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, DateTime.Today.Year));
-                    var turma = await ObterTurma(planoAEE.TurmaId);
-                    Turma turmaAtual = null;
-                    var etapaConcluida = false;
-                    AlunoPorTurmaResposta ultimaMatricula = null;
+                    if (ultimaMatricula == null)
+                        ultimaMatricula = matriculas.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
 
-                    if (turma.AnoLetivo != DateTime.Today.Year)
-                        etapaConcluida = DeterminaEtapaConcluida(matriculas, planoAEE.AlunoCodigo, turma, turmaAtual, ref ultimaMatricula);
-
-                    if (matriculas.Any() && (!matriculas.Any(a => a.EstaAtivo(DateTime.Today)) || etapaConcluida))
-                    {
-                        if (ultimaMatricula == null)
-                            ultimaMatricula = matriculas.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
-
-                        await EncerrarPlanoAEE(planoAEE, ultimaMatricula?.SituacaoMatricula ?? "Inativo", ultimaMatricula?.DataSituacao ?? DateTime.Now);
-                    }
+                    await EncerrarPlanoAEE(planoAEE, ultimaMatricula?.SituacaoMatricula ?? "Inativo", ultimaMatricula?.DataSituacao ?? DateTime.Now);
                 }
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($">>>> Erro: {ex}");
             }
 
             return true;
@@ -143,7 +135,7 @@ namespace SME.SGP.Aplicacao
                     .OrderBy(m => m.DataMatricula)
                     .LastOrDefault();
 
-                turmaAtual = ultimaMatriculaAtual != null ?
+                turmaAtual = ultimaMatriculaAtual != null ? 
                     mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaMatriculaAtual.CodigoTurma.ToString())).Result : null;
 
                 ultimaMatricula = matriculasAnoTurma
