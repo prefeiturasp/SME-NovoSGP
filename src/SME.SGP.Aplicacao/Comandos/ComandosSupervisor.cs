@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                 var atribuicaoExistentes = repositorioSupervisorEscolaDre
                     .ObtemPorDreESupervisor(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId);
 
-                throw new NegocioException($"O supervisor {atribuicaoSupervisorEscolaDto.SupervisorId} não é valido para essa atribuição.");
+                throw new NegocioException($"O supervisor {atribuicaoSupervisorEscolaDto.SupervisorId} não é valido para essa atribuição.", ehInformativo: true);
             }
         }
 
