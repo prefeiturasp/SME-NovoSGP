@@ -188,7 +188,7 @@ namespace SME.SGP.Aplicacao
                             NotaConceito = notaConceito
                         };
 
-                        await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
+                        await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota);
 
                         ((List<FechamentoFinalConsultaRetornoAlunoNotaConceitoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
                     }
