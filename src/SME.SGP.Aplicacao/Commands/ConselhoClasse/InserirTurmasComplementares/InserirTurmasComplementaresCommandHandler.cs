@@ -28,13 +28,15 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(InserirTurmasComplementaresCommand request, CancellationToken cancellationToken)
         {
             var turmaRegular = await repositorioTurmaConsulta.ObterPorId(request.TurmaId);
+            var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-            if (turmaRegular.DeveVerificarRegraRegulares())
+            if (turmaRegular.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turmaRegular.TipoTurma))
             {
                 string[] turmasCodigos;
 
-                var turmasCodigosParaConsulta = new List<TipoTurma>() { turmaRegular.TipoTurma };
+                var turmasCodigosParaConsulta = new List<int>() { (int)turmaRegular.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turmaRegular.ObterTiposRegularesDiferentes());
+                turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turmaRegular.AnoLetivo, request.AlunoCodigo, turmasCodigosParaConsulta));
 
                 if (turmasCodigos != null && turmasCodigos.Any())

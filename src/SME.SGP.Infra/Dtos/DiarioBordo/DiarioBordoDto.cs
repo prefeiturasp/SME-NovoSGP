@@ -19,6 +19,7 @@ namespace SME.SGP.Infra.Dtos
 
         public string Planejamento { get; set; }
         public string ReflexoesReplanejamento { get; set; }
+        public bool InseridoCJ { get; set; }
 
         public IEnumerable<ObservacaoNotificacoesDiarioBordoDto> Observacoes { get; set; }
 

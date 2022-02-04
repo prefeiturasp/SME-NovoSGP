@@ -116,9 +116,25 @@ namespace SME.SGP.Aplicacao
                     }
                 unitOfWork.PersistirTransacao();
 
-                planoAulaDto.Descricao = planoAula.Descricao;
-                planoAulaDto.RecuperacaoAula = planoAula.RecuperacaoAula;
-                planoAulaDto.LicaoCasa = planoAula.LicaoCasa;
+                 var planoAulaDescricao = await MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual,TipoArquivo.PlanoAula);
+                 var recuperacaoAula = await MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual,TipoArquivo.PlanoAulaRecuperacao);
+                 var licaoCasa = await MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
+
+                planoAulaDto.Id = planoAula.Id;
+                planoAulaDto.Descricao = planoAulaDescricao;
+                planoAulaDto.RecuperacaoAula = recuperacaoAula;
+                planoAulaDto.LicaoCasa = licaoCasa;
+
+                //Se houver plano para copiar
+                if (planoAulaDto.CopiarConteudo != null)
+                {
+                    var migrarPlanoAula = planoAulaDto.CopiarConteudo;
+
+                    migrarPlanoAula.PlanoAulaId = planoAula.Id;
+
+                    await mediator.Send(new MigrarPlanoAulaCommand(migrarPlanoAula, usuario));
+                }
+
                 planoAulaDto.Id = planoAula.Id;
 
                 return planoAulaDto;
@@ -130,7 +146,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<PlanoAula> MapearParaDominio(PlanoAulaDto planoDto, PlanoAulaResumidoDto planoAulaResumidoDto, PlanoAula planoAula = null)
+        private PlanoAula MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
         {
             if (planoAula == null)
                 planoAula = new PlanoAula();
@@ -144,15 +160,16 @@ namespace SME.SGP.Aplicacao
         }
         private async Task<string> MoverRemoverExcluidos(string novo, string atual, TipoArquivo tipo)
         {
-            var caminho = string.Empty;
-
+            string novaDescricao = string.Empty;
             if (!string.IsNullOrEmpty(novo))
-                caminho = await mediator.Send(new MoverArquivosTemporariosCommand(tipo, atual, novo));
-
+            {
+                 novaDescricao = await mediator.Send(new MoverArquivosTemporariosCommand(tipo, atual, novo));
+            }
             if (!string.IsNullOrEmpty(atual))
-                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
-
-            return caminho;
+            {
+                 await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
+            }
+            return novaDescricao;
         }
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {

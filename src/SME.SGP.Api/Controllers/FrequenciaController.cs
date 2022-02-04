@@ -193,24 +193,6 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpPost("frequencias/anoLetivo/{anoLetivo}/ue/{ueId}/consolidar")]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(bool), 200)]
-        public async Task<IActionResult> ConsolidarFrequenciaAnoUe(int anoLetivo, long ueId, [FromServices] IConsolidarFrequenciaPorAnoUeUseCase useCase)
-        {
-            return Ok(await useCase.Executar(anoLetivo, ueId));
-        }
-
-        [HttpGet("migracao")]
-        [ProducesResponseType(typeof(TipoFrequenciaDto), 500)]
-        [ProducesResponseType(typeof(TipoFrequenciaDto), 601)]
-        [ProducesResponseType(typeof(bool), 200)]
-        public async Task<IActionResult> MigracaoDadosFrequencia([FromQuery] int[] anosLetivos, [FromServices] ICarregarDadosAulasFrequenciaUseCase useCase)
-        {
-            return Ok(await useCase.Executar(anosLetivos));
-        }
-
         [HttpGet("frequencias/turmas/{turmaCodigo}/alunos/{alunoCodigo}/componentes-curriculares/{componenteCurricularId}")]
         [ProducesResponseType(typeof(IEnumerable<FrequenciaAluno>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

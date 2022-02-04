@@ -21,22 +21,23 @@ namespace SME.SGP.Aplicacao
         {
             var componentesCurricularesParaVisualizar = new List<string>();
 
-            var componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo, request.RfLogado, request.PerfilAtual);
+            var componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo, 
+                                                                                                       request.RfLogado, 
+                                                                                                       request.PerfilAtual, 
+                                                                                                       request.RealizarAgrupamentoComponente);
             
             var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado?.Select(b => b.Codigo.ToString());            
 
             foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
-            {
                 if (await PodePersistirTurmaDisciplina(request.RfLogado, request.TurmaCodigo, componenteParaVerificarAtribuicao))
                     componentesCurricularesParaVisualizar.Add(componenteParaVerificarAtribuicao);
-            }
 
             return componentesCurricularesParaVisualizar.ToArray();
         }
 
-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesUsuarioLogado(string turmaCodigo, string criadoRF, Guid perfilAtual)
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesUsuarioLogado(string turmaCodigo, string criadoRF, Guid perfilAtual, bool realizarAgrupamentoComponente)
         {
-            return await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, criadoRF, perfilAtual));
+            return await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, criadoRF, perfilAtual, realizarAgrupamentoComponente));
         }
         public async Task<bool> PodePersistirTurmaDisciplina(string criadoRF, string turmaCodigo, string componenteParaVerificarAtribuicao)
         {

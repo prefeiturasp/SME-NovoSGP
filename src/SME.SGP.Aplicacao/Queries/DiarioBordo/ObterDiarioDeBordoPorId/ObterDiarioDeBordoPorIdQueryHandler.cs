@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             {
                 var usuariosNotificados = await repositorioDiarioBordoObservacao.ObterNomeUsuariosNotificadosObservacao(item.Id);
                 item.QtdUsuariosNotificados = usuariosNotificados.Count();
-                item.NomeUsuariosNotificados = string.Join(",", usuariosNotificados);
+                item.NomeUsuariosNotificados = string.Join(", ", usuariosNotificados);
                 listaObservacoes.Add(item);
             }
 
@@ -57,6 +57,7 @@ namespace SME.SGP.Aplicacao
                 Migrado = diarioBordo.Migrado,
                 Planejamento = diarioBordo.Planejamento,
                 ReflexoesReplanejamento = diarioBordo.ReflexoesReplanejamento,
+                InseridoCJ = diarioBordo.InseridoCJ,
                 Observacoes = observacoes.Select(obs =>
                 {
                     return new ObservacaoNotificacoesDiarioBordoDto()

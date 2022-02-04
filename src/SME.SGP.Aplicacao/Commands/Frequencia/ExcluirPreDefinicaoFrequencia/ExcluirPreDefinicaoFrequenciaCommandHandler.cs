@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirPreDefinicaoFrequenciaCommand request, CancellationToken cancellationToken)
         {
-            await repositorioFrequenciaPreDefinida.RemoverPorCCIdETurmaId(request.ComponenteCurricularId, request.TurmaId);
+            await repositorioFrequenciaPreDefinida.RemoverPorCCIdETurmaId(request.ComponenteCurricularId, request.TurmaId, request.AlunosComFrequenciaRegistrada);
             return true;
         }
     }

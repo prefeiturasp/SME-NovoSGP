@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "Aula sem Diario de Bordo registrado", GroupName = "Calendário")]
         DiarioBordo = 9,
 
-        [Display(Name = "Aula sem Avaliação registrada", GroupName = "Calendário")]
+        [Display(Name = "Avaliações sem nota registrada", GroupName = "Calendário")]
         Avaliacao = 10,
 
         [Display(Name = "Aulas criadas em dias não letivos", GroupName = "Calendário")]
