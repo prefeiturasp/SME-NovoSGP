@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -12,8 +13,12 @@ namespace SME.SGP.Aplicacao
 {
     public class EncerrarPlanosAEEEstudantesInativosUseCase : AbstractUseCase, IEncerrarPlanosAEEEstudantesInativosUseCase
     {
-        public EncerrarPlanosAEEEstudantesInativosUseCase(IMediator mediator) : base(mediator)
+        private readonly ILogger<EncerrarPlanosAEEEstudantesInativosUseCase> logger;
+
+        public EncerrarPlanosAEEEstudantesInativosUseCase(IMediator mediator,
+                                                          ILogger<EncerrarPlanosAEEEstudantesInativosUseCase> logger) : base(mediator)
         {
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
@@ -41,12 +46,11 @@ namespace SME.SGP.Aplicacao
                         await EncerrarPlanoAEE(planoAEE, ultimaMatricula?.SituacaoMatricula ?? "Inativo", ultimaMatricula?.DataSituacao ?? DateTime.Now);
                     }
                 }
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine($">>>> Erro: {ex}");
-            }
+                logger.LogError(ex, "Erro ao encerrar plano AEE");
+            }            
 
             return true;
         }
@@ -143,7 +147,7 @@ namespace SME.SGP.Aplicacao
                     .OrderBy(m => m.DataMatricula)
                     .LastOrDefault();
 
-                turmaAtual = ultimaMatriculaAtual != null ?
+                turmaAtual = ultimaMatriculaAtual != null ? 
                     mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaMatriculaAtual.CodigoTurma.ToString())).Result : null;
 
                 ultimaMatricula = matriculasAnoTurma
