@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                     LicaoCasaAtual = planoAula?.LicaoCasa ?? string.Empty,
                     RecuperacaoAulaAtual = planoAula?.RecuperacaoAula ?? string.Empty
                 };
-                planoAula = await MapearParaDominio(planoAulaDto, planoAulaResumidoDto, planoAula);
+                planoAula = await MapearParaDominio(planoAulaDto, planoAula);
 
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
                 if (periodoEscolar == null)
@@ -146,15 +146,15 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private PlanoAula MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
+        private async Task<PlanoAula> MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
         {
             if (planoAula == null)
                 planoAula = new PlanoAula();
 
             planoAula.AulaId = planoDto.AulaId;
-            planoAula.Descricao = await MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual, TipoArquivo.PlanoAula); 
-            planoAula.RecuperacaoAula = await MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual, TipoArquivo.PlanoAulaRecuperacao);
-            planoAula.LicaoCasa = await MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
+            planoAula.Descricao = await MoverRemoverExcluidos(planoDto.Descricao, planoAula.Descricao, TipoArquivo.PlanoAula); 
+            planoAula.RecuperacaoAula = await MoverRemoverExcluidos(planoDto.RecuperacaoAula, planoAula.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
+            planoAula.LicaoCasa = await MoverRemoverExcluidos(planoDto.LicaoCasa, planoAula.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa);
 
             return planoAula;
         }
