@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> VerificaObrigatoriedade(long questaoId)
         {
-            var query = @"select obrigatorio from questao where id = 81";
+            var query = @"select obrigatorio from questao where id = @questaoId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync(query, new { questaoId });
         }
