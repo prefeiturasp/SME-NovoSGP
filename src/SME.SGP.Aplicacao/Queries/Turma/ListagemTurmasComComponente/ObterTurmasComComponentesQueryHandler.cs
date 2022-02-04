@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var turmaCodigo = request.TurmaCodigo == null ? 0 : long.Parse(request.TurmaCodigo);
 
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"turmas/ues/{request.UeCodigo}/modalidades/{(int)request.Modalidade}/anos/{request.AnoLetivo}/componentes?codigoTurma={turmaCodigo}&ehProfessor={request.EhProfessor}&codigoRf={request.CodigoRf}&qtdeRegistros={request.QtdeRegistros}&qtdeRegistrosIgnorados={request.QtdeRegistrosIgnorados}&componentesCurricularesDoProfessorCJ={request.ComponentesCurricularesDoProfessorCJ}&consideraHistorico={request.ConsideraHistorico}");
+            var resposta = await httpClient.GetAsync($"turmas/ues/{request.UeCodigo}/modalidades/{(int)request.Modalidade}/anos/{request.AnoLetivo}/componentes?codigoTurma={turmaCodigo}&ehProfessor={request.EhProfessor}&codigoRf={request.CodigoRf}&qtdeRegistros={request.QtdeRegistros}&qtdeRegistrosIgnorados={request.QtdeRegistrosIgnorados}&componentesCurricularesDoProfessorCJ={request.ComponentesCurricularesDoProfessorCJ}&consideraHistorico={request.ConsideraHistorico}&periodoEscolarInicio={request.PeriodoEscolarInicio}");
 
             if (resposta.IsSuccessStatusCode)
             {

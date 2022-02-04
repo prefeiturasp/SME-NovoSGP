@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao
         private async Task<long> ObterUsuarioId(string rf)
             => await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(rf));
 
-        private async Task<DreUeDto> ObterCodigoDREUE(long ueId)
+        private async Task<DreUeCodigoDto> ObterCodigoDREUE(long ueId)
             => await mediator.Send(new ObterCodigoUEDREPorIdQuery(ueId));
     }
 }

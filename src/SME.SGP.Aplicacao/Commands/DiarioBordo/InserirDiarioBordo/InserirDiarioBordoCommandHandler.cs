@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
+            bool inseridoCJ = false;
             
             if(aula == null)
                 throw new NegocioException("Aula informada não existe");
@@ -45,12 +46,13 @@ namespace SME.SGP.Aplicacao
                 if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
                 {
                     if (!atribuicoesEsporadica.Where(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
-                        throw new NegocioException($"Você não possui permissão para inserir registro de diário de bordo neste período");
+                        throw new NegocioException($"Você não possui permissão para inserir registro de diário de bordo neste período");   
                 }
+                inseridoCJ = true;
             }
 
             await MoverRemoverExcluidos(request);
-            var diarioBordo = MapearParaEntidade(request, turma.Id);
+            var diarioBordo = MapearParaEntidade(request, turma.Id, inseridoCJ);
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
 
@@ -70,14 +72,15 @@ namespace SME.SGP.Aplicacao
                 diario.ReflexoesReplanejamento = moverArquivo;
             }
         }
-        private DiarioBordo MapearParaEntidade(InserirDiarioBordoCommand request, long turmaId)
+        private DiarioBordo MapearParaEntidade(InserirDiarioBordoCommand request, long turmaId, bool inseridoCJ)
             => new DiarioBordo()
             { 
                 AulaId = request.AulaId,
                 Planejamento = request.Planejamento,
                 ReflexoesReplanejamento = request.ReflexoesReplanejamento,
                 ComponenteCurricularId = request.ComponenteCurricularId,
-                TurmaId = turmaId
+                TurmaId = turmaId,
+                InseridoCJ = inseridoCJ
             };
     }
 }

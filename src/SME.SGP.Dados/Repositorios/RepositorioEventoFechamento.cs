@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Consts;
 
 namespace SME.SGP.Dados.Repositorios
 {

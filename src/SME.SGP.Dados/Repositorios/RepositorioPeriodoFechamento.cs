@@ -3,6 +3,7 @@ using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
@@ -17,76 +18,7 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioPeriodoFechamento(ISgpContext conexao) : base(conexao)
         {
         }
-        public async Task<bool> ExistePeriodoPorUeDataBimestre(long ueId, DateTime dataReferencia, int bimestre)
-        {
-            string query = @"select  1
-                           from periodo_fechamento p
-                           left join periodo_fechamento_bimestre pfb ON pfb.periodo_fechamento_id = p.id
-                           left join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
-                           where p.ue_id = @ueId
-                           and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento
-                           and pe.bimestre = @bimestre";
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new
-            {
-                ueId,
-                dataReferencia,
-                bimestre
-            });
-        }
-
-        public async Task<PeriodoFechamento> ObterPeriodoPorUeDataBimestreAsync(long ueId, DateTime dataReferencia, int bimestre)
-        {
-            string query = @"select p.*, pfb.*
-                           from periodo_fechamento p
-                           left join periodo_fechamento_bimestre pfb ON pfb.periodo_fechamento_id = p.id
-                           left join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
-                           where p.ue_id = @ueId
-                           and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento
-                           and pe.bimestre = @bimestre";
-
-            var lookup = new Dictionary<long, PeriodoFechamento>();
-
-            await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoFechamento>(query.ToString(), (periodoFechamento, periodoFechamentoBimestre) => {
-                var retorno = new PeriodoFechamento();
-                if (!lookup.TryGetValue(periodoFechamento.Id, out retorno))
-                {
-                    retorno = periodoFechamento;
-                    lookup.Add(periodoFechamento.Id, retorno);
-                }
-
-                retorno.AdicionarFechamentoBimestre(periodoFechamentoBimestre);
-
-                return retorno;
-            },  new
-            {
-                ueId,
-                dataReferencia,
-                bimestre
-            });
-
-            return lookup.Select( a => a.Value).FirstOrDefault();
-        }
-
-        public async Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurma(int anoLetivo, int bimestre, long? periodoEscolarId)
-        {
-            var validacaoBimestre = bimestre == 0 ? "order by pe.bimestre desc limit 1" : "and pe.bimestre = @bimestre";
-            var validacaoPeriodo = periodoEscolarId.HasValue ? "and pe.id = @periodoEscolarId" : "";
-
-            var query = $@"select pfb.* 
-                          from periodo_fechamento pf 
-                         inner join periodo_fechamento_bimestre pfb on pfb.periodo_fechamento_id = pf.id
-                         inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
-                         inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
-                         where tc.ano_letivo  = @anoLetivo
-                            {validacaoPeriodo} 
-                            {validacaoBimestre}";
-
-
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { anoLetivo, bimestre, periodoEscolarId });
-        }
-
+         
         public PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId)
         {
             var query = new StringBuilder("select f.*,fb.*,p.*, t.*");
@@ -264,5 +196,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoVigenteDto>(query, new { anoLetivo, modalidadeTipoCalendario });
         }
+
     }
 }

@@ -26,15 +26,14 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
                         
-            var alunosDaTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(aula.TurmaId));                  
+            var alunosDaTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(aula.TurmaId));
 
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
             var alunosDaTurmaFiltrados = alunosDaTurma.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderBy(a => a.SituacaoMatricula).Take(1));
-
+                        
             FrequenciaDto registroFrequenciaDto = await ObterRegistroFrequencia(aula, turma);
-
 
             var frequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(aula.Id));
 
@@ -82,12 +81,8 @@ namespace SME.SGP.Aplicacao
 
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, aula.DisciplinaId, periodoEscolar.Id));
             
-            foreach (var aluno in alunosDaTurmaFiltrados.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
+            foreach (var aluno in alunosDaTurmaFiltrados.Where(a => a.DeveMostrarNaChamada(aula.DataAula, periodoEscolar.PeriodoInicio)).OrderBy(c => c.NomeAluno))
             {
-
-                if (NaoExibirAlunoFrequencia(aluno, aula, periodoEscolar))
-                    continue;
-
                 var tipoFrequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(turma.Id, long.Parse(aula.DisciplinaId), aluno.CodigoAluno));
 
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
@@ -222,12 +217,10 @@ namespace SME.SGP.Aplicacao
             return registroFrequenciaDto;
         }
 
-        private bool NaoExibirAlunoFrequencia(AlunoPorTurmaResposta aluno, Aula aula, PeriodoEscolar periodoEscolar)
+        public bool NaoExibirAlunoFrequencia(AlunoPorTurmaResposta aluno, Aula aula, PeriodoEscolar periodoEscolar)
         {
             DateTime dataSituacao = DateTime.Parse(aluno.DataSituacao.ToString("dd/MM/yyyy"));
-            DateTime dataMatricula = DateTime.Parse(aluno.DataMatricula.ToString("dd/MM/yyyy"));
-            return (aluno.EstaInativo(aula.DataAula) && (dataSituacao < periodoEscolar.PeriodoInicio || dataSituacao < aula.DataAula)) ||
-                   (aluno.Inativo && (aula.DataAula >= dataMatricula));
+            return (!aluno.DeveMostrarNaChamada(aula.DataAula, periodoEscolar.PeriodoInicio) || (dataSituacao < periodoEscolar.PeriodoInicio));
         }
     }
 }

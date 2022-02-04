@@ -57,16 +57,6 @@ namespace SME.SGP.Aplicacao
             return dto;
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string codigoTurma, int anoLetivo)
-        {
-            var alunos = await servicoEol.ObterAlunosPorTurma(codigoTurma);
-
-            if (alunos == null || !alunos.Any())
-                throw new NegocioException($"Não foi encontrado alunos para a turma {codigoTurma} e ano letivo {anoLetivo}");
-
-            return alunos.Where(x => x.DeveMostrarNaChamada(DateTime.Now)).OrderBy(x => x.NumeroAlunoChamada);
-        }
-
         private PaginacaoResultadoDto<ComunicadoDto> MapearParaDtoPaginado(PaginacaoResultadoDto<Comunicado> comunicado)
         {
             var itens = new List<ComunicadoDto>();
