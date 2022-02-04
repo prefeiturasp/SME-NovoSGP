@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -12,8 +13,12 @@ namespace SME.SGP.Aplicacao
 {
     public class EncerrarPlanosAEEEstudantesInativosUseCase : AbstractUseCase, IEncerrarPlanosAEEEstudantesInativosUseCase
     {
-        public EncerrarPlanosAEEEstudantesInativosUseCase(IMediator mediator) : base(mediator)
+        private readonly ILogger<EncerrarPlanosAEEEstudantesInativosUseCase> logger;
+
+        public EncerrarPlanosAEEEstudantesInativosUseCase(IMediator mediator,
+                                                          ILogger<EncerrarPlanosAEEEstudantesInativosUseCase> logger) : base(mediator)
         {
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
@@ -47,6 +52,10 @@ namespace SME.SGP.Aplicacao
             {
                 Console.WriteLine($">>>> Erro: {ex}");
             }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Erro ao encerrar plano AEE");
+            }            
 
             return true;
         }
