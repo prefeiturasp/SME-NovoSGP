@@ -33,13 +33,17 @@ namespace SME.SGP.Aplicacao
             {
                 listaDashBoard.Add(CarregaDashBoard(Permissao.CI_C, roles));
                 listaDashBoard.Add(CarregaDashBoard(Permissao.DDB_C, roles));
-                listaDashBoard.Add(CarregaDashBoard(Permissao.PDA_C, roles, descricao: "Frequência"));
+                listaDashBoard.Add(CarregaDashBoard(Permissao.L_C, roles, descricao: "Listão"));
             }
             else if (perfil_2.Contains(perfilAtual))
             {
                 listaDashBoard.Add(CarregaDashBoard(Permissao.CP_C, roles));
                 listaDashBoard.Add(CarregaDashBoard(Permissao.PA_C, roles));
-                listaDashBoard.Add(CarregaDashBoard(Permissao.PDA_C, roles));
+
+                if (perfilAtual == Perfis.PERFIL_PROFESSOR || perfilAtual == Perfis.PERFIL_CJ)
+                    listaDashBoard.Add(CarregaDashBoard(Permissao.L_C, roles, descricao: "Listão"));
+                else
+                    listaDashBoard.Add(CarregaDashBoard(Permissao.PDA_C, roles));
             }
             else
             {
@@ -55,7 +59,7 @@ namespace SME.SGP.Aplicacao
         private DashBoard CarregaDashBoard(Permissao menu, IEnumerable<Permissao> roles, bool exigeTurma = true, string descricao = null)
         {
             var atributo = menu.GetAttribute<PermissaoMenuAttribute>();
-            
+
             return new DashBoard()
             {
                 Descricao = descricao ?? atributo.Menu,

@@ -28,12 +28,18 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(servicoEOL.ObterListaTurmasPorProfessor(codigoRf));
         }
 
-        public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string ueId,string nomeProfessor)
+        public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string ueId, string nomeProfessor)
         {
             if (String.IsNullOrEmpty(nomeProfessor) && nomeProfessor.Length < 2)
                 return null;
             var retornoProfessores = await servicoEOL.ObterProfessoresAutoComplete(anoLetivo, dreId, ueId, nomeProfessor);
-            return retornoProfessores;
+            for (int i = 0; i < retornoProfessores.Count(); i++)
+            {
+                var professorSgp = await ObterProfessorSGPConsultaPorNome(retornoProfessores.ToList()[i].CodigoRF);
+                if (professorSgp != null)
+                    retornoProfessores.ToList()[i].UsuarioId = professorSgp.Id;
+            }
+            return retornoProfessores.Where(x => x.UsuarioId > 0);
         }
 
         public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor, bool incluirEmei)
@@ -48,7 +54,7 @@ namespace SME.SGP.Aplicacao
         {
             var professorResumo = await ObterProfessorEOL(codigoRF, anoLetivo, buscarOutrosCargos);
             var professorSgp = await ObterProfessorSGP(codigoRF);
-                
+
             if (professorResumo != null)
                 professorResumo.UsuarioId = professorSgp.Id;
 
@@ -66,6 +72,12 @@ namespace SME.SGP.Aplicacao
             if (usuarioSgp == null)
                 throw new NegocioException("RF não localizado no SGP");
 
+            return usuarioSgp;
+        }
+
+        private async Task<Usuario> ObterProfessorSGPConsultaPorNome(string codigoRF)
+        {
+            var usuarioSgp = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRF));
             return usuarioSgp;
         }
 

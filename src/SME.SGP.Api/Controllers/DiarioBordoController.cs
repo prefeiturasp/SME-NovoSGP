@@ -57,6 +57,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(diarioBordoDto));
         }
 
+        [HttpPost("salvar")]
+        [ProducesResponseType(typeof(IEnumerable<AuditoriaDiarioBordoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_I, Policy = "Bearer")]
+        public async Task<IActionResult> SalvarVarios([FromServices] IInserirAlterarDiarioBordoUseCase useCase, [FromBody] IEnumerable<InserirAlterarDiarioBordoDto> diarioBordoDto)
+        {
+            return Ok(await useCase.Executar(diarioBordoDto));
+        }
+
         [HttpGet("devolutivas/{devolutivaId}")]
         [ProducesResponseType(typeof(DiarioBordoDto), 200)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
@@ -129,6 +138,20 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await obterUsuarioNotificarDiarioBordoObservacaoUseCase.Executar(dto);
             return Ok(retorno);
+        }
+
+
+        [HttpGet("turmas/{turmaCodigo}/inicio/{dataInicio}/fim/{dataFim}/componentes-curriculares/{componenteCurricularId}")]
+        [ProducesResponseType(typeof(IEnumerable<DiarioBordoPorPeriodoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterDatasDiarioPorPeriodo(string turmaCodigo, DateTime dataInicio, DateTime dataFim, long componenteCurricularId, [FromServices] IObterDatasDiarioBordoPorPeriodoUseCase useCase)
+        {
+            var result = await useCase.Executar(turmaCodigo, dataInicio, dataFim, componenteCurricularId);
+            if (result == null)
+                return NoContent();
+
+            return Ok(result);
         }
     }
 }

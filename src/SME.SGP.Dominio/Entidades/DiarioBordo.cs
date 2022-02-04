@@ -14,6 +14,7 @@
 
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
+        public bool InseridoCJ { get; set; }
 
 
         public void AdicionarAula(Aula aula)

@@ -15,5 +15,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task ExcluirPlanoDaAula(long aulaId);
         Task<bool> PlanoAulaRegistradoAsync(long aulaId);
         Task<PlanoAulaObjetivosAprendizagemDto> ObterPlanoAulaEObjetivosAprendizagem(long aulaId);
+        Task<IEnumerable<PlanoAulaObjetivosAprendizagemDto>> ObterPlanosAulaEObjetivosAprendizagem(IEnumerable<long> aulasId);
     }
 }

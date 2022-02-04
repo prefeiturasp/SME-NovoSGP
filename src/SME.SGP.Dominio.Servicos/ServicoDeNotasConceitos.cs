@@ -96,7 +96,7 @@ namespace SME.SGP.Dominio
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.hostAplicacao = configuration["UrlFrontEnd"];
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));            
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
@@ -329,8 +329,8 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Período escolar da atividade avaliativa não encontrado");
 
             var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
-            var existePeriodoEmAberto = periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
-                || await repositorioPeriodoFechamento.ExistePeriodoPorUeDataBimestre(turma.UeId, DateTime.Today, bimestreAvaliacao);
+
+            var existePeriodoEmAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.Bimestre, !turma.EhAnoAnterior()));
 
             foreach (var notaConceito in notasConceitos)
             {
