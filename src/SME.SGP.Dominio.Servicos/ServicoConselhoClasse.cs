@@ -107,12 +107,10 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task<ConselhoClasseNotaRetornoDto> GravarConselhoClasse(FechamentoTurma fechamentoTurma, long conselhoClasseId, string alunoCodigo, Turma turma, ConselhoClasseNotaDto conselhoClasseNotaDto, int? bimestre)
-        {
-            var conselhoClasseNota = new ConselhoClasseNota();
+        {            
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            ConselhoClasseNotaRetornoDto conselhoClasseNotaRetorno = null;
-            conselhoClasseNotaRetorno = conselhoClasseId == 0 ?
+            
+            var conselhoClasseNotaRetorno = conselhoClasseId == 0 ?
                 await InserirConselhoClasseNota(fechamentoTurma, alunoCodigo, turma, conselhoClasseNotaDto, bimestre, usuarioLogado) :
                 await AlterarConselhoClasse(conselhoClasseId, fechamentoTurma.Id, alunoCodigo, turma, conselhoClasseNotaDto, bimestre, usuarioLogado);
 
@@ -122,8 +120,9 @@ namespace SME.SGP.Dominio.Servicos
                 var conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta.ObterPorIdAsync(conselhoClasseNotaRetorno.ConselhoClasseAlunoId);
                 await VerificaRecomendacoesAluno(conselhoClasseAluno);
             }
-
-            await mediator.Send(new PublicaFilaAtualizacaoSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId, usuarioLogado));
+            
+            if (!await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId)))
+                throw new NegocioException("Erro ao atualizar situação do conselho de classe");
 
             return conselhoClasseNotaRetorno;
         }
