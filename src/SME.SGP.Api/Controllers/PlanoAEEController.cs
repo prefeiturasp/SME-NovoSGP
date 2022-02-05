@@ -17,6 +17,12 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/plano-aee")]
     public class PlanoAEEController : ControllerBase
     {
+        private readonly IMediator mediator;
+
+        public PlanoAEEController(IMediator mediator)
+        {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
 
         [HttpGet]
         [Route("situacoes")]
@@ -170,9 +176,19 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
-        public async Task<IActionResult> EncerrarPlanos([FromServices] IMediator mediator)
+        public async Task<IActionResult> EncerrarPlanos()
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.EncerrarPlanoAEEEstudantesInativos, Guid.NewGuid()));
+            return Ok();
+        }
+
+        [HttpGet("expirar-planos")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ExpirarPlanos()
+        {
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.GerarPendenciaValidadePlanoAEE, Guid.NewGuid()));
             return Ok();
         }
     }
