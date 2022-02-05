@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
@@ -163,6 +164,16 @@ namespace SME.SGP.Api.Controllers
             await useCase.Executar(devolucao);
 
             return Ok(new RetornoBaseDto("Plano devolvido com sucesso"));
+        }
+
+        [HttpGet("encerrar-planos")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
+        public async Task<IActionResult> EncerrarPlanos([FromServices] IMediator mediator)
+        {
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.EncerrarPlanoAEEEstudantesInativos, Guid.NewGuid()));
+            return Ok();
         }
     }
 }
