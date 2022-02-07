@@ -101,6 +101,16 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpGet("listar")]
+        [ProducesResponseType(typeof(FechamentoNotaConceitoTurmaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarFechamentoTurma(string turmaCodigo, long componenteCurricularCodigo, int bimestre, int? semestre, [FromServices] IListarFechamentoTurmaBimestreUseCase useCase)
+        {
+            return Ok(await useCase.Executar(turmaCodigo, componenteCurricularCodigo, bimestre, semestre));
+        }
+
         [HttpPost("salvar-fechamento")]
         [ProducesResponseType(typeof(AuditoriaPersistenciaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
