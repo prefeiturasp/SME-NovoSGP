@@ -126,7 +126,6 @@ namespace SME.SGP.Aplicacao
             var alunosFechamentoNotaConceito = new List<AlunosFechamentoNotaConceitoTurmaDto>();
             
             var ultimoPeriodoEscolar = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault();
-            var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, ultimoPeriodoEscolar, turma, componenteCurricularCodigo, ultimoPeriodoEscolar.PeriodoFim);
 
             foreach (var aluno in alunos)
             {
@@ -150,8 +149,6 @@ namespace SME.SGP.Aplicacao
                     alunoDto.Frequencia = frequenciaAluno.PercentualFrequencia.ToString();
                 else
                     alunoDto.Frequencia = turmaPossuiFrequenciaRegistrada ? "100" : string.Empty;
-
-                alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
 
                 if (aluno.CodigoAluno != null)
                 {
