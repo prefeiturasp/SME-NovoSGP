@@ -403,7 +403,7 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 // Fechamento Final
-                if (fechamentoTurma.Turma.AnoLetivo != 2020)
+                if (fechamentoTurma.Turma.AnoLetivo >= DateTime.Now.Year)
                 {
                     var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
                     if (!validacaoConselhoFinal.Item2)
@@ -444,11 +444,16 @@ namespace SME.SGP.Dominio.Servicos
             int bimestre;
             long[] conselhosClassesIds;
             string[] turmasCodigos;
+            var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-            if (turma.DeveVerificarRegraRegulares())
+            if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
             {
+                var turmasCodigosParaConsulta = new List<int>();
+                turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
+                turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
+
                 turmasCodigos = await mediator
-                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes(), historico));
+                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, historico));
 
                 turmasCodigos = turmasCodigos
                     .Concat(new string[] { turma.CodigoTurma }).ToArray();

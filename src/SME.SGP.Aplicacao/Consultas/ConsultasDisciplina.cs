@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            var chaveCache = $"Disciplinas-{codigoTurma}-{usuarioLogado.PerfilAtual}";
+            var chaveCache = $"Disciplinas-{codigoTurma}-{usuarioLogado.PerfilAtual}-{realizarAgrupamentoComponente}";
 
             var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
 
@@ -106,7 +106,10 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.EhProfessorCj())
             {
                 var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
-                disciplinasDto = MapearParaDto(disciplinas, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
+
+                var disciplinasEolTratadas = realizarAgrupamentoComponente ? disciplinas.DistinctBy(s => s.Nome) : disciplinas;
+
+                disciplinasDto = MapearParaDto(disciplinasEolTratadas, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
             }
 
             else
@@ -126,7 +129,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => (a.TerritorioSaber && a.CodigoComponenteTerritorioSaber > 0) ? a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular : a.Codigo == d.CodigoComponenteCurricular);
                     d.PossuiObjetivos = turma.AnoLetivo < Convert.ToInt32(dataInicioNovoSGP) ? false : componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
-                    d.CodigoComponenteCurricular = componenteEOL.Codigo;
+                    d.CodigoComponenteCurricular = componenteEOL.TerritorioSaber ? d.Id :componenteEOL.Codigo;
                     d.Regencia = componenteEOL.Regencia;
                     if (d.TerritorioSaber)
                         d.Nome = componenteEOL.Descricao;
@@ -400,6 +403,7 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = componenteCurricular.TerritorioSaber,
                     Compartilhada = componenteCurricular.Compartilhada,
                     LancaNota = componenteCurricular.LancaNota,
+                    
                 };
         }
 
@@ -430,6 +434,8 @@ namespace SME.SGP.Aplicacao
             Compartilhada = disciplinaEol.Compartilhada,
             RegistroFrequencia = disciplinaEol.RegistraFrequencia,
             LancaNota = disciplinaEol.LancaNota,
+            NomeComponenteInfantil = disciplinaEol.NomeComponenteInfantil,
+            Id = disciplinaEol.Id
         };
 
         private List<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false, bool ensinoEspecial = false)
@@ -448,9 +454,11 @@ namespace SME.SGP.Aplicacao
 
         private DisciplinaDto MapearParaDto(DisciplinaResposta disciplina, bool turmaPrograma = false, bool ensinoEspecial = false) => new DisciplinaDto()
         {
+            Id = disciplina.Id,
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
             Nome = disciplina.Nome,
+            NomeComponenteInfantil = disciplina.NomeComponenteInfantil,
             Regencia = disciplina.Regencia,
             TerritorioSaber = disciplina.TerritorioSaber,
             Compartilhada = disciplina.Compartilhada,

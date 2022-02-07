@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,8 +31,12 @@ namespace SME.SGP.Aplicacao
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                await mediator.Send(new ExcluirFrequenciasAlunoPorRegistroFrequenciaIdCommand(request.RegistroFrequenciaId));
-                await mediator.Send(new ExcluirPreDefinicaoFrequenciaCommand(request.TurmaId, request.ComponenteCurricularId));
+                var alunosComFrequenciaRegistrada = request.Frequencias.Select(s => s.CodigoAluno).ToArray();
+
+                await mediator.Send(new ExcluirFrequenciasAlunoPorRegistroFrequenciaIdCommand(request.RegistroFrequenciaId, alunosComFrequenciaRegistrada));
+
+                await mediator.Send(new ExcluirPreDefinicaoFrequenciaCommand(request.TurmaId, request.ComponenteCurricularId, alunosComFrequenciaRegistrada));
+                
                 try
                 {
                     foreach (var frequencia in request.Frequencias)

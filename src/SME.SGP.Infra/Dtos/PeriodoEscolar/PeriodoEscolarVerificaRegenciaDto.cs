@@ -12,5 +12,6 @@ namespace SME.SGP.Infra
         public int Bimestre { get; set; }
         public long AulaId { get; set; }
         public DateTime DataAula { get; set; }
+        public bool AulaCj { get; set; }
     }
 }

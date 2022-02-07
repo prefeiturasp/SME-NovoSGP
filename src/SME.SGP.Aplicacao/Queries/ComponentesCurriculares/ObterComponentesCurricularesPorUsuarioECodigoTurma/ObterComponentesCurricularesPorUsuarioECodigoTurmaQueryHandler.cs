@@ -29,24 +29,27 @@ namespace SME.SGP.Aplicacao
             if (request.UsuarioLogado.EhProfessorCj())
                 return await ObterComponentesAtribuicaoCj(request.TurmaCodigo, request.UsuarioLogado.CodigoRf);
             else
-                return await ObterComponentesCurricularesUsuario(request.TurmaCodigo, request.UsuarioLogado.CodigoRf, request.UsuarioLogado.PerfilAtual, request.RealizarAgrupamentoComponente);
+                return await ObterComponentesCurricularesUsuario(request.TurmaCodigo, request.UsuarioLogado.CodigoRf, request.UsuarioLogado.PerfilAtual);
         }
 
-        private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesUsuario(string turmaCodigo, string codigoRf, Guid perfilAtual, bool realizarAgrupamentoComponente)
+        private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesUsuario(string turmaCodigo, string codigoRf, Guid perfilAtual)
         {
+            var obterTurma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
+            bool realizarAgrupamentoComponente = obterTurma.AnoLetivo != DateTimeExtension.HorarioBrasilia().Year;
             var componentesCurricularesEol = await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, codigoRf, perfilAtual, realizarAgrupamentoComponente);
 
             if (componentesCurricularesEol == null || !componentesCurricularesEol.Any())
                 return null;
 
-            return (await ObterComponentesCurricularesRepositorioSgp(componentesCurricularesEol))?
+            return (await ObterComponentesCurricularesRepositorioSgp(componentesCurricularesEol, obterTurma.ModalidadeCodigo == Modalidade.EducacaoInfantil))?
                 .OrderBy(c => c.Nome)?.ToList();
+
         }
 
-        private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesRepositorioSgp(IEnumerable<ComponenteCurricularEol> componentesCurricularesEol)
+        private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesRepositorioSgp(IEnumerable<ComponenteCurricularEol> componentesCurricularesEol, bool ehEducacaoInfatil)
         {
             var componentesSgp = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesEol.Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : a.Codigo).ToArray()));
-            return MapearParaComponenteNomeDto(componentesSgp, componentesCurricularesEol);
+            return MapearParaComponenteNomeDto(componentesSgp, componentesCurricularesEol, ehEducacaoInfatil);
         }
 
         private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesAtribuicaoCj(string turmaCodigo, string login)
@@ -61,7 +64,7 @@ namespace SME.SGP.Aplicacao
             return MapearParaComponenteNomeDto(disciplinasEol);
         }
 
-        private IEnumerable<DisciplinaNomeDto> MapearParaComponenteNomeDto(IEnumerable<DisciplinaDto> componentesSgp, IEnumerable<ComponenteCurricularEol> componentesCurricularesEol)
+        private IEnumerable<DisciplinaNomeDto> MapearParaComponenteNomeDto(IEnumerable<DisciplinaDto> componentesSgp, IEnumerable<ComponenteCurricularEol> componentesCurricularesEol, bool ehEducacaoInfatil)
         {
             foreach (var componenteSgp in componentesSgp)
             {
@@ -79,7 +82,7 @@ namespace SME.SGP.Aplicacao
                         yield return new DisciplinaNomeDto()
                         {
                             Codigo = componenteSgp.Id.ToString(),
-                            Nome = componenteSgp.Nome
+                            Nome = componenteEol.ExibirComponenteEOL && ehEducacaoInfatil ? componenteSgp.NomeComponenteInfantil : componenteSgp.Nome
                         };
                 }
             }
