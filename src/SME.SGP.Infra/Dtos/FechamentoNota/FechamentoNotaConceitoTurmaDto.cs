@@ -17,6 +17,8 @@ namespace SME.SGP.Infra
         public double PercentualAlunosInsuficientes { get; set; }
         public List<string> Observacoes { get; set; }
 
+        public SituacaoFechamento Situacao { get; set; }
+
         public FechamentoNotaConceitoTurmaDto()
         {
             Observacoes = new List<string>();

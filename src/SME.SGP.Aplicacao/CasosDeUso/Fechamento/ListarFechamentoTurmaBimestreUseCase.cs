@@ -79,6 +79,7 @@ namespace SME.SGP.Aplicacao
             {
                 fechamentoNotaConceitoTurma.FechamentoId = fechamentosTurma.First().Id;
                 fechamentoNotaConceitoTurma.DataFechamento = fechamentosTurma.First().AlteradoEm.HasValue ? fechamentosTurma.First().AlteradoEm.Value : fechamentosTurma.First().CriadoEm;
+                fechamentoNotaConceitoTurma.Situacao = fechamentosTurma.First().Situacao;
             }
 
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosValidosComOrdenacao = null;
@@ -141,9 +142,8 @@ namespace SME.SGP.Aplicacao
             IEnumerable<FechamentoTurmaDisciplina> fechamentosTurma, PeriodoEscolar periodoAtual, Turma turma, string componenteCurricularCodigo,
             bool turmaPossuiFrequenciaRegistrada, DisciplinaDto disciplina, IEnumerable<DisciplinaDto> disciplinasRegencia, IEnumerable<PeriodoEscolar> periodosEscolares, Usuario usuarioAtual)
         {
-            var alunosFechamentoNotaConceito = new List<AlunosFechamentoNotaConceitoTurmaDto>();
-            
-            var ultimoPeriodoEscolar = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault();
+            var alunosFechamentoNotaConceito = new List<AlunosFechamentoNotaConceitoTurmaDto>();    
+            var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, periodoAtual, turma, componenteCurricularCodigo.ToString(), periodoAtual.PeriodoFim);
 
             foreach (var aluno in alunos)
             {
@@ -161,6 +161,7 @@ namespace SME.SGP.Aplicacao
                 };
 
                 alunoDto.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, periodoAtual.PeriodoFim, turma.EhTurmaInfantil));
+                alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
 
                 var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQuery(aluno.CodigoAluno, componenteCurricularCodigo, periodoAtual.Id, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma));
                 if (frequenciaAluno != null)
@@ -244,6 +245,9 @@ namespace SME.SGP.Aplicacao
                                     Disciplina = disciplinaReg.Nome
                                 };
 
+                                if (fechamentoTurma != null && nota.DisciplinaCodigo > 0)
+                                    await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota);
+
                                 ((List<FechamentoConsultaNotaConceitoTurmaListaoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
                             }
                         }
@@ -255,6 +259,9 @@ namespace SME.SGP.Aplicacao
                                 DisciplinaCodigo = disciplina.Id,
                                 Disciplina = disciplina.Nome
                             };
+
+                            if(fechamentoTurma != null && nota.DisciplinaCodigo > 0)
+                                await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota);
 
                             ((List<FechamentoConsultaNotaConceitoTurmaListaoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
                         }
@@ -353,7 +360,7 @@ namespace SME.SGP.Aplicacao
         private string MontaTextoAuditoriaAlteracao(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, bool EhNota)
         {
             if (fechamentoTurmaDisciplina != null && !string.IsNullOrEmpty(fechamentoTurmaDisciplina.AlteradoPor))
-                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "alteradas" : "alterados")} por {fechamentoTurmaDisciplina.AlteradoPor}({fechamentoTurmaDisciplina.AlteradoRF}) em {fechamentoTurmaDisciplina.AlteradoEm.Value.ToString("dd/MM/yyyy")},às {fechamentoTurmaDisciplina.AlteradoEm.Value.ToString("HH:mm")}.";
+                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "alteradas" : "alterados")} por {fechamentoTurmaDisciplina.AlteradoPor}({fechamentoTurmaDisciplina.AlteradoRF}) em {fechamentoTurmaDisciplina.AlteradoEm.Value.ToString("dd/MM/yyyy")}, às {fechamentoTurmaDisciplina.AlteradoEm.Value.ToString("HH:mm")}.";
             else return string.Empty;
         }
 
@@ -363,7 +370,7 @@ namespace SME.SGP.Aplicacao
                 $"({fechamentoTurmaDisciplina.CriadoRF})" : "";
 
             if (fechamentoTurmaDisciplina != null)
-                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "incluídas" : "incluídos")} por {fechamentoTurmaDisciplina.CriadoPor}{criadorRf} em {fechamentoTurmaDisciplina.CriadoEm.ToString("dd/MM/yyyy")},às {fechamentoTurmaDisciplina.CriadoEm.ToString("HH:mm")}.";
+                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "incluídas" : "incluídos")} por {fechamentoTurmaDisciplina.CriadoPor}{criadorRf} em {fechamentoTurmaDisciplina.CriadoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurmaDisciplina.CriadoEm.ToString("HH:mm")}.";
 
             else return string.Empty;
         }
