@@ -266,6 +266,29 @@ namespace SME.SGP.Dados
             });
         }
 
+        public async Task<FrequenciaAluno> ObterPorAlunoDisciplinaDataAsync(string codigoAluno, string disciplinaId, DateTime dataAtual, string turmaCodigo)
+        {
+            var query = @"select *
+                        from frequencia_aluno fa
+                        inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
+                        where codigo_aluno = @codigoAluno
+                            and disciplina_id = @disciplinaId
+	                        and tipo = 1
+	                        and pe.periodo_inicio <= @dataAtual
+	                        and pe.periodo_fim >= @dataAtual ";
+
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += "and fa.turma_id = @turmaCodigo";
+
+            return await database.QueryFirstOrDefaultAsync<FrequenciaAluno>(query, new
+            {
+                codigoAluno,
+                disciplinaId,
+                dataAtual,
+                turmaCodigo
+            });
+        }
+
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolar(string codigoTurma, string componenteCurricularId, TipoFrequenciaAluno tipoFrequencia, IEnumerable<long> periodosEscolaresIds)
         {
             const string sql = @"select 

@@ -17,5 +17,8 @@ namespace SME.SGP.Aplicacao
             TurmaId = turmaId;
             TipoTurma = tipoTurma;
         }
+
+        public long TurmaId { get; set; }
+        public TipoTurma TipoTurma { get; set; }
     }
 }
