@@ -9,9 +9,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTipoNotaPorTurmaIdQuery : IRequest<NotaTipoValor>
     {
-        public long TurmaId { get; set; }
-        public TipoTurma TipoTurma { get; set; }
-
         public ObterTipoNotaPorTurmaIdQuery(long turmaId, TipoTurma tipoTurma)
         {
             TurmaId = turmaId;
