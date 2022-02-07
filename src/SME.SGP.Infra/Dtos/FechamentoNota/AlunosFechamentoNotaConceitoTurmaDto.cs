@@ -8,8 +8,8 @@ namespace SME.SGP.Infra
     {
         public AlunosFechamentoNotaConceitoTurmaDto()
         {
-            NotasConceitoBimestre = new List<FechamentoFinalConsultaRetornoAlunoNotaConceitoDto>();
-            NotasConceitoFinal = new List<FechamentoFinalConsultaRetornoAlunoNotaConceitoDto>();
+            NotasConceitoBimestre = new List<FechamentoConsultaNotaConceitoTurmaListaoDto>();
+            NotasConceitoFinal = new List<FechamentoConsultaNotaConceitoTurmaListaoDto>();
             PodeEditar = true;
         }
 
@@ -21,7 +21,7 @@ namespace SME.SGP.Infra
         public bool EhAtendidoAEE { get; set; }
         public bool PodeEditar { get; set; }
         public MarcadorFrequenciaDto Marcador { get; set; }
-        public IList<FechamentoFinalConsultaRetornoAlunoNotaConceitoDto> NotasConceitoBimestre { get; set; }
-        public IList<FechamentoFinalConsultaRetornoAlunoNotaConceitoDto> NotasConceitoFinal { get; set; }
+        public IList<FechamentoConsultaNotaConceitoTurmaListaoDto> NotasConceitoBimestre { get; set; }
+        public IList<FechamentoConsultaNotaConceitoTurmaListaoDto> NotasConceitoFinal { get; set; }
     }
 }
