@@ -113,14 +113,16 @@ pipeline {
         agent { label 'master' }
         when { anyOf {  branch 'release'; } }
         steps{
-          try {
-            withCredentials([string(credentialsId: "flyway_sgp_treinamento", variable: 'url')]) {
-              checkout scm
-              sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+          script{
+            try {
+                withCredentials([string(credentialsId: "flyway_sgp_treinamento", variable: 'url')]) {
+                checkout scm
+                sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+                }
+            } 
+            catch (err) {
+                echo err.getMessage()
             }
-          } 
-          catch (err) {
-            echo err.getMessage()
           }
         }		
       }        
