@@ -8,7 +8,6 @@ namespace SME.SGP.Infra
         public bool AulaCj { get; set; }
         public DateTime Data { get; set; }
         public string DescricaoPlanejamento { get; set; }
-        public string DescricaoReflexoes { get; set; }
         public bool InseridoCJ { get; set; }
         public string Descricao { get; set; }
         public string Planejamento
@@ -16,9 +15,7 @@ namespace SME.SGP.Infra
             get
             {
                 var descricao = ObterPlanejamento();
-                if (!string.IsNullOrEmpty(DescricaoReflexoes))
-                    descricao += ObterReflexoes();
-
+                
                 return descricao;
             }
         }
@@ -28,8 +25,6 @@ namespace SME.SGP.Infra
             get
             {
                 var descricao = ObterPlanejamento(false);
-                if (!string.IsNullOrEmpty(DescricaoReflexoes))
-                    descricao += ObterReflexoes(false);
 
                 return descricao;
             }
@@ -42,14 +37,6 @@ namespace SME.SGP.Infra
                 DescricaoPlanejamento :
                 UtilRegex.RemoverTagsHtml(UtilRegex.RemoverTagsHtmlMidia(DescricaoPlanejamento));
             return $"<b>Planejamento</b><br/>{descricao}<br/>";
-        }
-
-        private string ObterReflexoes(bool textoFormatado = true)
-        {
-            var descricao = textoFormatado ?
-                DescricaoReflexoes :
-                UtilRegex.RemoverTagsHtml(UtilRegex.RemoverTagsHtmlMidia(DescricaoReflexoes));
-            return $"<br/><b>Reflexões e replanejamento</b><br/>{descricao}";
         }
     }
 }
