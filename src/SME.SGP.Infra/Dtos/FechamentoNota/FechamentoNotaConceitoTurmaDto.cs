@@ -14,6 +14,13 @@ namespace SME.SGP.Infra
         public TipoNota NotaTipo { get; set; }
         public string AuditoriaAlteracao { get; set; }
         public string AuditoriaInclusao { get; set; }
-        public bool PeriodoAberto { get; set; }
+        public double PercentualAlunosInsuficientes { get; set; }
+        public List<string> Observacoes { get; set; }
+
+        public FechamentoNotaConceitoTurmaDto()
+        {
+            Observacoes = new List<string>();
+            Alunos = new List<AlunosFechamentoNotaConceitoTurmaDto>();
+        }
     }
 }

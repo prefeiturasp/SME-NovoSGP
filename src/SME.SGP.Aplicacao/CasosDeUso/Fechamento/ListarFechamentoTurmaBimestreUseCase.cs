@@ -48,14 +48,14 @@ namespace SME.SGP.Aplicacao
             if (!componentesCurriculares.Any())
                 throw new NegocioException("Não foi possível localizar dados do componente curricular selecionado.");
 
+            fechamentoNotaConceitoTurma.PercentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
+
             var componenteCurricularSelecionado = componentesCurriculares.FirstOrDefault();
             var usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var ultimoPeriodoEscolar = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault();
             var bimestreAtual = bimestre;
 
-            bool temPeriodoAberto =await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, ultimoPeriodoEscolar.Bimestre, turma.AnoLetivo == DateTime.Today.Year));
-            fechamentoNotaConceitoTurma.PeriodoAberto = temPeriodoAberto;
             fechamentoNotaConceitoTurma.NotaTipo = tipoNotaTurma.TipoNota;
             fechamentoNotaConceitoTurma.MediaAprovacaoBimestre = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
 
@@ -81,19 +81,35 @@ namespace SME.SGP.Aplicacao
                 fechamentoNotaConceitoTurma.DataFechamento = fechamentosTurma.First().AlteradoEm.HasValue ? fechamentosTurma.First().AlteradoEm.Value : fechamentosTurma.First().CriadoEm;
             }
 
+            IOrderedEnumerable<AlunoPorTurmaResposta> alunosValidosComOrdenacao = null;
             if (bimestre > 0)
             {
+                var tipoAvaliacaoBimestral = await mediator.Send(new ObterTipoAvaliacaoBimestralQuery());
+                await ValidaMinimoAvaliacoesBimestrais(componenteCurricularSelecionado, disciplinasRegencia, tipoCalendario.Id, turma.CodigoTurma, bimestreAtual, tipoAvaliacaoBimestral, fechamentoNotaConceitoTurma);
                 var periodoAtual = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestreAtual);
                 if (periodoAtual == null)
                     throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
 
                 var bimestreDoPeriodo = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, periodoAtual.PeriodoFim));
-                var alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
-                                                                 a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
-                                                                 a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido)) &&
-                                                                 a.DataMatricula.Date <= bimestreDoPeriodo.PeriodoFim.Date)
+
+                if (turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year)
+                {
+                    alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
+                                                                   a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido))
+                                                                   || (a.EstaInativo(periodoAtual.PeriodoFim) && a.DataSituacao.Date >= periodoAtual.PeriodoInicio.Date && a.DataSituacao.Date <= periodoAtual.PeriodoFim.Date) &&
+                                                                    (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido))
                                                            .OrderBy(a => a.NumeroAlunoChamada)
                                                            .ThenBy(a => a.NomeValido());
+                }
+                else
+                {
+                    alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
+                                                                      a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
+                                                                      a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido)) &&
+                                                                      a.DataMatricula.Date <= bimestreDoPeriodo.PeriodoFim.Date)
+                                                                         .OrderBy(a => a.NumeroAlunoChamada)
+                                                                         .ThenBy(a => a.NomeValido());
+                }
 
                 var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, componenteCurricularCodigo.ToString(), bimestreDoPeriodo.Id));
                 
@@ -103,7 +119,9 @@ namespace SME.SGP.Aplicacao
             } 
             else if (bimestre == 0)
             {
-                var alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
+                fechamentoNotaConceitoTurma.DataFechamento = ultimoPeriodoEscolar.PeriodoFim;
+
+                alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
                                                                 a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
                                                                 a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido)))
                                                               .OrderBy(a => a.NumeroAlunoChamada)
@@ -158,40 +176,95 @@ namespace SME.SGP.Aplicacao
                     var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma != null ? fechamentoTurma.Id : 0);
 
                     if (notasConceitoBimestre.Any())
-                        alunoDto.NotasConceitoBimestre = new List<FechamentoFinalConsultaRetornoAlunoNotaConceitoDto>();
+                        alunoDto.NotasConceitoBimestre = new List<FechamentoConsultaNotaConceitoTurmaListaoDto>();
 
                     if (turma.EhEJA() && notasConceitoBimestre != null)
                         notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != 6);
 
-                    foreach (var notaConceitoBimestre in notasConceitoBimestre)
+                    if (notasConceitoBimestre.Any())
                     {
-                        string nomeDisciplina;
-                        if (disciplina.Regencia)
-                            nomeDisciplina = disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId)?.Nome;
-                        else nomeDisciplina = disciplina.Nome;
-
-                        string notaConceito = string.Empty;
-
-                        if (notaConceitoBimestre.ConceitoId.HasValue)
+                        foreach (var notaConceitoBimestre in notasConceitoBimestre)
                         {
-                            var valorConceito = await ObterConceito(notaConceitoBimestre.ConceitoId.Value);
-                            notaConceito = valorConceito.ToString();
+                            string nomeDisciplina;
+                            if (disciplina.Regencia)
+                                nomeDisciplina = disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId)?.Nome;
+                            else nomeDisciplina = disciplina.Nome;
+
+                            double? notaConceito;
+
+                            if (notaConceitoBimestre.ConceitoId.HasValue)
+                            {
+                                var valorConceito = await ObterConceito(notaConceitoBimestre.ConceitoId.Value);
+                                notaConceito = valorConceito;
+                            }
+                            else
+                                notaConceito = notaConceitoBimestre.Nota;
+
+                            var nota = new FechamentoConsultaNotaConceitoTurmaListaoDto()
+                            {
+                                Bimestre = periodoAtual.Bimestre,
+                                DisciplinaCodigo = notaConceitoBimestre.DisciplinaId,
+                                Disciplina = nomeDisciplina,
+                                NotaConceito = notaConceito
+                            };
+
+                            await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota);
+
+                            ((List<FechamentoConsultaNotaConceitoTurmaListaoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
+                        }
+
+                        if (disciplina.Regencia)
+                        {
+                            var listaDisciplinasSemNotaAluno = disciplinasRegencia.Where(d => !notasConceitoBimestre.Select(n=> n.DisciplinaId).Contains(d.CodigoComponenteCurricular));
+
+                            if (listaDisciplinasSemNotaAluno.Any())
+                            {
+                                foreach (var disciplinasSemNota in listaDisciplinasSemNotaAluno)
+                                {
+                                    var nota = new FechamentoConsultaNotaConceitoTurmaListaoDto()
+                                    {
+                                        Bimestre = periodoAtual.Bimestre,
+                                        DisciplinaCodigo = disciplinasSemNota.CodigoComponenteCurricular,
+                                        Disciplina = disciplinasSemNota.Nome
+                                    };
+
+                                    ((List<FechamentoConsultaNotaConceitoTurmaListaoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
+                                }
+                            }
+                           
+                        }
+                    }
+                    else
+                    {
+                        if (disciplinasRegencia != null)
+                        {
+                            foreach(var disciplinaReg in disciplinasRegencia)
+                            {
+                                var nota = new FechamentoConsultaNotaConceitoTurmaListaoDto()
+                                {
+                                    Bimestre = periodoAtual.Bimestre,
+                                    DisciplinaCodigo = disciplinaReg.CodigoComponenteCurricular,
+                                    Disciplina = disciplinaReg.Nome
+                                };
+
+                                ((List<FechamentoConsultaNotaConceitoTurmaListaoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
+                            }
                         }
                         else
-                            notaConceito = notaConceitoBimestre.Nota.ToString();
-
-                        var nota = new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                         {
-                            Bimestre = periodoAtual.Bimestre,
-                            DisciplinaCodigo = notaConceitoBimestre.DisciplinaId,
-                            Disciplina = nomeDisciplina,
-                            NotaConceito = notaConceito
-                        };
+                            var nota = new FechamentoConsultaNotaConceitoTurmaListaoDto()
+                            {
+                                Bimestre = periodoAtual.Bimestre,
+                                DisciplinaCodigo = disciplina.Id,
+                                Disciplina = disciplina.Nome
+                            };
 
-                        await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota);
-
-                        ((List<FechamentoFinalConsultaRetornoAlunoNotaConceitoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
+                            ((List<FechamentoConsultaNotaConceitoTurmaListaoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
+                        }
                     }
+
+                    if (alunoDto.NotasConceitoBimestre.Any())
+                        alunoDto.NotasConceitoBimestre = alunoDto.NotasConceitoBimestre.OrderBy(a => a.Disciplina).ToList(); 
 
                     alunosFechamentoNotaConceito.Add(alunoDto);
                 }
@@ -226,9 +299,14 @@ namespace SME.SGP.Aplicacao
                         var nota = notasFechamentosBimestres.FirstOrDefault(a => a.Bimestre == periodo.Bimestre
                                                                             && a.DisciplinaId == disciplinaParaAdicionar.CodigoComponenteCurricular
                                                                             && a.AlunoCodigo == aluno.CodigoAluno);
-                        var notaParaAdicionar = nota?.NotaConceito ?? "";
 
-                        fechamentoFinalAluno.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
+                        double? notaParaAdicionar = nota != null ? 
+                                                            string.IsNullOrEmpty(nota.NotaConceito) 
+                                                                                ? null
+                                                                                : double.Parse(nota.NotaConceito)
+                                                    :null;
+
+                        fechamentoFinalAluno.NotasConceitoBimestre.Add(new FechamentoConsultaNotaConceitoTurmaListaoDto()
                         {
                             Bimestre = periodo.Bimestre,
                             Disciplina = disciplinaParaAdicionar.Nome,
@@ -244,12 +322,12 @@ namespace SME.SGP.Aplicacao
                     var nota = notasFechamentosFinais.FirstOrDefault(a => a.ComponenteCurricularId == disciplinaParaAdicionar.CodigoComponenteCurricular
                                                                     && a.AlunoCodigo == aluno.CodigoAluno);
 
-                    string notaParaAdicionar = nota == null ? string.Empty :
-                                            tipoNota.EhNota() ?
-                                                nota.Nota :
-                                                nota.ConceitoId;
+                    double? notaParaAdicionar = nota == null ? null :
+                                                                       double.Parse(tipoNota.EhNota() ?
+                                                                                        nota.Nota :
+                                                                                        nota.ConceitoId);
 
-                    fechamentoFinalAluno.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
+                    fechamentoFinalAluno.NotasConceitoFinal.Add(new FechamentoConsultaNotaConceitoTurmaListaoDto()
                     {
                         Disciplina = disciplinaParaAdicionar.Nome,
                         DisciplinaCodigo = disciplinaParaAdicionar.CodigoComponenteCurricular,
@@ -260,6 +338,10 @@ namespace SME.SGP.Aplicacao
 
                 fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
                 fechamentoFinalAluno.CodigoAluno = aluno.CodigoAluno;
+
+                if (fechamentoFinalAluno.NotasConceitoBimestre.Any())
+                    fechamentoFinalAluno.NotasConceitoBimestre = fechamentoFinalAluno.NotasConceitoBimestre.OrderBy(a => a.Disciplina).ToList();
+
                 alunosFechamentoNotaConceito.Add(fechamentoFinalAluno);
             }
 
@@ -353,13 +435,13 @@ namespace SME.SGP.Aplicacao
             return fechamentoFinalAluno;
         }
 
-        private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoFinalConsultaRetornoAlunoNotaConceitoDto notasConceito)
+        private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoConsultaNotaConceitoTurmaListaoDto notasConceito)
         {
             double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
 
             if (nota > 0)
             {
-                notasConceito.NotaConceito = nota.ToString();
+                notasConceito.NotaConceito = nota;
                 notasConceito.EmAprovacao = true;
             }
             else
@@ -386,6 +468,28 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar == null)
                 return 1;
             else return periodoEscolar.Bimestre;
+        }
+
+        private async Task ValidaMinimoAvaliacoesBimestrais(DisciplinaDto disciplinaEOL, IEnumerable<DisciplinaDto> disciplinasRegencia, long tipoCalendarioId, string turmaCodigo, int bimestre, TipoAvaliacao tipoAvaliacaoBimestral, FechamentoNotaConceitoTurmaDto fechamentoNotaConceitoTurma)
+        {
+            if (disciplinaEOL.Regencia)
+            {
+                var disciplinasObservacao = new List<string>();
+                foreach (var disciplinaRegencia in disciplinasRegencia)
+                {
+                    var avaliacoes = await mediator.Send(new ObterAvaliacoesBimestraisRegenciaQuery(tipoCalendarioId, turmaCodigo, disciplinaRegencia.CodigoComponenteCurricular.ToString(), bimestre));
+                    if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
+                        disciplinasObservacao.Add(disciplinaRegencia.Nome);
+                }
+                if (disciplinasObservacao.Count > 0)
+                    fechamentoNotaConceitoTurma.Observacoes.Add($"O(s) componente(s) curricular(es) [{string.Join(",", disciplinasObservacao)}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
+            }
+            else
+            {
+                var avaliacoes = await mediator.Send(new ObterAvaliacoesBimestraisQuery(tipoCalendarioId, turmaCodigo, disciplinaEOL.CodigoComponenteCurricular.ToString(), bimestre));
+                if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
+                    fechamentoNotaConceitoTurma.Observacoes.Add($"O componente curricular [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
+            }
         }
 
     }
