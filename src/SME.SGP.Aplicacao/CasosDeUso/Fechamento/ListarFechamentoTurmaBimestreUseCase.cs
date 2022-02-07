@@ -80,6 +80,7 @@ namespace SME.SGP.Aplicacao
                 fechamentoNotaConceitoTurma.FechamentoId = fechamentosTurma.First().Id;
                 fechamentoNotaConceitoTurma.DataFechamento = fechamentosTurma.First().AlteradoEm.HasValue ? fechamentosTurma.First().AlteradoEm.Value : fechamentosTurma.First().CriadoEm;
                 fechamentoNotaConceitoTurma.Situacao = fechamentosTurma.First().Situacao;
+                fechamentoNotaConceitoTurma.SituacaoNome = fechamentosTurma.First().Situacao.Name();
             }
 
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosValidosComOrdenacao = null;
