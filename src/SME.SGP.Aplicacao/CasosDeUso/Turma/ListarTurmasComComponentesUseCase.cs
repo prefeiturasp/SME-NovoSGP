@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
 
             turmasPaginadas = await MapearNomeFiltroTurmas(turmasPaginadas.Items.Select(c => c.TurmaCodigo.ToString()).Distinct().ToArray(),turmasPaginadas);
             var componentes = MapearParaDtoComPaginacao(turmasPaginadas, componentesRetorno);
-            var retorno = await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.Bimestre, usuario, qtdeRegistros,qtdeRegistrosIgnorados);
+            var retorno = await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.Bimestre, usuario);
 
             return retorno;
         }
@@ -140,7 +140,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre, Usuario usuario, int qtdeRegistros, int qtdeRegistrosIgnorados)
+        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre, Usuario usuario)
         {
             List<TurmaComComponenteDto> itensComPendencias = new List<TurmaComComponenteDto>();
 
