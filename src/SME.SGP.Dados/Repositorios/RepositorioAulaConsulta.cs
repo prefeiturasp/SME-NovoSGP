@@ -1076,8 +1076,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select a.id as AulaId, 
                             db.id as DiarioBordoId, 
                             a.data_aula as DataAula, 
-                            db.planejamento as Planejamento, 
-                            db.reflexoes_replanejamento as ReflexoesReplanejamento 
+                            db.planejamento as Planejamento 
                             from aula a 
                             left join diario_bordo db on db.aula_id = a.id 
                             where a.turma_id = @turmaCodigo 

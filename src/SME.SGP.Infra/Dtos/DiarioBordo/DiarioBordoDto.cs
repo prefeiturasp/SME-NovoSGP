@@ -18,7 +18,6 @@ namespace SME.SGP.Infra.Dtos
         public bool TemPeriodoAberto { get; set; }
 
         public string Planejamento { get; set; }
-        public string ReflexoesReplanejamento { get; set; }
         public bool InseridoCJ { get; set; }
 
         public IEnumerable<ObservacaoNotificacoesDiarioBordoDto> Observacoes { get; set; }
