@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
                                                                                          filtroTurmaDto.DreCodigo,
                                                                                          filtroTurmaDto.TurmaCodigo,
                                                                                          filtroTurmaDto.AnoLetivo,
-                                                                                         qtdeRegistros,
+                                                                                         0,
                                                                                          qtdeRegistrosIgnorados,
                                                                                          filtroTurmaDto.Bimestre,
                                                                                          filtroTurmaDto.Modalidade.Value,
@@ -73,13 +73,16 @@ namespace SME.SGP.Aplicacao
                 turmasPaginadas.Items = turmasItems; 
             }                       
 
-            var componentesRetorno = await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(componentesCodigos));                       
+            var componentesRetorno = await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(componentesCodigos));
 
-            turmasPaginadas = await MapearNomeFiltroTurmas(turmasPaginadas.Items.Select(c => c.TurmaCodigo.ToString()).ToArray(),turmasPaginadas);
+            turmasPaginadas.TotalRegistros = turmasPaginadas.Items != null && turmasPaginadas.Items.Any() ? turmasPaginadas.Items.Count() : 0;
+            turmasPaginadas.TotalPaginas = (int)Math.Ceiling((double)turmasPaginadas.TotalRegistros / qtdeRegistros);
+            turmasPaginadas.Items = turmasPaginadas.Items.Skip(qtdeRegistrosIgnorados).Take(qtdeRegistros);
 
+            turmasPaginadas = await MapearNomeFiltroTurmas(turmasPaginadas.Items.Select(c => c.TurmaCodigo.ToString()).Distinct().ToArray(),turmasPaginadas);
             var componentes = MapearParaDtoComPaginacao(turmasPaginadas, componentesRetorno);
+            var retorno = await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.Bimestre, usuario, qtdeRegistros,qtdeRegistrosIgnorados);
 
-            var retorno = await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.Bimestre, usuario);
             return retorno;
         }
 
@@ -137,7 +140,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre, Usuario usuario)
+        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre, Usuario usuario, int qtdeRegistros, int qtdeRegistrosIgnorados)
         {
             List<TurmaComComponenteDto> itensComPendencias = new List<TurmaComComponenteDto>();
 
@@ -178,6 +181,8 @@ namespace SME.SGP.Aplicacao
                     itensComPendencias.Add(turmaComponente);
                 }
             }
+
+            var totalRegistros = itensComPendencias.Any() ? itensComPendencias.Count() : 0;
 
             return new PaginacaoResultadoDto<TurmaComComponenteDto>
             {
