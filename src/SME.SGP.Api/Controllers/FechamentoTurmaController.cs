@@ -106,7 +106,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> SalvarFechamento([FromBody] FechamentoTurmaDisciplinaDto fechamentoTurma, [FromServices] IInserirFechamentoTurmaDisciplinaUseCase useCase)
+        public async Task<IActionResult> SalvarFechamento([FromBody] FechamentoFinalTurmaDisciplinaDto fechamentoTurma, [FromServices] IInserirFechamentoTurmaDisciplinaUseCase useCase)
         {
             return Ok(await useCase.Executar(fechamentoTurma));
         }

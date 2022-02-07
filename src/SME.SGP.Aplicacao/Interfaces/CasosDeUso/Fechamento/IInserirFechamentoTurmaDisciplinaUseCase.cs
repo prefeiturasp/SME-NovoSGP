@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IInserirFechamentoTurmaDisciplinaUseCase : IUseCase<FechamentoTurmaDisciplinaDto, AuditoriaPersistenciaDto>
+    public interface IInserirFechamentoTurmaDisciplinaUseCase : IUseCase<FechamentoFinalTurmaDisciplinaDto, AuditoriaPersistenciaDto>
     {
     }
 }

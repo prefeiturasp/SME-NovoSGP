@@ -23,6 +23,7 @@ namespace SME.SGP.Infra
         public bool EhRegencia { get; set; }
 
         public bool EhFinal { get; set; }
+        public bool ComponenteSemNota { get; set; }
 
         [ListaTemElementos(ErrorMessage = "Necessário informar a lista de alunos e notas/conceitos para o fechamento")]
         public IEnumerable<FechamentoNotaDto> NotaConceitoAlunos { get; set; }

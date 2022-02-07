@@ -6,21 +6,21 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFechamentoTurmaPorTurmaIdQuery : IRequest<FechamentoTurma>
     {
-        public ObterFechamentoTurmaPorTurmaIdQuery(long fechamentoTurmaId)
+        public ObterFechamentoTurmaPorTurmaIdQuery(long turmaId)
         {
-            FechamentoTurmaId = fechamentoTurmaId;
+            TurmaId = turmaId;
         }
 
-        public long FechamentoTurmaId { get; set; }
+        public long TurmaId { get; set; }
     }
 
     public class ObterFechamentoTurmaPorTurmaIdQueryValidator : AbstractValidator<ObterFechamentoTurmaPorTurmaIdQuery>
     {
         public ObterFechamentoTurmaPorTurmaIdQueryValidator()
         {
-            RuleFor(a => a.FechamentoTurmaId)
+            RuleFor(a => a.TurmaId)
                 .NotNull()
-                .WithMessage("Necessário informar o id para obter o fechamento da turma");
+                .WithMessage("Necessário informar o id da turma para obter o fechamento da turma");
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FechamentoTurma> Handle(ObterFechamentoTurmaPorTurmaIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioFechamentoTurma.ObterPorTurmaPeriodo(request.FechamentoTurmaId);
+            return await repositorioFechamentoTurma.ObterPorTurmaPeriodo(request.TurmaId);
         }
     }
 }

@@ -20,4 +20,3 @@ namespace SME.SGP.Aplicacao
             => await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(request.TurmaCodigo, request.DisciplinaId);
     }
 }
-}
