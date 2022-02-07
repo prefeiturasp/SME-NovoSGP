@@ -182,8 +182,6 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var totalRegistros = itensComPendencias.Any() ? itensComPendencias.Count() : 0;
-
             return new PaginacaoResultadoDto<TurmaComComponenteDto>
             {
                 Items = itensComPendencias,
