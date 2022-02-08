@@ -235,7 +235,8 @@ namespace SME.SGP.Dados.Repositorios
                          left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilhoCodigo
                          where t.id = @turmaId
                            and a.disciplina_id = @componenteCurricularPaiCodigo 
-                           and not a.excluido ");
+                           and not a.excluido 
+                           and (a.data_aula < NOW() or db.id is not null)");
 
             if (periodoInicio.HasValue)
                 condicao.AppendLine(" and a.data_aula::date >= @periodoInicio ");
@@ -243,11 +244,6 @@ namespace SME.SGP.Dados.Repositorios
             if (periodoFim.HasValue)
                 condicao.AppendLine(" and a.data_aula::date <= @periodoFim ");
 
-            if (periodoInicio.HasValue)
-                condicao.AppendLine(" and a.data_aula::date >= @periodoInicio ");
-
-            if (periodoFim.HasValue)
-                condicao.AppendLine(" and a.data_aula::date <= @periodoFim ");
 
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);

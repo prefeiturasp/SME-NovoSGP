@@ -43,7 +43,11 @@ namespace SME.SGP.Aplicacao
 
             var planoAulas = await mediator.Send(new ObterPlanosAulaEObjetivosAprendizagemQuery(aulas.Select(s=> s.Id)));
 
-            var planoAulaDto = await MapearParaDto(planoAulas, aulas, temPlanoAnual, request.ComponenteCurricularCodigo, turma.UeId,usuarioLogado.EhSomenteProfessorCj());            
+            var bimestre = periodosEscolaresAulasInicioFim.FirstOrDefault().Bimestre;
+
+            var validaObjetivos = !usuarioLogado.EhSomenteProfessorCj() && turma.ModalidadeCodigo != Modalidade.EJA && turma.ModalidadeCodigo != Modalidade.Medio;
+
+            var planoAulaDto = await MapearParaDto(planoAulas, aulas, temPlanoAnual, request.ComponenteCurricularCodigo, turma.UeId, validaObjetivos, long.Parse(request.ComponenteCurricularId), bimestre, turma.Id);            
 
             return planoAulaDto.OrderBy(x => x.DataAula);
         }
@@ -74,16 +78,27 @@ namespace SME.SGP.Aplicacao
             return temPlanoAnual.Any(s => s > 0);
         }
 
-        private async Task<IEnumerable<PlanoAulaRetornoDto>> MapearParaDto(IEnumerable<PlanoAulaObjetivosAprendizagemDto> planoAulas, IEnumerable<Aula> aulas, bool temPlanoAnual, string componenteCurricularCodigo, long ueId, bool professorCJ)
+        private async Task<IEnumerable<PlanoAulaRetornoDto>> MapearParaDto(IEnumerable<PlanoAulaObjetivosAprendizagemDto> planoAulas, IEnumerable<Aula> aulas, bool temPlanoAnual, string componenteCurricularCodigo, long ueId, bool validaObjetivos, long componenteCurricularId, int bimestre, long turmaId)
         {
             var planosAulaRetorno = new List<PlanoAulaRetornoDto>();
 
             var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
 
+            var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }))).FirstOrDefault().Regencia;
+
+
+            var objetivosAprendizagemComponente = validaObjetivos ? await mediator.Send(new ObterObjetivosPlanoDisciplinaQuery(bimestre,
+                                                                                                                           turmaId,
+                                                                                                                           componenteCurricularId,
+                                                                                                                           long.Parse(planoAulas.FirstOrDefault().DisciplinaId),
+                                                                                                                           ehRegencia)) : null;
+
+            var temObjetivosAprendizagemOpcionais = objetivosAprendizagemComponente == null || objetivosAprendizagemComponente.Count() == 0;
+
             foreach (var plano in planoAulas)
             {
                 var atividadeAvaliativa = await mediator.Send(new ObterAtividadeAvaliativaQuery(plano.DataAula.Date, componenteCurricularCodigo, plano.TurmaId, ue.CodigoUe));
-                
+
                 planosAulaRetorno.Add(new PlanoAulaRetornoDto()
                 {
                     Id = plano.Id,
@@ -103,7 +118,7 @@ namespace SME.SGP.Aplicacao
                     AlteradoRf = plano.AlteradoRf,
                     PossuiPlanoAnual = temPlanoAnual,
                     ObjetivosAprendizagemComponente = plano.ObjetivosAprendizagemComponente,
-                    ObjetivosAprendizagemOpcionais = professorCJ || plano?.ObjetivosAprendizagemComponente?.Count()==0 ? true : false,
+                    ObjetivosAprendizagemOpcionais = temObjetivosAprendizagemOpcionais,
                     IdAtividadeAvaliativa = atividadeAvaliativa?.Id,
                     PodeLancarNota = atividadeAvaliativa != null && plano.DataAula.Date <= DateTimeExtension.HorarioBrasilia().Date,                    
                     EhReposicao = plano.TipoAula == (int)TipoAula.Reposicao
@@ -118,7 +133,8 @@ namespace SME.SGP.Aplicacao
                 AulaId = aula.Id,
                 QtdAulas = aula.Quantidade,
                 AulaCj = aula.AulaCJ,
-                EhReposicao = aula.EhReposicao()
+                EhReposicao = aula.EhReposicao(),
+                ObjetivosAprendizagemOpcionais = temObjetivosAprendizagemOpcionais,
             }));
 
             return planosAulaRetorno;

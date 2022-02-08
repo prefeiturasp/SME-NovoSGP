@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                                                                           request.Turma.Ue.DreId,
                                                                           request.Turma.UeId));
 
-            return periodoFechamento.InicioDoFechamento <= request.DataReferencia;
+            return periodoFechamento == null || periodoFechamento.InicioDoFechamento <= request.DataReferencia;
         }
     }
 }
