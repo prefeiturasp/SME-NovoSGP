@@ -26,10 +26,6 @@ namespace SME.SGP.Aplicacao
                .NotEmpty()
                .WithMessage("O id da turma deve ser informado para consulta dos fechamentos.");
 
-            RuleFor(c => c.ComponentesCurricularesId)
-               .NotEmpty()
-               .WithMessage("Os ids dos componentes curriculares deve ser informado para consulta dos fechamentos.");
-
             RuleFor(c => c.Bimestre)
                .NotNull()
                .WithMessage("O bimestre do período escolar deve ser informado para consulta dos fechamento.");

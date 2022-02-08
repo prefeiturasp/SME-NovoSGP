@@ -82,6 +82,11 @@ namespace SME.SGP.Aplicacao
                 fechamentoNotaConceitoTurma.Situacao = fechamentosTurma.First().Situacao;
                 fechamentoNotaConceitoTurma.SituacaoNome = fechamentosTurma.First().Situacao.Name();
             }
+            else
+            {
+                fechamentoNotaConceitoTurma.Situacao = SituacaoFechamento.NaoIniciado;
+                fechamentoNotaConceitoTurma.SituacaoNome = SituacaoFechamento.NaoIniciado.Name();
+            }
 
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosValidosComOrdenacao = null;
             if (bimestre > 0)
@@ -91,6 +96,7 @@ namespace SME.SGP.Aplicacao
                 var periodoAtual = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestreAtual);
                 if (periodoAtual == null)
                     throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
+                fechamentoNotaConceitoTurma.PeriodoFim = periodoAtual.PeriodoFim;
 
                 var bimestreDoPeriodo = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, periodoAtual.PeriodoFim));
 
@@ -161,7 +167,7 @@ namespace SME.SGP.Aplicacao
                     EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
                 };
 
-                alunoDto.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, periodoAtual.PeriodoFim, turma.EhTurmaInfantil));
+                alunoDto.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, periodoAtual.PeriodoInicio, turma.EhTurmaInfantil));
                 alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
 
                 var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQuery(aluno.CodigoAluno, componenteCurricularCodigo, periodoAtual.Id, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma));
@@ -283,6 +289,10 @@ namespace SME.SGP.Aplicacao
             NotaTipoValor tipoNota, Usuario usuarioAtual)
         {
             var alunosFechamentoNotaConceito = new List<AlunosFechamentoNotaConceitoTurmaDto>();
+
+            if (turma.AnoLetivo != 2020)
+                await VerificaSePodeFazerFechamentoFinal(periodosEscolares, turma);
+
             var ultimoPeriodoEscolar = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault();
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, ultimoPeriodoEscolar, turma, componenteCurricularCodigo.ToString(), ultimoPeriodoEscolar.PeriodoFim);
             var notasFechamentosBimestres = await ObterNotasFechamentosBimestres(componenteCurricularCodigo, turma, periodosEscolares, tipoNota.EhNota());
@@ -377,6 +387,16 @@ namespace SME.SGP.Aplicacao
                 return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "incluídas" : "incluídos")} por {fechamentoTurmaDisciplina.CriadoPor}{criadorRf} em {fechamentoTurmaDisciplina.CriadoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurmaDisciplina.CriadoEm.ToString("HH:mm")}.";
 
             else return string.Empty;
+        }
+
+        private async Task VerificaSePodeFazerFechamentoFinal(IEnumerable<PeriodoEscolar> periodosEscolares, Turma turma)
+        {
+            var ultimoBimestre = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault().Bimestre;
+
+            var fechamentoDoUltimoBimestre = await mediator.Send(new ObterFechamentosTurmaComponentesQuery(turma.Id, null, ultimoBimestre));
+
+            if (fechamentoDoUltimoBimestre == null || !fechamentoDoUltimoBimestre.Any())
+                throw new NegocioException($"Para acessar este aba você precisa realizar o fechamento do {ultimoBimestre}º  bimestre.");
         }
 
         private async Task<bool> PodeEditarNotaOuConceitoPeriodoUsuario(Usuario usuarioLogado, PeriodoEscolar periodoEscolar, Turma turma, string codigoComponenteCurricular, DateTime data)
