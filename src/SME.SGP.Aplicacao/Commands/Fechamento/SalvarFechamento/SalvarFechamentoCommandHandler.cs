@@ -514,7 +514,8 @@ namespace SME.SGP.Aplicacao
                 Nota = fechamentoNota.Nota,
                 ConceitoIdAnterior = fechamentoNota.ConceitoId != null ? fechamentoNota.ConceitoId.Value : (long?)null,
                 ConceitoId = fechamentoNota.ConceitoId,
-                CodigoAluno = alunoCodigo
+                CodigoAluno = alunoCodigo,
+                DisciplinaId = fechamentoNota.DisciplinaId
             });
         }
 

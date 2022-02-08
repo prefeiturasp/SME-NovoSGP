@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
         public IList<AlunosFechamentoNotaConceitoTurmaDto> Alunos { get; set; }
         public long FechamentoId { get; set; }
         public DateTime DataFechamento { get; set; }
+        public DateTime PeriodoFim { get; set; }
         public double MediaAprovacaoBimestre { get; set; }
         public TipoNota NotaTipo { get; set; }
         public string AuditoriaAlteracao { get; set; }
