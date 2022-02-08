@@ -89,7 +89,43 @@ pipeline {
             sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
           }
         }		
-      }    
+      }
+
+      stage('Deploy Treinamento'){
+          when { anyOf { branch 'release'; } }        
+          steps {
+              script{
+                  try {
+                      withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
+                          sh('cp $config '+"$home"+'/.kube/config')
+                          sh "kubectl -n sme-novosgp-treino rollout restart deploy"
+                          sh('rm -f '+"$home"+'/.kube/config')
+                      }
+                  }
+                  catch (err) {
+                      echo err.getMessage()
+                  }
+              }
+          }           
+      }
+
+      stage('Treinamento Flyway') {
+        agent { label 'master' }
+        when { anyOf {  branch 'release'; } }
+        steps{
+          script{
+            try {
+                withCredentials([string(credentialsId: "flyway_sgp_treinamento", variable: 'url')]) {
+                checkout scm
+                sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+                }
+            } 
+            catch (err) {
+                echo err.getMessage()
+            }
+          }
+        }		
+      }        
     }
 
   post {

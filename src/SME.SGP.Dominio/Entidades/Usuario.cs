@@ -281,6 +281,11 @@ namespace SME.SGP.Dominio
 
         public bool PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme()
         {
+            return EhAdmGestao();
+        }
+
+        public bool EhAdmGestao()
+        {
             return (PerfilAtual == Dominio.Perfis.PERFIL_AD
                  || PerfilAtual == Dominio.Perfis.PERFIL_CP
                  || PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR
