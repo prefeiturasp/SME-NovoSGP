@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RecuperacaoParalelaListagemDto> Listar(FiltroRecuperacaoParalelaDto filtro)
         {
-            var alunosEol = await servicoEOL.ObterAlunosAtivosPorTurma(filtro.TurmaCodigo);
+            var alunosEol = await servicoEOL.ObterAlunosAtivosPorTurma(filtro.TurmaCodigo, DateTimeExtension.HorarioBrasilia());
 
             if (!alunosEol.Any())
                 return null;
