@@ -50,15 +50,6 @@ namespace SME.SGP.Aplicacao
                 }
                 inseridoCJ = true;
             }
-            else
-            {
-                var professorTurma = await servicoEol.VerificaAtribuicaoProfessorTurma(usuario.CodigoRf, turma.CodigoTurma);
-                if (professorTurma?.DataDisponibilizacao < DateTime.Now)
-                {
-                    throw new NegocioException(
-                        $"Você não possui permissão para inserir registro de diário de bordo, pois não está mais atribuído(a) a turma.");
-                }
-            }
 
             await MoverRemoverExcluidos(request);
             var diarioBordo = MapearParaEntidade(request, turma.Id, inseridoCJ);
@@ -75,18 +66,12 @@ namespace SME.SGP.Aplicacao
                 var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.DiarioBordo, string.Empty, diario.Planejamento));
                 diario.Planejamento = moverArquivo;
             }
-            if (!string.IsNullOrEmpty(diario.ReflexoesReplanejamento))
-            {
-                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.DiarioBordo, string.Empty, diario.ReflexoesReplanejamento));
-                diario.ReflexoesReplanejamento = moverArquivo;
-            }
         }
         private DiarioBordo MapearParaEntidade(InserirDiarioBordoCommand request, long turmaId, bool inseridoCJ)
             => new DiarioBordo()
             { 
                 AulaId = request.AulaId,
                 Planejamento = request.Planejamento,
-                ReflexoesReplanejamento = request.ReflexoesReplanejamento,
                 ComponenteCurricularId = request.ComponenteCurricularId,
                 TurmaId = turmaId,
                 InseridoCJ = inseridoCJ
