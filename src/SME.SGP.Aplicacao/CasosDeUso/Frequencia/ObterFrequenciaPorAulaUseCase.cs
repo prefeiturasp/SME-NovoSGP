@@ -216,11 +216,5 @@ namespace SME.SGP.Aplicacao
             };
             return registroFrequenciaDto;
         }
-
-        public bool NaoExibirAlunoFrequencia(AlunoPorTurmaResposta aluno, Aula aula, PeriodoEscolar periodoEscolar)
-        {
-            DateTime dataSituacao = DateTime.Parse(aluno.DataSituacao.ToString("dd/MM/yyyy"));
-            return (!aluno.DeveMostrarNaChamada(aula.DataAula, periodoEscolar.PeriodoInicio) || (dataSituacao < periodoEscolar.PeriodoInicio));
-        }
     }
 }
