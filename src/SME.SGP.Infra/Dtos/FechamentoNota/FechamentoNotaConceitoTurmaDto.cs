@@ -18,6 +18,7 @@ namespace SME.SGP.Infra
         public List<string> Observacoes { get; set; }
 
         public SituacaoFechamento Situacao { get; set; }
+        public String SituacaoNome { get; set; }
 
         public FechamentoNotaConceitoTurmaDto()
         {
