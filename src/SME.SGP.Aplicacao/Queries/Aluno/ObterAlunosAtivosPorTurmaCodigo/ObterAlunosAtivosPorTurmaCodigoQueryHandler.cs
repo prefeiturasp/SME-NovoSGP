@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var resposta = await httpClient.GetAsync($"Turmas/{request.TurmaCodigo}/alunos-ativos/data-aula-ticks/{request.DataAula.Ticks}");
 
             if (!resposta.IsSuccessStatusCode)
-                throw new NegocioException("Não foi possível buscar alunos ativos da respectiva no EOL.");
+                throw new NegocioException("Não foi possível buscar alunos ativos no EOL.");
 
             var json = resposta.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<IEnumerable<AlunoPorTurmaResposta>>(json);
