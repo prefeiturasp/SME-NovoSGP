@@ -53,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
                 query += " and gd.ano = @ano ";
 
             if (modalidade == Modalidade.Medio)
-                query += " and @anoLetivo between to_char(g.inicio_vigencia, 'YYYY') and to_char(g.fim_vigencia, 'YYYY') ";
+                query += " and to_char(g.inicio_vigencia, 'YYYY') <= @anoLetivo and (to_char(g.fim_vigencia, 'YYYY') >= @anoLetivo or g.fim_vigencia is null) ";
 
 
             var filtro = await database.Conexao.QueryAsync<GradeFiltro, Grade, Grade>(query,
