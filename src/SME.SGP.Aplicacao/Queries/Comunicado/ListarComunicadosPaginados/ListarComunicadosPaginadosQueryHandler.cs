@@ -1,17 +1,14 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepcional
+namespace SME.SGP.Aplicacao
 {
     public class ListarComunicadosPaginadosQueryHandler : ConsultasBase, IRequestHandler<ListarComunicadosPaginadosQuery, PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>>
     {
@@ -25,7 +22,9 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
         }
         public async Task<PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>> Handle(ListarComunicadosPaginadosQuery request, CancellationToken cancellationToken)
         {
-            return await MapearParaDtoAsync(await repositorioComunicado.ObterComunicadosReduzidos(request.DRECodigo, request.UECodigo, request.TurmaCodigo, request.AlunoCodigo, Paginacao), request.AlunoCodigo);
+            var comunicadosReduzidos = await repositorioComunicado.ObterComunicadosReduzidos(request.DRECodigo, request.UECodigo, request.TurmaCodigo, request.AlunoCodigo, Paginacao);
+
+            return await MapearParaDtoAsync(comunicadosReduzidos, request.AlunoCodigo);
         }
 
         private async Task<PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>> MapearParaDtoAsync(PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto> resultadoDto, string alunoCodigo)
@@ -42,9 +41,9 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
         {
             var listaComunicados = new List<ComunicadoAlunoReduzidoDto>();
             if (comunicados.Count() == 0)
-                return listaComunicados;
+                return default;
 
-            var obterComunicados = await mediator.Send(new ObterSituacaoComunicadosEscolaAquiQuery(alunoCodigo, comunicados.Select(c => c.ComunicadoId).ToArray())); ;
+            var obterComunicados = await mediator.Send(new ObterSituacaoComunicadosEscolaAquiQuery(alunoCodigo, comunicados.Select(c => c.ComunicadoId).ToArray()));
 
             foreach (var comunicado in comunicados)
             {
