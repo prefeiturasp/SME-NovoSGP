@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -74,12 +75,11 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FrequenciaPreDefinidaDto>(query.ToString(), parametros);
         }
 
-        public async Task RemoverPorCCIdETurmaId(long componenteCurricularId, long turmaId)
+        public async Task RemoverPorCCIdETurmaId(long componenteCurricularId, long turmaId, string[] alunosComFrequenciaRegistrada)
         {
             await database.Conexao.ExecuteAsync("DELETE FROM frequencia_pre_definida " +
-                "WHERE turma_id = @turmaId AND componente_curricular_id = @componenteCurricularId;",
-                new { turmaId, componenteCurricularId });
-
+            "WHERE turma_id = @turmaId AND componente_curricular_id = @componenteCurricularId and codigo_aluno = any(@alunosComFrequenciaRegistrada);",
+            new { turmaId, componenteCurricularId, alunosComFrequenciaRegistrada });            
         }
 
         public async Task Salvar(FrequenciaPreDefinida frequenciaPreDefinida)

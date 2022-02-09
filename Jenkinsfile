@@ -31,16 +31,16 @@ pipeline {
           }
         }
       
-        //stage('AnaliseCodigo') {
-	     //   when { branch 'release' }
-         // steps {
-         //     withSonarQubeEnv('sonarqube-local'){
-         //       sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP-API-EOL"'
-         //       sh 'dotnet build SME.Pedagogico.API.sln'
-         //       sh 'dotnet-sonarscanner'
-         //   }
-         // }
-       // }
+        stage('Sonar') {
+	       when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
+         steps {
+             withSonarQubeEnv('sonarqube-local'){
+               sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP"'
+               sh 'dotnet build SME.SGP.sln'
+               sh 'dotnet-sonarscanner'
+           }
+         }
+       }
 
         stage('Build') {
           when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; } } 
@@ -82,13 +82,50 @@ pipeline {
         	 
       stage('Flyway') {
         agent { label 'master' }
+        when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }
         steps{
           withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
             checkout scm
             sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
           }
         }		
-      }    
+      }
+
+      stage('Deploy Treinamento'){
+          when { anyOf { branch 'release'; } }        
+          steps {
+              script{
+                  try {
+                      withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
+                          sh('cp $config '+"$home"+'/.kube/config')
+                          sh "kubectl -n sme-novosgp-treino rollout restart deploy"
+                          sh('rm -f '+"$home"+'/.kube/config')
+                      }
+                  }
+                  catch (err) {
+                      echo err.getMessage()
+                  }
+              }
+          }           
+      }
+
+      stage('Treinamento Flyway') {
+        agent { label 'master' }
+        when { anyOf {  branch 'release'; } }
+        steps{
+          script{
+            try {
+                withCredentials([string(credentialsId: "flyway_sgp_treinamento", variable: 'url')]) {
+                checkout scm
+                sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+                }
+            } 
+            catch (err) {
+                echo err.getMessage()
+            }
+          }
+        }		
+      }        
     }
 
   post {

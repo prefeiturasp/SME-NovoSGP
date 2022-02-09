@@ -98,10 +98,10 @@ namespace SME.SGP.Dominio
             return TipoTurma.EhUmDosValores(TipoTurma.EdFisica, TipoTurma.Itinerarios2AAno);
         }
 
-        public IEnumerable<TipoTurma> ObterTiposRegularesDiferentes()
+        public IEnumerable<int> ObterTiposRegularesDiferentes()
         {
             return TiposRegulares
-                .Where(a => a != TipoTurma)
+                .Where(a => a != TipoTurma).Select(s=> (int)s)
                 .ToList();
         }
         public bool DeveVerificarRegraRegulares()

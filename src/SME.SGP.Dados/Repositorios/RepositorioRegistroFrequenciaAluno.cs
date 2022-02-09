@@ -16,10 +16,10 @@ namespace SME.SGP.Dados
         {
         }
 
-        public async Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId)
+        public async Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId, string[] alunosComFrequenciaRegistrada)
         {
-            await database.Conexao.ExecuteAsync("DELETE FROM registro_frequencia_aluno WHERE registro_frequencia_id = @registroFrequenciaId", 
-                new { registroFrequenciaId });
+            await database.Conexao.ExecuteAsync("DELETE FROM registro_frequencia_aluno WHERE registro_frequencia_id = @registroFrequenciaId  and codigo_aluno = any(@alunosComFrequenciaRegistrada);",
+            new { registroFrequenciaId, alunosComFrequenciaRegistrada});
         }
 
         public async Task RemoverPorRegistroFrequenciaIdENumeroAula(long registroFrequenciaId, int numeroAula, string codigoAluno)

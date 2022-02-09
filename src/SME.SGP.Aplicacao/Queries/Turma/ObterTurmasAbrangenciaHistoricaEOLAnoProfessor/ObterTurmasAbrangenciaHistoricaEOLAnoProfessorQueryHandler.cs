@@ -23,8 +23,12 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<List<AbrangenciaTurmaRetornoEolDto>> Handle(ObterTurmasAbrangenciaHistoricaEOLAnoProfessorQuery request, CancellationToken cancellationToken)
         {
+            int anoLetivo = request.AnoLetivo;
+            string professorRf = request.ProfessorRf;
+
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"turmas/anos-letivos/{request.AnoLetivo}/professor/{request.ProfessorRf}/turmas-historicas-geral");
+
+            var resposta = await httpClient.GetAsync($"turmas/anos-letivos/{anoLetivo}/professor/{professorRf}/turmas-historicas-geral");
 
             if (resposta.IsSuccessStatusCode)
             {

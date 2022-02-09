@@ -31,7 +31,8 @@ namespace SME.SGP.Infra
         public string TipoResponsavel { get; set; }
         public string CelularResponsavel { get; set; }
         public DateTime DataAtualizacaoContato { get; set; }
-                
+        public string CodigoEscola { get; set; }
+
         public bool Inativo
         {
             get => !(new[] { SituacaoMatriculaAluno.Ativo,
@@ -62,9 +63,9 @@ namespace SME.SGP.Infra
             return SituacoesAtiva.Contains(CodigoSituacaoMatricula);
         }
 
-        public bool DeveMostrarNaChamada(DateTime dataAula)
+        public bool DeveMostrarNaChamada(DateTime dataAula, DateTime periodoInicio)
         {
-            return EstaAtivo(dataAula) || NumeroAlunoChamada > 0;
+            return EstaAtivo(dataAula) || (DataSituacao.Date > periodoInicio.Date && NumeroAlunoChamada > 0);
         }
 
         /// <summary>
@@ -72,8 +73,8 @@ namespace SME.SGP.Infra
         /// </summary>
         /// <param name="dataBase">Data a se considerar para verificar a situação do aluno, Ex: Data da aula</param>
         /// <returns></returns>
-        public bool EstaAtivo(DateTime dataBase) => SituacoesAtiva.Contains(CodigoSituacaoMatricula) || 
-                                                    dataBase.Date <= DataSituacao.Date ||
+        public bool EstaAtivo(DateTime dataBase) => (SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date <= dataBase.Date) ||
+                                                    
                                                     CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido;
 
         /// <summary>
@@ -100,13 +101,9 @@ namespace SME.SGP.Infra
             return true;
         }
 
-        public bool PodeEditarNotaConceitoNoPeriodo(PeriodoEscolar periodoEscolar, PeriodoFechamentoBimestre periodoFechamentoBimestre = null)
+        public bool PodeEditarNotaConceitoNoPeriodo(PeriodoEscolar periodoEscolar, bool temPeriodoAberto)
         {
-            if (!PodeEditarNotaConceito())
-            {
-                return DataSituacao >= periodoEscolar?.PeriodoFim || (periodoFechamentoBimestre != null && DataSituacao >= periodoFechamentoBimestre.InicioDoFechamento);
-            }
-            return true;
+            return !PodeEditarNotaConceito() ? temPeriodoAberto : true;
         }
     }
 }

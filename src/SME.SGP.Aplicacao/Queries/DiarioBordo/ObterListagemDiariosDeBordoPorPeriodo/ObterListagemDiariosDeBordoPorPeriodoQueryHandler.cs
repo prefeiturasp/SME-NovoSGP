@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<DiarioBordoTituloDto>> Handle(ObterListagemDiariosDeBordoPorPeriodoQuery request, CancellationToken cancellationToken)
         {
-            var periodo = await repositorioDiarioBordo.ObterListagemDiarioBordoPorPeriodoPaginado(request.TurmaId, request.ComponenteCurricularId, request.DataInicio, request.DataFim, Paginacao);
+            var periodo = await repositorioDiarioBordo.ObterListagemDiarioBordoPorPeriodoPaginado(request.TurmaId, request.ComponenteCurricularPaiId, request.ComponenteCurricularFilhoId, request.DataInicio, request.DataFim, Paginacao);
 
             if (periodo == null && !periodo.Items.Any())
                 return null;
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             {
                 TotalPaginas = dto.TotalPaginas,
                 TotalRegistros = dto.TotalRegistros,
-                Items = dto.Items.Select(item => new DiarioBordoTituloDto(item.Id, item.Descricao))
+                Items = dto.Items.Select(item => new DiarioBordoTituloDto(item.Id, item.Descricao, item.Pendente, item.AulaId))
             };
         }
     }

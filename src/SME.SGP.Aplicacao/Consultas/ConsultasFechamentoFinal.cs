@@ -184,7 +184,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar.podeEditar && aluno.PodeEditarNotaConceito();
+                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar && aluno.PodeEditarNotaConceito();
                 fechamentoFinalAluno.Codigo = aluno.CodigoAluno;
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
@@ -194,7 +194,7 @@ namespace SME.SGP.Aplicacao
 
             retorno.NotaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, turma.AnoLetivo)));
             retorno.FrequenciaMedia = await consultasFrequencia.ObterFrequenciaMedia(disciplinaEOL, turma.AnoLetivo);
-            retorno.PeriodoEncerrado = usuarioEPeriodoPodeEditar.periodoEncerrado;
+            retorno.PeriodoEncerrado = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, ultimoPeriodoEscolar.Bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result;
 
             return retorno;
         }
@@ -240,23 +240,18 @@ namespace SME.SGP.Aplicacao
             return listaRetorno;
         }
 
-        private async Task<(bool podeEditar, bool periodoEncerrado)> PodeEditarNotaOuConceitoPeriodoUsuario(Usuario usuarioLogado, PeriodoEscolar periodoEscolar, Turma turma, string codigoComponenteCurricular, DateTime data)
+        private async Task<bool> PodeEditarNotaOuConceitoPeriodoUsuario(Usuario usuarioLogado, PeriodoEscolar periodoEscolar, Turma turma, string codigoComponenteCurricular, DateTime data)
         {
             if (!usuarioLogado.EhGestorEscolar() && !usuarioLogado.EhPerfilDRE() && !usuarioLogado.EhPerfilSME())
             {
                 var usuarioPodeEditar = await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turma.CodigoTurma, codigoComponenteCurricular, data);
                 if (!usuarioPodeEditar)
-                    return (false, false);
-            }               
+                    return false;
+            }
 
-            var periodoFechamento = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre, periodoEscolar.Id);
+            var temPeriodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolar.Bimestre);
 
-            var reabertura = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(periodoEscolar.Bimestre, DateTime.Today, periodoEscolar.TipoCalendarioId, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
-
-            var dentroPeriodo = (periodoFechamento != null && periodoFechamento.DataDentroPeriodo(DateTime.Today)) ||
-                (reabertura != null && reabertura.DataDentroPeriodo(DateTime.Now));
-
-            return (dentroPeriodo, periodoFechamento != null && DateTime.Today.Date > periodoFechamento.FinalDoFechamento.Date);
+            return temPeriodoAberto;
         }
 
         private async Task<FechamentoFinalConsultaRetornoAlunoDto> TrataFrequenciaAluno(FechamentoFinalConsultaFiltroDto filtros, IEnumerable<PeriodoEscolar> periodosEscolares, AlunoPorTurmaResposta aluno, Turma turma)

@@ -35,5 +35,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> VerificarSeJaExistePorTipoAvaliacao(long tipoAvaliacaoId);
         Task<IEnumerable<AtividadeAvaliativa>> ObterPorTurmaDisciplinasPeriodoAsync(string turmaCodigo, string[] disciplinasId, DateTime inicioPeriodo, DateTime fimPeriodo);        
         Task<bool> AtividadeImportada(long atividadeId);
+        IEnumerable<AtividadeAvaliativa> ListarAtividadesIds(IEnumerable<long> ids);
     }
 }

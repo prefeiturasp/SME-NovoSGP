@@ -61,11 +61,11 @@ namespace SME.SGP.Aplicacao
                 DevolutivaId = diarioBordo.DevolutivaId,
                 Devolutivas = diarioBordo.Devolutiva?.Descricao,
                 Planejamento = diarioBordo.Planejamento,
-                ReflexoesReplanejamento = diarioBordo.ReflexoesReplanejamento,
                 Excluido = diarioBordo.Excluido,
                 Migrado = diarioBordo.Migrado,
                 TemPeriodoAberto = aberto,
-                Auditoria = (AuditoriaDto)diarioBordo
+                Auditoria = (AuditoriaDto)diarioBordo,
+                InseridoCJ = diarioBordo.InseridoCJ
             };
         }
     }
