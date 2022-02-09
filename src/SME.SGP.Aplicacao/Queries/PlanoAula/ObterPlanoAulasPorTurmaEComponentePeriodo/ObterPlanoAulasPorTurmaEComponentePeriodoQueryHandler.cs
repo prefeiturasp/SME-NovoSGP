@@ -86,11 +86,11 @@ namespace SME.SGP.Aplicacao
 
             var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }))).FirstOrDefault().Regencia;
 
-
+            var disciplinaId = (planoAulas != null && planoAulas.Any()) ? long.Parse(planoAulas.FirstOrDefault().DisciplinaId) : 0;
             var objetivosAprendizagemComponente = validaObjetivos ? await mediator.Send(new ObterObjetivosPlanoDisciplinaQuery(bimestre,
                                                                                                                            turmaId,
                                                                                                                            componenteCurricularId,
-                                                                                                                           long.Parse(planoAulas.FirstOrDefault().DisciplinaId),
+                                                                                                                           disciplinaId,
                                                                                                                            ehRegencia)) : null;
 
             var temObjetivosAprendizagemOpcionais = objetivosAprendizagemComponente == null || objetivosAprendizagemComponente.Count() == 0;
