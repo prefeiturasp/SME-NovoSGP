@@ -22,9 +22,6 @@ namespace SME.SGP.Dados.Repositorios
                    and f.modalidade = @modalidade
                    and f.duracao_turno = @duracao";
 
-            if (modalidade == Modalidade.Medio)
-                query += " and current_date between g.inicio_vigencia and g.fim_vigencia ";
-
             var filtro = await database.Conexao.QueryAsync<GradeFiltro, Grade, Grade>(query,
                 (gradeFiltro, grade) =>
                 {
