@@ -392,8 +392,9 @@ namespace SME.SGP.Aplicacao
             }
 
             var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoFechamentoQuery(turma, periodoEscolar.Bimestre, DateTimeExtension.HorarioBrasilia().Date));
+            var podeLancarNota = await mediator.Send(new ObterComponenteLancaNotaQuery(Convert.ToInt64(codigoComponenteCurricular)));
 
-            return temPeriodoAberto;
+            return temPeriodoAberto && podeLancarNota;
         }
 
         private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolares, bool ehNota)
