@@ -25,9 +25,9 @@ namespace SME.SGP.Api
 
             services.AddHttpClient<IServicoEol, ServicoEOL>(c =>
             {
-                c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOLHml").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
-                c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
+                c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApiHml").Value);
             }).AddPolicyHandler(policy);
 
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
@@ -51,9 +51,9 @@ namespace SME.SGP.Api
 
             services.AddHttpClient(name: "servicoEOL", c =>
             {
-                c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOLHml").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
-                c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
+                c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApiHml").Value);
 
             }).AddPolicyHandler(policy);
 
