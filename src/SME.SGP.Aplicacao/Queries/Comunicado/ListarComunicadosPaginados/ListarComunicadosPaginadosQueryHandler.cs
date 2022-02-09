@@ -22,7 +22,9 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>> Handle(ListarComunicadosPaginadosQuery request, CancellationToken cancellationToken)
         {
-            return await MapearParaDtoAsync(await repositorioComunicado.ObterComunicadosReduzidos(request.DRECodigo, request.UECodigo, request.TurmaCodigo, request.AlunoCodigo, Paginacao), request.AlunoCodigo);
+            var comunicadosReduzidos = await repositorioComunicado.ObterComunicadosReduzidos(request.DRECodigo, request.UECodigo, request.TurmaCodigo, request.AlunoCodigo, Paginacao);
+
+            return await MapearParaDtoAsync(comunicadosReduzidos, request.AlunoCodigo);
         }
 
         private async Task<PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>> MapearParaDtoAsync(PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto> resultadoDto, string alunoCodigo)
