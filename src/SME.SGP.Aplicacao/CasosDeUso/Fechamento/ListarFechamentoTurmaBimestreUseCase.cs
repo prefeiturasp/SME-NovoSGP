@@ -102,22 +102,18 @@ namespace SME.SGP.Aplicacao
 
                 if (turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year)
                 {
+                    //Ver com Marlon se essa condição faz sentido
                     alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
                                                                    a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido))
                                                                    || (a.EstaInativo(periodoAtual.PeriodoFim) && a.DataSituacao.Date >= periodoAtual.PeriodoInicio.Date && a.DataSituacao.Date <= periodoAtual.PeriodoFim.Date) &&
                                                                     (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido))
-                                                           .OrderBy(a => a.NumeroAlunoChamada)
+                                                           .OrderBy(a => a.NomeAluno)
                                                            .ThenBy(a => a.NomeValido());
                 }
                 else
-                {
-                    alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
-                                                                      a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
-                                                                      a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido)) &&
-                                                                      a.DataMatricula.Date <= bimestreDoPeriodo.PeriodoFim.Date)
-                                                                         .OrderBy(a => a.NumeroAlunoChamada)
-                                                                         .ThenBy(a => a.NomeValido());
-                }
+                    alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))
+                                                      .OrderBy(a => a.NomeAluno)
+                                                      .ThenBy(a => a.NomeValido());
 
                 var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, componenteCurricularCodigo.ToString(), bimestreDoPeriodo.Id));
 
@@ -129,11 +125,9 @@ namespace SME.SGP.Aplicacao
             {
                 fechamentoNotaConceitoTurma.DataFechamento = ultimoPeriodoEscolar.PeriodoFim;
 
-                alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
-                                                                a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
-                                                                a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido)))
-                                                              .OrderBy(a => a.NumeroAlunoChamada)
-                                                              .ThenBy(a => a.NomeValido());
+                alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(ultimoPeriodoEscolar.PeriodoFim, ultimoPeriodoEscolar.PeriodoInicio))
+                                                  .OrderBy(a => a.NomeAluno)
+                                                  .ThenBy(a => a.NomeValido());
 
                 fechamentoNotaConceitoTurma.Alunos = await RetornaListagemAlunosFechamentoFinal(alunosValidosComOrdenacao, disciplinas, fechamentosTurma, turma,
                                                             componenteCurricularCodigo, periodosEscolares, tipoNotaTurma, usuarioAtual);
