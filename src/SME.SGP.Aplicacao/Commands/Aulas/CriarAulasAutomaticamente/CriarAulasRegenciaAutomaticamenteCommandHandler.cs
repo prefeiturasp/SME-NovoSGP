@@ -54,7 +54,6 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(
                         new ObterAulasDaTurmaPorTipoCalendarioQuery(dadoTurma.TurmaCodigo, tipoCalendarioId));
 
-
                 var aulasCriadas = aulasCriadasPorUsuarios
                     .Where(a => !a.CriadoPor.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase))
                     .Select(a => Convert.ToInt64(a.DisciplinaId))
