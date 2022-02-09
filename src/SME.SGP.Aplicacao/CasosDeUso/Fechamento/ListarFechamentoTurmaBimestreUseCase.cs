@@ -100,18 +100,7 @@ namespace SME.SGP.Aplicacao
 
                 var bimestreDoPeriodo = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, periodoAtual.PeriodoFim));
 
-                if (turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year)
-                {
-                    //Ver com Marlon se essa condição faz sentido
-                    alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
-                                                                   a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido))
-                                                                   || (a.EstaInativo(periodoAtual.PeriodoFim) && a.DataSituacao.Date >= periodoAtual.PeriodoInicio.Date && a.DataSituacao.Date <= periodoAtual.PeriodoFim.Date) &&
-                                                                    (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido))
-                                                           .OrderBy(a => a.NomeAluno)
-                                                           .ThenBy(a => a.NomeValido());
-                }
-                else
-                    alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))
+                alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))
                                                       .OrderBy(a => a.NomeAluno)
                                                       .ThenBy(a => a.NomeValido());
 
