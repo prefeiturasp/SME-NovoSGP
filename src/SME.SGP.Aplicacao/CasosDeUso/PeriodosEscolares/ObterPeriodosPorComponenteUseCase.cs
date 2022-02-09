@@ -118,8 +118,6 @@ namespace SME.SGP.Aplicacao
                         DataInicio = dataInicioPeriodo,
                         DataFim = dataAula,
                         PeriodoEscolar = $"{formataDataInicio} - {formataDataFim}",
-                        //AulaCj = periodo.AulaCj
-                        
                     });
 
                     dataInicioPeriodo = DateTime.MinValue;
