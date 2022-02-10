@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
@@ -15,6 +16,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/plano-aee")]
+    [Authorize("Bearer")]
     public class PlanoAEEController : ControllerBase
     {
         private readonly IMediator mediator;
@@ -175,7 +177,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("encerrar-planos")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> EncerrarPlanos()
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.EncerrarPlanoAEEEstudantesInativos, Guid.NewGuid()));
