@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -99,6 +100,8 @@ namespace SME.SGP.Aplicacao
             somatorioAulasRealizadas = (dados1 == null ? 0 : dados1.AulasRealizadas) + (dados2 == null ? 0 : dados2.AulasRealizadas);
             somatorioAusencias = (dados1 == null ? 0 : dados1.Ausencias) + (dados2 == null ? 0 : dados2.Ausencias);
             mediaFrequencia = ((dados1 == null ? 0 : dados1.Frequencia) + (dados2 == null ? 0 : dados2.Frequencia)) / 2;
+
+            mediaFrequencia = mediaFrequencia != null ? Math.Round(mediaFrequencia.Value, 2) : mediaFrequencia;
 
             bimestres.Add(new FrequenciaAlunoBimestreDto
             {
