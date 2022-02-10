@@ -176,7 +176,7 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryFirstOrDefaultAsync<ObterTurmaSimplesPorIdRetornoDto>(query, new { id });
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo, string codigoTurma = null)
+        public async Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo, string codigoTurma = null, int pagina = 1)
         {
             var modalidade = Modalidade.EducacaoInfantil;
             var turmas = new List<Turma>();
@@ -193,8 +193,9 @@ namespace SME.SGP.Dados.Repositorios
                             where
 	                            t.modalidade_codigo = :modalidade
 	                            and t.historica = false
-	                            and t.ano_letivo = :anoLetivo	                            
-                                {(!string.IsNullOrEmpty(codigoTurma) ? " and t.turma_id = :codigoTurma" : string.Empty)}";
+	                            and t.ano_letivo = :anoLetivo
+	                            and ano ~ E'^[0-9\.]+$'
+                                {(!string.IsNullOrEmpty(codigoTurma) ? " and t.turma_id = :codigoTurma" : " offset (@pagina * 10) rows fetch next 10 rows only")}";
 
             await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
@@ -206,7 +207,7 @@ namespace SME.SGP.Dados.Repositorios
                     turmas.Add(turma);
 
                 return turma;
-            }, new { anoLetivo, modalidade, codigoTurma });
+            }, new { anoLetivo, modalidade, codigoTurma, pagina = pagina - 1 });
 
             return turmas;
         }
