@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,7 +48,7 @@ namespace SME.SGP.Aplicacao
                 var eventoReposicaoDeAula = await repositorioEvento
                     .EventosNosDiasETipo(request.DataAula, request.DataAula, TipoEvento.ReposicaoDeAula, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
 
-                if (eventoReposicaoAulaNoDia == null && eventoReposicaoDeAula == null)
+                if (eventoReposicaoAulaNoDia.Count() == 0 && eventoReposicaoDeAula.Count() == 0)
                     return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula fora do periodo escolar");
 
                 somenteAulaReposicao = true;
