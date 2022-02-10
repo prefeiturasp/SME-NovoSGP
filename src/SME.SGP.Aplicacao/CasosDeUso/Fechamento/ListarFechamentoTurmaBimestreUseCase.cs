@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
             }
             else if (bimestre == 0)
             {
-                fechamentoNotaConceitoTurma.DataFechamento = ultimoPeriodoEscolar.PeriodoFim;
+                fechamentoNotaConceitoTurma.PeriodoFim = ultimoPeriodoEscolar.PeriodoFim;
 
                 alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(ultimoPeriodoEscolar.PeriodoFim, ultimoPeriodoEscolar.PeriodoInicio))
                                                   .OrderBy(a => a.NomeAluno)
@@ -401,6 +401,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaRetorno = new List<FechamentoNotaAlunoDto>();
             var fechamentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();
+            IEnumerable<FechamentoNotaAlunoAprovacaoDto> notasBimestrais = new List<FechamentoNotaAlunoAprovacaoDto>();
             foreach (var periodo in periodosEscolares)
             {
                 var fechamentoBimestreTurma = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery(turma.Id, new long[] { disciplinaCodigo }, periodo.Bimestre));
@@ -411,7 +412,9 @@ namespace SME.SGP.Aplicacao
 
 
             var fechamentosIds = fechamentosTurmaDisciplina?.Select(a => a.Id).ToArray() ?? new long[] { };
-            var notasBimestrais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosIds));
+
+            if (fechamentosIds.Length > 0)
+                notasBimestrais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosIds));
 
             foreach (var nota in notasBimestrais.Where(a => a.Bimestre.HasValue))
             {
