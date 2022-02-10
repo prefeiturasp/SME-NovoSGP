@@ -174,10 +174,10 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false, NotificacaoPlanoAEETipo tipo = NotificacaoPlanoAEETipo.PlanoCriado)
         {
             var joinPendecias = desconsiderarPendencias ? @"left join pendencia_plano_aee ppa on ppa.plano_aee_id = pa.id
-                                                            left join pendencia p on ppa.pendencia_id = p.id": string.Empty;
+                                                            left join pendencia p on ppa.pendencia_id = p.id and not p.excluido": string.Empty;
             var joinNotificacoes = desconsiderarNotificados ? "left join notificacao_plano_aee npa on npa.plano_aee_id = pa.id and npa.tipo = @tipo" : string.Empty;
 
-            var condicaoPendencias = desconsiderarPendencias ? $"and (ppa.id is null or p.situacao = {(int)SituacaoPendencia.Resolvida})" : string.Empty;
+            var condicaoPendencias = desconsiderarPendencias ? $"and (ppa.id is null or p.id is null or p.situacao = {(int)SituacaoPendencia.Resolvida})" : string.Empty;
             var condicaoNotificacoes = desconsiderarNotificados ? "and npa.id is null" : string.Empty;
 
             var query = $@"select pa.* 
