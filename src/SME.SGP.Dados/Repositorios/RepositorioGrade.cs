@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             return filtro.FirstOrDefault();
         }
 
-        public async Task<Grade> ObterGradeTurmaAno(TipoEscola tipoEscola, Modalidade modalidade, int duracao, int ano)
+        public async Task<Grade> ObterGradeTurmaAno(TipoEscola tipoEscola, Modalidade modalidade, int duracao, int ano, string anoLetivo)
         {
             string query = @"select f.id as FiltroId, g.Id as GradeId, g.*
                   from grade_filtro f
@@ -52,18 +52,22 @@ namespace SME.SGP.Dados.Repositorios
             if (ano > 0)
                 query += " and gd.ano = @ano ";
 
+            if (modalidade == Modalidade.Medio)
+                query += " and to_char(g.inicio_vigencia, 'YYYY') <= @anoLetivo and (to_char(g.fim_vigencia, 'YYYY') >= @anoLetivo or g.fim_vigencia is null) ";
+
 
             var filtro = await database.Conexao.QueryAsync<GradeFiltro, Grade, Grade>(query,
-                (gradeFiltro, grade) =>
-                {
-                    return grade;
-                }, new
-                {
-                    tipoEscola,
-                    modalidade,
-                    duracao,
-                    ano
-                }, splitOn: "FiltroId, GradeId");
+            (gradeFiltro, grade) =>
+            {
+                return grade;
+            }, new
+            {
+                tipoEscola,
+                modalidade,
+                duracao,
+                ano,
+                anoLetivo
+            }, splitOn: "FiltroId, GradeId");
 
             return filtro.FirstOrDefault();
         }
