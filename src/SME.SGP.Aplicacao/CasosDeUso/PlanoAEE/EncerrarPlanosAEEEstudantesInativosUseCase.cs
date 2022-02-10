@@ -50,10 +50,6 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                Console.WriteLine($">>>> Erro: {ex}");
-            }
-            catch (Exception ex)
-            {
                 logger.LogError(ex, "Erro ao encerrar plano AEE");
             }            
 
