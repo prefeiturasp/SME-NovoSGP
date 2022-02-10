@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,9 +21,18 @@ namespace SME.SGP.Aplicacao
                 request.TipoCalendarioId.Value :
                 await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(request.Turma));
 
+            int bimestre = request.Bimestre;
+
+            if(bimestre == 0)
+                if (request.Turma.ModalidadeTipoCalendario == (ModalidadeTipoCalendario.EJA))
+                    bimestre = 2;
+                else
+                    bimestre = 4;
+            
+
             var periodoFechamento = await mediator.Send(
                 new ObterPeriodoFechamentoPorCalendarioDreUeBimestreQuery(tipoCalendarioId,
-                                                                          request.Bimestre,
+                                                                          bimestre,
                                                                           request.Turma.Ue.DreId,
                                                                           request.Turma.UeId));
 
