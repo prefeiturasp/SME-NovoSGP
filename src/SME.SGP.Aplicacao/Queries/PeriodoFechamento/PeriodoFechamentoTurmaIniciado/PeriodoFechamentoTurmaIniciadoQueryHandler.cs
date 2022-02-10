@@ -21,14 +21,8 @@ namespace SME.SGP.Aplicacao
                 request.TipoCalendarioId.Value :
                 await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(request.Turma));
 
-            int bimestre = request.Bimestre;
-
-            if(bimestre == 0)
-                if (request.Turma.ModalidadeTipoCalendario == (ModalidadeTipoCalendario.EJA))
-                    bimestre = 2;
-                else
-                    bimestre = 4;
-            
+            int bimestre = request.Bimestre > 0 ? request.Bimestre :
+                        request.Turma.ModalidadeTipoCalendario == (ModalidadeTipoCalendario.EJA) ? 2 : 4;
 
             var periodoFechamento = await mediator.Send(
                 new ObterPeriodoFechamentoPorCalendarioDreUeBimestreQuery(tipoCalendarioId,
