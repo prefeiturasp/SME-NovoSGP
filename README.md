@@ -124,11 +124,6 @@ Nosso produto *oferece interfaces amigáveis para o usuário e diversas automaç
 **Notificação**
 ![8. Notificacao.png](http://amcom.educacao.ws/images/8-notificacao.png)
 
-## Roadmap:
-
-O Roadmap do Produto é vivo e dinâmico. Essa é a foto atual do plano de evolução do produto, com previsão de entrega da Release 4 em Setembro, incluindo as Unidades Escolares do Infantil no sistema.
-
-![roadmap.jfif](http://amcom.educacao.ws/images/roadmap.jfif)
 
 # Comunicação:
 
@@ -138,7 +133,7 @@ O Roadmap do Produto é vivo e dinâmico. Essa é a foto atual do plano de evolu
 
 # Como contribuir
 
-Contribuições são **super bem vindas**! Se você tem vontade de construir o PTRF conosco, veja o nosso [guia de contribuição](./CONTRIBUTING.md) onde explicamos detalhadamente como trabalhamos e de que formas você pode nos ajudar a alcançar nossos objetivos. Lembrando que todos devem seguir  nosso [código de conduta](./CODEOFCONDUCT.md).
+Contribuições são **super bem vindas**! Se você tem vontade de construir o SGP conosco, veja o nosso [guia de contribuição](./CONTRIBUTING.md) onde explicamos detalhadamente como trabalhamos e de que formas você pode nos ajudar a alcançar nossos objetivos. Lembrando que todos devem seguir  nosso [código de conduta](./CODEOFCONDUCT.md).
 
 # Instalação e configuração
 
