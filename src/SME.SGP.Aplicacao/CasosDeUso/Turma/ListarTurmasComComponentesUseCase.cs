@@ -171,7 +171,6 @@ namespace SME.SGP.Aplicacao
             foreach (var turmaCodigo in turmasComponentes.Items.GroupBy(a => a.TurmaCodigo))
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo.Key.ToString()));
-
                 var ehTurmaInfantil = turma.EhTurmaInfantil;
 
                 var periodoFechamentoIniciado = !ehTurmaInfantil && !usuario.EhProfessorCj() &&
@@ -179,7 +178,8 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var turmaComponente in turmaCodigo)
                 {
-                    var pendencias = await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.ComponenteCurricularCodigo.ToString(),
+
+                    var pendencias = bimestre > 0 ? await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.ComponenteCurricularCodigo.ToString(),
                                                                                                         turma.CodigoTurma,
                                                                                                         bimestre,
                                                                                                         verificaDiarioBordo: ehTurmaInfantil && !usuario.EhProfessorCjInfantil(),
@@ -188,17 +188,17 @@ namespace SME.SGP.Aplicacao
                                                                                                         verificaFrequencia: !ehTurmaInfantil || !usuario.EhProfessorCjInfantil(),
                                                                                                         professorCj: usuario.EhProfessorCj(),
                                                                                                         professorNaoCj: usuario.EhProfessor(),
-                                                                                                        professorRf: usuario.CodigoRf));
+                                                                                                        professorRf: usuario.CodigoRf)) : null;
 
                     var possuiFechamento = periodoFechamentoIniciado &&
                         await mediator.Send(new ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(turma.Id,
                                                                                                         bimestre,
                                                                                                         turmaComponente.ComponenteCurricularCodigo));
 
-                    turmaComponente.PendenciaDiarioBordo = pendencias.PendenciaDiarioBordo;
-                    turmaComponente.PendenciaAvaliacoes = pendencias.PendenciaAvaliacoes;
-                    turmaComponente.PendenciaFrequencia = pendencias.PendenciaFrequencia;
-                    turmaComponente.PendenciaPlanoAula = pendencias.PendenciaPlanoAula;
+                    turmaComponente.PendenciaDiarioBordo = pendencias?.PendenciaDiarioBordo ?? false;
+                    turmaComponente.PendenciaAvaliacoes = pendencias?.PendenciaAvaliacoes ?? false;
+                    turmaComponente.PendenciaFrequencia = pendencias?.PendenciaFrequencia ?? false;
+                    turmaComponente.PendenciaPlanoAula = pendencias?.PendenciaPlanoAula ?? false;
                     turmaComponente.PendenciaFechamento = periodoFechamentoIniciado && !possuiFechamento;
                     turmaComponente.PeriodoFechamentoIniciado = periodoFechamentoIniciado;
 
