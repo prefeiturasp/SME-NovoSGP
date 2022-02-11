@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
                                                                                              anosInfantilDesconsiderar != null ? String.Join(",", anosInfantilDesconsiderar) : string.Empty));
             }
 
-            if (turmasPaginadas == null || turmasPaginadas?.Items == null)
+            if (turmasPaginadas == null || turmasPaginadas?.Items == null || !turmasPaginadas.Items.Any())
                 return default;
 
             var codigosTurmaPaginada = turmasPaginadas.Items.Select(c => c.TurmaCodigo).Distinct().ToArray();
