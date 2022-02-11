@@ -69,6 +69,9 @@ namespace SME.SGP.Aplicacao
                 if (disciplinasRegencia == null || !disciplinasRegencia.Any())
                     throw new NegocioException("Não foram encontrados componentes curriculares para a regência informada.");
 
+                if (turma.EhEJA() && disciplinasRegencia != null)
+                    disciplinasRegencia = disciplinasRegencia.Where(n => n.CodigoComponenteCurricular != 6);
+
                 disciplinas.AddRange(disciplinasRegencia);
             }
             else
