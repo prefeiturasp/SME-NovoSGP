@@ -68,8 +68,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre)
-        {
-            var retorno = new List<ConselhoDeClasseGrupoMatrizDto>();
+        {            
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
@@ -110,6 +109,8 @@ namespace SME.SGP.Aplicacao
 
             var registrosFrequencia = await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, new string[] { turma.CodigoTurma }, disciplinas.Select(d => !d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : d.CodigoComponenteTerritorioSaber.ToString()).ToArray(),
                 periodoEscolar?.Id));
+
+            var retorno = new List<ConselhoDeClasseGrupoMatrizDto>();
 
             foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key.Nome))
             {
@@ -153,7 +154,7 @@ namespace SME.SGP.Aplicacao
 
             var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-            if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a=> a.Id == (int)turma.TipoTurma))
+            if (turma.DeveVerificarRegraRegulares() || (turmasitinerarioEnsinoMedio != null && turmasitinerarioEnsinoMedio.Any(a=> a.Id == (int)turma.TipoTurma)))
             {
                 var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
@@ -214,7 +215,7 @@ namespace SME.SGP.Aplicacao
                await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)) :
                await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, alunoCodigo, bimestre));
 
-            Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var disciplinasDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, usuarioAtual.PerfilAtual, usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares, false));
 

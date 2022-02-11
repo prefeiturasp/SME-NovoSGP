@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public void Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
+        public async Task Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
         {
             var planoAnualDto = migrarPlanoAnualDto.PlanoAnual;
             var planoCopia = new PlanoAnualDto(
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
                     var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual);
 
                     if (planoAnual == null)
-                        planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao, bimestreAtual.ObjetivosAprendizagemOpcionais);
+                        planoAnual = await MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao, bimestreAtual.ObjetivosAprendizagemOpcionais);
 
                     planoAnual.Descricao = planoAnualOrigem.Descricao;
                     Salvar(planoCopia, planoAnual, bimestreAtual);
@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
                     if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistir)
                         throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
                 }
-                planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao, bimestrePlanoAnual.ObjetivosAprendizagemOpcionais);
+                planoAnual = await MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao, bimestrePlanoAnual.ObjetivosAprendizagemOpcionais);
                 Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
             }
             unitOfWork.PersistirTransacao();
@@ -154,7 +154,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private PlanoAnual MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, int bimestre, string descricao, bool objetivosAprendizagemOpcionais)
+        private async Task<PlanoAnual> MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, int bimestre, string descricao, bool objetivosAprendizagemOpcionais)
         {
             if (planoAnual == null)
             {
@@ -162,7 +162,7 @@ namespace SME.SGP.Aplicacao
             }
             planoAnual.Ano = planoAnualDto.AnoLetivo.Value;
             planoAnual.Bimestre = bimestre;
-            planoAnual.Descricao = descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanejamentoAnual.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAnual.Descricao = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanejamentoAnual, descricao, planoAnual.Descricao));
             planoAnual.EscolaId = planoAnualDto.EscolaId;
             planoAnual.TurmaId = planoAnualDto.TurmaId.Value;
             planoAnual.ComponenteCurricularEolId = planoAnualDto.ComponenteCurricularEolId;
