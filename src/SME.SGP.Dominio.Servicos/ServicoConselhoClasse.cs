@@ -193,6 +193,16 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+            
+            var alunos = await mediator
+                .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
+
+            if (alunos == null || !alunos.Any())
+                throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
+
+            var inativo = alunos.First(a => a.CodigoAluno == alunoCodigo).Inativo;
+            
+            await mediator.Send(new ConsolidarTurmaConselhoClasseAlunoCommand(alunoCodigo, turma.Id, bimestre.Value, inativo));
 
             var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, bimestre ?? 0);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
@@ -518,7 +528,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurmas(string[] turmasCodigo, bool ehEnsinoEspecial, int turnoParaComponentesCurriculares)
         {
             var componentesTurma = new List<DisciplinaDto>();
-            Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
             if (componentesCurriculares != null && componentesCurriculares.Any())
@@ -582,7 +592,8 @@ namespace SME.SGP.Dominio.Servicos
 
             foreach (var conselhoAluno in listaAgrupada)
                 await PublicarMensagem(conselhoAluno.turmaId, conselhoAluno.bimestre);
-        }
+                
+        }        
 
         private async Task PublicarMensagem(long turmaId, int bimestre)
         {
