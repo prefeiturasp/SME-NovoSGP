@@ -26,6 +26,8 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
+            await mediator.Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil parâmetro ativo", LogNivel.Informacao, LogContexto.Infantil));
+
             var dadosCriacaoAulaInfantil = mensagemRabbit?
                 .ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() ?? new DadosCriacaoAulasAutomaticasCarregamentoDto();
             var anoAtual = DateTime.Now.Year;
