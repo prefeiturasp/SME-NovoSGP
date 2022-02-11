@@ -24,9 +24,7 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", LogNivel.Negocio, LogContexto.Infantil));
                 return false;
-            }
-
-            await mediator.Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil parâmetro ativo", LogNivel.Informacao, LogContexto.Infantil));
+            }           
 
             var dadosCriacaoAulaInfantil = mensagemRabbit?
                 .ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() ?? new DadosCriacaoAulasAutomaticasCarregamentoDto();
@@ -59,7 +57,11 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterTurmasInfantilNaoDeProgramaQuery(anoAtual, dadosCriacaoAulaInfantil?.CodigoTurma, dadosCriacaoAulaInfantil?.Pagina ?? 1));
 
             if (turmas == null || !turmas.Any())
-                return true;
+            {
+                await mediator
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não foram encontradas turmas.", LogNivel.Negocio, LogContexto.Infantil));
+                return false;
+            }
 
             foreach (var turma in turmas)
             {
