@@ -157,6 +157,8 @@ namespace SME.SGP.Aplicacao
 
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString(), filtro.PeriodoEscolarId));
 
+            var periodoFechamentoBimestre = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoVigente(turmaCompleta, DateTimeExtension.HorarioBrasilia(), filtro.Bimestre);
+
             foreach (var aluno in alunosAtivos)
             {
                 var notaConceitoAluno = new NotasConceitosAlunoRetornoDto()
@@ -207,11 +209,9 @@ namespace SME.SGP.Aplicacao
                     notasAvaliacoes.Add(notaAvaliacao);
                 }
 
-                var temPeriodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turmaCompleta, aluno.DataSituacao, filtro.Bimestre);
-
                 notaConceitoAluno.PodeEditar =
                         (notasAvaliacoes.Any(na => na.PodeEditar) || (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any())) &&
-                        (aluno.Inativo == false || (aluno.Inativo && temPeriodoAberto));
+                        (aluno.Inativo == false || (aluno.Inativo && aluno.DataSituacao >= periodoFechamentoBimestre?.PeriodoFechamentoInicio.Date));
 
                 notaConceitoAluno.Marcador = await mediator
                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
