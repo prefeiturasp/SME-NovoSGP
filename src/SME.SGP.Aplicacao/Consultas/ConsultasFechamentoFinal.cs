@@ -164,9 +164,10 @@ namespace SME.SGP.Aplicacao
                         }
                     }
 
-                    foreach (var disciplinaParaAdicionar in disciplinas)
+                    foreach (var disciplina in disciplinas)
                     {
-                        var nota = notasFechamentosFinais.FirstOrDefault(a => a.ComponenteCurricularId == disciplinaParaAdicionar.CodigoComponenteCurricular
+                        var codigoComponenteCurricular = disciplina.CodigoComponenteCurricular;
+                        var nota = notasFechamentosFinais.FirstOrDefault(a => a.ComponenteCurricularId == codigoComponenteCurricular
                                                                         && a.AlunoCodigo == aluno.CodigoAluno);
 
                         string notaParaAdicionar = nota == null ? string.Empty :
@@ -176,8 +177,8 @@ namespace SME.SGP.Aplicacao
 
                         fechamentoFinalAluno.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                         {
-                            Disciplina = disciplinaParaAdicionar.Nome,
-                            DisciplinaCodigo = disciplinaParaAdicionar.CodigoComponenteCurricular,
+                            Disciplina = disciplina.Nome,
+                            DisciplinaCodigo = disciplina.CodigoComponenteCurricular,
                             NotaConceito = notaParaAdicionar,
                             EmAprovacao = nota?.EmAprovacao ?? false
                         });
