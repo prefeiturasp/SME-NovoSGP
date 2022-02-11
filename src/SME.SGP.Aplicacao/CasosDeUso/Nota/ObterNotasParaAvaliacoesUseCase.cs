@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -28,6 +29,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<NotasConceitosRetornoDto> Executar(ListaNotasConceitosConsultaRefatoradaDto filtro)
         {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+
             var turmaCompleta = await mediator
                 .Send(new ObterTurmaComUeEDrePorCodigoQuery(filtro.TurmaCodigo));
 
@@ -55,6 +59,8 @@ namespace SME.SGP.Aplicacao
 
             var retorno = new NotasConceitosRetornoDto();
             var tipoAvaliacaoBimestral = await mediator.Send(new ObterTipoAvaliacaoBimestralQuery());
+
+            Console.WriteLine($"Antes de alunos - {watch.Elapsed.TotalSeconds}");
 
             retorno.BimestreAtual = filtro.Bimestre;
             retorno.MediaAprovacaoBimestre = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
@@ -158,6 +164,8 @@ namespace SME.SGP.Aplicacao
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString(), filtro.PeriodoEscolarId));
 
             var periodoFechamentoBimestre = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoVigente(turmaCompleta, DateTimeExtension.HorarioBrasilia(), filtro.Bimestre);
+
+            Console.WriteLine($"lstPendencias - {watch.Elapsed.TotalSeconds}");
 
             foreach (var aluno in alunosAtivos)
             {
@@ -324,6 +332,8 @@ namespace SME.SGP.Aplicacao
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }
 
+            Console.WriteLine($"alunosAtivos - {watch.Elapsed.TotalSeconds}");
+
             foreach (var avaliacao in atividadesAvaliativasdoBimestre)
             {
                 var avaliacaoDoBimestre = new NotasConceitosAvaliacaoRetornoDto()
@@ -362,6 +372,8 @@ namespace SME.SGP.Aplicacao
                     atividadeAvaliativaParaObterTipoNota = avaliacao;
             }
 
+            Console.WriteLine($"atividadesAvaliativasdoBimestre - {watch.Elapsed.TotalSeconds}");
+
             bimestreParaAdicionar.Alunos = listaAlunosDoBimestre;
             bimestreParaAdicionar.QtdAvaliacoesBimestrais = atividadesAvaliativasdoBimestre
                 .Count(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id);
@@ -386,6 +398,8 @@ namespace SME.SGP.Aplicacao
 
             
             retorno.Bimestres.Add(bimestreParaAdicionar);
+            
+            Console.WriteLine($"Final - {watch.Elapsed.TotalSeconds}");
 
             return retorno;
         }
