@@ -77,6 +77,9 @@ namespace SME.SGP.Aplicacao
                     .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, dadosCriacaoAulaInfantil, Guid.NewGuid(), null));
             }
 
+            await mediator
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de carregamento para manutenção de aulas do Infantil finalizada.", LogNivel.Informacao, LogContexto.Infantil));
+
             return true;
         }
     }
