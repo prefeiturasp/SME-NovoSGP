@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
             int.TryParse(turma.Ano, out int ano);
 
             // Busca grade a partir dos dados da abrangencia da turma
-            var grade = await mediator.Send(new ObterGradePorTipoEscolaModalidadeDuracaoAnoQuery(turma.Ue.TipoEscola, turma.ModalidadeCodigo, turma.QuantidadeDuracaoAula, ano));
+            var grade = await mediator.Send(new ObterGradePorTipoEscolaModalidadeDuracaoAnoQuery(turma.Ue.TipoEscola, turma.ModalidadeCodigo, turma.QuantidadeDuracaoAula, ano, turma.AnoLetivo.ToString()));
             if (grade == null)
                 return 0;
 

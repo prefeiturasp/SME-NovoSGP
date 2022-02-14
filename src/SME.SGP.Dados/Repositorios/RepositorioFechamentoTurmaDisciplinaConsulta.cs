@@ -56,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id 
                         inner join turma t on t.id = ft.turma_id
                         inner join fechamento_aluno fa on f.id = fa.fechamento_turma_disciplina_id
-                        where not f.excluido
+                        where not f.excluido and not fa.excluido
                             and t.id = @turmaId ");
 
             if (disciplinasId != null && disciplinasId.Length > 0)
@@ -141,7 +141,7 @@ namespace SME.SGP.Dados.Repositorios
                                  n.alterado_por AlteradoPor
                          from fechamento_nota n
                         inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
-                        where not n.excluido
+                        where not n.excluido and not fa.excluido 
                             and fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
                             and fa.aluno_codigo = @codigoAluno ";
 

@@ -8,6 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioPeriodoFechamento : IRepositorioBase<PeriodoFechamento>
     {
         PeriodoFechamento ObterPorFiltros(long? tipoCalendarioId, long? turmaId);
+        Task<PeriodoFechamento> ObterPorFiltrosAsync(long? tipoCalendarioId, long? turmaId);
         void SalvarBimestres(IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, long fechamentoId);
         bool ValidaRegistrosForaDoPeriodo(DateTime inicioDoFechamento, DateTime finalDoFechamento, long fechamentoId, long periodoEscolarId, long? dreId);
         Task<PeriodoFechamentoVigenteDto> ObterPeriodoVigentePorAnoModalidade(int anoLetivo, int modalidadeTipoCalendario);

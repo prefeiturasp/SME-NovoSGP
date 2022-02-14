@@ -7,6 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<FechamentoTurma> ObterPorTurmaCodigoBimestreAsync(string turmaCodigo, int bimestre = 0);
         Task<FechamentoTurma> ObterPorTurmaPeriodo(long turmaId, long periodoId = 0);
+        Task<FechamentoTurma> ObterPorFechamentoTurmaIdAsync(long fechamentoTurmaId);
         Task<FechamentoTurma> ObterCompletoPorIdAsync(long fechamentoTurmaId);
         Task<bool> VerificaExistePorTurmaCCPeriodoEscolar(long turmaId, long componenteCurricularId, long? periodoEscolarId);
         Task<IEnumerable<FechamentoTurma>> ObterPorTurmaBimestreComponenteCurricular(long turmaId, int bimestre, long componenteCurricularId);
