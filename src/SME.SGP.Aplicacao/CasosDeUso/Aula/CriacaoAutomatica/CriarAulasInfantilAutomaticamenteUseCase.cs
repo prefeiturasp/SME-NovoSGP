@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", LogNivel.Negocio, LogContexto.Infantil));
                 return false;
-            }           
+            }
 
             var dadosCriacaoAulaInfantil = mensagemRabbit?
                 .ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() ?? new DadosCriacaoAulasAutomaticasCarregamentoDto();
@@ -66,18 +66,22 @@ namespace SME.SGP.Aplicacao
             foreach (var turma in turmas)
             {
                 var comando = new CriarAulasInfantilAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar);
-                await mediator
+                var sucesso = await mediator
                     .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
 
                 await mediator
-                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de carregamento para manutenção de aulas do Infantil, criação de aulas para a turma {turma.CodigoTurma}.", LogNivel.Informacao, LogContexto.Infantil));
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de carregamento para manutenção de aulas do Infantil, criação de aulas para a turma {turma.CodigoTurma}. Sucesso: ({(sucesso ? "Sim" : "Não")})", LogNivel.Informacao, LogContexto.Infantil));
             }
 
             if (dadosCriacaoAulaInfantil != null && string.IsNullOrEmpty(dadosCriacaoAulaInfantil.CodigoTurma))
             {
                 dadosCriacaoAulaInfantil.Pagina += 1;
-                await mediator
+
+                var sucesso = await mediator
                     .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, dadosCriacaoAulaInfantil, Guid.NewGuid(), null));
+
+                await mediator
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de carregamento para manutenção de aulas do Infantil execução da proxíma página: {dadosCriacaoAulaInfantil.Pagina}. Sucesso: ({(sucesso ? "Sim" : "Não")})", LogNivel.Informacao, LogContexto.Infantil));
             }
 
             await mediator
