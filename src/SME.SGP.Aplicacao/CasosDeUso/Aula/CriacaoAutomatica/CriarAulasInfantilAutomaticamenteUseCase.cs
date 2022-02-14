@@ -65,17 +65,8 @@ namespace SME.SGP.Aplicacao
 
             foreach (var turma in turmas)
             {
-                try
-                {
-                    var comando = new CriarAulasInfantilAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar);
-                    await mediator
-                        .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
-                }
-                catch (Exception ex)
-                {
-                    await mediator
-                        .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil. Erro: {ex}", LogNivel.Critico, LogContexto.Infantil));
-                }                
+                var comando = new CriarAulasInfantilAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar);
+                await mediator.Send(comando);
             }
 
             if (dadosCriacaoAulaInfantil != null && string.IsNullOrEmpty(dadosCriacaoAulaInfantil.CodigoTurma))
@@ -83,7 +74,7 @@ namespace SME.SGP.Aplicacao
                 dadosCriacaoAulaInfantil.Pagina += 1;
 
                 await mediator
-                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, dadosCriacaoAulaInfantil, Guid.NewGuid(), null));                
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, dadosCriacaoAulaInfantil, Guid.NewGuid(), null));
             }
 
             await mediator
