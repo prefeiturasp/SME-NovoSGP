@@ -61,9 +61,6 @@ namespace SME.SGP.Aplicacao
                 VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
             };
 
-            await mediator
-                .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Alocação da mensagem em fila. Conf.: host={factory.HostName}/user={factory.UserName}/password={factory.Password}/virtual_host={factory.VirtualHost}", LogNivel.Negocio, LogContexto.Infantil));
-
             using (var conexaoRabbit = factory.CreateConnection())
             {
                 using (IModel _channel = conexaoRabbit.CreateModel())
