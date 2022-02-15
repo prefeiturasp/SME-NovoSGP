@@ -24,14 +24,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CO_I, Policy = "Bearer")]
         public async Task<IActionResult> PostAsync([FromBody] ComunicadoInserirDto comunicadoDto, [FromServices] ISolicitarInclusaoComunicadoEscolaAquiUseCase useCase)
         {
-            try
-            {
-                return Ok(await useCase.Executar(comunicadoDto));
-            }
-            catch (System.Exception ex)
-            {
-                return BadRequest(ex);
-            }
+            return Ok(await useCase.Executar(comunicadoDto));
         }
 
         [HttpPut("{id}")]

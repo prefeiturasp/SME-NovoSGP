@@ -66,13 +66,13 @@ namespace SME.SGP.Aplicacao
             foreach (var turma in turmas)
             {
                 var comando = new CriarAulasInfantilAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar);
-                await mediator.Send(comando);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
             }
 
             if (dadosCriacaoAulaInfantil != null && string.IsNullOrEmpty(dadosCriacaoAulaInfantil.CodigoTurma))
             {
-                var dados = new DadosCriacaoAulasAutomaticasCarregamentoDto() { Pagina = dadosCriacaoAulaInfantil.Pagina + 1 };
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, dados, Guid.NewGuid(), null));                
+                dadosCriacaoAulaInfantil.Pagina += 1;
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, dadosCriacaoAulaInfantil, Guid.NewGuid(), null));
             }
 
             return true;

@@ -243,13 +243,13 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(long turmaId)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(string codigoTurma, DateTime dataAula)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
-            var resposta = await httpClient.GetAsync($"turmas/{turmaId}/alunos-ativos");
+            var resposta = await httpClient.GetAsync($"turmas/{codigoTurma}/alunos-ativos/data-aula-ticks/{dataAula.Ticks}");
 
             if (!resposta.IsSuccessStatusCode)
-                throw new NegocioException($"Não foi encontrado alunos ativos para a turma {turmaId}");
+                throw new NegocioException($"Não foi encontrado alunos ativos para a turma {codigoTurma}");
 
             if (resposta.StatusCode == HttpStatusCode.NoContent)
                 return alunos;
@@ -305,20 +305,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             var json = await resposta.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
-        }
-
-        [Obsolete("não utilizar mais esse método, utilize o ObterAlunosPorTurma")]
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo)
-        {
-            var alunos = new List<AlunoPorTurmaResposta>();
-            var resposta = await httpClient.GetAsync($"turmas/{turmaId}/alunos/anosLetivos/{anoLetivo}");
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
-            }
-
-            return alunos;
         }
 
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil,bool realizarAgrupamentoComponente = false)
