@@ -71,7 +71,6 @@ namespace SME.SGP.Aplicacao
 
             if (dadosCriacaoAulaInfantil != null && string.IsNullOrEmpty(dadosCriacaoAulaInfantil.CodigoTurma))
             {
-                dadosCriacaoAulaInfantil.Pagina += 1;
                 var dados = new DadosCriacaoAulasAutomaticasCarregamentoDto() { Pagina = dadosCriacaoAulaInfantil.Pagina + 1 };
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, dados, Guid.NewGuid(), null));
 
