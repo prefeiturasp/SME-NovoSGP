@@ -11,6 +11,7 @@ namespace SME.SGP.Aplicacao
             CodigoAluno = codigoAluno;
             AnoLetivo = anoLetivo;
             CodigoTurma = codigoTurma;
+            ConsideraHistorico = consideraHistorico;
             FiltrarSituacao = filtrarSituacao;
         }
 

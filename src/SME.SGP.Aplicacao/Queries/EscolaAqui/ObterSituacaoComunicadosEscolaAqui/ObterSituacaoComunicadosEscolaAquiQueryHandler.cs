@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos.EscolaAqui.ComunicadoEvento;
-using SME.SGP.Infra.Dtos.EscolaAqui.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -17,7 +15,7 @@ namespace SME.SGP.Aplicacao
     public class ObterSituacaoComunicadosEscolaAquiQueryHandler : IRequestHandler<ObterSituacaoComunicadosEscolaAquiQuery, IEnumerable<SituacaoComunicadoEADto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private const string BaseUrl = "/api/v1/UsuarioNotificacaoLeitura/status-leitura";
+        private const string BaseUrl = "v1/UsuarioNotificacaoLeitura/status-leitura";
 
         public ObterSituacaoComunicadosEscolaAquiQueryHandler(IHttpClientFactory httpClientFactory)
         {
@@ -32,9 +30,7 @@ namespace SME.SGP.Aplicacao
             url.Append(@"?codigoAluno=" + Convert.ToInt64(request.AlunoCodigo));
 
             foreach (var comunicadoId in request.ComunicadosIds)
-            {
                 url.Append(@"&notificacaoId=" + comunicadoId);
-            }
 
             var resposta = await httpClient.GetAsync($"{url}", cancellationToken);
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
