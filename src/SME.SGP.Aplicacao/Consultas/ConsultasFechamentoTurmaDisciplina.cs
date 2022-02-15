@@ -191,13 +191,10 @@ namespace SME.SGP.Aplicacao
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
 
                 var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendario.Id, periodoAtual.PeriodoFim);
-                var alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
-                                                             a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
-                                                             a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido)) &&
-                                                             a.DataSituacao.Date <= bimestreDoPeriodo.PeriodoFim.Date)
+                var alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))                                                             
                                                        .GroupBy(a => a.CodigoAluno)
                                                        .Select(a => a.OrderByDescending(i => i.DataSituacao).First())
-                                                       .OrderBy(a => a.NumeroAlunoChamada)
+                                                       .OrderBy(a => a.NomeAluno)
                                                        .ThenBy(a => a.NomeValido());
 
                 var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, disciplinaId.ToString(), bimestreDoPeriodo.Id));

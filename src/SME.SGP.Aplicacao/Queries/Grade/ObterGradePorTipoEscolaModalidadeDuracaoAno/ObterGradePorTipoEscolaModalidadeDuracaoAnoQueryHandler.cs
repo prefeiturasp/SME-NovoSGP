@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<Grade> Handle(ObterGradePorTipoEscolaModalidadeDuracaoAnoQuery request, CancellationToken cancellationToken)
-            => await repositorioGrade.ObterGradeTurmaAno(request.TipoEscola, request.Modalidade, request.Duracao, request.Ano);
+            => await repositorioGrade.ObterGradeTurmaAno(request.TipoEscola, request.Modalidade, request.Duracao, request.Ano, request.AnoLetivo);
     }
 }

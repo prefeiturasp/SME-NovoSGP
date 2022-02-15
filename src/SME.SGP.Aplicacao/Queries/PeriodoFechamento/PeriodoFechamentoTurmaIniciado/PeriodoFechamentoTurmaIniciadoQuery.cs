@@ -29,10 +29,6 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("A turma deve ser informada para consulta de período de fechamento iniciado");
 
-            RuleFor(a => a.Bimestre)
-                .NotEmpty()
-                .WithMessage("O bimestre deve ser informado para consulta de período de fechamento iniciado");
-
             RuleFor(a => a.DataReferencia)
                 .NotEmpty()
                 .WithMessage("A data deve ser informada para consulta de período de fechamento iniciado");
