@@ -55,10 +55,10 @@ namespace SME.SGP.Aplicacao
         {
             var factory = new ConnectionFactory
             {
-                HostName = configuration.GetSection("ConfiguracaoRabbitOptions:HostName").Value,
-                UserName = configuration.GetSection("ConfiguracaoRabbitOptions:UserName").Value,
-                Password = configuration.GetSection("ConfiguracaoRabbitOptions:Password").Value,
-                VirtualHost = configuration.GetSection("ConfiguracaoRabbitOption:Virtualhost").Value
+                HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
+                UserName = configuration.GetSection("ConfiguracaoRabbit:UserName").Value,
+                Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
+                VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
             };
 
             await mediator
