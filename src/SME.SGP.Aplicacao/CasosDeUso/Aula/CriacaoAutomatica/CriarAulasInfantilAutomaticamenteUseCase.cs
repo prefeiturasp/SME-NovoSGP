@@ -72,13 +72,12 @@ namespace SME.SGP.Aplicacao
             if (dadosCriacaoAulaInfantil != null && string.IsNullOrEmpty(dadosCriacaoAulaInfantil.CodigoTurma))
             {
                 dadosCriacaoAulaInfantil.Pagina += 1;
+                var dados = new DadosCriacaoAulasAutomaticasCarregamentoDto() { Pagina = dadosCriacaoAulaInfantil.Pagina + 1 };
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, dados, Guid.NewGuid(), null));
 
                 await mediator
-                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, dadosCriacaoAulaInfantil, Guid.NewGuid(), null));
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil inclusão novamente na fila da página: {dados.Pagina}.", LogNivel.Negocio, LogContexto.Infantil));
             }
-
-            await mediator
-                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de carregamento para manutenção de aulas do Infantil finalizada.", LogNivel.Informacao, LogContexto.Infantil));
 
             return true;
         }
