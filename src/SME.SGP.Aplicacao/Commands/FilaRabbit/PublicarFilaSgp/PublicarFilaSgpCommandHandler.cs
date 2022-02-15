@@ -5,6 +5,7 @@ using Polly;
 using Polly.Registry;
 using RabbitMQ.Client;
 using SME.GoogleClassroom.Infra;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Text;
@@ -59,6 +60,9 @@ namespace SME.SGP.Aplicacao
                 Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
                 VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
             };
+
+            await mediator
+                   .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Alocação de mensagem na fila do Rabbit. Confogurações: host={factory.HostName}/user={factory.UserName}/password={factory.Password}/virtualhost={factory.VirtualHost}.", LogNivel.Informacao, LogContexto.WorkerRabbit));
 
             using (var conexaoRabbit = factory.CreateConnection())
             {
