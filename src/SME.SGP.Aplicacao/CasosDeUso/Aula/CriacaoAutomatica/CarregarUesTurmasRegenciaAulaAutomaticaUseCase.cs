@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             Modalidade[] modalidades;
             Turma turma = null;
+            var executarProximaPagina = false;
 
             var mensagem = mensagemRabbit?
                 .ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() ?? new DadosCriacaoAulasAutomaticasCarregamentoDto();
@@ -47,15 +48,17 @@ namespace SME.SGP.Aplicacao
                 if (modalidade == Modalidade.EJA)
                 {
                     await ObterDados(modalidade, 1, turma, mensagem.Pagina);
-                    await ObterDados(modalidade, 2, turma, mensagem.Pagina);
+                    executarProximaPagina = await ObterDados(modalidade, 2, turma, mensagem.Pagina);
                 }
-                else await ObterDados(modalidade, turma: turma, pagina: mensagem.Pagina);
+                else executarProximaPagina = await ObterDados(modalidade, turma: turma, pagina: mensagem.Pagina);
             }
 
-            mensagem.Pagina += 1;
-
-            await mediator
-                .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.CarregarDadosUeTurmaRegenciaAutomaticamente, mensagem, Guid.NewGuid(), null));
+            if (executarProximaPagina)
+            {
+                mensagem.Pagina += 1;
+                await mediator
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.CarregarDadosUeTurmaRegenciaAutomaticamente, mensagem, Guid.NewGuid(), null));
+            }
 
             return true;
         }
@@ -90,7 +93,7 @@ namespace SME.SGP.Aplicacao
                 return false;
 
             foreach (var ueCodigo in uesCodigos)
-                await PublicarMensagens(modalidade, turma, anoAtual, tipoCalendarioId, diasForaDoPeriodoEscolar, diasLetivosENaoLetivos, ueCodigo);            
+                await PublicarMensagens(modalidade, turma, anoAtual, tipoCalendarioId, diasForaDoPeriodoEscolar, diasLetivosENaoLetivos, ueCodigo);
 
             return true;
         }
