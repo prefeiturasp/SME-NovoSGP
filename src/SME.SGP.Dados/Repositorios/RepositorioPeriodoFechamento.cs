@@ -71,6 +71,58 @@ namespace SME.SGP.Dados.Repositorios
             return lookup.Values.FirstOrDefault();
         }
 
+        public async Task<PeriodoFechamento> ObterPorFiltrosAsync(long? tipoCalendarioId, long? turmaId)
+        {
+            var query = new StringBuilder("select f.*,fb.*,p.*, t.*");
+            query.AppendLine("from");
+            query.AppendLine("periodo_fechamento f");
+            query.AppendLine("inner join periodo_fechamento_bimestre fb on");
+            query.AppendLine("f.id = fb.periodo_fechamento_id");
+            query.AppendLine("inner join periodo_escolar p on");
+            query.AppendLine("fb.periodo_escolar_id = p.id");
+            query.AppendLine("inner join tipo_calendario t on");
+            query.AppendLine("p.tipo_calendario_id = t.id");
+            if (turmaId.HasValue)
+                query.AppendLine(@"join turma tu on t.modalidade = (case when tu.modalidade_codigo = 5 then 1
+                                                                         when tu.modalidade_codigo = 6 then 1
+                                                                         when tu.modalidade_codigo = 3 then 2
+                                                                         when tu.modalidade_codigo = 1 then 3
+                                                                    end)");
+
+            query.AppendLine("where 1=1");
+
+            if (tipoCalendarioId.HasValue)
+                query.AppendLine("and p.tipo_calendario_id = @tipoCalendarioId");
+
+            query.AppendLine("and f.dre_id is null");
+            query.AppendLine("and f.ue_id is null");
+
+            if (turmaId.HasValue)
+                query.AppendLine("and tu.id = @turmaId");
+
+            var lookup = new Dictionary<long, PeriodoFechamento>();
+
+            var lista = await database.Conexao.QueryAsync<PeriodoFechamento, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, PeriodoFechamento>(query.ToString(), (fechamento, fechamentoBimestre, periodoEscolar, tipoCalendario) =>
+            {
+                PeriodoFechamento periodoFechamento;
+                if (!lookup.TryGetValue(fechamento.Id, out periodoFechamento))
+                {
+                    periodoFechamento = fechamento;
+                    lookup.Add(fechamento.Id, periodoFechamento);
+                }
+
+                periodoEscolar.AdicionarTipoCalendario(tipoCalendario);
+                fechamentoBimestre.AdicionarPeriodoEscolar(periodoEscolar);
+                periodoFechamento.AdicionarFechamentoBimestre(fechamentoBimestre);
+                return periodoFechamento;
+            }, new
+            {
+                tipoCalendarioId,
+                turmaId
+            });
+            return lookup.Values.FirstOrDefault();
+        }
+
         public Task<PeriodoFechamento> ObterPorTurma(long turmaId)
         {
             throw new NotImplementedException();

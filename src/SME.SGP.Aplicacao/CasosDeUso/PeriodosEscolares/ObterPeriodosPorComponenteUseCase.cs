@@ -99,11 +99,11 @@ namespace SME.SGP.Aplicacao
 
             periodosAulas = exibirDataFutura ? periodosAulas : periodosAulas.Where(w => w.DataAula <= DateTimeExtension.HorarioBrasilia());
 
-            foreach (var periodo in periodosAulas)
+            foreach (var dataAula in periodosAulas.Select(s=> s.DataAula).Distinct())
             {
                 if (qtdeDiasAulas == 0)
                     if (dataInicioPeriodo == DateTime.MinValue)
-                        dataInicioPeriodo = periodo.DataAula;
+                        dataInicioPeriodo = dataAula;
 
                 if (qtdeDiasAulas < 5)
                     qtdeDiasAulas++;
@@ -111,15 +111,13 @@ namespace SME.SGP.Aplicacao
                 if (qtdeDiasAulas == 5 || contador == periodosAulas.Count())
                 {
                     string formataDataInicio = dataInicioPeriodo.Date.ToString("dd/MM/yy");
-                    string formataDataFim = periodo.DataAula.Date.ToString("dd/MM/yy");
+                    string formataDataFim = dataAula.Date.ToString("dd/MM/yy");
                     listaPeriodos.Add(new PeriodoEscolarComponenteDto
                     {
                         Id = id++,
                         DataInicio = dataInicioPeriodo,
-                        DataFim = periodo.DataAula,
+                        DataFim = dataAula,
                         PeriodoEscolar = $"{formataDataInicio} - {formataDataFim}",
-                        AulaCj = periodo.AulaCj
-                        
                     });
 
                     dataInicioPeriodo = DateTime.MinValue;
