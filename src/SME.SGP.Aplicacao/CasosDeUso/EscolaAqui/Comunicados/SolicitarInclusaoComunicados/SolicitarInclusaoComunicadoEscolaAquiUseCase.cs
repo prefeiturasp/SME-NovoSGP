@@ -17,9 +17,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<string> Executar(ComunicadoInserirDto comunicado)
-        {
-            try
-            {
+        {            
                 await ValidarInsercao(comunicado);
 
                 if (comunicado.Modalidades.Any() && comunicado.Modalidades.Any(c => c == -99))
@@ -55,13 +53,7 @@ namespace SME.SGP.Aplicacao
                 if (!retorno)
                     throw new NegocioException("Erro ao criar o comunicado");
 
-                return "Comunicado criado com sucesso!";
-            }
-            catch (Exception ex)
-            {
-                return ex.ToString();
-                
-            }           
+                return "Comunicado criado com sucesso!";                       
         }
 
         private async Task ValidarInsercao(ComunicadoInserirDto comunicado)
