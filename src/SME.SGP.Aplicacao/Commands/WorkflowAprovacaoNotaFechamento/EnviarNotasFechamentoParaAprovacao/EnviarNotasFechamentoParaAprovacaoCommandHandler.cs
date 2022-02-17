@@ -81,13 +81,13 @@ namespace SME.SGP.Aplicacao
             var alunosTurma = await servicoEol.ObterAlunosPorTurma(turma.CodigoTurma);
 
             mensagem.AppendLine(componenteSgp.Regencia ?
-                await MontarTabelaNotasRegencia(alunosTurma, notasAprovacao) :
+                await MontarTabelaNotasRegencia(alunosTurma, notasAprovacao, lancaNota) :
                 MontarTabelaNotas(alunosTurma, notasAprovacao));
             return mensagem.ToString();
         }
 
 
-        private async Task<string> MontarTabelaNotasRegencia(IEnumerable<AlunoPorTurmaResposta> alunosTurma, List<FechamentoNotaDto> notasAprovacao)
+        private async Task<string> MontarTabelaNotasRegencia(IEnumerable<AlunoPorTurmaResposta> alunosTurma, List<FechamentoNotaDto> notasAprovacao, bool lancaNota)
         {
             var componentes = await mediator.Send(new ObterComponentesCurricularesQuery());
 
@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao
                 mensagem.AppendLine("<tr>");
                 mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.CodigoAluno})</td>");
 
-                if (!notaAprovacao.ConceitoId.HasValue)
+                if (!notaAprovacao.ConceitoId.HasValue && lancaNota)
                 {
                     mensagem.Append($"<td style='padding: 5px; text-align:left;'>{ObterNomeComponente(componentes, notaAprovacao.DisciplinaId)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior.Value)}</td>");

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,10 +43,10 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares =
                 await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
 
-            if (periodosEscolares == null)
+            if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Não foi possível encontrar o período escolar da turma.");
 
-            List<FrequenciaAlunoBimestreDto> bimestres = new List<FrequenciaAlunoBimestreDto>();
+            var bimestres = new List<FrequenciaAlunoBimestreDto>();
 
             if(turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
             {
@@ -94,11 +95,13 @@ namespace SME.SGP.Aplicacao
             int somatorioAusencias = 0;
             int somatorioAulasRealizadas = 0;
             double? mediaFrequencia;
-            List<FrequenciaAlunoBimestreDto> bimestres = new List<FrequenciaAlunoBimestreDto>();
+            var bimestres = new List<FrequenciaAlunoBimestreDto>();
 
             somatorioAulasRealizadas = (dados1 == null ? 0 : dados1.AulasRealizadas) + (dados2 == null ? 0 : dados2.AulasRealizadas);
             somatorioAusencias = (dados1 == null ? 0 : dados1.Ausencias) + (dados2 == null ? 0 : dados2.Ausencias);
             mediaFrequencia = ((dados1 == null ? 0 : dados1.Frequencia) + (dados2 == null ? 0 : dados2.Frequencia)) / 2;
+
+            mediaFrequencia = mediaFrequencia != null ? Math.Round(mediaFrequencia.Value, 2) : mediaFrequencia;
 
             bimestres.Add(new FrequenciaAlunoBimestreDto
             {
@@ -115,9 +118,9 @@ namespace SME.SGP.Aplicacao
         private async Task<FrequenciaAlunoBimestreDto> ObterInformacoesBimestre(Turma turma, string alunoCodigo,
             long tipoCalendarioId, PeriodoEscolar periodoEscolar, long componenteCurricularId)
         {
-            FrequenciaAlunoBimestreDto dto = new FrequenciaAlunoBimestreDto();
+            var frequenciaAlunoBimestre = new FrequenciaAlunoBimestreDto();
 
-            dto.Bimestre = periodoEscolar.Bimestre.ToString();
+            frequenciaAlunoBimestre.Bimestre = periodoEscolar.Bimestre.ToString();
 
             var frequenciasRegistradas = await mediator.Send(new ObterFrequenciaBimestresQuery(alunoCodigo,
                 periodoEscolar.Bimestre, turma.CodigoTurma, TipoFrequenciaAluno.Geral));
@@ -125,9 +128,9 @@ namespace SME.SGP.Aplicacao
             if (frequenciasRegistradas != null && frequenciasRegistradas.Any())
             {
                 var frequencia = frequenciasRegistradas.FirstOrDefault();
-                dto.Ausencias = frequencia.QuantidadeAusencias;
-                dto.Frequencia = frequencia?.Frequencia != null ? frequencia.Frequencia : 0;
-                dto.AulasRealizadas = frequencia.TotalAulas;
+                frequenciaAlunoBimestre.Ausencias = frequencia.QuantidadeAusencias;
+                frequenciaAlunoBimestre.Frequencia = frequencia?.Frequencia != null ? frequencia.Frequencia : 0;
+                frequenciaAlunoBimestre.AulasRealizadas = frequencia.TotalAulas;
             }
             else
             {
@@ -139,14 +142,14 @@ namespace SME.SGP.Aplicacao
                     return null;
                 }
 
-                dto.AulasRealizadas =
+                frequenciaAlunoBimestre.AulasRealizadas =
                     await mediator.Send(new ObterAulasDadasPorTurmaIdEPeriodoEscolarQuery(turma.Id,
                         new List<long> {periodoEscolar.Id}, tipoCalendarioId));
-                dto.Ausencias = 0;
-                dto.Frequencia = alunoPossuiFrequenciaRegistrada.FirstOrDefault().PercentualFrequencia;
+                frequenciaAlunoBimestre.Ausencias = 0;
+                frequenciaAlunoBimestre.Frequencia = alunoPossuiFrequenciaRegistrada.FirstOrDefault().PercentualFrequencia;
             }
 
-            return dto;
+            return frequenciaAlunoBimestre;
         }
     }
 }

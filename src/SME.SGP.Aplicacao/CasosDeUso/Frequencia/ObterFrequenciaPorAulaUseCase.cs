@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
                         
-            var alunosDaTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(aula.TurmaId));
+            var alunosDaTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
 
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
@@ -215,12 +215,6 @@ namespace SME.SGP.Aplicacao
                 Desabilitado = !aula.PermiteRegistroFrequencia(turma)
             };
             return registroFrequenciaDto;
-        }
-
-        public bool NaoExibirAlunoFrequencia(AlunoPorTurmaResposta aluno, Aula aula, PeriodoEscolar periodoEscolar)
-        {
-            DateTime dataSituacao = DateTime.Parse(aluno.DataSituacao.ToString("dd/MM/yyyy"));
-            return (!aluno.DeveMostrarNaChamada(aula.DataAula, periodoEscolar.PeriodoInicio) || (dataSituacao < periodoEscolar.PeriodoInicio));
         }
     }
 }

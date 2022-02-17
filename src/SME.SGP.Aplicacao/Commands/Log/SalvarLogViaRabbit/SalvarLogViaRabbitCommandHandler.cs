@@ -29,7 +29,8 @@ namespace SME.SGP.Aplicacao
                                                                            request.Contexto.ToString(),
                                                                            request.Observacao,
                                                                            request.Projeto,
-                                                                           request.Rastreamento), new JsonSerializerSettings
+                                                                           request.Rastreamento,
+                                                                           request.ExcecaoInterna), new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore
 
@@ -69,7 +70,7 @@ namespace SME.SGP.Aplicacao
     }
     public class LogMensagem
     {
-        public LogMensagem(string mensagem, string nivel, string contexto, string observacao, string projeto, string rastreamento)
+        public LogMensagem(string mensagem, string nivel, string contexto, string observacao, string projeto, string rastreamento, string excecaoInterna)
         {
             Mensagem = mensagem;
             Nivel = nivel;
@@ -77,6 +78,7 @@ namespace SME.SGP.Aplicacao
             Observacao = observacao;
             Projeto = projeto;
             Rastreamento = rastreamento;
+            ExcecaoInterna = excecaoInterna;
             DataHora = DateTime.Now;
         }
 
@@ -86,6 +88,7 @@ namespace SME.SGP.Aplicacao
         public string Observacao { get; set; }
         public string Projeto { get; set; }
         public string Rastreamento { get; set; }
+        public string ExcecaoInterna { get; set; }
         public DateTime DataHora { get; set; }
 
     }
