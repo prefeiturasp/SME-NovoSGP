@@ -13,45 +13,34 @@ namespace SME.SGP.Aplicacao
 {
     public class EncerrarPlanosAEEEstudantesInativosUseCase : AbstractUseCase, IEncerrarPlanosAEEEstudantesInativosUseCase
     {
-        private readonly ILogger<EncerrarPlanosAEEEstudantesInativosUseCase> logger;
-
-        public EncerrarPlanosAEEEstudantesInativosUseCase(IMediator mediator,
-                                                          ILogger<EncerrarPlanosAEEEstudantesInativosUseCase> logger) : base(mediator)
+        public EncerrarPlanosAEEEstudantesInativosUseCase(IMediator mediator) 
+            : base(mediator)
         {
-            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            try
-            {
-                var planosAtivos = await mediator.Send(new ObterPlanosAEEAtivosQuery());
+            var planosAtivos = await mediator.Send(new ObterPlanosAEEAtivosQuery());
 
-                foreach (var planoAEE in planosAtivos)
+            foreach (var planoAEE in planosAtivos)
+            {
+                var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, DateTime.Today.Year));
+                var turma = await ObterTurma(planoAEE.TurmaId);
+                Turma turmaAtual = null;
+                var etapaConcluida = false;
+                AlunoPorTurmaResposta ultimaMatricula = null;
+
+                if (turma.AnoLetivo != DateTime.Today.Year)
+                    etapaConcluida = DeterminaEtapaConcluida(matriculas, planoAEE.AlunoCodigo, turma, turmaAtual, ref ultimaMatricula);
+
+                if (!matriculas?.Any(a => a.EstaAtivo(DateTime.Today)) ?? true || etapaConcluida)
                 {
-                    var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, DateTime.Today.Year));
-                    var turma = await ObterTurma(planoAEE.TurmaId);
-                    Turma turmaAtual = null;
-                    var etapaConcluida = false;
-                    AlunoPorTurmaResposta ultimaMatricula = null;
+                    if (ultimaMatricula == null)
+                        ultimaMatricula = matriculas?.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
 
-                    if (turma.AnoLetivo != DateTime.Today.Year)
-                        etapaConcluida = DeterminaEtapaConcluida(matriculas, planoAEE.AlunoCodigo, turma, turmaAtual, ref ultimaMatricula);
-
-                    if (matriculas.Any() && (!matriculas.Any(a => a.EstaAtivo(DateTime.Today)) || etapaConcluida))
-                    {
-                        if (ultimaMatricula == null)
-                            ultimaMatricula = matriculas.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
-
-                        await EncerrarPlanoAEE(planoAEE, ultimaMatricula?.SituacaoMatricula ?? "Inativo", ultimaMatricula?.DataSituacao ?? DateTime.Now);
-                    }
+                    await EncerrarPlanoAEE(planoAEE, ultimaMatricula?.SituacaoMatricula ?? "Inativo", ultimaMatricula?.DataSituacao ?? DateTime.Now);
                 }
-
             }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Erro ao encerrar plano AEE");
-            }            
 
             return true;
         }
@@ -144,6 +133,9 @@ namespace SME.SGP.Aplicacao
 
             if (concluiuTurma)
             {
+                if (turmaAtual == null)
+                    return true;
+
                 var ultimaMatriculaAtual = matriculas
                     .OrderBy(m => m.DataMatricula)
                     .LastOrDefault();
@@ -155,8 +147,7 @@ namespace SME.SGP.Aplicacao
                     .OrderBy(m => m.DataSituacao)
                     .FirstOrDefault(m => m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
 
-                return turmaAtual != null &&
-                       turma.Ue.CodigoUe != turmaAtual.Ue.CodigoUe &&
+                return turma.Ue.CodigoUe != turmaAtual.Ue.CodigoUe &&
                        (turma.EhTurmaInfantil && !turmaAtual.EhTurmaInfantil);
             }
 
