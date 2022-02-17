@@ -50,15 +50,6 @@ namespace SME.SGP.Aplicacao
                 }
                 inseridoCJ = true;
             }
-            else
-            {
-                var professorTurma = await servicoEol.VerificaAtribuicaoProfessorTurma(usuario.CodigoRf, turma.CodigoTurma);
-                if (professorTurma?.DataDisponibilizacao < DateTime.Now)
-                {
-                    throw new NegocioException(
-                        $"Você não possui permissão para inserir registro de diário de bordo, pois não está mais atribuído(a) a turma.");
-                }
-            }
 
             await MoverRemoverExcluidos(request);
             var diarioBordo = MapearParaEntidade(request, turma.Id, inseridoCJ);
