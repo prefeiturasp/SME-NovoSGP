@@ -13,17 +13,14 @@ namespace SME.SGP.Aplicacao
 {
     public class EncerrarPlanosAEEEstudantesInativosUseCase : AbstractUseCase, IEncerrarPlanosAEEEstudantesInativosUseCase
     {
-        private readonly ILogger<EncerrarPlanosAEEEstudantesInativosUseCase> logger;
-
-        public EncerrarPlanosAEEEstudantesInativosUseCase(IMediator mediator,
-                                                          ILogger<EncerrarPlanosAEEEstudantesInativosUseCase> logger) : base(mediator)
+        public EncerrarPlanosAEEEstudantesInativosUseCase(IMediator mediator) 
+            : base(mediator)
         {
-            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var planosAtivos = await mediator.Send(new ObterPlanosAEEAtivosQuery());           
+            var planosAtivos = await mediator.Send(new ObterPlanosAEEAtivosQuery());
 
             foreach (var planoAEE in planosAtivos)
             {
