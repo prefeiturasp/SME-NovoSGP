@@ -102,7 +102,6 @@ namespace SME.SGP.Dados.Repositorios
                            and p.tipo = @tipo
                            and pe.bimestre = @bimestre
                            and a.turma_id = @turmaId
-                           and a.tipo_aula = @tipoAula
                            and a.disciplina_id = @disciplinaId 
                            and a.data_aula between pe.periodo_inicio and pe.periodo_fim ");
 
@@ -113,7 +112,6 @@ namespace SME.SGP.Dados.Repositorios
                     disciplinaId,
                     tipo = (int)tipoPendenciaAula,
                     bimestre,
-                    tipoAula = (int)TipoAula.Normal,
                     professorRf 
                 }, commandTimeout: 60);
         }

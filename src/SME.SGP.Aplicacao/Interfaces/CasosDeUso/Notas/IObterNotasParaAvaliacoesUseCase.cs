@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterNotasParaAvaliacoesUseCase
     {
-        Task<NotasConceitosRetornoDto> Executar(ListaNotasConceitosConsultaRefatoradaDto filtro);
+        Task<NotasConceitosRetornoDto> Executar(ListaNotasConceitosDto filtro);
     }
 }
