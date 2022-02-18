@@ -3,6 +3,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -35,9 +36,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PDC_I, Permissao.PDC_A, Policy = "Bearer")]
-        public IActionResult Post(PlanoCicloDto planoCicloDto)
+        public async Task<IActionResult> Post(PlanoCicloDto planoCicloDto)
         {
-            comandosPlanoCiclo.Salvar(planoCicloDto);
+            await comandosPlanoCiclo.Salvar(planoCicloDto);
             return Ok();
         }
     }

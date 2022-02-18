@@ -185,7 +185,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
+                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar && aluno.PodeEditarNotaConceito();
                 fechamentoFinalAluno.Codigo = aluno.CodigoAluno;
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
@@ -198,7 +198,7 @@ namespace SME.SGP.Aplicacao
 
             retorno.PeriodoAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, ultimoPeriodoEscolar.Bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result;
 
-            return retorno;
+          	return retorno;
         }
 
         private string MontaTextoAuditoriaAlteracao(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, bool EhNota)

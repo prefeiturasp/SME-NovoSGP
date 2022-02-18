@@ -20,50 +20,70 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var executarManutencao = await mediator.Send(new ObterExecutarManutencaoAulasInfantilQuery());
-
             if (!executarManutencao)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", LogNivel.Negocio, LogContexto.Infantil));
                 return false;
-            }
+            }           
 
+            var dadosCriacaoAulaInfantil = mensagemRabbit?
+                .ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() ?? new DadosCriacaoAulasAutomaticasCarregamentoDto();
             var anoAtual = DateTime.Now.Year;
-            var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.EducacaoInfantil, anoAtual, null));
-            if (tipoCalendarioId > 0)
+            var tipoCalendarioId = await mediator
+                .Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.EducacaoInfantil, anoAtual, null));
+            if (tipoCalendarioId < 1)
             {
-                var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
-                if (periodosEscolares != null && periodosEscolares.Any())
-                {
-                    var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
-                    var diasForaDoPeriodoEscolar = await mediator.Send(new ObterDiasForaDoPeriodoEscolarQuery(periodosEscolares));
-
-                    var turmas = await mediator.Send(new ObterTurmasInfantilNaoDeProgramaQuery(anoAtual, mensagemRabbit?.Mensagem?.ToString()));
-                    if (turmas != null && turmas.Any())
-                    {
-                        var paginador = 900;
-                        for (int pagina = 0; pagina <= turmas.Count(); pagina += paginador)
-                        {
-                            var lista = turmas.Skip(pagina).Take(paginador);
-                            if (lista.Any())
-                            {
-                                var comando = new CriarAulasInfantilAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), lista, tipoCalendarioId, diasForaDoPeriodoEscolar);
-
-                                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
-                            }
-                        }
-                    }
-                    return true;
-                }
-                else
-                {
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Período Escolar cadastrado.", LogNivel.Negocio, LogContexto.Infantil));
-                }
+                await mediator
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Calendário Escolar cadastrado.", LogNivel.Negocio, LogContexto.Infantil));
+                return false;
             }
-            else
+
+            var periodosEscolares = await mediator
+                .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
+            if (periodosEscolares == null || !periodosEscolares.Any())
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Calendário Escolar cadastrado.", LogNivel.Negocio, LogContexto.Infantil));
+                await mediator
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Período Escolar cadastrado.", LogNivel.Negocio, LogContexto.Infantil));
+                return false;
             }
-            return false;
+
+            var diasLetivosENaoLetivos = await mediator
+                .Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
+
+            var diasForaDoPeriodoEscolar = await mediator
+                .Send(new ObterDiasForaDoPeriodoEscolarQuery(periodosEscolares));
+
+            var turmas = await mediator
+                .Send(new ObterTurmasInfantilNaoDeProgramaQuery(anoAtual, dadosCriacaoAulaInfantil?.CodigoTurma, dadosCriacaoAulaInfantil?.Pagina ?? 1));
+
+            if (turmas == null || !turmas.Any())
+            {
+                await mediator
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não foram encontradas turmas.", LogNivel.Negocio, LogContexto.Infantil));
+                return false;
+            }
+
+            foreach (var turma in turmas)
+            {
+                var comando = new CriarAulasInfantilAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar);
+                await mediator
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
+
+                await mediator
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de carregamento para manutenção de aulas do Infantil, criação de aulas para a turma {turma.CodigoTurma}.", LogNivel.Informacao, LogContexto.Infantil));
+            }
+
+            if (dadosCriacaoAulaInfantil != null && string.IsNullOrEmpty(dadosCriacaoAulaInfantil.CodigoTurma))
+            {
+                dadosCriacaoAulaInfantil.Pagina += 1;
+                await mediator
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, dadosCriacaoAulaInfantil, Guid.NewGuid(), null));
+            }
+
+            await mediator
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de carregamento para manutenção de aulas do Infantil finalizada.", LogNivel.Informacao, LogContexto.Infantil));
+
+            return true;
         }
     }
 }
