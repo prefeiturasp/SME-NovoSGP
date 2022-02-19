@@ -7,6 +7,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -42,7 +43,8 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("{turmaId}/bimestres/{bimestre}")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(FechamentoTurmaPeriodoEscolarDto), 200)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.FB_A, Policy = "Bearer")]
