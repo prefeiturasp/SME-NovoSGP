@@ -593,5 +593,22 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync(query, new { turmaId, periodoEscolarId })).Any();
         }
+
+        public Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo)
+        {
+            var query = @"SELECT aa.nome_avaliacao as Nome
+	                        , aa.data_avaliacao as data
+	                        , coalesce(nc.conceito, nc.nota) as NotaConceito
+                          FROM atividade_avaliativa aa
+                         INNER JOIN turma t ON t.turma_id = aa.turma_id
+                         INNER JOIN periodo_escolar pe ON aa.data_avaliacao between pe.periodo_inicio and pe.periodo_fim
+                          left join notas_conceito nc on nc.atividade_avaliativa = aa.id
+                         WHERE NOT aa.excluido
+                           AND t.id = @turmaId
+                           and pe.id = @periodoEscolarId
+                           and nc.aluno_id = @alunoCodigo";
+
+            return database.Conexao.QueryAsync<AvaliacaoNotaAlunoDto>(query, new { turmaId, periodoEscolarId, alunoCodigo });
+        }
     }
 }
