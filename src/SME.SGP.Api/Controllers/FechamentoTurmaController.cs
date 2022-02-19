@@ -22,14 +22,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Salvar([FromBody] IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
             => Ok(await comandos.Salvar(fechamentoTurma));
 
-        [HttpGet()]
-        [ProducesResponseType(typeof(FechamentoTurmaDisciplinaBimestreDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar(string turmaCodigo, long disciplinaCodigo, int? bimestre, int semestre, [FromServices] IConsultasFechamentoTurmaDisciplina consultas)
-            => Ok(await consultas.ObterNotasFechamentoTurmaDisciplina(turmaCodigo, disciplinaCodigo, bimestre, semestre));
-
         [HttpPost("reprocessar/{fechamentoId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -39,6 +31,20 @@ namespace SME.SGP.Api.Controllers
         {
             await comandos.Reprocessar(fechamentoId);
             return Ok();
+        }
+
+        [HttpPost("{turmaId}/bimestres/{bimestre}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_A, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFechamentoId(long turmaId, int bimestre, [FromServices] IObterFechamentoIdPorTurmaBimestreUseCase useCase)
+        {
+            var fechamento = await useCase.Executar(new Infra.Dtos.TurmaBimestreDto(turmaId, bimestre));
+            if (fechamento is null)
+                return NoContent();
+
+            return Ok(fechamento);
         }
 
         [HttpPost("reprocessar")]

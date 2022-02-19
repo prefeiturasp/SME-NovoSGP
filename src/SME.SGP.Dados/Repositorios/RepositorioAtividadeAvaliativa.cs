@@ -581,5 +581,17 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select atividade_classroom_id from atividade_avaliativa where id = @atividadeId and atividade_classroom_id is not null";
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { atividadeId });
         }
+
+        public async Task<bool> TurmaPossuiAvaliacaoNoPeriodo(long turmaId, long periodoEscolarId)
+        {
+            var query = @"select 1 
+                        from atividade_avaliativa aa 
+                        inner join turma t on t.turma_id = aa.turma_id 
+                        inner join periodo_escolar pe on aa.data_avaliacao between pe.periodo_inicio and pe.periodo_fim 
+                        where t.id = @turmaId
+                          and pe.id = @periodoEscolarId";
+
+            return (await database.Conexao.QueryAsync(query, new { turmaId, periodoEscolarId })).Any();
+        }
     }
 }
