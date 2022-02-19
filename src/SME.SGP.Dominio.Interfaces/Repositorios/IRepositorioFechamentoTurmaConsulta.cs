@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Infra.Dtos;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -12,5 +13,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> VerificaExistePorTurmaCCPeriodoEscolar(long turmaId, long componenteCurricularId, long? periodoEscolarId);
         Task<IEnumerable<FechamentoTurma>> ObterPorTurmaBimestreComponenteCurricular(long turmaId, int bimestre, long componenteCurricularId);
         Task<IEnumerable<FechamentoTurmaDisciplina>> ObterPorTurmaPeriodoCCAsync(long turmaId, long periodoEscolarId, long componenteCurricularId);
+        Task<FechamentoTurmaPeriodoEscolarDto> ObterIdEPeriodoPorTurmaBimestre(long turmaId, int? bimestre);
     }
 }

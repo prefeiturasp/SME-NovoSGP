@@ -41,6 +41,20 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpPost("{turmaId}/bimestres/{bimestre}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_A, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFechamentoId(long turmaId, int bimestre, [FromServices] IObterFechamentoIdPorTurmaBimestreUseCase useCase)
+        {
+            var fechamento = await useCase.Executar(new Infra.Dtos.TurmaBimestreDto(turmaId, bimestre));
+            if (fechamento is null)
+                return NoContent();
+
+            return Ok(fechamento);
+        }
+
         [HttpPost("reprocessar")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
