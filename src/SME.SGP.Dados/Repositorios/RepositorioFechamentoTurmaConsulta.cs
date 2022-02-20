@@ -152,7 +152,8 @@ namespace SME.SGP.Dados.Repositorios
 	                        , pe.id as PeriodoEscolarId
                           from fechamento_turma ft
                          left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
-                        where ft.turma_id = @turmaId
+                        where not ft.excluido 
+                          and ft.turma_id = @turmaId
                           and pe.bimestre = @bimestre ";
 
             return database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaPeriodoEscolarDto>(query, new { turmaId, bimestre });
