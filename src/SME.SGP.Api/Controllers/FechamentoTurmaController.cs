@@ -81,8 +81,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> SalvarAnotacao([FromBody] AnotacaoAlunoDto anotacaoAluno, [FromServices] IComandosFechamentoAluno comandos)
-            => Ok(await comandos.SalvarAnotacaoAluno(anotacaoAluno));
+        public async Task<IActionResult> SalvarAnotacao([FromBody] AnotacaoAlunoDto anotacaoAluno, [FromServices] ISalvarAnotacaoFechamentoAlunoUseCase useCase)
+            => Ok(await useCase.Executar(anotacaoAluno));
 
         [HttpGet("anotacoes/alunos/{codigoAluno}/fechamentos/{fechamentoId}/turmas/{codigoTurma}/anos/{anoLetivo}")]
         [ProducesResponseType(typeof(FechamentoAlunoCompletoDto), 200)]
