@@ -47,6 +47,10 @@ namespace SME.SGP.Aplicacao
             var diasLetivos = DeterminaDiasLetivos(diasParaCriarAula, diasNaoLetivos.Select(dnl => dnl.Data).Distinct(), turma);
 
             var aulas = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId, criadoPor)))?.ToList();
+            var aulasCriadasOuExcluidasPorUsuario = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId)))
+                .Where(a => (!a.CriadoPor.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase) && !a.Excluido) || 
+                            (!(a.AlteradoPor?.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase) ?? true) && a.Excluido))                
+                .ToList();
 
             if (aulas == null || !aulas.Any())
             {
@@ -57,7 +61,8 @@ namespace SME.SGP.Aplicacao
                         .Send(new RecuperarDiarioBordoComAulasExcluidasQuery(turma.CodigoTurma, codigoDisciplina, tipoCalendarioId, periodoTurmaConsiderado.Select(p => p.Data).ToArray())));
 
                 var aulasCriacao = from ac in ObterAulasParaCriacao(tipoCalendarioId, periodoTurmaConsiderado, diasLetivos, diasNaoLetivos, turma)
-                                   where !diariosBordoComAulaExcluida.Select(db => db.Aula.DataAula).Contains(ac.DataAula)
+                                   where !diariosBordoComAulaExcluida.Select(db => db.Aula.DataAula).Contains(ac.DataAula) &&
+                                         !aulasCriadasOuExcluidasPorUsuario.Select(a => a.DataAula).Distinct().Contains(ac.DataAula)
                                    select ac;
 
                 aulasACriar.AddRange(aulasCriacao);
@@ -77,7 +82,8 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var diasCriacaoAula = (from d in diasSemAula
-                                       where !diariosBordoComAulaExcluida.Select(db => db.Aula.DataAula).Contains(d.Data)
+                                       where !diariosBordoComAulaExcluida.Select(db => db.Aula.DataAula).Contains(d.Data) &&
+                                             !aulasCriadasOuExcluidasPorUsuario.Select(a => a.DataAula).Distinct().Contains(d.Data)
                                        select d).ToList();
 
                 aulasACriar.AddRange(ObterListaDeAulas(diasCriacaoAula, tipoCalendarioId, turma).ToList());
