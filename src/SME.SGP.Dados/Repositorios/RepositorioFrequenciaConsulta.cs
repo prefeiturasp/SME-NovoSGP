@@ -1,4 +1,7 @@
 ﻿using Dapper;
+using Polly;
+using Polly.Registry;
+using SME.GoogleClassroom.Infra;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -16,14 +19,22 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFrequenciaConsulta : RepositorioBase<RegistroFrequencia>, IRepositorioFrequenciaConsulta
     {
-        public RepositorioFrequenciaConsulta(ISgpContextConsultas database) : base(database)
+        private readonly IAsyncPolicy policy;
+        public RepositorioFrequenciaConsulta(ISgpContextConsultas database,
+                                             IReadOnlyPolicyRegistry<string> registry)
+            : base(database)
         {
-        }        
+            policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
+        }
 
         public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
         {
             var query = @"select 1 from registro_frequencia where aula_id = @aulaId";
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { aulaId });
+
+            var retorno = await policy
+                .ExecuteAsync(() => database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { aulaId }));
+
+            return retorno;
         }
 
         public async Task<IEnumerable<AlunoComponenteCurricularDto>> ObterAlunosAusentesPorTurmaEPeriodo(string turmaCodigo, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
@@ -308,7 +319,7 @@ namespace SME.SGP.Dados.Repositorios
                            and a.turma_id = @turmaCodigo ";
 
             return await database.Conexao.QueryAsync<AulaComFrequenciaNaDataDto>(query, new { turmaCodigo });
-        }        
+        }
 
         public async Task<IEnumerable<TotalFrequenciaEAulasPorPeriodoDto>> ObterTotalFrequenciaEAulasPorPeriodo(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard)
         {

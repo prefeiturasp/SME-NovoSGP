@@ -860,12 +860,11 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId, string criadoPor = null)
         {
-            var query = @"select a.* 
+            var query = @"select a.*
                             from aula a
                                 inner join turma t
                                     on a.turma_id = t.turma_id
-                          where a.tipo_calendario_id = @tipoCalendarioId and 
-                                not a.excluido and
+                          where a.tipo_calendario_id = @tipoCalendarioId and
                                 a.turma_id = @turmaId";
 
             var criadoRf = new string[] { criadoPor };
