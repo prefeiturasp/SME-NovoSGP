@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
@@ -93,6 +94,17 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> CadastroAula([FromServices] IPodeCadastrarAulaUseCase podeCadastrarAulaUseCase, long aulaId, string turmaCodigo, long componenteCurricular, [FromQuery] DateTime dataAula, [FromQuery] bool ehRegencia, [FromQuery] TipoAula tipoAula)
         {
             return Ok(await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(aulaId, turmaCodigo, componenteCurricular, dataAula, ehRegencia, tipoAula)));
+        }
+
+        [HttpGet("sincronizar/aulas-regencia")]
+        [ProducesResponseType(typeof(CadastroAulaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_A, Policy = "Bearer")]
+        public async Task<IActionResult> SincronizarAulasRegencia([FromQuery] long? codigoTurma, [FromServices] IMediator mediator)
+        {
+            var dados = new DadosCriacaoAulasAutomaticasCarregamentoDto() { CodigoTurma = codigoTurma?.ToString() };
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.CarregarDadosUeTurmaRegenciaAutomaticamente, dados, Guid.NewGuid(), null));
+            return Ok();
         }
     }
 }
