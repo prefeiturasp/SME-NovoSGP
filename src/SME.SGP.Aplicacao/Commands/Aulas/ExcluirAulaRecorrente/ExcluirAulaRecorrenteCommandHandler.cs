@@ -15,8 +15,9 @@ namespace SME.SGP.Aplicacao
     public class ExcluirAulaRecorrenteCommandHandler : IRequestHandler<ExcluirAulaRecorrenteCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioAulaConsulta repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAulaConsulta;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
+        private readonly IRepositorioAula repositorioAula;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
@@ -24,7 +25,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioDevolutiva repositorioDevolutiva;
 
         public ExcluirAulaRecorrenteCommandHandler(IMediator mediator,
-                                                   IRepositorioAulaConsulta repositorioAula,
+                                                   IRepositorioAulaConsulta repositorioAulaConsulta,
+                                                   IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
                                                    IRepositorioPlanoAula repositorioPlanoAula,
                                                    IRepositorioDiarioBordo repositorioDiarioBordo,
@@ -33,6 +35,7 @@ namespace SME.SGP.Aplicacao
                                                    IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioAulaConsulta = repositorioAulaConsulta ?? throw new ArgumentNullException(nameof(repositorioAulaConsulta));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -44,12 +47,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
-            var aulaOrigem = await repositorioAula.ObterCompletoPorIdAsync(request.AulaId);
+            var aulaOrigem = await repositorioAulaConsulta.ObterCompletoPorIdAsync(request.AulaId);
             if (aulaOrigem == null)
                 throw new NegocioException("Não foi possível obter a aula.");
 
             var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(aulaOrigem.TipoCalendarioId, aulaOrigem.DataAula.Date, request.Recorrencia));
-            var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aulaOrigem.AulaPaiId ?? aulaOrigem.Id, aulaOrigem.Id, fimRecorrencia);
+            var aulasRecorrencia = await repositorioAulaConsulta.ObterAulasRecorrencia(aulaOrigem.AulaPaiId ?? aulaOrigem.Id, aulaOrigem.Id, fimRecorrencia);
             var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasRecorrencia);
 
             try

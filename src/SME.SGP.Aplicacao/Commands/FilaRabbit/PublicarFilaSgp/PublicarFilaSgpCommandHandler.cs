@@ -5,6 +5,7 @@ using Polly;
 using Polly.Registry;
 using RabbitMQ.Client;
 using SME.GoogleClassroom.Infra;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Text;
