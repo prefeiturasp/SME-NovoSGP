@@ -130,6 +130,8 @@ namespace SME.SGP.Aplicacao
             var fechamentosNotasDaTurma = await mediator
                 .Send(new ObterFechamentosPorTurmaPeriodoCCQuery(filtro.PeriodoEscolarId, filtro.TurmaId, filtro.DisciplinaCodigo));
 
+           // var listaFechamentoNotaEmAprovacao = 
+            
             //Obter alunos ativos
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
             if (filtro.TurmaHistorico)
@@ -273,6 +275,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota);
                                 nota.EhConceito = notaRegencia.ConceitoId.HasValue;
+                                //double notaConceitoWF = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaRegencia.Id).Nota;
                                 VerificaNotaEmAprovacao(notaRegencia.NotaConceitoAprovacaoWf, nota);
                             }                            
 
