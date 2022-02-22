@@ -70,7 +70,9 @@ namespace SME.SGP.Aplicacao
                 var datasDesconsideradas = componentesCurricularesAulas != null && componentesCurricularesAulas.Any() ? (from a in aulasCriadasPorUsuarios
                                             join cc in componentesCurricularesAulas
                                             on a.DisciplinaId equals cc.CodigoComponenteCurricular.ToString()
-                                            where cc.Regencia
+                                            where cc.Regencia && 
+                                            ((!a.CriadoPor.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase) && !a.Excluido) ||
+                                             (!(a.AlteradoPor?.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase) ?? true) && a.Excluido))
                                             select a.DataAula) : Enumerable.Empty<DateTime>();
 
                 var professorTitular = await mediator

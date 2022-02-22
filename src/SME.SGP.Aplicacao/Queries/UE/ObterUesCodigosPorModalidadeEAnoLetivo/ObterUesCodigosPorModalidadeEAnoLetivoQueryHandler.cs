@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<string>> Handle(ObterUesCodigosPorModalidadeEAnoLetivoQuery request, CancellationToken cancellationToken)
         {
             return await repositorioUe
-                .ObterUesCodigosPorModalidadeEAnoLetivo(request.Modalidade, request.AnoLetivo);
+                .ObterUesCodigosPorModalidadeEAnoLetivo(request.Modalidade, request.AnoLetivo, request.Pagina);
         }
     }
 }

@@ -48,12 +48,12 @@ namespace SME.SGP.Aplicacao
                 if (modalidade == Modalidade.EJA)
                 {
                     await ObterDados(modalidade, 1, turma, mensagem.Pagina);
-                    executarProximaPagina = await ObterDados(modalidade, 2, turma, mensagem.Pagina);
+                    await ObterDados(modalidade, 2, turma, mensagem.Pagina);
                 }
                 else executarProximaPagina = await ObterDados(modalidade, turma: turma, pagina: mensagem.Pagina);
             }
 
-            if (executarProximaPagina)
+            if (string.IsNullOrWhiteSpace(mensagem.CodigoTurma) && executarProximaPagina)
             {
                 mensagem.Pagina += 1;
                 await mediator
@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
             var uesCodigos = turma != null ? new string[] { turma.Ue.CodigoUe } : await mediator
                 .Send(new ObterUesCodigosPorModalidadeEAnoLetivoQuery(modalidade, anoAtual, pagina));
 
-            if (uesCodigos == null && !uesCodigos.Any())
+            if (uesCodigos == null || !uesCodigos.Any())
                 return false;
 
             foreach (var ueCodigo in uesCodigos)
