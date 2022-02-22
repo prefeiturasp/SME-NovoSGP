@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotaEmAprovacaoPorFechamentoNotaIdQueryHandler : IRequestHandler<ObterNotaEmAprovacaoPorFechamentoNotaIdQuery, IEnumerable<FechamentoNotaAprovacaoDto>>
     {
-        public Task<IEnumerable<FechamentoNotaAprovacaoDto>> Handle(ObterNotaEmAprovacaoPorFechamentoNotaIdQuery request, CancellationToken cancellationToken)
+        private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNotaConsulta;
+
+        public ObterNotaEmAprovacaoPorFechamentoNotaIdQueryHandler(IRepositorioFechamentoNotaConsulta repositorioFechamentoNotaConsulta)
         {
-            throw new NotImplementedException();
+            this.repositorioFechamentoNotaConsulta = repositorioFechamentoNotaConsulta ?? throw new ArgumentNullException(nameof(repositorioFechamentoNotaConsulta));
         }
+        public async Task<IEnumerable<FechamentoNotaAprovacaoDto>> Handle(ObterNotaEmAprovacaoPorFechamentoNotaIdQuery request, CancellationToken cancellationToken)
+            => await repositorioFechamentoNotaConsulta.ObterNotasEmAprovacaoPorIdsFechamento(request.IdsFechamentoNota);
+        
     }
 }

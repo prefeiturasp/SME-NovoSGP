@@ -131,8 +131,9 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterFechamentosPorTurmaPeriodoCCQuery(filtro.PeriodoEscolarId, filtro.TurmaId, filtro.DisciplinaCodigo));
 
             var idsFechamentoNota = fechamentosNotasDaTurma.SelectMany(a => a.FechamentoAlunos).SelectMany(a => a.FechamentoNotas).Select(a => a.Id);
+
             var listaFechamentoNotaEmAprovacao = await mediator.Send(new ObterNotaEmAprovacaoPorFechamentoNotaIdQuery() { IdsFechamentoNota = idsFechamentoNota });
-            
+           
             //Obter alunos ativos
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
             if (filtro.TurmaHistorico)
@@ -276,8 +277,11 @@ namespace SME.SGP.Aplicacao
                             {
                                 nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota);
                                 nota.EhConceito = notaRegencia.ConceitoId.HasValue;
-                                double notaConceitoWF = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaRegencia.Id).NotaEmAprovacao;
-                                VerificaNotaEmAprovacao(notaConceitoWF, nota);
+                                if (listaFechamentoNotaEmAprovacao.Any())
+                                {
+                                    double notaConceitoWF = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaRegencia.Id).NotaEmAprovacao;
+                                    VerificaNotaEmAprovacao(notaConceitoWF, nota);
+                                }
                             }                            
 
                             notaConceitoAluno.NotasBimestre.Add(nota);
@@ -296,9 +300,13 @@ namespace SME.SGP.Aplicacao
                                    notaConceitoBimestre.ConceitoId.Value :
                                    notaConceitoBimestre.Nota,
                                 EhConceito = notaConceitoBimestre.ConceitoId.HasValue
-                            };
-                            double notaConceitoWF = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaConceitoBimestre.Id).NotaEmAprovacao;
-                            VerificaNotaEmAprovacao(notaConceitoWF, nota);
+                            };                         
+
+                            if (listaFechamentoNotaEmAprovacao.Any())
+                            {
+                                double notaConceitoWF = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaConceitoBimestre.Id).NotaEmAprovacao;
+                                VerificaNotaEmAprovacao(notaConceitoWF, nota);
+                            }
 
                             notaConceitoAluno.NotasBimestre.Add(nota);
                         }
