@@ -50,11 +50,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_A, Policy = "Bearer")]
         public async Task<IActionResult> ObterFechamentoId(long turmaId, int bimestre, [FromServices] IObterFechamentoIdPorTurmaBimestreUseCase useCase)
         {
-            var fechamento = await useCase.Executar(new Infra.Dtos.TurmaBimestreDto(turmaId, bimestre));
-            if (fechamento is null)
-                return NoContent();
-
-            return Ok(fechamento);
+            return Ok(await useCase.Executar(new Infra.Dtos.TurmaBimestreDto(turmaId, bimestre)));
         }
 
         [HttpPost("reprocessar")]

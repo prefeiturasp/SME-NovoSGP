@@ -22,13 +22,28 @@ namespace SME.SGP.Aplicacao
         {
             var fechamento = await repositorioFechamentoTurma.ObterIdEPeriodoPorTurmaBimestre(request.TurmaId, request.Bimestre > 0 ? (int?)request.Bimestre : null);
 
-            if (fechamento == null)
-                return null;
+            var periodoEscolarId = fechamento == null ?
+                await ObterPeriodoEscolarId(request.TurmaId, request.Bimestre) :
+                fechamento.PeriodoEscolarId;
 
-            if (fechamento.PeriodoEscolarId.HasValue)
-                fechamento.PossuiAvaliacao = await mediator.Send(new TurmaPossuiAvaliacaoNoPeriodoQuery(request.TurmaId, fechamento.PeriodoEscolarId.Value));
+            if (fechamento == null)
+                fechamento = new FechamentoTurmaPeriodoEscolarDto() { PeriodoEscolarId = periodoEscolarId };
+
+            if (periodoEscolarId.HasValue)
+                fechamento.PossuiAvaliacao = await mediator.Send(new TurmaPossuiAvaliacaoNoPeriodoQuery(request.TurmaId, periodoEscolarId.Value));
 
             return fechamento;
+        }
+
+        private async Task<long?> ObterPeriodoEscolarId(long turmaId, int bimestre)
+        {
+            if (bimestre == 0)
+                return 0;
+
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
+
+            return periodoEscolar.Id;
         }
     }
 }
