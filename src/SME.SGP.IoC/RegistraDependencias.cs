@@ -96,7 +96,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosFechamentoFinal, ComandosFechamentoFinal>();
             services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
             services.TryAddScoped<IComandosPendenciaFechamento, ComandosPendenciaFechamento>();
-            services.TryAddScoped<IComandosFechamentoAluno, ComandosFechamentoAluno>();
             services.TryAddScoped<IComandosFechamentoTurma, ComandosFechamentoTurma>();
             services.TryAddScoped<IComandosConselhoClasse, ComandosConselhoClasse>();
             services.TryAddScoped<IComandosConselhoClasseAluno, ComandosConselhoClasseAluno>();
@@ -623,6 +622,7 @@ namespace SME.SGP.IoC
 
             // Atividades
             services.TryAddScoped<IImportarAtividadesGsaUseCase, ImportarAtividadesGsaUseCase>();
+            services.TryAddScoped<IObterAtividadesNotasAlunoPorTurmaPeriodoUseCase, ObterAtividadesNotasAlunoPorTurmaPeriodoUseCase>();
 
             // Atividade Infantil
             services.TryAddScoped<IObterAtividadesInfantilUseCase, ObterAtividadesInfantilUseCase>();
@@ -669,6 +669,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
             services.TryAddScoped<IVarreduraFechamentosEmProcessamentoPendentesUseCase, VarreduraFechamentosEmProcessamentoPendentesUseCase>();
             services.TryAddScoped<IInserirFechamentoTurmaDisciplinaUseCase, InserirFechamentoTurmaDisciplinaUseCase>();
+            services.TryAddScoped<IObterFechamentoIdPorTurmaBimestreUseCase, ObterFechamentoIdPorTurmaBimestreUseCase>();
+
+            // Fechamento Aluno
+            services.TryAddScoped<ISalvarAnotacaoFechamentoAlunoUseCase, SalvarAnotacaoFechamentoAlunoUseCase>();
 
             //Fechamento Reabertura
             services.TryAddScoped<INotificacaoPeriodoFechamentoReaberturaIniciando, NotificacaoPeriodoFechamentoReaberturaIniciandoUseCase>();
