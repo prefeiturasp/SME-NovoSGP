@@ -51,5 +51,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, turmasCodigos, periodoId });
         }
+
+        public Task<IEnumerable<string>> ObterAlunosComAnotacaoNoFechamento(long fechamentoTurmaDisciplinaId)
+        {
+            var query = @"select fa.aluno_codigo  
+                          from fechamento_aluno fa 
+                         where not fa.excluido 
+                           and fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId";
+
+            return database.Conexao.QueryAsync<string>(query, new { fechamentoTurmaDisciplinaId });
+        }
     }
 }

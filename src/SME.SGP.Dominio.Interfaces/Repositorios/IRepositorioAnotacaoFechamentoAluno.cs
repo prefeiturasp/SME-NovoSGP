@@ -8,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<AnotacaoFechamentoAluno> ObterPorFechamentoEAluno(long fechamentoTurmaDisciplinaId, string alunoCodigo);
         Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacoesTurmaAlunoBimestreAsync(string alunoCodigo, string[] turmasCodigos, long periodoId);
+        Task<IEnumerable<string>> ObterAlunosComAnotacaoNoFechamento(long fechamentoTurmaDisciplinaId);
     }
 }
