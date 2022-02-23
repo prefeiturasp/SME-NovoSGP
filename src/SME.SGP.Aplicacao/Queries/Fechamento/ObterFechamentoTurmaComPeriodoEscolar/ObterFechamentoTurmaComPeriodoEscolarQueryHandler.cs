@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FechamentoTurmaPeriodoEscolarDto> Handle(ObterFechamentoTurmaComPeriodoEscolarQuery request, CancellationToken cancellationToken)
         {
-            var fechamento = await repositorioFechamentoTurma.ObterIdEPeriodoPorTurmaBimestre(request.TurmaId, request.Bimestre > 0 ? request.Bimestre : null);
+            var fechamento = await repositorioFechamentoTurma.ObterIdEPeriodoPorTurmaBimestre(request.TurmaId, request.Bimestre > 0 ? (int?)request.Bimestre : null);
 
             if (fechamento == null)
                 return null;
