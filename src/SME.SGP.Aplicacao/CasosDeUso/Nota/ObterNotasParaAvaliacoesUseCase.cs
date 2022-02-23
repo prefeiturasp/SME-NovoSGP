@@ -130,6 +130,10 @@ namespace SME.SGP.Aplicacao
             var fechamentosNotasDaTurma = await mediator
                 .Send(new ObterFechamentosPorTurmaPeriodoCCQuery(filtro.PeriodoEscolarId, filtro.TurmaId, filtro.DisciplinaCodigo));
 
+            var idsFechamentoNota = fechamentosNotasDaTurma.SelectMany(a => a.FechamentoAlunos).SelectMany(a => a.FechamentoNotas).Select(a => a.Id);
+
+            var listaFechamentoNotaEmAprovacao = await mediator.Send(new ObterNotaEmAprovacaoPorFechamentoNotaIdQuery() { IdsFechamentoNota = idsFechamentoNota });
+           
             //Obter alunos ativos
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
             if (filtro.TurmaHistorico)
@@ -212,7 +216,8 @@ namespace SME.SGP.Aplicacao
 
                 notaConceitoAluno.PodeEditar =
                         (notasAvaliacoes.Any(na => na.PodeEditar) || (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any())) &&
-                        (aluno.Inativo == false || (aluno.Inativo && aluno.DataSituacao >= periodoFechamentoBimestre?.PeriodoFechamentoInicio.Date));
+                        (aluno.Inativo == false || (aluno.Inativo && (aluno.DataSituacao >= periodoFechamentoBimestre?.PeriodoFechamentoInicio.Date || 
+                        (aluno.DataSituacao >= bimestreParaAdicionar.PeriodoInicio && bimestreParaAdicionar.PeriodoFim <= aluno.DataSituacao))));
 
                 notaConceitoAluno.Marcador = await mediator
                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
@@ -272,7 +277,11 @@ namespace SME.SGP.Aplicacao
                             {
                                 nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota);
                                 nota.EhConceito = notaRegencia.ConceitoId.HasValue;
-                                VerificaNotaEmAprovacao(notaRegencia.NotaConceitoAprovacaoWf, nota);
+                                if (listaFechamentoNotaEmAprovacao.Any())
+                                {
+                                    double notaConceitoWF = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaRegencia.Id).NotaEmAprovacao;
+                                    VerificaNotaEmAprovacao(notaConceitoWF, nota);
+                                }
                             }                            
 
                             notaConceitoAluno.NotasBimestre.Add(nota);
@@ -291,9 +300,13 @@ namespace SME.SGP.Aplicacao
                                    notaConceitoBimestre.ConceitoId.Value :
                                    notaConceitoBimestre.Nota,
                                 EhConceito = notaConceitoBimestre.ConceitoId.HasValue
-                            };
+                            };                         
 
-                            VerificaNotaEmAprovacao(notaConceitoBimestre.NotaConceitoAprovacaoWf, nota);
+                            if (listaFechamentoNotaEmAprovacao.Any())
+                            {
+                                double notaConceitoWF = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaConceitoBimestre.Id).NotaEmAprovacao;
+                                VerificaNotaEmAprovacao(notaConceitoWF, nota);
+                            }
 
                             notaConceitoAluno.NotasBimestre.Add(nota);
                         }

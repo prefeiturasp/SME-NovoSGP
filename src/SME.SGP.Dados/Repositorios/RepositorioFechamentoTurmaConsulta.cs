@@ -95,14 +95,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterPorTurmaPeriodoCCAsync(long turmaId, long periodoEscolarId, long componenteCurricularId)
         {
-            var query = @"select f.*, fa.*, fn.*, coalesce(coalesce(w.nota,w.conceito_id),-1) as NotaConceitoAprovacaoWf
+            var query = @"select f.*, fa.*, fn.*
                          from fechamento_turma_disciplina f
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id 
                         inner join turma t on t.id = ft.turma_id
                         inner join fechamento_aluno fa on f.id = fa.fechamento_turma_disciplina_id
                         left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 
-                        left join wf_aprovacao_nota_fechamento w on w.fechamento_nota_id = fn.id
                         where not f.excluido
                             and t.id = @turmaId 
                         and f.disciplina_id = @componenteCurricularId
