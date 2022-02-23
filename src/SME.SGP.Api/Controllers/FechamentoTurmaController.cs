@@ -42,7 +42,7 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpPost("{turmaId}/bimestres/{bimestre}")]
+        [HttpGet("{turmaId}/bimestres/{bimestre}")]
         [ProducesResponseType(typeof(FechamentoTurmaPeriodoEscolarDto), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
