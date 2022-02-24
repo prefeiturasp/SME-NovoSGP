@@ -13,6 +13,5 @@
 
         public bool Migrado { get; set; }
         public bool Excluido { get; set; }
-        public double NotaConceitoAprovacaoWf { get; set; }
     }
 }

@@ -10,17 +10,17 @@ namespace SME.SGP.Aplicacao
 {
     public class CriarAulasInfantilAutomaticamenteCommand : IRequest<bool>
     {
-        public CriarAulasInfantilAutomaticamenteCommand(IEnumerable<DiaLetivoDto> diasLetivos, IEnumerable<Turma> turmas, long tipoCalendarioId, IEnumerable<DateTime> diasForaDoPeriodoEscolar)
+        public CriarAulasInfantilAutomaticamenteCommand(IEnumerable<DiaLetivoDto> diasLetivos, Turma turma, long tipoCalendarioId, IEnumerable<DateTime> diasForaDoPeriodoEscolar)
         {
             DiasLetivos = diasLetivos;
-            Turmas = turmas;
+            Turma = turma;
             TipoCalendarioId = tipoCalendarioId;
             DiasForaDoPeriodoEscolar = diasForaDoPeriodoEscolar;
         }
 
         public long TipoCalendarioId { get; set; }
         public IEnumerable<DiaLetivoDto> DiasLetivos { get; set; }
-        public IEnumerable<Turma> Turmas { get; set; }
+        public Turma Turma { get; set; }
 
         public IEnumerable<DateTime> DiasForaDoPeriodoEscolar { get; set; }
     }
@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
     {
         public CriarAulasInfantilAutomaticamenteCommandValidator()
         {
-            RuleFor(c => c.Turmas)
+            RuleFor(c => c.Turma)
                 .NotEmpty()
                 .WithMessage("As Turmas devem ser informadas.");
 
