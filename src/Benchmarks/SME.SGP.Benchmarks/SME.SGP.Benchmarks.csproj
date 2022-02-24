@@ -15,4 +15,9 @@
     <ProjectReference Include="..\..\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
   </ItemGroup>
 
+	<PropertyGroup>
+		<!-- Exclude the project from analysis -->
+		<SonarQubeExclude>true</SonarQubeExclude>
+	</PropertyGroup>
+
 </Project>
