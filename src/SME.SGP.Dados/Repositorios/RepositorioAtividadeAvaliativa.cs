@@ -594,7 +594,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync(query, new { turmaId, periodoEscolarId })).Any();
         }
 
-        public Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo)
+        public Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular)
         {
             var query = @"SELECT aa.nome_avaliacao as Nome
 	                        , aa.data_avaliacao as data
@@ -602,13 +602,15 @@ namespace SME.SGP.Dados.Repositorios
                           FROM atividade_avaliativa aa
                          INNER JOIN turma t ON t.turma_id = aa.turma_id
                          INNER JOIN periodo_escolar pe ON aa.data_avaliacao between pe.periodo_inicio and pe.periodo_fim
-                          left join notas_conceito nc on nc.atividade_avaliativa = aa.id
+                         INNER JOIN atividade_avaliativa_disciplina aad ON aad.atividade_avaliativa_id = aa.id
+                          left join notas_conceito nc on nc.atividade_avaliativa = aa.id and nc.aluno_id = @alunoCodigo
                          WHERE NOT aa.excluido
                            AND t.id = @turmaId
                            and pe.id = @periodoEscolarId
-                           and nc.aluno_id = @alunoCodigo";
+                           and aad.disciplina_id = @componenteCurricular
+                        order by aa.data_avaliacao";
 
-            return database.Conexao.QueryAsync<AvaliacaoNotaAlunoDto>(query, new { turmaId, periodoEscolarId, alunoCodigo });
+            return database.Conexao.QueryAsync<AvaliacaoNotaAlunoDto>(query, new { turmaId, periodoEscolarId, alunoCodigo, componenteCurricular });
         }
     }
 }
