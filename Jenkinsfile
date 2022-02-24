@@ -47,7 +47,7 @@ pipeline {
 	       when { anyOf { branch 'lobo/sonar';} } 
          steps {
              withSonarQubeEnv('sonarqube-local'){
-               sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs'
+               sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs"'
                sh 'dotnet build SME.SGP.sln'
                sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
                sh 'dotnet-sonarscanner'
