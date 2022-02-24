@@ -21,21 +21,21 @@ namespace SME.SGP.Aplicacao.Teste
             query = new ObterFechamentoTurmaComPeriodoEscolarQueryHandler(repositorioFechamentoTurma.Object, mediator.Object);
         }
 
-        [Fact]
-        public async Task Turma_Sem_Fechamento()
-        {
-            //Arrange
-            FechamentoTurmaPeriodoEscolarDto fechamento = null;
-            repositorioFechamentoTurma.Setup(a => a.ObterIdEPeriodoPorTurmaBimestre(It.IsAny<long>(), It.IsAny<int?>())).ReturnsAsync(fechamento);
+        //[Fact]
+        //public async Task Turma_Sem_Fechamento()
+        //{
+        //    //Arrange
+        //    FechamentoTurmaPeriodoEscolarDto fechamento = null;
+        //    repositorioFechamentoTurma.Setup(a => a.ObterIdEPeriodoPorTurmaBimestre(It.IsAny<long>(), It.IsAny<int?>())).ReturnsAsync(fechamento);
 
-            //Act
-            var retorno = await query.Handle(new ObterFechamentoTurmaComPeriodoEscolarQuery(123, 1), new System.Threading.CancellationToken());
+        //    //Act
+        //    var retorno = await query.Handle(new ObterFechamentoTurmaComPeriodoEscolarQuery(123, 1), new System.Threading.CancellationToken());
 
-            //Assert
-            repositorioFechamentoTurma.Verify(c => c.ObterIdEPeriodoPorTurmaBimestre(It.IsAny<long>(), It.IsAny<int?>()), Times.Once);
+        //    //Assert
+        //    repositorioFechamentoTurma.Verify(c => c.ObterIdEPeriodoPorTurmaBimestre(It.IsAny<long>(), It.IsAny<int?>()), Times.Once);
 
-            Assert.True(retorno is null, "Turma sem fechamento deve retornar null");
-        }
+        //    Assert.True(retorno is null, "Turma sem fechamento deve retornar null");
+        //}
 
         [Fact]
         public async Task Turma_Com_Fechamento_Sem_Avaliacao()

@@ -30,14 +30,14 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             Setup();
         }
 
-        [Fact]
-        public async Task DeveObterGradeTurma()
-        {
-            var gradeDto = await consultasGrade.ObterGradeTurma(TipoEscola.EMEBS, Modalidade.Fundamental, 5);
+        //[Fact]
+        //public async Task DeveObterGradeTurma()
+        //{
+        //    var gradeDto = await consultasGrade.ObterGradeTurma(TipoEscola.EMEBS, Modalidade.Fundamental, 5);
 
-            Assert.NotNull(gradeDto);
-            Assert.True(gradeDto.Id == 1);
-        }
+        //    Assert.NotNull(gradeDto);
+        //    Assert.True(gradeDto.Id == 1);
+        //}
 
         //[Fact]
         //public async Task DeveObterHorasGradeComponente()

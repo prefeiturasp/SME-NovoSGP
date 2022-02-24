@@ -37,25 +37,25 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             Assert.Throws<ArgumentNullException>(() => new ConsultasNotificacao(null, null, null));
         }
 
-        [Fact(DisplayName = "ListarNotificacoesBasicaPorAnoLetivoRF")]
-        public void DeveListarNotificacoesBasicaPorAnoLetivoRF()
-        {
-            consultasNotificacao.ListarPorAnoLetivoRf(2019, "1");
-            repositorioNotificacaoConsulta.Verify(r => r.ObterNotificacoesPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()));
-        }
+        //[Fact(DisplayName = "ListarNotificacoesBasicaPorAnoLetivoRF")]
+        //public void DeveListarNotificacoesBasicaPorAnoLetivoRF()
+        //{
+        //    consultasNotificacao.ListarPorAnoLetivoRf(2019, "1");
+        //    repositorioNotificacaoConsulta.Verify(r => r.ObterNotificacoesPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()));
+        //}
 
-        [Fact(DisplayName = "ObterNotificacaoBasicaListaPorAnoLetivoeRf")]
-        public void DeveObterPlanoAnualResumidoPorAnoLetivoeRf()
-        {
-            consultasNotificacao.ObterNotificacaoBasicaLista(2019, "1");
-            repositorioNotificacaoConsulta.Verify(r => r.ObterNotificacoesPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()));
-        }
+        //[Fact(DisplayName = "ObterNotificacaoBasicaListaPorAnoLetivoeRf")]
+        //public void DeveObterPlanoAnualResumidoPorAnoLetivoeRf()
+        //{
+        //    consultasNotificacao.ObterNotificacaoBasicaLista(2019, "1");
+        //    repositorioNotificacaoConsulta.Verify(r => r.ObterNotificacoesPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()));
+        //}
 
-        [Fact(DisplayName = "ObterQuantidadeNaoLidasPorAnoERF")]
-        public void DeveObterQuantidadeNotificacoesNoLidasPorAnoERF()
-        {
-            consultasNotificacao.QuantidadeNotificacoesNaoLidas(2019, "1");
-            repositorioNotificacaoConsulta.Verify(r => r.ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>()));
-        }
+        //[Fact(DisplayName = "ObterQuantidadeNaoLidasPorAnoERF")]
+        //public void DeveObterQuantidadeNotificacoesNoLidasPorAnoERF()
+        //{
+        //    consultasNotificacao.QuantidadeNotificacoesNaoLidas(2019, "1");
+        //    repositorioNotificacaoConsulta.Verify(r => r.ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>()));
+        //}
     }
 }
