@@ -606,7 +606,8 @@ namespace SME.SGP.Dados.Repositorios
                          WHERE NOT aa.excluido
                            AND t.id = @turmaId
                            and pe.id = @periodoEscolarId
-                           and nc.aluno_id = @alunoCodigo";
+                           and nc.aluno_id = @alunoCodigo
+                        order by aa.data_avaliacao";
 
             return database.Conexao.QueryAsync<AvaliacaoNotaAlunoDto>(query, new { turmaId, periodoEscolarId, alunoCodigo });
         }
