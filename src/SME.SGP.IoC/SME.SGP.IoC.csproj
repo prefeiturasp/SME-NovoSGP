@@ -24,5 +24,7 @@
 		<!-- Exclude the project from analysis -->
 		<SonarQubeExclude>true</SonarQubeExclude>
 	</PropertyGroup>
+	
+	
 
 </Project>
