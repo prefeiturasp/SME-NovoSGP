@@ -22,4 +22,9 @@
     <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
   </ItemGroup>
 
+	<PropertyGroup>
+		<!-- Exclude the project from analysis -->
+		<SonarQubeExclude>true</SonarQubeExclude>
+	</PropertyGroup>
+
 </Project>
