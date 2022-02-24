@@ -19,12 +19,9 @@ namespace SME.SGP.Aplicacao
 
             // Excluir anotacao quando enviado string vazia
             if (string.IsNullOrEmpty(anotacaoDto.Anotacao))
-            {
                 await mediator.Send(new ExcluirAnotacaoFechamentoAlunoCommand(anotacao));
-                return default;
-            }
-
-            await mediator.Send(new SalvarAnotacaoFechamentoAlunoCommand(anotacao));
+            else
+                await mediator.Send(new SalvarAnotacaoFechamentoAlunoCommand(anotacao));
 
             return (AuditoriaPersistenciaDto)anotacao;
         }
