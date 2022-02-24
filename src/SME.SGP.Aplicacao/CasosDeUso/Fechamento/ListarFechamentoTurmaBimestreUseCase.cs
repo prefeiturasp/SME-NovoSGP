@@ -77,6 +77,7 @@ namespace SME.SGP.Aplicacao
             else
                 disciplinas.Add(new DisciplinaDto() { Nome = componenteCurricularSelecionado.Nome, CodigoComponenteCurricular = componenteCurricularSelecionado.CodigoComponenteCurricular });
 
+            var alunosComAnotacao = Enumerable.Empty<string>();
             var fechamentosTurma = await ObterFechamentosTurmaDisciplina(turmaCodigo, componenteCurricularCodigo.ToString(), bimestre);
             if (fechamentosTurma != null && fechamentosTurma.Any())
             {
@@ -84,14 +85,14 @@ namespace SME.SGP.Aplicacao
                 fechamentoNotaConceitoTurma.DataFechamento = fechamentosTurma.First().AlteradoEm.HasValue ? fechamentosTurma.First().AlteradoEm.Value : fechamentosTurma.First().CriadoEm;
                 fechamentoNotaConceitoTurma.Situacao = fechamentosTurma.First().Situacao;
                 fechamentoNotaConceitoTurma.SituacaoNome = fechamentosTurma.First().Situacao.Name();
+
+                alunosComAnotacao = await ObterAlunosComAnotacaoNoFechamento(fechamentoNotaConceitoTurma.FechamentoId);
             }
             else
             {
                 fechamentoNotaConceitoTurma.Situacao = SituacaoFechamento.NaoIniciado;
                 fechamentoNotaConceitoTurma.SituacaoNome = SituacaoFechamento.NaoIniciado.Name();
             }
-
-            var alunosComAnotacao = await ObterAlunosComAnotacaoNoFechamento(fechamentoNotaConceitoTurma.FechamentoId);
 
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosValidosComOrdenacao = null;
             if (bimestre > 0)
