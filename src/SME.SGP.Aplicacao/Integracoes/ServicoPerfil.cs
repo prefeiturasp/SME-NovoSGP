@@ -37,11 +37,11 @@ namespace SME.SGP.Aplicacao.Integracoes
             {
                 lstTurmasAtribuidasInfantil = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_PROFESSOR, false);
 
-                if (lstTurmasAtribuidasInfantil != null && lstTurmasAtribuidasInfantil.Any())
-                    return Perfis.PERFIL_PROFESSOR;
+                if (lstTurmasAtribuidasInfantil != null && lstTurmasAtribuidasInfantil.Any() || Perfis.PERFIL_PROFESSOR != null)
+                        return Perfis.PERFIL_PROFESSOR;
                 else
                     return Perfis.PERFIL_CJ;
-            }            
+            }
 
             return Guid.Empty;
 
