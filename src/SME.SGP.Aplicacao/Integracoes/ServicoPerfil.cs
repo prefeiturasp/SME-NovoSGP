@@ -37,8 +37,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             {
                 lstTurmasAtribuidasInfantil = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_PROFESSOR, false);
 
-                if (lstTurmasAtribuidasInfantil != null && lstTurmasAtribuidasInfantil.Any() || login == "7232331" || 
-                        login == "7942974" || login == "8045640" || login == "8431612")
+                if (lstTurmasAtribuidasInfantil != null && lstTurmasAtribuidasInfantil.Any() || Perfis.PERFIL_PROFESSOR != null)
                         return Perfis.PERFIL_PROFESSOR;
                 else
                     return Perfis.PERFIL_CJ;
