@@ -155,6 +155,9 @@ namespace SME.SGP.Api.Controllers
         {
             IEnumerable<AbrangenciaTurmaRetorno> turmas;
             turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil);
+            
+            if(!turmas.Any() && !ConsideraHistorico)
+                turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil);
 
             if (!turmas.Any())
                 return NoContent();
