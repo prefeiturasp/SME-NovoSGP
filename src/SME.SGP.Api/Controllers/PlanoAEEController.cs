@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
@@ -14,8 +16,15 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/plano-aee")]
+    [Authorize("Bearer")]
     public class PlanoAEEController : ControllerBase
     {
+        private readonly IMediator mediator;
+
+        public PlanoAEEController(IMediator mediator)
+        {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
 
         [HttpGet]
         [Route("situacoes")]
@@ -163,6 +172,27 @@ namespace SME.SGP.Api.Controllers
             await useCase.Executar(devolucao);
 
             return Ok(new RetornoBaseDto("Plano devolvido com sucesso"));
+        }
+
+        [HttpGet("encerrar-planos")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> EncerrarPlanos([FromServices] IEncerrarPlanosAEEEstudantesInativosUseCase encerrarPlanosAEEEstudantesInativosUseCase)
+        {
+            //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.EncerrarPlanoAEEEstudantesInativos, Guid.NewGuid()));
+            await encerrarPlanosAEEEstudantesInativosUseCase.Executar(null);
+            return Ok();
+        }
+
+        [HttpGet("expirar-planos")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ExpirarPlanos()
+        {
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.GerarPendenciaValidadePlanoAEE, Guid.NewGuid()));
+            return Ok();
         }
     }
 }

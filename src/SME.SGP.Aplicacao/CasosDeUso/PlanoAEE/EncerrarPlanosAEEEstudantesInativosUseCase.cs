@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -12,7 +13,8 @@ namespace SME.SGP.Aplicacao
 {
     public class EncerrarPlanosAEEEstudantesInativosUseCase : AbstractUseCase, IEncerrarPlanosAEEEstudantesInativosUseCase
     {
-        public EncerrarPlanosAEEEstudantesInativosUseCase(IMediator mediator) : base(mediator)
+        public EncerrarPlanosAEEEstudantesInativosUseCase(IMediator mediator) 
+            : base(mediator)
         {
         }
 
@@ -22,11 +24,20 @@ namespace SME.SGP.Aplicacao
 
             foreach (var planoAEE in planosAtivos)
             {
-                var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, DateTime.Now.Year));
+                var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, DateTime.Today.Year));
+                var turma = await ObterTurma(planoAEE.TurmaId);
+                Turma turmaAtual = null;
+                var etapaConcluida = false;
+                AlunoPorTurmaResposta ultimaMatricula = null;
 
-                if (matriculas.Any() && !matriculas.Any(a => a.EstaAtivo(DateTime.Today)))
+                if (turma.AnoLetivo != DateTime.Today.Year)
+                    etapaConcluida = DeterminaEtapaConcluida(matriculas, planoAEE.AlunoCodigo, turma, turmaAtual, ref ultimaMatricula);
+
+                if (!matriculas?.Any(a => a.EstaAtivo(DateTime.Today)) ?? true || etapaConcluida)
                 {
-                    var ultimaMatricula = matriculas.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
+                    if (ultimaMatricula == null)
+                        ultimaMatricula = matriculas?.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
+
                     await EncerrarPlanoAEE(planoAEE, ultimaMatricula?.SituacaoMatricula ?? "Inativo", ultimaMatricula?.DataSituacao ?? DateTime.Now);
                 }
             }
@@ -75,7 +86,7 @@ namespace SME.SGP.Aplicacao
             var usuariosIds = await ObterUsuariosId(coordenadoresUe);
             var coordenadoresCEFAI = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dreCodigo));
 
-            foreach(var coordenadorCEFAI in coordenadoresCEFAI)            
+            foreach (var coordenadorCEFAI in coordenadoresCEFAI)
                 usuariosIds.Add(coordenadorCEFAI);
 
             return usuariosIds;
@@ -111,5 +122,36 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurma(long turmaId)
             => await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
+
+        private bool DeterminaEtapaConcluida(IEnumerable<AlunoPorTurmaResposta> matriculas, string alunoCodigo, Turma turma, Turma turmaAtual, ref AlunoPorTurmaResposta ultimaMatricula)
+        {
+            var matriculasAnoTurma = mediator
+                .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(alunoCodigo, turma.AnoLetivo)).Result;
+
+            var concluiuTurma = matriculasAnoTurma
+                .Any(m => m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
+
+            if (concluiuTurma)
+            {
+                if (turmaAtual == null)
+                    return true;
+
+                var ultimaMatriculaAtual = matriculas
+                    .OrderBy(m => m.DataMatricula)
+                    .LastOrDefault();
+
+                turmaAtual = ultimaMatriculaAtual != null ?
+                    mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaMatriculaAtual.CodigoTurma.ToString())).Result : null;
+
+                ultimaMatricula = matriculasAnoTurma
+                    .OrderBy(m => m.DataSituacao)
+                    .FirstOrDefault(m => m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
+
+                return turma.Ue.CodigoUe != turmaAtual.Ue.CodigoUe &&
+                       (turma.EhTurmaInfantil && !turmaAtual.EhTurmaInfantil);
+            }
+
+            return false;
+        }
     }
 }
