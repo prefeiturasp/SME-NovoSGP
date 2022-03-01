@@ -5,14 +5,16 @@ namespace SME.SGP.Aplicacao
 {
     public class TurmaPossuiAvaliacaoNoPeriodoQuery : IRequest<bool>
     {
-        public TurmaPossuiAvaliacaoNoPeriodoQuery(long turmaId, long periodoEscolarId)
+        public TurmaPossuiAvaliacaoNoPeriodoQuery(long turmaId, long periodoEscolarId, long? componenteCurricularCodigo = null)
         {
             TurmaId = turmaId;
             PeriodoEscolarId = periodoEscolarId;
+            ComponenteCurricularCodigo = componenteCurricularCodigo;
         }
 
         public long TurmaId { get; }
         public long PeriodoEscolarId { get; }
+        public long? ComponenteCurricularCodigo { get; }
     }
 
     public class TurmaPossuiAvaliacaoNoPeriodoQueryValidator : AbstractValidator<TurmaPossuiAvaliacaoNoPeriodoQuery>
