@@ -139,7 +139,6 @@ namespace SME.SGP.Dados.Repositorios
                                                and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
                                                and not tc.excluido  ");
 
-
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { turmaId, modalidade = (int)modalidade, dataReferencia });
         }
 
@@ -456,6 +455,18 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("order by a.data_aula");
             return database.Conexao.QueryAsync<PeriodoEscolarVerificaRegenciaDto>(query.ToString(), new { turmaCodigo, componenteCurricularId, bimestre });
+        }
+
+        public async Task<PeriodoEscolar> ObterPeriodoEscolarAtualAsync(ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataReferencia)
+        {
+            const string sql = @"select pe.*
+                                   from periodo_escolar pe
+                                        inner join tipo_calendario tc on (tc.id = pe.tipo_calendario_id)
+                                  where tc.modalidade = @modalidade
+                                    and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
+                                    and not tc.excluido ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(sql, new { modalidadeTipoCalendario = (int)modalidadeTipoCalendario, dataReferencia });
         }
     }
 }
