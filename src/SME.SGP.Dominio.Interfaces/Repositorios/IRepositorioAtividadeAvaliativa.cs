@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<AtividadeAvaliativa>> Listar(DateTime? dataAvaliacao, string dreId, string ueId, string nomeAvaliacao, int? tipoAvaliacaoId, string turmaId, Paginacao paginacao);
 
         IEnumerable<AtividadeAvaliativa> ListarPorIds(IEnumerable<long> ids);
-        Task<bool> TurmaPossuiAvaliacaoNoPeriodo(long turmaId, long periodoEscolarId);
+        Task<bool> TurmaPossuiAvaliacaoNoPeriodo(long turmaId, long periodoEscolarId, long? componenteCurricularCodigo);
         Task<IEnumerable<AtividadeAvaliativa>> ListarPorTurmaDisciplinaPeriodo(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo);
         Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular);
         Task<AtividadeAvaliativa> ObterPorAtividadeClassroomId(long atividadeClassroomId);

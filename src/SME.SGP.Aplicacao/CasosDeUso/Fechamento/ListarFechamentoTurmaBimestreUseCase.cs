@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao
                                                            componenteCurricularCodigo.ToString(), turmaPossuiFrequenciaRegistrada, componenteCurricularSelecionado, disciplinasRegencia,
                                                            periodosEscolares, usuarioAtual, alunosComAnotacao);
 
-                fechamentoNotaConceitoTurma.PossuiAvaliacao = await mediator.Send(new TurmaPossuiAvaliacaoNoPeriodoQuery(turma.Id, periodoAtual.Id));
+                fechamentoNotaConceitoTurma.PossuiAvaliacao = await mediator.Send(new TurmaPossuiAvaliacaoNoPeriodoQuery(turma.Id, periodoAtual.Id, componenteCurricularCodigo));
                 fechamentoNotaConceitoTurma.PeriodoEscolarId = periodoAtual.Id;
             }
             else if (bimestre == 0)
