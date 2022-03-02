@@ -13,8 +13,8 @@ namespace SME.SGP.Aplicacao
 
         public ObterPeriodoEscolarAtualQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioTurmaConsulta repositorioTurmaConsulta)
         {
-            _repositorioPeriodoEscolar = repositorioPeriodoEscolar;
-            _repositorioTurmaConsulta = repositorioTurmaConsulta;
+            _repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            _repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
         }
         public async Task<PeriodoEscolar> Handle(ObterPeriodoEscolarAtualQuery request, CancellationToken cancellationToken)
         {
