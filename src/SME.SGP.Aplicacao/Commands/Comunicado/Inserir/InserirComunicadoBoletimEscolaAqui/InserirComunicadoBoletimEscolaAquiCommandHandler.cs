@@ -78,6 +78,7 @@ namespace SME.SGP.Aplicacao
             comunicado.Semestre = request.Semestre;
             comunicado.AdicionarTurma(request.Turma);
             comunicado.AdicionarAluno(request.Aluno);
+            comunicado.CodigoArquivo = request.CodigoArquivo;
         }
         private string FormatarMensagem(string urlNotificacao, int anoLetivo, Guid CodigoArquivo, string nomeAluno)
         {
