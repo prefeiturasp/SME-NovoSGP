@@ -14,11 +14,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Relatorios.ObterDataCriacaoRelatorio
             bool relatorioExiste = false;
             const int tempoParaExclusaoDoRelatorio = 24;
             var dataCriacaoRelatorio = await mediator.Send(new ObterDataCriacaoRelatorioPorCodigoQuery(codigoRelatorio));
-            var tempoEmHorasDaCriacao = CalcularTempoEmHoras(dataCriacaoRelatorio.CriadoEm);
+            if (dataCriacaoRelatorio != null)
+            {
+                var tempoEmHorasDaCriacao = CalcularTempoEmHoras(dataCriacaoRelatorio.CriadoEm);
 
-            if (tempoEmHorasDaCriacao < tempoParaExclusaoDoRelatorio)
-                relatorioExiste = true;
-
+                if (tempoEmHorasDaCriacao < tempoParaExclusaoDoRelatorio)
+                    relatorioExiste = true;
+            }
             return relatorioExiste;
         }
 
