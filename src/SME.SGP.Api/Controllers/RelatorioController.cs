@@ -243,7 +243,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("relatorio-existe")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> VerificarSeRelatorioExiste(Guid codigoRelatorio, [FromServices] IObterDataCriacaoRelatorioUseCase useCase)
+        public async Task<IActionResult> VerificarSeRelatorioExiste([FromQuery] Guid codigoRelatorio, [FromServices] IObterDataCriacaoRelatorioUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoRelatorio));
         }
