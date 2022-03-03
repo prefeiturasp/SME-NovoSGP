@@ -12,10 +12,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Relatorios.ObterDataCriacaoRelatorio
         public async Task<bool> Executar(Guid codigoRelatorio)
         {
             bool relatorioExiste = false;
+            var tempoParaExclusaoDoRelatorio = 24;
             var dataCriacaoRelatorio = await mediator.Send(new ObterDataCriacaoRelatorioPorCodigoQuery(codigoRelatorio));
             var tempoEmHorasDaCriacao = CalcularTempoEmHoras(dataCriacaoRelatorio.CriadoEm);
 
-            if (tempoEmHorasDaCriacao < 24)
+            if (tempoEmHorasDaCriacao < tempoParaExclusaoDoRelatorio)
                 relatorioExiste = true;
 
             return relatorioExiste;
