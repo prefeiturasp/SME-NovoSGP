@@ -37,8 +37,6 @@ namespace SME.SGP.Dominio
         public string SeriesResumidas { get; set; }
         public long? TipoCalendarioId { get; set; }
         public long? EventoId { get; set; }
-        public Guid? CodigoArquivo { get; set; }
-
         public void AdicionarAluno(ComunicadoAluno aluno)
         {
             if (Id > 0)
