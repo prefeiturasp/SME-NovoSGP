@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Relatorios.ObterDataCriacaoRelatorioPorCodigo
+namespace SME.SGP.Aplicacao
 {
     public class ObterDataCriacaoRelatorioPorCodigoQueryHandler : IRequestHandler<ObterDataCriacaoRelatorioPorCodigoQuery, DataCriacaoRelatorioDto>
     {
