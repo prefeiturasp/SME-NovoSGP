@@ -103,14 +103,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterNotasPorBimestresUeAlunoTurmaUseCase.Executar(new NotaConceitoPorBimestresAlunoTurmaDto(ueCodigo, turmaCodigo, alunoCodigo, bimestres)));
         }
 
-        [HttpGet("turmas/{turmaId}/periodo-escolar/{periodoEscolarId}/alunos/{alunoCodigo}")]
+        [HttpGet("turmas/{turmaId}/periodo-escolar/{periodoEscolarId}/alunos/{alunoCodigo}/componentes-curriculares/{componenteCurricular}")]
         [ProducesResponseType(typeof(IEnumerable<AvaliacaoNotaAlunoDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Authorize("Bearer")]
-        public async Task<IActionResult> ObterNotasAvaliacoesPorTurmaBimestreAluno(long turmaId, long periodoEscolarId, string alunoCodigo, [FromServices] IObterAtividadesNotasAlunoPorTurmaPeriodoUseCase useCase)
+        public async Task<IActionResult> ObterNotasAvaliacoesPorTurmaBimestreAluno(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular, [FromServices] IObterAtividadesNotasAlunoPorTurmaPeriodoUseCase useCase)
         {
-            var avaliacoes = await useCase.Executar(new FiltroTurmaAlunoPeriodoEscolarDto(turmaId, periodoEscolarId, alunoCodigo));
+            var avaliacoes = await useCase.Executar(new FiltroTurmaAlunoPeriodoEscolarDto(turmaId, periodoEscolarId, alunoCodigo, componenteCurricular));
 
             if (avaliacoes is null)
                 return NoContent();

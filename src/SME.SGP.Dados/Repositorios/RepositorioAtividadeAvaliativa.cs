@@ -582,19 +582,24 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { atividadeId });
         }
 
-        public async Task<bool> TurmaPossuiAvaliacaoNoPeriodo(long turmaId, long periodoEscolarId)
+        public async Task<bool> TurmaPossuiAvaliacaoNoPeriodo(long turmaId, long periodoEscolarId, long? componenteCurricularCodigo)
         {
             var query = @"select 1 
                         from atividade_avaliativa aa 
+                        inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = aa.id
                         inner join turma t on t.turma_id = aa.turma_id 
                         inner join periodo_escolar pe on aa.data_avaliacao between pe.periodo_inicio and pe.periodo_fim 
-                        where t.id = @turmaId
-                          and pe.id = @periodoEscolarId";
+                        where not aa.excluido
+                          and t.id = @turmaId
+                          and pe.id = @periodoEscolarId ";
 
-            return (await database.Conexao.QueryAsync(query, new { turmaId, periodoEscolarId })).Any();
+            if (componenteCurricularCodigo.HasValue)
+                query += " and aad.disciplina_id = @componenteCurricularCodigo";
+
+            return (await database.Conexao.QueryAsync(query, new { turmaId, periodoEscolarId, componenteCurricularCodigo = componenteCurricularCodigo.ToString()  })).Any();
         }
 
-        public Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo)
+        public Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular)
         {
             var query = @"SELECT aa.nome_avaliacao as Nome
 	                        , aa.data_avaliacao as data
@@ -602,13 +607,15 @@ namespace SME.SGP.Dados.Repositorios
                           FROM atividade_avaliativa aa
                          INNER JOIN turma t ON t.turma_id = aa.turma_id
                          INNER JOIN periodo_escolar pe ON aa.data_avaliacao between pe.periodo_inicio and pe.periodo_fim
-                          left join notas_conceito nc on nc.atividade_avaliativa = aa.id
+                         INNER JOIN atividade_avaliativa_disciplina aad ON aad.atividade_avaliativa_id = aa.id
+                          left join notas_conceito nc on nc.atividade_avaliativa = aa.id and nc.aluno_id = @alunoCodigo
                          WHERE NOT aa.excluido
                            AND t.id = @turmaId
                            and pe.id = @periodoEscolarId
-                           and nc.aluno_id = @alunoCodigo";
+                           and aad.disciplina_id = @componenteCurricular
+                        order by aa.data_avaliacao";
 
-            return database.Conexao.QueryAsync<AvaliacaoNotaAlunoDto>(query, new { turmaId, periodoEscolarId, alunoCodigo });
+            return database.Conexao.QueryAsync<AvaliacaoNotaAlunoDto>(query, new { turmaId, periodoEscolarId, alunoCodigo, componenteCurricular });
         }
     }
 }

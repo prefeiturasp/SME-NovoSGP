@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                 var anosCJ = await mediator.Send(new ObterAnosAtribuicaoCJQuery(login, consideraHistorico));
                 if (anosCJ.Any())
                     anosLetivos.AddRange(anosCJ);
-                
+
             }
             anosLetivos.Add(DateTime.Now.Year);
             return anosLetivos.Distinct().ToList();
@@ -171,9 +171,8 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
             var anosInfantilDesconsiderar = !consideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(anoLetivo, Modalidade.EducacaoInfantil)) : null;
-
+           
             var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
-
             return OrdernarTurmasItinerario(result);
         }
 

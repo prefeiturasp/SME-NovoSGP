@@ -200,6 +200,9 @@ namespace SME.SGP.Aplicacao
             {
                 var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(codigoTurma, usuario.Login, usuario.PerfilAtual);
 
+                if (turma.ModalidadeCodigo == Modalidade.EJA)
+                    componentesCurriculares = RemoverEdFisicaEJA(componentesCurriculares);
+
                 disciplinasDto = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(componentesCurriculares.Select(a => a.Codigo).ToArray()))?.OrderBy(c => c.Nome)?.ToList();
 
                 disciplinasDto.ForEach(d =>
@@ -216,6 +219,9 @@ namespace SME.SGP.Aplicacao
 
             return await TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia, codigoTurma, usuario.EhProfessorCj());
         }
+
+        private IEnumerable<ComponenteCurricularEol> RemoverEdFisicaEJA(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
+            => componentesCurriculares.Where(c => c.Codigo != 6);
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo)
         {

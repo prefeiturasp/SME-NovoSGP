@@ -24,7 +24,13 @@ namespace SME.SGP.Dados.Repositorios
                                 cc.id as CodigoComponenteCurricular,
                                 cc.area_conhecimento_id as AreaConhecimentoId,
                                 cc.componente_curricular_pai_id as CdComponenteCurricularPai,
-                                coalesce(cc.descricao_sgp,cc.descricao) as Nome,
+                                case                     
+                                when (cc.descricao_sgp is not null and cc.descricao_sgp  != '' and cc.descricao_sgp != ' ')
+                                then
+                                	cc.descricao_sgp
+                                else
+                                 	cc.descricao 
+                                end as Nome,
                                 descricao_infantil as NomeComponenteInfantil,
                                 cc.eh_base_nacional as EhBaseNacional,
                                 cc.eh_compartilhada as Compartilhada,
