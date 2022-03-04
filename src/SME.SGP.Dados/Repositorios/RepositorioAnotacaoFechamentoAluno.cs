@@ -56,6 +56,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select fa.aluno_codigo  
                           from fechamento_aluno fa 
+                        inner join anotacao_fechamento_aluno afa on afa.fechamento_aluno_id = fa.id
                          where not fa.excluido 
                            and fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId";
 

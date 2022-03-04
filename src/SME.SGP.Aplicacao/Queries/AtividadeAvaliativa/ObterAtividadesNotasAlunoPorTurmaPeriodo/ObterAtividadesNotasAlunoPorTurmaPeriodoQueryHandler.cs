@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public Task<IEnumerable<AvaliacaoNotaAlunoDto>> Handle(ObterAtividadesNotasAlunoPorTurmaPeriodoQuery request, CancellationToken cancellationToken)
-            => repositorioAtividadeAvaliativa.ObterAtividadesNotasAlunoPorTurmaPeriodo(request.TurmaId, request.PeriodoEscolarId, request.AlunoCodigo);
+            => repositorioAtividadeAvaliativa.ObterAtividadesNotasAlunoPorTurmaPeriodo(request.TurmaId, request.PeriodoEscolarId, request.AlunoCodigo, request.ComponenteCurricular);
     }
 }

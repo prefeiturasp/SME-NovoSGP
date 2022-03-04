@@ -7,14 +7,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterMatriculasAlunoPorCodigoEAnoQuery : IRequest<IEnumerable<AlunoPorTurmaResposta>>
     {
-        public ObterMatriculasAlunoPorCodigoEAnoQuery(string codigoAluno, int anoLetivo)
+        public ObterMatriculasAlunoPorCodigoEAnoQuery(string codigoAluno, int anoLetivo, bool historico = false, bool filtrarSituacao = true)
         {
             CodigoAluno = codigoAluno;
             AnoLetivo = anoLetivo;
+            Historico = historico;
+            FiltrarSituacao = filtrarSituacao;
         }
 
         public string CodigoAluno { get; }
         public int AnoLetivo { get; }
+        public bool Historico { get; set; }
+        public bool FiltrarSituacao { get; set; }
     }
 
     public class ObterMatriculasAlunoPorCodigoEAnoQueryValidator : AbstractValidator<ObterMatriculasAlunoPorCodigoEAnoQuery>

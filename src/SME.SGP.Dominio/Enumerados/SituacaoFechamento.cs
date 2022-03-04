@@ -14,6 +14,9 @@ namespace SME.SGP.Dominio
         ProcessadoComPendencias = 2,
 
         [Display(Name = "Processado com sucesso")]
-        ProcessadoComSucesso = 3
+        ProcessadoComSucesso = 3,
+
+        [Display(Name = "Processado com erro")]
+        ProcessadoComErro = 4,
     }
 }

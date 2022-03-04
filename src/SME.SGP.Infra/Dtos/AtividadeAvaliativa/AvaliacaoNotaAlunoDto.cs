@@ -6,6 +6,6 @@ namespace SME.SGP.Infra
     {
         public string Nome { get; set; }
         public DateTime Data { get; set; }
-        public string NotaConceito { get; set; }
+        public double? NotaConceito { get; set; }
     }
 }
