@@ -48,7 +48,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact]
         public async Task Consultar_Relatorio_Nao_Encontrado_Na_Base()
         {
-            mediator.Setup(a => a.Send(It.IsAny<ObterDataCriacaoRelatorioPorCodigoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new DataCriacaoRelatorioDto());
+            DataCriacaoRelatorioDto dto = null;
+            mediator.Setup(a => a.Send(It.IsAny<ObterDataCriacaoRelatorioPorCodigoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(dto);
             var retorno = await useCase.Executar(Guid.NewGuid());
             Assert.False(retorno);
         }
