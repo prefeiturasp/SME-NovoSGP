@@ -48,11 +48,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact]
         public async Task Consultar_Relatorio_Nao_Encontrado_Na_Base()
         {
-            var relatorioCorrelacao = new DataCriacaoRelatorioDto
-            {
-                CriadoEm = DateTime.Now,
-            };
-
             var retorno = await useCase.Executar(Guid.NewGuid());
 
             Assert.False(retorno);
