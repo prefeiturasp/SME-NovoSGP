@@ -38,10 +38,6 @@ namespace SME.SGP.Aplicacao
 
             var resposta = await httpClient.PostAsync("v1/notificacao", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
-            var retorno = string.Concat(resposta.RequestMessage.RequestUri.AbsoluteUri, "\n", resposta.Content.ReadAsStringAsync());
-
-            await mediator.Send(new SalvarLogViaRabbitCommand($"Retorno endpoint criação comunicado: {retorno}", LogNivel.Informacao, LogContexto.Comunicado));
-
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 return true;
             else
