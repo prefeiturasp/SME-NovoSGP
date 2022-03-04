@@ -199,7 +199,7 @@ namespace SME.SGP.Dominio
 
             possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilCJInfantil() && !possuiTurmaAtiva;
             if (possuiPerfilPrioritario)
-                return Dominio.Perfis.PERFIL_AD;
+                return Dominio.Perfis.PERFIL_CJ_INFANTIL;
 
             possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilComunicadosUe() && !possuiTurmaAtiva;
             if (possuiPerfilPrioritario)
