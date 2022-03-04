@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Consultar_Relatorio_Nao_Encontrado_Na_Base()
         {
             var retorno = await useCase.Executar(Guid.NewGuid());
-
+            mediator.Setup(a => a.Send(It.IsAny<ObterDataCriacaoRelatorioPorCodigoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new DataCriacaoRelatorioDto());
             Assert.False(retorno);
         }
     }
