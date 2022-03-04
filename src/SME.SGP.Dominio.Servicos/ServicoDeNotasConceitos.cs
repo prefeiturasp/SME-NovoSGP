@@ -101,29 +101,37 @@ namespace SME.SGP.Dominio
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
         {
-            turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId);
+            turma = await repositorioTurma
+                .ObterTurmaComUeEDrePorCodigo(turmaId);
+
             if (turma == null)
                 throw new NegocioException($"Turma com código [{turmaId}] não localizada");
 
-            var idsAtividadesAvaliativas = notasConceitos.Select(x => x.AtividadeAvaliativaID);
+            var idsAtividadesAvaliativas = notasConceitos
+                .Select(x => x.AtividadeAvaliativaID);
 
-            var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
+            var atividadesAvaliativas = repositorioAtividadeAvaliativa
+                .ListarPorIds(idsAtividadesAvaliativas);
 
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turmaId);
+            var alunos = await servicoEOL
+                .ObterAlunosPorTurma(turmaId, true);
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
 
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
-
+            var usuario = await servicoUsuario
+                .ObterUsuarioLogado();
 
             await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId, usuario.EhGestorEscolar());
 
             var entidadesSalvar = new List<NotaConceito>();
 
-            var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
+            var notasPorAvaliacoes = notasConceitos
+                .GroupBy(x => x.AtividadeAvaliativaID);
 
-            var dataConsiderada = atividadesAvaliativas.Any() ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao : DateTime.Today;
+            var dataConsiderada = atividadesAvaliativas.Any() ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao.Date : DateTime.Today;
+
+            alunos = alunos.Where(a => a.EstaAtivo(dataConsiderada) || (a.Inativo && a.DataSituacao.Date >= dataConsiderada));
 
             if (!usuario.EhGestorEscolar())
                 await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, dataConsiderada, usuario);
@@ -131,12 +139,15 @@ namespace SME.SGP.Dominio
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
                 var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-
                 entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf, disciplinaId, usuario, turma));
             }
 
             SalvarNoBanco(entidadesSalvar);
-            var alunosId = alunos.Select(a => a.CodigoAluno).ToList();
+
+            var alunosId = alunos
+                .Select(a => a.CodigoAluno)
+                .ToList();
+
             await validarMediaAlunos(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId);
         }
 
