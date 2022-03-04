@@ -240,7 +240,7 @@ namespace SME.SGP.Api.Controllers
         }
 
 
-        [HttpGet("relatorio-existe")]
+        [HttpGet("existe")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> VerificarSeRelatorioExiste([FromQuery] Guid codigoRelatorio, [FromServices] IObterDataCriacaoRelatorioUseCase useCase)

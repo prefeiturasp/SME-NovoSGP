@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.Relatorios.ObterDataCriacaoRelatorio
+namespace SME.SGP.Aplicacao
 {
     public class ObterDataCriacaoRelatorioUseCase : AbstractUseCase, IObterDataCriacaoRelatorioUseCase
     {
