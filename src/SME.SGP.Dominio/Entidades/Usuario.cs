@@ -187,7 +187,7 @@ namespace SME.SGP.Dominio
 
             var possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL && possuiTurmaInfantilAtiva);
             if (possuiPerfilPrioritario)
-                return Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
+                return Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL; 
 
             possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR && possuiTurmaAtiva);
             if (possuiPerfilPrioritario)
