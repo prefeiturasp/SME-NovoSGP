@@ -10,6 +10,7 @@ namespace SME.SGP.Dominio
         Task ExcluirPorAno(int anoLetivo);
         Task Excluir(ConsolidacaoRegistrosPedagogicos consolidacao);
         Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> GerarRegistrosPedagogicos(long ueId, int anoLetivo);
+        Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> GerarRegistrosPedagogicosComSeparacaoDiarioBordo(long ueId, int anoLetivo);
         Task<long> Inserir(ConsolidacaoRegistrosPedagogicos consolidacao);
     }
 }

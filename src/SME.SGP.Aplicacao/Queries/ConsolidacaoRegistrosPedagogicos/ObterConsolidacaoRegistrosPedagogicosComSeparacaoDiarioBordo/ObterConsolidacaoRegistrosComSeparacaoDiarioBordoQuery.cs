@@ -1,16 +1,13 @@
-﻿using FluentValidation;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using FluentValidation;
+using MediatR;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterConsolidacaoRegistrosPedagogicosQuery : IRequest<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>>
+    public class ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery : IRequest<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>>
     {
-        public ObterConsolidacaoRegistrosPedagogicosQuery(long ueId, int anoLetivo)
+        public ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery(long ueId, int anoLetivo)
         {
             UeId = ueId;
             AnoLetivo = anoLetivo;
@@ -20,9 +17,9 @@ namespace SME.SGP.Aplicacao
         public int AnoLetivo { get; set; }
     }
 
-    public class ObterConsolidacaoRegistrosPedagogicosQueryValidator : AbstractValidator<ObterConsolidacaoRegistrosPedagogicosQuery>
+    public class ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQueryValidator : AbstractValidator<ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery>
     {
-        public ObterConsolidacaoRegistrosPedagogicosQueryValidator()
+        public ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQueryValidator()
         {
             RuleFor(a => a.UeId)
                 .NotEmpty()
