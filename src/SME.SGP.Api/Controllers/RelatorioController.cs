@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Api.Middlewares;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
@@ -17,6 +18,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/relatorios")]
     [Authorize("Bearer")]
+    [ChaveIntegracaoSgpApi]
     public class RelatorioController : ControllerBase
     {
         [HttpGet("{codigoCorrelacao}")]
