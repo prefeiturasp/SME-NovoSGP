@@ -149,7 +149,7 @@ namespace SME.SGP.Dominio
 
         CJInfantilPodeEditarAulaTitular = 84,
 
-        SeprarDiarioBordoPorComponente = 85,
+        SepararDiarioBordoPorComponente = 85,
 
         //Sistema
         HabilitarServicosEmBackground = 100,

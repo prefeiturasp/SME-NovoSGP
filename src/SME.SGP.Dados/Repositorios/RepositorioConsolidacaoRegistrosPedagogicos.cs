@@ -130,7 +130,7 @@ namespace SME.SGP.Dados
                                               left outer join diario_bordo db on (db.aula_id = a.id
                                                                              and not db.excluido)
                                         where not a.excluido
-                                          and t.ue_ie = @ueId
+                                          and t.ue_id = @ueId
                                           and t.ano_letivo = @anoLetivo
                                     ),
                                     componentePai as (

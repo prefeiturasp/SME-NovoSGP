@@ -18,11 +18,9 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<FiltroConsolidacaoRegistrosPedagogicosPorUeDto>();
 
-            var separarDiarioBordoPorComponente = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.SeprarDiarioBordoPorComponente, filtro.AnoLetivo));
-
             IEnumerable<ConsolidacaoRegistrosPedagogicosDto> consolidacoes;
 
-            if (separarDiarioBordoPorComponente.Ano == filtro.AnoLetivo)
+            if (await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.SepararDiarioBordoPorComponente, filtro.AnoLetivo)) != null)
                 consolidacoes = await mediator.Send(new ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery(filtro.UeId, filtro.AnoLetivo));
             else
                 consolidacoes = await mediator.Send(new ObterConsolidacaoRegistrosPedagogicosQuery(filtro.UeId, filtro.AnoLetivo));
