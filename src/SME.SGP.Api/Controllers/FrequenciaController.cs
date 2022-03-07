@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Api.Middlewares;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
@@ -17,6 +18,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Authorize("Bearer")]
     [Route("api/v1/calendarios")]
+    [ChaveIntegracaoSgpApi]
     public class FrequenciaController : ControllerBase
     {
         private readonly IMediator mediator;
