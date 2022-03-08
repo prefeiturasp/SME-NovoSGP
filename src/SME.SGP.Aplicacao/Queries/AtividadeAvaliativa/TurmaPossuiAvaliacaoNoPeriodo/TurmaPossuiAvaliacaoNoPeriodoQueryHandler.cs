@@ -16,6 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public Task<bool> Handle(TurmaPossuiAvaliacaoNoPeriodoQuery request, CancellationToken cancellationToken)
-           => repositorioAtividadeAvaliativa.TurmaPossuiAvaliacaoNoPeriodo(request.TurmaId, request.PeriodoEscolarId);
+           => repositorioAtividadeAvaliativa.TurmaPossuiAvaliacaoNoPeriodo(request.TurmaId, request.PeriodoEscolarId, request.ComponenteCurricularCodigo);
     }
 }
