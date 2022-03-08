@@ -24,12 +24,18 @@ namespace SME.SGP.Aplicacao
             if (filtro.PlanoAEEId.HasValue && filtro.PlanoAEEId > 0)
             {
                 var entidadePlano = await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
-                var anoLetivo = entidadePlano.Turma.AnoLetivo;
+                int anoLetivo = 0;
 
                 if (entidadePlano.AlteradoEm?.Year != null)
                     anoLetivo = (int)entidadePlano.AlteradoEm?.Year;
 
                 var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, false));
+
+                if (alunoPorTurmaResposta == null)
+                {
+                    anoLetivo = entidadePlano.Turma.AnoLetivo;
+                    alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.EhTurmaHistorica, false));
+                }
 
                 if (alunoPorTurmaResposta == null)
                     throw new NegocioException("Aluno não localizado");
@@ -102,7 +108,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            if(usuario == null)
+            if (usuario == null)
                 throw new NegocioException("Usuário não localizado");
 
             if (usuario.EhPerfilProfessor())
