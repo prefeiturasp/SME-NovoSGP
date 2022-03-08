@@ -14,11 +14,13 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioNotificacaoConsulta> repositorioNotificacaoConsulta;
         private readonly Mock<IRepositorioNotificacao> repositorioNotificacao;
         private readonly Mock<IRepositorioUsuario> repositorioUsuario;
+        private readonly Mock<IObterDataCriacaoRelatorioUseCase> obterDataCriacaoRelatorio;
         private readonly Mock<IMediator> mediator;
 
         public ConsultasNotificacaoTeste()
         {
             repositorioNotificacao = new Mock<IRepositorioNotificacao>();
+            obterDataCriacaoRelatorio = new Mock<IObterDataCriacaoRelatorioUseCase>();
             repositorioNotificacaoConsulta = new Mock<IRepositorioNotificacaoConsulta>();
 
             repositorioUsuario = new Mock<IRepositorioUsuario>();
@@ -28,13 +30,13 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             var obj = new HttpContextAccessor();
             obj.HttpContext = context;
 
-            consultasNotificacao = new ConsultasNotificacao(repositorioNotificacao.Object, new ContextoHttp(obj), mediator.Object);
+            consultasNotificacao = new ConsultasNotificacao(repositorioNotificacao.Object, new ContextoHttp(obj), mediator.Object, obterDataCriacaoRelatorio.Object);
         }
 
         [Fact(DisplayName = "DeveDispararExcecaoAoInstanciarSemDependencias")]
         public void DeveDispararExcecaoAoInstanciarSemDependencias()
         {
-            Assert.Throws<ArgumentNullException>(() => new ConsultasNotificacao(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new ConsultasNotificacao(null, null, null,null));
         }
 
         [Fact(DisplayName = "ListarNotificacoesBasicaPorAnoLetivoRF")]
