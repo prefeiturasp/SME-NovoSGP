@@ -112,10 +112,9 @@ namespace SME.SGP.Dados
                                         rf.criado_em as RegistroFrequenciaCriadoEm,
                                         pa.id as PlanoAulaId,
                                         pa.criado_em as PlanoAulaCriadoEm,
-                                        db.id as DiarioBordoId,
-                                        db.criado_em as DiarioBordoCriadoEm,
                                         a.professor_rf as RFProfessor,
-                                        t.modalidade_codigo as ModalidadeCodigo 
+                                        t.modalidade_codigo as ModalidadeCodigo,
+                                        a.*
                                     from aula a
                                         join periodo_escolar pe on (pe.tipo_calendario_id = a.tipo_calendario_id)
                                         join turma t on (t.turma_id = a.turma_id)
@@ -123,8 +122,7 @@ namespace SME.SGP.Dados
                                                                         and  not rf.excluido)
                                         left join plano_aula pa on (pa.aula_id = a.id
                                                                 and  not pa.excluido)
-                                        left join diario_bordo db on (db.aula_id = a.id
-                                                                    and  not db.excluido)
+
                                     where not a.excluido
                                     and t.ue_id = @ueId
                                     and t.ano_letivo = @anoLetivo
@@ -157,43 +155,38 @@ namespace SME.SGP.Dados
                                     count(cc.AulaId) filter (where cc.RegistroFrequenciaId is null) as FrequenciasPendentes,
                                     max(cc.RegistroFrequenciaCriadoEm) as DataUltimaFrequencia,
                                     max(cc.PlanoAulaCriadoEm) as DataUltimoPlanoAula,
-                                    max(cc.DiarioBordoCriadoEm) as DataUltimoDiarioBordo,
-                                    count(cc.ComponenteCurricularId) filter (where cc.DiarioBordoId is null) as DiarioBordoPendentes,
+                                    max(db.criado_em) as DataUltimoDiarioBordo,
+                                    count(cc.ComponenteCurricularId) filter (where db.id is null) as DiarioBordoPendentes,
                                     count(cc.AulaId) filter (where cc.PlanoAulaId is null) as PlanoAulaPendentes,
-                                    cc.RFProfessor,
-                                    cc.ModalidadeCodigo 
+                                    null as RFProfessor,
+                                    cc.ModalidadeCodigo
                                 from componentesCurricularesInfantisAulas cc
+                                    left join diario_bordo db on (db.aula_id = cc.AulaId
+                                                                and  not db.excluido)
                                 group by cc.PeriodoEscolarId, cc.Bimestre, cc.TurmaId, cc.TurmaCodigo, cc.AnoLetivo, 
-                                    cc.ComponenteCurricularId, cc.DisciplinaId, cc.RFProfessor, cc.ModalidadeCodigo  
-
+                                    cc.ComponenteCurricularId, cc.DisciplinaId, cc.RFProfessor, cc.ModalidadeCodigo                                
+                                
                                 union all
 
-                                select pe.id as PeriodoEscolarId,
-                                    pe.bimestre as Bimestre,
-                                    t.id as TurmaId,
-                                    t.turma_id as TurmaCodigo,
-                                    t.ano_letivo as AnoLetivo,
-                                    cast(a.disciplina_id as int8) as ComponenteCurricularId,
-                                    count(a.id) as QuantidadeAulas,
-                                    count(a.id) filter (where rf.id is null) as FrequenciasPendentes,
-                                    max(rf.criado_em) as DataUltimaFrequencia,
-                                    max(pa.criado_em) as DataUltimoPlanoAula,
+                                select a.PeriodoEscolarId,
+                                    a.Bimestre,
+                                    a.TurmaId,
+                                    a.TurmaCodigo,
+                                    a.AnoLetivo,
+                                    a.DisciplinaId,
+                                    count(a.AulaId) as QuantidadeAulas,
+                                    count(a.AulaId) filter (where a.RegistroFrequenciaId is null) as FrequenciasPendentes,
+                                    max(a.RegistroFrequenciaCriadoEm) as DataUltimaFrequencia,
+                                    max(a.PlanoAulaCriadoEm) as DataUltimoPlanoAula,
                                     null::timestamp as DataUltimoDiarioBordo,
                                     0 as DiarioBordoPendentes,
-                                    count(a.id) filter (where pa.id is null) as PlanoAulaPendentes,
-                                    a.professor_rf as RFProfessor,
-                                    t.modalidade_codigo as ModalidadeCodigo 
-                                from aula a
-                                    join periodo_escolar pe on (pe.tipo_calendario_id = a.tipo_calendario_id)
-                                    join turma t on (t.turma_id = a.turma_id)
-                                    left join registro_frequencia rf on (rf.aula_id = a.id
-                                                                    and  not rf.excluido)
-                                    left join plano_aula pa on (pa.aula_id = a.id
-                                                            and  not pa.excluido)
-                                where not a.excluido
-                                and t.ue_id = @ueId
-                                and t.ano_letivo = @anoLetivo
-                                group by pe.id, pe.bimestre, t.id, a.disciplina_id, a.professor_rf, t.modalidade_codigo";
+                                    count(a.AulaId) filter (where a.PlanoAulaId is null) as PlanoAulaPendentes,
+                                    a.RFProfessor,
+                                    a.ModalidadeCodigo 
+                                from aulas a
+                                where a.ModalidadeCodigo <> 1
+                                group by a.PeriodoEscolarId, a.Bimestre, a.TurmaId, a.TurmaCodigo, a.AnoLetivo,
+                                    a.DisciplinaId, a.RFProfessor, a.ModalidadeCodigo";
 
             return await database.Conexao.QueryAsync<ConsolidacaoRegistrosPedagogicosDto>(query, new { ueId, anoLetivo });
         }
