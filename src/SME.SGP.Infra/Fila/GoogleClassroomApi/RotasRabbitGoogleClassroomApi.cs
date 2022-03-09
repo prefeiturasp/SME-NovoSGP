@@ -6,7 +6,7 @@
         public static string FilaGoogleSync => "googleclass.sync.geral";
 
         #region GSA
-        public static string FilaGsaSync => "googleclass.sync.comparativo";
+        public static string FilaGsaSync => "googleclass.gsa.sync";
         #endregion
 
         #region Professores
