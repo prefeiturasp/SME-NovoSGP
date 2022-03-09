@@ -20,7 +20,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> Handle(ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorio.GerarRegistrosPedagogicosComSeparacaoDiarioBordo(request.UeId, request.AnoLetivo);
+            
+            return await repositorio.GerarRegistrosPedagogicosComSeparacaoDiarioBordo(request.TurmaCodigo, request.AnoLetivo, request.ComponentesCurricularesIds);
         }
     }
 }

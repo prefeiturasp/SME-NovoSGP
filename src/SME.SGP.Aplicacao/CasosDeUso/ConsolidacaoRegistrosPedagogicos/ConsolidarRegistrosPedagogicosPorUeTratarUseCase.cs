@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -10,28 +11,50 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsolidarRegistrosPedagogicosPorUeTratarUseCase : AbstractUseCase, IConsolidarRegistrosPedagogicosPorUeTratarUseCase
     {
-        public ConsolidarRegistrosPedagogicosPorUeTratarUseCase(IMediator mediator) : base(mediator)
+        private readonly IRepositorioUeConsulta repositorioUe;
+
+        public ConsolidarRegistrosPedagogicosPorUeTratarUseCase(IMediator mediator, IRepositorioUeConsulta repositorioUe) : base(mediator)
         {
+            this.repositorioUe = repositorioUe;
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<FiltroConsolidacaoRegistrosPedagogicosPorUeDto>();
 
-            IEnumerable<ConsolidacaoRegistrosPedagogicosDto> consolidacoes;
+            var dataReferencia = filtro.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year
+                ? DateTimeExtension.HorarioBrasilia().Date
+                : new DateTime(filtro.AnoLetivo, 12, 31, 0, 0, 0, DateTimeKind.Utc);
+
+            var consolidacoes = Enumerable.Empty<ConsolidacaoRegistrosPedagogicosDto>();
 
             if (await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.SepararDiarioBordoPorComponente, filtro.AnoLetivo)) != null)
-                consolidacoes = await mediator.Send(new ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery(filtro.UeId, filtro.AnoLetivo));
+            {
+                var ue = await repositorioUe.ObterUePorId(filtro.UeId);
+                var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorUeQuery(ue.CodigoUe, dataReferencia));
+
+                var professoresTitularesAgrupadoTurma = professoresTitulares.GroupBy(c => c.TurmaId);
+
+                foreach (var agrupadoTurma in professoresTitularesAgrupadoTurma)
+                {
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarRegistrosPedagogicosPorTurmaTratar, 
+                        new FiltroConsolidacaoRegistrosPedagogicosPorTurmaDto(agrupadoTurma.Key.ToString(), filtro.AnoLetivo,
+                        professoresTitulares), new Guid(), null));
+                }
+            }
             else
+            {
                 consolidacoes = await mediator.Send(new ObterConsolidacaoRegistrosPedagogicosQuery(filtro.UeId, filtro.AnoLetivo));
 
-            if (consolidacoes.Any())
-            {
-                var consolidacaoCompleta = await AtribuiProfessorEConsolida(consolidacoes);
+                if (consolidacoes.Any())
+                {
+                    var consolidacaoCompleta = await AtribuiProfessorEConsolida(consolidacoes);
 
-                foreach (var consolidacao in consolidacaoCompleta.Distinct())
-                    await mediator.Send(new ConsolidarRegistrosPedagogicosCommand(consolidacao));
+                    foreach (var consolidacao in consolidacaoCompleta.Distinct())
+                        await mediator.Send(new ConsolidarRegistrosPedagogicosCommand(consolidacao));
+                }
             }
+
             return true;
         }
 
@@ -109,7 +132,6 @@ namespace SME.SGP.Aplicacao
                                         PeriodoEscolarId = consolidacao.PeriodoEscolarId,
                                         AnoLetivo = consolidacao.AnoLetivo,
                                         ComponenteCurricularId = consolidacao.ComponenteCurricularId,
-                                        ComponenteCurricular = consolidacao.ComponenteCurricular,
                                         QuantidadeAulas = consolidacao.QuantidadeAulas,
                                         FrequenciasPendentes = consolidacao.FrequenciasPendentes,
                                         DataUltimaFrequencia = consolidacao.DataUltimaFrequencia,
@@ -138,7 +160,6 @@ namespace SME.SGP.Aplicacao
                                             PeriodoEscolarId = consolidacao.PeriodoEscolarId,
                                             AnoLetivo = consolidacao.AnoLetivo,
                                             ComponenteCurricularId = consolidacao.ComponenteCurricularId,
-                                            ComponenteCurricular = consolidacao.ComponenteCurricular,
                                             QuantidadeAulas = quantidadeAulas,
                                             FrequenciasPendentes = frequenciasPendentes,
                                             DataUltimaFrequencia = dataUltimaFrequencia,
@@ -164,7 +185,6 @@ namespace SME.SGP.Aplicacao
                                     PeriodoEscolarId = bimestre,
                                     AnoLetivo = dadosConsolidadosTurma.AnoLetivo,
                                     ComponenteCurricularId = dadosProfessor.DisciplinaId,
-                                    ComponenteCurricular = string.Empty,
                                     QuantidadeAulas = 0,
                                     FrequenciasPendentes = 0,
                                     DataUltimaFrequencia = null,

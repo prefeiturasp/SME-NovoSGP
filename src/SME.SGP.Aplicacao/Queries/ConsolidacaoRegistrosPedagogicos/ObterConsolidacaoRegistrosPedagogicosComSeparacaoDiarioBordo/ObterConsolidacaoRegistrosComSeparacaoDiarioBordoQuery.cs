@@ -7,27 +7,33 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery : IRequest<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>>
     {
-        public ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery(long ueId, int anoLetivo)
+        public ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery(string turmaCodigo, int anoLetivo, long[] componentesCurricularesIds)
         {
-            UeId = ueId;
+            TurmaCodigo = turmaCodigo;
             AnoLetivo = anoLetivo;
+            ComponentesCurricularesIds = componentesCurricularesIds;
         }
 
-        public long UeId { get; }
+        public string TurmaCodigo { get; }
         public int AnoLetivo { get; set; }
+        public long[] ComponentesCurricularesIds { get; set; }
     }
 
     public class ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQueryValidator : AbstractValidator<ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery>
     {
         public ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQueryValidator()
         {
-            RuleFor(a => a.UeId)
+            RuleFor(a => a.TurmaCodigo)
                 .NotEmpty()
-                .WithMessage("O identificador da UE deve ser informado para consolidar os registros pedagógicos");
+                .WithMessage("O código da turma deve ser informado para consolidar os registros pedagógicos");
 
             RuleFor(a => a.AnoLetivo)
                 .NotEmpty()
                 .WithMessage("O ano letivo deve ser informado para consolidar os registros pedagógicos");
+
+            RuleFor(a => a.ComponentesCurricularesIds)
+                .NotEmpty()
+                .WithMessage("Os componentes curriculares devem ser informados para consolidar os registros pedagógicos.");
         }
     }
 }

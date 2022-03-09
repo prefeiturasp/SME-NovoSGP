@@ -98,7 +98,7 @@ namespace SME.SGP.Dados
             return (long)await database.Conexao.InsertAsync(consolidacao);
         }
 
-        public async Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> GerarRegistrosPedagogicosComSeparacaoDiarioBordo(long ueId, int anoLetivo)
+        public async Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> GerarRegistrosPedagogicosComSeparacaoDiarioBordo(string turmaCodigo, int anoLetivo, long[] componentesCurricularesIds)
         {
             const string query = @"with aulas as (
                                     select pe.id as PeriodoEscolarId,
@@ -124,7 +124,7 @@ namespace SME.SGP.Dados
                                                                 and  not pa.excluido)
 
                                     where not a.excluido
-                                    and t.ue_id = @ueId
+                                    and t.turma_id = @turmaCodigo
                                     and t.ano_letivo = @anoLetivo
                                 ),
                                 componentePai as (
@@ -144,6 +144,7 @@ namespace SME.SGP.Dados
                                         a.*
                                     from componentesCurricularesInfantis cc
                                         left join lateral (select * from aulas) a on true
+                                   where cc.componentecurricularid = Any(@componentesCurricularesIds)
                                 )
                                 select distinct cc.PeriodoEscolarId,
                                     cc.Bimestre,
@@ -188,7 +189,7 @@ namespace SME.SGP.Dados
                                 group by a.PeriodoEscolarId, a.Bimestre, a.TurmaId, a.TurmaCodigo, a.AnoLetivo,
                                     a.DisciplinaId, a.RFProfessor, a.ModalidadeCodigo";
 
-            return await database.Conexao.QueryAsync<ConsolidacaoRegistrosPedagogicosDto>(query, new { ueId, anoLetivo });
+            return await database.Conexao.QueryAsync<ConsolidacaoRegistrosPedagogicosDto>(query, new { turmaCodigo, anoLetivo, componentesCurricularesIds });
         }
     }
 }
