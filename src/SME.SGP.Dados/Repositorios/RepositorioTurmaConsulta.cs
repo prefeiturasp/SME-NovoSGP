@@ -382,7 +382,7 @@ namespace SME.SGP.Dados.Repositorios
         {
 
             var query = new StringBuilder(@"select distinct t.id as TurmaId,
-                                                     coalesce(nome_filtro,nome) as nome       
+                                                     coalesce(t.nome_filtro, t.nome) as nome       
                                                 from turma t 
                                                inner join ue on ue.id = t.ue_id
                                                inner join dre on dre.id = ue.dre_id
