@@ -127,7 +127,11 @@ namespace SME.SGP.Aplicacao.Commands
         private async Task<PlanoAEE> MapearParaEntidade(SalvarPlanoAeeCommand request)
         {
             if (request.PlanoAEEDto.Id.HasValue && request.PlanoAEEDto.Id > 0)
-                return await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
+            {
+                var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
+                planoAEE.TurmaId = request.TurmaId;
+                return planoAEE;
+            }
 
             return new PlanoAEE()
             {
