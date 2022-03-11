@@ -126,6 +126,7 @@ namespace SME.SGP.Dados
                                     where not a.excluido
                                     and t.turma_id = @turmaCodigo
                                     and t.ano_letivo = @anoLetivo
+                                    and a.data_aula >= pe.periodo_inicio and a.data_aula <= pe.periodo_fim
                                 ),
                                 componentePai as (
                                     select a.DisciplinaId 
