@@ -20,10 +20,11 @@ namespace SME.SGP.Aplicacao
         public async Task<BimestreDto> Executar(long turmaId)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+
             if (turma == null)
                 throw new NegocioException("A turma informada não foi encontrada");
 
-            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turma, DateTime.Now.Date));
+            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualQuery(turmaId, DateTime.Now.Date));
 
             return periodoEscolar == null ? null :
                 new BimestreDto() { Id = periodoEscolar.Id, Numero = periodoEscolar.Bimestre };
