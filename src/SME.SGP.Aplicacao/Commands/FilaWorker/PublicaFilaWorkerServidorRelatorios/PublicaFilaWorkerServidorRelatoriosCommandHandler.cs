@@ -41,12 +41,16 @@ namespace SME.SGP.Aplicacao
                 VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
             };
 
-            using var conexaoRabbit = factory.CreateConnection();
-            using IModel _channel = conexaoRabbit.CreateModel();
-            var props = _channel.CreateBasicProperties();
-            props.Persistent = true;
+            using (var conexaoRabbit = factory.CreateConnection())
+            {
+                using (IModel _channel = conexaoRabbit.CreateModel())
+                {
+                    var props = _channel.CreateBasicProperties();
+                    props.Persistent = true;
 
-            _channel.BasicPublish(ExchangeSgpRabbit.ServidorRelatorios, request.Fila, props, body);
+                    _channel.BasicPublish(ExchangeSgpRabbit.ServidorRelatorios, request.Fila, props, body);
+                }
+            }
         }
 
         private static byte[] FormataBodyWorker(PublicaFilaWorkerServidorRelatoriosCommand request)
