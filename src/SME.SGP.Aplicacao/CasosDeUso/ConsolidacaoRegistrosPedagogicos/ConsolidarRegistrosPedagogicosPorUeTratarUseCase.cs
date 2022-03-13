@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                 {
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarRegistrosPedagogicosPorTurmaTratar, 
                         new FiltroConsolidacaoRegistrosPedagogicosPorTurmaDto(agrupadoTurma.Key.ToString(), filtro.AnoLetivo,
-                        professoresTitulares), new Guid(), null));
+                        agrupadoTurma), new Guid(), null));
                 }
             }
             else
