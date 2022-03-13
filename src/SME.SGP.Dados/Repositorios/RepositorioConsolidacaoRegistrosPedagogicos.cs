@@ -75,20 +75,19 @@ namespace SME.SGP.Dados
                                     when max(db.criado_em) is not null or disciplina_id = '512' then 0
                                     else count(a.id) filter (where pa.id is null)
                                     end as PlanoAulaPendentes
-                                    , a.professor_rf as RFProfessor
+                                    , case when t.modalidade_codigo = 1 then '' else a.professor_rf end as RFProfessor
                                     , t.modalidade_codigo as ModalidadeCodigo
                                 from aula a
                                     left join diario_bordo db on db.aula_id = a.id and not db.excluido 
                                     inner join turma t on t.turma_id = a.turma_id 
                                     inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id 
-                                    inner join periodo_fechamento_bimestre pfb on pfb.periodo_escolar_id = pe.id 
-                                                and a.data_aula between pfb.inicio_fechamento and pfb.final_fechamento
+                                                                 and a.data_aula >= pe.periodo_inicio and a.data_aula <= pe.periodo_fim
                                     left join registro_frequencia rf on rf.aula_id = a.id and not rf.excluido 
                                     left join plano_aula pa on pa.aula_id = a.id and not pa.excluido 
                                 where not a.excluido 
                                 and t.ue_id = @ueId
-                                and t.ano_letivo = @anoLetivo
-                                group by pe.id, pe.bimestre, t.id, a.disciplina_id, a.professor_rf, t.modalidade_codigo";
+                                and t.ano_letivo = @anoLetivo and a.tipo_aula = 1
+                                group by pe.id, pe.bimestre, t.id, a.disciplina_id, case when t.modalidade_codigo = 1 then '' else a.professor_rf end, t.modalidade_codigo";
 
             return await database.Conexao.QueryAsync<ConsolidacaoRegistrosPedagogicosDto>(query, new { ueId, anoLetivo });
         }
@@ -116,7 +115,8 @@ namespace SME.SGP.Dados
                                         t.modalidade_codigo as ModalidadeCodigo,
                                         a.*
                                     from aula a
-                                        join periodo_escolar pe on (pe.tipo_calendario_id = a.tipo_calendario_id)
+                                        join periodo_escolar pe on (pe.tipo_calendario_id = a.tipo_calendario_id
+                                                                and a.data_aula >= pe.periodo_inicio and a.data_aula <= pe.periodo_fim)
                                         join turma t on (t.turma_id = a.turma_id)
                                         left join registro_frequencia rf on (rf.aula_id = a.id
                                                                         and  not rf.excluido)
@@ -125,8 +125,8 @@ namespace SME.SGP.Dados
 
                                     where not a.excluido
                                     and t.turma_id = @turmaCodigo
-                                    and t.ano_letivo = @anoLetivo
-                                    and a.data_aula >= pe.periodo_inicio and a.data_aula <= pe.periodo_fim
+                                    and t.ano_letivo = @anoLetivo 
+                                    and a.tipo_aula = 1
                                 ),
                                 componentePai as (
                                     select a.DisciplinaId 
@@ -142,7 +142,7 @@ namespace SME.SGP.Dados
                                 ),
                                 componentesCurricularesInfantisAulas as (
                                     select distinct cc.*,
-                                        a.*
+                                        a.*,null as RFProfessorInfantil
                                     from componentesCurricularesInfantis cc
                                         left join lateral (select * from aulas) a on true
                                    where cc.componentecurricularid = Any(@componentesCurricularesIds)
@@ -159,14 +159,14 @@ namespace SME.SGP.Dados
                                     max(cc.PlanoAulaCriadoEm) as DataUltimoPlanoAula,
                                     max(db.criado_em) as DataUltimoDiarioBordo,
                                     count(cc.ComponenteCurricularId) filter (where db.id is null) as DiarioBordoPendentes,
-                                    count(cc.AulaId) filter (where cc.PlanoAulaId is null) as PlanoAulaPendentes,
-                                    null as RFProfessor,
+                                    count(cc.AulaId) filter (where cc.PlanoAulaId is null and cc.ModalidadeCodigo != 1) as PlanoAulaPendentes,
+                                    cc.RFProfessorInfantil as RFProfessor,
                                     cc.ModalidadeCodigo
                                 from componentesCurricularesInfantisAulas cc
                                     left join diario_bordo db on (db.aula_id = cc.AulaId
                                                                 and  not db.excluido)
                                 group by cc.PeriodoEscolarId, cc.Bimestre, cc.TurmaId, cc.TurmaCodigo, cc.AnoLetivo, 
-                                    cc.ComponenteCurricularId, cc.DisciplinaId, cc.RFProfessor, cc.ModalidadeCodigo                                
+                                    cc.ComponenteCurricularId, cc.DisciplinaId, cc.RFProfessorInfantil, cc.ModalidadeCodigo                                
                                 
                                 union all
 
