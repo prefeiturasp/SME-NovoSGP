@@ -85,7 +85,7 @@ namespace SME.SGP.Dados
                                     left join registro_frequencia rf on rf.aula_id = a.id and not rf.excluido 
                                     left join plano_aula pa on pa.aula_id = a.id and not pa.excluido 
                                 where not a.excluido 
-                                and t.ue_id = @ueId
+                                and t.ue_id = @ueId and a.data_aula < NOW()
                                 and t.ano_letivo = @anoLetivo and a.tipo_aula = 1
                                 and a.data_aula < NOW()
                                 group by pe.id, pe.bimestre, t.id, a.disciplina_id, case when t.modalidade_codigo = 1 then '' else a.professor_rf end, t.modalidade_codigo";
