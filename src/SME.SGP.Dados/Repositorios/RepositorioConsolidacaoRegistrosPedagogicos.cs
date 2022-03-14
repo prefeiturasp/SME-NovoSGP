@@ -171,7 +171,7 @@ namespace SME.SGP.Dados
                                         count(distinct cc.AulaId) filter (where cc.RegistroFrequenciaId is null) as FrequenciasPendentes,
                                         max(cc.RegistroFrequenciaCriadoEm) as DataUltimaFrequencia,
                                         max(cc.PlanoAulaCriadoEm) as DataUltimoPlanoAula,
-                                        max(cd.criado_em) as DataUltimoDiarioBordo,
+                                        max(cd.criado_em) filter (where cd.id is not null) as DataUltimoDiarioBordo,
                                         count(distinct cd.AulaId) filter (where cd.id is null) as DiarioBordoPendentes,
                                         count(distinct cc.AulaId) filter (where cc.PlanoAulaId is null and cc.ModalidadeCodigo != 1) as PlanoAulaPendentes,
                                         cc.RFProfessorInfantil as RFProfessor,
