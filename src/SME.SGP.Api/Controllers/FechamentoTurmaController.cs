@@ -131,18 +131,18 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_A, Policy = "Bearer")]
         public async Task<IActionResult> ConsolidarFechamentoTurma([FromBody] FechamentoTurmaConsolidacaoDto fechamentoTurmaConsolidacaoDto, [FromServices] IMediator mediator)
         {
-            foreach (var codigoTurma in fechamentoTurmaConsolidacaoDto.CodigosTurma)
+            foreach (var idTurma in fechamentoTurmaConsolidacaoDto.IdsTurma)
             {
                 try
                 {
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaFechamentoSync,
-                                                                   new ConsolidacaoTurmaDto(codigoTurma, fechamentoTurmaConsolidacaoDto.Bimestre),
+                                                                   new ConsolidacaoTurmaDto(idTurma, fechamentoTurmaConsolidacaoDto.Bimestre),
                                                                    Guid.NewGuid(),
                                                                    null));
                 }
                 catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao executar o fechamento da turma: {codigoTurma}. Detalhes : {ex}", LogNivel.Critico, LogContexto.Fechamento));
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao executar o fechamento da turma id: {idTurma}. Detalhes : {ex}", LogNivel.Critico, LogContexto.Fechamento));
                 }
             }
 
