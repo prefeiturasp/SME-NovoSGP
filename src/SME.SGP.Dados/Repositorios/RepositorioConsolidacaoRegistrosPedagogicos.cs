@@ -100,98 +100,110 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> GerarRegistrosPedagogicosComSeparacaoDiarioBordo(string turmaCodigo, int anoLetivo, long[] componentesCurricularesIds)
         {
-            const string query = @"with aulas as (
-                                    select pe.id as PeriodoEscolarId,
-                                        pe.bimestre as Bimestre,
-                                        t.id as TurmaId,
-                                        t.turma_id as TurmaCodigo,
-                                        t.ano_letivo as AnoLetivo,
-                                        cast(a.disciplina_id as int8) as DisciplinaId,
-                                        a.id as AulaId,
-                                        rf.id as RegistroFrequenciaId,
-                                        rf.criado_em as RegistroFrequenciaCriadoEm,
-                                        pa.id as PlanoAulaId,
-                                        pa.criado_em as PlanoAulaCriadoEm,
-                                        a.professor_rf as RFProfessor,
-                                        t.modalidade_codigo as ModalidadeCodigo,
-                                        a.*
-                                    from aula a
-                                        join periodo_escolar pe on (pe.tipo_calendario_id = a.tipo_calendario_id
-                                                                and a.data_aula >= pe.periodo_inicio and a.data_aula <= pe.periodo_fim)
-                                        join turma t on (t.turma_id = a.turma_id)
-                                        left join registro_frequencia rf on (rf.aula_id = a.id
-                                                                        and  not rf.excluido)
-                                        left join plano_aula pa on (pa.aula_id = a.id
-                                                                and  not pa.excluido)
+            const string query = @"with 
+                                    aulas as (
+                                        select pe.id as PeriodoEscolarId,
+                                            pe.bimestre as Bimestre,
+                                            t.id as TurmaId,
+                                            t.turma_id as TurmaCodigo,
+                                            t.ano_letivo as AnoLetivo,
+                                            cast(a.disciplina_id as int8) as DisciplinaId,
+                                            a.id as AulaId,
+                                            rf.id as RegistroFrequenciaId,
+                                            rf.criado_em as RegistroFrequenciaCriadoEm,
+                                            pa.id as PlanoAulaId,
+                                            pa.criado_em as PlanoAulaCriadoEm,
+                                            a.professor_rf as RFProfessor,
+                                            t.modalidade_codigo as ModalidadeCodigo,
+                                            a.*
+                                        from aula a
+                                            join periodo_escolar pe on (pe.tipo_calendario_id = a.tipo_calendario_id
+                                                                    and a.data_aula >= pe.periodo_inicio and a.data_aula <= pe.periodo_fim)
+                                            join turma t on (t.turma_id = a.turma_id)
+                                            left join registro_frequencia rf on (rf.aula_id = a.id
+                                                                            and  not rf.excluido)
+                                            left join plano_aula pa on (pa.aula_id = a.id
+                                                                    and  not pa.excluido)
 
-                                    where not a.excluido
-                                    and t.turma_id = @turmaCodigo
-                                    and t.ano_letivo = @anoLetivo 
-                                    and a.tipo_aula = 1
-                                    and a.data_aula < NOW()
-                                ),
-                                componentePai as (
-                                    select a.DisciplinaId 
+                                        where not a.excluido
+                                        and t.turma_id = @turmaCodigo
+                                        and t.ano_letivo = @anoLetivo 
+                                        and a.tipo_aula = 1
+                                        and a.data_aula < NOW()
+                                    ),
+                                    componentePai as (
+                                        select a.DisciplinaId 
+                                        from aulas a
+                                        limit 1
+                                    ),
+                                    componentesCurricularesInfantis as (
+                                        select cc.id as ComponenteCurricularId,
+                                            cc.descricao_infantil as DescricaoInfantil
+                                        from componente_curricular cc 
+                                            join componentePai cp on (cp.DisciplinaId = cc.componente_curricular_pai_id)
+                                        where cc.descricao_infantil is not null
+                                    ),
+                                    componentesCurricularesInfantisAulas as (
+                                        select distinct cc.*,
+                                            a.*,null as RFProfessorInfantil
+                                        from componentesCurricularesInfantis cc
+                                            left join lateral (select * from aulas) a on true
+                                       where cc.componentecurricularid = Any(@componentesCurricularesIds)
+                                    ),
+                                    countDiarioBordo as (
+	                                    select cc.AulaId,
+	                                           cc.ComponenteCurricularId,	       
+	                                           cc.data_aula,
+	                                           db.criado_em,
+	                                           db.id
+	                                      from componentesCurricularesInfantisAulas cc
+                                               left join diario_bordo db on (db.aula_id = cc.AulaId 
+                                                                        and  db.componente_curricular_id = cc.ComponenteCurricularId)  
+                                         where ((not db.excluido) or (db.id is null))
+                                    )
+                                    select distinct cc.PeriodoEscolarId,
+                                        cc.Bimestre,
+                                        cc.TurmaId,
+                                        cc.TurmaCodigo,
+                                        cc.AnoLetivo,
+                                        cc.ComponenteCurricularId,
+                                        count(distinct cc.AulaId) as QuantidadeAulas,
+                                        count(distinct cc.AulaId) filter (where cc.RegistroFrequenciaId is null) as FrequenciasPendentes,
+                                        max(cc.RegistroFrequenciaCriadoEm) as DataUltimaFrequencia,
+                                        max(cc.PlanoAulaCriadoEm) as DataUltimoPlanoAula,
+                                        max(cd.criado_em) as DataUltimoDiarioBordo,
+                                        count(distinct cd.AulaId) filter (where cd.id is null) as DiarioBordoPendentes,
+                                        count(distinct cc.AulaId) filter (where cc.PlanoAulaId is null and cc.ModalidadeCodigo != 1) as PlanoAulaPendentes,
+                                        cc.RFProfessorInfantil as RFProfessor,
+                                        cc.ModalidadeCodigo
+                                    from componentesCurricularesInfantisAulas cc
+                                         left join countDiarioBordo cd on (cd.AulaId = cc.AulaId 
+                                                                      and cd.ComponenteCurricularId = cc.ComponenteCurricularId)
+                                    group by cc.PeriodoEscolarId, cc.Bimestre, cc.TurmaId, cc.TurmaCodigo, cc.AnoLetivo, 
+	                                    cc.ComponenteCurricularId, cc.RFProfessorInfantil, cc.ModalidadeCodigo                                
+
+                                    union all
+
+                                    select a.PeriodoEscolarId,
+                                        a.Bimestre,
+                                        a.TurmaId,
+                                        a.TurmaCodigo,
+                                        a.AnoLetivo,
+                                        a.DisciplinaId,
+                                        count(a.AulaId) as QuantidadeAulas,
+                                        count(a.AulaId) filter (where a.RegistroFrequenciaId is null) as FrequenciasPendentes,
+                                        max(a.RegistroFrequenciaCriadoEm) as DataUltimaFrequencia,
+                                        max(a.PlanoAulaCriadoEm) as DataUltimoPlanoAula,
+                                        null::timestamp as DataUltimoDiarioBordo,
+                                        0 as DiarioBordoPendentes,
+                                        count(a.AulaId) filter (where a.PlanoAulaId is null) as PlanoAulaPendentes,
+                                        a.RFProfessor,
+                                        a.ModalidadeCodigo 
                                     from aulas a
-                                    limit 1
-                                ),
-                                componentesCurricularesInfantis as (
-                                    select cc.id as ComponenteCurricularId,
-                                        cc.descricao_infantil as DescricaoInfantil
-                                    from componente_curricular cc 
-                                        join componentePai cp on (cp.DisciplinaId = cc.componente_curricular_pai_id)
-                                    where cc.descricao_infantil is not null
-                                ),
-                                componentesCurricularesInfantisAulas as (
-                                    select distinct cc.*,
-                                        a.*,null as RFProfessorInfantil
-                                    from componentesCurricularesInfantis cc
-                                        left join lateral (select * from aulas) a on true
-                                   where cc.componentecurricularid = Any(@componentesCurricularesIds)
-                                )
-                                select distinct cc.PeriodoEscolarId,
-                                    cc.Bimestre,
-                                    cc.TurmaId,
-                                    cc.TurmaCodigo,
-                                    cc.AnoLetivo,
-                                    cc.ComponenteCurricularId,
-                                    count(cc.AulaId) as QuantidadeAulas,
-                                    count(cc.AulaId) filter (where cc.RegistroFrequenciaId is null) as FrequenciasPendentes,
-                                    max(cc.RegistroFrequenciaCriadoEm) as DataUltimaFrequencia,
-                                    max(cc.PlanoAulaCriadoEm) as DataUltimoPlanoAula,
-                                    max(db.criado_em) as DataUltimoDiarioBordo,
-                                    count(cc.ComponenteCurricularId) filter (where db.id is null) as DiarioBordoPendentes,
-                                    count(cc.AulaId) filter (where cc.PlanoAulaId is null and cc.ModalidadeCodigo != 1) as PlanoAulaPendentes,
-                                    cc.RFProfessorInfantil as RFProfessor,
-                                    cc.ModalidadeCodigo
-                                from componentesCurricularesInfantisAulas cc
-                                    left join diario_bordo db on (db.aula_id = cc.AulaId
-                                                                and  not db.excluido)
-                                group by cc.PeriodoEscolarId, cc.Bimestre, cc.TurmaId, cc.TurmaCodigo, cc.AnoLetivo, 
-                                    cc.ComponenteCurricularId, cc.DisciplinaId, cc.RFProfessorInfantil, cc.ModalidadeCodigo                                
-                                
-                                union all
-
-                                select a.PeriodoEscolarId,
-                                    a.Bimestre,
-                                    a.TurmaId,
-                                    a.TurmaCodigo,
-                                    a.AnoLetivo,
-                                    a.DisciplinaId,
-                                    count(a.AulaId) as QuantidadeAulas,
-                                    count(a.AulaId) filter (where a.RegistroFrequenciaId is null) as FrequenciasPendentes,
-                                    max(a.RegistroFrequenciaCriadoEm) as DataUltimaFrequencia,
-                                    max(a.PlanoAulaCriadoEm) as DataUltimoPlanoAula,
-                                    null::timestamp as DataUltimoDiarioBordo,
-                                    0 as DiarioBordoPendentes,
-                                    count(a.AulaId) filter (where a.PlanoAulaId is null) as PlanoAulaPendentes,
-                                    a.RFProfessor,
-                                    a.ModalidadeCodigo 
-                                from aulas a
-                                where a.ModalidadeCodigo <> 1
-                                group by a.PeriodoEscolarId, a.Bimestre, a.TurmaId, a.TurmaCodigo, a.AnoLetivo,
-                                    a.DisciplinaId, a.RFProfessor, a.ModalidadeCodigo";
-
+                                    where a.ModalidadeCodigo <> 1
+                                    group by a.PeriodoEscolarId, a.Bimestre, a.TurmaId, a.TurmaCodigo, a.AnoLetivo,
+	                                    a.DisciplinaId, a.RFProfessor, a.ModalidadeCodigo";
+                
             return await database.Conexao.QueryAsync<ConsolidacaoRegistrosPedagogicosDto>(query, new { turmaCodigo, anoLetivo, componentesCurricularesIds });
         }
     }
