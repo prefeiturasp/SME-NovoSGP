@@ -78,7 +78,12 @@ namespace SME.SGP.Aplicacao
                 usuarioLogado.Login,
                 usuarioLogado.PerfilAtual);
             var componentes = await mediator.Send(obterComponentesQuery);
-            if (componentes == null || componentes.All(c => c.Codigo != aulaRecorrente.ComponenteCurricularId))
+            var naoPodeCriarAulaTurma = componentes == null || !componentes.Any() 
+                || componentes.Any(c => 
+                (!c.TerritorioSaber && c.Codigo != aulaRecorrente.ComponenteCurricularId) 
+                || ( c.TerritorioSaber && c.CodigoComponenteTerritorioSaber != aulaRecorrente.ComponenteCurricularId ));
+
+            if (naoPodeCriarAulaTurma)
             {
                 throw new NegocioException(MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA);
             }
