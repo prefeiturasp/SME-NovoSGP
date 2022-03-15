@@ -42,7 +42,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> Listar([FromQuery]FiltroTurmaDto filtroTurmaDto, [FromServices] IListarTurmasComComponentesUseCase listarTurmasComComponentesUseCase)
         {
-            return Ok(await listarTurmasComComponentesUseCase.Executar(filtroTurmaDto));
+            var retorno = await listarTurmasComComponentesUseCase.Executar(filtroTurmaDto);
+
+            if (retorno == null)
+                return NoContent();
+
+            return Ok(retorno);
         }
     }
 }
