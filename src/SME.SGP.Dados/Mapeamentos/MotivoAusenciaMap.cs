@@ -8,7 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public MotivoAusenciaMap()
         {
             ToTable("motivo_ausencia");
-            Map(e => e.Id).ToColumn("id");
+            Map(e => e.Id).ToColumn("id").IsIdentity().IsKey();
             Map(e => e.Descricao).ToColumn("descricao");
         }  
     }

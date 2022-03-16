@@ -7,11 +7,13 @@ namespace SME.SGP.Dados.Mapeamentos
         public NotaConceitoCicloParametroMap()
         {
             ToTable("notas_conceitos_ciclos_parametos");
-            Map(n => n.InicioVigencia).ToColumn("inicio_vigencia");
-            Map(n => n.TipoNotaId).ToColumn("tipo_nota");
-            Map(n => n.QtdMinimaAvalicoes).ToColumn("qtd_minima_avaliacao");
-            Map(n => n.PercentualAlerta).ToColumn("percentual_alerta");
-            Map(n => n.FimVigencia).ToColumn("fim_vigencia");
+            Map(c => c.Ativo).ToColumn("ativo");
+            Map(c => c.CicloId).ToColumn("ciclo_id");
+            Map(c => c.FimVigencia).ToColumn("fim_vigencia");
+            Map(c => c.InicioVigencia).ToColumn("inicio_vigencia");
+            Map(c => c.PercentualAlerta).ToColumn("percentual_alerta");
+            Map(c => c.QtdMinimaAvalicoes).ToColumn("qtd_minima_avalicoes");
+            Map(c => c.TipoNotaId).ToColumn("tipo_nota_id");
         }
     }
 }

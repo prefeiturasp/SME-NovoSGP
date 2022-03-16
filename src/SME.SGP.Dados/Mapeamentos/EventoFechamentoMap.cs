@@ -10,8 +10,9 @@ namespace SME.SGP.Dados
         public EventoFechamentoMap()
         {
             ToTable("evento_fechamento");
-            Map(x => x.EventoId).ToColumn("evento_id");
-            Map(x => x.FechamentoId).ToColumn("fechamento_id");
+            Map(c => c.EventoId).ToColumn("evento_id");
+            Map(c => c.FechamentoId).ToColumn("fechamento_id");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             result.ShouldHaveValidationErrorFor(a => a.Planejamento);
         }
 
-        private TestValidationResult<AlterarDiarioBordoCommand, AlterarDiarioBordoCommand> ValidarCommand(AlterarDiarioBordoCommand command)
+        private TestValidationResult<AlterarDiarioBordoCommand> ValidarCommand(AlterarDiarioBordoCommand command)
         {
             var validator = new AlterarDiarioBordoCommandValidator();
             return validator.TestValidate(command);
