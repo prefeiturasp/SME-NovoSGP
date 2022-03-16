@@ -12,14 +12,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterBimestresComConselhoClasseTurmaQueryHandler : IRequestHandler<ObterBimestresComConselhoClasseTurmaQuery, IEnumerable<BimestreComConselhoClasseTurmaDto>>
     {
-        private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
-        public ObterBimestresComConselhoClasseTurmaQueryHandler(IRepositorioConselhoClasse repositorioConselhoClasse)
+        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasse;
+        public ObterBimestresComConselhoClasseTurmaQueryHandler(IRepositorioConselhoClasseConsulta repositorioConselhoClasse)
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse;
         }
         public async Task<IEnumerable<BimestreComConselhoClasseTurmaDto>> Handle(ObterBimestresComConselhoClasseTurmaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasse.ObterimestreComConselhoClasseTurmaAsync(request.Id);            
+            return await repositorioConselhoClasse.ObterBimestreComConselhoClasseTurmaAsync(request.Id);            
         }
     }
 }

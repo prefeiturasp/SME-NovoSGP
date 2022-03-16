@@ -45,8 +45,17 @@ namespace SME.SGP.Aplicacao.Commands
                 try
                 {
                     // Salva Plano
-                    if (plano?.Situacao == SituacaoPlanoAEE.Devolvido)
+                    if (plano?.Situacao == SituacaoPlanoAEE.Devolvido ||
+                       (plano?.Situacao == SituacaoPlanoAEE.Expirado && plano?.CriadoEm.Date < new DateTime(2021, 9, 16)) ||  /* regra conforme bug 52143 */
+                       ((plano?.Situacao == SituacaoPlanoAEE.Expirado || plano?.Situacao == SituacaoPlanoAEE.Validado) && string.IsNullOrWhiteSpace(plano.ParecerCoordenacao)))
+                    {
                         plano.Situacao = SituacaoPlanoAEE.ParecerCP;
+                    }
+                    else if (plano?.Situacao == SituacaoPlanoAEE.Expirado)
+                    {
+                        await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
+                        plano.Situacao = SituacaoPlanoAEE.Validado;
+                    }
 
                     planoId = await repositorioPlanoAEE.SalvarAsync(plano);
 
@@ -62,25 +71,21 @@ namespace SME.SGP.Aplicacao.Commands
                         if (await ValidaPersistenciaResposta(questao.Resposta, questao.QuestaoId))
                         {
                             var planoAEEQuestaoId = await mediator.Send(new SalvarPlanoAEEQuestaoCommand(planoId, questao.QuestaoId, planoAEEVersaoId));
-
                             await mediator.Send(new SalvarPlanoAEERespostaCommand(planoId, planoAEEQuestaoId, questao.Resposta, questao.TipoQuestao));
                         }
                     }
 
-                    if (request.PlanoAEEDto.Situacao == SituacaoPlanoAEE.Expirado)
-                        await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
-
-                    if (await ParametroGeracaoPendenciaAtivo())
+                    if (await ParametroGeracaoPendenciaAtivo() && plano?.Situacao != SituacaoPlanoAEE.Validado)
                         await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoId));
 
                     unitOfWork.PersistirTransacao();
 
                     return new RetornoPlanoAEEDto(planoId, planoAEEVersaoId);
                 }
-                catch (Exception ex)
+                catch
                 {
                     unitOfWork.Rollback();
-                    throw ex;
+                    throw;
                 }
             }
         }
@@ -122,7 +127,11 @@ namespace SME.SGP.Aplicacao.Commands
         private async Task<PlanoAEE> MapearParaEntidade(SalvarPlanoAeeCommand request)
         {
             if (request.PlanoAEEDto.Id.HasValue && request.PlanoAEEDto.Id > 0)
-                return await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
+            {
+                var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
+                planoAEE.TurmaId = request.TurmaId;
+                return planoAEE;
+            }
 
             return new PlanoAEE()
             {

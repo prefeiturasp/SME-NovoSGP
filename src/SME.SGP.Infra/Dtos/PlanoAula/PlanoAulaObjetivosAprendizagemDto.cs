@@ -12,10 +12,10 @@ namespace SME.SGP.Infra
 
         public long Id { get; set; }
         public string Descricao { get; set; }
-        public string DesenvolvimentoAula { get; set; }
         public string RecuperacaoAula { get; set; }
         public string LicaoCasa { get; set; }
         public long AulaId { get; set; }
+        public bool AulaCj { get; set; }
         public string UeId { get; set; }
         public string TurmaId { get; set; }
         public string DisciplinaId { get; set; }
@@ -30,6 +30,7 @@ namespace SME.SGP.Infra
         public DateTime? AlteradoEm { get; set; }
         public string AlteradoPor { get; set; }
         public string AlteradoRf { get; set; }
+        public int TipoAula { get; set; }
 
         public List<ObjetivosAprendizagemPorComponenteDto> ObjetivosAprendizagemComponente { get; set; }
 
@@ -37,6 +38,6 @@ namespace SME.SGP.Infra
         {
             if (objetivoAprendizagemComponente != null)
                 ObjetivosAprendizagemComponente.Add(objetivoAprendizagemComponente);
-        }
+        } 
     }
 }

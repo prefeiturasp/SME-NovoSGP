@@ -32,7 +32,6 @@ namespace SME.SGP.Dominio
         public long UeId { get; set; }
         public string NomeFiltro { get; set; }
         public bool Historica { get; set; }
-        public int AnoTurmaInteiro => int.Parse(Ano);
 
         public bool EhTurmaFund1 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 1 && AnoTurmaInteiro <= 5);
         public bool EhTurmaFund2 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 6 && AnoTurmaInteiro <= 9);
@@ -86,6 +85,7 @@ namespace SME.SGP.Dominio
         public int ObterHorasGradeRegencia()
             => EhEJA() ? 5 : 1;
 
+        public int AnoTurmaInteiro => Ano.ToCharArray().All(a => char.IsDigit(a)) ? int.Parse(Ano) : 1;
 
 
         public bool AulasReposicaoPrecisamAprovacao(int quantidadeAulasExistentesNoDia)
@@ -98,15 +98,18 @@ namespace SME.SGP.Dominio
         public string NomeComModalidade()
                  => $"{ModalidadeCodigo.ObterNomeCurto()}-{Nome}";
 
+        public string AnoComModalidade()
+                 => $"{ModalidadeCodigo.ObterNomeCurto()}-{Ano}";
+
         public bool EhTurmaEdFisicaOuItinerario()
         {
             return TipoTurma.EhUmDosValores(TipoTurma.EdFisica, TipoTurma.Itinerarios2AAno);
         }
 
-        public IEnumerable<TipoTurma> ObterTiposRegularesDiferentes()
+        public IEnumerable<int> ObterTiposRegularesDiferentes()
         {
             return TiposRegulares
-                .Where(a => a != TipoTurma)
+                .Where(a => a != TipoTurma).Select(s=> (int)s)
                 .ToList();
         }
         public bool DeveVerificarRegraRegulares()

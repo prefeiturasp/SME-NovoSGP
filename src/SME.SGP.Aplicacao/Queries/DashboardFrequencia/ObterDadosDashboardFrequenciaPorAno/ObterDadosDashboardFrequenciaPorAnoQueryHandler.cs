@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDadosDashboardFrequenciaPorAnoQueryHandler : IRequestHandler<ObterDadosDashboardFrequenciaPorAnoQuery, IEnumerable<GraficoFrequenciaGlobalPorAnoDto>>
     {
-        private readonly IRepositorioConsolidacaoFrequenciaTurma repositorioConsolidacaoFrequenciaTurma;
+        private readonly IRepositorioConsolidacaoFrequenciaTurmaConsulta repositorioConsolidacaoFrequenciaTurma;
 
-        public ObterDadosDashboardFrequenciaPorAnoQueryHandler(IRepositorioConsolidacaoFrequenciaTurma repositorioConsolidacaoFrequenciaTurma)
+        public ObterDadosDashboardFrequenciaPorAnoQueryHandler(IRepositorioConsolidacaoFrequenciaTurmaConsulta repositorioConsolidacaoFrequenciaTurma)
         {
             this.repositorioConsolidacaoFrequenciaTurma = repositorioConsolidacaoFrequenciaTurma ?? throw new ArgumentNullException(nameof(repositorioConsolidacaoFrequenciaTurma));
         }

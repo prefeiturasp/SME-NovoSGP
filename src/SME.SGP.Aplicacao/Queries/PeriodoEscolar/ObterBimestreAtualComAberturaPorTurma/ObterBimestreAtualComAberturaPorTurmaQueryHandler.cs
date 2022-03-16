@@ -7,15 +7,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodoEscolarComAberturaPorTurmaQueryHandler : IRequestHandler<ObterBimestreAtualComAberturaPorTurmaQuery, int>
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
 
-        public ObterPeriodoEscolarComAberturaPorTurmaQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+        public ObterPeriodoEscolarComAberturaPorTurmaQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }
         public async Task<int> Handle(ObterBimestreAtualComAberturaPorTurmaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioPeriodoEscolar.ObterBimestreAtualComAberturaPorTurmaAsync(request.Turma.AnoLetivo, request.Turma.ModalidadeTipoCalendario, request.Turma.UeId, request.DataReferencia);
+            return await repositorioPeriodoEscolar.ObterBimestreAtualComAberturaPorAnoModalidade(request.Turma.AnoLetivo, request.Turma.ModalidadeTipoCalendario, request.DataReferencia);
         }
     }
 }

@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ExisteAulaNaDataTurmaDisciplinaProfessorRfQueryHandler : IRequestHandler<ExisteAulaNaDataTurmaDisciplinaProfessorRfQuery, bool>
     {
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
 
-        public ExisteAulaNaDataTurmaDisciplinaProfessorRfQueryHandler(IRepositorioAula repositorioAula)
+        public ExisteAulaNaDataTurmaDisciplinaProfessorRfQueryHandler(IRepositorioAulaConsulta repositorioAula)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }

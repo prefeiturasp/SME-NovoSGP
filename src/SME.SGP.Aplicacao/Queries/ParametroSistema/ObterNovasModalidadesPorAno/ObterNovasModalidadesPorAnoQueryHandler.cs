@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao.Queries.ParametroSistema.ObterNovasModalidadesPorAno
 {
     public class ObterNovasModalidadesPorAnoQueryHandler : IRequestHandler<ObterNovasModalidadesPorAnoQuery, IEnumerable<Modalidade>>
     {
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
 
-        public ObterNovasModalidadesPorAnoQueryHandler(IRepositorioParametrosSistema repositorioParametrosSistema)
+        public ObterNovasModalidadesPorAnoQueryHandler(IRepositorioParametrosSistemaConsulta repositorioParametrosSistema)
         {
             this.repositorioParametrosSistema = repositorioParametrosSistema;
         }

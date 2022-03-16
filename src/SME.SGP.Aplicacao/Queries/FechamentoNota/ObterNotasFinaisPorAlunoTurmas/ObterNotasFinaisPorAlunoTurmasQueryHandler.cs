@@ -3,7 +3,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotasFinaisPorAlunoTurmasQueryHandler : IRequestHandler<ObterNotasFinaisPorAlunoTurmasQuery, IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
-        private readonly IRepositorioFechamentoNota repositorioFechamento;
+        private readonly IRepositorioFechamentoNotaConsulta repositorioFechamento;
 
-        public ObterNotasFinaisPorAlunoTurmasQueryHandler(IRepositorioFechamentoNota repositorioFechamento)
+        public ObterNotasFinaisPorAlunoTurmasQueryHandler(IRepositorioFechamentoNotaConsulta repositorioFechamento)
         {
             this.repositorioFechamento = repositorioFechamento ?? throw new ArgumentNullException(nameof(repositorioFechamento));
         }

@@ -31,14 +31,13 @@ namespace SME.SGP.Aplicacao
 
         private string ObterCaminhoArquivo(TipoArquivo tipo)
         {
-            var caminho = Path.Combine(ObterCaminhoArquivos(), tipo.ToString());
+            var caminho = Path.Combine(ObterCaminhoArquivos(), tipo.Name());
             return VerificaCaminhoExiste(caminho);
         }
 
         private string ObterCaminhoArquivos()
         {
-            var caminho = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arquivos");
-            return VerificaCaminhoExiste(caminho);
+            return VerificaCaminhoExiste(UtilArquivo.ObterDiretorioBase());
         }
 
         private string VerificaCaminhoExiste(string caminho)

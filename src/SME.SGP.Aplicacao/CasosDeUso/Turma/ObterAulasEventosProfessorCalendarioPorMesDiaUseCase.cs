@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -9,18 +8,17 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulasEventosProfessorCalendarioPorMesDiaUseCase
+    public class ObterAulasEventosProfessorCalendarioPorMesDiaUseCase : AbstractUseCase, IObterAulasEventosProfessorCalendarioPorMesDiaUseCase
     {
-        public static async Task<EventosAulasNoDiaCalendarioDto> Executar(IMediator mediator, FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId, int mes, int dia, int anoLetivo,
-            IServicoUsuario servicoUsuario)
+        public ObterAulasEventosProfessorCalendarioPorMesDiaUseCase(IMediator mediator) : base(mediator)
         {
-            string rf = "";
-            string dadosTurma = "";
+        }
 
+        public async Task<EventosAulasNoDiaCalendarioDto> Executar(FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId, int mes, int dia, int anoLetivo)
+        {
             var dataConsulta = new DateTime(anoLetivo, mes, dia);
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            rf = usuarioLogado.CodigoRf;
 
             if (usuarioLogado == null)
                 throw new NegocioException("Não foi possível localizar o Usuário logado.");
@@ -46,7 +44,8 @@ namespace SME.SGP.Aplicacao
             {
                 TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo
             });
-            dadosTurma = turma.CodigoTurma + "-" + turma.Nome;
+
+            string dadosTurma = turma.CodigoTurma + "-" + turma.Nome;
 
             var retorno = new EventosAulasNoDiaCalendarioDto();
 
@@ -59,25 +58,47 @@ namespace SME.SGP.Aplicacao
                 Turma = turma
             });
 
-            retorno.PodeCadastrarAula = podeCadastrarAulaEMensagem.PodeCadastrar;
-            retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
-
+                retorno.PodeCadastrarAula = podeCadastrarAulaEMensagem.PodeCadastrar;
+                retorno.SomenteAulaReposicao = podeCadastrarAulaEMensagem.SomenteReposicao;
+                retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
 
             string[] componentesCurricularesDoProfessor = new string[0];
-            if (usuarioLogado.EhProfessor())
+
+            IEnumerable<Aula> aulasParaVisualizar = null;
+            IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();
+
+            atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
             {
-                componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));
+                UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
+                DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
+                TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
+                DataReferencia = dataConsulta
+            });
+
+            bool podeEditarRegistroTitular = await VerificaCJPodeEditarRegistroTitular(anoLetivo);
+
+            if (usuarioLogado.EhProfessorCjInfantil() && podeEditarRegistroTitular)
+            {
+                aulasParaVisualizar = aulasDoDia;
+                retorno.PodeCadastrarAula = false;
+            }
+                     
+            else
+            {
+                if (usuarioLogado.EhProfessor())
+                    componentesCurricularesDoProfessor = await mediator
+                                                              .Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf,
+                                                                                                                               usuarioLogado.PerfilAtual,
+                                                                                                                               filtroAulasEventosCalendarioDto.TurmaCodigo,
+                                                                                                                               usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
+                atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor);
             }
 
-            IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
-
-
-            IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
 
             if (aulasParaVisualizar.Any())
             {
-
                 componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)).ToArray(), aulasParaVisualizar.Any(a => a.DisciplinaId.Length > 5)));
 
                 atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
@@ -87,8 +108,6 @@ namespace SME.SGP.Aplicacao
                     TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
                     DataReferencia = dataConsulta
                 });
-
-                atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor);
             }
 
             retorno.EventosAulas = await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery()
@@ -103,6 +122,12 @@ namespace SME.SGP.Aplicacao
 
             return retorno;
         }
+
+        public async Task<bool> VerificaCJPodeEditarRegistroTitular(int anoLetivo)
+        {
+            var dadosParametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.CJInfantilPodeEditarAulaTitular, anoLetivo));
+
+            return dadosParametro?.Ativo ?? false;
+        }
     }
 }
-

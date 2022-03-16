@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterParametroSistemaPorTipoEAnoQueryHandler : IRequestHandler<ObterParametroSistemaPorTipoEAnoQuery, ParametrosSistema>
     {
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
 
-        public ObterParametroSistemaPorTipoEAnoQueryHandler(IRepositorioParametrosSistema repositorioParametrosSistema)
+        public ObterParametroSistemaPorTipoEAnoQueryHandler(IRepositorioParametrosSistemaConsulta repositorioParametrosSistema)
         {
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }

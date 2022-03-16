@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<DiarioBordoDto> Executar(long aulaId)
+        public async Task<DiarioBordoDto> Executar(long aulaId, long componenteCurricularId)
         {
             Aula aula = await mediator.Send(new ObterAulaPorIdQuery(aulaId));
             if (aula == null || aula.Excluido)
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             var aberto = await AulaDentroDoPeriodo(mediator, aula.TurmaId, aula.DataAula);
 
-            DiarioBordo diarioBordo = await mediator.Send(new ObterDiarioBordoPorAulaIdQuery(aulaId));
+            DiarioBordo diarioBordo = await mediator.Send(new ObterDiarioBordoPorAulaIdQuery(aulaId,componenteCurricularId));
             if (diarioBordo == null || diarioBordo.Excluido)
             {
                 diarioBordo = new DiarioBordo
@@ -61,11 +61,11 @@ namespace SME.SGP.Aplicacao
                 DevolutivaId = diarioBordo.DevolutivaId,
                 Devolutivas = diarioBordo.Devolutiva?.Descricao,
                 Planejamento = diarioBordo.Planejamento,
-                ReflexoesReplanejamento = diarioBordo.ReflexoesReplanejamento,
                 Excluido = diarioBordo.Excluido,
                 Migrado = diarioBordo.Migrado,
                 TemPeriodoAberto = aberto,
-                Auditoria = (AuditoriaDto)diarioBordo
+                Auditoria = (AuditoriaDto)diarioBordo,
+                InseridoCJ = diarioBordo.InseridoCJ
             };
         }
     }

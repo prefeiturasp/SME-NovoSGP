@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
             var descricao = $@"O Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} foi cadastrado. <br/><a href='{hostAplicacao}aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano e registrar o seu parecer.
                 <br/><br/>A pendência será resolvida automaticamente após este registro.";
 
-            await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, plano.ResponsavelId.Value, titulo, descricao));
+            await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, plano.ResponsavelId.Value, titulo, descricao, turma.UeId));
         }
 
         private async Task ExcluirPendenciaCEFAI(PlanoAEE planoAEE)

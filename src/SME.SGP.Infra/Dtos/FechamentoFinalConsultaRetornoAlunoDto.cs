@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -12,7 +13,7 @@ namespace SME.SGP.Infra
         }
 
         public string Codigo { get; set; }
-        public double FrequenciaValor{ get; set; }
+        public double FrequenciaValor { get { return string.IsNullOrWhiteSpace(Frequencia) || !double.TryParse(Frequencia, out double valor) ? 0 : Convert.ToDouble(Frequencia ?? "0"); } }
         public string Frequencia { get; set; }
         public string Informacao { get; set; }
         public string Nome { get; set; }

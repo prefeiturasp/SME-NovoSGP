@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificarExistenciaPlanoAEEPorEstudanteQueryHandler : IRequestHandler<VerificarExistenciaPlanoAEEPorEstudanteQuery, PlanoAEEResumoDto>
     {
-        private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
+        private readonly IRepositorioPlanoAEEConsulta repositorioPlanoAEE;
 
-        public VerificarExistenciaPlanoAEEPorEstudanteQueryHandler(IRepositorioPlanoAEE repositorioPlanoAEE)
+        public VerificarExistenciaPlanoAEEPorEstudanteQueryHandler(IRepositorioPlanoAEEConsulta repositorioPlanoAEE)
         {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
         }

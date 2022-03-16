@@ -12,10 +12,10 @@ namespace SME.SGP.Aplicacao
     public class SalvarCartaIntencoesObservacaoCommandHandler : IRequestHandler<SalvarCartaIntencoesObservacaoCommand, AuditoriaDto>
     {
         private readonly IRepositorioCartaIntencoesObservacao repositorioCartaIntencoesObservacao;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IMediator mediator;
 
-        public SalvarCartaIntencoesObservacaoCommandHandler(IRepositorioCartaIntencoesObservacao repositorioCartaIntencoesObservacao, IRepositorioTurma repositorioTurma,
+        public SalvarCartaIntencoesObservacaoCommandHandler(IRepositorioCartaIntencoesObservacao repositorioCartaIntencoesObservacao, IRepositorioTurmaConsulta repositorioTurma,
             IMediator mediator)
         {
             this.repositorioCartaIntencoesObservacao = repositorioCartaIntencoesObservacao ?? throw new System.ArgumentNullException(nameof(repositorioCartaIntencoesObservacao));

@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -62,7 +63,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioId = await ObterUsuarioPorRF(planoEncerrado.CriadoRF);
 
-            await mediator.Send(new GerarPendenciaPlanoAEECommand(planoEncerrado.Id, usuarioId, titulo, descricao));
+            await mediator.Send(new GerarPendenciaPlanoAEECommand(planoEncerrado.Id, usuarioId, titulo, descricao, turma.UeId));
         }
 
         private async Task<long> ObterUsuarioPorRF(string criadoRF)

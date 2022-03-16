@@ -3,6 +3,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -28,7 +29,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("quantidade-imagens")]
-        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(ParametroQuantidadeUploadImagemDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         public async Task<IActionResult> ObterParametroQuantidadeImagens([FromQuery] int ano, [FromServices] IObterParametroQuantidadeImagensPercursoColetivoTurmaUseCase useCase)

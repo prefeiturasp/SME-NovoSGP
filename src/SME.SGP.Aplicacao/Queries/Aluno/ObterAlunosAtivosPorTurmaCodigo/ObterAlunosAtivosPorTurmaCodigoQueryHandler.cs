@@ -1,13 +1,10 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,10 +23,10 @@ namespace SME.SGP.Aplicacao
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
 
-            var resposta = await httpClient.GetAsync($"{request.TurmaCodigo}/alunos-ativos");
+            var resposta = await httpClient.GetAsync($"Turmas/{request.TurmaCodigo}/alunos-ativos/data-aula-ticks/{request.DataAula.Ticks}");
 
             if (!resposta.IsSuccessStatusCode)
-                throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
+                throw new NegocioException("Não foi possível buscar alunos ativos no EOL.");
 
             var json = resposta.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<IEnumerable<AlunoPorTurmaResposta>>(json);

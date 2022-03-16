@@ -50,6 +50,7 @@ namespace SME.SGP.Aplicacao
                             var temAvaliacaoComComponente = (from avaliacao in avaliacoesDoDia
                                                              from disciplina in avaliacao.Disciplinas
                                                              where componentesCurricularesDoDia.Contains(disciplina.DisciplinaId.ToString()) || avaliacao.ProfessorRf == request.UsuarioCodigoRf
+                                                             where avaliacao.TipoAvaliacaoId != 18 
                                                              select true);
 
                             if (temAvaliacaoComComponente.Any())

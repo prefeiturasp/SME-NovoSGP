@@ -16,13 +16,13 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
-        private readonly IRepositorioDre repositorioDre;
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioDreConsulta repositorioDre;
+        private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultasAtribuicoes(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioDre repositorioDre, IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica,
-            IServicoEol servicoEol, IRepositorioUe repositorioUe, IServicoUsuario servicoUsuario, IConsultasAbrangencia consultasAbrangencia, IMediator mediator)
+        public ConsultasAtribuicoes(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioDreConsulta repositorioDre, IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica,
+            IServicoEol servicoEol, IRepositorioUeConsulta repositorioUe, IServicoUsuario servicoUsuario, IConsultasAbrangencia consultasAbrangencia, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));

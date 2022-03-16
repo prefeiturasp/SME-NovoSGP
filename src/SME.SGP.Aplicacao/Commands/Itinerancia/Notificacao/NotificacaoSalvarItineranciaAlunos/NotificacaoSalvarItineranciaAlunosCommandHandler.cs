@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(NotificacaoSalvarItineranciaAlunosCommand request, CancellationToken cancellationToken)
         {
-            var ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(request.UeCodigo));
+            var ue = await mediator.Send(new ObterUeComDrePorIdQuery(request.UeId));
             if (ue == null)
                 throw new NegocioException("Não foi possível encontrar a UE informada");
             await NotificarItinerancia(ue, request.CriadoRF, request.CriadoPor, request.DataVisita, request.Estudantes, request.ItineranciaId);
@@ -58,6 +58,9 @@ namespace SME.SGP.Aplicacao
                 UsuarioNome = criadoPor,
                 UsuarioRF = criadoRF
             }));
+
+            if (codigoCorrelacao == Guid.Empty)
+                throw new NegocioException("Não foi possivel obter o relatório para a notificação do registro de itinerância");
 
             mensagem.AppendLine($"<br/><br/><a href='{urlServidorRelatorios}api/v1/downloads/sgp/pdf/Itiner%C3%A2ncias.pdf/{codigoCorrelacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
 

@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,16 +25,14 @@ namespace SME.SGP.Aplicacao
         {
             var alunos = new List<AlunoPorTurmaResposta>();
 
-            var chaveCache = $"alunos-turma:{request.TurmaCodigo}";
+            var chaveCache = $"alunos-turma:{request.TurmaCodigo}/considera-inativos:{request.ConsideraInativos}";
             var cacheAlunos = repositorioCache.Obter(chaveCache);
             if (cacheAlunos != null)
-            {
                 alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(cacheAlunos);
-            }
             else
             {
                 var httpClient = httpClientFactory.CreateClient("servicoEOL");
-                var resposta = await httpClient.GetAsync($"turmas/{request.TurmaCodigo}");
+                var resposta = await httpClient.GetAsync($"turmas/{request.TurmaCodigo}/considera-inativos/{request.ConsideraInativos}");
                 if (resposta.IsSuccessStatusCode)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();

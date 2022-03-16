@@ -9,12 +9,11 @@ using SME.SGP.Infra.Dtos;
 namespace SME.SGP.Aplicacao
 {
     public class
-        ObterFechamentoSituacaoPorEstudanteQueryHandler : IRequestHandler<ObterFechamentoSituacaoQuery,
-            IEnumerable<FechamentoSituacaoQuantidadeDto>>
+        ObterFechamentoSituacaoPorEstudanteQueryHandler : IRequestHandler<ObterFechamentoSituacaoQuery,IEnumerable<FechamentoSituacaoQuantidadeDto>>
     {
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorio;
+        private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorio;
 
-        public ObterFechamentoSituacaoPorEstudanteQueryHandler(IRepositorioFechamentoTurmaDisciplina repositorio)
+        public ObterFechamentoSituacaoPorEstudanteQueryHandler(IRepositorioFechamentoTurmaDisciplinaConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

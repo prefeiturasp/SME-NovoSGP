@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await ObterUsuarioLogado();
             var professor = $"{usuarioLogado.Nome} ({usuarioLogado.CodigoRf})";
             var data = $"{DateTime.Today:dd/MM/yyyy} às {DateTime.Now:HH:mm}";
-            var aluno = await ObterAluno(request.AlunoCodigo, request.Turma.AnoLetivo);
+            var aluno = await ObterAluno(request.AlunoCodigo);
 
             var parecerAnterior = request.ParecerAnterior ?? "(Nenhum)";
 
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
         private async Task<Ue> ObterUe(long ueId)
             => await mediator.Send(new ObterUeComDrePorIdQuery(ueId));
 
-        private async Task<AlunoReduzidoDto> ObterAluno(string alunoCodigo, int anoLetivo)
-            => await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(alunoCodigo, anoLetivo));
+        private async Task<AlunoReduzidoDto> ObterAluno(string alunoCodigo)
+            => await mediator.Send(new ObterAlunoPorCodigoQuery(alunoCodigo));
     }
 }

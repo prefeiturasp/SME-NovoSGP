@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
@@ -19,6 +20,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IServicoPerfil> servicoPerfil;
         private readonly Mock<IServicoTokenJwt> servicoTokenJwt;
         private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IMediator> mediator;
 
         public ComandosUsuarioTeste()
         {
@@ -35,9 +37,10 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioAtribuicaoEsporadica = new Mock<IRepositorioAtribuicaoEsporadica>();
             repositorioAtribuicaoCJ = new Mock<IRepositorioAtribuicaoCJ>();
             repositorioHistoricoEmailUsuario = new Mock<IRepositorioHistoricoEmailUsuario>();
+            mediator = new Mock<IMediator>();
 
             comandosUsuario = new ComandosUsuario(repositorioUsuario.Object, servicoAutenticacao.Object, servicoUsuario.Object, servicoPerfil.Object, servicoEOL.Object, servicoTokenJwt.Object, servicoEmail.Object,
-                mockConfiguration.Object, repositorioCache.Object, servicoAbrangencia.Object, repositorioAtribuicaoEsporadica.Object, repositorioAtribuicaoCJ.Object, repositorioHistoricoEmailUsuario.Object);
+                mockConfiguration.Object, repositorioCache.Object, servicoAbrangencia.Object, repositorioAtribuicaoEsporadica.Object, repositorioAtribuicaoCJ.Object, repositorioHistoricoEmailUsuario.Object, mediator.Object);
         }
 
         //[Fact]

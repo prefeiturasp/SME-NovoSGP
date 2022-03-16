@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
             var turma = $"{request.Turma.Nome} da {ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao}) de {request.Turma.AnoLetivo}";
             var professor = $"{request.UsuarioLogado.Nome} ({request.UsuarioLogado.CodigoRf})";
             var data = $"{DateTime.Today:dd/MM/yyyy} às {DateTime.Now:HH:mm}";
-            var aluno = await ObterAluno(request.AlunoCodigo, request.Turma.AnoLetivo);
+            var aluno = await ObterAluno(request.AlunoCodigo);
 
             var titulo = $"Alteração em nota/conceito pós-conselho - {aluno.Nome} ({aluno.CodigoAluno}) - {componenteCurricular} - {request.Turma.Nome} ({request.Turma.AnoLetivo})";
             var descricao = new StringBuilder($"A nota/conceito pós-conselho do bimestre {bimestre} do componente curricular {componenteCurricular} da turma {turma} foi alterada pelo Professor {professor} em {data}.<br/>");
@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
         private async Task<string> ObterComponente(long componenteCurricularCodigo)
             => await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(componenteCurricularCodigo));
 
-        private async Task<AlunoReduzidoDto> ObterAluno(string alunoCodigo, int anoLetivo)
-            => await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(alunoCodigo, anoLetivo));
+        private async Task<AlunoReduzidoDto> ObterAluno(string alunoCodigo)
+            => await mediator.Send(new ObterAlunoPorCodigoQuery(alunoCodigo));
     }
 }

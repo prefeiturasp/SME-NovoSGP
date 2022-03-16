@@ -53,10 +53,11 @@ namespace SME.SGP.Dados
                          from pendencia_professor pp
                         inner join pendencia p on p.id = pp.pendencia_id
                         where not p.excluido
+                          and p.situacao = @situacao
                           and pp.turma_id = @turmaId
                           and p.tipo = @tipoPendencia";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, tipoPendencia });
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, tipoPendencia, situacao = SituacaoPendencia.Pendente });
         }
 
         public async Task<long> ObterPendenciaIdPorTurmaCCPeriodoEscolar(long turmaId, long componenteCurricularId, long periodoEscolarId, TipoPendencia tipoPendencia)

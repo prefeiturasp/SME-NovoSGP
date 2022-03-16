@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFechamentoPorTurmaPeriodoCCQueryHandler : IRequestHandler<ObterFechamentosPorTurmaPeriodoCCQuery, IEnumerable<FechamentoTurmaDisciplina>>
     {
-        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
 
-        public ObterFechamentoPorTurmaPeriodoCCQueryHandler(IRepositorioFechamentoTurma repositorioFechamentoTurma)
+        public ObterFechamentoPorTurmaPeriodoCCQueryHandler(IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
         }

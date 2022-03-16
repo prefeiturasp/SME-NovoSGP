@@ -33,7 +33,8 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task SincronizarObjetivosComJurema()
         {
-            var parametrosDataUltimaAtualizacao = await repositorioParametrosSistema.ObterUnicoChaveEValorPorTipo(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema);
+            var parametrosDataUltimaAtualizacao = await mediator.Send(new ObterParametroSistemaUnicoChaveEValorPorTipoQuery(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema));
+
             if (parametrosDataUltimaAtualizacao.HasValue)
             {
                 var dataUltimaAtualizacao = DateTime.Parse(parametrosDataUltimaAtualizacao.Value.Value);

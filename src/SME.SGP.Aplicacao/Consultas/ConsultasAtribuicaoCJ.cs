@@ -13,10 +13,10 @@ namespace SME.SGP.Aplicacao
     public class ConsultasAtribuicaoCJ : IConsultasAtribuicaoCJ
     {
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
 
 
-        public ConsultasAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioComponenteCurricular repositorioComponenteCurricular, IServicoEol servicoEOL)
+        public ConsultasAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IServicoEol servicoEOL)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));

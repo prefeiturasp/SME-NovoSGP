@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -10,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciasAulaPorAulaIdQueryHandler : IRequestHandler<ObterPendenciasAulaPorAulaIdQuery, long[]>
     {
-        private readonly IRepositorioPendenciaAula repositorioPendenciaAula;
+        private readonly IRepositorioPendenciaAulaConsulta repositorioPendenciaAula;
 
-        public ObterPendenciasAulaPorAulaIdQueryHandler(IRepositorioPendenciaAula repositorioPendenciaAula)
+        public ObterPendenciasAulaPorAulaIdQueryHandler(IRepositorioPendenciaAulaConsulta repositorioPendenciaAula)
         {
             this.repositorioPendenciaAula = repositorioPendenciaAula ?? throw new ArgumentNullException(nameof(repositorioPendenciaAula));
         }

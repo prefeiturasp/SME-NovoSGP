@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanosAEEPorDataFimQueryHandler : IRequestHandler<ObterPlanosAEEPorDataFimQuery, IEnumerable<PlanoAEE>>
     {
-        private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
+        private readonly IRepositorioPlanoAEEConsulta repositorioPlanoAEE;
 
-        public ObterPlanosAEEPorDataFimQueryHandler(IRepositorioPlanoAEE repositorioPlanoAEE)
+        public ObterPlanosAEEPorDataFimQueryHandler(IRepositorioPlanoAEEConsulta repositorioPlanoAEE)
         {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
         }

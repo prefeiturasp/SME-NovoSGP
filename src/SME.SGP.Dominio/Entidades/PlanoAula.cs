@@ -5,7 +5,6 @@ namespace SME.SGP.Dominio
     public class PlanoAula : EntidadeBase
     {
         public string Descricao { get; set; }
-        public string DesenvolvimentoAula { get; set; }
         public string RecuperacaoAula { get; set; }
         public string LicaoCasa { get; set; }
 

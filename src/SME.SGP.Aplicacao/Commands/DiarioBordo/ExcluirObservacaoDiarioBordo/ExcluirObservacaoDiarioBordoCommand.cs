@@ -1,19 +1,16 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
     public class ExcluirObservacaoDiarioBordoCommand : IRequest<bool>
     {
-        public ExcluirObservacaoDiarioBordoCommand(long diarioBordoId, long? usuarioId = null)
+        public ExcluirObservacaoDiarioBordoCommand(long diarioBordoObservacaoId)
         {
-            DiarioBordoId = diarioBordoId;
-            UsuarioId = usuarioId;
+            DiarioBordoObservacaoId = diarioBordoObservacaoId;
         }
 
-        public long DiarioBordoId { get; set; }
-        public long? UsuarioId { get; set; }
+        public long DiarioBordoObservacaoId { get; set; }
     }
 
 
@@ -21,9 +18,9 @@ namespace SME.SGP.Aplicacao
     {
         public ExcluirObservacaoDiarioBordoCommandValidator()
         {
-            RuleFor(c => c.DiarioBordoId)
+            RuleFor(c => c.DiarioBordoObservacaoId)
                 .NotEmpty()
-                .WithMessage("O id do diario de bordo deve ser informado.");
+                .WithMessage("O id da observacao do diario de bordo deve ser informado.");
         }
     }
 }

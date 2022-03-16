@@ -19,17 +19,18 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IConsultasAbrangencia consultasAbrangencia;
-        private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
+        
+        private readonly IRepositorioUeConsulta repositorioUe;
 
         public MigrarPlanoAulaCommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioPlanoAula repositorioPlanoAula,
-            IConsultasAbrangencia consultasAbrangencia, IRepositorioTurma repositorioTurma, IRepositorioUe repositorioUe)
+            IConsultasAbrangencia consultasAbrangencia, IRepositorioTurmaConsulta repositorioTurmaConsulta, IRepositorioUeConsulta repositorioUe)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }
 
@@ -60,7 +61,6 @@ namespace SME.SGP.Aplicacao
                     Id = planoTurma.Sobreescrever ? request.PlanoAulaMigrar.PlanoAulaId : 0,
                     AulaId = aulaConsultaDto.Id,
                     Descricao = planoAulaDto.Descricao,
-                    DesenvolvimentoAula = planoAulaDto.DesenvolvimentoAula,
                     LicaoCasa = request.PlanoAulaMigrar.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
                     ObjetivosAprendizagemComponente = !usuario.EhProfessorCj() ||
                                                    request.PlanoAulaMigrar.MigrarObjetivos ?
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarMigracao(MigrarPlanoAulaDto migrarPlanoAulaDto, string codigoRf, bool ehProfessorCj, string ueId, string turmaCodigo)
         {
 
-            var turmaAula = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turmaAula = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             Ue ue = repositorioUe.ObterPorId(turmaAula.UeId);
             turmaAula.AdicionarUe(ue);
 
@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
 
             var idsTurmasSelecionadas = migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).ToList();
 
-            var turmasSelecionadas = await repositorioTurma.ObterPorCodigosAsync(idsTurmasSelecionadas.ToArray());
+            var turmasSelecionadas = await repositorioTurmaConsulta.ObterPorCodigosAsync(idsTurmasSelecionadas.ToArray());
             if (turmasSelecionadas.Any(t => t.TipoTurma == TipoTurma.Programa))
             {
                 var turmasPrograma = await consultasAbrangencia.ObterTurmasPrograma(turmaAula.Ue.CodigoUe, turmaAula.ModalidadeCodigo);
@@ -95,6 +95,23 @@ namespace SME.SGP.Aplicacao
             }
 
             var turmasAtribuidasAoProfessor = await mediator.Send(new ObterTurmasPorProfessorRfQuery(codigoRf));
+
+            if (ehProfessorCj)
+            {
+                var turmasAtribuidasCJ = turmasAtribuidasAoProfessor.ToList();
+                var professoresAbragenciaTurma = await mediator.Send(new ObterProfessoresTurmaAbrangenciaQuery(turmaCodigo));
+
+                if(professoresAbragenciaTurma.Any(p=> p == codigoRf))
+                {
+                    turmasAtribuidasCJ.Add(new ProfessorTurmaDto()
+                    {
+                        CodTurma = Convert.ToInt32(turmaAula.CodigoTurma),
+                        Ano = turmaAula.Ano
+                    });
+                }
+
+                turmasAtribuidasAoProfessor = turmasAtribuidasCJ;
+            }
 
             await ValidaTurmasProfessor(ehProfessorCj, ueId,
                                   migrarPlanoAulaDto.DisciplinaId,

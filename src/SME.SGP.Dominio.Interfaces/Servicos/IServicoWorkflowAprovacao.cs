@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task Aprovar(WorkflowAprovacao workflow, bool aprovar, string observacao, long notificacaoId);
 
-        void ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar);
+        Task ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar);
         Task ConfiguracaoInicialAsync(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar);
 
         Task ExcluirWorkflowNotificacoes(long id);

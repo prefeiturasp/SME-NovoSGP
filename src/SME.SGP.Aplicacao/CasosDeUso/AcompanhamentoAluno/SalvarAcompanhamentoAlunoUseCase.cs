@@ -1,8 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Infra;
 using SME.SGP.Dominio;
-using System;
+using SME.SGP.Infra;
+using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,11 +16,69 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto dto)
         {
-            var acompanhamentoSemestre = await MapearAcompanhamentoSemestre(dto);
+            if (dto.TextoSugerido)
+                await CopiarArquivo(dto);
+
+            var acompanhamentoSemestre = await MapearAcompanhamentoSemestre(dto);            
 
             return (AcompanhamentoAlunoSemestreAuditoriaDto)acompanhamentoSemestre;
         }
 
+        private async Task CopiarArquivo(AcompanhamentoAlunoDto acompanhamentoAluno)
+        {
+            var imagens = Regex.Matches(acompanhamentoAluno.PercursoIndividual, "<img[^>]*>");
+            if (imagens != null)
+                foreach (var imagem in imagens)
+                {
+                    var nomeArquivo = Regex.Match(imagem.ToString(), @"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+");
+                    var novoCaminho = await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.RegistroIndividual, TipoArquivo.AcompanhamentoAluno));
+                    if (!string.IsNullOrEmpty(novoCaminho))
+                    {
+                        var caminhoBase = UtilArquivo.ObterDiretorioBase();
+                        var caminhoArquivoDestino = Path.Combine(caminhoBase, novoCaminho, nomeArquivo.ToString());                        
+                        var str = Regex.Replace(acompanhamentoAluno.PercursoIndividual, $@"https.+?{nomeArquivo.ToString()}", caminhoArquivoDestino);
+                        acompanhamentoAluno.PercursoIndividual = str;
+                    }
+                }
+        }
+
+        private async Task MoverRemoverExcluidosAlterar(string observacoes, string percursoIndividual, AcompanhamentoAlunoSemestre entidade)
+        {
+            string percursoIndividualAtual = entidade.PercursoIndividual;
+            string observacoesAtual = entidade.Observacoes;
+            if (!string.IsNullOrEmpty(percursoIndividual))
+            {
+                var moverArquivoPercursoIndividual = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.AcompanhamentoAluno, entidade.PercursoIndividual, percursoIndividual));
+                entidade.PercursoIndividual = moverArquivoPercursoIndividual;
+            }
+            if (!string.IsNullOrEmpty(observacoes))
+            {
+                var moverArquivoObservacoes = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.AcompanhamentoAluno, entidade.Observacoes, observacoes));
+                entidade.Observacoes = moverArquivoObservacoes;
+            }
+
+            if (!string.IsNullOrEmpty(percursoIndividualAtual))
+            {
+                await mediator.Send(new RemoverArquivosExcluidosCommand(percursoIndividualAtual, percursoIndividual, TipoArquivo.AcompanhamentoAluno.Name()));
+            }
+            if (!string.IsNullOrEmpty(observacoesAtual))
+            {
+                await mediator.Send(new RemoverArquivosExcluidosCommand(observacoesAtual, observacoes, TipoArquivo.AcompanhamentoAluno.Name()));
+            }
+        }
+        private async Task MoverArquivosIncluir(AcompanhamentoAlunoDto dto)
+        {
+            if (!string.IsNullOrEmpty(dto.PercursoIndividual))
+            {
+                var percursoIndividual = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.AcompanhamentoAluno, string.Empty, dto.PercursoIndividual));
+                dto.PercursoIndividual = percursoIndividual;
+            }
+            if (!string.IsNullOrEmpty(dto.Observacoes))
+            {
+                var observacoes = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.AcompanhamentoAluno, string.Empty, dto.Observacoes));
+                dto.Observacoes = observacoes;
+            }
+        }
         private async Task<AcompanhamentoAlunoSemestre> MapearAcompanhamentoSemestre(AcompanhamentoAlunoDto dto)
         {
             var acompanhamentoSemestre = dto.AcompanhamentoAlunoSemestreId > 0 ?
@@ -32,9 +91,7 @@ namespace SME.SGP.Aplicacao
         private async Task<AcompanhamentoAlunoSemestre> AtualizaObservacoesAcompanhamento(long acompanhamentoAlunoSemestreId, string observacoes, string percursoIndividual)
         {
             var acompanhamento = await ObterAcompanhamentoSemestrePorId(acompanhamentoAlunoSemestreId);
-            acompanhamento.Observacoes = observacoes;
-            acompanhamento.PercursoIndividual = percursoIndividual;
-
+            await MoverRemoverExcluidosAlterar(observacoes, percursoIndividual, acompanhamento);
             return await mediator.Send(new SalvarAcompanhamentoAlunoSemestreCommand(acompanhamento));
         }
 
@@ -43,6 +100,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<AcompanhamentoAlunoSemestre> GerarAcompanhamentoSemestre(AcompanhamentoAlunoDto dto)
         {
+            await MoverArquivosIncluir(dto);
             var acompanhamentoAlunoId = dto.AcompanhamentoAlunoId > 0 ?
                 dto.AcompanhamentoAlunoId :
                 await mediator.Send(new GerarAcompanhamentoAlunoCommand(dto.TurmaId, dto.AlunoCodigo));

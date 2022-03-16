@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTiposCalendarioPorAnoLetivoModalidadeQueryHandler : IRequestHandler<ObterTiposCalendarioPorAnoLetivoModalidadeQuery, IEnumerable<TipoCalendario>>
     {
-        private IRepositorioTipoCalendario repositorioTipoCalendario;
+        private IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
 
-        public ObterTiposCalendarioPorAnoLetivoModalidadeQueryHandler(IRepositorioTipoCalendario repositorioTipoCalendario)
+        public ObterTiposCalendarioPorAnoLetivoModalidadeQueryHandler(IRepositorioTipoCalendarioConsulta repositorioTipoCalendario)
         {
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }

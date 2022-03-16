@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 { 
     public class ObterNotaConselhoEmAprovacaoQueryHandler : IRequestHandler<ObterNotaConselhoEmAprovacaoQuery, double>
     {
-        private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
+        private readonly IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota;
 
-        public ObterNotaConselhoEmAprovacaoQueryHandler(IRepositorioConselhoClasseNota repositorioConselhoClasseNota)
+        public ObterNotaConselhoEmAprovacaoQueryHandler(IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota)
         {
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
         }

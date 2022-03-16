@@ -67,8 +67,13 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterRecorrenciaDaSerie(long aulaId, [FromServices] IConsultasAula consultas, [FromServices] IObterFrequenciaOuPlanoNaRecorrenciaUseCase obterFrequenciaOuPlanoNaRecorrenciaUseCase)
         {
             var recorrencia = consultas.ObterRecorrenciaDaSerie(aulaId);
-            var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica ? 1
-                : await consultas.ObterQuantidadeAulasRecorrentes(aulaId, RecorrenciaAula.RepetirTodosBimestres);
+            
+            var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica 
+                                               ? 1
+                                               : await consultas
+                                                       .ObterQuantidadeAulasRecorrentes(aulaId, 
+                                                                                        RecorrenciaAula.RepetirTodosBimestres);
+                
             var existeFrequenciaPlanoAula = await obterFrequenciaOuPlanoNaRecorrenciaUseCase.Executar(aulaId);
 
             var retorno = new AulaRecorrenciaDto()
@@ -91,5 +96,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(aulaId, turmaCodigo, componenteCurricular, dataAula, ehRegencia, tipoAula)));
         }
 
+        [HttpGet("sincronizar/aulas-regencia")]
+        [ProducesResponseType(typeof(CadastroAulaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_A, Policy = "Bearer")]
+        public async Task<IActionResult> SincronizarAulasRegencia([FromQuery] long? codigoTurma, [FromServices] IMediator mediator)
+        {
+            var dados = new DadosCriacaoAulasAutomaticasCarregamentoDto() { CodigoTurma = codigoTurma?.ToString() };
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.CarregarDadosUeTurmaRegenciaAutomaticamente, dados, Guid.NewGuid(), null));
+            return Ok();
+        }
     }
 }

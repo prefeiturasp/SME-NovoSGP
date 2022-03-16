@@ -43,7 +43,9 @@ namespace SME.SGP.Aplicacao
             foreach (var alunosNoComponente in alunosPorComponentes)
             {
                 var alunosCodigo = alunosNoComponente.Select(a => a.AlunoCodigo).ToList();
-                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunosCodigo, dataFim, turmaCodigo, alunosNoComponente.Key));
+
+                var comando = new CalcularFrequenciaPorTurmaCommand(alunosCodigo, dataFim, turmaCodigo, alunosNoComponente.Key);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
             }
 
         }

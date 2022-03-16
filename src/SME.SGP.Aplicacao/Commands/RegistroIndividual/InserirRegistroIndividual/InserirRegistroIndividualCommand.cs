@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirRegistroIndividualCommand : IRequest<AuditoriaDto>
+    public class InserirRegistroIndividualCommand : IRequest<RegistroIndividual>
     {
         public InserirRegistroIndividualCommand(long turmaId, long alunoCodigo, long componenteCurricularId, DateTime dataRegistro, string registro)
         {

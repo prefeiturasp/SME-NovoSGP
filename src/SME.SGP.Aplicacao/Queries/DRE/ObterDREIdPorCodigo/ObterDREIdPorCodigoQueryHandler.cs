@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDREIdPorCodigoQueryHandler : IRequestHandler<ObterDREIdPorCodigoQuery, long>
     {
-        private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioDreConsulta repositorioDre;
 
-        public ObterDREIdPorCodigoQueryHandler(IRepositorioDre repositorioDre)
+        public ObterDREIdPorCodigoQueryHandler(IRepositorioDreConsulta repositorioDre)
         {
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
         }

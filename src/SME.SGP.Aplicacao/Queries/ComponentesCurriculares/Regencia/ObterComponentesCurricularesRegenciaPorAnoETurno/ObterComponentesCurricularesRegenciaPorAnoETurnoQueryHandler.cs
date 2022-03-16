@@ -15,8 +15,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesRegenciaPorAnoETurnoQueryHandler : IRequestHandler<ObterComponentesCurricularesRegenciaPorAnoETurnoQuery, IEnumerable<DisciplinaDto>>
     {
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        public ObterComponentesCurricularesRegenciaPorAnoETurnoQueryHandler(IRepositorioComponenteCurricular repositorioComponenteCurricular)
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        public ObterComponentesCurricularesRegenciaPorAnoETurnoQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular)
         {
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }

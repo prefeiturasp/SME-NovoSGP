@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificaSeExisteParametroSistemaPorAnoQueryHandler : IRequestHandler<VerificaSeExisteParametroSistemaPorAnoQuery, bool>
     {
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
 
-        public VerificaSeExisteParametroSistemaPorAnoQueryHandler(IRepositorioParametrosSistema repositorioParametrosSistema)
+        public VerificaSeExisteParametroSistemaPorAnoQueryHandler(IRepositorioParametrosSistemaConsulta repositorioParametrosSistema)
         {
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }

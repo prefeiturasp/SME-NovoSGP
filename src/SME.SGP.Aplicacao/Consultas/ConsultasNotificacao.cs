@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -13,17 +15,21 @@ namespace SME.SGP.Aplicacao
     public class ConsultasNotificacao : ConsultasBase, IConsultasNotificacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
+        private readonly IMediator mediator;
+        private readonly IObterDataCriacaoRelatorioUseCase obterDataCriacaoRelatorio;
 
-        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IRepositorioUsuario repositorioUsuario, IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
+        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IContextoAplicacao contextoAplicacao, IMediator mediator, IObterDataCriacaoRelatorioUseCase obterDataCriacaoRelatorio) : base(contextoAplicacao)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
+            this.obterDataCriacaoRelatorio = obterDataCriacaoRelatorio ?? throw new System.ArgumentNullException(nameof(obterDataCriacaoRelatorio));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<PaginacaoResultadoDto<NotificacaoBasicaDto>> Listar(NotificacaoFiltroDto filtroNotificacaoDto)
         {
-            var retorno = await repositorioNotificacao.Obter(filtroNotificacaoDto.DreId,
+            var retorno = await mediator.Send(new ObterNotificacoesQuery(filtroNotificacaoDto.DreId,
                 filtroNotificacaoDto.UeId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioRf,
-                (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo, Paginacao);
+                (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo, this.Paginacao));
 
             var retornoPaginadoDto = new PaginacaoResultadoDto<NotificacaoBasicaDto>();
             retornoPaginadoDto.TotalRegistros = retorno.TotalRegistros;
@@ -48,9 +54,9 @@ namespace SME.SGP.Aplicacao
             return retornoPaginadoDto;
         }
 
-        public IEnumerable<NotificacaoBasicaDto> ListarPorAnoLetivoRf(int anoLetivo, string usuarioRf, int limite = 5)
+        public async Task<IEnumerable<NotificacaoBasicaDto>> ListarPorAnoLetivoRf(int anoLetivo, string usuarioRf, int limite = 5)
         {
-            var notificacao = repositorioNotificacao.ObterNotificacoesPorAnoLetivoERf(anoLetivo, usuarioRf, limite);
+            var notificacao = await mediator.Send(new ObterNotificacoesPorAnoLetivoERfQuery(anoLetivo, usuarioRf, limite));
 
             return notificacao.Select(x => new NotificacaoBasicaDto
             {
@@ -65,7 +71,7 @@ namespace SME.SGP.Aplicacao
             });
         }
 
-        public NotificacaoDetalheDto Obter(long notificacaoId)
+        public async Task<NotificacaoDetalheDto> Obter(long notificacaoId)
         {
             var notificacao = repositorioNotificacao.ObterPorId(notificacaoId);
 
@@ -75,7 +81,7 @@ namespace SME.SGP.Aplicacao
             if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
                 repositorioNotificacao.Salvar(notificacao);
 
-            var retorno = MapearEntidadeParaDetalheDto(notificacao);
+            var retorno = await MapearEntidadeParaDetalheDto(notificacao);
 
             return retorno;
         }
@@ -89,8 +95,8 @@ namespace SME.SGP.Aplicacao
         {
             return new NotificacaoBasicaListaDto
             {
-                Notificacoes = ListarPorAnoLetivoRf(anoLetivo, usuarioRf),
-                QuantidadeNaoLidas = QuantidadeNotificacoesNaoLidas(anoLetivo, usuarioRf)
+                Notificacoes = ListarPorAnoLetivoRf(anoLetivo, usuarioRf).Result,
+                QuantidadeNaoLidas = QuantidadeNotificacoesNaoLidas(anoLetivo, usuarioRf).Result
             };
         }
 
@@ -104,13 +110,21 @@ namespace SME.SGP.Aplicacao
             return EnumExtensao.ListarDto<NotificacaoTipo>();
         }
 
-        public int QuantidadeNotificacoesNaoLidas(int anoLetivo, string usuarioRf)
+        public async Task<int> QuantidadeNotificacoesNaoLidas(int anoLetivo, string usuarioRf)
         {
-            return repositorioNotificacao.ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(anoLetivo, usuarioRf);
+            return await mediator.Send(new ObterNotificacaoQuantNaoLidasPorAnoLetivoRfAnoLetivoQuery(anoLetivo, usuarioRf));
         }
 
-        private static NotificacaoDetalheDto MapearEntidadeParaDetalheDto(Dominio.Notificacao retorno)
+        private async Task<NotificacaoDetalheDto> MapearEntidadeParaDetalheDto(Notificacao retorno)
         {
+            string codigoRelatorio = string.Empty;
+            bool relatorioExiste = true;
+            if (NotificacaoTipo.Relatorio == retorno.Tipo)
+                codigoRelatorio = ObterCodigoArquivo(retorno.Mensagem);
+
+            if (!string.IsNullOrEmpty(codigoRelatorio))
+                relatorioExiste = await VerificarSeArquivoExiste(codigoRelatorio);
+
             return new NotificacaoDetalheDto()
             {
                 AlteradoEm = retorno.AlteradoEm.ToString(),
@@ -118,7 +132,7 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = retorno.CriadoEm.ToString(),
                 CriadoPor = retorno.CriadoPor,
                 Id = retorno.Id,
-                Mensagem = retorno.Mensagem,
+                Mensagem = relatorioExiste ? retorno.Mensagem : "O arquivo não está mais disponível, solicite a geração do relatório novamente.",
                 Situacao = retorno.Status.ToString(),
                 Tipo = retorno.Tipo.GetAttribute<DisplayAttribute>().Name,
                 Titulo = retorno.Titulo,
@@ -131,6 +145,19 @@ namespace SME.SGP.Aplicacao
                 Codigo = retorno.Codigo,
                 Observacao = retorno.WorkflowAprovacaoNivel == null ? string.Empty : retorno.WorkflowAprovacaoNivel.Observacao
             };
+        }
+
+        private static string ObterCodigoArquivo(string mensagem)
+        {
+            string pattern = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+            Regex rg = new Regex(pattern);
+            var codigo = rg.Match(mensagem);
+            return codigo.ToString();
+        }
+        private async Task<bool> VerificarSeArquivoExiste(string codigoArquivo)
+        {
+            var guidRelatorio = new Guid(codigoArquivo);
+            return await obterDataCriacaoRelatorio.Executar(guidRelatorio);
         }
     }
 }

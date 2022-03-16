@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     class ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQueryHandler : IRequestHandler<ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery, string[]>
     {
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
 
-        public ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQueryHandler(IRepositorioParametrosSistema repositorioParametrosSistema)
+        public ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQueryHandler(IRepositorioParametrosSistemaConsulta repositorioParametrosSistema)
         {
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }

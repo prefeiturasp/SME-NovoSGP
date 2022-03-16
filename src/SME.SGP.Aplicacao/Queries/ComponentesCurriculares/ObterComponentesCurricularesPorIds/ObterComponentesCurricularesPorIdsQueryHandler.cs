@@ -11,10 +11,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesPorIdsQueryHandler : IRequestHandler<ObterComponentesCurricularesPorIdsQuery, IEnumerable<DisciplinaDto>>
     {
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoEol servicoEol;
 
-        public ObterComponentesCurricularesPorIdsQueryHandler(IRepositorioComponenteCurricular repositorioComponenteCurricular, IServicoEol servicoEol)
+        public ObterComponentesCurricularesPorIdsQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IServicoEol servicoEol)
         {
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoEol = servicoEol ?? throw new System.ArgumentNullException(nameof(servicoEol));

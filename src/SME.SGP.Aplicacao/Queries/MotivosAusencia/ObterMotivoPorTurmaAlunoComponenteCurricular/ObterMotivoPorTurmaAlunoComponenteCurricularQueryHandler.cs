@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao.Queries.MotivosAusencia.ObterMotivosPorTurmaAlunoCom
 {
     public class ObterMotivoPorTurmaAlunoComponenteCurricularQueryHandler : IRequestHandler<ObterMotivoPorTurmaAlunoComponenteCurricularQuery, IEnumerable<JustificativaAlunoDto>>
     {
-        private readonly IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno;
+        private readonly IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno;
 
-        public ObterMotivoPorTurmaAlunoComponenteCurricularQueryHandler(IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno)
+        public ObterMotivoPorTurmaAlunoComponenteCurricularQueryHandler(IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno)
         {
             this.repositorioAnotacaoFrequenciaAluno = repositorioAnotacaoFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFrequenciaAluno));
         }

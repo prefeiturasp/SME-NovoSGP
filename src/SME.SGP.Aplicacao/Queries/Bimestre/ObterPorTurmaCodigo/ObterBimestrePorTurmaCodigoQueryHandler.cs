@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,17 +7,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterBimestrePorTurmaCodigoQueryHandler : IRequestHandler<ObterBimestrePorTurmaCodigoQuery, int>
     {
-        private readonly IRepositorioTurma repositorioTurma;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IMediator mediator;
 
-        public ObterBimestrePorTurmaCodigoQueryHandler(IRepositorioTurma repositorioTurma, IConsultasPeriodoEscolar consultasPeriodoEscolar)
+        public ObterBimestrePorTurmaCodigoQueryHandler(IConsultasPeriodoEscolar consultasPeriodoEscolar, IMediator mediator)
         {
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<int> Handle(ObterBimestrePorTurmaCodigoQuery request, CancellationToken cancellationToken)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(request.TurmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
             return await consultasPeriodoEscolar.ObterBimestre(request.Data, turma.ModalidadeCodigo, turma.Semestre);
         }
     }

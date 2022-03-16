@@ -12,12 +12,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasFechamentoAluno : IConsultasFechamentoAluno
     {
-        private readonly IRepositorioFechamentoAluno repositorio;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioAnotacaoFechamentoAluno repositorio;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
 
-        public ConsultasFechamentoAluno(IRepositorioFechamentoAluno repositorio,                                         
-                                        IRepositorioComponenteCurricular repositorioComponenteCurricular,
+        public ConsultasFechamentoAluno(IRepositorioAnotacaoFechamentoAluno repositorio,
+                                        IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                         IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FechamentoAlunoCompletoDto> ObterAnotacaoAluno(string codigoAluno, long fechamentoId, string codigoTurma, int anoLetivo)
         {
-            var consultaFechamentoAluno = await repositorio.ObterFechamentoAluno(fechamentoId, codigoAluno);
+            var anotacaoAluno = await ObterAnotacaoPorAlunoEFechamento(fechamentoId, codigoAluno);
             var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(codigoTurma, anoLetivo));
             if (dadosAlunos == null || !dadosAlunos.Any(da => da.CodigoEOL.Equals(codigoAluno)))
                 throw new NegocioException($"Não foram localizados dados do aluno {codigoAluno} na turma {codigoTurma} no EOL para o ano letivo {anoLetivo}");
@@ -36,7 +36,6 @@ namespace SME.SGP.Aplicacao
 
             dadosAluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(codigoAluno, anoLetivo));
 
-            var anotacaoAluno = consultaFechamentoAluno;
             var anotacaoDto = anotacaoAluno == null ?
                             new FechamentoAlunoCompletoDto() { Aluno = dadosAluno } :
                             MapearParaDto(anotacaoAluno, dadosAluno);
@@ -64,10 +63,10 @@ namespace SME.SGP.Aplicacao
             return anotacoesDto;
         }
 
-        public async Task<FechamentoAluno> ObterAnotacaoPorAlunoEFechamento(long fechamentoId, string codigoAluno)
-            => await repositorio.ObterFechamentoAluno(fechamentoId, codigoAluno);
+        public async Task<AnotacaoFechamentoAluno> ObterAnotacaoPorAlunoEFechamento(long fechamentoId, string codigoAluno)
+            => await repositorio.ObterPorFechamentoEAluno(fechamentoId, codigoAluno);
 
-        private FechamentoAlunoCompletoDto MapearParaDto(FechamentoAluno anotacaoAluno, AlunoDadosBasicosDto dadosAluno)
+        private FechamentoAlunoCompletoDto MapearParaDto(AnotacaoFechamentoAluno anotacaoAluno, AlunoDadosBasicosDto dadosAluno)
         {
             if (anotacaoAluno == null)
                 return null;

@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDescricaoComponenteCurricularPorIdQueryHandler : IRequestHandler<ObterDescricaoComponenteCurricularPorIdQuery, string>
     {
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
 
-        public ObterDescricaoComponenteCurricularPorIdQueryHandler(IRepositorioComponenteCurricular repositorioComponenteCurricular)
+        public ObterDescricaoComponenteCurricularPorIdQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular)
         {
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }

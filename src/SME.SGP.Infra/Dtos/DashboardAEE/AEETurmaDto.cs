@@ -6,7 +6,7 @@ namespace SME.SGP.Infra.Dtos
     {
         public long Quantidade { get; set; }
         public Modalidade Modalidade { get; set; }
-        public int AnoTurma { get; set; }
+        public string AnoTurma { get; set; }
         public string Nome { get; set; }
         public string Descricao { get; set; }
         public int Ordem { get => Modalidade == Modalidade.EducacaoInfantil ? 1 :

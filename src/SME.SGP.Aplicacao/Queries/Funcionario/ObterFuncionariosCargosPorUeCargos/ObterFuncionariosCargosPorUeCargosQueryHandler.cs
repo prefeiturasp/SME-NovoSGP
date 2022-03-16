@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                     {
                         listaRetorno.Add(new FuncionarioCargoDTO()
                         {
-                            CargoId = (int)Cargo.Supervisor,
+                            CargoId = Cargo.Supervisor,
                             FuncionarioRF = supervisorParaAdicionar.SupervisorId
                         });
                     }

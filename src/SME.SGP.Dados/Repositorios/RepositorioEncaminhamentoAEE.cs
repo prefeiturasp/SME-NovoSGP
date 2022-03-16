@@ -280,5 +280,25 @@ namespace SME.SGP.Dados.Repositorios
             var existeEncaminhamentoAEEAluno = await database.Conexao.QueryFirstOrDefaultAsync<int>(sql, new { codigoEstudante });
             return existeEncaminhamentoAEEAluno >= 1 ? true : false;
         }
+
+        public async Task<IEnumerable<EncaminhamentoAEECodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoAEEId(long encaminhamentoId)
+        {
+            var sql = @"select
+	                        a.codigo
+                        from
+	                        encaminhamento_aee ea
+                        inner join encaminhamento_aee_secao eas on
+	                        ea.id = eas.encaminhamento_aee_id
+                        inner join questao_encaminhamento_aee qea on
+	                        eas.id = qea.encaminhamento_aee_secao_id
+                        inner join resposta_encaminhamento_aee rea on
+	                        qea.id = rea.questao_encaminhamento_id
+                        inner join arquivo a on
+	                        rea.arquivo_id = a.id
+                        where
+	                        ea.id = @encaminhamentoId";
+
+            return await database.Conexao.QueryAsync<EncaminhamentoAEECodigoArquivoDto>(sql.ToString(),new { encaminhamentoId });
+        }
     }
 }

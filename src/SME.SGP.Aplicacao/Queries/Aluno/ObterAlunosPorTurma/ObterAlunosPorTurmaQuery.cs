@@ -7,10 +7,12 @@ namespace SME.SGP.Aplicacao
     public class ObterAlunosPorTurmaQuery : IRequest<IEnumerable<AlunoPorTurmaResposta>>
     {
         public string TurmaCodigo { get; set; }
+        public bool ConsideraInativos { get; set; }
 
-        public ObterAlunosPorTurmaQuery(string turmaCodigo)
+        public ObterAlunosPorTurmaQuery(string turmaCodigo, bool consideraInativos = false)
         {
             TurmaCodigo = turmaCodigo;
+            ConsideraInativos = consideraInativos;
         }
     }
 }

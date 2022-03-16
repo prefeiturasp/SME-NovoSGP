@@ -728,8 +728,8 @@ namespace SME.SGP.Dados.Repositorios
             queryNova.AppendLine($"{ (ehTodasDres ? "null" : string.IsNullOrWhiteSpace(dreId) ? "null" : $"'{dreId}'")}, ");
             queryNova.AppendLine($"{(ehTodasUes ? "null" : string.IsNullOrWhiteSpace(ueId) ? "null" : $"'{ueId}'")},");
             queryNova.AppendLine($"{podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme}, ");
-            queryNova.AppendLine($"{(dataInicio.HasValue ? $"'{dataInicio.Value.Date}'" : "null")}, ");
-            queryNova.AppendLine($"{(dataFim.HasValue ? $"'{dataFim.Value.Date}'" : "null")}, ");
+            queryNova.AppendLine($"{(dataInicio.HasValue ? $"TO_DATE(TO_CHAR('{dataInicio.Value.Date.ToString("MM-dd-yyyy")}':: DATE, 'yyyy-mm-dd'), 'yyyy-mm-dd')" : "null")}, ");
+            queryNova.AppendLine($"{(dataFim.HasValue ? $"TO_DATE(TO_CHAR('{dataFim.Value.Date.ToString("MM-dd-yyyy")}':: DATE, 'yyyy-mm-dd'), 'yyyy-mm-dd')" : "null")}, ");
             queryNova.AppendLine($"{(tipoEventoId.HasValue ? tipoEventoId.ToString() : "null")}, ");
             queryNova.AppendLine($"{(string.IsNullOrWhiteSpace(nomeEvento) ? "null" : $"'{nomeEvento}'")},");
             queryNova.AppendLine($"{usuario.EhPerfilSME()},");
@@ -1112,7 +1112,8 @@ namespace SME.SGP.Dados.Repositorios
                             e.ue_id,
                             e.dre_id,
                             e.nome,
-                            e.feriado_id                       
+                            e.feriado_id,
+                            e.tipo_evento_id TipoEventoId
                         from
 	                        evento e
                                 inner join tipo_calendario tc

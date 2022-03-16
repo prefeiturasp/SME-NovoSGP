@@ -4,8 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,14 +11,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterGradeAulasPorTurmaEProfessorQueryHandler : IRequestHandler<ObterGradeAulasPorTurmaEProfessorQuery, GradeComponenteTurmaAulasDto>
     {
-        private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioGrade repositorioGrade;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
-        public ObterGradeAulasPorTurmaEProfessorQueryHandler(IRepositorioTurma repositorioTurma,
-                                                             IRepositorioAula repositorioAula,
+        public ObterGradeAulasPorTurmaEProfessorQueryHandler(IRepositorioTurmaConsulta repositorioTurma,
+                                                             IRepositorioAulaConsulta repositorioAula,
                                                              IRepositorioGrade repositorioGrade,
                                                              IServicoUsuario servicoUsuario,
                                                              IMediator mediator)
@@ -52,8 +50,8 @@ namespace SME.SGP.Aplicacao
                 request.EhGestor = usuario.EhGestorEscolar();
             }
 
-            var horascadastradas = await ObtenhaHorasCadastradas(request.ComponenteCurricular, semana, request.DataAula, request.CodigoRf, turma, request.EhRegencia, request.EhGestor);
-            var aulasRestantes = horasGrade - horascadastradas;
+            var horasCadastradas = await ObtenhaHorasCadastradas(request.ComponenteCurricular, semana, request.DataAula, request.CodigoRf, turma, request.EhRegencia, request.EhGestor);
+            var aulasRestantes = horasCadastradas > horasGrade ? 0 : (horasGrade - horasCadastradas);
 
             return new GradeComponenteTurmaAulasDto
             {
@@ -71,11 +69,10 @@ namespace SME.SGP.Aplicacao
             if (componenteCurricularId == 1030)
                 return 4;
 
-            int ano;
-            int.TryParse(turma.Ano, out ano);
+            int.TryParse(turma.Ano, out int ano);
 
             // Busca grade a partir dos dados da abrangencia da turma
-            var grade = await mediator.Send(new ObterGradePorTipoEscolaModalidadeDuracaoAnoQuery(turma.Ue.TipoEscola, turma.ModalidadeCodigo, turma.QuantidadeDuracaoAula, ano));
+            var grade = await mediator.Send(new ObterGradePorTipoEscolaModalidadeDuracaoAnoQuery(turma.Ue.TipoEscola, turma.ModalidadeCodigo, turma.QuantidadeDuracaoAula, ano, turma.AnoLetivo.ToString()));
             if (grade == null)
                 return 0;
 

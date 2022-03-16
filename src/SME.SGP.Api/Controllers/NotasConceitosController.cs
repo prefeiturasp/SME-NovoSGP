@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -19,15 +20,25 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(NotasConceitosRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
-        public async Task<IActionResult> Get([FromQuery] ListaNotasConceitosConsultaRefatoradaDto consultaListaNotasConceitosDto, [FromServices] IObterNotasParaAvaliacoesUseCase obterNotasParaAvaliacoesUseCase)
+        [Permissao(Permissao.NC_C, Permissao.NC_I, Permissao.L_I, Permissao.L_C, Policy = "Bearer")]
+        public async Task<IActionResult> Get([FromQuery] ListaNotasConceitosDto consultaListaNotasConceitosDto, [FromServices] IObterNotasParaAvaliacoesUseCase obterNotasParaAvaliacoesUseCase)
         {
             return Ok(await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto));
         }
+
+        [HttpGet("avaliacoes-bimestre")]
+        [ProducesResponseType(typeof(NotasConceitosListaoRetornoDto),200)]
+        [ProducesResponseType(typeof(RetornoBaseDto),500)]
+        [Permissao(Permissao.NC_C, Permissao.NC_I, Permissao.L_I, Permissao.L_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListaNotaAvaliacoesBimestre([FromQuery]ListaNotasConceitosBimestreRefatoradaDto conceitosBimestreRefatoradaDto,[FromServices]IObterNotasParaAvaliacoesListaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(conceitosBimestreRefatoradaDto));
+        }
+
         [HttpGet("periodos")]
         [ProducesResponseType(typeof(IEnumerable<PeriodosParaConsultaNotasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
+        [Permissao(Permissao.NC_C, Permissao.NC_I,Permissao.L_I, Permissao.L_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPeriodosParaConsulta([FromQuery] ObterPeriodosParaConsultaNotasFiltroDto filtro, [FromServices] IObterPeriodosParaConsultaNotasUseCase obterNotasParaAvaliacoesUseCase)
         {
             return Ok(await obterNotasParaAvaliacoesUseCase.Executar(filtro));
@@ -91,6 +102,22 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterNotasPorBimestresUeAlunoTurmaUseCase.Executar(new NotaConceitoPorBimestresAlunoTurmaDto(ueCodigo, turmaCodigo, alunoCodigo, bimestres)));
         }
+
+        [HttpGet("turmas/{turmaId}/periodo-escolar/{periodoEscolarId}/alunos/{alunoCodigo}/componentes-curriculares/{componenteCurricular}")]
+        [ProducesResponseType(typeof(IEnumerable<AvaliacaoNotaAlunoDto>), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Authorize("Bearer")]
+        public async Task<IActionResult> ObterNotasAvaliacoesPorTurmaBimestreAluno(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular, [FromServices] IObterAtividadesNotasAlunoPorTurmaPeriodoUseCase useCase)
+        {
+            var avaliacoes = await useCase.Executar(new FiltroTurmaAlunoPeriodoEscolarDto(turmaId, periodoEscolarId, alunoCodigo, componenteCurricular));
+
+            if (avaliacoes is null)
+                return NoContent();
+
+            return Ok(avaliacoes);
+        }
+
 
     }
 }

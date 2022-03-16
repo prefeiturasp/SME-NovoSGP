@@ -1,18 +1,17 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dados.Repositorios;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterNotaPorAtividadeGoogleClassIdQueryHandler : IRequestHandler<ObterNotaPorAtividadeGoogleClassIdQuery, NotaConceito>
     {
-        private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
+        private readonly IRepositorioNotasConceitosConsulta repositorioNotasConceitos;
 
-        public ObterNotaPorAtividadeGoogleClassIdQueryHandler(IRepositorioNotasConceitos repositorioNotasConceitos)
+        public ObterNotaPorAtividadeGoogleClassIdQueryHandler(IRepositorioNotasConceitosConsulta repositorioNotasConceitos)
         {
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
         }

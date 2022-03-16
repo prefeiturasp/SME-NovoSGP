@@ -9,5 +9,10 @@
         public string Turma { get; set; }
         public string DreCodigo { get; set; }
         public string UeCodigo { get; set; }
+        public string TurmaComModalidade()
+                 => $"{Modalidade}-{Turma}";
+        public string AnoComModalidade()
+                 => $"{Modalidade}-{Ano}";
+
     }
 }

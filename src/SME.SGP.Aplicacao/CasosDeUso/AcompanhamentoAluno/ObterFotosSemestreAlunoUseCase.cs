@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             if (ano == 0)
                 throw new NegocioException("O ano do acompanhamento do estudante/criança não foi localizado");
 
-            var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeFotosAcompanhamentoAluno, ano));
+            var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeImagensPercursoIndividualCrianca, ano));
             if (parametroQuantidade == null)
                 throw new NegocioException("O parâmetro de quantidade de fotos do acompanhamento do estudante/criança não foi localizado");
 

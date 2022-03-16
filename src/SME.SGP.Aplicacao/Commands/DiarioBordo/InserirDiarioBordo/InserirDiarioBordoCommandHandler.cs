@@ -1,13 +1,12 @@
-﻿using MediatR;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,18 +14,21 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
+        private readonly IServicoEol servicoEol;
 
         public InserirDiarioBordoCommandHandler(IMediator mediator,
-                                                IRepositorioDiarioBordo repositorioDiarioBordo)
+                                                IRepositorioDiarioBordo repositorioDiarioBordo, IServicoEol servicoEol)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
+            this.servicoEol = servicoEol;
         }
 
         public async Task<AuditoriaDto> Handle(InserirDiarioBordoCommand request, CancellationToken cancellationToken)
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
+            bool inseridoCJ = false;
             
             if(aula == null)
                 throw new NegocioException("Aula informada não existe");
@@ -44,23 +46,35 @@ namespace SME.SGP.Aplicacao
                 if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
                 {
                     if (!atribuicoesEsporadica.Where(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
-                        throw new NegocioException($"Você não possui permissão para inserir registro de diário de bordo neste período");
+                        throw new NegocioException($"Você não possui permissão para inserir registro de diário de bordo neste período");   
                 }
+                inseridoCJ = true;
             }
 
-            var diarioBordo = MapearParaEntidade(request);
+            await MoverRemoverExcluidos(request);
+            var diarioBordo = MapearParaEntidade(request, turma.Id, inseridoCJ);
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
 
             return (AuditoriaDto)diarioBordo;
         }
 
-        private DiarioBordo MapearParaEntidade(InserirDiarioBordoCommand request)
+        private async Task MoverRemoverExcluidos(InserirDiarioBordoCommand diario)
+        {
+            if (!string.IsNullOrEmpty(diario.Planejamento))
+            {
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.DiarioBordo, string.Empty, diario.Planejamento));
+                diario.Planejamento = moverArquivo;
+            }
+        }
+        private DiarioBordo MapearParaEntidade(InserirDiarioBordoCommand request, long turmaId, bool inseridoCJ)
             => new DiarioBordo()
             { 
                 AulaId = request.AulaId,
                 Planejamento = request.Planejamento,
-                ReflexoesReplanejamento = request.ReflexoesReplanejamento
+                ComponenteCurricularId = request.ComponenteCurricularId,
+                TurmaId = turmaId,
+                InseridoCJ = inseridoCJ
             };
     }
 }

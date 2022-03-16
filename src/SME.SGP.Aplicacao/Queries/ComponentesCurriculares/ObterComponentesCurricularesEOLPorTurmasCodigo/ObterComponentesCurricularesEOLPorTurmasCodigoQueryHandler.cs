@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             var turmas = String.Join("&codigoTurmas=", request.CodigosDeTurmas);
 
-            var resposta = await httpClient.GetAsync($"/api/v1/componentes-curriculares/turmas?codigoTurmas={turmas}");
+            var resposta = await httpClient.GetAsync($"/api/v1/componentes-curriculares/turmas?codigoTurmas={turmas}{(request.AdicionarComponentesPlanejamento.HasValue ? $"&adicionarComponentesPlanejamento={request.AdicionarComponentesPlanejamento.Value}" : string.Empty)}");
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {

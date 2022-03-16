@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao.Queries
 {
     public class ValidaSeExisteUePorCodigoQueryHandler : IRequestHandler<ValidaSeExisteUePorCodigoQuery, bool>
     {
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
 
-        public ValidaSeExisteUePorCodigoQueryHandler(IRepositorioUe repositorioUe)
+        public ValidaSeExisteUePorCodigoQueryHandler(IRepositorioUeConsulta repositorioUe)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }

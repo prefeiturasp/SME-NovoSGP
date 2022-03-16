@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
     public class ObterPlanosAEEQueryHandler : ConsultasBase, IRequestHandler<ObterPlanosAEEQuery, PaginacaoResultadoDto<PlanoAEEResumoDto>>
     {
         public IMediator mediator { get; }
-        public IRepositorioPlanoAEE repositorioPlanoAEE { get; }
+        public IRepositorioPlanoAEEConsulta repositorioPlanoAEE { get; }
 
-        public ObterPlanosAEEQueryHandler(IContextoAplicacao contextoAplicacao, IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE) : base(contextoAplicacao)
+        public ObterPlanosAEEQueryHandler(IContextoAplicacao contextoAplicacao, IMediator mediator, IRepositorioPlanoAEEConsulta repositorioPlanoAEE) : base(contextoAplicacao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
@@ -49,15 +49,13 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(planoAEE.AlunoCodigo, planoAEE.TurmaAno));
-
                     listaPlanosAEE.Add(new PlanoAEEResumoDto()
                     {
                         Id = planoAEE.Id,
                         Situacao = planoAEE.Situacao != 0 ? planoAEE.Situacao.Name() : "",
                         Turma = $"{planoAEE.TurmaModalidade.ShortName()} - {planoAEE.TurmaNome}",
-                        Numero = aluno?.NumeroAlunoChamada ?? 0,
-                        Nome = $"{aluno?.NomeAluno}",
+                        Numero = planoAEE.AlunoNumero,
+                        Nome = planoAEE.AlunoNome,
                         PossuiEncaminhamentoAEE = planoAEE.PossuiEncaminhamentoAEE,
                         EhAtendidoAEE = (planoAEE.Situacao != SituacaoPlanoAEE.Encerrado && planoAEE.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamento),
                         CriadoEm = planoAEE.CriadoEm,

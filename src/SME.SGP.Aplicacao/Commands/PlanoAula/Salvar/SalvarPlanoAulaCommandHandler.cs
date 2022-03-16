@@ -3,14 +3,14 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPlanoAulaCommandHandler : AbstractUseCase, IRequestHandler<SalvarPlanoAulaCommand, AuditoriaDto>
+    public class SalvarPlanoAulaCommandHandler : AbstractUseCase, IRequestHandler<SalvarPlanoAulaCommand, PlanoAulaDto>
     {
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
@@ -35,10 +35,11 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public async Task<AuditoriaDto> Handle(SalvarPlanoAulaCommand request, CancellationToken cancellationToken)
+        public async Task<PlanoAulaDto> Handle(SalvarPlanoAulaCommand request, CancellationToken cancellationToken)
         {
             try
             {
+                unitOfWork.IniciarTransacao();
                 var planoAulaDto = request.PlanoAula;
                 var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
@@ -60,6 +61,16 @@ namespace SME.SGP.Aplicacao
                     await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
 
                 PlanoAula planoAula = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(planoAulaDto.AulaId));
+                var planoAulaResumidoDto = new PlanoAulaResumidoDto()
+                {
+                    DescricaoNovo = request.PlanoAula.Descricao,
+                    RecuperacaoAulaNovo = request.PlanoAula.RecuperacaoAula,
+                    LicaoCasaNovo = request.PlanoAula.LicaoCasa,
+
+                    DescricaoAtual = planoAula?.Descricao ?? string.Empty,
+                    LicaoCasaAtual = planoAula?.LicaoCasa ?? string.Empty,
+                    RecuperacaoAulaAtual = planoAula?.RecuperacaoAula ?? string.Empty
+                };
                 planoAula = MapearParaDominio(planoAulaDto, planoAula);
 
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
@@ -103,8 +114,30 @@ namespace SME.SGP.Aplicacao
                     {
                         await repositorioObjetivosAula.SalvarAsync(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagem.Id, objetivoAprendizagem.ComponenteCurricularId));
                     }
+                unitOfWork.PersistirTransacao();
 
-                return (AuditoriaDto)planoAula;
+                 var planoAulaDescricao = await MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual,TipoArquivo.PlanoAula);
+                 var recuperacaoAula = await MoverRemoverExcluidos(planoAulaResumidoDto.RecuperacaoAulaNovo, planoAulaResumidoDto.RecuperacaoAulaAtual,TipoArquivo.PlanoAulaRecuperacao);
+                 var licaoCasa = await MoverRemoverExcluidos(planoAulaResumidoDto.LicaoCasaNovo, planoAulaResumidoDto.LicaoCasaAtual, TipoArquivo.PlanoAulaLicaoCasa);
+
+                planoAulaDto.Id = planoAula.Id;
+                planoAulaDto.Descricao = planoAulaDescricao;
+                planoAulaDto.RecuperacaoAula = recuperacaoAula;
+                planoAulaDto.LicaoCasa = licaoCasa;
+
+                //Se houver plano para copiar
+                if (planoAulaDto.CopiarConteudo != null)
+                {
+                    var migrarPlanoAula = planoAulaDto.CopiarConteudo;
+
+                    migrarPlanoAula.PlanoAulaId = planoAula.Id;
+
+                    await mediator.Send(new MigrarPlanoAulaCommand(migrarPlanoAula, usuario));
+                }
+
+                planoAulaDto.Id = planoAula.Id;
+
+                return planoAulaDto;
             }
             catch (Exception ex)
             {
@@ -119,14 +152,25 @@ namespace SME.SGP.Aplicacao
                 planoAula = new PlanoAula();
 
             planoAula.AulaId = planoDto.AulaId;
-            planoAula.Descricao = planoDto.Descricao;
-            planoAula.DesenvolvimentoAula = planoDto.DesenvolvimentoAula;
-            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula;
-            planoAula.LicaoCasa = planoDto.LicaoCasa;
+            planoAula.Descricao = planoDto.Descricao?.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAula.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula?.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAulaRecuperacao.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAula.LicaoCasa = planoDto.LicaoCasa?.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAulaLicaoCasa.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
 
             return planoAula;
         }
-
+        private async Task<string> MoverRemoverExcluidos(string novo, string atual, TipoArquivo tipo)
+        {
+            string novaDescricao = string.Empty;
+            if (!string.IsNullOrEmpty(novo))
+            {
+                 novaDescricao = await mediator.Send(new MoverArquivosTemporariosCommand(tipo, atual, novo));
+            }
+            if (!string.IsNullOrEmpty(atual))
+            {
+                 await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, tipo.Name()));
+            }
+            return novaDescricao;
+        }
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
             if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))

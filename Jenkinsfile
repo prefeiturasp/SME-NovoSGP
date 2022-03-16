@@ -31,16 +31,16 @@ pipeline {
           }
         }
       
-        //stage('AnaliseCodigo') {
-	     //   when { branch 'release' }
-         // steps {
-         //     withSonarQubeEnv('sonarqube-local'){
-         //       sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP-API-EOL"'
-         //       sh 'dotnet build SME.Pedagogico.API.sln'
-         //       sh 'dotnet-sonarscanner'
-         //   }
-         // }
-       // }
+        stage('Sonar') {
+	       when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
+         steps {
+             withSonarQubeEnv('sonarqube-local'){
+               sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP"'
+               sh 'dotnet build SME.SGP.sln'
+               sh 'dotnet-sonarscanner'
+           }
+         }
+       }
 
         stage('Build') {
           when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; } } 
@@ -66,7 +66,7 @@ pipeline {
                     if ( env.branchname == 'main' ||  env.branchname == 'master' || env.branchname == 'homolog' || env.branchname == 'release' ) {
                         sendTelegram("🤩 [Deploy ${env.branchname}] Job Name: ${JOB_NAME} \nBuild: ${BUILD_DISPLAY_NAME} \nMe aprove! \nLog: \n${env.BUILD_URL}")
                         timeout(time: 24, unit: "HOURS") {
-                            input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marlon_goncalves, bruno_alevato, robson_silva, luiz_araujo, rafael_losi'
+                            input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marlon_goncalves, robson_silva, rafael_losi, ricardo_coda'
                         }
                     }
 					withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
@@ -82,13 +82,50 @@ pipeline {
         	 
       stage('Flyway') {
         agent { label 'master' }
+        when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }
         steps{
           withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
             checkout scm
             sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
           }
         }		
-      }    
+      }
+
+      stage('Deploy Treinamento'){
+          when { anyOf { branch 'release'; } }        
+          steps {
+              script{
+                  try {
+                      withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
+                          sh('cp $config '+"$home"+'/.kube/config')
+                          sh "kubectl -n sme-novosgp-treino rollout restart deploy"
+                          sh('rm -f '+"$home"+'/.kube/config')
+                      }
+                  }
+                  catch (err) {
+                      echo err.getMessage()
+                  }
+              }
+          }           
+      }
+
+      stage('Treinamento Flyway') {
+        agent { label 'master' }
+        when { anyOf {  branch 'release'; } }
+        steps{
+          script{
+            try {
+                withCredentials([string(credentialsId: "flyway_sgp_treinamento", variable: 'url')]) {
+                checkout scm
+                sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+                }
+            } 
+            catch (err) {
+                echo err.getMessage()
+            }
+          }
+        }		
+      }        
     }
 
   post {

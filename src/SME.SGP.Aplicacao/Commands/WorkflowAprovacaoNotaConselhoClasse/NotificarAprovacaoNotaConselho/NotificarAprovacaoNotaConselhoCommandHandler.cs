@@ -16,21 +16,18 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioNotificacao repositorioNotificacao;
-        private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IServicoEol servicoEOL;
         public NotificarAprovacaoNotaConselhoCommandHandler(IMediator mediator, 
                                                             IRepositorioNotificacao repositorioNotificacao,
-                                                            IRepositorioTurma repositorioTurma,
-                                                            IRepositorioUsuario repositorioUsuario,
+                                                            IRepositorioTurmaConsulta repositorioTurma,
                                                             IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                                             IServicoEol servicoEOL)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
@@ -38,7 +35,7 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(NotificarAprovacaoNotaConselhoCommand request, CancellationToken cancellationToken)
         {
             var usuarioRf = await mediator.Send(new ObterCriadorWorkflowQuery(request.WorkFlowId));
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(usuarioRf, "");
+            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(usuarioRf));
 
             if(usuario != null)
             {

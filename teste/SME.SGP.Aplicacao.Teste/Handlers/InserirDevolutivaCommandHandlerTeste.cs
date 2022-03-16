@@ -18,14 +18,14 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         private const string textoDescricao = "teste de inclusão de devolutiva... teste de inclusão de devolutiva... teste de inclusão de devolutiva... teste de inclusão de devolutiva... teste de inclusão de devolutiva.....";
         private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioDevolutiva> repositorioDevolutiva;
-        private readonly Mock<IRepositorioTurma> repositorioTurma;
+        private readonly Mock<IRepositorioTurmaConsulta> repositorioTurma;
         private readonly InserirDevolutivaCommandHandler inserirDevolutivaCommandHandler;
 
         public InserirDevolutivaCommandHandlerTeste()
         {
             mediator = new Mock<IMediator>();
             repositorioDevolutiva = new Mock<IRepositorioDevolutiva>();
-            repositorioTurma = new Mock<IRepositorioTurma>();
+            repositorioTurma = new Mock<IRepositorioTurmaConsulta>();
             inserirDevolutivaCommandHandler = new InserirDevolutivaCommandHandler(mediator.Object, repositorioDevolutiva.Object, repositorioTurma.Object);
         }
 

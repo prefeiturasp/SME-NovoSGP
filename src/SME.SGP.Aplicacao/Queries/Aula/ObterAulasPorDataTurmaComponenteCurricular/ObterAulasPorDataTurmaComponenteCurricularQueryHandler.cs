@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,8 +9,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulasPorDataTurmaComponenteCurricularQueryHandler : IRequestHandler<ObterAulasPorDataTurmaComponenteCurricularQuery, IEnumerable<AulaConsultaDto>>
     {
-        private readonly IRepositorioAula repositorioAula;
-        public ObterAulasPorDataTurmaComponenteCurricularQueryHandler(IRepositorioAula repositorioAula)
+        private readonly IRepositorioAulaConsulta repositorioAula;
+        public ObterAulasPorDataTurmaComponenteCurricularQueryHandler(IRepositorioAulaConsulta repositorioAula)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
         }

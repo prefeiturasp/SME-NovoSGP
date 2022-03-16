@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulaPorCodigoTurmaComponenteEDataQueryHandler : IRequestHandler<ObterAulaPorCodigoTurmaComponenteEDataQuery, DataAulaDto>
     {
-        private readonly IRepositorioAula repositorio;
+        private readonly IRepositorioAulaConsulta repositorio;
 
-        public ObterAulaPorCodigoTurmaComponenteEDataQueryHandler(IRepositorioAula repositorio)
+        public ObterAulaPorCodigoTurmaComponenteEDataQueryHandler(IRepositorioAulaConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

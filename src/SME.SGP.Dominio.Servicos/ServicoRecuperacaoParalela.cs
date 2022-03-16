@@ -13,10 +13,10 @@ namespace SME.SGP.Dominio.Servicos
         private const string RecuperacaoParalelaFrequente = "RecuperacaoParalelaFrequente";
         private const string RecuperacaoParalelaNaoComparece = "RecuperacaoParalelaNaoComparece";
         private const string RecuperacaoParalelaPoucoFrequente = "RecuperacaoParalelaPoucoFrequente";
-        private readonly IRepositorioFrequencia repositorioFrequencia;        
+        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;        
         private readonly IMediator mediator;
 
-        public ServicoRecuperacaoParalela(IRepositorioFrequencia repositorioFrequencia, IMediator mediator)
+        public ServicoRecuperacaoParalela(IRepositorioFrequenciaConsulta repositorioFrequencia, IMediator mediator)
         {
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));            
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

@@ -16,7 +16,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/boletimescolar", ShortName = "BoletimEscolar", Description = "Boletim escolar")]
         Boletim = 4,
 
-        [Display(Name = "relatorios/conselhoclasseatafinal", ShortName = "Ata de resultados finais", Description = "Ata de resultados finais")]
+        [Display(Name = "relatorios/conselhoclasseatafinal", ShortName = "Ata final de resultados", Description = "Relatório Ata final de resultados")]
         ConselhoClasseAtaFinal = 5,
 
         [Display(Name = "relatorios/frequencia", ShortName = "RelatorioFrequencia", Description = "Relatório de frequência")]
@@ -105,5 +105,15 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/boletimescolardetalhadoescolaaqui", ShortName = "BoletimEscolarDetalhadoEscolaAqui", Description = "Boletim escolar detalhado")]
         BoletimDetalhadoApp = 35,
+
+        [Display(Name = "relatorios/acompanhamento-registrospedagogicos", ShortName = "AcompanhamentoRegistrosPedagogicos", Description = "Relatório do Acompanhamento de Registros Pedagógicos")]
+        AcompanhamentoRegistrosPedagogicos = 36,
+
+        [Display(Name = "relatorios/acompanhamento-frequencia", ShortName = "AcompanhamentoFrequencia", Description = "Relatório de Frequência Individual")]
+        AcompanhamentoFrequencia = 37,
+
+        [Display(Name = "relatorios/ocorrencias", ShortName = "RelatorioOcorrencia", Description = "Relatório de ocorrências")]
+        RelatorioOcorrencias = 38,
+
     }
 }

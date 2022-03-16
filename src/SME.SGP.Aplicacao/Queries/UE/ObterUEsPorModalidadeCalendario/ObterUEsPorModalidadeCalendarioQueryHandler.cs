@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,9 +12,9 @@ namespace SME.SGP.Aplicacao.Queries.UE.ObterUEsPorModalidadeCalendario
 {
     public class ObterUEsPorModalidadeCalendarioQueryHandler : IRequestHandler<ObterUEsPorModalidadeCalendarioQuery, IEnumerable<Ue>>
     {
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
 
-        public ObterUEsPorModalidadeCalendarioQueryHandler(IRepositorioUe repositorioUe)
+        public ObterUEsPorModalidadeCalendarioQueryHandler(IRepositorioUeConsulta repositorioUe)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }

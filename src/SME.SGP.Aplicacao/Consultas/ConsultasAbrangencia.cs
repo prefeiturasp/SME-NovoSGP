@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                 var anosCJ = await mediator.Send(new ObterAnosAtribuicaoCJQuery(login, consideraHistorico));
                 if (anosCJ.Any())
                     anosLetivos.AddRange(anosCJ);
-                
+
             }
             anosLetivos.Add(DateTime.Now.Year);
             return anosLetivos.Distinct().ToList();
@@ -125,12 +125,12 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtro, filtroEhCodigo);
         }
 
-        public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0)
+        public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0, string dreCodigo = null, string ueCodigo = null)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            var retorno = await repositorioAbrangencia.ObterSemestres(login, perfil, modalidade, consideraHistorico, anoLetivo);
+            var retorno = await repositorioAbrangencia.ObterSemestres(login, perfil, modalidade, consideraHistorico, anoLetivo, dreCodigo, ueCodigo);
 
             return retorno
                     .Where(a => a != 0);
@@ -171,11 +171,22 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
             var anosInfantilDesconsiderar = !consideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(anoLetivo, Modalidade.EducacaoInfantil)) : null;
-
+           
             var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
-
             return OrdernarTurmasItinerario(result);
         }
+
+        public async Task<IEnumerable<long>> ObterCodigoTurmasAbrangencia(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool desconsideraNovosAnosInfantil = false)
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfil = servicoUsuario.ObterPerfilAtual();
+            var anosInfantilDesconsiderar = !desconsideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(anoLetivo, Modalidade.EducacaoInfantil)) : null;
+
+            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
+            var ordernarTurmasItinerario = OrdernarTurmasItinerario(result);
+            return ordernarTurmasItinerario.Select(x => long.Parse(x.Codigo)).ToArray();
+        }
+
 
         private IEnumerable<AbrangenciaTurmaRetorno> OrdernarTurmasItinerario(IEnumerable<AbrangenciaTurmaRetorno> result)
         {

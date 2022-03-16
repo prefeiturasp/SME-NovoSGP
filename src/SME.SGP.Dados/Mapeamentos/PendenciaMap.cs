@@ -14,6 +14,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Instrucao).ToColumn("instrucao");
             Map(c => c.Excluido).ToColumn("excluido");
             Map(c => c.DescricaoHtml).ToColumn("descricao_html");
+            Map(c => c.UeId).ToColumn("ue_id");
         }
     }
 }

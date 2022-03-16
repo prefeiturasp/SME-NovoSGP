@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> PodeAtribuirResponsavel(PlanoAEE planoAEE, Usuario usuario, Turma turma)
-            => planoAEE.Situacao == SituacaoPlanoAEE.AtribuicaoPAAI
+            => (planoAEE.Situacao == SituacaoPlanoAEE.AtribuicaoPAAI || planoAEE.Situacao == SituacaoPlanoAEE.ParecerPAAI)
             && await EhCoordenadorCEFAI(usuario, turma);
 
         private async Task<bool> EhCoordenadorCEFAI(Usuario usuarioLogado, Turma turma)

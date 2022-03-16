@@ -30,31 +30,38 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
         {
             var situacaoFechamento = SituacaoFechamento.ProcessadoComSucesso;
 
-            if (!request.ComponenteSemNota)
+            try
             {
-                await servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre);
-                await servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(request.FechamentoTurmaDisciplinaId, request.Justificativa, request.CriadoRF, request.Bimestre);
-                await servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.CriadoRF, request.Bimestre);
+                if (!request.ComponenteSemNota)
+                {
+                    await servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre);
+                    await servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(request.FechamentoTurmaDisciplinaId, request.Justificativa, request.CriadoRF, request.Bimestre);
+                    await servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.CriadoRF, request.Bimestre);
+                }
+                await servicoPendenciaFechamento.ValidarAulasReposicaoPendente(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre);
+
+                if (request.RegistraFrequencia)
+                    await servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre);
+
+                var quantidadePendencias = servicoPendenciaFechamento.ObterQuantidadePendenciasGeradas();
+                if (quantidadePendencias > 0)
+                {
+                    situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
+                    await GerarNotificacaoFechamento(request.ComponenteCurricularId, request.TurmaCodigo, request.UsuarioId, request.Bimestre, servicoPendenciaFechamento);
+                }
+
+                await mediator.Send(new AtualizarSituacaoFechamentoTurmaDisciplinaCommand(request.FechamentoTurmaDisciplinaId, situacaoFechamento));
+
+                var consolidacaoTurma = new ConsolidacaoTurmaDto(request.TurmaId, request.Bimestre);
+                var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null));
+
             }
-            await servicoPendenciaFechamento.ValidarAulasReposicaoPendente(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre);
-
-            if (request.RegistraFrequencia)
-                await servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre);
-
-            var quantidadePendencias = servicoPendenciaFechamento.ObterQuantidadePendenciasGeradas();
-            if (quantidadePendencias > 0)
+            catch (Exception)
             {
-                situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
-                await GerarNotificacaoFechamento(request.ComponenteCurricularId, request.TurmaCodigo, request.UsuarioId, request.Bimestre, servicoPendenciaFechamento);
+                await mediator.Send(new AtualizarSituacaoFechamentoTurmaDisciplinaCommand(request.FechamentoTurmaDisciplinaId, SituacaoFechamento.ProcessadoComErro));
+                throw;
             }
-
-            await mediator.Send(new AtualizarSituacaoFechamentoTurmaDisciplinaCommand(request.FechamentoTurmaDisciplinaId, situacaoFechamento));
-
-
-
-            var consolidacaoTurma = new ConsolidacaoTurmaDto(request.TurmaId, request.Bimestre);
-            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null));
 
             return true;
         }

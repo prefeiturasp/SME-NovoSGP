@@ -18,11 +18,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConfiguration configuration;
         private readonly IAsyncPolicy policy;
+        private readonly IMediator mediator;
 
-        public PublicarFilaEmLoteSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry)
+        public PublicarFilaEmLoteSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry, IMediator mediator)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(PublicarFilaEmLoteSgpCommand request, CancellationToken cancellationToken)
@@ -31,12 +33,25 @@ namespace SME.SGP.Aplicacao
 
             foreach (var command in request.Commands)
             {
+                string usuarioLogadoNomeCompleto = command.Usuario?.Nome;
+                string usuarioLogadoRf = command.Usuario?.CodigoRf;
+                Guid? perfilUsuario = command.Usuario?.PerfilAtual;
+
+                if (command.Usuario == null)
+                {
+                    var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+                    usuarioLogadoNomeCompleto = usuario.Nome;
+                    usuarioLogadoRf = usuario.CodigoRf;
+                    perfilUsuario = usuario.PerfilAtual;
+                }
+
                 var requisicao = new MensagemRabbit(command.Filtros,
-                                                    command.CodigoCorrelacao,
-                                                    command.UsuarioLogadoNomeCompleto,
-                                                    command.UsuarioLogadoRF,
-                                                    command.PerfilUsuario,
-                                                    command.NotificarErroUsuario);
+                                                 command.CodigoCorrelacao,
+                                                 usuarioLogadoNomeCompleto,
+                                                 usuarioLogadoRf,
+                                                 perfilUsuario,
+                                                 command.NotificarErroUsuario);
 
                 var mensagem = JsonConvert.SerializeObject(requisicao, new JsonSerializerSettings
                 {

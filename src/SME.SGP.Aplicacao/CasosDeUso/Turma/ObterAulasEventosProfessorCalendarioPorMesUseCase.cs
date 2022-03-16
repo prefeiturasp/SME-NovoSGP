@@ -1,20 +1,19 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulasEventosProfessorCalendarioPorMesUseCase
+    public class ObterAulasEventosProfessorCalendarioPorMesUseCase : AbstractUseCase, IObterAulasEventosProfessorCalendarioPorMesUseCase   
     {
-        public static async Task<IEnumerable<EventoAulaDiaDto>> Executar(IMediator mediator, FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId,
-            int mes, IServicoUsuario servicoUsuario)
+        public ObterAulasEventosProfessorCalendarioPorMesUseCase(IMediator mediator) : base(mediator)
         {
-            string rf = "";
-            string dadosTurma = "";
+        }
 
+        public async Task<IEnumerable<EventoAulaDiaDto>> Executar(FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId, int mes)
+        {
             var eventosDaUeSME = await mediator.Send(new ObterEventosDaUeSMEPorMesQuery()
             {
                 UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
@@ -24,8 +23,6 @@ namespace SME.SGP.Aplicacao
             });
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            rf = usuarioLogado.CodigoRf;
-            dadosTurma = filtroAulasEventosCalendarioDto.TurmaCodigo;
 
             if (usuarioLogado == null)
                 throw new NegocioException("Não foi possível localizar o Usuário logado.");
@@ -39,14 +36,6 @@ namespace SME.SGP.Aplicacao
                 Mes = mes
             });
 
-            string[] componentesCurricularesDoProfessor = new string[0];
-            if (usuarioLogado.EhProfessor())
-            {
-                componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual, filtroAulasEventosCalendarioDto.TurmaCodigo));
-            }
-
-            IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
-
             var avaliacoes = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesQuery()
             {
                 UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
@@ -57,7 +46,28 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = filtroAulasEventosCalendarioDto.AnoLetivo
             });
 
-            avaliacoes = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, componentesCurricularesDoProfessor);
+            string[] componentesCurricularesDoProfessor = new string[0];
+
+            bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(filtroAulasEventosCalendarioDto.AnoLetivo);
+
+            IEnumerable<Aula> aulasParaVisualizar;
+            
+            if (usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)
+                aulasParaVisualizar = aulas;
+
+            else
+            {
+                if (usuarioLogado.EhProfessor())
+                    componentesCurricularesDoProfessor = await mediator
+                                                               .Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf,
+                                                                                                                                usuarioLogado.PerfilAtual,
+                                                                                                                                filtroAulasEventosCalendarioDto.TurmaCodigo,
+                                                                                                                                usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+
+                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
+
+                avaliacoes = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, componentesCurricularesDoProfessor);
+            }
 
             return await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery()
             {
@@ -70,6 +80,12 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = filtroAulasEventosCalendarioDto.AnoLetivo
             });
         }
+
+        public async Task<bool> VerificaCJPodeEditarRegistroTitular(int anoLetivo)
+        {
+            var dadosParametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.CJInfantilPodeEditarAulaTitular, anoLetivo));
+
+            return dadosParametro?.Ativo ?? false;
+        }
     }
 }
-

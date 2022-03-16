@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,7 +41,12 @@ namespace SME.SGP.Aplicacao
                     if (ocorrenciaTipo is null)
                         throw new NegocioException("O tipo da ocorrência informado não foi encontrado.");
 
-                    var ocorrencia = new Ocorrencia(request.DataOcorrencia, request.HoraOcorrencia, request.Titulo, request.Descricao, ocorrenciaTipo, turma);
+                    var ocorrencia = new Ocorrencia(request.DataOcorrencia, 
+                                                    request.HoraOcorrencia,
+                                                    request.Titulo, 
+                                                    request.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.Ocorrencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/"),
+                                                    ocorrenciaTipo,
+                                                    turma);
                     ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);
 
                     ocorrencia.AdiconarAlunos(request.CodigosAlunos);
@@ -50,6 +56,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     unitOfWork.PersistirTransacao();
+                    MoverArquivos(request);
                     return (AuditoriaDto)ocorrencia;
                 }
                 catch
@@ -57,6 +64,13 @@ namespace SME.SGP.Aplicacao
                     unitOfWork.Rollback();
                     throw;
                 }
+            }
+        }
+        private void MoverArquivos(InserirOcorrenciaCommand novo)
+        {
+            if (!string.IsNullOrEmpty(novo.Descricao))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, string.Empty, novo.Descricao));
             }
         }
     }

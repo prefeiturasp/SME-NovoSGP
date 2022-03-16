@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
@@ -28,17 +29,18 @@ using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
+using SME.SGP.Infra.Utilitarios;
+using System;
 
 namespace SME.SGP.IoC
 {
     public static class RegistraDependencias
     {
-        public static void Registrar(IServiceCollection services)
+        public static void Registrar(IServiceCollection services, ConfiguracaoRabbitOptions configRabbit)
         {
             services.AdicionarMediatr();
             services.AdicionarValidadoresFluentValidation();
@@ -49,7 +51,13 @@ namespace SME.SGP.IoC
             RegistrarConsultas(services);
             RegistrarServicos(services);
             RegistrarCasosDeUso(services);
+            RegistrarRabbit(services, configRabbit);
             RegistrarMapeamentos.Registrar();
+        }
+
+        private static void RegistrarRabbit(IServiceCollection services, ConfiguracaoRabbitOptions configRabbit)
+        {
+            services.AddRabbit(configRabbit);
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -88,7 +96,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosFechamentoFinal, ComandosFechamentoFinal>();
             services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
             services.TryAddScoped<IComandosPendenciaFechamento, ComandosPendenciaFechamento>();
-            services.TryAddScoped<IComandosFechamentoAluno, ComandosFechamentoAluno>();
             services.TryAddScoped<IComandosFechamentoTurma, ComandosFechamentoTurma>();
             services.TryAddScoped<IComandosConselhoClasse, ComandosConselhoClasse>();
             services.TryAddScoped<IComandosConselhoClasseAluno, ComandosConselhoClasseAluno>();
@@ -165,6 +172,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultaRecuperacaoParalelaPeriodo, ConsultaRecuperacaoParalelaPeriodo>();
             services.TryAddScoped<IConsultaRecuperacaoParalelaPeriodo, ConsultaRecuperacaoParalelaPeriodo>();
             services.TryAddScoped<IConsultasPlanoAnualTerritorioSaber, ConsultasPlanoAnualTerritorioSaber>();
+            services.TryAddScoped<IRepositorioConceitoConsulta, RepositorioConceitoConsulta>();
+            services.TryAddScoped<IRepositorioAulaPrevistaConsulta, RepositorioAulaPrevistaConsulta>();
+            services.TryAddScoped<IRepositorioAulaPrevistaBimestreConsulta, RepositorioAulaPrevistaBimestreConsulta>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -187,45 +197,57 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioObjetivoAprendizagemPlano, RepositorioObjetivoAprendizagemPlano>();
             services.TryAddScoped<IRepositorioCache, RepositorioCache>();
             services.TryAddScoped<IRepositorioComponenteCurricularJurema, RepositorioComponenteCurricularJurema>();
-            services.TryAddScoped<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
             services.TryAddScoped<IRepositorioSupervisorEscolaDre, RepositorioSupervisorEscolaDre>();
             services.TryAddScoped<IRepositorioNotificacao, RepositorioNotificacao>();
+            services.TryAddScoped<IRepositorioNotificacaoConsulta, RepositorioNotificacaoConsulta>();
             services.TryAddScoped<IRepositorioWorkflowAprovacao, RepositorioWorkflowAprovacao>();
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivel, RepositorioWorkflowAprovacaoNivel>();
             services.TryAddScoped<IRepositorioUsuario, RepositorioUsuario>();
+            services.TryAddScoped<IRepositorioUsuarioConsulta, RepositorioUsuarioConsulta>();
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
             services.TryAddScoped<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
             services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
             services.TryAddScoped<IRepositorioAbrangencia, RepositorioAbrangencia>();
             services.TryAddScoped<IRepositorioTipoCalendario, RepositorioTipoCalendario>();
+            services.TryAddScoped<IRepositorioTipoCalendarioConsulta, RepositorioTipoCalendarioConsulta>();
             services.TryAddScoped<IRepositorioFeriadoCalendario, RepositorioFeriadoCalendario>();
             services.TryAddScoped<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();
+            services.TryAddScoped<IRepositorioPeriodoEscolarConsulta, RepositorioPeriodoEscolarConsulta>();
             services.TryAddScoped<IRepositorioEvento, RepositorioEvento>();
             services.TryAddScoped<IRepositorioParametrosSistema, RepositorioParametrosSistema>();
+            services.TryAddScoped<IRepositorioParametrosSistemaConsulta, RepositorioParametrosSistemaConsulta>();
             services.TryAddScoped<IRepositorioAula, RepositorioAula>();
+            services.TryAddScoped<IRepositorioAulaConsulta, RepositorioAulaConsulta>();
             services.TryAddScoped<IRepositorioGrade, RepositorioGrade>();
             services.TryAddScoped<IRepositorioGradeFiltro, RepositorioGradeFiltro>();
             services.TryAddScoped<IRepositorioGradeDisciplina, RepositorioGradeDisciplina>();
             services.TryAddScoped<IRepositorioFrequencia, RepositorioFrequencia>();
-            services.TryAddScoped<IRepositorioRegistroAusenciaAluno, RepositorioRegistroAusenciaAluno>();
+            services.TryAddScoped<IRepositorioFrequenciaConsulta, RepositorioFrequenciaConsulta>();
             services.TryAddScoped<IRepositorioAtribuicaoEsporadica, RepositorioAtribuicaoEsporadica>();
             services.TryAddScoped<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
+            services.TryAddScoped<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta, RepositorioFrequenciaAlunoDisciplinaPeriodoConsulta>();
             services.TryAddScoped<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
             services.TryAddScoped<IRepositorioTipoAvaliacao, RepositorioTipoAvaliacao>();
             services.TryAddScoped<IRepositorioPlanoAula, RepositorioPlanoAula>();
             services.TryAddScoped<IRepositorioObjetivoAprendizagemAula, RepositorioObjetivoAprendizagemAula>();
             services.TryAddScoped<IRepositorioAtribuicaoCJ, RepositorioAtribuicaoCJ>();
             services.TryAddScoped<IRepositorioDre, RepositorioDre>();
+            services.TryAddScoped<IRepositorioDreConsulta, RepositorioDreConsulta>();
             services.TryAddScoped<IRepositorioUe, RepositorioUe>();
+            services.TryAddScoped<IRepositorioUeConsulta, RepositorioUeConsulta>();
             services.TryAddScoped<IRepositorioTurma, RepositorioTurma>();
+            services.TryAddScoped<IRepositorioTurmaConsulta, RepositorioTurmaConsulta>();
             services.TryAddScoped<IRepositorioAtividadeAvaliativaRegencia, RepositorioAtividadeAvaliativaRegencia>();
             services.TryAddScoped<IRepositorioNotasConceitos, RepositorioNotasConceitos>();
+            services.TryAddScoped<IRepositorioNotasConceitosConsulta, RepositorioNotasConceitosConsulta>();
             services.TryAddScoped<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
             services.TryAddScoped<IRepositorioConceito, RepositorioConceito>();
             services.TryAddScoped<IRepositorioNotaParametro, RepositorioNotaParametro>();
             services.TryAddScoped<IRepositorioNotaTipoValor, RepositorioNotaTipoValor>();
+            services.TryAddScoped<IRepositorioNotaTipoValorConsulta, RepositorioNotaTipoValorConsulta>();
             services.TryAddScoped<IRepositorioNotificacaoFrequencia, RepositorioNotificacaoFrequencia>();
+            services.TryAddScoped<IRepositorioNotificacaoFrequenciaConsulta, RepositorioNotificacaoFrequenciaConsulta>();
             services.TryAddScoped<IRepositorioEventoMatricula, RepositorioEventoMatricula>();
             services.TryAddScoped<IRepositorioAulaPrevista, RepositorioAulaPrevista>();
             services.TryAddScoped<IRepositorioNotificacaoAulaPrevista, RepositorioNotificacaoAulaPrevista>();
@@ -236,15 +258,20 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioFechamentoConsolidado, RepositorioFechamentoConsolidado>();
             services.TryAddScoped<IRepositorioConselhoClasseConsolidado, RepositorioConselhoClasseConsolidado>();
             services.TryAddScoped<IRepositorioCompensacaoAusencia, RepositorioCompensacaoAusencia>();
+            services.TryAddScoped<IRepositorioCompensacaoAusenciaConsulta, RepositorioCompensacaoAusenciaConsulta>();
             services.TryAddScoped<IRepositorioCompensacaoAusenciaAluno, RepositorioCompensacaoAusenciaAluno>();
+            services.TryAddScoped<IRepositorioCompensacaoAusenciaAlunoConsulta, RepositorioCompensacaoAusenciaAlunoConsulta>();
             services.TryAddScoped<IRepositorioCompensacaoAusenciaDisciplinaRegencia, RepositorioCompensacaoAusenciaDisciplinaRegencia>();
             services.TryAddScoped<IRepositorioProcessoExecutando, RepositorioProcessoExecutando>();
             services.TryAddScoped<IRepositorioPeriodoFechamento, RepositorioPeriodoFechamento>();
             services.TryAddScoped<IRepositorioPeriodoFechamentoBimestre, RepositorioPeriodoFechamentoBimestre>();
             services.TryAddScoped<IRepositorioNotificacaoCompensacaoAusencia, RepositorioNotificacaoCompensacaoAusencia>();
             services.TryAddScoped<IRepositorioEventoFechamento, RepositorioEventoFechamento>();
+            services.TryAddScoped<IRepositorioEventoFechamentoConsulta, RepositorioEventoFechamentoConsulta>();
             services.TryAddScoped<IRepositorioFechamentoTurmaDisciplina, RepositorioFechamentoTurmaDisciplina>();
+            services.TryAddScoped<IRepositorioFechamentoTurmaDisciplinaConsulta, RepositorioFechamentoTurmaDisciplinaConsulta>();
             services.TryAddScoped<IRepositorioFechamentoNota, RepositorioFechamentoNota>();
+            services.TryAddScoped<IRepositorioFechamentoNotaConsulta, RepositorioFechamentoNotaConsulta>();
             services.TryAddScoped<IRepositorioRecuperacaoParalela, RepositorioRecuperacaoParalela>();
             services.TryAddScoped<IRepositorioRecuperacaoParalelaPeriodo, RepositorioRecuperacaoParalelaPeriodo>();
             services.TryAddScoped<IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta, RepositorioRecuperacaoParalelaPeriodoObjetivoResposta>();
@@ -255,10 +282,15 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioHistoricoEmailUsuario, RepositorioHistoricoEmailUsuario>();
             services.TryAddScoped<IRepositorioSintese, RepositorioSintese>();
             services.TryAddScoped<IRepositorioFechamentoAluno, RepositorioFechamentoAluno>();
+            services.TryAddScoped<IRepositorioFechamentoAlunoConsulta, RepositorioFechamentoAlunoConsulta>();
             services.TryAddScoped<IRepositorioFechamentoTurma, RepositorioFechamentoTurma>();
+            services.TryAddScoped<IRepositorioFechamentoTurmaConsulta, RepositorioFechamentoTurmaConsulta>();
             services.TryAddScoped<IRepositorioConselhoClasse, RepositorioConselhoClasse>();
+            services.TryAddScoped<IRepositorioConselhoClasseConsulta, RepositorioConselhoClasseConsulta>();
             services.TryAddScoped<IRepositorioConselhoClasseAluno, RepositorioConselhoClasseAluno>();
+            services.TryAddScoped<IRepositorioConselhoClasseAlunoConsulta, RepositorioConselhoClasseAlunoConsulta>();
             services.TryAddScoped<IRepositorioConselhoClasseAlunoTurmaComplementar, RepositorioConselhoClasseAlunoTurmaComplementar>();
+            services.TryAddScoped<IRepositorioConselhoClasseNotaConsulta, RepositorioConselhoClasseNotaConsulta>();
             services.TryAddScoped<IRepositorioConselhoClasseNota, RepositorioConselhoClasseNota>();
             services.TryAddScoped<IRepositorioComunicado, RepositorioComunicado>();
             services.TryAddScoped<IRepositorioWfAprovacaoNotaFechamento, RepositorioWfAprovacaoNotaFechamento>();
@@ -272,7 +304,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioRelatorioSemestralPAPAlunoSecao, RepositorioRelatorioSemestralPAPAlunoSecao>();
             services.TryAddScoped<IRepositorioSecaoRelatorioSemestralPAP, RepositorioSecaoRelatorioSemestralPAP>();
             services.TryAddScoped<IRepositorioObjetivoAprendizagem, RepositorioObjetivoAprendizagem>();
-            services.TryAddScoped<IRepositorioConselhoClasseParecerConclusivo, RepositorioConselhoClasseParecerConclusivo>();
+            services.TryAddScoped<IRepositorioConselhoClasseParecerConclusivo, RepositorioConselhoClasseParecerConclusivoConsulta>();
             services.TryAddScoped<IRepositorioPlanoAnualTerritorioSaber, RepositorioPlanoAnualTerritorioSaber>();
             services.TryAddScoped<IRepositorioCorrelacaoRelatorio, RepositorioCorrelacaoRelatorio>();
             services.TryAddScoped<IRepositorioCorrelacaoRelatorioJasper, RepositorioRelatorioCorrelacaoJasper>();
@@ -289,6 +321,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioCartaIntencoes, RepositorioCartaIntencoes>();
             services.TryAddScoped<IRepositorioDiarioBordoObservacao, RepositorioDiarioBordoObservacao>();
             services.TryAddScoped<IRepositorioAnotacaoFrequenciaAluno, RepositorioAnotacaoFrequenciaAluno>();
+            services.TryAddScoped<IRepositorioAnotacaoFrequenciaAlunoConsulta, RepositorioAnotacaoFrequenciaAlunoConsulta>();
             services.TryAddScoped<IRepositorioMotivoAusencia, RepositorioMotivoAusencia>();
             services.TryAddScoped<IRepositorioCartaIntencoesObservacao, RepositorioCartaIntencoesObservacao>();
             services.TryAddScoped<IRepositorioPlanejamentoAnual, RepositorioPlanejamentoAnual>();
@@ -299,6 +332,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioDiarioBordoObservacaoNotificacao, RepositorioDiarioBordoObservacaoNotificacao>();
             services.TryAddScoped<IRepositorioNotificacaoDevolutiva, RepositorioNotificacaoDevolutiva>();
             services.TryAddScoped<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
+            services.TryAddScoped<IRepositorioComponenteCurricularConsulta, RepositorioComponenteCurricularConsulta>();
             services.TryAddScoped<IRepositorioArquivo, RepositorioArquivo>();
             services.TryAddScoped<IRepositorioHistoricoNota, RepositorioHistoricoNota>();
             services.TryAddScoped<IRepositorioHistoricoNotaConselhoClasse, RepositorioHistoricoNotaConselhoClasse>();
@@ -317,12 +351,15 @@ namespace SME.SGP.IoC
 
             // Acompanhamento Aluno
             services.TryAddScoped<IRepositorioAcompanhamentoAluno, RepositorioAcompanhamentoAluno>();
+            services.TryAddScoped<IRepositorioAcompanhamentoAlunoConsulta, RepositorioAcompanhamentoAlunoConsulta>();
+            services.TryAddScoped<IRepositorioAcompanhamentoAlunoConsulta, RepositorioAcompanhamentoAlunoConsulta>();
             services.TryAddScoped<IRepositorioAcompanhamentoTurma, RepositorioAcompanhamentoTurma>();
             services.TryAddScoped<IRepositorioAcompanhamentoAlunoSemestre, RepositorioAcompanhamentoAlunoSemestre>();
             services.TryAddScoped<IRepositorioAcompanhamentoAlunoFoto, RepositorioAcompanhamentoAlunoFoto>();
 
             // Mural de Avisos
             services.TryAddScoped<IRepositorioAviso, RepositorioAviso>();
+            services.TryAddScoped<IRepositorioAtividadeInfantil, RepositorioAtividadeInfantil>();
 
             // Encaminhamento AEE
             services.TryAddScoped<IRepositorioSecaoEncaminhamentoAEE, RepositorioSecaoEncaminhamentoAEE>();
@@ -334,6 +371,9 @@ namespace SME.SGP.IoC
             // EventoTipo
             services.TryAddScoped<IRepositorioEventoTipo, RepositorioEventoTipo>();
             services.TryAddScoped<IRepositorioPerfilEventoTipo, RepositorioPerfilEventoTipo>();
+
+            // Fechamento
+            services.TryAddScoped<IRepositorioAnotacaoFechamentoAluno, RepositorioAnotacaoFechamentoAluno>();
 
             // Pendencias do EncaminhamentoAEE
             services.TryAddScoped<IRepositorioPendenciaEncaminhamentoAEE, RepositorioPendenciaEncaminhamentoAEE>();
@@ -350,13 +390,15 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendencia, RepositorioPendencia>();
             services.TryAddScoped<IRepositorioPendenciaFechamento, RepositorioPendenciaFechamento>();
             services.TryAddScoped<IRepositorioPendenciaAula, RepositorioPendenciaAula>();
+            services.TryAddScoped<IRepositorioPendenciaAulaConsulta, RepositorioPendenciaAulaConsulta>();
             services.TryAddScoped<IRepositorioPendenciaUsuario, RepositorioPendenciaUsuario>();
             services.TryAddScoped<IRepositorioPendenciaCalendarioUe, RepositorioPendenciaCalendarioUe>();
             services.TryAddScoped<IRepositorioPendenciaParametroEvento, RepositorioPendenciaParametroEvento>();
             services.TryAddScoped<IRepositorioPendenciaProfessor, RepositorioPendenciaProfessor>();
             services.TryAddScoped<IRepositorioPendenciaRegistroIndividual, RepositorioPendenciaRegistroIndividual>();
             services.TryAddScoped<IRepositorioPendenciaRegistroIndividualAluno, RepositorioPendenciaRegistroIndividualAluno>();
-
+            services.TryAddScoped<IRepositorioPendenciaPerfil, RepositorioPendenciaPerfil>();
+            services.TryAddScoped<IRepositorioPendenciaPerfilUsuario, RepositorioPendenciaPerfilUsuario>();
             // Itinerancia
             services.TryAddScoped<IRepositorioItinerancia, RepositorioItinerancia>();
             services.TryAddScoped<IRepositorioItineranciaAluno, RepositorioItineranciaAluno>();
@@ -369,6 +411,7 @@ namespace SME.SGP.IoC
 
             // PlanoAEE
             services.TryAddScoped<IRepositorioPlanoAEE, RepositorioPlanoAEE>();
+            services.TryAddScoped<IRepositorioPlanoAEEConsulta, RepositorioPlanoAEEConsulta>();
             services.TryAddScoped<IRepositorioPlanoAEEVersao, RepositorioPlanoAEEVersao>();
             services.TryAddScoped<IRepositorioPlanoAEEQuestao, RepositorioPlanoAEEQuestao>();
             services.TryAddScoped<IRepositorioPlanoAEEResposta, RepositorioPlanoAEEResposta>();
@@ -383,6 +426,7 @@ namespace SME.SGP.IoC
 
             // Consolidação Frequeência Turma
             services.TryAddScoped<IRepositorioConsolidacaoFrequenciaTurma, RepositorioConsolidacaoFrequenciaTurma>();
+            services.TryAddScoped<IRepositorioConsolidacaoFrequenciaTurmaConsulta, RepositorioConsolidacaoFrequenciaTurmaConsulta>();
 
             // Consolidação Devolutivas
             services.TryAddScoped<IRepositorioConsolidacaoDevolutivas, RepositorioConsolidacaoDevolutivas>();
@@ -390,6 +434,7 @@ namespace SME.SGP.IoC
             // Frequência 
             services.TryAddScoped<IRepositorioFrequenciaPreDefinida, RepositorioFrequenciaPreDefinida>();
             services.TryAddScoped<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
+            services.TryAddScoped<IRepositorioRegistroFrequenciaAlunoConsulta, RepositorioRegistroFrequenciaAlunoConsulta>();
             services.TryAddScoped<IRepositorioDashBoardFrequencia, RepositorioDashBoardFrequencia>();
 
             //Evento Bimestre
@@ -409,6 +454,11 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterOrdenacaoAreasConhecimentoUseCase, ObterOrdenacaoAreasConhecimentoUseCase>();
             services.TryAddScoped<IMapearAreasDoConhecimentoUseCase, MapearAreasDoConhecimentoUseCase>();
             services.TryAddScoped<IObterComponentesDasAreasDeConhecimentoUseCase, ObterComponentesDasAreasDeConhecimentoUseCase>();
+
+            services.TryAddScoped<IRabbitDeadletterSerapSyncUseCase, RabbitDeadletterSerapSyncUseCase>();            
+
+            // Consolidacao de Registros Pedagogicos
+            services.TryAddScoped<IRepositorioConsolidacaoRegistrosPedagogicos, RepositorioConsolidacaoRegistrosPedagogicos>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -545,6 +595,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IUsuarioPossuiAbrangenciaAdmUseCase, UsuarioPossuiAbrangenciaAdmUseCase>();
             services.TryAddScoped<IObterModalidadesPorAnoUseCase, ObterModalidadesPorAnoUseCase>();
             services.TryAddScoped<IObterAbrangenciaDresUseCase, ObterAbrangenciaDresUseCase>();
+            services.TryAddScoped<IObterTurmasNaoHistoricasUseCase, ObterTurmasNaoHistoricasUseCase>();
 
 
 
@@ -556,6 +607,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAcompanhamentoAlunoUseCase, ObterAcompanhamentoAlunoUseCase>();
             services.TryAddScoped<IObterAcompanhamentoAlunoUseCase, ObterAcompanhamentoAlunoUseCase>();
             services.TryAddScoped<IObterAcompanhamentoTurmaApanhadoGeralUseCase, ObterAcompanhamentoTurmaApanhadoGeralUseCase>();
+            services.TryAddScoped<ICarregarAjusteImagensAcompanhamentoAprendizagemAlunoUseCase, CarregarAjusteImagensAcompanhamentoAprendizagemAlunoUseCase>();
+            services.TryAddScoped<ISyncAjusteImagensAcompanhamentoAprendizagemAlunoUseCase, SyncAjusteImagensAcompanhamentoAprendizagemAlunoUseCase>();
 
             // Aulas Previstas
             services.TryAddScoped<INotificacaoAulasPrevistrasSyncUseCase, NotificacaoAulasPrevistrasSyncUseCase>();
@@ -572,6 +625,10 @@ namespace SME.SGP.IoC
 
             // Atividades
             services.TryAddScoped<IImportarAtividadesGsaUseCase, ImportarAtividadesGsaUseCase>();
+            services.TryAddScoped<IObterAtividadesNotasAlunoPorTurmaPeriodoUseCase, ObterAtividadesNotasAlunoPorTurmaPeriodoUseCase>();
+
+            // Atividade Infantil
+            services.TryAddScoped<IObterAtividadesInfantilUseCase, ObterAtividadesInfantilUseCase>();
 
             // Avisos do Mural Gsa
             services.TryAddScoped<IImportarAvisoDoMuralGsaUseCase, ImportarAvisoDoMuralGsaUseCase>();
@@ -585,6 +642,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirCartaIntencoesObservacaoUseCase, ExcluirCartaIntencoesObservacaoUseCase>();
             services.TryAddScoped<ISalvarNotificacaoCartaIntencoesObservacaoUseCase, SalvarNotificacaoCartaIntencoesObservacaoUseCase>();
             services.TryAddScoped<IExcluirNotificacaoCartaIntencoesObservacaoUseCase, ExcluirNotificacaoCartaIntencoesObservacaoUseCase>();
+
+            // Compensacao Ausencia
+            services.TryAddScoped<IPeriodoDeCompensacaoAbertoUseCase, PeriodoDeCompensacaoAbertoUseCase>();
+            services.TryAddScoped<INotificarCompensacaoAusenciaUseCase, NotificarCompensacaoAusenciaUseCase>();
 
             // Componentes Curriculares
             services.TryAddScoped<IObterComponentesCurricularesPorTurmaECodigoUeUseCase, ObterComponentesCurricularesPorTurmaECodigoUeUseCase>();
@@ -601,9 +662,25 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarFrequenciaTurmasUseCase, ConsolidarFrequenciaTurmasUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaTurmasPorAnoUseCase, ConsolidarFrequenciaTurmasPorAnoUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaPorTurmaUseCase, ConsolidarFrequenciaPorTurmaUseCase>();
+            services.TryAddScoped<IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase, ConsolidacaoDashBoardFrequenciaPorDataETipoUseCase>();
+
+            //Calcula Frequencia Geral
+            services.TryAddScoped<ICalcularFrequenciaGeralUseCase, CalcularFrequenciaGeralUseCase>();
 
             // Fechamento
             services.TryAddScoped<IGerarPendenciasFechamentoUseCase, GerarPendenciasFechamentoUseCase>();
+            services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
+            services.TryAddScoped<IVarreduraFechamentosEmProcessamentoPendentesUseCase, VarreduraFechamentosEmProcessamentoPendentesUseCase>();
+            services.TryAddScoped<IInserirFechamentoTurmaDisciplinaUseCase, InserirFechamentoTurmaDisciplinaUseCase>();
+            services.TryAddScoped<IObterFechamentoIdPorTurmaBimestreUseCase, ObterFechamentoIdPorTurmaBimestreUseCase>();
+
+            // Fechamento Aluno
+            services.TryAddScoped<ISalvarAnotacaoFechamentoAlunoUseCase, SalvarAnotacaoFechamentoAlunoUseCase>();
+
+            //Fechamento Reabertura
+            services.TryAddScoped<INotificacaoPeriodoFechamentoReaberturaIniciando, NotificacaoPeriodoFechamentoReaberturaIniciandoUseCase>();
+            services.TryAddScoped<INotificacaoPeriodoFechamentoReaberturaEncerrando, NotificacaoPeriodoFechamentoReaberturaEncerrandoUseCase>();
+
 
             //Notificacao Devolutivoa
             services.TryAddScoped<ISalvarNotificacaoDevolutivaUseCase, SalvarNotificacaoDevolutivaUseCase>();
@@ -639,7 +716,6 @@ namespace SME.SGP.IoC
 
             // Dashboard devolutivas
             services.TryAddScoped<IObterGraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteUseCase, ObterGraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteUseCase>();
-            services.TryAddScoped<IObterDiariosDeBordoComESemReflexoesEReplanejamentosUseCase, ObterDiariosDeBordoComESemReflexoesEReplanejamentosUseCase>();
             services.TryAddScoped<IObterDevolutivasEstimadasEConfirmadasUseCase, ObterDevolutivasEstimadasEConfirmadasUseCase>();
             services.TryAddScoped<IObterPeriodoDeDiasDevolutivaUseCase, ObterPeriodoDeDiasDevolutivaUseCase>();
             services.TryAddScoped<IObterUltimaConsolidacaoDevolutivaUseCase, ObterUltimaConsolidacaoDevolutivaUseCase>();
@@ -659,6 +735,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDadosDeLeituraDeComunicadosPorModalidadeETurmaUseCase, ObterDadosDeLeituraDeComunicadosPorModalidadeETurmaUseCase>();
             services.TryAddScoped<IObterDadosDeLeituraDeComunicadosPorAlunosDaTurmaUseCase, ObterDadosDeLeituraDeComunicadosPorAlunosDaTurmaUseCase>();
 
+            // Listão
+            services.TryAddScoped<IListarTurmasComComponentesUseCase, ListarTurmasComComponentesUseCase>();
 
             // Dias Letivos
             services.TryAddScoped<IObterDiasLetivosPorCalendarioUseCase, ObterDiasLetivosPorCalendarioUseCase>();
@@ -674,6 +752,11 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterInstrucoesModalUseCase, ObterInstrucoesModalUseCase>();
             services.TryAddScoped<IObterEncaminhamentosAEEUseCase, ObterEncaminhamentosAEEUseCase>();
             services.TryAddScoped<IPesquisaResponsavelEncaminhamentoPorDreUEUseCase, PesquisaResponsavelEncaminhamentoPorDreUEUseCase>();
+
+            //FechamentoReabertura
+            services.TryAddScoped<INotificarFechamentoReaberturaUseCase, NotificarFechamentoReaberturaUseCase>();
+            services.TryAddScoped<INotificarFechamentoReaberturaDREUseCase, NotificarFechamentoReaberturaDREUseCase>();
+            services.TryAddScoped<INotificarFechamentoReaberturaUEUseCase, NotificarFechamentoReaberturaUEUseCase>();
 
             // Funcionario
             services.TryAddScoped<IPesquisaFuncionariosPorDreUeUseCase, PesquisaFuncionariosPorDreUeUseCase>();
@@ -696,8 +779,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAnosLetivosPAPUseCase, ObterAnosLetivosPAPUseCase>();
 
             services.TryAddScoped<IBuscarTiposCalendarioPorDescricaoUseCase, BuscarTiposCalendarioPorDescricaoUseCase>();
+
             services.TryAddScoped<IPendenciaAulaUseCase, PendenciaAulaUseCase>();
-            services.TryAddScoped<IExecutaPendenciaAulaUseCase, ExecutaPendenciaAulaUseCase>();
+            services.TryAddScoped<IPendenciaAulaDiarioBordoUseCase, PendenciaAulaDiarioBordoUseCase>();
+            services.TryAddScoped<IPendenciaAulaAvaliacaoUseCase, PendenciaAulaAvaliacaoUseCase>();
+            services.TryAddScoped<IPendenciaAulaFrequenciaUseCase, PendenciaAulaFrequenciaUseCase>();
+            services.TryAddScoped<IPendenciaAulaPlanoAulaUseCase, PendenciaAulaPlanoAulaUseCase>();
 
             services.TryAddScoped<ISalvarPlanejamentoAnualUseCase, SalvarPlanejamentoAnualUseCase>();
             services.TryAddScoped<IObterPeriodosEscolaresParaCopiaPorPlanejamentoAnualIdUseCase, ObterPeriodosEscolaresParaCopiaPorPlanejamentoAnualIdUseCase>();
@@ -708,16 +795,19 @@ namespace SME.SGP.IoC
 
             // Frequência
             services.TryAddScoped<IConciliacaoFrequenciaTurmasSyncUseCase, ConciliacaoFrequenciaTurmasSyncUseCase>();
+            services.TryAddScoped<IConciliacaoFrequenciaTurmasPorPeriodoUseCase, ConciliacaoFrequenciaTurmasPorPeriodoUseCase>();
             services.TryAddScoped<IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase, ValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase>();
             services.TryAddScoped<IExecutaConsolidacaoFrequenciaPorAnoUseCase, ExecutaConsolidacaoFrequenciaPorAnoUseCase>();
+            services.TryAddScoped<IInserirFrequenciaListaoUseCase, InserirFrequenciaListaoUseCase>();
 
             // Notificações
 
             services.TryAddScoped<INotificacaoFrequenciaUeUseCase, NotificacaoFrequenciaUeUseCase>();
             services.TryAddScoped<INotificacaoAndamentoFechamentoUseCase, NotificacaoAndamentoFechamentoUseCase>();
             services.TryAddScoped<INotificacaoUeFechamentosInsuficientesUseCase, NotificacaoUeFechamentosInsuficientesUseCase>();
-            services.TryAddScoped<INotificacaoPeriodoFechamentoUseCase, NotificacaoPeriodoFechamentoUseCase>();
             services.TryAddScoped<INotificacaoInicioFimPeriodoFechamentoUseCase, NotificacaoInicioFimPeriodoFechamentoUseCase>();
+            services.TryAddScoped<INotificacaoInicioPeriodoFechamentoUEUseCase, NotificacaoInicioPeriodoFechamentoUEUseCase>();
+            services.TryAddScoped<INotificacaoFimPeriodoFechamentoUEUseCase, NotificacaoFimPeriodoFechamentoUEUseCase>();
 
 
             //Notificação Resultado Insatisfatorio 
@@ -731,12 +821,25 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterBimestresComConselhoClasseTurmaUseCase, ObterBimestresComConselhoClasseTurmaUseCase>();
             services.TryAddScoped<IObterObjetivosPorDisciplinaUseCase, ObterObjetivosPorDisciplinaUseCase>();
 
+            // Parecer Conclusivo
+            services.TryAddScoped<IReprocessarParecerConclusivoPorAnoUseCase, ReprocessarParecerConclusivoPorAnoUseCase>();
+            services.TryAddScoped<IReprocessarParecerConclusivoPorDreUseCase, ReprocessarParecerConclusivoPorDreUseCase>();
+            services.TryAddScoped<IReprocessarParecerConclusivoPorUeUseCase, ReprocessarParecerConclusivoPorUeUseCase>();
+            services.TryAddScoped<IReprocessarParecerConclusivoPorTurmaUseCase, ReprocessarParecerConclusivoPorTurmaUseCase>();
+            services.TryAddScoped<IReprocessarParecerConclusivoAlunoUseCase, ReprocessarParecerConclusivoAlunoUseCase>();
+
             // Pendencias
             services.TryAddScoped<IObterPendenciasUseCase, ObterPendenciasUseCase>();
             services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisUseCase, ExecutaVerificacaoPendenciasGeraisUseCase>();
+            services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisAulaUseCase, ExecutaVerificacaoPendenciasGeraisAulaUseCase>();
+            services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisCalendarioUseCase, ExecutaVerificacaoPendenciasGeraisCalendarioUseCase>();
+            services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisEventosUseCase, ExecutaVerificacaoPendenciasGeraisEventosUseCase>();
             services.TryAddScoped<IExecutarExclusaoPendenciasAulaUseCase, ExecutarExclusaoPendenciasAulaUseCase>();
             services.TryAddScoped<IExecutarExclusaoPendenciaDiasLetivosInsuficientes, ExecutarExclusaoPendenciaDiasLetivosInsuficientes>();
             services.TryAddScoped<IExecutarExclusaoPendenciaParametroEvento, ExecutarExclusaoPendenciaParametroEvento>();
+
+            services.TryAddScoped<ITratarAtribuicaoPendenciasUsuariosUseCase, TratarAtribuicaoPendenciasUsuariosUseCase>();
+            services.TryAddScoped<ICargaAtribuicaoPendenciasPerfilUsuarioUseCase, CargaAtribuicaoPendenciasPerfilUsuarioUseCase>();
 
             // Pendencias Professor
             services.TryAddScoped<IExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase, ExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase>();
@@ -757,6 +860,10 @@ namespace SME.SGP.IoC
 
             // Periodo Fechamento
             services.TryAddScoped<IObterPeriodoFechamentoVigenteUseCase, ObterPeriodoFechamentoVigenteUseCase>();
+            services.TryAddScoped<IVerificaPendenciasFechamentoUseCase, VerificaPendenciasFechamentoUseCase>();
+
+            //PeriodoEscolar
+            services.TryAddScoped<IObterPeriodosPorComponenteUseCase, ObterPeriodosPorComponenteUseCase>();
 
             // Plano AEE
             services.TryAddScoped<IObterPlanoAEEPorIdUseCase, ObterPlanoAEEPorIdUseCase>();
@@ -771,6 +878,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirPlanoAulaUseCase, ExcluirPlanoAulaUseCase>();
             services.TryAddScoped<IMigrarPlanoAulaUseCase, MigrarPlanoAulaUseCase>();
             services.TryAddScoped<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
+            services.TryAddScoped<IObterPlanoAulasPorTurmaEComponentePeriodoUseCase, ObterPlanoAulasPorTurmaEComponentePeriodoUseCase>();            
 
             // Relatórios
             services.TryAddScoped<IRelatorioPlanoAulaUseCase, RelatorioPlanoAulaUseCase>();
@@ -868,6 +976,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirOcorrenciaUseCase, ExcluirOcorrenciaUseCase>();
             services.TryAddScoped<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
             services.TryAddScoped<IObterOcorrenciasPorAlunoUseCase, ObterOcorrenciasPorAlunoUseCase>();
+            services.TryAddScoped<IRelatorioOcorrenciasUseCase, RelatorioOcorrenciasUseCase>();
+            services.TryAddScoped<IObterDataCriacaoRelatorioUseCase, ObterDataCriacaoRelatorioUseCase>();
 
             // Itinerancia
             services.TryAddScoped<IObterObjetivosBaseUseCase, ObterObjetivosBaseUseCase>();
@@ -946,7 +1056,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDadosDashboardAusenciasComJustificativaUseCase, ObterDadosDashboardAusenciasComJustificativaUseCase>();
             services.TryAddScoped<IObterModalidadesAnoUseCase, ObterModalidadesAnoUseCase>();
             services.TryAddScoped<IObterQuantidadeCriancaUseCase, ObterQuantidadeCriancaUseCase>();
-
+      
 
             services.TryAddScoped<IObterDataConsolidacaoFrequenciaUseCase, ObterDataConsolidacaoFrequenciaUseCase>();
             services.TryAddScoped<IObterModalidadesPorUeUseCase, ObterModalidadesPorUeUseCase>();
@@ -974,27 +1084,26 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterPendenciasParaFechamentoConsolidadoUseCase, ObterPendenciasParaFechamentoConsolidadoUseCase>();
             services.TryAddScoped<IObterDetalhamentoPendenciaFechamentoConsolidadoUseCase, ObterDetalhamentoPendenciaFechamentoConsolidadoUseCase>();
             services.TryAddScoped<IObterDetalhamentoPendenciaAulaUseCase, ObterDetalhamentoPendenciaAulaUseCase>();
-
+            services.TryAddScoped<IObterAulasEventosProfessorCalendarioPorMesDiaUseCase, ObterAulasEventosProfessorCalendarioPorMesDiaUseCase>();
+            services.TryAddScoped<IObterAulasEventosProfessorCalendarioPorMesUseCase, ObterAulasEventosProfessorCalendarioPorMesUseCase>();
 
             services.TryAddScoped<IObterFrequenciasPreDefinidasUseCase, ObterFrequenciasPreDefinidasUseCase>();
             services.TryAddScoped<IObterTiposFrequenciasUseCase, ObterTiposFrequenciasUseCase>();
             services.TryAddScoped<IInserirFrequenciaUseCase, InserirFrequenciaUseCase>();
             services.TryAddScoped<IObterFrequenciaPorAulaUseCase, ObterFrequenciaPorAulaUseCase>();
 
-            services.TryAddScoped<IExecutarSincronizacaoDadosFrequenciaUseCase, ExecutarSincronizacaoDadosFrequenciaUseCase>();
-            services.TryAddScoped<IExecutarSincronizacaoDadosTurmasFrequenciaUseCase, ExecutarSincronizacaoDadosTurmasFrequenciaUseCase>();
-            services.TryAddScoped<ICarregarDadosAulasFrequenciaUseCase, CarregarDadosAulasFrequenciaUseCase>();
             services.TryAddScoped<IExecutarSincronizacaoRegistroFrequenciaAlunosUseCase, ExecutarSincronizacaoRegistroFrequenciaAlunosUseCase>();
             services.TryAddScoped<ICarregarRegistroFrequenciaAlunosUseCase, CarregarRegistroFrequenciaAlunosUseCase>();
 
 
-            services.TryAddScoped<IRabbitDeadletterSrTratarUseCase, RabbitDeadletterSrTratarUseCase>();
+            services.TryAddScoped<IRabbitDeadletterSgpTratarUseCase, RabbitDeadletterSgpTratarUseCase>();
 
             services.TryAddScoped<IConciliacaoFrequenciaTurmasAlunosCronUseCase, ConciliacaoFrequenciaTurmasAlunosCronUseCase>();
             services.TryAddScoped<IConciliacaoFrequenciaTurmasAlunosSyncUseCase, ConciliacaoFrequenciaTurmasAlunosSyncUseCase>();
             services.TryAddScoped<IConciliacaoFrequenciaTurmasAlunosBuscarUseCase, ConciliacaoFrequenciaTurmasAlunosBuscarUseCase>();
 
             services.TryAddScoped<IObterNotasParaAvaliacoesUseCase, ObterNotasParaAvaliacoesUseCase>();
+            services.TryAddScoped<IObterNotasParaAvaliacoesListaoUseCase, ObterNotasParaAvaliacoesListaoUseCase>();
             services.TryAddScoped<IObterPeriodosParaConsultaNotasUseCase, ObterPeriodosParaConsultaNotasUseCase>();
 
 
@@ -1007,6 +1116,14 @@ namespace SME.SGP.IoC
             // Consolidação de Diarios de Bordo
             services.TryAddScoped<IConsolidarDiariosBordoCarregarUseCase, ConsolidarDiariosBordoCarregarUseCase>();
             services.TryAddScoped<IConsolidarDiariosBordoPorUeTratarUseCase, ConsolidarDiariosBordoPorUeTratarUseCase>();
+
+            // Consolidação de Registros Pedagógicos
+            services.TryAddScoped<IConsolidarRegistrosPedagogicosUseCase, ConsolidarRegistrosPedagogicosUseCase>();
+            services.TryAddScoped<IConsolidarRegistrosPedagogicosPorUeTratarUseCase, ConsolidarRegistrosPedagogicosPorUeTratarUseCase>();
+            services.TryAddScoped<IRelatorioAcompanhamentoRegistrosPedagogicosUseCase, RelatorioAcompanhamentoRegistrosPedagogicosUseCase>();
+
+            //Acompanhamento de Frequencia
+            services.TryAddScoped<IRelatorioAcompanhamentoDeFrequênciaUseCase, RelatorioAcompanhamentoDeFrequênciaUseCase>();
 
             // Dashboard Registro Individual
             services.TryAddScoped<IObterQuantidadeRegistrosIndividuaisPorAnoTurmaUseCase, ObterQuantidadeRegistrosIndividuaisPorAnoTurmaUseCase>();
@@ -1061,10 +1178,15 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterFiltroSemanaUseCase, ObterFiltroSemanaUseCase>();
             // Dashboard Frequencia Aluno
             services.TryAddScoped<IObterDadosDashboardFrequenciaPorAnoTurmaUseCase, ObterDadosDashboardFrequenciaPorAnoTurmaUseCase>();
+            services.TryAddScoped<IObterDadosDashboardFrequenciaPorAnoTurmaUseCase, ObterDadosDashboardFrequenciaPorAnoTurmaUseCase>();
+            services.TryAddScoped<IObterFrequenciasPorPeriodoUseCase, ObterFrequenciasPorPeriodoUseCase>();
 
             //  Dashboard Compensação ausência
             services.TryAddScoped<IObterDadosDashboardTotalAusenciasCompensadasUseCase, ObterDadosDashboardTotalAusenciasCompensadasUseCase>();
-            services.TryAddScoped<IObterDadosDashboardTotalAtividadesCompensacaoUseCase, ObterDadosDashboardTotalAtividadesCompensacaoUseCase>();
+            services.TryAddScoped<IExecutaConsolidacaoDashBoardFrequenciaUseCase, ExecutaConsolidacaoDashBoardFrequenciaUseCase>();
+            services.TryAddScoped<IExecutaConsolidacaoDiariaDashBoardFrequenciaUseCase, ExecutaConsolidacaoDiariaDashBoardFrequenciaUseCase>();
+            services.TryAddScoped<IExecutaConsolidacaoSemanalDashBoardFrequenciaUseCase, ExecutaConsolidacaoSemanalDashBoardFrequenciaUseCase>();
+            services.TryAddScoped<IExecutaConsolidacaoMensalDashBoardFrequenciaUseCase, ExecutaConsolidacaoMensalDashBoardFrequenciaUseCase>();
 
             // Rotas Agendamento Sync
             services.TryAddScoped<IRotasAgendamentoTratarUseCase, RotasAgendamentoTratarUseCase>();
@@ -1111,7 +1233,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificacaoFrequencia, NotificacaoFrequenciaUseCase>();
             services.TryAddScoped<IExecutarTipoCalendario, ExecutarTipoCalendarioUseCase>();
             services.TryAddScoped<IExecutarGravarRecorrencia, ExecutarGravarRecorrenciaUseCase>();
-            services.TryAddScoped<INotificarCompensacaoAusencia, NotificarCompensacaoAusenciaUseCase>();
             services.TryAddScoped<IGerarNotificacaoAlteracaoLimiteDias, GerarNotificacaoAlteracaoLimiteDiasUseCase>();
             services.TryAddScoped<IVerificarPendenciasFechamentoTurmaDisciplina, VerificarPendenciasFechamentoTurmaDisciplinaUseCase>();
             services.TryAddScoped<IAlterarPeriodosComHierarquiaInferiorFechamento, AlterarPeriodosComHierarquiaInferiorFechamentoUseCase>();
@@ -1127,6 +1248,16 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutaSyncGsaGoogleClassroomUseCase, ExecutaSyncGsaGoogleClassroomUseCase>();
             services.TryAddScoped<IExecutarSyncSerapEstudantesProvasUseCase, ExecutarSyncSerapEstudantesProvasUseCase>();
             services.TryAddScoped<IPendenciasGeraisUseCase, PendenciasGeraisUseCase>();
+
+            //Remoção da Atribuição de Pendencia Usuário
+            services.TryAddScoped<IRemoverAtribuicaoPendenciasUsuariosUseCase, RemoverAtribuicaoPendenciasUsuariosUseCase>();
+            services.TryAddScoped<IRemoverAtribuicaoPendenciasUsuariosUeUseCase, RemoverAtribuicaoPendenciasUsuariosUeUseCase>();
+            services.TryAddScoped<IRemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase, RemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase>();
+
+            services.TryAddScoped<IObterDatasDiarioBordoPorPeriodoUseCase, ObterDatasDiarioBordoPorPeriodoUseCase>();
+            services.TryAddScoped<IInserirAlterarDiarioBordoUseCase, InserirAlterarDiarioBordoUseCase>();
+
+            services.TryAddScoped<IListarFechamentoTurmaBimestreUseCase, ListarFechamentoTurmaBimestreUseCase>();
         }
     }
 }

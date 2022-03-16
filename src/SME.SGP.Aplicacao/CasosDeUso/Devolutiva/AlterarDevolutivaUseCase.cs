@@ -25,10 +25,23 @@ namespace SME.SGP.Aplicacao
             var bimestre = await mediator.Send(new ObterBimestreAtualQuery(DateTime.Today, turma));
             await ValidarBimestreEmAberto(turma, bimestre);
 
+            await MoverRemoverExcluidos(param, devolutiva);
+
             devolutiva.Descricao = param.Descricao;
             return await mediator.Send(new AlterarDevolutivaCommand(devolutiva));
         }
-
+        private async Task MoverRemoverExcluidos(AlterarDevolutivaDto alterarDevolutivaDto, Devolutiva devolutiva)
+        {
+            if (!string.IsNullOrEmpty(alterarDevolutivaDto.Descricao))
+            {
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Devolutiva, devolutiva.Descricao, alterarDevolutivaDto.Descricao));
+                alterarDevolutivaDto.Descricao = moverArquivo;
+            }
+            if (!string.IsNullOrEmpty(devolutiva.Descricao))
+            {
+                await mediator.Send(new RemoverArquivosExcluidosCommand(devolutiva.Descricao, alterarDevolutivaDto.Descricao, TipoArquivo.Devolutiva.Name()));
+            }
+        }
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));

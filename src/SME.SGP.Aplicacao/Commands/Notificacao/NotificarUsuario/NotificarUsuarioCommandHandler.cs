@@ -11,7 +11,6 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IMediator mediator;
-        private readonly IRepositorioUsuario repositorioUsuario;
 
         public NotificarUsuarioCommandHandler(IRepositorioNotificacao repositorioNotificacao, IMediator mediator)
         {
@@ -27,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             var notificacao = new Notificacao()
             {
-                Codigo = request.Codigo == 0 ? ObtemNovoCodigo() : request.Codigo,
+                Codigo = request.Codigo == 0 ? await mediator.Send(new ObterNotificacaoUltimoCodigoPorAnoQuery(DateTime.Now.Year)) + 1 : request.Codigo,
                 Titulo = request.Titulo,
                 Mensagem = request.Mensagem,
                 DreId = request.DreCodigo,
@@ -43,12 +42,6 @@ namespace SME.SGP.Aplicacao
                 notificacao.CriadoEm = request.CriadoEm.Value;
 
             return await repositorioNotificacao.SalvarAsync(notificacao);            
-        }
-
-        public long ObtemNovoCodigo()
-        {
-            return repositorioNotificacao.ObterUltimoCodigoPorAno(DateTime.Now.Year) + 1;
-        }
-
+        }         
     }
 }

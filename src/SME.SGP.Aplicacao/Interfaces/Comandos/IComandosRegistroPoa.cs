@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
@@ -8,6 +9,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 
         void Cadastrar(RegistroPoaDto registroPoaDto);
 
-        void Excluir(long id);
+        Task Excluir(long id);
     }
 }

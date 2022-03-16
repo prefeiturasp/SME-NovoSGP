@@ -22,9 +22,21 @@ namespace SME.SGP.Aplicacao
             if (!usuario.EhProfessorCj() && !usuario.EhGestorEscolar())
                 await ValidarAtribuicaoUsuario(long.Parse(aula.DisciplinaId), aula.TurmaId, aula.DataAula, usuario);
 
+            await MoverRemoverExcluidos(param,anotacao);
             return await AtualizarAnotacaoFrequenciaAluno(anotacao, param);
         }
-
+        private async Task MoverRemoverExcluidos(AlterarAnotacaoFrequenciaAlunoDto anotacaoAluno, AnotacaoFrequenciaAluno anotacao)
+        {
+            if (!string.IsNullOrEmpty(anotacaoAluno.Anotacao))
+            {
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FrequenciaAnotacaoEstudante, anotacao.Anotacao, anotacaoAluno.Anotacao));
+                anotacaoAluno.Anotacao = moverArquivo;
+            }
+            if (!string.IsNullOrEmpty(anotacao.Anotacao))
+            {
+                var deletarArquivosNaoUtilziados = await mediator.Send(new RemoverArquivosExcluidosCommand(anotacao.Anotacao, anotacaoAluno.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
+            }
+        }
         private async Task<bool> AtualizarAnotacaoFrequenciaAluno(AnotacaoFrequenciaAluno anotacao, AlterarAnotacaoFrequenciaAlunoDto param)
         {
             anotacao.MotivoAusenciaId = param.MotivoAusenciaId;

@@ -2,8 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterCodigosDreUePorTurmaIdQueryHandler : IRequestHandler<ObterCodigosDreUePorTurmaIdQuery, DreUeDaTurmaDto>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
 
-        public ObterCodigosDreUePorTurmaIdQueryHandler(IRepositorioTurma repositorioTurma)
+        public ObterCodigosDreUePorTurmaIdQueryHandler(IRepositorioTurmaConsulta repositorioTurma)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }

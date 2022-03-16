@@ -11,11 +11,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ConciliacaoFrequenciaTurmasAlunosSyncUseCase : AbstractUseCase, IConciliacaoFrequenciaTurmasAlunosSyncUseCase
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
 
-        public ConciliacaoFrequenciaTurmasAlunosSyncUseCase(IMediator mediator, IRepositorioTurma repositorioTurma) : base(mediator)
+        public ConciliacaoFrequenciaTurmasAlunosSyncUseCase(IMediator mediator, IRepositorioTurmaConsulta repositorioTurmaConsulta) : base(mediator)
         {
-            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
             var filtro = mensagem.ObterObjetoMensagem<FiltroCalculoFrequenciaDataRereferenciaDto>();
 
-            var turmasComponentesDoAnoLetivo = await repositorioTurma.ObterTurmasComponentesPorAnoLetivo(filtro.DataReferencia);
+            var turmasComponentesDoAnoLetivo = await repositorioTurmaConsulta.ObterTurmasComponentesPorAnoLetivo(filtro.DataReferencia);
 
             if (turmasComponentesDoAnoLetivo != null && turmasComponentesDoAnoLetivo.Any())
             {

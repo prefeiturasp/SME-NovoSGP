@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using MediatR;
+using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -15,6 +16,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IRepositorioObjetivoDesenvolvimentoPlano> repositorioObjetivoDesenvolvimentoPlano;
         private readonly Mock<IRepositorioPlanoCiclo> repositorioPlanoCiclo;
         private readonly Mock<IUnitOfWork> unitOfWork;
+        private readonly Mock<IMediator> mediator;
 
         public ComandosPlanoCicloTeste()
         {
@@ -22,19 +24,20 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioMatrizSaberPlano = new Mock<IRepositorioMatrizSaberPlano>();
             repositorioObjetivoDesenvolvimentoPlano = new Mock<IRepositorioObjetivoDesenvolvimentoPlano>();
             unitOfWork = new Mock<IUnitOfWork>();
+            mediator = new Mock<IMediator>();
             comandosPlanoCiclo = new ComandosPlanoCiclo(repositorioPlanoCiclo.Object,
                                                         repositorioMatrizSaberPlano.Object,
                                                         repositorioObjetivoDesenvolvimentoPlano.Object,
-                                                        unitOfWork.Object);
+                                                        unitOfWork.Object,mediator.Object);
         }
 
         [Fact(DisplayName = "DeveDispararExcecaoAoInstanciarSemDependencias")]
         public void DeveDispararExcecaoAoInstanciarSemDependencias()
         {
-            Assert.Throws<ArgumentNullException>(() => new ComandosPlanoCiclo(null, repositorioMatrizSaberPlano.Object, repositorioObjetivoDesenvolvimentoPlano.Object, unitOfWork.Object));
-            Assert.Throws<ArgumentNullException>(() => new ComandosPlanoCiclo(repositorioPlanoCiclo.Object, null, repositorioObjetivoDesenvolvimentoPlano.Object, unitOfWork.Object));
-            Assert.Throws<ArgumentNullException>(() => new ComandosPlanoCiclo(repositorioPlanoCiclo.Object, repositorioMatrizSaberPlano.Object, null, unitOfWork.Object));
-            Assert.Throws<ArgumentNullException>(() => new ComandosPlanoCiclo(repositorioPlanoCiclo.Object, repositorioMatrizSaberPlano.Object, repositorioObjetivoDesenvolvimentoPlano.Object, null));
+            Assert.Throws<ArgumentNullException>(() => new ComandosPlanoCiclo(null, repositorioMatrizSaberPlano.Object, repositorioObjetivoDesenvolvimentoPlano.Object, unitOfWork.Object, mediator.Object));
+            Assert.Throws<ArgumentNullException>(() => new ComandosPlanoCiclo(repositorioPlanoCiclo.Object, null, repositorioObjetivoDesenvolvimentoPlano.Object, unitOfWork.Object, mediator.Object));
+            Assert.Throws<ArgumentNullException>(() => new ComandosPlanoCiclo(repositorioPlanoCiclo.Object, repositorioMatrizSaberPlano.Object, null, unitOfWork.Object, mediator.Object));
+            Assert.Throws<ArgumentNullException>(() => new ComandosPlanoCiclo(repositorioPlanoCiclo.Object, repositorioMatrizSaberPlano.Object, repositorioObjetivoDesenvolvimentoPlano.Object, null, mediator.Object));
         }
 
         [Fact(DisplayName = "DeveSalvarPlanoCiclo")]

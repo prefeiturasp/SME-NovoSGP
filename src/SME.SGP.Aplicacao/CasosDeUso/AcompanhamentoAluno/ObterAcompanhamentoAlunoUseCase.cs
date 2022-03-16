@@ -12,8 +12,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAcompanhamentoAlunoUseCase : AbstractUseCase, IObterAcompanhamentoAlunoUseCase
     {
-        public ObterAcompanhamentoAlunoUseCase(IMediator mediator) : base(mediator)
+        private readonly IConsultasPeriodoFechamento consultaPeriodoFechamento;
+
+        public ObterAcompanhamentoAlunoUseCase(IMediator mediator, IConsultasPeriodoFechamento consultaPeriodoFechamento) : base(mediator)
         {
+            this.consultaPeriodoFechamento = consultaPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultaPeriodoFechamento));
         }
 
         public async Task<AcompanhamentoAlunoTurmaSemestreDto> Executar(FiltroAcompanhamentoTurmaAlunoSemestreDto filtro)
@@ -23,6 +26,8 @@ namespace SME.SGP.Aplicacao
             var acompanhamentoAlunoTurmaSemestre = await ObterAcompanhamentoSemestre(filtro.AlunoId, turma.Id, filtro.Semestre);
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
+
+            acompanhamentoAlunoTurmaSemestre.PodeEditar = await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTimeExtension.HorarioBrasilia().Date, filtro.Semestre);
 
             TratamentoSemestre(acompanhamentoAlunoTurmaSemestre, periodosEscolares, filtro.Semestre, turma.ModalidadeCodigo);
             await TratamentoPercursoIndividual(acompanhamentoAlunoTurmaSemestre, filtro.TurmaId, filtro.AlunoId, filtro.ComponenteCurricularId);
@@ -46,12 +51,13 @@ namespace SME.SGP.Aplicacao
                 percursoIndividual.AppendLine(registroIndividual.Registro);
             }
 
+            acompanhamentoAlunoTurmaSemestre.TextoSugerido = true;
             acompanhamentoAlunoTurmaSemestre.PercursoIndividual = percursoIndividual.ToString();
         }
 
         private async Task ParametroQuantidadeFotosAluno(AcompanhamentoAlunoTurmaSemestreDto acompanhamentoAlunoTurmaSemestre, int anoLetivo)
         {
-            var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeFotosAcompanhamentoAluno, anoLetivo));
+            var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeImagensPercursoIndividualCrianca, anoLetivo));
 
             acompanhamentoAlunoTurmaSemestre.QuantidadeFotos = parametroQuantidade == null ? 3 :
                 int.Parse(parametroQuantidade.Valor);
@@ -59,7 +65,7 @@ namespace SME.SGP.Aplicacao
 
         private void TratamentoSemestre(AcompanhamentoAlunoTurmaSemestreDto acompanhamentosAlunoTurmaSemestre, IEnumerable<PeriodoEscolar> periodosEscolares, int semestre, Modalidade modalidadeCodigo)
         {
-            acompanhamentosAlunoTurmaSemestre.PodeEditar = VerificaSePodeEditarAcompanhamentoAluno(periodosEscolares);
+            
 
             var periodosSemestre = modalidadeCodigo == Modalidade.EJA ?
                 periodosEscolares :
@@ -97,8 +103,5 @@ namespace SME.SGP.Aplicacao
 
         private async Task<long> ObterAcompanhamentoAluno(long turmaId, string alunoId)
             => await mediator.Send(new ObterAcompanhamentoAlunoIDPorTurmaQuery(turmaId, alunoId));
-         
-        private bool VerificaSePodeEditarAcompanhamentoAluno(IEnumerable<PeriodoEscolar> periodosEscolares)
-            => periodosEscolares.Any(a => a.PeriodoInicio <= DateTime.Today && a.PeriodoFim >= DateTime.Today);
     }
 }

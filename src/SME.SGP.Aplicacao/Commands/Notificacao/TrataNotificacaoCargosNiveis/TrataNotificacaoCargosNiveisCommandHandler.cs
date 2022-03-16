@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
                     var notificacaoParaTratar = notificacaoParaTratarAgrupada.FirstOrDefault(a => a.WorkflowId == workflowsIdParaTratar);
 
-                    var funcionariosNoCargo = funcionariosCargosDaUe.Where(a => a.CargoId == notificacaoParaTratar.Cargo).ToList();
+                    var funcionariosNoCargo = funcionariosCargosDaUe.Where(a => a.CargoId == (Cargo)notificacaoParaTratar.Cargo).ToList();
 
                     if (!funcionariosNoCargo.Any())
                         await mediator.Send(new AlteraWorkflowAprovacaoNivelNotificacaoCargoCommand(notificacaoParaTratar.WorkflowId, notificacaoParaTratar.NotificacaoId, funcionariosCargosDaUe.ToList()));

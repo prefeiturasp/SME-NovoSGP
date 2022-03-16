@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
         public DateTime PeriodoInicio { get; set; }
         public DateTime PeriodoFim { get; set; }
         public bool PodeEditar { get; set; }
+        public bool TextoSugerido { get; set; }
         public AuditoriaDto Auditoria { get; set; }
     }
 }

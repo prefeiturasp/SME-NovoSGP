@@ -38,8 +38,8 @@ namespace SME.SGP.Aplicacao
                     string erro = $"Não foi possível obter os dados do aluno no EOL - HttpCode {(int)resposta.StatusCode} - erro: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
 
                     await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, string.Empty));
-
-                    throw new NegocioException(erro);
+                    var respostaErro = resposta?.Content != null ? resposta?.Content?.ReadAsStringAsync()?.Result.ToString() : erro;
+                    throw new NegocioException(respostaErro);
                 }
             }
             catch (Exception e)

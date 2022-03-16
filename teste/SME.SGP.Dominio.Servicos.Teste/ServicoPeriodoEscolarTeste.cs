@@ -9,6 +9,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
     public class ServicoPeriodoEscolarTeste
     {
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
+        private readonly Mock<IRepositorioPeriodoEscolarConsulta> repositorioPeriodoEscolarConsulta;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
         private readonly IServicoPeriodoEscolar servicoPeriodoEscolar;
         private readonly Mock<IUnitOfWork> unitOfWork;
@@ -16,17 +17,22 @@ namespace SME.SGP.Dominio.Servicos.Teste
         public ServicoPeriodoEscolarTeste()
         {
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
+            repositorioPeriodoEscolarConsulta = new Mock<IRepositorioPeriodoEscolarConsulta>();
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
             unitOfWork = new Mock<IUnitOfWork>();
-            servicoPeriodoEscolar = new ServicoPeriodoEscolar(unitOfWork.Object, repositorioPeriodoEscolar.Object, repositorioTipoCalendario.Object);
+            servicoPeriodoEscolar = new ServicoPeriodoEscolar(unitOfWork.Object,
+                                                              repositorioPeriodoEscolar.Object,
+                                                              repositorioPeriodoEscolarConsulta.Object,
+                                                              repositorioTipoCalendario.Object);
         }
 
         [Fact]
         public void Deve_Gerar_Excecao_Quando_Instanciar_Sem_Dependencia()
         {
-            Assert.Throws<ArgumentNullException>(() => new ServicoPeriodoEscolar(null, repositorioPeriodoEscolar.Object, repositorioTipoCalendario.Object));
-            Assert.Throws<ArgumentNullException>(() => new ServicoPeriodoEscolar(unitOfWork.Object, null, repositorioTipoCalendario.Object));
-            Assert.Throws<ArgumentNullException>(() => new ServicoPeriodoEscolar(unitOfWork.Object, repositorioPeriodoEscolar.Object, null));
+            Assert.Throws<ArgumentNullException>(() => new ServicoPeriodoEscolar(null, repositorioPeriodoEscolar.Object, repositorioPeriodoEscolarConsulta.Object, repositorioTipoCalendario.Object));
+            Assert.Throws<ArgumentNullException>(() => new ServicoPeriodoEscolar(unitOfWork.Object, null, repositorioPeriodoEscolarConsulta.Object, repositorioTipoCalendario.Object));
+            Assert.Throws<ArgumentNullException>(() => new ServicoPeriodoEscolar(unitOfWork.Object, repositorioPeriodoEscolar.Object, null, repositorioTipoCalendario.Object));
+            Assert.Throws<ArgumentNullException>(() => new ServicoPeriodoEscolar(unitOfWork.Object, repositorioPeriodoEscolar.Object, repositorioPeriodoEscolarConsulta.Object, null));
         }
 
         //[Fact]

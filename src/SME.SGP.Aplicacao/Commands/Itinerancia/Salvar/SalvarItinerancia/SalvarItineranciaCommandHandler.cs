@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -34,7 +35,8 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = request.AnoLetivo,
                 EventoId = request.EventoId,
                 DreId = request.DreId,
-                UeId = request.UeId
+                UeId = request.UeId,
+                Situacao = SituacaoItinerancia.Enviado
             };
     }
 }

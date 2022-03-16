@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTotalAlunosNoSemestreQueryHandler : IRequestHandler<ObterTotalAlunosNoSemestreQuery, int>
     {
-        private readonly IRepositorioAcompanhamentoAluno repositorio;
+        private readonly IRepositorioAcompanhamentoAlunoConsulta repositorio;
 
-        public ObterTotalAlunosNoSemestreQueryHandler(IRepositorioAcompanhamentoAluno repositorio)
+        public ObterTotalAlunosNoSemestreQueryHandler(IRepositorioAcompanhamentoAlunoConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

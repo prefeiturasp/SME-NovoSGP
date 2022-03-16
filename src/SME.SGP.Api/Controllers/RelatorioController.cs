@@ -199,7 +199,6 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("pendencias/tipos")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public IActionResult ObterTipoPendencias([FromQuery] bool opcaoTodos, [FromServices] IRelatorioPendenciasUseCase relatorioPendenciasFechamentoUseCase)
         {
             return Ok(relatorioPendenciasFechamentoUseCase.ListarTodosTipos(opcaoTodos));
@@ -210,6 +209,32 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> Gerar(FiltroRelatorioAtaBimestralDto filtro, [FromServices] IRelatorioAtaBimestralUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpPost("acompanhamento-registros-pedagogicos")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> AcompanhamentoRegistrosPedagogicos(FiltroRelatorioAcompanhamentoRegistrosPedagogicosDto filtro, [FromServices] IRelatorioAcompanhamentoRegistrosPedagogicosUseCase relatorioRegistrosPedagogicos)
+        {
+            return Ok(await relatorioRegistrosPedagogicos.Executar(filtro));
+        }
+
+
+        [HttpPost("acompanhamento-frequencia")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ImprimirAcompanhamentoFrequencia(FiltroAcompanhamentoFrequenciaJustificativaDto filtro,[FromServices] IRelatorioAcompanhamentoDeFrequênciaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+
+        [HttpPost("ocorrencias")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ImprimirRelatorioOcorrencias(FiltroImpressaoOcorrenciaDto filtro, [FromServices] IRelatorioOcorrenciasUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
         }

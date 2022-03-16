@@ -31,4 +31,6 @@ services:
 networks:
   sme-network:
     driver: bridge
+    external:
+      name: sme-network
     name: sme_external_network

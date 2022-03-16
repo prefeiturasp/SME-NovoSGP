@@ -2,12 +2,8 @@
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -35,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
 
-            if (periodosEscolares == null)
+            if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Não foi possível encontrar o período escolar da turma.");
 
             var periodo = new PeriodoOcorrenciaPorAlunoDto();
@@ -43,7 +39,7 @@ namespace SME.SGP.Aplicacao
             if (dto.Semestre == 1)
             {
                 periodo.DataInicio = periodosEscolares.First(a => a.Bimestre == 1).PeriodoInicio;
-                periodo.DataFim = periodosEscolares.First(a => a.Bimestre == 2).PeriodoFim;  
+                periodo.DataFim = periodosEscolares.First(a => a.Bimestre == 2).PeriodoFim;
             }
             else
             {

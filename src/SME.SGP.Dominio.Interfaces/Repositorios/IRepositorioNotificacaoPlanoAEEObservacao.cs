@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Dominio.Interfaces.Repositorios
+namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioNotificacaoPlanoAEEObservacao : IRepositorioBase<NotificacaoPlanoAEEObservacao>
     {

@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotificacoesNiveisCargosQueryHandler : IRequestHandler<ObterNotificacoesNiveisCargosQuery, IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>>
     {
-        private readonly IRepositorioNotificacao repositorioNotificacao;
+        private readonly IRepositorioNotificacaoConsulta repositorioNotificacao;
 
-        public ObterNotificacoesNiveisCargosQueryHandler(IRepositorioNotificacao repositorioNotificacao)
+        public ObterNotificacoesNiveisCargosQueryHandler(IRepositorioNotificacaoConsulta repositorioNotificacao)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
         }

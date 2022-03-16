@@ -10,8 +10,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulaReduzidaPorTurmaComponenteEBimestreQueryHandler : IRequestHandler<ObterAulaReduzidaPorTurmaComponenteEBimestreQuery, IEnumerable<AulaReduzidaDto>>
     {
-        private readonly IRepositorioAula repositorioAula;
-        public ObterAulaReduzidaPorTurmaComponenteEBimestreQueryHandler(IRepositorioAula repositorioAula)
+        private readonly IRepositorioAulaConsulta repositorioAula;
+        public ObterAulaReduzidaPorTurmaComponenteEBimestreQueryHandler(IRepositorioAulaConsulta repositorioAula)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }

@@ -1,4 +1,7 @@
-﻿using Microsoft.ApplicationInsights;
+﻿using Elastic.Apm.AspNetCore;
+using Elastic.Apm.DiagnosticSource;
+using Elastic.Apm.SqlClient;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -39,13 +42,12 @@ namespace SME.SGP.Worker.Rabbbit
         {
             services.AddHttpContextAccessor();
 
-            RegistraDependencias.Registrar(services);
-
             RegistrarHttpClients(services, configuration);
             services.AddApplicationInsightsTelemetry(configuration);
             services.AddPolicies();
 
             ConfiguraVariaveisAmbiente(services);
+            RegistraDependencias.Registrar(services, configuracaoRabbitOptions);
             ConfiguraGoogleClassroomSync(services);
             ConfiguraRabbitParaLogs(services);
 
@@ -94,6 +96,10 @@ namespace SME.SGP.Worker.Rabbbit
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseElasticApm(configuration,
+                new SqlClientDiagnosticSubscriber(),
+                new HttpDiagnosticsSubscriber());
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -181,12 +187,14 @@ namespace SME.SGP.Worker.Rabbbit
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-sr-api-key", configuration.GetSection("ApiKeySr").Value);
             });
 
             services.AddHttpClient(name: "servicoServidorRelatorios", c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
-                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("Accept", "application/json");                
+                c.DefaultRequestHeaders.Add("x-sr-api-key", configuration.GetSection("ApiKeySr").Value);
             });
 
         }

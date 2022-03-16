@@ -9,8 +9,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulasPorDataTurmaComponenteCurricularEProfessorQueryHandler : IRequestHandler<ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery, IEnumerable<AulaConsultaDto>>
     {
-        private readonly IRepositorioAula repositorioAula;
-        public ObterAulasPorDataTurmaComponenteCurricularEProfessorQueryHandler(IRepositorioAula repositorioAula)
+        private readonly IRepositorioAulaConsulta repositorioAula;
+        public ObterAulasPorDataTurmaComponenteCurricularEProfessorQueryHandler(IRepositorioAulaConsulta repositorioAula)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
         }

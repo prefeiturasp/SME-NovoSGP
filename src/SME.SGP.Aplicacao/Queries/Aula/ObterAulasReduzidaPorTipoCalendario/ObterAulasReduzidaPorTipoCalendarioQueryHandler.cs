@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulasReduzidaPorTipoCalendarioQueryHandler : IRequestHandler<ObterAulasReduzidaPorTipoCalendarioQuery, IEnumerable<AulaReduzidaDto>>
     {
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
 
-        public ObterAulasReduzidaPorTipoCalendarioQueryHandler(IRepositorioAula repositorioAula)
+        public ObterAulasReduzidaPorTipoCalendarioQueryHandler(IRepositorioAulaConsulta repositorioAula)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.IO;
 using System.Threading;
@@ -16,26 +17,29 @@ namespace SME.SGP.Aplicacao
             var extencao = Path.GetExtension(request.Nome);
             var nomeArquivo = $"{request.Codigo}{extencao}";
             var caminhoArquivo = Path.Combine($"{caminhoBase}", nomeArquivo);
-
+            
             try
             {
+                if (!File.Exists(caminhoArquivo))
+                {
+                   var arq = Array.Empty<byte>();
+                    return Task.FromResult(arq);
+                }
                 var arquivo = File.ReadAllBytes(caminhoArquivo);
-
+            
                 if (arquivo != null)
-                    return Task.FromResult(arquivo);
-
-                throw new NegocioException("A imagem da criança/aluno não foi encontrada");
+                     arquivo = Array.Empty<byte>();
+                
+                return Task.FromResult(arquivo);
             }
             catch (Exception)
             {
                 throw new NegocioException("A imagem da criança/aluno não foi encontrada.");
             }
-         
-
         }
 
         private string ObterCaminhoArquivos(TipoArquivo tipo)
-            => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arquivos", tipo.ToString());
+            => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ArquivoContants.PastaAquivos, tipo.Name());
 
     }
 }

@@ -25,23 +25,23 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IServicoEol servicoEOL;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEventosAulasCalendario(
             IRepositorioEvento repositorioEvento,
             IComandosDiasLetivos comandosDiasLetivos,
-            IRepositorioAula repositorioAula,
+            IRepositorioAulaConsulta repositorioAula,
             IServicoUsuario servicoUsuario,
             IServicoEol servicoEOL,
-            IRepositorioComponenteCurricular repositorioComponenteCurricular,
+            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IConsultasDisciplina consultasDisciplina,

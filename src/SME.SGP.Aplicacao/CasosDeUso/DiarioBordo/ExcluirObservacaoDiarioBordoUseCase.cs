@@ -13,10 +13,9 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Executar(long diarioBordoId)
+        public async Task<bool> Executar(long diarioBordoObservacaoId)
         {
-            var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
-            return await mediator.Send(new ExcluirObservacaoDiarioBordoCommand(diarioBordoId, usuarioId));
+            return await mediator.Send(new ExcluirObservacaoDiarioBordoCommand(diarioBordoObservacaoId));
         }
     }
 }

@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQueryHandler : IRequestHandler<VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery, bool>
     {
-        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
 
-        public VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQueryHandler(IRepositorioFechamentoTurma repositorioFechamentoTurma)
+        public VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQueryHandler(IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
         }

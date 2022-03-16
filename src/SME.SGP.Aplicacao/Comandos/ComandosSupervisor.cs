@@ -67,7 +67,12 @@ namespace SME.SGP.Aplicacao
                 });
 
             if (!supervisores.Any(s => s.CodigoRF.Equals(atribuicaoSupervisorEscolaDto.SupervisorId)))
+            {                
+                var atribuicaoExistentes = repositorioSupervisorEscolaDre
+                    .ObtemPorDreESupervisor(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId);
+
                 throw new NegocioException($"O supervisor {atribuicaoSupervisorEscolaDto.SupervisorId} não é valido para essa atribuição.");
+            }
         }
 
         private void AtribuirEscolas(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto)

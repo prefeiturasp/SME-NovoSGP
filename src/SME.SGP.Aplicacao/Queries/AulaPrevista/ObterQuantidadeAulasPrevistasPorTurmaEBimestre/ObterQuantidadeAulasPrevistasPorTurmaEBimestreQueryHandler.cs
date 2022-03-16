@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuantidadeAulasPrevistasPorTurmaEBimestreQueryHandler : IRequestHandler<ObterQuantidadeAulasPrevistasPorTurmaEBimestreQuery, int>
     {
-        private readonly IRepositorioAulaPrevistaBimestre repositorioAulaPrevistaBimestre;
+        private readonly IRepositorioAulaPrevistaBimestreConsulta repositorioAulaPrevistaBimestre;
 
-        public ObterQuantidadeAulasPrevistasPorTurmaEBimestreQueryHandler(IRepositorioAulaPrevistaBimestre repositorioAulaPrevistaBimestre)
+        public ObterQuantidadeAulasPrevistasPorTurmaEBimestreQueryHandler(IRepositorioAulaPrevistaBimestreConsulta repositorioAulaPrevistaBimestre)
         {
             this.repositorioAulaPrevistaBimestre = repositorioAulaPrevistaBimestre;
         }

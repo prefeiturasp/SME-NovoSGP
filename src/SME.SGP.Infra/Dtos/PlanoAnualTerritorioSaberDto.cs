@@ -41,4 +41,11 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "A turma deve ser informada")]
         public long? TurmaId { get; set; }
     }
+    public class PlanoAnualTerritorioSaberResumidoDto
+    {
+        public string DesenvolvimentoAtual { get; set; }
+        public string DesenvolvimentoNovo { get; set; }
+        public string ReflexaoAtual { get; set; }
+        public string ReflexaoNovo { get; set; }
+    }
 }

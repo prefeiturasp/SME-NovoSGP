@@ -8,13 +8,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciaOuPlanoNaRecorrenciaQueryHandler : IRequestHandler<ObterFrequenciaOuPlanoNaRecorrenciaQuery, bool>
     {
-        private readonly IRepositorioAula repositorioAula;
-        private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioAulaConsulta repositorioAula;
+        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
 
-        public ObterFrequenciaOuPlanoNaRecorrenciaQueryHandler(IRepositorioAula repositorioAula,
-                                                               IRepositorioFrequencia repositorioFrequencia,
+        public ObterFrequenciaOuPlanoNaRecorrenciaQueryHandler(IRepositorioAulaConsulta repositorioAula,
+                                                               IRepositorioFrequenciaConsulta repositorioFrequencia,
                                                                IRepositorioPlanoAula repositorioPlanoAula,
                                                                IRepositorioDiarioBordo repositorioDiarioBordo)
         {

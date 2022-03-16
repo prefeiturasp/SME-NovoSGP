@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
             listaComponentes.Insert(0, new ComponenteCurricularEol() { Codigo = -99, Descricao = "Todos" });
 
-            return listaComponentes;
+            return listaComponentes.GroupBy(x => x.Codigo).SelectMany(y => y.OrderBy(a => a.Descricao).Take(1));            
         }
 
         private async Task TratarNomeComponentes(List<ComponenteCurricularEol> listaComponentes)

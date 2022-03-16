@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodoEscolarPorTurmaBimestreQueryHandler : IRequestHandler<ObterPeriodoEscolarPorTurmaBimestreQuery, PeriodoEscolar>
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
 
-        public ObterPeriodoEscolarPorTurmaBimestreQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+        public ObterPeriodoEscolarPorTurmaBimestreQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar;
         }

@@ -4,7 +4,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,9 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDashboardFrequenciaAusenciasPorMotivoQueryHandler : IRequestHandler<ObterDashboardFrequenciaAusenciasPorMotivoQuery, IEnumerable<GraficoBaseDto>>
     {
-        private readonly IRepositorioFrequencia repositorio;
+        private readonly IRepositorioFrequenciaConsulta repositorio;
 
-        public ObterDashboardFrequenciaAusenciasPorMotivoQueryHandler(IRepositorioFrequencia repositorio)
+        public ObterDashboardFrequenciaAusenciasPorMotivoQueryHandler(IRepositorioFrequenciaConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

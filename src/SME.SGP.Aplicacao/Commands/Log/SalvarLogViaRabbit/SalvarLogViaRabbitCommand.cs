@@ -7,13 +7,15 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarLogViaRabbitCommand : IRequest<bool>
     {
-        public SalvarLogViaRabbitCommand(string mensagem, LogNivel nivel, LogContexto contexto, string observacao = "", string projeto = "SGP")
+        public SalvarLogViaRabbitCommand(string mensagem, LogNivel nivel, LogContexto contexto, string observacao = "", string projeto = "SGP", string rastreamento = "", string excecaoInterna = "")
         {
             Mensagem = mensagem;
             Nivel = nivel;
             Contexto = contexto;
             Observacao = observacao;
             Projeto = projeto;
+            Rastreamento = rastreamento;
+            ExcecaoInterna = excecaoInterna;
         }
 
         public string Mensagem { get; set; }
@@ -23,6 +25,8 @@ namespace SME.SGP.Aplicacao
         public LogContexto Contexto { get; set; }
         public string Observacao { get; set; }
         public string Projeto { get; set; }
+        public string Rastreamento { get; set; }
+        public string ExcecaoInterna { get; }
     }
 
 }

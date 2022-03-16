@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTotalAulasTurmaEBimestreEComponenteCurricularQueryHandler : IRequestHandler<ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery, IEnumerable<TurmaComponenteQntAulasDto>>
     {
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
 
-        public ObterTotalAulasTurmaEBimestreEComponenteCurricularQueryHandler(IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo)
+        public ObterTotalAulasTurmaEBimestreEComponenteCurricularQueryHandler(IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo)
         {
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo;
         }

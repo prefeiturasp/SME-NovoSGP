@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodosEscolaresPorTipoCalendarioIdQueryHandler : IRequestHandler<ObterPeriodosEscolaresPorTipoCalendarioIdQuery, IEnumerable<Dominio.PeriodoEscolar>>
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
 
-        public ObterPeriodosEscolaresPorTipoCalendarioIdQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+        public ObterPeriodosEscolaresPorTipoCalendarioIdQueryHandler(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }

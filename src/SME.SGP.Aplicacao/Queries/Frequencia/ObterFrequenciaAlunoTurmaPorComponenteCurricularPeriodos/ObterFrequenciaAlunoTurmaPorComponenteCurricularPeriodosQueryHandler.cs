@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciaAlunoTurmaPorComponenteCurricularPeriodosQueryHandler : IRequestHandler<ObterFrequenciaAlunoTurmaPorComponenteCurricularPeriodosQuery, IEnumerable<FrequenciaAluno>>
     {
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
 
-        public ObterFrequenciaAlunoTurmaPorComponenteCurricularPeriodosQueryHandler(IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo)
+        public ObterFrequenciaAlunoTurmaPorComponenteCurricularPeriodosQueryHandler(IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo)
         {
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new System.ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
         }

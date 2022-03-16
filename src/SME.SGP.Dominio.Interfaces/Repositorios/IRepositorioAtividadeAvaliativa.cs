@@ -12,12 +12,13 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<AtividadeAvaliativa>> Listar(DateTime? dataAvaliacao, string dreId, string ueId, string nomeAvaliacao, int? tipoAvaliacaoId, string turmaId, Paginacao paginacao);
 
         IEnumerable<AtividadeAvaliativa> ListarPorIds(IEnumerable<long> ids);
-
+        Task<bool> TurmaPossuiAvaliacaoNoPeriodo(long turmaId, long periodoEscolarId, long? componenteCurricularCodigo);
         Task<IEnumerable<AtividadeAvaliativa>> ListarPorTurmaDisciplinaPeriodo(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo);
+        Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular);
         Task<AtividadeAvaliativa> ObterPorAtividadeClassroomId(long atividadeClassroomId);
-        Task<IEnumerable<AvaliacoesPorTurmaComponenteDto>> ObterAvaliacoesTurmaComponentePorUeNoPeriodo(long ueId, DateTime dataInicio, DateTime dataFim);
+        Task<IEnumerable<AvaliacoesPorTurmaComponenteDto>> ObterAvaliacoesTurmaComponentePorUeNoPeriodo(long? ueId, DateTime dataInicio, DateTime dataFim);
         Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId);
-        Task<IEnumerable<TurmaEComponenteDto>> ObterTurmaEComponenteSemAvaliacaoNoPeriodo(long ueId, long tipoCalendarioId, DateTime dataInicio, DateTime dataFim);
+        Task<IEnumerable<TurmaEComponenteDto>> ObterTurmaEComponenteSemAvaliacaoNoPeriodo(long tipoCalendarioId, DateTime dataInicio, DateTime dataFim);
         IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasSemNotaParaNenhumAluno(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int tipoAtividadeAvaliativa);
 
         Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesPorDia(string dreId, string ueId, DateTime dataAvaliacao, string professorRf, string turmaId);
@@ -33,7 +34,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> VerificarSeJaExisteAvaliacaoRegencia(DateTime dataAvaliacao, string dreId, string ueId, string turmaId, string[] disciplinasId, string[] disciplinasContidaId, string professorRf, long? id);
 
         Task<bool> VerificarSeJaExistePorTipoAvaliacao(long tipoAvaliacaoId);
-        Task<IEnumerable<AtividadeAvaliativa>> ObterPorTurmaDisciplinasPeriodoAsync(string turmaCodigo, string[] disciplinasId, DateTime inicioPeriodo, DateTime fimPeriodo);
+        Task<IEnumerable<AtividadeAvaliativa>> ObterPorTurmaDisciplinasPeriodoAsync(string turmaCodigo, string[] disciplinasId, DateTime inicioPeriodo, DateTime fimPeriodo);        
         Task<bool> AtividadeImportada(long atividadeId);
+        IEnumerable<AtividadeAvaliativa> ListarAtividadesIds(IEnumerable<long> ids);
     }
 }

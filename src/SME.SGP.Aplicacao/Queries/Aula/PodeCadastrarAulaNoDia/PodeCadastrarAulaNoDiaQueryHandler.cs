@@ -42,7 +42,8 @@ namespace SME.SGP.Aplicacao
         {
             var dreUe = await mediator.Send(new ObterCodigosDreUePorTurmaIdQuery(turma.Id));
 
-            return await mediator.Send(new ExisteEventoNaDataPorTipoDreUEQuery(request.DataAula, tipoCalendarioId, TipoEvento.ReposicaoDeAula, dreUe.DreCodigo, dreUe.UeCodigo));
+            return await mediator.Send(new ExisteEventoNaDataPorTipoDreUEQuery(request.DataAula, tipoCalendarioId, TipoEvento.ReposicaoDeAula, dreUe.DreCodigo, dreUe.UeCodigo)) ||
+                   await mediator.Send(new ExisteEventoNaDataPorTipoDreUEQuery(request.DataAula, tipoCalendarioId, TipoEvento.ReposicaoDoDia, dreUe.DreCodigo, dreUe.UeCodigo));
         }
 
         private async Task<bool> PermiteAulaNormal(PodeCadastrarAulaNoDiaQuery request, Turma turma, long tipoCalendarioId)

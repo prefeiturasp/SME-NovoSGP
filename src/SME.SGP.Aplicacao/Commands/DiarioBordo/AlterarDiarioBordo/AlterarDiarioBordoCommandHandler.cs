@@ -49,21 +49,33 @@ namespace SME.SGP.Aplicacao
             }
 
 
-            var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId);
+            var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId,request.ComponenteCurricularId);
             if (diarioBordo == null)
                 throw new NegocioException($"Diário de Bordo para a aula {request.AulaId} não encontrado!");
 
+            await MoverRemoverExcluidos(request, diarioBordo);
             MapearAlteracoes(diarioBordo, request);
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
 
             return (AuditoriaDto)diarioBordo;
         }
-
+        private async Task MoverRemoverExcluidos(AlterarDiarioBordoCommand diario, DiarioBordo diarioBordo)
+        {
+            if (!string.IsNullOrEmpty(diario.Planejamento))
+            {
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.DiarioBordo, diarioBordo.Planejamento, diario.Planejamento));
+                diario.Planejamento = moverArquivo;
+            }
+            if (!string.IsNullOrEmpty(diarioBordo.Planejamento))
+            {
+                await mediator.Send(new RemoverArquivosExcluidosCommand(diarioBordo.Planejamento, diario.Planejamento, TipoArquivo.DiarioBordo.Name()));
+            }
+        }
         private void MapearAlteracoes(DiarioBordo entidade, AlterarDiarioBordoCommand request)
         {
             entidade.Planejamento = request.Planejamento;
-            entidade.ReflexoesReplanejamento = request.ReflexoesReplanejamento;
+            entidade.ComponenteCurricularId = request.ComponenteCurricularId;
         }
     }
 }

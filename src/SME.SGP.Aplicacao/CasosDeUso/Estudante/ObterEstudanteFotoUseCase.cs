@@ -28,8 +28,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<ArquivoDto> DownloadMiniatura(MiniaturaFotoDto miniatura)
         {
-
             var arquivoFisico = await mediator.Send(new DownloadArquivoCommand(miniatura.Codigo, miniatura.Nome, miniatura.Tipo));
+
+            if(arquivoFisico.Length <= 0)
+                return null;          
 
             return new ArquivoDto()
             {

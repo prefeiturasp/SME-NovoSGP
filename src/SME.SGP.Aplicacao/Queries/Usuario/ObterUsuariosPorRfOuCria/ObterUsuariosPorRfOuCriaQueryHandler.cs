@@ -16,17 +16,21 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoEol servicoEOL;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
+        private readonly IMediator mediator;
 
-        public ObterUsuariosPorRfOuCriaQueryHandler(IRepositorioUsuario repositorioUsuario, IServicoEol servicoEOL, IRepositorioPrioridadePerfil repositorioPrioridadePerfil)
+        public ObterUsuariosPorRfOuCriaQueryHandler(IRepositorioUsuario repositorioUsuario, IServicoEol servicoEOL, IRepositorioPrioridadePerfil repositorioPrioridadePerfil, IMediator mediator)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil ?? throw new ArgumentNullException(nameof(repositorioPrioridadePerfil));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<Usuario>> Handle(ObterUsuariosPorRfOuCriaQuery request, CancellationToken cancellationToken)
         {
-            var usuarios = (await repositorioUsuario.ObterUsuariosPorCodigoRf(request.CodigosRf))?.ToList();
+            var retornoUsuarios = await mediator.Send(new ObterUsuariosPorCodigosRfQuery(request.CodigosRf));
+
+            var usuarios = retornoUsuarios.ToList();
 
             var usuariosFaltantesRf = request.CodigosRf.Where(u => !usuarios.Select(us => us.CodigoRf).Contains(u));
 

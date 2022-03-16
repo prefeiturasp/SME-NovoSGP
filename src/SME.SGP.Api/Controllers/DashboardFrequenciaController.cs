@@ -102,5 +102,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(anoLetivo));
         }
+
+        [HttpPost("consolidar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> ConsolidarFrequenciasParaDashBorad([FromQuery] FiltroConsolicacaoGeralDashBoardFrequenciaDto filtro, [FromServices] IExecutaConsolidacaoDashBoardFrequenciaUseCase useCase)
+        {
+            await useCase.Executar(filtro);
+            return Ok();
+        }
     }
 }

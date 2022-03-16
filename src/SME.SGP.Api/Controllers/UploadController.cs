@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -32,7 +29,7 @@ namespace SME.SGP.Api.Controllers
                 var file = files.FirstOrDefault();
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
-                        $"https://{Request.Host}{Request.PathBase}/Arquivos/Editor/", 
+                        $"https://{Request.Host}{Request.PathBase}{ArquivoContants.PastaAquivosTemporaria}", 
                         Dominio.TipoArquivo.Editor));
             }
                 

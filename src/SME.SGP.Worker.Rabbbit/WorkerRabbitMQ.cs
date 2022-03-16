@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Elastic.Apm;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,6 +30,8 @@ namespace SME.SGP.Worker.RabbitMQ
         private readonly IModel canalRabbit;
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
+        private readonly IServicoTelemetria servicoTelemetria;
+        private readonly TelemetriaOptions telemetriaOptions;
         private IMediator mediator;
 
         /// <summary>
@@ -37,9 +40,14 @@ namespace SME.SGP.Worker.RabbitMQ
         /// </summary>
         private readonly Dictionary<string, ComandoRabbit> comandos;
 
-        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, ConnectionFactory factory)
+        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory,
+                              ServicoTelemetria servicoTelemetria,
+                              TelemetriaOptions telemetriaOptions,
+                              ConnectionFactory factory)
         {
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException("Service Scope Factory não localizado");
+            this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
+            this.telemetriaOptions = telemetriaOptions ?? throw new ArgumentNullException(nameof(telemetriaOptions));
             //this.mediator = mediator;
 
             ////TODO: REVER
@@ -55,6 +63,7 @@ namespace SME.SGP.Worker.RabbitMQ
 
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.Sgp, ExchangeType.Direct, true, false);
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
+            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpLogs, ExchangeType.Direct, true, false);
 
             DeclararFilasSgp();
 
@@ -64,24 +73,29 @@ namespace SME.SGP.Worker.RabbitMQ
 
         private void DeclararFilasSgp()
         {
+            DeclararFilasPorRota(typeof(RotasRabbitLogs), ExchangeSgpRabbit.SgpLogs);
             DeclararFilasPorRota(typeof(RotasRabbitSgp), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
-            DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
+            DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);            
         }
 
-        private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter)
+        private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter = "")
         {
+            var args = new Dictionary<string, object>();
+
+            if (!string.IsNullOrEmpty(exchangeDeadLetter))
+                args.Add("x-dead-letter-exchange", exchangeDeadLetter);
+
             foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
             {
-                var args = new Dictionary<string, object>()
-                    {
-                        { "x-dead-letter-exchange", exchangeDeadLetter }
-                    };
                 canalRabbit.QueueDeclare(fila, true, false, false, args);
                 canalRabbit.QueueBind(fila, exchange, fila, null);
 
-                var filaDeadLetter = $"{fila}.deadletter";
-                canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
-                canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
+                if (!string.IsNullOrEmpty(exchangeDeadLetter))
+                {
+                    var filaDeadLetter = $"{fila}.deadletter";
+                    canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
+                    canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
+                }
             }
         }
         private void RegistrarFilaComErro()
@@ -113,32 +127,54 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaExcluirNotificacaoDevolutiva, new ComandoRabbit("Excluir uma notificação sobre devolutiva", typeof(IExcluirNotificacaoDevolutivaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExcluirNotificacaoDiarioBordo, new ComandoRabbit("Excluir uma notificação do diario de bordo", typeof(IExcluirNotificacaoDiarioBordoUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAula, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordo, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaDiarioBordoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaAvaliacao, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaAvaliacaoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaFrequencia, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaFrequenciaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaPlanoAula, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaPlanoAulaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaSincronizaComponetesCurricularesEol, new ComandoRabbit("Sincroniza os compoentes curriculares com o Eol", typeof(ISincronizarComponentesCurricularesUseCase)));
             comandos.Add(RotasRabbitSgp.RotaCalculoFrequenciaPorTurmaComponente, new ComandoRabbit("Cálculo de frequência por Turma e Componente", typeof(ICalculoFrequenciaTurmaDisciplinaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaConciliacaoCalculoFrequenciaPorTurmaComponente, new ComandoRabbit("Conciliação de Cálculo de frequência por Turma e Componente", typeof(ICalculoFrequenciaTurmaDisciplinaUseCase)));
 
-            comandos.Add(RotasRabbitSgp.RotaExecutaVerificacaoPendenciasGerais, new ComandoRabbit("Executa verficação das pendências gerais", typeof(IExecutaVerificacaoPendenciasGeraisUseCase)));
+            comandos.Add(RotasRabbitSgp.PendenciasGerais, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisUseCase)));
+            comandos.Add(RotasRabbitSgp.PendenciasGeraisAulas, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisAulaUseCase)));
+            comandos.Add(RotasRabbitSgp.PendenciasGeraisCalendario, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisCalendarioUseCase)));
+            comandos.Add(RotasRabbitSgp.PendenciasGeraisEventos, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisEventosUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula, new ComandoRabbit("Executa exclusão de pendências da aula", typeof(IExecutarExclusaoPendenciasAulaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes, new ComandoRabbit("Executa exclusão de pendências de dias letivos insuficientes", typeof(IExecutarExclusaoPendenciaDiasLetivosInsuficientes)));
+
             comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciaParametroEvento, new ComandoRabbit("Executa exclusão de pendências de eventos por parâmetro", typeof(IExecutarExclusaoPendenciaParametroEvento)));
             comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAusenciaAvaliacao, new ComandoRabbit("Executa exclusão de pendências de ausencia de avaliação", typeof(IExecutarExclusaoPendenciasAusenciaAvaliacaoUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaVerificacaoPendenciasProfessor, new ComandoRabbit("Executa verificação de pendências de avaliação do professor", typeof(IExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaVerificacaoPendenciasAusenciaFechamento, new ComandoRabbit("Executa verificação de pendências de fechamento de bimestre", typeof(IExecutaVerificacaoGeracaoPendenciaAusenciaFechamentoUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAusenciaFechamento, new ComandoRabbit("Executa exclusão de pendências de ausencia de fechamento", typeof(IExecutarExclusaoPendenciasAusenciaFechamentoUseCase)));
 
+            comandos.Add(RotasRabbitSgp.VerificaPendenciasFechamentoTurma, new ComandoRabbit("Notificar usuário resultado insatisfatório de aluno", typeof(IVerificaPendenciasFechamentoUseCase)));
+
+            comandos.Add(RotasRabbitSgp.RotaAtualizarParecerConclusivoAlunoPorDre, new ComandoRabbit("Atualiza parecer conclusivo do conselho de classe do aluno por DRE", typeof(IReprocessarParecerConclusivoPorDreUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaAtualizarParecerConclusivoAlunoPorUe, new ComandoRabbit("Atualiza parecer conclusivo do conselho de classe do aluno por UE", typeof(IReprocessarParecerConclusivoPorUeUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaAtualizarParecerConclusivoAlunoPorTurma, new ComandoRabbit("Atualiza parecer conclusivo do conselho de classe do aluno por Turma", typeof(IReprocessarParecerConclusivoPorTurmaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaAtualizarParecerConclusivoAluno, new ComandoRabbit("Atualiza parecer conclusivo do conselho de classe do aluno", typeof(IReprocessarParecerConclusivoAlunoUseCase)));
+
             comandos.Add(RotasRabbitSgp.RotaNotificacaoResultadoInsatisfatorio, new ComandoRabbit("Notificar usuário resultado insatisfatório de aluno", typeof(INotificarResultadoInsatisfatorioUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaAtualizacaoSituacaoConselhoClasse, new ComandoRabbit("Executa atualização da situação do conselho de classe", typeof(IAtualizarSituacaoConselhoClasseUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoAndamentoFechamento, new ComandoRabbit("Executa notificação sobre o andamento do fechamento", typeof(INotificacaoAndamentoFechamentoUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoUeFechamentosInsuficientes, new ComandoRabbit("Executa notificação UE sobre fechamento insuficientes", typeof(INotificacaoUeFechamentosInsuficientesUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoReuniaoPedagogica, new ComandoRabbit("Executa notificação sobre o andamento do fechamento", typeof(INotificacaoReuniaoPedagogicaUseCase)));
-            comandos.Add(RotasRabbitSgp.RotaNotificacaoPeriodoFechamento, new ComandoRabbit("Executa notificação sobre período de fechamento", typeof(INotificacaoPeriodoFechamentoUseCase)));
             comandos.Add(RotasRabbitSgp.RotaGeracaoPendenciasFechamento, new ComandoRabbit("Executa inclusão de fila de Geração de Pendências do Fechamento", typeof(IGerarPendenciasFechamentoUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaNotificacaoInicioFimPeriodoFechamento, new ComandoRabbit("Executa notificação sobre o início e fim do Periodo de fechamento", typeof(INotificacaoInicioFimPeriodoFechamentoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaNotificacaoInicioPeriodoFechamentoUE, new ComandoRabbit("Executa notificação sobre o início do Periodo de fechamento por UE", typeof(INotificacaoInicioPeriodoFechamentoUEUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaNotificacaoFimPeriodoFechamentoUE, new ComandoRabbit("Executa notificação sobre o fim do Periodo de fechamento por UE", typeof(INotificacaoFimPeriodoFechamentoUEUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoFrequenciaUe, new ComandoRabbit("Notificar frequências dos alunos no bimestre para UE", typeof(INotificacaoFrequenciaUeUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaTrataNotificacoesNiveis, new ComandoRabbit("Trata Níveis e Cargos das notificações aguardando ação", typeof(ITrataNotificacoesNiveisCargosUseCase)));
             comandos.Add(RotasRabbitSgp.RotaPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Gerar as pendências por ausência de registro individual", typeof(IGerarPendenciaAusenciaRegistroIndividualUseCase)));
             comandos.Add(RotasRabbitSgp.RotaAtualizarPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Atualizar pendência por ausência de registro individual", typeof(IAtualizarPendenciaRegistroIndividualUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new ComandoRabbit("Tratar atribuição de pendência aos usuários", typeof(ITratarAtribuicaoPendenciasUsuariosUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaCargaAtribuicaoPendenciaPerfilUsuario, new ComandoRabbit("Carga de atribuição de pendência aos usuários com perfil", typeof(ICargaAtribuicaoPendenciasPerfilUsuarioUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaRemoverAtribuicaoPendenciaUsuarios, new ComandoRabbit("Remover a atribuição de pendência aos usuários", typeof(IRemoverAtribuicaoPendenciasUsuariosUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaRemoverAtribuicaoPendenciaUsuariosUe, new ComandoRabbit("Remover a atribuição de pendência aos usuários por UE", typeof(IRemoverAtribuicaoPendenciasUsuariosUeUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaRemoverAtribuicaoPendenciaUsuariosUeFuncionario, new ComandoRabbit("Remover a atribuição de pendência aos usuários por UE e por Funcionário", typeof(IRemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase)));
 
 
             comandos.Add(RotasRabbitSgp.RotaNotificacaoRegistroConclusaoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para registro de conclusão do Encaminhamento AEE", typeof(INotificacaoConclusaoEncaminhamentoAEEUseCase)));
@@ -167,6 +203,8 @@ namespace SME.SGP.Worker.RabbitMQ
 
             comandos.Add(RotasRabbitSgp.RotaNotificacaoRegistroItineranciaInseridoUseCase, new ComandoRabbit("Enviar Notificação quanto insere um novo Registro de Itinerância", typeof(INotificacaoSalvarItineranciaUseCase)));
 
+            comandos.Add(RotasRabbitSgp.NotificarCompensacaoAusencia, new ComandoRabbit("Notificar Compensação Ausência", typeof(INotificarCompensacaoAusenciaUseCase)));
+
             comandos.Add(RotasRabbitSgp.ConsolidacaoFrequenciasTurmasCarregar, new ComandoRabbit("Consolidação de Registros de Frequência das Turmas - Carregar", typeof(IConsolidarFrequenciaTurmasUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarFrequenciasTurmasNoAno, new ComandoRabbit("Consolidar Registros de Frequência das Turmas", typeof(IConsolidarFrequenciaTurmasPorAnoUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarFrequenciasPorTurma, new ComandoRabbit("Consolidar Registros de Frequência por Turma", typeof(IConsolidarFrequenciaPorTurmaUseCase)));
@@ -186,7 +224,6 @@ namespace SME.SGP.Worker.RabbitMQ
 
             comandos.Add(RotasRabbitSgp.ConsolidarTurmaFechamentoSync, new ComandoRabbit("Consolidação fechamento - Sincronizar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarTurmaFechamentoComponenteTratar, new ComandoRabbit("Consolidação fechamento - Consolidar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoComponenteUseCase)));
-            comandos.Add(RotasRabbitSgp.RotaValidacaoAusenciaConciliacaoFrequenciaTurma, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase)));
 
             ///Consolidação de Devolutivas
             comandos.Add(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantil, new ComandoRabbit("Consolidar Devolutivas Turmas da Modalidade Infantil", typeof(IConsolidarDevolutivasPorTurmaInfantilUseCase)));
@@ -195,7 +232,10 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.ConsolidarDiariosBordoCarregar, new ComandoRabbit("Carregar UEs para consolidação de Diarios de Bordo", typeof(IConsolidarDiariosBordoCarregarUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarDiariosBordoPorUeTratar, new ComandoRabbit("Tratar consolidação de diarios de bordo por UE", typeof(IConsolidarDiariosBordoPorUeTratarUseCase)));
 
+            comandos.Add(RotasRabbitSgp.ConsolidarRegistrosPedagogicosPorUeTratar, new ComandoRabbit("Tratar consolidação de registros pedagógicos por UE", typeof(IConsolidarRegistrosPedagogicosPorUeTratarUseCase)));
+
             comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasSync, new ComandoRabbit("Inicia rotina de cálculo de frequência da turma", typeof(IConciliacaoFrequenciaTurmasSyncUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaCalcularFrequenciaGeralSync, new ComandoRabbit("Inicia rotina de cálculo de frequência geral com base em registro frequencia do aluno", typeof(ICalcularFrequenciaGeralUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaRabbitDeadletterSync, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSgpSyncUseCase)));
             comandos.Add(RotasRabbitSgp.RotaRabbitDeadletterTratar, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSgpTratarUseCase)));
@@ -203,12 +243,17 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaRabbitSRDeadletterTratar, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSrTratarUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasAlunosSync, new ComandoRabbit("Conciliação de frequência da turma sync", typeof(IConciliacaoFrequenciaTurmasAlunosSyncUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaPorPeriodo, new ComandoRabbit("Conciliação de frequência das turmas por período", typeof(IConciliacaoFrequenciaTurmasPorPeriodoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaValidacaoAusenciaConciliacaoFrequenciaTurma, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasAlunosBuscar, new ComandoRabbit("Conciliação de frequência da turma buscar", typeof(IConciliacaoFrequenciaTurmasAlunosBuscarUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaNotificacaoAlunosFaltosos, new ComandoRabbit("Conciliação de frequência da turma buscar", typeof(INotificarAlunosFaltososUseCase)));
 
-            comandos.Add(RotasRabbitSgp.SincronizarDadosFrequenciaMigracao, new ComandoRabbit("Sincronizar - migração dados frequencia aulas", typeof(IExecutarSincronizacaoDadosFrequenciaUseCase)));
-            comandos.Add(RotasRabbitSgp.SincronizarDadosTurmasFrequenciaMigracao, new ComandoRabbit("Sincronizar - migração dados frequencia aulas", typeof(IExecutarSincronizacaoDadosTurmasFrequenciaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaNotificacaoFechamentoReabertura, new ComandoRabbit("Notificação de Reabertura de Fechamento", typeof(INotificarFechamentoReaberturaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaDRE, new ComandoRabbit("Notificação de Reabertura de Fechamento DRE", typeof(INotificarFechamentoReaberturaDREUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaUE, new ComandoRabbit("Notificação de Reabertura de Fechamento UE", typeof(INotificarFechamentoReaberturaUEUseCase)));
+
+
             comandos.Add(RotasRabbitSgp.CarregarDadosAlunosFrequenciaMigracao, new ComandoRabbit("Carregar- migração dados frequencia alunos", typeof(ICarregarRegistroFrequenciaAlunosUseCase)));
             comandos.Add(RotasRabbitSgp.SincronizarDadosAlunosFrequenciaMigracao, new ComandoRabbit("Executar sincronização - migração dados frequencia alunos", typeof(IExecutarSincronizacaoRegistroFrequenciaAlunosUseCase)));
 
@@ -224,6 +269,9 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAluno, new ComandoRabbit("Consolidar Acompanhamento Aprendizagem", typeof(IConsolidacaoAcompanhamentoAprendizagemAlunosSyncUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAlunoPorUE, new ComandoRabbit("Consolidar Acompanhamento Aprendizagem por UE", typeof(IConsolidacaoAcompanhamentoAprendizagemAlunosPorUEUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAlunoTratar, new ComandoRabbit("Tratar Acompanhamento Aprendizagem", typeof(IConsolidacaoAcompanhamentoAprendizagemAlunosTratarUseCase)));
+
+            // Consolidação de Registros Pedagógicos
+            comandos.Add(RotasRabbitSgp.ConsolidarRegistrosPedagogicos, new ComandoRabbit("Consolidar Registros Pedagógicos", typeof(IConsolidarRegistrosPedagogicosUseCase)));
 
             // Mural de Avisos Gsa
             comandos.Add(RotasRabbitSgp.RotaMuralAvisosSync, new ComandoRabbit("Importar avisos do mural do GSA", typeof(IImportarAvisoDoMuralGsaUseCase)));
@@ -241,10 +289,17 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.PlanoAulaDaAulaExcluir, new ComandoRabbit("Executar exclusão de plano de aula por aula id", typeof(IExcluirPlanoAulaPorAulaIdUseCase)));
             comandos.Add(RotasRabbitSgp.AnotacoesFrequenciaDaAulaExcluir, new ComandoRabbit("Executar exclusão de anotações de frequência por aula id", typeof(IExcluirAnotacoesFrequenciaPorAulaIdUseCase)));
             comandos.Add(RotasRabbitSgp.DiarioBordoDaAulaExcluir, new ComandoRabbit("Executar exclusão de diario de bordo por aula id", typeof(IExcluirDiarioBordoPorAulaIdUseCase)));
+
+            // Consolidação frequência
+            comandos.Add(RotasRabbitSgp.RotaConsolidacaoDashBoardFrequencia, new ComandoRabbit("Consolidar frequências por tipo período para o dashboard", typeof(IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaConsolidacaoDiariaDashBoardFrequencia, new ComandoRabbit("Consolidação geral de frequências diarias para o dashboard", typeof(IExecutaConsolidacaoDiariaDashBoardFrequenciaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaConsolidacaoSemanalDashBoardFrequencia, new ComandoRabbit("Consolidação geral de frequências semanais para o dashboard", typeof(IExecutaConsolidacaoSemanalDashBoardFrequenciaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaConsolidacaoMensalDashBoardFrequencia, new ComandoRabbit("Consolidação geral de frequências mensal para o dashboard", typeof(IExecutaConsolidacaoMensalDashBoardFrequenciaUseCase)));
+
+            comandos.Add(RotasRabbitSgp.VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes, new ComandoRabbit("Efetua a varredura em busca de fechamentos em processamento pendentes", typeof(IVarreduraFechamentosEmProcessamentoPendentesUseCase)));
             comandos.Add(RotasRabbitSgp.NotificacaoFrequencia, new ComandoRabbit("Executar a notificacao de frequencia", typeof(INotificacaoFrequencia)));
             comandos.Add(RotasRabbitSgp.ExecutarTipoCalendario, new ComandoRabbit("Executar o tipo calendario", typeof(IExecutarTipoCalendario)));
             comandos.Add(RotasRabbitSgp.ExecutarGravarRecorrencia, new ComandoRabbit("Executar a gravação das recorrencias", typeof(IExecutarGravarRecorrencia)));
-            comandos.Add(RotasRabbitSgp.NotificarCompensacaoAusencia, new ComandoRabbit("Notifica a compensacao por auxencia", typeof(INotificarCompensacaoAusencia)));
             comandos.Add(RotasRabbitSgp.GerarNotificacaoAlteracaoLimiteDias, new ComandoRabbit("Gera notificacao de alteracao de limite de dias", typeof(IGerarNotificacaoAlteracaoLimiteDias)));
             comandos.Add(RotasRabbitSgp.VerificarPendenciasFechamentoTurmaDisciplina, new ComandoRabbit("Verifica prendencias no fechamento de turma para disciplina", typeof(IVerificarPendenciasFechamentoTurmaDisciplina)));
             comandos.Add(RotasRabbitSgp.AlterarPeriodosComHierarquiaInferiorFechamento, new ComandoRabbit("Altera o periodo com hierarquia inferior", typeof(IAlterarPeriodosComHierarquiaInferiorFechamento)));
@@ -260,7 +315,13 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.SyncGsaGoogleClassroom, new ComandoRabbit("Sicronizar gsa google classroom", typeof(IExecutaSyncGsaGoogleClassroomUseCase)));
             comandos.Add(RotasRabbitSgp.SyncSerapEstudantesProvas, new ComandoRabbit("Sicronizar provas dos estantes serap ", typeof(IExecutarSyncSerapEstudantesProvasUseCase)));
             comandos.Add(RotasRabbitSgp.TratarNotificacoesNiveisCargos, new ComandoRabbit("Tratar notificações", typeof(ITrataNotificacoesNiveisCargosUseCase)));
-            comandos.Add(RotasRabbitSgp.PendenciasGerais, new ComandoRabbit("Pendencias gerais", typeof(IPendenciasGeraisUseCase)));
+
+            //Fechamento Reabertura
+            comandos.Add(RotasRabbitSgp.NotificacaoPeriodoFechamentoReaberturaIniciando, new ComandoRabbit("Executar notificação de período de Fechamento Reabertura iniciando", typeof(INotificacaoPeriodoFechamentoReaberturaIniciando)));
+            comandos.Add(RotasRabbitSgp.NotificacaoPeriodoFechamentoReaberturaEncerrando, new ComandoRabbit("Executar notificação de período de Fechamento Reabertura encerrando", typeof(INotificacaoPeriodoFechamentoReaberturaEncerrando)));
+
+            comandos.Add(RotasRabbitSgp.AjusteImagesAcompanhamentoAprendizagemAlunoCarregar, new ComandoRabbit("Efetua a atualização da rota das imagens do acompanhamento aluno", typeof(ICarregarAjusteImagensAcompanhamentoAprendizagemAlunoUseCase)));
+            comandos.Add(RotasRabbitSgp.AjusteImagesAcompanhamentoAprendizagemAlunoSync, new ComandoRabbit("Efetua a atualização da rota das imagens do acompanhamento aluno", typeof(ISyncAjusteImagensAcompanhamentoAprendizagemAlunoUseCase)));
         }
 
 
@@ -274,13 +335,21 @@ namespace SME.SGP.Worker.RabbitMQ
                 var comandoRabbit = comandos[rota];
                 try
                 {
+                    if (telemetriaOptions.Apm)
+                        Agent.Tracer.StartTransaction("TratarMensagem", "WorkerRabbitSGP");
+
                     using (var scope = serviceScopeFactory.CreateScope())
                     {
                         AtribuirContextoAplicacao(mensagemRabbit, scope);
 
                         var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
-                        await ObterMetodo(comandoRabbit.TipoCasoUso, "Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
+                        var metodo = ObterMetodo(comandoRabbit.TipoCasoUso, "Executar");
+                        await servicoTelemetria.RegistrarAsync(async () =>
+                            await metodo.InvokeAsync(casoDeUso, new object[] { mensagemRabbit }),
+                                                    "RabbitMQ",
+                                                    "TratarMensagem",
+                                                    rota);
 
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
                     }
@@ -312,7 +381,11 @@ namespace SME.SGP.Worker.RabbitMQ
 
             }
             else
+            {
                 canalRabbit.BasicReject(ea.DeliveryTag, false);
+                var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
+                await RegistrarLog(ea, mensagemRabbit, null, LogNivel.Critico, $"Rota não registrada");
+            }
 
         }
 
@@ -320,7 +393,7 @@ namespace SME.SGP.Worker.RabbitMQ
         {
             var mensagem = $"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - ERRO - {ea.RoutingKey}";
 
-            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerRabbit, observacao));
+            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerRabbit, observacao, rastreamento: ex?.StackTrace, excecaoInterna: ex.InnerException?.Message));
         }
 
         private static void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)
@@ -393,7 +466,7 @@ namespace SME.SGP.Worker.RabbitMQ
                 }
                 catch (Exception ex)
                 {
-                    _ = mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message)).Result;
+                    _ = await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message));
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }
             };

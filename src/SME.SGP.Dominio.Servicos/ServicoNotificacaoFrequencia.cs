@@ -6,7 +6,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,19 +15,14 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoNotificacaoFrequencia : IServicoNotificacaoFrequencia
     {
         private readonly IConfiguration configuration;
-        private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
-        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
-        private readonly IRepositorioDre repositorioDre;
-        private readonly IRepositorioFrequencia repositorioFrequencia;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno;
-        private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
+        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno;
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
+        private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -36,24 +30,18 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IMediator mediator;
 
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
-                                            IRepositorioParametrosSistema repositorioParametrosSistema,
-                                            IRepositorioFrequencia repositorioFrequencia,
-                                            IRepositorioComponenteCurricular repositorioComponenteCurricular,
-                                            IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
-                                            IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
-                                            IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
-                                            IRepositorioTurma repositorioTurma,
-                                            IRepositorioUe repositorioUe,
-                                            IRepositorioDre repositorioDre,
-                                            IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
-                                            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                            IRepositorioTipoCalendario repositorioTipoCalendario,
+                                            IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
+                                            IRepositorioFrequenciaConsulta repositorioFrequencia,
+                                            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
+                                            IRepositorioTurmaConsulta repositorioTurma,
+                                            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+                                            IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno,
+                                            IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
                                             IServicoEol servicoEOL,
                                             IConfiguration configuration,
-                                            IConsultasFeriadoCalendario consultasFeriadoCalendario,
-                                            IMediator mediator)
+                                            IMediator mediator, IConsultasFeriadoCalendario consultasFeriadoCalendario)
         {
             this.repositorioNotificacaoFrequencia = repositorioNotificacaoFrequencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoFrequencia));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
@@ -61,19 +49,14 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.repositorioFrequenciaAluno = repositorioFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAluno));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
-            this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
-            this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasFeriadoCalendario = consultasFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(consultasFeriadoCalendario));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         #region Metodos Publicos
@@ -108,79 +91,7 @@ namespace SME.SGP.Dominio.Servicos
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidade, dataReferencia.Semestre());
 
             await NotificaAlunosFaltososCargo(DiaRetroativo(dataReferencia, quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario?.Id ?? 0);
-            await NotificaAlunosFaltososCargo(DiaRetroativo(dataReferencia, quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
-        }
-
-        public async Task NotificarCompensacaoAusencia(long compensacaoId)
-        {
-            // Verifica se compensação possui alunos vinculados
-            var alunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
-            if (alunos == null || !alunos.Any())
-                return;
-
-            // Verifica se possui aluno não notificado na compensação
-            if (!alunos.Any(a => !a.Notificado && a.QuantidadeFaltasCompensadas > 0))
-                return;
-
-            // Carrega dados da compensacao a notificar
-            var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
-            var turma = await repositorioTurma.ObterPorId(compensacao.TurmaId);
-            var ue = repositorioUe.ObterUEPorTurma(turma.CodigoTurma);
-            var dre = repositorioDre.ObterPorId(ue.DreId);
-            var disciplinaEOL = await ObterNomeDisciplina(compensacao.DisciplinaId);
-            MeusDadosDto professor = await servicoEOL.ObterMeusDados(compensacao.CriadoRF);
-
-            // Carrega dados dos alunos não notificados
-            var alunosTurma = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
-            var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
-            foreach (var aluno in alunos)
-            {
-                var alunoEol = alunosTurma.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
-                alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
-                {
-                    NumeroAluno = alunoEol.NumeroAlunoChamada,
-                    CodigoAluno = aluno.CodigoAluno,
-                    NomeAluno = alunoEol.NomeAluno,
-                    QuantidadeCompensacoes = aluno.QuantidadeFaltasCompensadas
-                });
-            }
-
-            repositorioNotificacaoCompensacaoAusencia.Excluir(compensacaoId);
-
-            var gestores = BuscaGestoresUe(ue.CodigoUe);
-            if (gestores != null && gestores.Any())
-            {
-                foreach (var gestor in gestores)
-                {
-                    var notificacaoId = NotificarCompensacaoAusencia(compensacaoId
-                            , gestor.Usuario
-                            , professor.Nome
-                            , professor.CodigoRf
-                            , disciplinaEOL
-                            , turma.CodigoTurma
-                            , turma.Nome
-                            , turma.ModalidadeCodigo.ObterAtributo<DisplayAttribute>().ShortName
-                            , ue.CodigoUe
-                            , ue.Nome
-                            , ue.TipoEscola.ObterAtributo<DisplayAttribute>().ShortName
-                            , dre.CodigoDre
-                            , dre.Nome
-                            , compensacao.Bimestre
-                            , compensacao.Nome
-                            , alunosDto);
-
-                    // Grava vinculo de notificação x compensação
-                    repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
-                }
-
-                // Marca aluno como notificado
-                alunosDto.ForEach(alunoDto =>
-                {
-                    var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == alunoDto.CodigoAluno);
-                    aluno.Notificado = true;
-                    repositorioCompensacaoAusenciaAluno.Salvar(aluno);
-                });
-            }
+            //await NotificaAlunosFaltososCargo(DiaRetroativo(dataReferencia, quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
         }
 
         public async Task VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm)
@@ -191,15 +102,10 @@ namespace SME.SGP.Dominio.Servicos
             var qtdDiasParametroString = await repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.QuantidadeDiasNotificarAlteracaoChamadaEfetivada,
                                                    anoAtual);
-
             var parseado = int.TryParse(qtdDiasParametroString, out int qtdDiasParametro);
 
             if (!parseado)
-            {
-                var mensagem = $"Não foi encontrado parametro ativo para o tipo 'QuantidadeDiasNotificarAlteracaoChamadaEfetivada' para o ano de {anoAtual}";
-                await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, Enumerados.LogNivel.Negocio, Enumerados.LogContexto.Frequencia));
                 return;
-            }
 
             var qtdDiasAlteracao = (alteradoEm.Date - criadoEm.Date).TotalDays;
 
@@ -426,7 +332,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuarios = new List<(Cargo?, Usuario)>();
             foreach (var usuarioEol in funcionariosRetornoEol)
-                usuarios.Add((usuarioEol.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.Id)));
+                usuarios.Add((usuarioEol.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.Id).Result));
 
             var cargoNotificacao = funcionariosRetornoEol.GroupBy(f => f.Cargo).Select(f => f.Key).First();
             // Carrega só até o nível de Diretor
@@ -452,7 +358,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (disciplinaEols != null)
                     foreach (var disciplina in disciplinaEols)
                     {
-                        return RetornaUsuarios(disciplina.ProfessorRf);
+                        return await RetornaUsuarios(disciplina.ProfessorRf);
                     }
             }
             else
@@ -462,21 +368,21 @@ namespace SME.SGP.Dominio.Servicos
                         .OrderBy(o => o.DataAula)
                         .Last().ProfessorId;
 
-                return this.RetornaUsuarios(professorRf);
+                return await this.RetornaUsuarios(professorRf);
 
             }
 
             return null;
         }
 
-        private IEnumerable<(Cargo?, Usuario)> RetornaUsuarios(string procurarRfs)
+        private async Task<IEnumerable<(Cargo?, Usuario)>> RetornaUsuarios(string procurarRfs)
         {
             var rfs = procurarRfs.Split(new char[] { ',' });
             var usuarios = new List<(Cargo?, Usuario)>();
 
             foreach (var rf in rfs)
             {
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(rf.Trim());
+                var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(rf.Trim());
                 if (usuario != null)
                     usuarios.Add((null, usuario));
             }
@@ -493,7 +399,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuarios = new List<(Cargo?, Usuario)>();
             foreach (var funcionario in funcionariosRetorno)
-                usuarios.Add((funcionario.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id)));
+                usuarios.Add((funcionario.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id).Result));
 
             return usuarios;
         }
@@ -553,7 +459,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             // Busca registro de aula sem frequencia e sem notificação do tipo
             IEnumerable<RegistroFrequenciaFaltanteDto> turmasSemRegistro = null;
-            turmasSemRegistro = repositorioNotificacaoFrequencia.ObterTurmasSemRegistroDeFrequencia(tipo);
+            turmasSemRegistro = await mediator.Send(new ObterNotificacaoFrequenciaTurmasSemRegistroDeFrequenciaQuery(tipo));
 
             if (turmasSemRegistro != null)
             {
@@ -594,49 +500,6 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             return cargosNotificados;
-        }
-
-        private long NotificarCompensacaoAusencia(long compensacaoId, Usuario usuario, string professor, string professorRf, string disciplina,
-            string codigoTurma, string turma, string modalidade, string codigoUe, string escola, string tipoEscola, string codigoDre, string dre,
-            int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos)
-        {
-            var tituloMensagem = $"Atividade de compensação da turma {turma}";
-
-            StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.AppendLine($"<p>A atividade de compensação <b>'{atividade}'</b> do componente curricular de <b>{disciplina}</b> foi cadastrada para a turma <b>{turma} {modalidade}</b> da <b>{tipoEscola} {escola} ({dre})</b> no <b>{bimestre}º</b> Bimestre pelo professor <b>{professor} ({professorRf})</b>.</p>");
-            mensagemUsuario.AppendLine("<p>O(s) seguinte(s) aluno(s) foi(ram) vinculado(s) a atividade:</p>");
-
-            mensagemUsuario.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
-            mensagemUsuario.AppendLine("<tr>");
-            mensagemUsuario.AppendLine("<td style='padding: 5px;'>Nº</td>");
-            mensagemUsuario.AppendLine("<td style='padding: 5px;'>Nome do aluno</td>");
-            mensagemUsuario.AppendLine("<td style='padding: 5px;'>Quantidade de aulas compensadas</td>");
-            mensagemUsuario.AppendLine("</tr>");
-            foreach (var aluno in alunos)
-            {
-                mensagemUsuario.AppendLine("<tr>");
-                mensagemUsuario.Append($"<td style='padding: 5px;'>{aluno.NumeroAluno}</td>");
-                mensagemUsuario.Append($"<td style='padding: 5px;'>{aluno.NomeAluno}</td>");
-                mensagemUsuario.Append($"<td style='text-align: center;'>{aluno.QuantidadeCompensacoes}</td>");
-                mensagemUsuario.AppendLine("</tr>");
-            }
-            mensagemUsuario.AppendLine("</table>");
-            mensagemUsuario.Append("Para consultar os detalhes desta atividade acesse 'Diário de classe > Compensação de ausência'");
-
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                Tipo = NotificacaoTipo.Frequencia,
-                Titulo = tituloMensagem,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuario.Id,
-                TurmaId = codigoTurma,
-                UeId = codigoUe,
-                DreId = codigoDre,
-            };
-            servicoNotificacao.Salvar(notificacao);
-            return notificacao.Id;
         }
 
         private async Task NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
@@ -694,10 +557,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
             else
-            {
-                var mensagem = $"Não foi possível obter os dados do Eol para notificação do registro de frequência";
-                await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, Enumerados.LogNivel.Negocio, Enumerados.LogContexto.Frequencia));
-            }
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível obter o componente curricular pois o EOL não respondeu", Enumerados.LogNivel.Critico, Enumerados.LogContexto.Frequencia));
         }
 
         private async Task<string> ObterNomeDisciplina(string codigoDisciplina)
@@ -743,7 +603,6 @@ namespace SME.SGP.Dominio.Servicos
 
             return dataRetorno;
         }
-
         private bool Feriado(DateTime data)
         {
             FiltroFeriadoCalendarioDto filtro = new FiltroFeriadoCalendarioDto();

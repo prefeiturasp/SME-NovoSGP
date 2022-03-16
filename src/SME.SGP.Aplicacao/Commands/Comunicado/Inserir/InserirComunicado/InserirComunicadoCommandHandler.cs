@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
@@ -37,11 +38,11 @@ namespace SME.SGP.Aplicacao
 
                 var id = await repositorioComunicado.SalvarAsync(comunicado);
 
-                if(comunicado.Modalidades != null)
+                if (comunicado.Modalidades != null)
                     await mediator.Send(new InserirComunicadoModalidadeCommand(comunicado));
 
                 if (comunicado.TiposEscolas != null)
-                    await mediator.Send(new InserirComunicadoTipoEscolaCommand(comunicado));                
+                    await mediator.Send(new InserirComunicadoTipoEscolaCommand(comunicado));
 
                 if (comunicado.Turmas != null && comunicado.Turmas.Any())
                 {
@@ -49,7 +50,7 @@ namespace SME.SGP.Aplicacao
                         await mediator.Send(new InserirComunicadoAnoEscolarCommand(comunicado));
 
                     await InserirComunicadoTurma(comunicado);
-                }                   
+                }
 
                 if (comunicado.Alunos != null && comunicado.Alunos.Any())
                     await InserirComunicadoAluno(comunicado);
@@ -60,8 +61,9 @@ namespace SME.SGP.Aplicacao
 
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao incluir comunicado: {ex}", LogNivel.Critico, LogContexto.Comunicado));
                 unitOfWork.Rollback();
                 throw;
             }
@@ -90,7 +92,7 @@ namespace SME.SGP.Aplicacao
             comunicado.SeriesResumidas = request.SeriesResumidas;
             comunicado.TipoCalendarioId = request.TipoCalendarioId;
             comunicado.EventoId = request.EventoId;
-            
+
 
             if (!request.CodigoDre.Equals("-99"))
                 comunicado.CodigoDre = request.CodigoDre;
@@ -104,7 +106,7 @@ namespace SME.SGP.Aplicacao
             if (request.Modalidades.Any() && !request.Modalidades.Any(a => a == -99))
                 comunicado.Modalidades = request.Modalidades;
 
-            if(request.TiposEscolas.Any() && !request.TiposEscolas.Any(a => a == -99))
+            if (request.TiposEscolas.Any() && !request.TiposEscolas.Any(a => a == -99))
                 comunicado.TiposEscolas = request.TiposEscolas;
 
             if (request.AnosEscolares.Any() && !request.AnosEscolares.Any(a => a == "-99"))

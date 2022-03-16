@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAEEPorReestruturacaoIdQueryHandler : IRequestHandler<ObterPlanoAEEPorReestruturacaoIdQuery, PlanoAEE>
     {
-        private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
+        private readonly IRepositorioPlanoAEEConsulta repositorioPlanoAEE;
 
-        public ObterPlanoAEEPorReestruturacaoIdQueryHandler(IRepositorioPlanoAEE repositorioPlanoAEE)
+        public ObterPlanoAEEPorReestruturacaoIdQueryHandler(IRepositorioPlanoAEEConsulta repositorioPlanoAEE)
         {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
         }

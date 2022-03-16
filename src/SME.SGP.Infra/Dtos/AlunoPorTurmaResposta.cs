@@ -17,7 +17,7 @@ namespace SME.SGP.Infra
         public DateTime DataSituacao { get; set; }
         public DateTime DataMatricula { get; set; }
         public string EscolaTransferencia { get; set; }
-        public string NomeAluno { get => string.IsNullOrWhiteSpace(NomeSocialAluno) ? nomeAluno : NomeSocialAluno; set { nomeAluno = value; } }
+        public string NomeAluno { get => !string.IsNullOrWhiteSpace(NomeSocialAluno) ? NomeSocialAluno : nomeAluno; set { nomeAluno = value; } }
         public string NomeSocialAluno { get; set; }
         public int NumeroAlunoChamada { get; set; }
         public char? ParecerConclusivo { get; set; }
@@ -49,15 +49,22 @@ namespace SME.SGP.Infra
         }
         public bool Maioridade => Idade > 18;
 
-        private SituacaoMatriculaAluno[] SituacoesAtiva => new[] { SituacaoMatriculaAluno.Ativo,
-                        SituacaoMatriculaAluno.Rematriculado,
-                        SituacaoMatriculaAluno.PendenteRematricula,
-                        SituacaoMatriculaAluno.SemContinuidade
+        private SituacaoMatriculaAluno[] SituacoesAtiva => new[] {
+            SituacaoMatriculaAluno.Concluido,
+            SituacaoMatriculaAluno.Ativo,
+            SituacaoMatriculaAluno.Rematriculado,
+            SituacaoMatriculaAluno.PendenteRematricula,
+            SituacaoMatriculaAluno.SemContinuidade
     };
 
-        public bool DeveMostrarNaChamada(DateTime dataAula)
+        public bool PossuiSituacaoAtiva()
         {
-            return EstaAtivo(dataAula) || NumeroAlunoChamada > 0;
+            return SituacoesAtiva.Contains(CodigoSituacaoMatricula);
+        }
+
+        public bool DeveMostrarNaChamada(DateTime dataAula, DateTime periodoInicio)
+        {
+            return EstaAtivo(dataAula) || (!PossuiSituacaoAtiva() && DataSituacao.Date > periodoInicio.Date);
         }
 
         /// <summary>
@@ -65,8 +72,8 @@ namespace SME.SGP.Infra
         /// </summary>
         /// <param name="dataBase">Data a se considerar para verificar a situação do aluno, Ex: Data da aula</param>
         /// <returns></returns>
-        public bool EstaAtivo(DateTime dataBase) => SituacoesAtiva.Contains(CodigoSituacaoMatricula) || 
-                                                    dataBase.Date <= DataSituacao.Date ||
+        public bool EstaAtivo(DateTime dataBase) => (SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date <= dataBase.Date) ||
+                                                    
                                                     CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido;
 
         /// <summary>
@@ -92,13 +99,10 @@ namespace SME.SGP.Infra
 
             return true;
         }
-        public bool PodeEditarNotaConceitoNoPeriodo(PeriodoEscolar periodoEscolar)
+
+        public bool PodeEditarNotaConceitoNoPeriodo(PeriodoEscolar periodoEscolar, bool temPeriodoAberto)
         {
-            if (!PodeEditarNotaConceito())
-            {
-                return DataSituacao >= periodoEscolar?.PeriodoFim;
-            }
-            return true;
+            return !PodeEditarNotaConceito() ? temPeriodoAberto : true;
         }
     }
 }

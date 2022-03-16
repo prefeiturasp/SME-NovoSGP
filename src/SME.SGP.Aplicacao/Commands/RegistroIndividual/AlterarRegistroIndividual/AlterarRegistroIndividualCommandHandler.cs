@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarRegistroIndividualCommandHandler : IRequestHandler<AlterarRegistroIndividualCommand, AuditoriaDto>
+    public class AlterarRegistroIndividualCommandHandler : IRequestHandler<AlterarRegistroIndividualCommand, RegistroIndividual>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioRegistroIndividual repositorioRegistroIndividual;
@@ -20,8 +20,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioRegistroIndividual = repositorioRegistroIndividual ?? throw new ArgumentNullException(nameof(repositorioRegistroIndividual));
         }
 
-        public async Task<AuditoriaDto> Handle(AlterarRegistroIndividualCommand request, CancellationToken cancellationToken)
+        public async Task<RegistroIndividual> Handle(AlterarRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
+
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
 
             if (turma == null)
@@ -36,13 +37,26 @@ namespace SME.SGP.Aplicacao
             if (registroIndividual == null)
                 throw new NegocioException($"Registro individual {request.Id} não encontrado!");
 
+            var regristroAtual = registroIndividual.Registro;
             MapearAlteracoes(registroIndividual, request);
-
+            MoverRemoverExcluidos(request, regristroAtual);
+            registroIndividual.Registro = request.Registro;
             await repositorioRegistroIndividual.SalvarAsync(registroIndividual);
 
-            return (AuditoriaDto)registroIndividual;
+            return registroIndividual;
         }
-
+        private void MoverRemoverExcluidos(AlterarRegistroIndividualCommand novo, string atual)
+        {
+            if (!string.IsNullOrEmpty(novo.Registro))
+            {
+                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroIndividual, atual, novo.Registro));
+                novo.Registro = moverArquivo.Result;
+            }
+            if (!string.IsNullOrEmpty(atual))
+            {
+                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo.Registro, TipoArquivo.RegistroIndividual.Name()));
+            }
+        }
         private void MapearAlteracoes(RegistroIndividual entidade, AlterarRegistroIndividualCommand request)
         {
             entidade.AlunoCodigo = request.AlunoCodigo;

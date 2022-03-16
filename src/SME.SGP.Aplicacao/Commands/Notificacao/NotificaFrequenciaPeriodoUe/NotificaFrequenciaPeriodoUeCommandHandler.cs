@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<IEnumerable<Ue>> ObterUes()
-            => await mediator.Send(new ObterUesComDrePorModalidadeTurmasQuery(Modalidade.Fundamental, DateTime.Now.Year));
+            => await mediator.Send(new ObterUesComDrePorModalidadeTurmasQuery(new Modalidade[] { Modalidade.Fundamental }, DateTime.Now.Year));
 
         private async Task<Guid> SolicitarRelatorioBimestral(int bimestre, Ue ue)
         {

@@ -1,20 +1,18 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterDiarioBordoPorAulaIdQuery : IRequest<DiarioBordo>
     {
 
-        public ObterDiarioBordoPorAulaIdQuery(long aulaId)
+        public ObterDiarioBordoPorAulaIdQuery(long aulaId,long componenteCurricularId)
         {
             AulaId = aulaId;
+            ComponenteCurricularId = componenteCurricularId;
         }
 
         public long AulaId { get; set; }
+        public long ComponenteCurricularId { get; set; }
     }
 }

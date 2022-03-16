@@ -19,14 +19,14 @@ namespace SME.SGP.Dominio
         private readonly string hostAplicacao;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioCiclo repositorioCiclo;
-        private readonly IRepositorioConceito repositorioConceito;
+        private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
-        private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
+        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IServicoEol servicoEOL;
@@ -45,7 +45,7 @@ namespace SME.SGP.Dominio
                 if (_usuariosCPs == null)
                 {
                     var listaCPsUe = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.CP);
-                    _usuariosCPs = CarregaUsuariosPorRFs(listaCPsUe);
+                    _usuariosCPs = CarregaUsuariosPorRFs(listaCPsUe).Result;
                 }
 
                 return _usuariosCPs;
@@ -60,7 +60,7 @@ namespace SME.SGP.Dominio
                 if (_usuarioDiretor == null)
                 {
                     var diretor = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Diretor);
-                    _usuarioDiretor = CarregaUsuariosPorRFs(diretor).First();
+                    _usuarioDiretor = CarregaUsuariosPorRFs(diretor).Result.First();
                 }
 
                 return _usuarioDiretor;
@@ -69,13 +69,13 @@ namespace SME.SGP.Dominio
 
         public ServicoDeNotasConceitos(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IServicoEol servicoEOL, IConsultasAbrangencia consultasAbrangencia,
-            IRepositorioNotaTipoValor repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo,
-            IRepositorioConceito repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro,
+            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo,
+            IRepositorioConceitoConsulta repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro,
             IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
-            IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-            IRepositorioAula repositorioAula, IRepositorioTurma repositorioTurma, IRepositorioParametrosSistema repositorioParametrosSistema,
+            IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+            IRepositorioAulaConsulta repositorioAula, IRepositorioTurmaConsulta repositorioTurma, IRepositorioParametrosSistema repositorioParametrosSistema,
             IServicoUsuario servicoUsuario, IConfiguration configuration, IMediator mediator)
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
@@ -96,34 +96,42 @@ namespace SME.SGP.Dominio
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.hostAplicacao = configuration["UrlFrontEnd"];
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));            
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
         {
-            turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId);
+            turma = await repositorioTurma
+                .ObterTurmaComUeEDrePorCodigo(turmaId);
+
             if (turma == null)
                 throw new NegocioException($"Turma com código [{turmaId}] não localizada");
 
-            var idsAtividadesAvaliativas = notasConceitos.Select(x => x.AtividadeAvaliativaID);
+            var idsAtividadesAvaliativas = notasConceitos
+                .Select(x => x.AtividadeAvaliativaID);
 
-            var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
+            var atividadesAvaliativas = repositorioAtividadeAvaliativa
+                .ListarPorIds(idsAtividadesAvaliativas);
 
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turmaId);
+            var alunos = await servicoEOL
+                .ObterAlunosPorTurma(turmaId, true);
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
 
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
-
+            var usuario = await servicoUsuario
+                .ObterUsuarioLogado();
 
             await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId, usuario.EhGestorEscolar());
 
             var entidadesSalvar = new List<NotaConceito>();
 
-            var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
+            var notasPorAvaliacoes = notasConceitos
+                .GroupBy(x => x.AtividadeAvaliativaID);
 
-            var dataConsiderada = atividadesAvaliativas.Any() ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao : DateTime.Today;
+            var dataConsiderada = atividadesAvaliativas.Any() ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao.Date : DateTime.Today;
+
+            alunos = alunos.Where(a => a.EstaAtivo(dataConsiderada) || (a.Inativo && a.DataSituacao.Date >= dataConsiderada));
 
             if (!usuario.EhGestorEscolar())
                 await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, dataConsiderada, usuario);
@@ -131,12 +139,15 @@ namespace SME.SGP.Dominio
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
                 var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-
                 entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf, disciplinaId, usuario, turma));
             }
 
             SalvarNoBanco(entidadesSalvar);
-            var alunosId = alunos.Select(a => a.CodigoAluno).ToList();
+
+            var alunosId = alunos
+                .Select(a => a.CodigoAluno)
+                .ToList();
+
             await validarMediaAlunos(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId);
         }
 
@@ -158,7 +169,8 @@ namespace SME.SGP.Dominio
         public async Task validarMediaAlunos(IEnumerable<long> idsAtividadesAvaliativas, IEnumerable<string> alunosId, Usuario usuario, string disciplinaId)
         {
             var dataAtual = DateTime.Now;
-            var notasConceitos = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(idsAtividadesAvaliativas, alunosId, disciplinaId);
+            var notasConceitos = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(idsAtividadesAvaliativas.ToArray(), alunosId.ToArray(), disciplinaId));
+
             var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
 
             var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
@@ -213,12 +225,12 @@ namespace SME.SGP.Dominio
             }
         }
 
-        private IEnumerable<Usuario> CarregaUsuariosPorRFs(IEnumerable<UsuarioEolRetornoDto> listaCPsUe)
+        private async Task<IEnumerable<Usuario>> CarregaUsuariosPorRFs(IEnumerable<UsuarioEolRetornoDto> listaCPsUe)
         {
+            var usuarios = new List<Usuario>();
             foreach (var cpUe in listaCPsUe)
-            {
-                yield return servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cpUe.CodigoRf);
-            }
+                usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cpUe.CodigoRf));
+            return usuarios;
         }
 
         private static void ValidarSeAtividadesAvaliativasExistem(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> avaliacoes)
@@ -328,17 +340,11 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Período escolar da atividade avaliativa não encontrado");
 
             var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
-            var existePeriodoEmAberto = periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
-                || await repositorioPeriodoFechamento.ExistePeriodoPorUeDataBimestre(turma.UeId, DateTime.Today, bimestreAvaliacao);
+
+            var existePeriodoEmAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.Bimestre, !turma.EhAnoAnterior()));
 
             foreach (var notaConceito in notasConceitos)
             {
-                if (notaConceito.Id > 0)
-                {
-                    if(!usuario.EhGestorEscolar())
-                        notaConceito.Validar(professorRf);
-                }
-
                 var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(notaConceito.AlunoId));
 
                 if (aluno == null)
@@ -426,7 +432,9 @@ namespace SME.SGP.Dominio
             if (usuario == null)
                 usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
+            var podePersistir = await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula);
+
+            if (!usuario.EhProfessorCj() && !podePersistir)
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
         }
     }

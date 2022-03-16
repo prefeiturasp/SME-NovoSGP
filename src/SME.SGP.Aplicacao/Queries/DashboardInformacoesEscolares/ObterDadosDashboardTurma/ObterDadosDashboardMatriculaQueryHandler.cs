@@ -10,16 +10,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDadosDashboardTurmaQueryHandler : IRequestHandler<ObterDadosDashboardTurmaQuery, IEnumerable<GraficoBaseDto>>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
 
-        public ObterDadosDashboardTurmaQueryHandler(IRepositorioTurma repositorioTurma)
+        public ObterDadosDashboardTurmaQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta)
         {
-            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
         }
 
         public async Task<IEnumerable<GraficoBaseDto>> Handle(ObterDadosDashboardTurmaQuery request, CancellationToken cancellationToken)
         {
-            var dadosGrafico = await repositorioTurma.ObterInformacoesEscolaresTurmasAsync(request.AnoLetivo, request.DreId, request.UeId, request.Anos, request.Modalidade, request.Semestre);
+            var dadosGrafico = await repositorioTurmaConsulta.ObterInformacoesEscolaresTurmasAsync(request.AnoLetivo, request.DreId, request.UeId, request.Anos, request.Modalidade, request.Semestre);
             TratarDescricaoDados(dadosGrafico, request.DreId);
             return dadosGrafico;
         }

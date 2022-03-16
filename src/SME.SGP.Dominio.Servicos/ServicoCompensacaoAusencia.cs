@@ -3,8 +3,10 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,34 +18,32 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
         private readonly IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequencia;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTurma consultasTurma;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        private readonly IRepositorioProcessoExecutando repositorioProcessoExecutando;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
 
         public ServicoCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                           IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
                                           IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia,
-                                          IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequencia,
+                                          IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequencia,
                                           IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                                          IConsultasTurma consultasTurma,
-                                          IRepositorioTipoCalendario repositorioTipoCalendario,
+                                          IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                           IServicoEol servicoEOL,
                                           IServicoUsuario servicoUsuario,
-                                          IRepositorioTurma repositorioTurma,
-                                          IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                          IRepositorioTurmaConsulta repositorioTurmaConsulta,
+                                          IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                           IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
                                           IConsultasDisciplina consultasDisciplina,
-                                          IUnitOfWork unitOfWork, IRepositorioProcessoExecutando repositorioProcessoExecutando,
+                                          IUnitOfWork unitOfWork,  
                                           IMediator mediator)
         {
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusencia));
@@ -51,15 +51,13 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioCompensacaoAusenciaDisciplinaRegencia = repositorioCompensacaoAusenciaDisciplinaRegencia ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusenciaDisciplinaRegencia));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new System.ArgumentNullException(nameof(repositorioFrequencia));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
-            this.consultasTurma = consultasTurma ?? throw new System.ArgumentNullException(nameof(consultasTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
-            this.repositorioProcessoExecutando = repositorioProcessoExecutando ?? throw new ArgumentNullException(nameof(repositorioProcessoExecutando));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
@@ -74,11 +72,12 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            if(!usuario.EhGestorEscolar())
+            if (!usuario.EhGestorEscolar())
                 await ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario, periodo.PeriodoFim);
 
             // Valida mesma compensação no ano
-            var compensacaoExistente = await repositorioCompensacaoAusencia.ObterPorAnoTurmaENome(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id);
+            var compensacaoExistente = await mediator.Send(new ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id));
+            
             if (compensacaoExistente != null)
             {
                 throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.");
@@ -91,6 +90,8 @@ namespace SME.SGP.Dominio.Servicos
 
             // Carrega dasdos da disciplina no EOL
             await ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds, compensacaoBanco.Migrado);
+
+            var descricaoAtual = compensacaoBanco != null ? compensacaoBanco.Descricao : string.Empty;
 
             // Persiste os dados
             var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco);
@@ -105,6 +106,7 @@ namespace SME.SGP.Dominio.Servicos
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds);
                 codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo);
                 unitOfWork.PersistirTransacao();
+                await MoverRemoverExcluidos(compensacaoDto.Descricao, descricaoAtual);
             }
             catch (Exception)
             {
@@ -117,9 +119,22 @@ namespace SME.SGP.Dominio.Servicos
                 await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
             }
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarCompensacaoAusencia, compensacao, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarCompensacaoAusencia,
+                                                           new FiltroNotificacaoCompensacaoAusenciaDto(compensacao.Id),
+                                                           Guid.NewGuid(),
+                                                           usuario));
         }
-
+        private async Task MoverRemoverExcluidos(string novo, string atual)
+        {
+            if (!string.IsNullOrEmpty(novo))
+            {
+                await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.CompensacaoAusencia, atual, novo));
+            }
+            if (!string.IsNullOrEmpty(atual))
+            {
+                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.CompensacaoAusencia.Name()));
+            }
+        }
         private async Task ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool registroMigrado)
         {
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
@@ -138,6 +153,10 @@ namespace SME.SGP.Dominio.Servicos
         {
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio, turma.Semestre);
 
+            var parametroSistema = await mediator
+                                         .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo,
+                                                                                         turma.AnoLetivo));
+
             PeriodoEscolarDto periodo = null;
             // Eja possui 2 calendarios por ano
             if (turma.ModalidadeCodigo == Modalidade.EJA)
@@ -153,15 +172,18 @@ namespace SME.SGP.Dominio.Servicos
                 periodo = (await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id)).Periodos
                     .FirstOrDefault(p => p.Bimestre == bimestre);
 
-            if (!await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre, tipoCalendario: tipoCalendario))
-                throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto.");
+            if (parametroSistema == null || !parametroSistema.Ativo)
+            {
+                if (!await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre, tipoCalendario: tipoCalendario))
+                    throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto.");
+            }
 
             return periodo;
         }
 
         private async Task<Turma> BuscaTurma(string turmaId)
         {
-            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaId);
+            var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(turmaId);
             if (turma == null)
                 throw new NegocioException("Turma não localizada!");
 
@@ -207,7 +229,7 @@ namespace SME.SGP.Dominio.Servicos
             IEnumerable<CompensacaoAusenciaAluno> alunos = new List<CompensacaoAusenciaAluno>();
 
             if (alteracao)
-                alunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
+                alunos = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(compensacaoId));
 
             // excluir os removidos da lista
             foreach (var alunoRemovido in alunos.Where(a => !alunosDto.Any(d => d.Id == a.CodigoAluno)))
@@ -282,7 +304,7 @@ namespace SME.SGP.Dominio.Servicos
             compensacao.DisciplinaId = compensacaoDto.DisciplinaId;
             compensacao.Bimestre = compensacaoDto.Bimestre;
             compensacao.Nome = compensacaoDto.Atividade;
-            compensacao.Descricao = compensacaoDto.Descricao;
+            compensacao.Descricao = compensacaoDto.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.CompensacaoAusencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
 
             return compensacao;
         }
@@ -292,6 +314,7 @@ namespace SME.SGP.Dominio.Servicos
             var compensacoesExcluir = new List<CompensacaoAusencia>();
             var compensacoesAlunosExcluir = new List<CompensacaoAusenciaAluno>();
             var compensacoesDisciplinasExcluir = new List<CompensacaoAusenciaDisciplinaRegencia>();
+            var listaCompensacaoDescricao = new List<string>();
 
             List<long> idsComErroAoExcluir = new List<long>();
 
@@ -299,10 +322,12 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var compensacaoId in compensacoesIds)
             {
                 var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
+                listaCompensacaoDescricao.Add(compensacao.Descricao);
                 compensacao.Excluir();
                 compensacoesExcluir.Add(compensacao);
 
-                var compensacoesAlunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
+                var compensacoesAlunos = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(compensacaoId));
+
                 foreach (var compensacaoAluno in compensacoesAlunos)
                 {
                     compensacaoAluno.Excluir();
@@ -320,7 +345,7 @@ namespace SME.SGP.Dominio.Servicos
             // Excluir lista carregada
             foreach (var compensacaoExcluir in compensacoesExcluir)
             {
-                var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(compensacaoExcluir.TurmaId);
+                var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(compensacaoExcluir.TurmaId);
                 var periodo = await BuscaPeriodo(turma, compensacaoExcluir.Bimestre);
 
                 unitOfWork.IniciarTransacao();
@@ -354,7 +379,13 @@ namespace SME.SGP.Dominio.Servicos
                     unitOfWork.Rollback();
                 }
             }
-
+            if (listaCompensacaoDescricao != null && listaCompensacaoDescricao.Any())
+            {
+                foreach (var item in listaCompensacaoDescricao)
+                {
+                    await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(item, TipoArquivo.CompensacaoAusencia.Name()));
+                }
+            }
             if (idsComErroAoExcluir.Any())
                 throw new NegocioException($"Não foi possível excluir as compensações de ids {string.Join(",", idsComErroAoExcluir)}");
         }
@@ -389,7 +420,7 @@ namespace SME.SGP.Dominio.Servicos
             var turmasComErro = new StringBuilder("");
             foreach (var turmaId in compensacaoCopia.TurmasIds)
             {
-                var turma = await repositorioTurma.ObterPorCodigo(turmaId);
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
                 CompensacaoAusenciaDto compensacaoDto = new CompensacaoAusenciaDto()
                 {
                     TurmaId = turmaId,

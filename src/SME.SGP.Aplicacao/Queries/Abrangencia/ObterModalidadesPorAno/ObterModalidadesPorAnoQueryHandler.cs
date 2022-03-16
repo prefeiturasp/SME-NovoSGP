@@ -23,7 +23,8 @@ namespace SME.SGP.Aplicacao
         {
             var lista = await repositorioAbrangencia.ObterModalidades(request.Login, request.Perfil, request.AnoLetivo, request.ConsideraHistorico, request.ModadlidadesQueSeraoIgnoradas);
 
-            var listaModalidades = from a in lista
+
+            var listaModalidades = from a in lista.Where(x => x != 0).ToList()
                                    select new EnumeradoRetornoDto() { Id = a, Descricao = ((Modalidade)a).GetAttribute<DisplayAttribute>().Name };
 
             return listaModalidades.OrderBy(a => a.Descricao);

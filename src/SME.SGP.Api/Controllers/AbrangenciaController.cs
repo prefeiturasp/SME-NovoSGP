@@ -136,9 +136,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterSemestres([FromQuery] Modalidade modalidade, [FromQuery] int anoLetivo = 0)
+        public async Task<IActionResult> ObterSemestres([FromQuery] FiltroSemestreDto filtroSemestreDto)
         {
-            var retorno = await consultasAbrangencia.ObterSemestres(modalidade, ConsideraHistorico, anoLetivo);
+            var retorno = await consultasAbrangencia.ObterSemestres(filtroSemestreDto.Modalidade, ConsideraHistorico, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo);
 
             if (!retorno.Any())
                 return NoContent();
@@ -155,6 +155,9 @@ namespace SME.SGP.Api.Controllers
         {
             IEnumerable<AbrangenciaTurmaRetorno> turmas;
             turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil);
+            
+            if(!turmas.Any() && !ConsideraHistorico)
+                turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil);
 
             if (!turmas.Any())
                 return NoContent();
@@ -226,5 +229,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await servicoAbrangencia.SincronizarAbrangenciaHistorica(anoLetivo, professorRf));
         }
 
+        [HttpGet("/api/v1/abrangencias/turmas/vigentes")]
+        [ProducesResponseType(typeof(IEnumerable<TurmaNaoHistoricaDto>), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterTurmasNaoHistoricas([FromServices] IObterTurmasNaoHistoricasUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
+        }
     }
 }

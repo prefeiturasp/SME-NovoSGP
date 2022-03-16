@@ -23,4 +23,10 @@ namespace SME.SGP.Infra
         public string Valor { get; set; }
         public int Ordem { get; set; }
     }
+    public class RelatorioSemestralAlunoSecaoResumidaDto
+    {
+        public RelatorioSemestralAlunoSecaoResumidaDto() { }
+        public string SecaoAtual { get; set; }
+        public string SecaoNovo { get; set; }
+    }
 }

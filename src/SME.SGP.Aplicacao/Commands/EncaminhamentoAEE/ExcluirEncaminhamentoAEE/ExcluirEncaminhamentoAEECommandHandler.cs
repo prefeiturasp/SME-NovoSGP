@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,6 +36,8 @@ namespace SME.SGP.Aplicacao.Commands
             {
                 try
                 {
+                    await ExcluirArquivos(encaminhamentoAeeId);
+
                     var idEntidadeExcluida = await repositorioEncaminhamentoAEE.RemoverLogico(encaminhamentoAeeId);
 
                     var secoes = await mediator.Send(new ExcluirSecoesEncaminhamentoAEEPorEncaminhamentoIdCommand(encaminhamentoAeeId));
@@ -48,8 +51,24 @@ namespace SME.SGP.Aplicacao.Commands
                     unitOfWork.Rollback();
 
                     throw;
-                }            
+                }
             }
+        }
+        private async Task ExcluirArquivos(long encaminhamentoAeeId)
+        {
+            var codigos = await repositorioEncaminhamentoAEE.ObterCodigoArquivoPorEncaminhamentoAEEId(encaminhamentoAeeId);
+            if (codigos !=null && codigos.Any())
+            {
+                foreach (var item in codigos)
+                {
+                    var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(item.Codigo));
+                    if (entidadeArquivo == null)
+                        throw new NegocioException("O arquivo informado não foi encontrado");
+
+                    await mediator.Send(new ExcluirArquivoFisicoCommand(entidadeArquivo.Codigo, entidadeArquivo.Tipo, entidadeArquivo.Nome));
+                }
+            }
+
         }
     }
 }

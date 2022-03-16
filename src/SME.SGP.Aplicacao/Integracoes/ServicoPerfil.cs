@@ -22,19 +22,15 @@ namespace SME.SGP.Aplicacao.Integracoes
         private async Task<Guid> ObterPerfilPrioritarioCJSemTurmaTitular(string login, bool usuarioPerfilCJPrioritario, bool usuarioPerfilCJInfantilPrioritario)
         {
             IEnumerable<Dto.AbrangenciaFiltroRetorno> lstTurmasAtribuidasInfantil;
-            IEnumerable<Dto.AbrangenciaFiltroRetorno> lstTurmasAtribuidasCjInfantil;
 
             if (usuarioPerfilCJInfantilPrioritario)
             {
                 lstTurmasAtribuidasInfantil = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_PROFESSOR_INFANTIL, false);
-                lstTurmasAtribuidasCjInfantil = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_CJ_INFANTIL, false);
 
                 if (lstTurmasAtribuidasInfantil != null && lstTurmasAtribuidasInfantil.Any())
                     return Perfis.PERFIL_PROFESSOR_INFANTIL;
-                else if (lstTurmasAtribuidasCjInfantil != null && lstTurmasAtribuidasCjInfantil.Any())
+                else 
                     return Perfis.PERFIL_CJ_INFANTIL;
-                else
-                    return Perfis.PERFIL_CJ;
             }
 
             if (usuarioPerfilCJPrioritario)
@@ -61,7 +57,10 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             usuario.DefinirPerfis(perfisUsuario);
 
-            var perfilProfCJSemTurmaTitular = await ObterPerfilPrioritarioCJSemTurmaTitular(usuario.Login, (usuario.PossuiPerfilCJPrioritario() || (!possuiTurmaAtiva && possuiTurmaCjAtiva)), (usuario.PossuiPerfilCJInfantilPrioritario() || (!possuiTurmaInfantilAtiva && possuiTurmaCjInfantilAtiva)));
+            var perfilProfCJSemTurmaTitular = await ObterPerfilPrioritarioCJSemTurmaTitular(
+                    usuario.Login, 
+                    (usuario.PossuiPerfilCJPrioritario() || (!possuiTurmaAtiva && possuiTurmaCjAtiva)), 
+                    (usuario.PossuiPerfilCJInfantilPrioritario() || (!possuiTurmaInfantilAtiva && possuiTurmaCjInfantilAtiva)));
             usuario.DefinirPerfilAtual(usuario.ObterPerfilPrioritario(possuiTurmaAtiva, possuiTurmaInfantilAtiva, perfilProfCJSemTurmaTitular));
 
             var perfisPorPrioridade = new PerfisPorPrioridadeDto

@@ -7,20 +7,28 @@ namespace SME.SGP.Dados.Mapeamentos
         public FechamentoReaberturaMap()
         {
             ToTable("fechamento_reabertura");
-            Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.Dre).Ignore();
-            Map(c => c.DreId).ToColumn("dre_id");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Fim).ToColumn("fim");
-            Map(c => c.Inicio).ToColumn("inicio");
-            Map(c => c.Migrado).ToColumn("migrado");
-            Map(c => c.Status).ToColumn("status");
-            Map(c => c.TipoCalendario).Ignore();
-            Map(c => c.TipoCalendarioId).ToColumn("tipo_calendario_id");
-            Map(c => c.Ue).Ignore();
-            Map(c => c.UeId).ToColumn("ue_id");
-            Map(c => c.WorkflowAprovacao).Ignore();
-            Map(c => c.WorkflowAprovacaoId).ToColumn("wf_aprovacao_id");
+            Map(a => a.Dre).Ignore();
+            Map(a => a.DreId).ToColumn("dre_id");
+
+            Map(a => a.Ue).Ignore();
+            Map(a => a.UeId).ToColumn("ue_id");
+
+            Map(a => a.TipoCalendario).Ignore();
+            Map(a => a.TipoCalendarioId).ToColumn("tipo_calendario_id");
+
+            Map(a => a.WorkflowAprovacao).Ignore();
+            Map(a => a.WorkflowAprovacaoId).ToColumn("wf_aprovacao_id");
+
+            Map(a => a.Aprovador).Ignore();
+            Map(a => a.AprovadorId).ToColumn("aprovador_id");
+
+            Map(a => a.Descricao).ToColumn("descricao");
+            Map(a => a.Excluido).ToColumn("excluido");
+            Map(a => a.Fim).ToColumn("fim");
+            Map(a => a.Inicio).ToColumn("inicio");
+            Map(a => a.Migrado).ToColumn("migrado");
+            Map(a => a.Status).ToColumn("status");
+            Map(a => a.AprovadoEm).ToColumn("aprovado_em");
         }
     }
 }

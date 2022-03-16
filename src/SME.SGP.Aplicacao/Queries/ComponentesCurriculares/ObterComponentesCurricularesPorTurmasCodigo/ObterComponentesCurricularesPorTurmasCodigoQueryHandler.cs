@@ -16,13 +16,13 @@ namespace SME.SGP.Aplicacao
     public class ObterComponentesCurricularesPorTurmasCodigoQueryHandler : IRequestHandler<ObterComponentesCurricularesPorTurmasCodigoQuery, IEnumerable<DisciplinaDto>>
     {
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IMediator mediator;
         private static readonly long[] IDS_COMPONENTES_REGENCIA = { 2, 7, 8, 89, 138 };
 
         public ObterComponentesCurricularesPorTurmasCodigoQueryHandler(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-            IRepositorioComponenteCurricular repositorioComponenteCurricular, IHttpClientFactory httpClientFactory, IMediator mediator)
+            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));

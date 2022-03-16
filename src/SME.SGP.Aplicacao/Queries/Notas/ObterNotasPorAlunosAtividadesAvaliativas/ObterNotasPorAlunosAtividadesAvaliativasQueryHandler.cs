@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotasPorAlunosAtividadesAvaliativasQueryHandler : IRequestHandler<ObterNotasPorAlunosAtividadesAvaliativasQuery, IEnumerable<NotaConceito>>
     {
-        private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
+        private readonly IRepositorioNotasConceitosConsulta repositorioNotasConceitos;
 
-        public ObterNotasPorAlunosAtividadesAvaliativasQueryHandler(IRepositorioNotasConceitos repositorioNotasConceitos)
+        public ObterNotasPorAlunosAtividadesAvaliativasQueryHandler(IRepositorioNotasConceitosConsulta repositorioNotasConceitos)
         {
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
         }

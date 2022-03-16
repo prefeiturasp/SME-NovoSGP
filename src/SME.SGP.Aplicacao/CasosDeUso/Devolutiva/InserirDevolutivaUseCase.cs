@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             await ValidarBimestreEmAberto(turma, bimestre);
 
             IEnumerable<long> idsDiarios = dados.Select(x => x.Item1);
-
+            await MoverRemoverExcluidos(param);
             AuditoriaDto auditoria = await mediator.Send(new InserirDevolutivaCommand(param.CodigoComponenteCurricular, idsDiarios, inicioEfetivo, fimEfetivo, param.Descricao, turma.Id));
 
             bool diariosAtualizados = await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
@@ -41,7 +41,14 @@ namespace SME.SGP.Aplicacao
 
             return auditoria;
         }
-
+        private async  Task MoverRemoverExcluidos(InserirDevolutivaDto devolutiva)
+        {
+            if (!string.IsNullOrEmpty(devolutiva.Descricao))
+            {
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Devolutiva, string.Empty, devolutiva.Descricao));
+                devolutiva.Descricao = moverArquivo;
+            }
+        }
         private async Task ValidarDevolutivaNoPeriodo(string turmaCodigo, long codigoComponenteCurricular, DateTime periodoInicio, DateTime periodoFim)
         {
             var devolutivasIds = await mediator.Send(new ObterDevolutivaPorTurmaComponenteNoPeriodoQuery(turmaCodigo, codigoComponenteCurricular, periodoInicio.Date, periodoFim.Date));
@@ -54,7 +61,7 @@ namespace SME.SGP.Aplicacao
             var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, turma.AnoLetivo == DateTime.Today.Year));
 
             if (!periodoAberto)
-                throw new NegocioException("Período dos diários de bordo não esta aberto");
+                throw new NegocioException("Apenas é possível consultar este registro pois o período não está em aberto.");
         }
 
         private async Task<int> ValidarBimestreDiarios(Turma turma, DateTime inicioEfetivo, DateTime fimEfetivo)

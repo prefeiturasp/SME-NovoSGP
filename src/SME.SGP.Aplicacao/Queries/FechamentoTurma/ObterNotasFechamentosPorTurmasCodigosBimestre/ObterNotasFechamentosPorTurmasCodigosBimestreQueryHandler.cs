@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotasFechamentosPorTurmasCodigosBimestreQueryHandler : IRequestHandler<ObterNotasFechamentosPorTurmasCodigosBimestreQuery, IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
-        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
+        private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNota;
 
-        public ObterNotasFechamentosPorTurmasCodigosBimestreQueryHandler(IRepositorioFechamentoNota repositorioFechamentoNota)
+        public ObterNotasFechamentosPorTurmasCodigosBimestreQueryHandler(IRepositorioFechamentoNotaConsulta repositorioFechamentoNota)
         {
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
         }

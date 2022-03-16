@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulasExcluidasComDiarioDeBordoAtivosQueryHandler : IRequestHandler<ObterAulasExcluidasComDiarioDeBordoAtivosQuery, IEnumerable<Aula>>
     {
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAula;
 
-        public ObterAulasExcluidasComDiarioDeBordoAtivosQueryHandler(IRepositorioAula repositorioAula)
+        public ObterAulasExcluidasComDiarioDeBordoAtivosQueryHandler(IRepositorioAulaConsulta repositorioAula)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
         }

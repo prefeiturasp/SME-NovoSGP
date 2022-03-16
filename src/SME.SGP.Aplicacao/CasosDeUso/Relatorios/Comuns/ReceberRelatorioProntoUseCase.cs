@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-
             var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
             if (relatorioCorrelacao == null)
             {

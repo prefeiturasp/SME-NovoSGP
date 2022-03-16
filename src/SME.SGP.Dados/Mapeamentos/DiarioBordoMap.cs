@@ -1,7 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dados
 {
@@ -10,12 +7,13 @@ namespace SME.SGP.Dados
         public DiarioBordoMap()
         {
             ToTable("diario_bordo");
-            Map(c => c.AulaId).ToColumn("aula_id");
-            Map(c => c.DevolutivaId).ToColumn("devolutiva_id");
-            Map(c => c.Planejamento).ToColumn("planejamento");
-            Map(c => c.ReflexoesReplanejamento).ToColumn("reflexoes_replanejamento");
-            Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Migrado).ToColumn("migrado");
+            Map(a => a.AulaId).ToColumn("aula_id");
+            Map(a => a.DevolutivaId).ToColumn("devolutiva_id");
+            Map(a => a.ComponenteCurricularId).ToColumn("componente_curricular_id");
+            Map(a => a.TurmaId).ToColumn("turma_id");
+            Map(a => a.InseridoCJ).ToColumn("inserido_cj");
+            Map(a => a.Excluido).ToColumn("excluido");
+            Map(a => a.Migrado).ToColumn("migrado");
         }
     }
 }

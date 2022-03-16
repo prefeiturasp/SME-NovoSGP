@@ -30,14 +30,14 @@ namespace SME.SGP.Aplicacao
             {
                 var quantidadeTotalDiariosdeBordo = new GraficoTotalDiariosEDevolutivasDTO()
                 {
-                    TurmaAno = ObterDescricaoTurmaAno(request.UeId > 0, item.Ano == 0 ? item.Turma : item.Ano.ToString(), request.Modalidade), 
+                    TurmaAno = ObterDescricaoTurmaAno(request.UeId > 0, item.Ano == "0" ? item.Turma : item.Ano.ToString(), request.Modalidade), 
                     Descricao = DashboardConstants.QuantidadeTotalDeDiariosDeBordoDescricao,
                     Quantidade = item.QuantidadeTotalDiariosdeBordo 
                 };
 
                 var quantidadeTotalDiariosdeBordoComDevolutiva = new GraficoTotalDiariosEDevolutivasDTO()
                 {
-                    TurmaAno = ObterDescricaoTurmaAno(request.UeId > 0, item.Ano == 0 ? item.Turma : item.Ano.ToString(), request.Modalidade),
+                    TurmaAno = ObterDescricaoTurmaAno(request.UeId > 0, item.Ano == "0" ? item.Turma : item.Ano.ToString(), request.Modalidade),
                     Descricao = DashboardConstants.QuantidadeTotalDeDiariosDeBordoComDevolutivasDescricao,
                     Quantidade = item.QuantidadeTotalDiariosdeBordoComDevolutiva
                 };

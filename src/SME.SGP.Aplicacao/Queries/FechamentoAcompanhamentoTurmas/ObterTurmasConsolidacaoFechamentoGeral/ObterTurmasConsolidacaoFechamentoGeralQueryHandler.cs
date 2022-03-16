@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasConsolidacaoFechamentoGeralQueryHandler : IRequestHandler<ObterTurmasConsolidacaoFechamentoGeralQuery, IEnumerable<TurmaConsolidacaoFechamentoGeralDto>>
     {
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
 
-        public ObterTurmasConsolidacaoFechamentoGeralQueryHandler(IRepositorioTurma repositorioTurma)
+        public ObterTurmasConsolidacaoFechamentoGeralQueryHandler(IRepositorioTurmaConsulta repositorioTurma)
         {
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
         }

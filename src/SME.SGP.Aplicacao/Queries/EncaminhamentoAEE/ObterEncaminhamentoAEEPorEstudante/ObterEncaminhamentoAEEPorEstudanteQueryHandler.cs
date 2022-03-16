@@ -2,8 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,6 +29,7 @@ namespace SME.SGP.Aplicacao
             {
                 Id = encaminhamento.Id,
                 Situacao = encaminhamento.Situacao != 0 ? encaminhamento.Situacao.Name() : "",
+                SituacaoTipo = encaminhamento.Situacao,
                 Turma = $"{encaminhamento.TurmaModalidade.ShortName()} - {encaminhamento.TurmaNome}"
             };
     }

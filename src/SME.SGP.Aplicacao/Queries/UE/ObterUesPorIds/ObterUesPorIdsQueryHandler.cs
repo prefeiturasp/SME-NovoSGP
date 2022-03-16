@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUesPorIdsQueryHandler : IRequestHandler<ObterUesPorIdsQuery, IEnumerable<Ue>>
     {
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
 
-        public ObterUesPorIdsQueryHandler(IRepositorioUe repositorioUe)
+        public ObterUesPorIdsQueryHandler(IRepositorioUeConsulta repositorioUe)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }

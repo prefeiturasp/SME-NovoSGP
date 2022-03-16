@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class IncluirFechamentoFinalCommandHandler : IRequestHandler<IncluirFechamentoFinalCommand, long>
     {
-        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
 
-        public IncluirFechamentoFinalCommandHandler(IRepositorioFechamentoTurma repositorioFechamentoTurma)
+        public IncluirFechamentoFinalCommandHandler(IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoTurma));
         }

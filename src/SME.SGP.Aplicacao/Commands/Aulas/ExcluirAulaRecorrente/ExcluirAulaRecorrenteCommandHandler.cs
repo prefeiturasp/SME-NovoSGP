@@ -15,32 +15,44 @@ namespace SME.SGP.Aplicacao
     public class ExcluirAulaRecorrenteCommandHandler : IRequestHandler<ExcluirAulaRecorrenteCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAulaConsulta;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
-        private readonly IServicoNotificacao servicoNotificacao;
+        private readonly IRepositorioAula repositorioAula;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IRepositorioPlanoAula repositorioPlanoAula;
+        private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
+        private readonly IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno;
+        private readonly IRepositorioDevolutiva repositorioDevolutiva;
 
         public ExcluirAulaRecorrenteCommandHandler(IMediator mediator,
+                                                   IRepositorioAulaConsulta repositorioAulaConsulta,
                                                    IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
-                                                   IServicoNotificacao servicoNotificacao,
+                                                   IRepositorioPlanoAula repositorioPlanoAula,
+                                                   IRepositorioDiarioBordo repositorioDiarioBordo,
+                                                   IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno,
+                                                   IRepositorioDevolutiva repositorioDevolutiva,
                                                    IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioAulaConsulta = repositorioAulaConsulta ?? throw new ArgumentNullException(nameof(repositorioAulaConsulta));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
+            this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
+            this.repositorioDevolutiva = repositorioDevolutiva ?? throw new ArgumentNullException(nameof(repositorioDevolutiva));
+            this.repositorioAnotacaoFrequenciaAluno = repositorioAnotacaoFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFrequenciaAluno));
         }
 
         public async Task<bool> Handle(ExcluirAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
-            var aulaOrigem = await repositorioAula.ObterCompletoPorIdAsync(request.AulaId);
+            var aulaOrigem = await repositorioAulaConsulta.ObterCompletoPorIdAsync(request.AulaId);
             if (aulaOrigem == null)
                 throw new NegocioException("Não foi possível obter a aula.");
 
             var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(aulaOrigem.TipoCalendarioId, aulaOrigem.DataAula.Date, request.Recorrencia));
-            var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aulaOrigem.AulaPaiId ?? aulaOrigem.Id, aulaOrigem.Id, fimRecorrencia);
+            var aulasRecorrencia = await repositorioAulaConsulta.ObterAulasRecorrencia(aulaOrigem.AulaPaiId ?? aulaOrigem.Id, aulaOrigem.Id, fimRecorrencia);
             var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasRecorrencia);
 
             try
@@ -61,10 +73,46 @@ namespace SME.SGP.Aplicacao
             {
                 await RemoverAulasEmManutencao(listaProcessos.Select(p => p.Id).ToArray());
             }
-
+            await ExcluirArquivoAnotacaoFrequencia(request.AulaId);
+            await ExcluirArquivosPlanoAula(request.AulaId);
+            await RemoverArquivosDiarioBordo(request.AulaId);
             return true;
         }
+        private async Task ExcluirArquivosPlanoAula(long aulaId)
+        {
+            var plano = await repositorioPlanoAula.ObterPlanoAulaPorAulaRegistroExcluido(aulaId);
 
+            if (plano != null)
+            {
+                await ExcluirArquivo(plano.Descricao, TipoArquivo.PlanoAula);
+                await ExcluirArquivo(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
+                await ExcluirArquivo(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa); 
+            }
+        }
+
+        private async Task RemoverArquivosDiarioBordo(long aulaId)
+        {
+            var diarioDeBordo = await repositorioDiarioBordo.ObterPorAulaIdRegistroExcluido(aulaId);
+            if(diarioDeBordo?.Planejamento != null)
+            {
+                await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
+            }
+        }
+        private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)
+        {
+            var anotacaoFrequencia = await repositorioAnotacaoFrequenciaAluno.ObterPorAulaIdRegistroExcluido(aulaId);
+            foreach (var item in anotacaoFrequencia)
+            {
+                await ExcluirArquivo(item.Anotacao,TipoArquivo.FrequenciaAnotacaoEstudante);
+            }
+        }
+        private async Task ExcluirArquivo(string mensagem,TipoArquivo tipo)
+        {
+            if (!string.IsNullOrEmpty(mensagem))
+            {
+                await mediator.Send(new RemoverArquivosExcluidosCommand(mensagem, string.Empty, tipo.Name()));
+            }
+        }
         private async Task<(DateTime dataAula, bool sucesso, string mensagem, bool existeFrequente, bool existePlanoAula)> TratarExclusaoAula(Aula aula, Usuario usuario)
         {
             try
@@ -175,27 +223,22 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = turma.Ue.Dre.CodigoDre,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuario.Id,
-                Tipo = NotificacaoTipo.Calendario,
-                Titulo = tituloMensagem,
-                TurmaId = turma.CodigoTurma,
-                UeId = turma.Ue.CodigoUe,
-            };
-
             unitOfWork.IniciarTransacao();
             try
             {
                 // Salva Notificação
-                servicoNotificacao.Salvar(notificacao);
+                var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(tituloMensagem, 
+                                                               mensagemUsuario.ToString(), 
+                                                               usuario.CodigoRf, 
+                                                               NotificacaoCategoria.Aviso, 
+                                                               NotificacaoTipo.Calendario, 
+                                                               turma.Ue.Dre.CodigoDre,
+                                                               turma.Ue.CodigoUe, 
+                                                               turma.CodigoTurma, 
+                                                               DateTime.Now.Year));
 
                 // Gera vinculo Notificacao x Aula
-                await repositorioNotificacaoAula.Inserir(notificacao.Id, aulaId);
+                await repositorioNotificacaoAula.Inserir(notificacaoId, aulaId);
 
                 unitOfWork.PersistirTransacao();
             }

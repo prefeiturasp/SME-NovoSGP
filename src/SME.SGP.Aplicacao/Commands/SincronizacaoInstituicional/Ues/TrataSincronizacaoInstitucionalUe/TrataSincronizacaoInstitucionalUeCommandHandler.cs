@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
     public class TrataSincronizacaoInstitucionalUeCommandHandler : IRequestHandler<TrataSincronizacaoInstitucionalUeCommand, bool>
     {
         private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioDreConsulta repositorioDre;
 
-        public TrataSincronizacaoInstitucionalUeCommandHandler(IRepositorioUe repositorioUe, IRepositorioDre repositorioDre)
+        public TrataSincronizacaoInstitucionalUeCommandHandler(IRepositorioUe repositorioUe, IRepositorioDreConsulta repositorioDre)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));

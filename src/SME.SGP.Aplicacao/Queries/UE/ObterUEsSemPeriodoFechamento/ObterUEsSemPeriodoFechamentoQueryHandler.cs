@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUEsSemPeriodoFechamentoQueryHandler : IRequestHandler<ObterUEsSemPeriodoFechamentoQuery, IEnumerable<Ue>>
     {
-        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioUeConsulta repositorioUe;
 
-        public ObterUEsSemPeriodoFechamentoQueryHandler(IRepositorioUe repositorioUe)
+        public ObterUEsSemPeriodoFechamentoQueryHandler(IRepositorioUeConsulta repositorioUe)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var modalidades = request.ModalidadeTipoCalendario.ObterModalidadesTurma();
 
-            return await repositorioUe.ObterUEsSemPeriodoFechamento(request.PeriodoEscolarId, request.Ano, modalidades.Cast<int>().ToArray());
+            return await repositorioUe.ObterUEsSemPeriodoFechamento(request.PeriodoEscolarId, request.Ano, modalidades.Cast<int>().ToArray(), DateTime.Now);
         }
     }
 }

@@ -9,16 +9,16 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificaSeExisteConselhoClassePorIdQueryHandler: IRequestHandler<VerificaSeExisteConselhoClassePorIdQuery, bool>
     {
-        private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
+        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta;
 
-        public VerificaSeExisteConselhoClassePorIdQueryHandler(IRepositorioConselhoClasse repositorioConselhoClasse)
+        public VerificaSeExisteConselhoClassePorIdQueryHandler(IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta)
         {
-            this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
+            this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
         }
 
         public async Task<bool> Handle(VerificaSeExisteConselhoClassePorIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasse.Exists(request.ConselhoClasseId);
+            return await repositorioConselhoClasseConsulta.Exists(request.ConselhoClasseId);
         }
 
     }

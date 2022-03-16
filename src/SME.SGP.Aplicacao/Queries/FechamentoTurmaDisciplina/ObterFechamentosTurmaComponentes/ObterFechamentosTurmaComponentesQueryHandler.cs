@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
    public class ObterFechamentosTurmaComponentesQueryHandler : IRequestHandler<ObterFechamentosTurmaComponentesQuery, IEnumerable<Dominio.FechamentoTurmaDisciplina>>
     {
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
 
-        public ObterFechamentosTurmaComponentesQueryHandler(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina)
+        public ObterFechamentosTurmaComponentesQueryHandler(IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina)
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
         }

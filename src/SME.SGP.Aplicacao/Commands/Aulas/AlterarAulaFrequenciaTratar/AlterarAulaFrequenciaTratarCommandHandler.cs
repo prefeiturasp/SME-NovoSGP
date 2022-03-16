@@ -12,15 +12,18 @@ namespace SME.SGP.Aplicacao
     public class AlterarAulaFrequenciaTratarCommandHandler : IRequestHandler<AlterarAulaFrequenciaTratarCommand, bool>
     {
         private readonly IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno;
+        private readonly IMediator mediator;
 
-        public AlterarAulaFrequenciaTratarCommandHandler(IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno)
+        public AlterarAulaFrequenciaTratarCommandHandler(IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno, IMediator mediator)
         {
             this.repositorioRegistroFrequenciaAluno = repositorioRegistroFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroFrequenciaAluno));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<bool> Handle(AlterarAulaFrequenciaTratarCommand request, CancellationToken cancellationToken)
         {
             //Obter as ausencias pela aula id
-            var ausencias = await repositorioRegistroFrequenciaAluno.ObterRegistrosAusenciaPorAulaAsync(request.Aula.Id);
+            var ausencias = await mediator.Send(new ObterRegistrosAusenciaPorAulaQuery(request.Aula.Id));
+
             var quantidadeAtual = request.Aula.Quantidade;
             var quantidadeOriginal = request.QuantidadeAulasOriginal;
 

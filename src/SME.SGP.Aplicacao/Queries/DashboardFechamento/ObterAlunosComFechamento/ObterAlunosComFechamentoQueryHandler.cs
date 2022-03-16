@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao
         ObterAlunosComFechamentoQueryHandler : IRequestHandler<ObterAlunosComFechamentoQuery,
             IEnumerable<TurmaAlunoBimestreFechamentoDto>>
     {
-        private readonly IRepositorioFechamentoAluno repositorio;
+        private readonly IRepositorioFechamentoAlunoConsulta repositorio;
 
-        public ObterAlunosComFechamentoQueryHandler(IRepositorioFechamentoAluno repositorio)
+        public ObterAlunosComFechamentoQueryHandler(IRepositorioFechamentoAlunoConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

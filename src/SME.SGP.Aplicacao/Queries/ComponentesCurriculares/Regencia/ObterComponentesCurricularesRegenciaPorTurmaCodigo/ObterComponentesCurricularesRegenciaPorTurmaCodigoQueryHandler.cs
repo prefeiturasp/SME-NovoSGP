@@ -1,13 +1,10 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,8 +13,8 @@ namespace SME.SGP.Aplicacao
     public class ObterComponentesCurricularesRegenciaPorTurmaCodigoQueryHandler : IRequestHandler<ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery, IEnumerable<DisciplinaDto>>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        public ObterComponentesCurricularesRegenciaPorTurmaCodigoQueryHandler(IRepositorioComponenteCurricular repositorioComponenteCurricular, IMediator mediator)
+        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        public ObterComponentesCurricularesRegenciaPorTurmaCodigoQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IMediator mediator)
         {
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -30,8 +27,9 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma não encontrada.");
 
-            var turno = turma.ModalidadeCodigo == Modalidade.Fundamental ? turma.QuantidadeDuracaoAula : 0;
-            var ano = turma.ModalidadeCodigo == Modalidade.Fundamental ? Convert.ToInt64(turma.Ano.ToUpper().Replace('S', '1')) : 0;
+            var ehQtdeDuracaoAulaTurma4h = turma.QuantidadeDuracaoAula == 4;
+            var turno = ehQtdeDuracaoAulaTurma4h ? turma.QuantidadeDuracaoAula : 0;
+            var ano = ehQtdeDuracaoAulaTurma4h ? Convert.ToInt64(turma.Ano.ToUpper().Replace('S', '1')) : 0;
 
             var regencias = await repositorioComponenteCurricular.ObterComponentesCurricularesRegenciaPorAnoETurno(ano, turno);
 

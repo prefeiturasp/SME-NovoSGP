@@ -13,19 +13,17 @@ namespace SME.SGP.Aplicacao
     public class ObterDatasAulasPorProfessorEComponenteQueryHandler : IRequestHandler<ObterDatasAulasPorProfessorEComponenteQuery, IEnumerable<DatasAulasDto>>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioAula repositorio;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioAulaConsulta repositorioConsulta;
+        private readonly IRepositorioTurmaConsulta repositorioTurma;
 
-        private readonly IRepositorioAula repositorioAula;
 
-        public ObterDatasAulasPorProfessorEComponenteQueryHandler(IMediator mediator, IRepositorioAula repositorio, IRepositorioTurma repositorioTurma, IRepositorioAula repositorioAula)
+        public ObterDatasAulasPorProfessorEComponenteQueryHandler(IMediator mediator, IRepositorioAulaConsulta repositorioConsulta, IRepositorioTurmaConsulta repositorioTurma)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.repositorioConsulta = repositorioConsulta ?? throw new ArgumentNullException(nameof(repositorioConsulta));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-
-            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }
+
 
         public async Task<IEnumerable<DatasAulasDto>> Handle(ObterDatasAulasPorProfessorEComponenteQuery request, CancellationToken cancellationToken)
         {
@@ -34,31 +32,51 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var datasAulas = ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo,
-                string.Empty, request.EhProfessorCj, request.EhProfessor);
+            var datasAulas = ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo,string.Empty);
 
             var aulas = new List<Aula>();
-            datasAulas.ToList()
-                .ForEach(da => aulas.Add(repositorioAula.ObterPorId(da.IdAula)));
+            foreach (var item in datasAulas)
+                aulas.Add(await mediator.Send(new ObterAulaPorIdQuery(item.IdAula)));
+            
 
-            var aulasPermitidas = usuarioLogado
-                .ObterAulasQuePodeVisualizar(aulas, new string[] { request.ComponenteCurricularCodigo })
-                .Select(a => a.Id);
+            var aulasPermitidas = new List<long>();
+            bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(turma.AnoLetivo);
+
+            if (usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)
+            {
+                aulasPermitidas = aulas.Where(a => a.DisciplinaId == request.ComponenteCurricularCodigo)
+                                       .Select(a=> a.Id).ToList();
+            }
+            else
+            {
+                aulasPermitidas = usuarioLogado
+               .ObterAulasQuePodeVisualizar(aulas, new string[] { request.ComponenteCurricularCodigo })
+               .Select(a => a.Id).ToList();
+            }
 
             return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data)
-                    .Select(x => new DatasAulasDto()
+                .Select(x => new DatasAulasDto()
+                {
+                    Data = x.Key,
+                    Aulas = x.OrderBy(a => a.AulaCJ).Select(async a => new AulaSimplesDto()
                     {
-                        Data = x.Key,
-                        Aulas = x.OrderBy(a => a.AulaCJ).Select(async a => new AulaSimplesDto()
-                        {
-                            AulaId = a.IdAula,
-                            AulaCJ = a.AulaCJ,
-                            ProfessorRf = a.ProfessorRf,
-                            CriadoPor = a.CriadoPor,
-                            PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula)),
-                            TipoAula = a.TipoAula
-                        }).Select(a => a.Result)
-                    });
+                        AulaId = a.IdAula,
+                        AulaCJ = a.AulaCJ,
+                        PodeEditar = (usuarioLogado.EhProfessorCj() && a.AulaCJ || usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar) || (!a.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar())),
+                        ProfessorRf = a.ProfessorRf,
+                        CriadoPor = a.CriadoPor,
+                        PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula)),
+                        TipoAula = a.TipoAula
+                    }).DistinctBy(a => a.Result.AulaId).Select(a => a.Result)
+                });
+        }
+
+
+        public async Task<bool> VerificaCJPodeEditarRegistroTitular(int anoLetivo)
+        {
+            var dadosParametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.CJInfantilPodeEditarAulaTitular, anoLetivo));
+
+            return dadosParametro?.Ativo ?? false;
         }
 
         private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId)
@@ -81,18 +99,19 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 
             return turma;
         }
 
-        private IEnumerable<DataAulasProfessorDto> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string professorRf, bool ehProfessorCj, bool ehProfessor)
+        private IEnumerable<DataAulasProfessorDto> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string professorRf)
         {
+            var aulas = repositorioConsulta.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodosEscolares.Select(s => s.Id).Distinct(), anoLetivo, turmaCodigo, componenteCurricularCodigo, professorRf, null, null,false);
             foreach (var periodoEscolar in periodosEscolares)
             {
-                foreach (var aula in repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodoEscolar.Id, anoLetivo, turmaCodigo, componenteCurricularCodigo, professorRf, ehProfessorCj, ehProfessor))
+                foreach (var aula in aulas)
                 {
                     yield return new DataAulasProfessorDto
                     {

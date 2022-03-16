@@ -12,13 +12,13 @@ namespace SME.SGP.Aplicacao
     public class ComandosFechamentoTurmaDisciplina : IComandosFechamentoTurmaDisciplina
     {
         private readonly IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina;
-        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
+        private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IMediator mediator;
 
-        public ComandosFechamentoTurmaDisciplina(IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina,
-                                                 IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
-                                                 IRepositorioFechamentoTurma repositorioFechamentoTurma,
+        public ComandosFechamentoTurmaDisciplina(IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina,                                                 
+                                                 IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
+                                                 IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,                                                 
                                                  IMediator mediator)
         {
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(servicoFechamentoTurmaDisciplina));
@@ -27,8 +27,13 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task Reprocessar(long fechamentoId)
-            => await servicoFechamentoTurmaDisciplina.Reprocessar(fechamentoId);
+        public async Task Reprocessar(long fechamentoId, Usuario usuario = null)
+            => await servicoFechamentoTurmaDisciplina.Reprocessar(fechamentoId, usuario);
+
+        public void Reprocessar(IEnumerable<long> fechamentoId, Usuario usuario = null)
+        {
+            fechamentoId.ToList().ForEach(f => Reprocessar(f, usuario).Wait());
+        }
 
         public async Task<IEnumerable<AuditoriaPersistenciaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma, bool componenteSemNota = false)
         {
@@ -60,8 +65,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task ProcessarPendentes(int anoLetivo)
         {
-            var fechamentosPendentes = await repositorioFechamentoTurmaDisciplina
-                .ObterFechamentosComSituacaoEmProcessamentoPorAnoLetivo(anoLetivo);
+            var fechamentosPendentes = await repositorioFechamentoTurmaDisciplina.ObterFechamentosComSituacaoEmProcessamentoPorAnoLetivo(anoLetivo);
 
             foreach (var fechamento in fechamentosPendentes)
             {
@@ -77,5 +81,7 @@ namespace SME.SGP.Aplicacao
                 }                
             }
         }
+
+       
     }
 }
