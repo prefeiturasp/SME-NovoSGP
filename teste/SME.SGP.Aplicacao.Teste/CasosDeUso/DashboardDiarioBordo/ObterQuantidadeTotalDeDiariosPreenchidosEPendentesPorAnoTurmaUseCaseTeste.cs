@@ -32,8 +32,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
                 AnoLetivo = 2022,
                 Modalidade = Dominio.Modalidade.EducacaoInfantil,
                 DreId = 12,
-                UeId = 019493,
-                UsuarioRf = "7909179"
+                UeId = 019493
             };
 
             var listaPerfis = new List<PrioridadePerfil>();
@@ -77,7 +76,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
                 Modalidade = Dominio.Modalidade.EducacaoInfantil,
                 DreId = 12,
                 UeId = 019493,
-                UsuarioRf = "7909179"
             };
 
             var listaPerfis = new List<PrioridadePerfil>();
@@ -121,8 +119,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
                 AnoLetivo = 2022,
                 Modalidade = Dominio.Modalidade.EducacaoInfantil,
                 DreId = 12,
-                UeId = 019493,
-                UsuarioRf = "8400458"
+                UeId = 019493
             };
 
             var listaPerfis = new List<PrioridadePerfil>();
@@ -163,8 +160,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
                 AnoLetivo = 2022,
                 Modalidade = Dominio.Modalidade.EducacaoInfantil,
                 DreId = 12,
-                UeId = 019493,
-                UsuarioRf = "8400458"
+                UeId = 019493
             };
 
             var listaPerfis = new List<PrioridadePerfil>();

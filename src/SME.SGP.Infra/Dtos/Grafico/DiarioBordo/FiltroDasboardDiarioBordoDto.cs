@@ -11,6 +11,5 @@ namespace SME.SGP.Infra
         public Modalidade Modalidade { get; set; }
         public long DreId { get; set; }
         public long UeId { get; set; }
-        public string UsuarioRf { get; set; }
     }
 }
