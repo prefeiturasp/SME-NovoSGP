@@ -86,7 +86,6 @@ namespace SME.SGP.Dados.Repositorios
                          inner join tipo_calendario tc on tc.id = a.tipo_calendario_id 
                          inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id ");
 
-
             if (professorTitular)
                 sqlQuery.AppendLine(" and not a.aula_cj ");
             else if (professorCj)
@@ -103,16 +102,17 @@ namespace SME.SGP.Dados.Repositorios
                            and pe.bimestre = @bimestre
                            and a.turma_id = @turmaId
                            and a.disciplina_id = @disciplinaId 
-                           and a.data_aula between pe.periodo_inicio and pe.periodo_fim ");
+                           and a.data_aula between pe.periodo_inicio and pe.periodo_fim
+                           limit 1");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
+                return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
                 new
                 {
                     turmaId,
                     disciplinaId,
                     tipo = (int)tipoPendenciaAula,
                     bimestre,
-                    professorRf 
+                    professorRf
                 }, commandTimeout: 60);
         }
 
