@@ -490,7 +490,7 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     filtro = filtro.Replace("%", string.Empty);
                     retorno = filtroEhCodigo ?
-                        retorno.Where(r => r.Codigo.ToUpper().Contains(filtro)).Take(10) : 
+                        retorno.Where(r => r.Codigo.ToUpper().Contains(filtro)).Take(10) :
                         retorno.Where(r => r.NomeSimples.ToUpper().Contains(filtro)).Take(10);
                 }
             }
@@ -855,29 +855,31 @@ namespace SME.SGP.Dados.Repositorios
 
             if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
             {
-                var dres = (from da in dadosAbrangenciaSupervisor
-                            where (Modalidade)da.Modalidade == modalidade &&
-                                  (semestre == 0 || (semestre > 0 && da.Semestre == semestre))
-                            select new
-                            {
-                                da.AbreviacaoDre,
-                                da.CodigoDre,
-                                da.DreNome,
-                                da.DreId
-                            }).Distinct();
+                var dres = retorno.Select(d => d.Id).ToList();
 
-                var listaAbrangencia = dres.Select(d =>
-                new AbrangenciaDreRetornoDto
-                {
-                    Abreviacao = d.AbreviacaoDre,
-                    Codigo = d.CodigoDre,
-                    Nome = d.DreNome,
-                    Id = d.DreId
-                });
+                var dresComplementares = (from da in dadosAbrangenciaSupervisor
+                                          where (Modalidade)da.Modalidade == modalidade &&
+                                                (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                                !dres.Contains(da.DreId)
+                                          select new
+                                          {
+                                              da.AbreviacaoDre,
+                                              da.CodigoDre,
+                                              da.DreNome,
+                                              da.DreId
+                                          }).Distinct();
+
+                var listaDistinta = dresComplementares
+                    .Select(d => new AbrangenciaDreRetornoDto()
+                    {
+                        Abreviacao = d.AbreviacaoDre,
+                        Codigo = d.CodigoDre,
+                        Id = d.DreId,
+                        Nome = d.DreNome
+                    });
 
                 retorno = retorno
-                    .Concat(listaAbrangencia)
-                    .Distinct()
+                    .Concat(listaDistinta)
                     .OrderBy(d => d.Codigo);
             }
 
@@ -891,31 +893,33 @@ namespace SME.SGP.Dados.Repositorios
 
             if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
             {
-                var ues = (from da in dadosAbrangenciaSupervisor
-                           where (Modalidade)da.Modalidade == modalidade &&
-                                 da.CodigoDre == dre &&
-                                 !tiposEscolasIgnoradas.Contains((int)da.TipoEscola) &&
-                                 (semestre == 0 || (semestre > 0 && da.Semestre == semestre))
-                           select new
-                           {
-                               da.CodigoUe,
-                               da.UeNome,
-                               da.TipoEscola,
-                               da.UeId
-                           }).Distinct();
+                var ues = retorno.Select(u => u.Id).ToList();
 
-                var listaDistinta = ues
-                    .Select(u => new AbrangenciaUeRetorno()
-                    {
-                        Codigo = u.CodigoUe,
-                        NomeSimples = u.UeNome,
-                        TipoEscola = u.TipoEscola,
-                        Id = u.UeId
-                    });
+                var uesComplementares = (from da in dadosAbrangenciaSupervisor
+                                         where (Modalidade)da.Modalidade == modalidade &&
+                                               da.CodigoDre == dre &&
+                                               !tiposEscolasIgnoradas.Contains((int)da.TipoEscola) &&
+                                               (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                               !ues.Contains(da.UeId)
+                                         select new
+                                         {
+                                             da.CodigoUe,
+                                             da.UeNome,
+                                             da.TipoEscola,
+                                             da.UeId
+                                         }).Distinct();
+
+                var listaDistinta = uesComplementares
+                   .Select(u => new AbrangenciaUeRetorno()
+                   {
+                       Codigo = u.CodigoUe,
+                       NomeSimples = u.UeNome,
+                       TipoEscola = u.TipoEscola,
+                       Id = u.UeId
+                   });
 
                 retorno = retorno
                     .Concat(listaDistinta)
-                    .Distinct()
                     .OrderBy(d => d.Nome);
             }
 
@@ -929,42 +933,29 @@ namespace SME.SGP.Dados.Repositorios
 
             if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
             {
-                var turmas = (from da in dadosAbrangenciaSupervisor
-                              where (Modalidade)da.Modalidade == modalidade &&
-                                    da.CodigoUe == ue &&
-                                    (semestre == 0 || (semestre > 0 && da.Semestre == semestre))
-                           select new
-                           {
-                               da.NomeFiltro,
-                               da.TurmaAno,
-                               da.TurmaAnoLetivo,
-                               da.CodigoTurma,
-                               da.Modalidade,
-                               da.TurmaNome,
-                               da.Semestre,
-                               da.EnsinoEspecial,
-                               da.TurmaId,
-                               da.TipoTurma
-                           }).Distinct();
+                var turmas = retorno.Select(t => t.Id).ToList();
 
-                var listaDistinta = turmas
-                    .Select(u => new AbrangenciaTurmaRetorno()
-                    {
-                        NomeFiltro = u.NomeFiltro,
-                        Ano = u.TurmaAno,
-                        AnoLetivo = u.TurmaAnoLetivo,
-                        Codigo = u.CodigoTurma,
-                        CodigoModalidade = u.Modalidade,
-                        Nome = u.TurmaNome,
-                        Semestre = u.Semestre,
-                        EnsinoEspecial = u.EnsinoEspecial,
-                        Id = u.TurmaId,
-                        TipoTurma = u.TipoTurma
-                    });
+                var turmasComplementares = (from da in dadosAbrangenciaSupervisor
+                                            where (Modalidade)da.Modalidade == modalidade &&
+                                                  da.CodigoUe == ue &&
+                                                  (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                                  !turmas.Contains(da.TurmaId)
+                                            select new AbrangenciaTurmaRetorno
+                                            {
+                                                NomeFiltro = da.NomeFiltro,
+                                                Ano = da.TurmaAno,
+                                                AnoLetivo = da.TurmaAnoLetivo,
+                                                Codigo = da.CodigoTurma,
+                                                CodigoModalidade = da.Modalidade,
+                                                Nome = da.TurmaNome,
+                                                Semestre = da.Semestre,
+                                                EnsinoEspecial = da.EnsinoEspecial,
+                                                Id = da.TurmaId,
+                                                TipoTurma = da.TipoTurma
+                                            });
 
                 retorno = retorno
-                    .Concat(listaDistinta)
-                    .Distinct()
+                    .Concat(turmasComplementares)
                     .OrderBy(d => d.Nome);
             }
 
