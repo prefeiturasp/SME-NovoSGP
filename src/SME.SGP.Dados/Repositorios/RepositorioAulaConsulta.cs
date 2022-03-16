@@ -1133,5 +1133,12 @@ namespace SME.SGP.Dados.Repositorios
                 throw ex;
             }
         }
+
+        public Task<IEnumerable<Aula>> ObterAulasPorIds(IEnumerable<long> aulasIds)
+        {
+            var query = "select * from aula where id = ANY(@aulasIds)";
+
+            return database.Conexao.QueryAsync<Aula>(query, new { aulasIds });
+        }
     }
 }

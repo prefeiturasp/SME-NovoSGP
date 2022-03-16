@@ -34,11 +34,8 @@ namespace SME.SGP.Aplicacao
 
             var datasAulas = ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo,string.Empty);
 
-            var aulas = new List<Aula>();
-            foreach (var item in datasAulas)
-                aulas.Add(await mediator.Send(new ObterAulaPorIdQuery(item.IdAula)));
+            var aulas = await mediator.Send(new ObterAulasPorIdsQuery(datasAulas.Select(a => a.IdAula)));
             
-
             var aulasPermitidas = new List<long>();
             bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(turma.AnoLetivo);
 

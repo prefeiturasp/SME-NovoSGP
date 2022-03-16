@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioTurma = new Mock<IRepositorioTurmaConsulta>();
             mediator = new Mock<IMediator>();
-            consultasGrade = new ConsultasGrade(repositorioGrade.Object, consultasAula.Object, servicoUsuario.Object, repositorioUe.Object, repositorioTurma.Object, mediator.Object);
             repositorioUe = new Mock<IRepositorioUeConsulta>();
+            consultasGrade = new ConsultasGrade(repositorioGrade.Object, consultasAula.Object, servicoUsuario.Object, repositorioUe.Object, repositorioTurma.Object, mediator.Object);
 
             Setup();
         }
@@ -33,6 +33,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact]
         public async Task DeveObterGradeTurma()
         {
+            repositorioGrade.Setup(a => a.ObterGradeTurma(It.IsAny<TipoEscola>(), It.IsAny<Modalidade>(), It.IsAny<int>()))
+                .ReturnsAsync(new Grade() { Id = 1, Nome = "Teste" });
+
             var gradeDto = await consultasGrade.ObterGradeTurma(TipoEscola.EMEBS, Modalidade.Fundamental, 5);
 
             Assert.NotNull(gradeDto);
