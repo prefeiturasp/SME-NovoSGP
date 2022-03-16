@@ -13,7 +13,6 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.LicaoCasa).ToColumn("licao_casa");
             Map(c => c.Migrado).ToColumn("migrado");
             Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.AulaId).ToColumn("aula_id");
         }
     }
 }
