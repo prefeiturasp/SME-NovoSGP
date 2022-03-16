@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
 
             usuario.DefinirPerfis(listaPerfis);
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioPorCodigoRfLoginQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
               .ReturnsAsync(usuario);
 
             var dados = new List<GraficoTotalDiariosPreenchidosEPendentesDTO>();
@@ -60,10 +60,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
             // Act
 
             var dadosGrafico = await useCase.Executar(filtro);
+
             bool verificaSePossuiSoNumeros = Regex.IsMatch(dadosGrafico?.FirstOrDefault().TurmaAno, @"^[0-9]+$");
 
             // Assert
-            Assert.True(verificaSePossuiSoNumeros);
+            Assert.True( verificaSePossuiSoNumeros);
         }
 
         [Fact]
@@ -75,17 +76,17 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
                 AnoLetivo = 2022,
                 Modalidade = Dominio.Modalidade.EducacaoInfantil,
                 DreId = 12,
-                UeId = 019493,
+                UeId = 019493
             };
 
             var listaPerfis = new List<PrioridadePerfil>();
             listaPerfis.Add(new PrioridadePerfil() { Tipo = TipoPerfil.DRE });
 
-            var usuario = new Usuario() { CodigoRf = "7909179" };
+            var usuario = new Usuario() { CodigoRf = "8400458" };
 
             usuario.DefinirPerfis(listaPerfis);
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioPorCodigoRfLoginQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
               .ReturnsAsync(usuario);
 
             var dados = new List<GraficoTotalDiariosPreenchidosEPendentesDTO>();
@@ -103,15 +104,15 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
             // Act
 
             var dadosGrafico = await useCase.Executar(filtro);
+
             bool verificaSePossuiSoNumeros = !Regex.IsMatch(dadosGrafico?.FirstOrDefault().TurmaAno, @"^[0-9]+$");
-            bool verificaSeETurma = dadosGrafico?.FirstOrDefault().TurmaAno.Length > 1;
 
             // Assert
-            Assert.True(verificaSePossuiSoNumeros & verificaSeETurma);
+            Assert.True(verificaSePossuiSoNumeros);
         }
 
         [Fact]
-        public async Task Nao_Deve_Trazer_Dados_Usuario_Visao_UE_Somente_Ano()
+        public async Task Nao_Deve_Trazer_Dados_Usuario_Visao_UE()
         {
             // Arrange
             var filtro = new FiltroDasboardDiarioBordoDto()
@@ -125,11 +126,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
             var listaPerfis = new List<PrioridadePerfil>();
             listaPerfis.Add(new PrioridadePerfil() { Tipo = TipoPerfil.UE });
 
-            var usuario = new Usuario() { CodigoRf = "7909179" };
+            var usuario = new Usuario() { CodigoRf = "8400458" };
 
             usuario.DefinirPerfis(listaPerfis);
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioPorCodigoRfLoginQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
               .ReturnsAsync(usuario);
 
             var dados = new List<GraficoTotalDiariosPreenchidosEPendentesDTO>();
@@ -146,9 +147,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
 
             // Act
             var dadosGrafico = await useCase.Executar(filtro);
-            bool validaComAno = !Regex.IsMatch(dadosGrafico?.FirstOrDefault().TurmaAno, @"^[0-9]+$");
+
+            bool validaComTurma = !Regex.IsMatch(dadosGrafico?.FirstOrDefault().TurmaAno, @"^[0-9]+$");
             // Assert
-            Assert.False(validaComAno);
+            Assert.False(validaComTurma);
         }
 
         [Fact]
@@ -160,7 +162,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
                 AnoLetivo = 2022,
                 Modalidade = Dominio.Modalidade.EducacaoInfantil,
                 DreId = 12,
-                UeId = 019493
+                UeId = 019493,
+                UsuarioRf = "8400458"
             };
 
             var listaPerfis = new List<PrioridadePerfil>();
@@ -170,14 +173,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
 
             usuario.DefinirPerfis(listaPerfis);
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioPorCodigoRfLoginQuery>(), It.IsAny<CancellationToken>()))
-              .ReturnsAsync(usuario);
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(usuario);
 
             var dados = new List<GraficoTotalDiariosPreenchidosEPendentesDTO>();
             dados.Add(
                 new GraficoTotalDiariosPreenchidosEPendentesDTO()
                 {
-                    TurmaAno = "1",
+                    TurmaAno = "1B",
                     Descricao = "Pendentes",
                     Quantidade = 100
                 });
@@ -187,7 +190,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
 
             // Act
             var dadosGrafico = await useCase.Executar(filtro);
-            bool validaComTurma = !Regex.IsMatch(dadosGrafico?.FirstOrDefault().TurmaAno, @"^[0-9]+$");
+
+            bool validaComTurma = Regex.IsMatch(dadosGrafico?.FirstOrDefault().TurmaAno, @"^[0-9]+$");
             // Assert
             Assert.False(validaComTurma);
         }
