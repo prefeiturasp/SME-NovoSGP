@@ -29,7 +29,7 @@ using System.IO.Compression;
 
 namespace SME.SGP.Api
 {
-    public class Startup
+	public class Startup
     {
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
@@ -63,6 +63,8 @@ namespace SME.SGP.Api
             app.UseRequestLocalization();
 
             app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseAuthorization();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -70,10 +72,10 @@ namespace SME.SGP.Api
             });
 
             //TODO: Ajustar para as os origins que irão consumir
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
+            app.UseCors(config => config
                 .AllowAnyMethod()
                 .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials());
 
             app.UseMetricServer();
@@ -82,9 +84,12 @@ namespace SME.SGP.Api
 
             app.UseAuthentication();
 
-            app.UseMvc();
-
             app.UseStaticFiles();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
@@ -156,6 +161,10 @@ namespace SME.SGP.Api
             services.AddSingleton(servicoTelemetria);
 
             services.AddMemoryCache();
+
+            services.AddCors();
+
+            services.AddControllers();
         }
 
         private void ConfiguraVariaveisAmbiente(IServiceCollection services)

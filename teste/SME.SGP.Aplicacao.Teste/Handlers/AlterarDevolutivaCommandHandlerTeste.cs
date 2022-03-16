@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             result.ShouldHaveValidationErrorFor(a => a.Devolutiva);
         }
 
-        private TestValidationResult<AlterarDevolutivaCommand, AlterarDevolutivaCommand> ValidarCommand(AlterarDevolutivaCommand command)
+        private TestValidationResult<AlterarDevolutivaCommand> ValidarCommand(AlterarDevolutivaCommand command)
         {
             var validator = new AlterarDevolutivaCommandValidator();
             return validator.TestValidate(command);

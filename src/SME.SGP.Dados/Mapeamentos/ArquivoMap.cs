@@ -7,7 +7,10 @@ namespace SME.SGP.Dados.Mapeamentos
         public ArquivoMap()
         {
             ToTable("arquivo");
-            Map(a => a.TipoConteudo).ToColumn("tipo_conteudo");
+            Map(c => c.Nome).ToColumn("nome");
+            Map(c => c.Codigo).ToColumn("codigo");
+            Map(c => c.TipoConteudo).ToColumn("tipo_conteudo");
+            Map(c => c.Tipo).ToColumn("tipo");
         }
     }
 }

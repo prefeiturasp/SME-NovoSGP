@@ -7,11 +7,12 @@ namespace SME.SGP.Dados
         public PlanoAEERespostaMap()
         {
             ToTable("plano_aee_resposta");
-            Map(a => a.PlanoAEEQuestaoId).ToColumn("plano_questao_id");
-            Map(a => a.RespostaId).ToColumn("resposta_id");
-            Map(a => a.ArquivoId).ToColumn("arquivo_id");
-            Map(a => a.PeriodoInicio).ToColumn("periodo_inicio");
-            Map(a => a.PeriodoFim).ToColumn("periodo_fim");
+            Map(c => c.PlanoAEEQuestaoId).ToColumn("plano_questao_id");
+            Map(c => c.RespostaId).ToColumn("resposta_id");
+            Map(c => c.ArquivoId).ToColumn("arquivo_id");
+            Map(c => c.Texto).ToColumn("texto");
+            Map(c => c.PeriodoInicio).ToColumn("periodo_inicio");
+            Map(c => c.PeriodoFim).ToColumn("periodo_fim");
         }
     }
 }

@@ -8,6 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConsolidacaoDevolutivasMap()
         {
             ToTable("consolidacao_devolutivas");
+            Map(c => c.Id).ToColumn("id");
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.QuantidadeEstimadaDevolutivas).ToColumn("quantidade_estimada_devolutivas");
             Map(c => c.QuantidadeRegistradaDevolutivas).ToColumn("quantidade_registrada_devolutivas");

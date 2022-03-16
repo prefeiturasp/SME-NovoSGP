@@ -8,10 +8,12 @@ namespace SME.SGP.Dados
         public ConsolidacaoDiariosBordoMap()
         {
             ToTable("consolidacao_diarios_bordo");
-            Map(a => a.TurmaId).ToColumn("turma_id");
-            Map(a => a.AnoLetivo).ToColumn("ano_letivo");
-            Map(a => a.QuantidadePreenchidos).ToColumn("quantidade_preenchidos");
-            Map(a => a.QuantidadePendentes).ToColumn("quantidade_pendentes");
+            Map(c => c.Id).ToColumn("id");
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
+            Map(c => c.QuantidadePreenchidos).ToColumn("quantidade_preenchidos");
+            Map(c => c.QuantidadePendentes).ToColumn("quantidade_pendentes");
+
         }
     }
 }
