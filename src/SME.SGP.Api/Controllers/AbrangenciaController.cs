@@ -138,7 +138,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterSemestres([FromQuery] FiltroSemestreDto filtroSemestreDto)
         {
-            var retorno = await consultasAbrangencia.ObterSemestres(filtroSemestreDto.Modalidade, ConsideraHistorico, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo);
+            var retorno = await consultasAbrangencia
+                .ObterSemestres(filtroSemestreDto.Modalidade, ConsideraHistorico, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo);
 
             if (!retorno.Any())
                 return NoContent();
@@ -156,7 +157,7 @@ namespace SME.SGP.Api.Controllers
             IEnumerable<AbrangenciaTurmaRetorno> turmas;
             turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil);
             
-            if(!turmas.Any() && !ConsideraHistorico)
+            if(turmas == null && !turmas.Any() && !ConsideraHistorico)
                 turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil);
 
             if (!turmas.Any())
