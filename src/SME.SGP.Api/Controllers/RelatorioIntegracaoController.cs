@@ -19,5 +19,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoRelatorio));
         }
+
+        [HttpPost("boletim")]
+        public async Task<IActionResult> SolicitarBoletimEscolaAqui([FromBody] FiltroRelatorioBoletimEscolaAquiDto filtroRelatorioBoletimDto, [FromServices] IBoletimEscolaAquiUseCase boletimUseCase)
+        {
+            return Ok(await boletimUseCase.Executar(filtroRelatorioBoletimDto));
+        }
     }
 }
