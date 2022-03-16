@@ -19,11 +19,9 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<GraficoTotalDiariosPreenchidosEPendentesDTO>> Executar(FiltroDasboardDiarioBordoDto filtro)
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-
             bool ehPerfilDRESME = usuario.EhPerfilDRE() || usuario.EhPerfilSME();
-            var dadosGrafico =  await mediator.Send(new ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaQuery(filtro.AnoLetivo, filtro.DreId, filtro.UeId, filtro.Modalidade, ehPerfilDRESME));
 
-            return dadosGrafico;
+            return await mediator.Send(new ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaQuery(filtro.AnoLetivo, filtro.DreId, filtro.UeId, filtro.Modalidade, ehPerfilDRESME));
         }
     }
 }
