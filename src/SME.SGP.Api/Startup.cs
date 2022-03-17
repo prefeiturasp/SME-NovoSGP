@@ -15,6 +15,7 @@ using Microsoft.Extensions.FileProviders;
 using Prometheus;
 using RabbitMQ.Client;
 using SME.SGP.Api.HealthCheck;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
