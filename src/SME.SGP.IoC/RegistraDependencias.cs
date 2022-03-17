@@ -710,10 +710,9 @@ namespace SME.SGP.IoC
 
             // Dashboard Diário de bordo
             services.TryAddScoped<IObterQuantidadeTotalDeDevolutivasPorDREUseCase, ObterQuantidadeTotalDeDevolutivasPorDREUseCase>();
-            services.TryAddScoped<IObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaUseCase, ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaUseCase>();
-            services.TryAddScoped<IObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaUseCase, ObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaUseCase>();
             services.TryAddScoped<IObterQuantidadeTotalDeDiariosPendentesPorDREUseCase, ObterQuantidadeTotalDeDiariosPendentesPorDREUseCase>();
             services.TryAddScoped<IObterUltimaConsolidacaoDiarioBordoUseCase, ObterUltimaConsolidacaoDiarioBordoUseCase>();
+            services.TryAddScoped<IObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaUseCase, ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaUseCase>();
 
             // Dashboard devolutivas
             services.TryAddScoped<IObterGraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteUseCase, ObterGraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteUseCase>();
