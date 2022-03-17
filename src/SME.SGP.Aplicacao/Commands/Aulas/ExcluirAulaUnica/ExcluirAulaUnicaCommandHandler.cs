@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task RemoverArquivosDiarioBordo(long aulaId)
         {
-            var diarioDeBordo = await repositorioDiarioBordo.ObterPorAulaIdRegistroExcluido(aulaId);
+            var diarioDeBordo = await repositorioDiarioBordo.ObterPorAulaId(aulaId);
             if(diarioDeBordo?.Planejamento != null)
             {
                 await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);

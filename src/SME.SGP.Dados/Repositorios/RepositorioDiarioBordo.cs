@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QueryFirstOrDefaultAsync<DiarioBordo>(sql, parametros);
         }
 
-        public async Task<DiarioBordo> ObterPorAulaIdRegistroExcluido(long aulaId)
+        public async Task<DiarioBordo> ObterPorAulaId(long aulaId)
         {
             var sql = @"select * from diario_bordo where aula_id = @aulaId";
 
@@ -396,14 +396,12 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<QuantidadeTotalDiariosPendentesEPreenchidosPorAnoOuTurmaDTO>> ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade, bool ehPerfilSMEDRE)
         {
-            try
-            {
-                var sql = @"";
+            var sql = @"";
 
-                if (dreId == 0 && ueId == 0)
-                {
-                    sql = ehPerfilSMEDRE 
-                        ? @"select
+            if (dreId == 0 && ueId == 0)
+            {
+                sql = ehPerfilSMEDRE
+                    ? @"select
                             distinct 
                             t.ano as AnoTurma,
                             sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes,
@@ -416,7 +414,7 @@ namespace SME.SGP.Dados.Repositorios
                             and t.ano_letivo = @anoLetivo
                             and t.modalidade_codigo = @modalidade
                         group by t.ano  "
-                        : @"select
+                    : @"select
                             distinct 
                             t.nome as AnoTurma,
                             sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes,
@@ -429,82 +427,78 @@ namespace SME.SGP.Dados.Repositorios
                             and t.ano_letivo = @anoLetivo
                             and t.modalidade_codigo = @modalidade
                         group by t.nome  ";
-                }
-
-                if (dreId > 0 && ueId == 0)
-                {                  
-                    sql = ehPerfilSMEDRE 
-                        ? @"select
-                            distinct 
-                            t.ano as AnoTurma,
-                            sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes,
-                            sum(c.quantidade_preenchidos) as quantidadeTotalDiariosPreenchidos
-                        from consolidacao_diarios_bordo c
-                            inner join turma t on t.id = c.turma_id
-                            inner join ue on ue.id = t.ue_id 
-                            inner join dre on dre.id = ue.dre_id
-                            and t.ano <> '0'
-                            and t.ano_letivo = @anoLetivo
-                            and dre.id = @dreId
-                            and t.modalidade_codigo = @modalidade
-                        group by t.ano "
-                        : @"select
-                            distinct 
-                            t.nome as AnoTurma,
-                            sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes,
-                            sum(c.quantidade_preenchidos) as quantidadeTotalDiariosPreenchidos
-                        from consolidacao_diarios_bordo c
-                            inner join turma t on t.id = c.turma_id
-                            inner join ue on ue.id = t.ue_id 
-                            inner join dre on dre.id = ue.dre_id
-                            and t.ano <> '0'
-                            and t.ano_letivo = @anoLetivo
-                            and dre.id = @dreId
-                            and t.modalidade_codigo = @modalidade
-                        group by t.nome ";
-                }
-
-                if (dreId > 0 && ueId > 0)
-                {
-                    sql = ehPerfilSMEDRE 
-                        ? @"select
-                            distinct 
-                            t.ano as AnoTurma,
-                            sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes,
-                            sum(c.quantidade_preenchidos) as quantidadeTotalDiariosPreenchidos
-                        from consolidacao_diarios_bordo c
-                            inner join turma t on t.id = c.turma_id
-                            inner join ue on ue.id = t.ue_id 
-                            inner join dre on dre.id = ue.dre_id
-                            and t.ano <> '0'
-                            and t.ano_letivo = @anoLetivo
-                            and dre.id = @dreId
-	                        and t.ue_id = @ueId
-                            and t.modalidade_codigo = @modalidade
-                        group by t.ano "
-                        : @"select
-                            distinct 
-                            t.nome as AnoTurma,
-                            sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes,
-                            sum(c.quantidade_preenchidos) as quantidadeTotalDiariosPreenchidos
-                        from consolidacao_diarios_bordo c
-                            inner join turma t on t.id = c.turma_id
-                            inner join ue on ue.id = t.ue_id 
-                            inner join dre on dre.id = ue.dre_id
-                            and t.ano <> '0'
-                            and t.ano_letivo = @anoLetivo
-                            and dre.id = @dreId
-	                        and t.ue_id = @ueId
-                            and t.modalidade_codigo = @modalidade
-                        group by t.nome ";
-                }
-
-                return await database.Conexao.QueryAsync<QuantidadeTotalDiariosPendentesEPreenchidosPorAnoOuTurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
             }
-            catch (Exception ex)
+
+            if (dreId > 0 && ueId == 0)
             {
-                throw ex;
+                sql = ehPerfilSMEDRE
+                    ? @"select
+                            distinct 
+                            t.ano as AnoTurma,
+                            sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes,
+                            sum(c.quantidade_preenchidos) as quantidadeTotalDiariosPreenchidos
+                        from consolidacao_diarios_bordo c
+                            inner join turma t on t.id = c.turma_id
+                            inner join ue on ue.id = t.ue_id 
+                            inner join dre on dre.id = ue.dre_id
+                            and t.ano <> '0'
+                            and t.ano_letivo = @anoLetivo
+                            and dre.id = @dreId
+                            and t.modalidade_codigo = @modalidade
+                        group by t.ano "
+                    : @"select
+                            distinct 
+                            t.nome as AnoTurma,
+                            sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes,
+                            sum(c.quantidade_preenchidos) as quantidadeTotalDiariosPreenchidos
+                        from consolidacao_diarios_bordo c
+                            inner join turma t on t.id = c.turma_id
+                            inner join ue on ue.id = t.ue_id 
+                            inner join dre on dre.id = ue.dre_id
+                            and t.ano <> '0'
+                            and t.ano_letivo = @anoLetivo
+                            and dre.id = @dreId
+                            and t.modalidade_codigo = @modalidade
+                        group by t.nome ";
             }
+
+            if (dreId > 0 && ueId > 0)
+            {
+                sql = ehPerfilSMEDRE
+                    ? @"select
+                            distinct 
+                            t.ano as AnoTurma,
+                            sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes,
+                            sum(c.quantidade_preenchidos) as quantidadeTotalDiariosPreenchidos
+                        from consolidacao_diarios_bordo c
+                            inner join turma t on t.id = c.turma_id
+                            inner join ue on ue.id = t.ue_id 
+                            inner join dre on dre.id = ue.dre_id
+                            and t.ano <> '0'
+                            and t.ano_letivo = @anoLetivo
+                            and dre.id = @dreId
+	                        and t.ue_id = @ueId
+                            and t.modalidade_codigo = @modalidade
+                        group by t.ano "
+                    : @"select
+                            distinct 
+                            t.nome as AnoTurma,
+                            sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes,
+                            sum(c.quantidade_preenchidos) as quantidadeTotalDiariosPreenchidos
+                        from consolidacao_diarios_bordo c
+                            inner join turma t on t.id = c.turma_id
+                            inner join ue on ue.id = t.ue_id 
+                            inner join dre on dre.id = ue.dre_id
+                            and t.ano <> '0'
+                            and t.ano_letivo = @anoLetivo
+                            and dre.id = @dreId
+	                        and t.ue_id = @ueId
+                            and t.modalidade_codigo = @modalidade
+                        group by t.nome ";
+            }
+
+            return await database.Conexao.QueryAsync<QuantidadeTotalDiariosPendentesEPreenchidosPorAnoOuTurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
+
         }
 
         public async Task<IEnumerable<QuantidadeDiariosDeBordoComDevolutivaEDevolutivaPendentePorTurmaAnoDto>> ObterDiariosDeBordoComDevolutivaEDevolutivaPendenteAsync(int anoLetivo, Modalidade modalidade, DateTime dataAula, long? dreId, long? ueId)
