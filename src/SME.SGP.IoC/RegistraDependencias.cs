@@ -709,6 +709,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDashboardAcompanhamentoAprendizagemPorDreUseCase, ObterDashboardAcompanhamentoAprendizagemPorDreUseCase>();
 
             // Dashboard Diário de bordo
+            services.TryAddScoped<IObterQuantidadeTotalDeDevolutivasPorDREUseCase, ObterQuantidadeTotalDeDevolutivasPorDREUseCase>();
             services.TryAddScoped<IObterQuantidadeTotalDeDiariosPendentesPorDREUseCase, ObterQuantidadeTotalDeDiariosPendentesPorDREUseCase>();
             services.TryAddScoped<IObterUltimaConsolidacaoDiarioBordoUseCase, ObterUltimaConsolidacaoDiarioBordoUseCase>();
             services.TryAddScoped<IObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaUseCase, ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaUseCase>();
