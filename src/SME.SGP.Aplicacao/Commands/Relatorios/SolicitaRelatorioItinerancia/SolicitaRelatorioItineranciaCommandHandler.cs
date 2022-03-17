@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Dominio.Interfaces.Repositorios;
 using System;
 using System.Net;
 using System.Net.Http;

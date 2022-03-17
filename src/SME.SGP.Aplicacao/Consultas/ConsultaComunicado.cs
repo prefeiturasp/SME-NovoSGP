@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
