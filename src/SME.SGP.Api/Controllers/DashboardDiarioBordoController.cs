@@ -48,7 +48,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("quantidade-devolutivas-por-ano")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(IEnumerable<GraficoTotalDiariosEDevolutivasDTO>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoTotalDevolutivasPorAnoDTO>), 200)]
         [Permissao(Permissao.DB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuantidadeTotalDeDevolutivasPorAno([FromQuery] FiltroDasboardDiarioBordoDevolutivasDto filtro, [FromServices] IObterQuantidadeTotalDeDevolutivasPorDREUseCase useCase)
         {
