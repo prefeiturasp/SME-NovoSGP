@@ -1138,7 +1138,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = "select * from aula where id = ANY(@aulasIds)";
 
-            return database.Conexao.QueryAsync<Aula>(query, new { aulasIds });
+            return database.Conexao.QueryAsync<Aula>(query, new { aulasIds = aulasIds.ToList() });
         }
     }
 }
