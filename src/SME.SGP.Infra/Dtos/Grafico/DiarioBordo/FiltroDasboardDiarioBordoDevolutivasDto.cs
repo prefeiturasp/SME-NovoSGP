@@ -10,8 +10,6 @@ namespace SME.SGP.Infra
     {
         [Required]
         public int AnoLetivo { get; set; }
-        [Required]
-        public Modalidade Modalidade { get; set; }
         public string AnoTurma { get; set; }
         public int Mes { get; set; }
         public long DreId { get; set; }
