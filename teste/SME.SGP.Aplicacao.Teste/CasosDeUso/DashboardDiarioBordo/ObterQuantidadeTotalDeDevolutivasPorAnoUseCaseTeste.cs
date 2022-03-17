@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using Moq;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -22,23 +24,38 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact]
         public async Task Deve_Retornar_Dados_Filtrando_Por_Ano()
         {
-            //// Arrange
+            // Arrange
+            var grafico = new List<GraficoTotalDevolutivasPorAnoDTO>();
+            var dados = new GraficoTotalDevolutivasPorAnoDTO() { Ano = "5", Descricao = "Devolutivas", Quantidade = 30 };
+            grafico.Add(dados);
 
+            mediator.Setup(a => a.Send(It.IsAny<ObterQuantidadeTotalDeDevolutivasPorAnoDreQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(grafico);
 
-            //mediator.Setup(a => a.Send(It.IsAny<ObterDatasAulasPorProfessorEComponenteQuery>(), It.IsAny<CancellationToken>()))
-            //    .ReturnsAsync(new List<DatasAulasDto>());
+            // Act
+            var dadosGrafico = await useCase.Executar(new FiltroDasboardDiarioBordoDevolutivasDto() { AnoLetivo = 2022, AnoTurma = "5", DreId = 0, Mes = 0} );
 
-            //// Act
-            //var datasAulas = await useCase.Executar(new ConsultaDatasAulasDto("123", "1105"));
-
-            //// Assert
-            //Assert.NotNull(datasAulas);
+            // Assert
+            Assert.NotNull(dadosGrafico);
         }
 
         [Fact]
         public async Task Deve_Retornar_Dados_Filtrando_Por_Mes()
         {
+            // Arrange
+            var grafico = new List<GraficoTotalDevolutivasPorAnoDTO>();
+            var dados = new GraficoTotalDevolutivasPorAnoDTO() { Ano = "1", Descricao = "Devolutivas", Quantidade = 10 };
+            grafico.Add(dados);
+            
+            mediator.Setup(a => a.Send(It.IsAny<ObterQuantidadeTotalDeDevolutivasPorAnoDreQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(grafico);
 
+            // Act
+            var dadosGrafico = await useCase.Executar(new FiltroDasboardDiarioBordoDevolutivasDto() { AnoLetivo = 2022, DreId = 0, Mes = 5 });
+            mediator.Verify(x => x.Send(It.IsAny<ObterQuantidadeTotalDeDevolutivasPorAnoDreQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+
+            // Assert
+            Assert.NotNull(dadosGrafico);
         }
     }
 }

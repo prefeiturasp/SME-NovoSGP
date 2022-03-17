@@ -175,7 +175,7 @@ namespace SME.SGP.Dados.Repositorios
             if (mes > 1 && mes < 13)
                 query.Append(" and extract(month from db.criado_em) = @mes");
 
-            if (!String.IsNullOrEmpty(ano))
+            if (!String.IsNullOrEmpty(ano) && Convert.ToInt32(ano) > 0)
                 query.Append(" and t.ano = @ano");
 
             if (dreId > 0)
