@@ -115,5 +115,8 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/ocorrencias", ShortName = "RelatorioOcorrencia", Description = "Relatório de ocorrências")]
         RelatorioOcorrencias = 38,
 
+        [Display(Name = "relatorios/acompanhamento-aprendizagem-escolaaqui", ShortName = "RAA Escola Aqui", Description = "Relatório do Acompanhamento da Aprendizagem Escola Aqui")]
+        RaaEscolaAqui = 39,
+
     }
 }

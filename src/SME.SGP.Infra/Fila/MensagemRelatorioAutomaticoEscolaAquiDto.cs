@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class MensagemRelatorioBoletimAppDto
+    public class MensagemRelatorioAutomaticoEscolaAquiDto
     {
         public string DreCodigo { get; set; }
         public string UeCodigo { get; set; }
