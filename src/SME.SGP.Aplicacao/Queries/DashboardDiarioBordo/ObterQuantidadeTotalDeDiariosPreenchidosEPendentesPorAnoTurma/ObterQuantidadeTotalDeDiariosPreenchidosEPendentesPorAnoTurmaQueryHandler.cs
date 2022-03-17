@@ -11,16 +11,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaQueryHandler : IRequestHandler<ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaQuery, IEnumerable<GraficoTotalDiariosPreenchidosEPendentesDTO>>
     {
-        private readonly IRepositorioDiarioBordo repositorio;
+        private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
 
         public ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaQueryHandler(IRepositorioDiarioBordo repositorio)
         {
-            this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
+            this.repositorioDiarioBordo = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }
 
         public async Task<IEnumerable<GraficoTotalDiariosPreenchidosEPendentesDTO>> Handle(ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaQuery request, CancellationToken cancellationToken)
         {
-           var retornoConsulta = await repositorio.ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.EhPerfilSMEDRE);
+           var retornoConsulta = await repositorioDiarioBordo.ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.EhPerfilSMEDRE);
            return MontarDto(retornoConsulta);
         }
 
