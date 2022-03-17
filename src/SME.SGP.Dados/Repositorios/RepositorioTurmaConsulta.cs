@@ -435,12 +435,23 @@ namespace SME.SGP.Dados.Repositorios
                 dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
             }
 
-            query.AppendLine(@" and t.modalidade_codigo = @modalidade
+            if (anoLetivo == DateTime.Today.Year)
+            {
+                query.AppendLine(@" and t.modalidade_codigo = @modalidade
                                 and t.ano_letivo = @anoLetivo
                                 and not t.historica 
                                 and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49)
                             order by coalesce(t.nome_filtro,t.nome)
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
+            }
+            else
+            {
+                query.AppendLine(@" and t.modalidade_codigo = @modalidade
+                                and t.ano_letivo = @anoLetivo
+                                and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49)
+                            order by coalesce(t.nome_filtro,t.nome)
+                            OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
+            }            
 
             query.AppendLine(@"select count(distinct (t.id))
                                     from turma t 
@@ -464,11 +475,19 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine(querySituacao.ToString());
 
-            query.AppendLine(@"and t.modalidade_codigo = @modalidade 
+            if (anoLetivo == DateTime.Today.Year)
+            {
+                query.AppendLine(@"and t.modalidade_codigo = @modalidade 
                                and t.ano_letivo = @anoLetivo
                                and not t.historica
                                and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49)");
-
+            }
+            else
+            {
+                query.AppendLine(@"and t.modalidade_codigo = @modalidade 
+                               and t.ano_letivo = @anoLetivo
+                               and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49)");
+            }
 
             var retorno = new PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>();
 
