@@ -459,14 +459,15 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PeriodoEscolar> ObterPeriodoEscolarAtualAsync(ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataReferencia)
         {
-            const string sql = @"select pe.*
-                                   from periodo_escolar pe
-                                        inner join tipo_calendario tc on (tc.id = pe.tipo_calendario_id)
-                                  where tc.modalidade = @modalidade
-                                    and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
-                                    and not tc.excluido ";
+            var query = new StringBuilder(@"select pe.*
+                                            from periodo_escolar pe
+                                                inner join tipo_calendario tc on (tc.id = pe.tipo_calendario_id)
+                                            where tc.modalidade = @modalidadeTipoCalendario
+                                            and pe.periodo_inicio <= @dataReferencia 
+                                            and pe.periodo_fim >= @dataReferencia
+                                            and not tc.excluido ");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(sql, new { modalidadeTipoCalendario = (int)modalidadeTipoCalendario, dataReferencia });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { modalidadeTipoCalendario = (int)modalidadeTipoCalendario, dataReferencia });
         }
     }
 }

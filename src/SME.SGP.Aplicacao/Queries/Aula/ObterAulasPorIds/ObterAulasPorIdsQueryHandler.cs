@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioAulaConsulta = repositorioAulaConsulta ?? throw new ArgumentNullException(nameof(repositorioAulaConsulta));
         }
 
-        public Task<IEnumerable<Aula>> Handle(ObterAulasPorIdsQuery request, CancellationToken cancellationToken)
-            => repositorioAulaConsulta.ObterAulasPorIds(request.AulasIds);
+        public async Task<IEnumerable<Aula>> Handle(ObterAulasPorIdsQuery request, CancellationToken cancellationToken)
+            => await repositorioAulaConsulta.ObterAulasPorIds(request.AulasIds);
     }
 }
