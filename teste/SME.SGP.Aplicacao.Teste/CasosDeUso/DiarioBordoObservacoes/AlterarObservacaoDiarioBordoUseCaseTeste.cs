@@ -50,6 +50,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                     new UsuarioNotificarDiarioBordoObservacaoDto()
                 });
 
+            mediator.Setup(a => a.Send(It.IsAny<ObterDiarioBordoObservacaoPorObservacaoIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new DiarioBordoObservacaoDto() { UsuarioCodigoRfDiarioBordo = "123" });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Usuario() { CodigoRf = "123" });
+
             //Act
             var auditoriaDto = await alterarObservacaoDiarioBordoUseCase.Executar("observacao", 1, null);
 

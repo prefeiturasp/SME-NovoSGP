@@ -106,5 +106,48 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { ueId });
         }
 
+        public Task<IEnumerable<DadosAbrangenciaSupervisorDto>> ObterDadosAbrangenciaSupervisor(string rfSupervisor, bool consideraHistorico, int anoLetivo)
+        {
+            var sqlQuery = new StringBuilder();
+
+            sqlQuery.AppendLine("select distinct vact.modalidade_codigo Modalidade,");
+            sqlQuery.AppendLine("                vact.dre_abreviacao AbreviacaoDre,");
+            sqlQuery.AppendLine("                vact.dre_codigo CodigoDre,");
+            sqlQuery.AppendLine("                vact.dre_nome DreNome,");
+            sqlQuery.AppendLine("                vact.dre_id DreId,");
+            sqlQuery.AppendLine("				 vact.ue_codigo CodigoUe,");
+            sqlQuery.AppendLine("				 vact.ue_nome UeNome,");
+            sqlQuery.AppendLine("				 ue.tipo_escola TipoEscola,");
+            sqlQuery.AppendLine("				 vact.ue_id UeId,");
+            sqlQuery.AppendLine("				 vact.turma_semestre Semestre,");
+            sqlQuery.AppendLine("				 vact.turma_codigo CodigoTurma,");
+            sqlQuery.AppendLine("                vact.turma_ano TurmaAno,");
+            sqlQuery.AppendLine("                vact.turma_ano_letivo TurmaAnoLetivo,");
+            sqlQuery.AppendLine("                vact.turma_nome TurmaNome,");
+            sqlQuery.AppendLine("                vact.qt_duracao_aula QuantidadeDuracaoAula,");
+            sqlQuery.AppendLine("                vact.tipo_turno TipoTurno,");
+            sqlQuery.AppendLine("                vact.ensino_especial EnsinoEspecial,");
+            sqlQuery.AppendLine("                vact.turma_id TurmaId,");
+            sqlQuery.AppendLine("                vact.tipo_turma TipoTurma,");
+            sqlQuery.AppendLine("                vact.nome_filtro NomeFiltro");
+            sqlQuery.AppendLine("	from supervisor_escola_dre sed");
+            sqlQuery.AppendLine("		inner join ue");
+            sqlQuery.AppendLine("			on sed.escola_id = ue.ue_id");
+            sqlQuery.AppendLine("		inner join v_abrangencia_cadeia_turmas vact");
+            sqlQuery.AppendLine("			on ue.id = vact.ue_id");
+            sqlQuery.AppendLine("where sed.supervisor_id = @rfSupervisor and");
+            sqlQuery.AppendLine("	 not sed.excluido and");
+            sqlQuery.AppendLine("    vact.turma_historica = @consideraHistorico and");
+            sqlQuery.AppendLine("    vact.turma_ano_letivo = @anoLetivo;");
+
+            return database.Conexao
+                .QueryAsync<DadosAbrangenciaSupervisorDto>(sqlQuery.ToString(),
+                new
+                {
+                    rfSupervisor,
+                    consideraHistorico,
+                    anoLetivo
+                });
+        }
     }
 }
