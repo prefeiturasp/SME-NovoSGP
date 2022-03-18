@@ -5,6 +5,7 @@ pipeline {
       registryCredential = 'jenkins_registry'
       deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"
       deployment2 = "${env.branchname == 'release-r2' ? 'sme-pedagogico-worker-r2' : 'sme-pedagogico-worker' }"      
+      deployment3 = "${env.branchname == 'release-r2' ? 'sme-worker-fechamento-r2' : 'sme-worker-fechamento' }"  
       deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-rabbit-r2' : 'sme-worker-rabbit' }"
     }
   
@@ -47,12 +48,15 @@ pipeline {
           steps {
             script {
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-sgp-backend"
-              imagename2 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-rabbit"                            
+              imagename2 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-rabbit"
+	      imagename3 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-fechamento"   
               dockerImage1 = docker.build(imagename1, "-f src/SME.SGP.Api/Dockerfile .")
-              dockerImage2 = docker.build(imagename2, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")              
+              dockerImage2 = docker.build(imagename2, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")
+	      dockerImage3 = docker.build(imagename3, "-f src/SME.SGP.Fechamento.Worker/Dockerfile .")
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
               dockerImage1.push()
-              dockerImage2.push()              
+              dockerImage2.push()
+	      dockerImage3.push()
               }
               sh "docker rmi $imagename1 $imagename2"
             }
@@ -72,7 +76,8 @@ pipeline {
 					withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
 						sh('cp $config '+"$home"+'/.kube/config')
 						sh "kubectl rollout restart deployment/${deployment1} -n sme-novosgp"
-						sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"						
+						sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"	
+						sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"	
 						sh "kubectl rollout restart deployment/${deployment4} -n sme-novosgp"
 						sh('rm -f '+"$home"+'/.kube/config')
 					}
