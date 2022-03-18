@@ -51,9 +51,18 @@ namespace SME.SGP.Aplicacao
             var notaConselhoClasse = notaEmAprovacao.ConselhoClasseNota;
 
             notaConselhoClasse.Nota = notaEmAprovacao.Nota;
+
             notaConselhoClasse.ConceitoId = notaEmAprovacao.ConceitoId;
 
             await mediator.Send(new SalvarConselhoClasseNotaCommand(notaConselhoClasse));
+
+            var periodoEscolar = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
+
+            int bimestre = periodoEscolar != null ? periodoEscolar.Bimestre : 0;
+
+            var turmaId = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.Id;
+
+            await mediator.Send(new ConsolidacaoNotaAlunoCommand(notaConselhoClasse.ConselhoClasseAluno.AlunoCodigo, turmaId, bimestre));
         }
 
         private async Task GerarParecerConclusivo(ConselhoClasseAluno conselhoClasseAluno, long usuarioSolicitanteId)

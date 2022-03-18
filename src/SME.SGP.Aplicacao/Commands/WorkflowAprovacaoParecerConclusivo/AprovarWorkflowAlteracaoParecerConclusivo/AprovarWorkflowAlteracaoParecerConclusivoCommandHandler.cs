@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,7 +45,8 @@ namespace SME.SGP.Aplicacao
             var conselhoClasseAluno = parecerEmAprovacao.ConselhoClasseAluno;
 
             conselhoClasseAluno.ConselhoClasseParecerId = parecerEmAprovacao.ConselhoClasseParecerId;
-            await mediator.Send(new SalvarConselhoClasseAlunoCommand(conselhoClasseAluno));
+
+            await mediator.Send(new PersistirParecerConclusivoCommand(conselhoClasseAluno));
         }
 
         private async Task ExcluirWorkFlow(WFAprovacaoParecerConclusivo parecerEmAprovacao)

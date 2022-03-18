@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var conselhoClasseAluno = request.ConselhoClasseAluno;
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
-
+                        
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
             if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null, turma.Historica))
                 return new ParecerConclusivoDto();
@@ -39,11 +39,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
-                await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
-
-                var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar != null ?
-                       conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre : 0);
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, consolidacaoTurma, Guid.NewGuid(), null));
+                await mediator.Send(new PersistirParecerConclusivoCommand(conselhoClasseAluno)); 
             }
 
             return new ParecerConclusivoDto()
