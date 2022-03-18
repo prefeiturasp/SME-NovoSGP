@@ -176,10 +176,11 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaRemoverAtribuicaoPendenciaUsuariosUe, new ComandoRabbit("Remover a atribuição de pendência aos usuários por UE", typeof(IRemoverAtribuicaoPendenciasUsuariosUeUseCase)));
             comandos.Add(RotasRabbitSgp.RotaRemoverAtribuicaoPendenciaUsuariosUeFuncionario, new ComandoRabbit("Remover a atribuição de pendência aos usuários por UE e por Funcionário", typeof(IRemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase)));
 
-
             comandos.Add(RotasRabbitSgp.RotaNotificacaoRegistroConclusaoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para registro de conclusão do Encaminhamento AEE", typeof(INotificacaoConclusaoEncaminhamentoAEEUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoEncerramentoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para encerramento do Encaminhamento AEE", typeof(INotificacaoEncerramentoEncaminhamentoAEEUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoDevolucaoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para devolucao do Encaminhamento AEE", typeof(INotificacaoDevolucaoEncaminhamentoAEEUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaEncerrarEncaminhamentoAEEAutomatico, new ComandoRabbit("Encerramento automático do Encaminhamento", typeof(IEncerrarEncaminhamentoAEEAutomaticoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaAtualizarEncaminhamentoAEEEncerrarAutomatico, new ComandoRabbit("Encerrar automaticamente Encaminhamento AEE", typeof(IAtualizarEncaminhamentoAEEAutomaticoUseCase)));
 
             comandos.Add(RotasRabbitSgp.EncerrarPlanoAEEEstudantesInativos, new ComandoRabbit("Excluir plano AEE estudantes inativos", typeof(IEncerrarPlanosAEEEstudantesInativosUseCase)));
             comandos.Add(RotasRabbitSgp.GerarPendenciaValidadePlanoAEE, new ComandoRabbit("Gerar Pendência de Validade do PlanoAEE", typeof(IGerarPendenciaValidadePlanoAEEUseCase)));

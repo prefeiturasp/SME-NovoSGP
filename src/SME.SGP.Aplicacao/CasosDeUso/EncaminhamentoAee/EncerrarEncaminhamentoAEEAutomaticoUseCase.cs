@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -20,18 +21,27 @@ namespace SME.SGP.Aplicacao
 
             foreach (var encaminhamento in encaminhamentos)
             {
-                var matriculasAlunoEol = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(encaminhamento.AlunoCodigo, encaminhamento.TurmaCodigo));
+                var matriculasAnoAlunoEol = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(encaminhamento.AlunoCodigo, DateTime.Today.Year));
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(encaminhamento.TurmaCodigo));
 
-                if (matriculasAlunoEol == null || !matriculasAlunoEol.Any())
+                if (matriculasAnoAlunoEol == null)
                     continue;
 
-                if (!matriculasAlunoEol.Any(c => c.EstaAtivo(DateTime.Now)))
-                {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAtualizarEncaminhamentoAEEEncerrarAutomatico,
-                        new FiltroAtualizarEncaminhamentoAEEEncerramentoAutomaticoDto(encaminhamento.EncaminhamentoId), new Guid(), null));
-                }
+                var matriculasInativas = matriculasAnoAlunoEol.Where(c => c.EstaInativo(DateTime.Now));
+
+                /* TODO:
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAtualizarEncaminhamentoAEEEncerrarAutomatico,
+                    new FiltroAtualizarEncaminhamentoAEEEncerramentoAutomaticoDto(encaminhamento.EncaminhamentoId), new Guid(), null));
+                */
             }
 
+            return true;
+        }
+
+        private async Task<bool> DeterminaEtapaConcluida(string alunoCodigo, int anoLetivo)
+        {
+            var matriculasAnoTurmaEol = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(alunoCodigo, anoLetivo));
+            var concluiuAnoTurma = matriculasAnoTurmaEol.Any(c => c.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
             return true;
         }
     }
