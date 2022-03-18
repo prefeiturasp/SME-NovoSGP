@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class FiltroRelatorioBoletimEscolaAquiDto
+    public class FiltroRelatorioEscolaAquiDto
     {
         public string DreCodigo { get; set; }
 
@@ -11,12 +11,11 @@ namespace SME.SGP.Infra
         public int Semestre { get; set; }
 
         public string TurmaCodigo { get; set; }
+        public long? TurmaId { get; set; }
 
         public int AnoLetivo { get; set; }
 
         public int ModalidadeCodigo { get; set; }
-
-        public int Modelo { get; set; }
 
         public string AlunoCodigo { get; set; }
 

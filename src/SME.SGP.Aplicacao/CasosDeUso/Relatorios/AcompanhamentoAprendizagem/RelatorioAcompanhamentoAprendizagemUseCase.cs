@@ -14,13 +14,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(FiltroRelatorioAcompanhamentoAprendizagemDto filtro)
         {
-            var usuarioLogado = filtro.TipoRelatorio != TipoRelatorio.RaaEscolaAqui ? await mediator.Send(new ObterUsuarioLogadoQuery()) 
-                                                                                    : await mediator.Send(new ObterUsuarioPorIdQuery(1));
-            var notificarUsuario = filtro.TipoRelatorio != TipoRelatorio.RaaEscolaAqui ? false : true;
-            return await mediator.Send(new GerarRelatorioCommand(filtro.TipoRelatorio, filtro,
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AcompanhamentoAprendizagem, filtro,
                 usuarioLogado, formato: TipoFormatoRelatorio.Html,
-                rotaRelatorio: filtro.TipoRelatorio != TipoRelatorio.RaaEscolaAqui ? RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRelatorioAcompanhamentoAprendizagem 
-                                                                                   : RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRaaEscolaAqui, notificarErroUsuario: notificarUsuario));
+                rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRelatorioAcompanhamentoAprendizagem));
         }
     }
 }
