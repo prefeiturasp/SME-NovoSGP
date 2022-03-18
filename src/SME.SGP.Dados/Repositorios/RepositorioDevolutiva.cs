@@ -161,5 +161,28 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO>(query, new { turmaCodigo, anoLetivo });
         }
+
+        public async Task<IEnumerable<QuantidadeTotalDevolutivasPorAnoDTO>> ObterDevolutivasPorAnoDre(int anoLetivo, int mes, long dreId)
+        {
+            var query = new StringBuilder(@" select t.ano as Ano,
+                            count(distinct d.criado_rf) as Quantidade
+                            from devolutiva d
+                            inner join diario_bordo db on db.devolutiva_id = d.id
+                            inner join turma t on t.id = db.turma_id
+                            inner join ue on ue.id = t.ue_id
+                            where t.ano_letivo = @anoLetivo ");
+
+            if (mes > 1 && mes < 13)
+                query.Append(" and extract(month from d.criado_em) = @mes");
+            else
+                query.Append(" and extract(month from d.criado_em) > 1 ");
+
+            if (dreId > 0)
+                query.Append(" and ue.dre_id = @dreId");
+
+            query.Append(" group by t.ano");
+
+            return await database.Conexao.QueryAsync<QuantidadeTotalDevolutivasPorAnoDTO>(query.ToString(), new { anoLetivo, mes, dreId});
+        }
     }
 }
