@@ -162,7 +162,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO>(query, new { turmaCodigo, anoLetivo });
         }
 
-        public async Task<IEnumerable<QuantidadeTotalDevolutivasPorAnoDTO>> ObterDevolutivasPorAnoDre(int anoLetivo, int mes, long dreId, string ano)
+        public async Task<IEnumerable<QuantidadeTotalDevolutivasPorAnoDTO>> ObterDevolutivasPorAnoDre(int anoLetivo, int mes, long dreId)
         {
             var query = new StringBuilder(@" select t.ano as Ano,
                             count(distinct d.criado_rf) as Quantidade
@@ -173,17 +173,16 @@ namespace SME.SGP.Dados.Repositorios
                             where t.ano_letivo = @anoLetivo ");
 
             if (mes > 1 && mes < 13)
-                query.Append(" and extract(month from db.criado_em) = @mes");
-
-            if (!String.IsNullOrEmpty(ano) && Convert.ToInt32(ano) > 0)
-                query.Append(" and t.ano = @ano");
+                query.Append(" and extract(month from d.criado_em) = @mes");
+            else
+                query.Append(" and extract(month from d.criado_em) > 1 ");
 
             if (dreId > 0)
                 query.Append(" and ue.dre_id = @dreId");
 
             query.Append(" group by t.ano");
 
-            return await database.Conexao.QueryAsync<QuantidadeTotalDevolutivasPorAnoDTO>(query.ToString(), new { anoLetivo, mes, dreId, ano });
+            return await database.Conexao.QueryAsync<QuantidadeTotalDevolutivasPorAnoDTO>(query.ToString(), new { anoLetivo, mes, dreId});
         }
     }
 }

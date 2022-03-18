@@ -10,14 +10,12 @@ namespace SME.SGP.Aplicacao
     public class ObterQuantidadeTotalDeDevolutivasPorAnoDreQuery : IRequest<IEnumerable<GraficoTotalDevolutivasPorAnoDTO>>
     {
         public int AnoLetivo { get; set; }
-        public string Ano { get; set; }
         public int Mes { get; set; }
         public long DreId { get; set; }
 
-        public ObterQuantidadeTotalDeDevolutivasPorAnoDreQuery(int anoLetivo, int mes, long dreId, string ano = "")
+        public ObterQuantidadeTotalDeDevolutivasPorAnoDreQuery(int anoLetivo, int mes, long dreId)
         {
             AnoLetivo = anoLetivo;
-            Ano = ano;
             Mes = mes;
             DreId = dreId;
         }

@@ -22,24 +22,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         }
 
         [Fact]
-        public async Task Deve_Retornar_Dados_Filtrando_Por_Ano()
-        {
-            // Arrange
-            var grafico = new List<GraficoTotalDevolutivasPorAnoDTO>();
-            var dados = new GraficoTotalDevolutivasPorAnoDTO() { Ano = "5", Descricao = "Devolutivas", Quantidade = 30 };
-            grafico.Add(dados);
-
-            mediator.Setup(a => a.Send(It.IsAny<ObterQuantidadeTotalDeDevolutivasPorAnoDreQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(grafico);
-
-            // Act
-            var dadosGrafico = await useCase.Executar(new FiltroDasboardDiarioBordoDevolutivasDto() { AnoLetivo = 2022, AnoTurma = "5", DreId = 0, Mes = 0} );
-
-            // Assert
-            Assert.NotNull(dadosGrafico);
-        }
-
-        [Fact]
         public async Task Deve_Retornar_Dados_Filtrando_Por_Mes()
         {
             // Arrange

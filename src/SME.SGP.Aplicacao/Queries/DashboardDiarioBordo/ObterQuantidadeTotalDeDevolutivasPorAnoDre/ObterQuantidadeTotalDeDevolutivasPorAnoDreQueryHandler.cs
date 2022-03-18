@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<GraficoTotalDevolutivasPorAnoDTO>> Handle(ObterQuantidadeTotalDeDevolutivasPorAnoDreQuery request, CancellationToken cancellationToken)
         {
-            var dadosConsulta = await repositorioDevolutiva.ObterDevolutivasPorAnoDre(request.AnoLetivo, request.Mes, request.DreId, request.Ano);
+            var dadosConsulta = await repositorioDevolutiva.ObterDevolutivasPorAnoDre(request.AnoLetivo, request.Mes, request.DreId);
             return MontarDto(dadosConsulta);
         }
 

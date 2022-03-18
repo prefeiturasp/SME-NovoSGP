@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<GraficoTotalDevolutivasPorAnoDTO>> Executar(FiltroDasboardDiarioBordoDevolutivasDto filtro)
         {
-            return await mediator.Send(new ObterQuantidadeTotalDeDevolutivasPorAnoDreQuery(filtro.AnoLetivo, filtro.Mes, filtro.DreId, filtro.AnoTurma));
+            return await mediator.Send(new ObterQuantidadeTotalDeDevolutivasPorAnoDreQuery(filtro.AnoLetivo, filtro.Mes, filtro.DreId));
         }
     }
 }
