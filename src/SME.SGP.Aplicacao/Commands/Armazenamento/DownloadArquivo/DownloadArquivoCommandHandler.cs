@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                 }
                 var arquivo = File.ReadAllBytes(caminhoArquivo);
             
-                if (arquivo != null)
+                if (arquivo == null)
                      arquivo = Array.Empty<byte>();
                 
                 return Task.FromResult(arquivo);
