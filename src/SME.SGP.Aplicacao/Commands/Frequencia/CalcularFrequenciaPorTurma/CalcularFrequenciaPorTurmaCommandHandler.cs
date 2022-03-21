@@ -21,11 +21,13 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IAsyncPolicy policy;
 
-        public CalcularFrequenciaPorTurmaCommandHandler(IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
+        public CalcularFrequenciaPorTurmaCommandHandler(
+                                                        IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
                                                         IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAluno,
                                                         IUnitOfWork unitOfWork,
                                                         IMediator mediator,
-                                                        IReadOnlyPolicyRegistry<string> registry)
+                                                        IReadOnlyPolicyRegistry<string> registry
+                                                        )
         {
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));

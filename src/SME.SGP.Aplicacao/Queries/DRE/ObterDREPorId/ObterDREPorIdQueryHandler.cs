@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<long> Handle(ObterDREIdPorCodigoQuery request, CancellationToken cancellationToken)
-        { 
+        {
             return await repositorioDre.ObterIdDrePorCodigo(request.CodigoDre);
         }
 

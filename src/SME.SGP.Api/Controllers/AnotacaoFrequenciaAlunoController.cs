@@ -67,7 +67,7 @@ namespace SME.SGP.Api.Controllers
 
         public async Task<IActionResult> ListarMotivos([FromServices] IObterMotivosAusenciaUseCase useCase)
         {
-            var motivsoAusencia = await useCase.Executar();            
+            var motivsoAusencia = await useCase.Executar();
 
             return Ok(motivsoAusencia);
         }

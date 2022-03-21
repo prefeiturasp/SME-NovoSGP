@@ -23,6 +23,8 @@ namespace SME.SGP.Api.HealthCheck
                 var result = clienteHttp.GetAsync(configuration.GetSection("UrlApiEOL").Value + "swagger/index.html").Result;
 
                 if (result.IsSuccessStatusCode)
+
+
                 {
                     return Task.FromResult(
                         HealthCheckResult.Healthy("O serviço está respondendo normalmente."));
