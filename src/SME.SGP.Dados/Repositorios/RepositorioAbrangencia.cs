@@ -765,7 +765,8 @@ namespace SME.SGP.Dados.Repositorios
                             from f_abrangencia_turmas_tipos(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo, @tipos, @anosInfantilDesconsiderar)
                           order by 5";
 
-            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos, anosInfantilDesconsiderar },queryName : "ObterTurmasPorTipos")).AsList();
+            var resultado = await database.Conexao
+                .QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos, anosInfantilDesconsiderar });
 
             if (perfil == Perfis.PERFIL_SUPERVISOR)
             {
