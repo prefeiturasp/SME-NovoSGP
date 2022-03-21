@@ -388,7 +388,7 @@ namespace SME.SGP.Aplicacao
             }
 
             if (turma.AnoLetivo != 2020 && !turma.EhAnoAnterior() && !await ExisteConselhoClasseUltimoBimestreAsync(turma, alunoCodigo))
-                throw new NegocioException("Aluno não possui conselho de classe do último bimestre");
+                return new ParecerConclusivoDto() { EmAprovacao = false};
 
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
             if (!turma.EhAnoAnterior() && (conselhoClasseAluno == null || !conselhoClasseAluno.ConselhoClasseParecerId.HasValue) && fechamentoTurma.PeriodoEscolarId == null)

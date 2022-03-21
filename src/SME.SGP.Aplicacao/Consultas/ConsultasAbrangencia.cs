@@ -127,13 +127,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0, string dreCodigo = null, string ueCodigo = null)
         {
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfil = servicoUsuario.ObterPerfilAtual();
+            var login = servicoUsuario
+                .ObterLoginAtual();
 
-            var retorno = await repositorioAbrangencia.ObterSemestres(login, perfil, modalidade, consideraHistorico, anoLetivo, dreCodigo, ueCodigo);
+            var perfil = servicoUsuario
+                .ObterPerfilAtual();
+
+            var retorno = await repositorioAbrangencia
+                .ObterSemestres(login, perfil, modalidade, consideraHistorico, anoLetivo, dreCodigo, ueCodigo);
 
             return retorno
-                    .Where(a => a != 0);
+                .Where(a => a != 0);
         }
 
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasRegulares(string codigoUe, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)

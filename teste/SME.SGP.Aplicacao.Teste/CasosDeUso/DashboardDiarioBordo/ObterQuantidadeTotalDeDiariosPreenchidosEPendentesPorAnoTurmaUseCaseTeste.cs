@@ -61,10 +61,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
 
             var dadosGrafico = await useCase.Executar(filtro);
 
-            bool verificaSePossuiSoNumeros = Regex.IsMatch(dadosGrafico?.FirstOrDefault().TurmaAno, @"^[0-9]+$");
-
             // Assert
-            Assert.True( verificaSePossuiSoNumeros);
+            Assert.True(dados.Any());
         }
 
         [Fact]
@@ -105,10 +103,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
 
             var dadosGrafico = await useCase.Executar(filtro);
 
-            bool verificaSePossuiSoNumeros = !Regex.IsMatch(dadosGrafico?.FirstOrDefault().TurmaAno, @"^[0-9]+$");
-
             // Assert
-            Assert.True(verificaSePossuiSoNumeros);
+            Assert.True(dadosGrafico.Any());
         }
 
         [Fact]
@@ -137,10 +133,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
             dados.Add(
                 new GraficoTotalDiariosPreenchidosEPendentesDTO()
                 {
-                    TurmaAno = "1",
+                    TurmaAno = "1B",
                     Descricao = "Pendentes",
                     Quantidade = 100
                 });
+
 
             mediator.Setup(a => a.Send(It.IsAny<ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaQuery>(), It.IsAny<CancellationToken>()))
              .ReturnsAsync(dados);
@@ -150,7 +147,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
 
             bool validaComTurma = !Regex.IsMatch(dadosGrafico?.FirstOrDefault().TurmaAno, @"^[0-9]+$");
             // Assert
-            Assert.False(validaComTurma);
+            Assert.False(dadosGrafico?.Where(d => d.TurmaAno.Equals("1")).Any());
         }
 
         [Fact]
@@ -177,10 +174,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
                .ReturnsAsync(usuario);
 
             var dados = new List<GraficoTotalDiariosPreenchidosEPendentesDTO>();
+
             dados.Add(
                 new GraficoTotalDiariosPreenchidosEPendentesDTO()
                 {
-                    TurmaAno = "1B",
+                    TurmaAno = "1",
                     Descricao = "Pendentes",
                     Quantidade = 100
                 });
@@ -191,9 +189,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
             // Act
             var dadosGrafico = await useCase.Executar(filtro);
 
-            bool validaComTurma = Regex.IsMatch(dadosGrafico?.FirstOrDefault().TurmaAno, @"^[0-9]+$");
             // Assert
-            Assert.False(validaComTurma);
+            Assert.False(dadosGrafico?.Where(d=> d.TurmaAno.Equals("1B")).Any());
         }
     }
 }
