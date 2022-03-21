@@ -2,6 +2,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -89,9 +90,10 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmasCodigos, periodoEscolarId });
         }
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisBimestresAlunoAsync(string alunoCodigo, string[] turmasCodigo, int bimestre = 0)
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisBimestresAlunoAsync(string alunoCodigo, string[] turmasCodigo, int bimestre = 0, DateTime? dataMatricula = null)
         {
-            var condicaoBimestre = bimestre > 0 ? "and bimestre = @bimestre" : "";
+            var condicaoBimestre = bimestre > 0 ? "and bimestre = @bimestre" : string.Empty;
+            var condicaoDataMatricula = dataMatricula.HasValue ? $"and (@dataMatricula <= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
             var query = $@"select distinct * from (
                 select pe.bimestre, fn.disciplina_id as ComponenteCurricularCodigo, ccn.id as ConselhoClasseNotaId, coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, coalesce(ccn.nota, fn.nota) as Nota
                   from fechamento_turma ft
@@ -108,6 +110,7 @@ namespace SME.SGP.Dados.Repositorios
                  where t.turma_id = ANY(@turmasCodigo)
                    and fa.aluno_codigo = @alunoCodigo
                    {condicaoBimestre}
+                   {condicaoDataMatricula}
                 union all 
                 select pe.bimestre, ccn.componente_curricular_codigo as ComponenteCurricularCodigo, ccn.id as ConselhoClasseNotaId, coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, coalesce(ccn.nota, fn.nota) as Nota
                   from fechamento_turma ft
@@ -124,9 +127,10 @@ namespace SME.SGP.Dados.Repositorios
                  where t.turma_id = ANY(@turmasCodigo)
                    and cca.aluno_codigo = @alunoCodigo
                    {condicaoBimestre}
+                   {condicaoDataMatricula}
                 ) x ";
 
-            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmasCodigo, bimestre });
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmasCodigo, bimestre, dataMatricula });
         }
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasAsync(string alunoCodigo, IEnumerable<string> turmasCodigos, long? periodoEscolarId)
