@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao.Teste
             //Assert
             repositorioFechamentoTurma.Verify(c => c.ObterIdEPeriodoPorTurmaBimestre(It.IsAny<long>(), It.IsAny<int?>()), Times.Once);
 
-            Assert.True(retorno is null, "Turma sem fechamento deve retornar null");
+            Assert.True(retorno.PeriodoEscolarId is null, "Turma sem fechamento deve retornar null");
         }
 
         [Fact]
