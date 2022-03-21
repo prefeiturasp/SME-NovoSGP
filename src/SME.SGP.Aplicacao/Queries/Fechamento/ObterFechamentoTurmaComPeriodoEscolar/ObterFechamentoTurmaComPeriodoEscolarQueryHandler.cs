@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 fechamento = new FechamentoTurmaPeriodoEscolarDto() { PeriodoEscolarId = periodoEscolarId };
 
             if (periodoEscolarId.HasValue)
-                fechamento.PossuiAvaliacao = await mediator.Send(new TurmaPossuiAvaliacaoNoPeriodoQuery(request.TurmaId, periodoEscolarId.Value));
+                fechamento.PossuiAvaliacao = await mediator.Send(new TurmaPossuiAvaliacaoNoPeriodoQuery(request.TurmaId, periodoEscolarId.Value));            
 
             return fechamento;
         }
@@ -41,6 +41,7 @@ namespace SME.SGP.Aplicacao
                 return 0;
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+            if (turma == null) return null;
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
 
             return periodoEscolar.Id;

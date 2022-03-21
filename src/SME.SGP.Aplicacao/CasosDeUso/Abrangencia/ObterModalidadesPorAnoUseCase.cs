@@ -20,10 +20,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<EnumeradoRetornoDto>> Executar(int anoLetivo, bool consideraHistorico, bool consideraNovasModalidades)
         {
-            var login = await mediator.Send(new ObterLoginAtualQuery());
-            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
-            var modadlidadesQueSeraoIgnoradas = await mediator.Send(new ObterNovasModalidadesPorAnoQuery(anoLetivo, consideraNovasModalidades));
-            return await mediator.Send(new ObterModalidadesPorAnoQuery(anoLetivo, consideraHistorico, login, perfil, modadlidadesQueSeraoIgnoradas));
+            var login = await mediator
+                .Send(new ObterLoginAtualQuery());
+
+            var perfil = await mediator
+                .Send(new ObterPerfilAtualQuery());
+
+            var modalidadesQueSeraoIgnoradas = await mediator
+                .Send(new ObterNovasModalidadesPorAnoQuery(anoLetivo, consideraNovasModalidades));
+
+            return await mediator
+                .Send(new ObterModalidadesPorAnoQuery(anoLetivo, consideraHistorico, login, perfil, modalidadesQueSeraoIgnoradas));
         }
     }
 }
