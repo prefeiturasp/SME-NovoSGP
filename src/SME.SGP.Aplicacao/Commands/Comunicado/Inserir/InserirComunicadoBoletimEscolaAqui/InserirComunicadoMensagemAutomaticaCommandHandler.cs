@@ -10,24 +10,24 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirComunicadoBoletimEscolaAquiCommandHandler : IRequestHandler<InserirComunicadoBoletimEscolaAquiCommand, bool>
+    public class InserirComunicadoMensagemAutomaticaCommandHandler : IRequestHandler<InserirComunicadoMensagemAutomaticaCommand, bool>
     {
         private readonly IRepositorioComunicado repositorioComunicado;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
 
-        public InserirComunicadoBoletimEscolaAquiCommandHandler(IRepositorioComunicado repositorioComunicado, IUnitOfWork unitOfWork, IMediator mediator)
+        public InserirComunicadoMensagemAutomaticaCommandHandler(IRepositorioComunicado repositorioComunicado, IUnitOfWork unitOfWork, IMediator mediator)
         {
             this.repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Handle(InserirComunicadoBoletimEscolaAquiCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(InserirComunicadoMensagemAutomaticaCommand request, CancellationToken cancellationToken)
         {
             var comunicado = new Comunicado();
             var aluno = await ObterNomeAluno(request.Aluno, request.AnoLetivo);
-            MapearParaEntidade(request, comunicado, aluno.Nome);
+            MapearParaEntidade(request, comunicado, aluno.Nome,request.TipoRelatorio,request.NomeRelatorio);
             try
             {
                 unitOfWork.IniciarTransacao();
@@ -43,12 +43,11 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.PersistirTransacao();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 unitOfWork.Rollback();
                 throw;
             }
-            throw new NotImplementedException();
         }
         private async Task InserirComunicadoTurma(Comunicado comunicado)
         {
@@ -64,13 +63,13 @@ namespace SME.SGP.Aplicacao
         {
             return await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(codigoAluno, anoLetivo));
         }
-        private void MapearParaEntidade(InserirComunicadoBoletimEscolaAquiCommand request, Comunicado comunicado, string nomeAluno)
+        private void MapearParaEntidade(InserirComunicadoMensagemAutomaticaCommand request, Comunicado comunicado, string nomeAluno, TipoRelatorio tipoRelatorio, string nomeRelatorio)
         {
-            var mensagem = FormatarMensagem(request.UrlRedirecionamentoBase, request.AnoLetivo, request.CodigoArquivo, nomeAluno);
+            var mensagem = FormatarMensagem(request.UrlRedirecionamentoBase, request.AnoLetivo, request.CodigoArquivo, nomeAluno, tipoRelatorio, request.Semestre);
             comunicado.DataEnvio = request.DataEnvio;
             comunicado.DataExpiracao = request.DataExpiracao;
             comunicado.Descricao = mensagem;
-            comunicado.Titulo = $"Boletim disponível para download";
+            comunicado.Titulo = $"{nomeRelatorio} disponível para download";
             comunicado.AnoLetivo = request.AnoLetivo;
             comunicado.AlunoEspecificado = request.AlunoEspecificado;
             comunicado.Modalidades = new int[] { request.Modalidade };
@@ -79,16 +78,33 @@ namespace SME.SGP.Aplicacao
             comunicado.AdicionarTurma(request.Turma);
             comunicado.AdicionarAluno(request.Aluno);
         }
-        private string FormatarMensagem(string urlNotificacao, int anoLetivo, Guid CodigoArquivo, string nomeAluno)
+        private string FormatarMensagem(string urlNotificacao, int anoLetivo, Guid CodigoArquivo, string nomeAluno, TipoRelatorio tipoRelatorio,int semestre)
         {
          
             
             
-            return $@"<h3><strong>Boletim {anoLetivo} dispon&iacute;vel para download</strong></h3>
+            string mensagemBoletim = $@"<h3><strong>Boletim {anoLetivo} dispon&iacute;vel para download</strong></h3>
                     <p>O boletim do ano de {anoLetivo} do estudante {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
                     <p>OBSERVA&Ccedil;&Atilde;O: O Download deve ser realizado em at&eacute; 24 horas, ap&oacute;s&nbsp; este prazo o arquivo ser&aacute; 
                     exclu&iacute;do e caso necessite voc&ecirc; dever solicitar um novo PDF de boletim.</p>
                     <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/pdf/Boletim.pdf/{CodigoArquivo.ToString()}' target='_blank'>Boletim {anoLetivo}</a></strong></p>";
+
+
+            string mensagemRaa = $@"<h3><strong>RAA dispon&iacute;vel para download</strong></h3>
+                    <p>O Relatório de Acompnhamento da Aprendizagem(RAA) do {semestre}° semestre do criança {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
+                    <p>OBSERVA&Ccedil;&Atilde;O: O Download deve ser realizado em at&eacute; 24 horas, ap&oacute;s&nbsp; este prazo o arquivo ser&aacute; 
+                    exclu&iacute;do e caso necessite voc&ecirc; dever&aacute solicitar novamente.</p>
+                    <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/pdf/Boletim.pdf/{CodigoArquivo.ToString()}' target='_blank'>RAA {semestre}° semestre</a></strong></p>";
+
+            switch (tipoRelatorio)
+            {
+                case TipoRelatorio.BoletimDetalhadoApp:
+                    return mensagemBoletim;
+                case TipoRelatorio.RaaEscolaAqui:
+                    return mensagemRaa;
+                default:
+                    return string.Empty;
+            }
         }
     }
 }

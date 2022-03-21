@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Middlewares;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -21,9 +22,15 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("boletim")]
-        public async Task<IActionResult> SolicitarBoletimEscolaAqui([FromBody] FiltroRelatorioBoletimEscolaAquiDto filtroRelatorioBoletimDto, [FromServices] IBoletimEscolaAquiUseCase boletimUseCase)
+        public async Task<IActionResult> SolicitarBoletimEscolaAqui([FromBody] FiltroRelatorioEscolaAquiDto filtroRelatorioBoletimDto, [FromServices] IBoletimEscolaAquiUseCase boletimUseCase)
         {
             return Ok(await boletimUseCase.Executar(filtroRelatorioBoletimDto));
+        }
+
+        [HttpPost("raa")]
+        public async Task<IActionResult> SolicitarRelatrioRaaEscolaAqui([FromBody] FiltroRelatorioEscolaAquiDto filtro,[FromServices] IRelatorioRaaEscolaAquiUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
         }
     }
 }
