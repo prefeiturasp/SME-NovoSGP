@@ -335,7 +335,7 @@ namespace SME.SGP.Worker.RabbitMQ
                 var comandoRabbit = comandos[rota];
 
                 var transacao = telemetriaOptions.Apm ?
-                    Agent.Tracer.StartTransaction("TratarMensagem", "WorkerRabbitSGP") :
+                    Agent.Tracer.StartTransaction(rota, "WorkerRabbitSGP") :
                     null;
                 try
                 {
