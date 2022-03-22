@@ -45,7 +45,7 @@ namespace SME.SGP.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseElasticApm(Configuration, 
+            app.UseElasticApm(Configuration,
                 new SqlClientDiagnosticSubscriber(),
                 new HttpDiagnosticsSubscriber());
 
@@ -93,7 +93,7 @@ namespace SME.SGP.Api
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });         
+            });
 
         }
 
@@ -122,7 +122,7 @@ namespace SME.SGP.Api
             ConfiguraRabbitParaLogs(services);
             var telemetriaOptions = ConfiguraTelemetria(services);
 
-            RegistraDependencias.Registrar(services, configuracaoRabbitOptions);
+            new RegistraDependencias().Registrar(services, configuracaoRabbitOptions);
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -136,7 +136,7 @@ namespace SME.SGP.Api
             RegistraDocumentacaoSwagger.Registrar(services);
             services.AddPolicies();
 
-            DefaultTypeMap.MatchNamesWithUnderscores = true;            
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddHealthChecks()
                     .AddNpgSql(
@@ -149,7 +149,7 @@ namespace SME.SGP.Api
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
-            });            
+            });
 
             DapperExtensionMethods.Init(servicoTelemetria);
 
