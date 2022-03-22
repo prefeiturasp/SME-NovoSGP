@@ -56,15 +56,13 @@ namespace SME.SGP.Dados.Repositorios
             return query.ToString();
         }
 
-   
-        
         public async Task<int> ObterTotalCompensacoesPorAlunoETurmaAsync(int bimestre, string codigoAluno, string disciplinaId, string turmaId)
         {
             var query = BuildQueryObterTotalCompensacoesPorAlunoETurma(disciplinaId);
             return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { bimestre, codigoAluno, disciplinaId, turmaId });
         }
 
-        public async Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> ObterTotalCompensacoesPorAlunosETurmaAsync(IEnumerable<int> bimestres, IEnumerable<string> alunoCodigos, string turmaId)
+        public async Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> ObterTotalCompensacoesPorAlunosETurmaAsync(int bimestre, List<string> alunoCodigos, string turmaCodigo)
         {
             var query = @"
                 select
@@ -81,15 +79,15 @@ namespace SME.SGP.Dados.Repositorios
                 where
 	                not caa.excluido
                     and not c.excluido 
-	                and c.bimestre = any(@bimestres)
+	                and c.bimestre = @bimestre
 	                and caa.codigo_aluno = any(@alunoCodigos)
-	                and t.turma_id = @turmaId
+	                and t.turma_id = @turmaCodigo
                 group by
 	                caa.codigo_aluno,
 	                c.disciplina_id,
 	                c.bimestre";
 
-            return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoCalculoFrequenciaDto>(query, new { bimestres, alunoCodigos, turmaId });
+            return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoCalculoFrequenciaDto>(query, new { bimestre, alunoCodigos, turmaCodigo });
         }       
     }
 }
