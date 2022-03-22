@@ -334,10 +334,12 @@ namespace SME.SGP.Worker.RabbitMQ
             {
                 var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
                 var comandoRabbit = comandos[rota];
+
+                var transacao = telemetriaOptions.Apm ?
+                    Agent.Tracer.StartTransaction("TratarMensagem", "WorkerRabbitSGP") :
+                    null;
                 try
                 {
-                    if (telemetriaOptions.Apm)
-                        Agent.Tracer.StartTransaction("TratarMensagem", "WorkerRabbitSGP");
 
                     using (var scope = serviceScopeFactory.CreateScope())
                     {
@@ -362,6 +364,8 @@ namespace SME.SGP.Worker.RabbitMQ
                     await RegistrarLog(ea, mensagemRabbit, nex, LogNivel.Negocio, $"Erros: {nex.Message}");
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario(nex.Message, mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
+
+                    transacao.CaptureException(nex);
                 }
                 catch (ValidacaoException vex)
                 {
@@ -371,6 +375,8 @@ namespace SME.SGP.Worker.RabbitMQ
 
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
+
+                    transacao.CaptureException(vex);
                 }
                 catch (Exception ex)
                 {
@@ -378,8 +384,13 @@ namespace SME.SGP.Worker.RabbitMQ
                     await RegistrarLog(ea, mensagemRabbit, ex, LogNivel.Critico, $"Erros: {ex.Message}");
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
-                }
 
+                    transacao.CaptureException(ex);
+                }
+                finally
+                {
+                    transacao?.End();
+                }
             }
             else
             {
