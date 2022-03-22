@@ -350,7 +350,7 @@ namespace SME.SGP.Worker.RabbitMQ
                         await servicoTelemetria.RegistrarAsync(async () =>
                             await metodo.InvokeAsync(casoDeUso, new object[] { mensagemRabbit }),
                                                     "RabbitMQ",
-                                                    "TratarMensagem",
+                                                    rota,
                                                     rota);
 
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
