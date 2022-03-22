@@ -336,7 +336,7 @@ namespace SME.SGP.Worker.RabbitMQ
                 var comandoRabbit = comandos[rota];
 
                 var transacao = telemetriaOptions.Apm ?
-                    Agent.Tracer.StartTransaction("TratarMensagem", "WorkerRabbitSGP") :
+                    Agent.Tracer.StartTransaction(rota, "WorkerRabbitSGP") :
                     null;
                 try
                 {
@@ -351,7 +351,7 @@ namespace SME.SGP.Worker.RabbitMQ
                         await servicoTelemetria.RegistrarAsync(async () =>
                             await metodo.InvokeAsync(casoDeUso, new object[] { mensagemRabbit }),
                                                     "RabbitMQ",
-                                                    "TratarMensagem",
+                                                    rota,
                                                     rota);
 
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
