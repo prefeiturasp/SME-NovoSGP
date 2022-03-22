@@ -90,10 +90,11 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmasCodigos, periodoEscolarId });
         }
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisBimestresAlunoAsync(string alunoCodigo, string[] turmasCodigo, int bimestre = 0, DateTime? dataMatricula = null)
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisBimestresAlunoAsync(string alunoCodigo, string[] turmasCodigo, int bimestre = 0, DateTime? dataMatricula = null, DateTime? dataSituacao = null)
         {
             var condicaoBimestre = bimestre > 0 ? "and bimestre = @bimestre" : string.Empty;
             var condicaoDataMatricula = dataMatricula.HasValue ? $"and (@dataMatricula <= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
+            var condicaoDataSituacao = dataSituacao.HasValue ? $"and (@dataSituacao >= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
             var query = $@"select distinct * from (
                 select pe.bimestre, fn.disciplina_id as ComponenteCurricularCodigo, ccn.id as ConselhoClasseNotaId, coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, coalesce(ccn.nota, fn.nota) as Nota
                   from fechamento_turma ft
@@ -111,6 +112,7 @@ namespace SME.SGP.Dados.Repositorios
                    and fa.aluno_codigo = @alunoCodigo
                    {condicaoBimestre}
                    {condicaoDataMatricula}
+                   {condicaoDataSituacao}
                 union all 
                 select pe.bimestre, ccn.componente_curricular_codigo as ComponenteCurricularCodigo, ccn.id as ConselhoClasseNotaId, coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, coalesce(ccn.nota, fn.nota) as Nota
                   from fechamento_turma ft
@@ -128,9 +130,10 @@ namespace SME.SGP.Dados.Repositorios
                    and cca.aluno_codigo = @alunoCodigo
                    {condicaoBimestre}
                    {condicaoDataMatricula}
+                   {condicaoDataSituacao}
                 ) x ";
 
-            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmasCodigo, bimestre, dataMatricula });
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmasCodigo, bimestre, dataMatricula, dataSituacao });
         }
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasAsync(string alunoCodigo, IEnumerable<string> turmasCodigos, long? periodoEscolarId)

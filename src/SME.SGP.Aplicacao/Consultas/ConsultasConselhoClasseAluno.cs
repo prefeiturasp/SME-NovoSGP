@@ -216,8 +216,8 @@ namespace SME.SGP.Aplicacao
             if (turmasComMatriculasValidas.Contains(codigoTurma))
             {
                 notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
-                    await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)) :
-                    await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(new string[] { codigoTurma } , alunoCodigo, dadosAluno.DataMatricula, bimestre));
+                    await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre, dadosAluno.DataMatricula, dadosAluno.SituacaoCodigo == SituacaoMatriculaAluno.Concluido ? periodoFim : dadosAluno.DataSituacao)) :
+                    await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(new string[] { codigoTurma }, alunoCodigo, dadosAluno.DataMatricula, dadosAluno.SituacaoCodigo == SituacaoMatriculaAluno.Concluido ? periodoFim : dadosAluno.DataSituacao, bimestre));
             }
 
             Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
@@ -236,11 +236,11 @@ namespace SME.SGP.Aplicacao
 
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
 
-            var frequenciasAluno = turmasComMatriculasValidas.Contains(codigoTurma) ?
+            var frequenciasAluno = turmasComMatriculasValidas.Contains(codigoTurma) && (dadosAluno.DataSituacao.Date >= periodoFim || dadosAluno.SituacaoCodigo == SituacaoMatriculaAluno.Concluido) ?
                 await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, alunoCodigo, tipoCalendario.Id, bimestre) :
                 Enumerable.Empty<FrequenciaAluno>();
 
-            var registrosFrequencia = turmasComMatriculasValidas.Contains(codigoTurma) ?
+            var registrosFrequencia = turmasComMatriculasValidas.Contains(codigoTurma) && (dadosAluno.DataSituacao.Date >= periodoFim || dadosAluno.SituacaoCodigo == SituacaoMatriculaAluno.Concluido) ?
                 await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, turmasCodigos, disciplinasCodigo.Select(d => d.ToString()).ToArray(), periodoEscolar?.Id)) :
                 Enumerable.Empty<RegistroFrequenciaAlunoBimestreDto>();
 

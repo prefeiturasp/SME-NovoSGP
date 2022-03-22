@@ -9,15 +9,19 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotasFechamentosPorTurmasCodigosBimestreQuery : IRequest<IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
-        public ObterNotasFechamentosPorTurmasCodigosBimestreQuery(string[] turmasCodigos, string alunoCodigo, int bimestre)
+        public ObterNotasFechamentosPorTurmasCodigosBimestreQuery(string[] turmasCodigos, string alunoCodigo, int bimestre, DateTime? dataMatricula = null, DateTime? dataSituacao = null)
         {
             TurmasCodigos = turmasCodigos;
             AlunoCodigo = alunoCodigo;
             Bimestre = bimestre;
+            DataMatricula = dataMatricula;
+            DataSituacao = dataSituacao;
         }
         public string[] TurmasCodigos { get; set; }
         public string AlunoCodigo { get; set; }
         public int Bimestre { get; set; }
+        public DateTime? DataMatricula { get; set; }
+        public DateTime? DataSituacao { get; set; }
 
         public class ObterNotasFechamentosPorTurmasCodigosBimestreQueryValidator : AbstractValidator<ObterNotasFechamentosPorTurmasCodigosBimestreQuery>
         {
