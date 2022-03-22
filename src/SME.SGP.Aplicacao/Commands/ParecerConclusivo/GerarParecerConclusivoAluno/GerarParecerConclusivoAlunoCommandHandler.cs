@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,16 @@ namespace SME.SGP.Aplicacao
             else
             {
                 conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
-                await mediator.Send(new PersistirParecerConclusivoCommand(conselhoClasseAluno)); 
+                var persistirParecerConclusivoDto = new PersistirParecerConclusivoDto()
+                {
+                    ConselhoClasseAlunoId = conselhoClasseAluno.Id,
+                    ConselhoClasseAlunoCodigo = conselhoClasseAluno.AlunoCodigo,
+                    ParecerConclusivoId = parecerConclusivo.Id,
+                    TurmaId = turma.Id,
+                    Bimestre = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre,
+                    AnoLetivo = turma.AnoLetivo
+                };
+                await mediator.Send(new PersistirParecerConclusivoCommand(persistirParecerConclusivoDto)); 
             }
 
             return new ParecerConclusivoDto()

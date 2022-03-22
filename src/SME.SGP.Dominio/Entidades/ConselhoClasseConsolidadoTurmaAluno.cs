@@ -9,15 +9,12 @@ namespace SME.SGP.Dominio
             DataAtualizacao = DateTime.Now;
         }
         public DateTime DataAtualizacao { get; set; }
-
         public SituacaoConselhoClasse Status { get; set; }
-
         public string AlunoCodigo { get; set; }
-
         public long? ParecerConclusivoId { get; set; }
-
         public long TurmaId { get; set; }
-
         public int Bimestre { get; set; }
+        public double? Nota { get; set; }
+        public long? ConceitoId { get; set; }
     }
 }

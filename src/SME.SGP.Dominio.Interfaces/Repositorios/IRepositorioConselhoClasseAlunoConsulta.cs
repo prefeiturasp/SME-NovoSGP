@@ -13,6 +13,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<ConselhoClasseAluno> ObterPorPeriodoAsync(string alunoCodigo, long turmaId, long periodoEscolarId);
         Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo);
         Task<IEnumerable<long>> ObterComponentesPorAlunoTurmaBimestreAsync(string alunoCodigo, int bimestre, long turmaId);
+        Task<ConselhoClasseAluno> ObterConselhoClasseAlunoPorId(long conselhoClasseAlunoId);
         Task<long> ObterConselhoClasseAlunoIdAsync(long conselhoClasseId, string alunoCodigo);
         Task<IEnumerable<ConselhoClasseFechamentoAlunoDto>> ObterConselhoClasseAlunosPorTurma(string turmaCodigo);
     }

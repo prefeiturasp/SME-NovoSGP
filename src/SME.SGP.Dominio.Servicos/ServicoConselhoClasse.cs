@@ -2,7 +2,9 @@
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -191,14 +193,20 @@ namespace SME.SGP.Dominio.Servicos
                 throw e;
             }
 
-            //Tratar após o fechamento da transação
+            //Tratar após o fechamento da transação - ano letivo e turmaId
             if (!enviarAprovacao)
-                await mediator.Send(new ConsolidacaoNotaAlunoCommand(alunoCodigo, turma.Id, bimestre.HasValue ? bimestre.Value : 0));
-
-            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, bimestre ?? 0);
-            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
-
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
+            {
+                var consolidacaoNotaAlunoDto = new ConsolidacaoNotaAlunoDto()
+                {
+                    AlunoCodigo = alunoCodigo,
+                    TurmaId = turma.Id,
+                    Bimestre = bimestre ?? BimestreConstants.AbaFinal,
+                    AnoLetivo = turma.AnoLetivo,
+                    Nota = conselhoClasseNotaDto.Nota,
+                    ConceitoId = conselhoClasseNotaDto.Conceito,
+                };
+                await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
+            }                
 
             var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()
             {
@@ -255,7 +263,18 @@ namespace SME.SGP.Dominio.Servicos
 
             //Tratar após o fechamento da transação
             if (!enviarAprovacao)
-                await mediator.Send(new ConsolidacaoNotaAlunoCommand(alunoCodigo, turma.Id, bimestre.HasValue ? bimestre.Value : 0));
+            {
+                var consolidacaoNotaAlunoDto = new ConsolidacaoNotaAlunoDto()
+                {
+                    AlunoCodigo = alunoCodigo,
+                    TurmaId = turma.Id,
+                    Bimestre = bimestre ?? BimestreConstants.AbaFinal,
+                    AnoLetivo = turma.AnoLetivo,
+                    Nota = conselhoClasseNotaDto.Nota,
+                    ConceitoId = conselhoClasseNotaDto.Conceito,
+                };
+                await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
+            }
 
             var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()
             {

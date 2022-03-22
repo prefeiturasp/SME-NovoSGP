@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dto;
 
 namespace SME.SGP.Aplicacao
 {
@@ -8,12 +9,18 @@ namespace SME.SGP.Aplicacao
         public string AlunoCodigo { get; }
         public long TurmaId { get; }
         public int Bimestre { get; }
+        public int AnoLetivo { get; set; }
+        public double? Nota { get; set; }
+        public long? ConceitoId { get; set; }
 
-        public ConsolidacaoNotaAlunoCommand(string alunoCodigo, long turmaId, int bimestre)
+        public ConsolidacaoNotaAlunoCommand(ConsolidacaoNotaAlunoDto consolidacaoNotaAlunoDto)
         {
-            AlunoCodigo = alunoCodigo;
-            TurmaId = turmaId;
-            Bimestre = bimestre;
+            AlunoCodigo = consolidacaoNotaAlunoDto.AlunoCodigo;
+            TurmaId = consolidacaoNotaAlunoDto.TurmaId;
+            Bimestre = consolidacaoNotaAlunoDto.Bimestre;
+            AnoLetivo = consolidacaoNotaAlunoDto.AnoLetivo;
+            Nota = consolidacaoNotaAlunoDto.Nota;
+            ConceitoId = consolidacaoNotaAlunoDto.ConceitoId;
         }
     }
 

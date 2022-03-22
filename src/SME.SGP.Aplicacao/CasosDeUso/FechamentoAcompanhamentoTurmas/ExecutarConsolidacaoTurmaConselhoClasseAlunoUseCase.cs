@@ -37,11 +37,13 @@ namespace SME.SGP.Aplicacao
 
             if (consolidadoTurmaAluno == null)
             {
-                consolidadoTurmaAluno = new ConselhoClasseConsolidadoTurmaAluno();
-                consolidadoTurmaAluno.AlunoCodigo = filtro.AlunoCodigo;
-                consolidadoTurmaAluno.Bimestre = filtro.Bimestre;
-                consolidadoTurmaAluno.TurmaId = filtro.TurmaId;
-                consolidadoTurmaAluno.Status = statusNovo;
+                consolidadoTurmaAluno = new ConselhoClasseConsolidadoTurmaAluno
+                {
+                    AlunoCodigo = filtro.AlunoCodigo,
+                    Bimestre = filtro.Bimestre,
+                    TurmaId = filtro.TurmaId,
+                    Status = statusNovo
+                };
             }
 
             if (!filtro.Inativo)
@@ -100,9 +102,14 @@ namespace SME.SGP.Aplicacao
             consolidadoTurmaAluno.Status = statusNovo;
 
             consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
+            
+            if (filtro.Nota.HasValue) //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                consolidadoTurmaAluno.Nota = filtro.Nota;
 
-            await repositorioConselhoClasseConsolidado
-                .SalvarAsync(consolidadoTurmaAluno);
+            if (filtro.ConceitoId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                consolidadoTurmaAluno.ConceitoId = filtro.ConceitoId;
+
+            await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno);
 
             return true;
         }

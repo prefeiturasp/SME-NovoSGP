@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dto;
+using SME.SGP.Infra.Consts;
 
 namespace SME.SGP.Aplicacao
 {
@@ -37,6 +39,7 @@ namespace SME.SGP.Aplicacao
             var notasEmAprovacao = new List<FechamentoNotaDto>();
             var mensagens = new List<string>();
             PeriodoEscolar periodoEscolar = null;
+            var consolidacaoNotasAlunos = new List<ConsolidacaoNotaAlunoDto>();
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turma = await ObterTurma(fechamentoTurma.TurmaId);
@@ -140,6 +143,8 @@ namespace SME.SGP.Aplicacao
                                     fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                                     fechamentoNota.FechamentoAluno = fechamentoAluno;
                                     await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+
+                                    ConsolidacaoNotasAlunos(!fechamentoTurma.EhFinal, periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
                                 }
                             }
                             catch (NegocioException e)
@@ -167,6 +172,8 @@ namespace SME.SGP.Aplicacao
 
                                 fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                                 var fechamentoNotaId = await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+
+                                ConsolidacaoNotasAlunos(!fechamentoTurma.EhFinal, periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
                             }
                             catch (NegocioException e)
                             {
@@ -196,6 +203,9 @@ namespace SME.SGP.Aplicacao
 
                 await EnviarNotasAprovacao(notasEmAprovacao, fechamentoTurmaDisciplinaId, periodoEscolar, usuarioLogado, turma, componenteCurricular, fechamentoTurma.EhFinal);
                 unitOfWork.PersistirTransacao();
+
+                foreach (var consolidacaoNotaAlunoDto in consolidacaoNotasAlunos)
+                    await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
 
                 if (alunosComNotaAlterada.Length > 0)
                 {
@@ -238,6 +248,19 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private static void ConsolidacaoNotasAlunos(bool fechamentoBimestre, int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota)
+        {
+            consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
+            {
+                AlunoCodigo = AlunoCodigo,
+                TurmaId = turma.Id,
+                Bimestre = fechamentoBimestre ? bimestre : BimestreConstants.AbaFinal,
+                AnoLetivo = turma.AnoLetivo,
+                Nota = fechamentoNota.Nota,
+                ConceitoId = fechamentoNota.ConceitoId,
+            });
         }
 
         private Task GerarPendenciasFechamento(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, Usuario usuario, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, long turmaId, bool componenteSemNota = false, bool registraFrequencia = true)

@@ -23,7 +23,12 @@ namespace SME.SGP.Aplicacao
         {
             var aluno = (await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(new long[] { long.Parse(request.AlunoCodigo) }, request.AnoLetivo))).FirstOrDefault();
 
-            var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(request.AlunoCodigo, conselhoClasse.ConselhoClasse.FechamentoTurma.Turma.Id, request.Bimestre, aluno.Inativo);
+            var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(request.AlunoCodigo, 
+                                                                                                         request.TurmaId, 
+                                                                                                         request.Bimestre, 
+                                                                                                         aluno.Inativo,
+                                                                                                         request.Nota,
+                                                                                                         request.ConceitoId);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemConsolidacaoConselhoClasseAluno, Guid.NewGuid(), null));
 

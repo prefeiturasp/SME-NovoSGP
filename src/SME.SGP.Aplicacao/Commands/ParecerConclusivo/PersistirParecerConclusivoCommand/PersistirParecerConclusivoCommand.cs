@@ -1,26 +1,57 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
+using SME.SGP.Dto;
 
 namespace SME.SGP.Aplicacao
 {
     public class PersistirParecerConclusivoCommand : IRequest<bool>
     {
-        public PersistirParecerConclusivoCommand(ConselhoClasseAluno conselhoClasseAluno)
+        public int Bimestre { get; set; }
+        public long TurmaId { get; set; }
+        public long ParecerConclusivoId { get; set; }
+        public long ConselhoClasseAlunoId { get; set; }
+        public string AlunoCodigo { get; set; }
+        public int AnoLetivo { get; set; }
+
+        public PersistirParecerConclusivoCommand(PersistirParecerConclusivoDto persistirParecerConclusivoDto)
         {
-            ConselhoClasseAluno = conselhoClasseAluno;
+            AlunoCodigo = persistirParecerConclusivoDto.ConselhoClasseAlunoCodigo;
+            TurmaId = persistirParecerConclusivoDto.TurmaId;
+            Bimestre = persistirParecerConclusivoDto.Bimestre;
+            ParecerConclusivoId = persistirParecerConclusivoDto.ParecerConclusivoId;
+            ConselhoClasseAlunoId = persistirParecerConclusivoDto.ConselhoClasseAlunoId;
+            AnoLetivo = persistirParecerConclusivoDto.AnoLetivo;
         }
 
-        public ConselhoClasseAluno ConselhoClasseAluno { get; }
     }
 
     public class PersistirParecerConclusivoCommandValidator : AbstractValidator<PersistirParecerConclusivoCommand>
     {
         public PersistirParecerConclusivoCommandValidator()
         {
-            RuleFor(a => a.ConselhoClasseAluno)
+            RuleFor(a => a.Bimestre)
                 .NotEmpty()
-                .WithMessage("O registro do conselho de classe do aluno deve ser informado para gerar seu parecer conclusivo");
+                .WithMessage("O bimestre deve ser informado para gerar seu parecer conclusivo");
+
+            RuleFor(a => a.TurmaId)
+                .NotEmpty()
+                .WithMessage("A turmaId deve ser informado para gerar seu parecer conclusivo");
+
+            RuleFor(a => a.AlunoCodigo)
+                .NotEmpty()
+                .WithMessage("O código do aluno deve ser informado para gerar seu parecer conclusivo");
+
+            RuleFor(a => a.ParecerConclusivoId)
+                .NotEmpty()
+                .WithMessage("O parecer conclusivo deve ser informado para gerar seu parecer conclusivo");
+
+            RuleFor(a => a.ConselhoClasseAlunoId)
+                .NotEmpty()
+                .WithMessage("O código do conselho deve ser informado para gerar seu parecer conclusivo");
+
+            RuleFor(a => a.AnoLetivo)
+               .NotEmpty()
+               .WithMessage("O ano letivo deve ser informado para gerar seu parecer conclusivo");
         }
     }
 }

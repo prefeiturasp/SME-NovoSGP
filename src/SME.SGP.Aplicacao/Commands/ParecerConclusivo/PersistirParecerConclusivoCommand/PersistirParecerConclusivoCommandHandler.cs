@@ -1,9 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,19 +21,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(PersistirParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
-            var conselhoClasse = request.ConselhoClasseAluno;
+            var conselhoClasse = await mediator.Send(new ObterConselhoClasseAlunoPorIdQuery(request.ConselhoClasseAlunoId));
 
-            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasse);
+            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasse);            
 
-            var periodoEscolarId = conselhoClasse.ConselhoClasse.FechamentoTurma.PeriodoEscolarId;
+            var aluno = (await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(new long[] { long.Parse(conselhoClasse.AlunoCodigo) }, request.AnoLetivo))).FirstOrDefault();
 
-            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodo)
-
-            int bimestre = conselhoClasse.ConselhoClasse.FechamentoTurma.PeriodoEscolar != null ? conselhoClasse.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre : 0;
-
-            var aluno = (await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(new long[] { long.Parse(conselhoClasse.AlunoCodigo) }, conselhoClasse.ConselhoClasse.FechamentoTurma.Turma.AnoLetivo))).FirstOrDefault();
-
-            var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(conselhoClasse.AlunoCodigo, conselhoClasse.ConselhoClasse.FechamentoTurma.Turma.Id, bimestre, aluno.Inativo);
+            var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(conselhoClasse.AlunoCodigo, 
+                                                                                                         request.TurmaId, 
+                                                                                                         request.Bimestre, 
+                                                                                                         aluno.Inativo);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemConsolidacaoConselhoClasseAluno, Guid.NewGuid(), null));
 
