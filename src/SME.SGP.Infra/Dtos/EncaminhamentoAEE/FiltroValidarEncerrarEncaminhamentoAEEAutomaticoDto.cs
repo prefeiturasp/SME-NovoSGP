@@ -2,17 +2,17 @@
 {
     public class FiltroValidarEncerrarEncaminhamentoAEEAutomaticoDto
     {
-        public FiltroValidarEncerrarEncaminhamentoAEEAutomaticoDto(long encaminhamentoId, string turmaCodigo,
+        public FiltroValidarEncerrarEncaminhamentoAEEAutomaticoDto(long encaminhamentoId, string ueCodigo,
             string alunoCodigo, int anoLetivo)
         {
             EncaminhamentoId = encaminhamentoId;
-            TurmaCodigo = turmaCodigo;
+            UeCodigo = ueCodigo;
             AlunoCodigo = alunoCodigo;
             AnoLetivo = anoLetivo;
         }
 
         public long EncaminhamentoId { get; }
-        public string TurmaCodigo { get; }
+        public string UeCodigo { get; }
         public string AlunoCodigo { get; }
         public int AnoLetivo { get; }
     }

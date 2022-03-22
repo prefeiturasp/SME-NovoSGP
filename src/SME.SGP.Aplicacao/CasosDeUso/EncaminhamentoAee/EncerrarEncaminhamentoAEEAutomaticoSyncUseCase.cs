@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             foreach (var encaminhamento in encaminhamentosVigentes)
             {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaValidarEncerrarEncaminhamentoAEEAutomatico,
-                    new FiltroValidarEncerrarEncaminhamentoAEEAutomaticoDto(encaminhamento.EncaminhamentoId, encaminhamento.TurmaCodigo,
+                    new FiltroValidarEncerrarEncaminhamentoAEEAutomaticoDto(encaminhamento.EncaminhamentoId, encaminhamento.UeCodigo,
                     encaminhamento.AlunoCodigo, encaminhamento.AnoLetivo)));
             }
 

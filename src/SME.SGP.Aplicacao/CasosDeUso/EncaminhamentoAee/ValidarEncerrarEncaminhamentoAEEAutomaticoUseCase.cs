@@ -19,20 +19,12 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<FiltroValidarEncerrarEncaminhamentoAEEAutomaticoDto>();
 
-            var matriculasTurmaAlunoEol = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(filtro.TurmaCodigo, filtro.AlunoCodigo));
+            var matriculasTurmaAlunoEol = await mediator.Send(new ObterMatriculasAlunoNaUEQuery(filtro.UeCodigo, filtro.AlunoCodigo));
 
             if (matriculasTurmaAlunoEol == null || !matriculasTurmaAlunoEol.Any())
                 return false;
 
-            bool concluiuTurmaAnoLetivo = false;
-
-            if (filtro.AnoLetivo != DateTime.Today.Year)
-            {
-                var matriculasAlunoEol = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(filtro.AlunoCodigo, filtro.AnoLetivo));
-                concluiuTurmaAnoLetivo = matriculasAlunoEol.Any(c => c.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
-            }
-
-            if (matriculasTurmaAlunoEol.Any(c => c.EstaInativo(DateTime.Today)) || concluiuTurmaAnoLetivo)
+            if (!matriculasTurmaAlunoEol.Any(c => c.EstaAtivo(DateTime.Today)))
             {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaEncerrarEncaminhamentoAEEEncerrarAutomatico,
                     new FiltroAtualizarEncaminhamentoAEEEncerramentoAutomaticoDto(filtro.EncaminhamentoId), new Guid(), null));
