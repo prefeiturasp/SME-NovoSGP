@@ -178,7 +178,7 @@ namespace SME.SGP.Dados.Repositorios
                 }, new { encaminhamentoId })).FirstOrDefault();
         }
 
-        public async Task<EncaminhamentoAEEAlunoTurmaDto> ObterEncaminhamentoPorEstudante(string codigoEstudante)
+        public async Task<EncaminhamentoAEEAlunoTurmaDto> ObterEncaminhamentoPorEstudante(string estudanteCodigo, string ueCodigo)
         {
             var sql = @"select ea.id 
                             , ea.aluno_codigo as AlunoCodigo 
@@ -193,9 +193,10 @@ namespace SME.SGP.Dados.Repositorios
                          inner join ue on t.ue_id = ue.id 
                      where not ea.excluido 
                        and ea.situacao not in (4, 5)
-                       and ea.aluno_codigo = @codigoEstudante ";
+                       and ea.aluno_codigo = @estudanteCodigo
+                       and ue.ue_id = @ueCodigo";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoAEEAlunoTurmaDto>(sql, new { codigoEstudante });
+            return await database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoAEEAlunoTurmaDto>(sql, new { estudanteCodigo, ueCodigo });
         }
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int anoLetivo, int? situacao)

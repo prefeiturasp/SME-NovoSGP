@@ -932,11 +932,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterEncaminhamentosAEEUseCase, ObterEncaminhamentosAEEUseCase>();
             services.TryAddScoped<IEncerrarEncaminhamentoAEEUseCase, EncerrarEncaminhamentoAEEUseCase>();
             services.TryAddScoped<IEnviarParaAnaliseEncaminhamentoAEEUseCase, EnviarParaAnaliseEncaminhamentoAEEUseCase>();
-            services.TryAddScoped<IVerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase, VerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase>();
+            services.TryAddScoped<IVerificaPodeCadastrarEncaminhamentoAEEParaEstudanteUseCase, VerificaPodeCadastrarEncaminhamentoAEEParaEstudanteUseCase>();
             services.TryAddScoped<IConcluirEncaminhamentoAEEUseCase, ConcluirEncaminhamentoAEEUseCase>();
             services.TryAddScoped<IObterResponsaveisEncaminhamentosAEE, ObterResponsaveisEncaminhamentosAEE>();
             services.TryAddScoped<IDevolverEncaminhamentoUseCase, DevolverEncaminhamentoUseCase>();
-
 
             // Plano AEE 
             services.TryAddScoped<IObterPlanosAEEUseCase, ObterPlanosAEEUseCase>();
