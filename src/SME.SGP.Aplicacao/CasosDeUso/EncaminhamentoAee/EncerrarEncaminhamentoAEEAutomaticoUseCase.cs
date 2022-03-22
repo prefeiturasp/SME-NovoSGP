@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Commands;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -11,37 +12,39 @@ namespace SME.SGP.Aplicacao
 {
     public class EncerrarEncaminhamentoAEEAutomaticoUseCase : AbstractUseCase, IEncerrarEncaminhamentoAEEAutomaticoUseCase
     {
-        public EncerrarEncaminhamentoAEEAutomaticoUseCase(IMediator mediator) : base(mediator)
+        private readonly IUnitOfWork _unitOfWork;
+
+        public EncerrarEncaminhamentoAEEAutomaticoUseCase(IMediator mediator,
+            IUnitOfWork unitOfWork) : base(mediator)
         {
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var encaminhamentos = await mediator.Send(new ObterEncaminhamentoAEEEncerrarAutomaticoQuery());
+            var filtro = mensagemRabbit.ObterObjetoMensagem<FiltroAtualizarEncaminhamentoAEEEncerramentoAutomaticoDto>();
 
-            foreach (var encaminhamento in encaminhamentos)
+            _unitOfWork.IniciarTransacao();
+            try
             {
-                var matriculasAnoAlunoEol = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(encaminhamento.AlunoCodigo, DateTime.Today.Year));
-                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(encaminhamento.TurmaCodigo));
+                await mediator.Send(new AtualizarEncaminhamentoAEEEncerrarAutomaticoCommand(filtro.EncaminhamentoId));
 
-                if (matriculasAnoAlunoEol == null)
-                    continue;
+                var pendenciasEncaminhamentoAEE = await mediator.Send(new ObterPendenciasDoEncaminhamentoAEEPorIdQuery(filtro.EncaminhamentoId));
 
-                var matriculasInativas = matriculasAnoAlunoEol.Where(c => c.EstaInativo(DateTime.Now));
+                if (pendenciasEncaminhamentoAEE != null)
+                {
+                    foreach (var pendenciaEncaminhamentoAEE in pendenciasEncaminhamentoAEE)
+                        await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendenciaEncaminhamentoAEE.PendenciaId));
+                }
 
-                /* TODO:
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAtualizarEncaminhamentoAEEEncerrarAutomatico,
-                    new FiltroAtualizarEncaminhamentoAEEEncerramentoAutomaticoDto(encaminhamento.EncaminhamentoId), new Guid(), null));
-                */
+                _unitOfWork.PersistirTransacao();
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                throw ex;
             }
 
-            return true;
-        }
-
-        private async Task<bool> DeterminaEtapaConcluida(string alunoCodigo, int anoLetivo)
-        {
-            var matriculasAnoTurmaEol = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(alunoCodigo, anoLetivo));
-            var concluiuAnoTurma = matriculasAnoTurmaEol.Any(c => c.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
             return true;
         }
     }

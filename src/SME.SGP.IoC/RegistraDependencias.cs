@@ -932,11 +932,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterEncaminhamentosAEEUseCase, ObterEncaminhamentosAEEUseCase>();
             services.TryAddScoped<IEncerrarEncaminhamentoAEEUseCase, EncerrarEncaminhamentoAEEUseCase>();
             services.TryAddScoped<IEnviarParaAnaliseEncaminhamentoAEEUseCase, EnviarParaAnaliseEncaminhamentoAEEUseCase>();
-            services.TryAddScoped<IVerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase, VerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase>();
+            services.TryAddScoped<IVerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase, VerificaPodeCadastrarEncaminhamentoAEEParaEstudanteUseCase>();
             services.TryAddScoped<IConcluirEncaminhamentoAEEUseCase, ConcluirEncaminhamentoAEEUseCase>();
             services.TryAddScoped<IObterResponsaveisEncaminhamentosAEE, ObterResponsaveisEncaminhamentosAEE>();
             services.TryAddScoped<IDevolverEncaminhamentoUseCase, DevolverEncaminhamentoUseCase>();            
-            services.TryAddScoped<IAtualizarEncaminhamentoAEEAutomaticoUseCase, AtualizarEncaminhamentoAEEAutomaticoUseCase>();
+            services.TryAddScoped<IEncerrarEncaminhamentoAEEAutomaticoSyncUseCase, EncerrarEncaminhamentoAEEAutomaticoSyncUseCase>();
+            services.TryAddScoped<IValidarEncerrarEncaminhamentoAEEAutomaticoUseCase, ValidarEncerrarEncaminhamentoAEEAutomaticoUseCase>();
             services.TryAddScoped<IEncerrarEncaminhamentoAEEAutomaticoUseCase, EncerrarEncaminhamentoAEEAutomaticoUseCase>();
 
             // Plano AEE 

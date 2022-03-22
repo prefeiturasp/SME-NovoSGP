@@ -179,8 +179,9 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaNotificacaoRegistroConclusaoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para registro de conclusão do Encaminhamento AEE", typeof(INotificacaoConclusaoEncaminhamentoAEEUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoEncerramentoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para encerramento do Encaminhamento AEE", typeof(INotificacaoEncerramentoEncaminhamentoAEEUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoDevolucaoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para devolucao do Encaminhamento AEE", typeof(INotificacaoDevolucaoEncaminhamentoAEEUseCase)));
-            comandos.Add(RotasRabbitSgp.RotaEncerrarEncaminhamentoAEEAutomatico, new ComandoRabbit("Encerramento automático do Encaminhamento", typeof(IEncerrarEncaminhamentoAEEAutomaticoUseCase)));
-            comandos.Add(RotasRabbitSgp.RotaAtualizarEncaminhamentoAEEEncerrarAutomatico, new ComandoRabbit("Encerrar automaticamente Encaminhamento AEE", typeof(IAtualizarEncaminhamentoAEEAutomaticoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaEncerrarEncaminhamentoAEEAutomaticoSync, new ComandoRabbit("Iniciar processo de encerramento automático do Encaminhamento AEE", typeof(IEncerrarEncaminhamentoAEEAutomaticoSyncUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaValidarEncerrarEncaminhamentoAEEAutomatico, new ComandoRabbit("Validar encerramento automático do Encaminhamento AEE", typeof(IValidarEncerrarEncaminhamentoAEEAutomaticoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaEncerrarEncaminhamentoAEEEncerrarAutomatico, new ComandoRabbit("Encerrar automaticamente Encaminhamento AEE", typeof(IEncerrarEncaminhamentoAEEAutomaticoUseCase)));
 
             comandos.Add(RotasRabbitSgp.EncerrarPlanoAEEEstudantesInativos, new ComandoRabbit("Excluir plano AEE estudantes inativos", typeof(IEncerrarPlanosAEEEstudantesInativosUseCase)));
             comandos.Add(RotasRabbitSgp.GerarPendenciaValidadePlanoAEE, new ComandoRabbit("Gerar Pendência de Validade do PlanoAEE", typeof(IGerarPendenciaValidadePlanoAEEUseCase)));

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class VerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase : AbstractUseCase, IVerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase
+    public class VerificaPodeCadastrarEncaminhamentoAEEParaEstudanteUseCase : AbstractUseCase, IVerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase
     {
-        public VerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase(IMediator mediator) : base(mediator)
+        public VerificaPodeCadastrarEncaminhamentoAEEParaEstudanteUseCase(IMediator mediator) : base(mediator)
         {
         }
 

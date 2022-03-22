@@ -301,23 +301,23 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<EncaminhamentoAEECodigoArquivoDto>(sql.ToString(),new { encaminhamentoId });
         }
 
-        public async Task<IEnumerable<EncaminhamentoAEEEncerrarAutomaticoDto>> ObterEncaminhamentoEncerrarAutomatico()
+        public async Task<IEnumerable<EncaminhamentoAEEVigenteDto>> ObterEncaminhamentosVigentes()
         {
             const string sql = @"select ea.id as encaminhamentoid,
                                         ea.aluno_codigo as alunocodigo,
+                                        ea.turma_id as turmaid,
                                         t.turma_id as turmacodigo,
                                         t.ano_letivo as anoletivo,
-                                        u.ue_id as uecodigo,
-                                        pea.pendencia_id  as pendenciaid
+                                        t.ue_id as ueid,
+                                        u.ue_id as uecodigo
                                 from encaminhamento_aee ea
                                     inner join turma t on (t.id = ea.turma_id)
                                     inner join ue u on (u.id = t.ue_id)
-                                    inner join pendencia_encaminhamento_aee pea on (pea.encaminhamento_aee_id = ea.id)
                                 where not ea.excluido
                                 and ea.situacao not in (5, 7, 8, 10)
                                 order by ea.id";
 
-            return await database.Conexao.QueryAsync<EncaminhamentoAEEEncerrarAutomaticoDto>(sql);
+            return await database.Conexao.QueryAsync<EncaminhamentoAEEVigenteDto>(sql);
         }
     }
 }

@@ -125,7 +125,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new
             {
                 codigoEstudante,
-                situacoesDesconsideradas = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamento }
+                situacoesDesconsideradas = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamente }
             });
         }
 

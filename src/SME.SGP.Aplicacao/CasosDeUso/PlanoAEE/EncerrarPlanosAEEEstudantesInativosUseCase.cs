@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task EncerrarPlanoAEE(PlanoAEE planoAEE, string situacaoMatricula, DateTime dataSituacao)
         {
-            planoAEE.Situacao = SituacaoPlanoAEE.EncerradoAutomaticamento;
+            planoAEE.Situacao = SituacaoPlanoAEE.EncerradoAutomaticamente;
 
             await mediator.Send(new PersistirPlanoAEECommand(planoAEE));
             await mediator.Send(new ResolverPendenciaPlanoAEECommand(planoAEE.Id));
