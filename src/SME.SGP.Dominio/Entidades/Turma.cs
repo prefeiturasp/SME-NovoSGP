@@ -33,6 +33,27 @@ namespace SME.SGP.Dominio
         public string NomeFiltro { get; set; }
         public bool Historica { get; set; }
 
+        public bool EhTurmaFund1 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 1 && AnoTurmaInteiro <= 5);
+        public bool EhTurmaFund2 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 6 && AnoTurmaInteiro <= 9);
+        public bool EhTurmaEnsinoMedio => ModalidadeCodigo == Modalidade.Medio;
+        public bool EhTurmaInfantil => ModalidadeCodigo == Modalidade.EducacaoInfantil;
+
+        public bool EhTurmaHistorica => AnoLetivo < DateTime.Now.Year;
+
+        public bool EnsinoEspecial { get; set; }
+        public DateTime? DataInicio { get; set; }
+        public DateTime? DataFim { get; set; }
+        public bool Extinta { get; set; }
+
+        public int EtapaEJA { get; set; }
+
+        public int TurnoParaComponentesCurriculares
+        {
+            get
+            {
+                return ModalidadeCodigo == Modalidade.Fundamental ? QuantidadeDuracaoAula : 0;
+            }
+        }
 
         public void AdicionarUe(Ue ue)
         {
@@ -66,19 +87,6 @@ namespace SME.SGP.Dominio
 
         public int AnoTurmaInteiro => Ano.ToCharArray().All(a => char.IsDigit(a)) ? int.Parse(Ano) : 1;
 
-        public bool EhTurmaFund1 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 1 && AnoTurmaInteiro <= 5);
-        public bool EhTurmaFund2 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 6 && AnoTurmaInteiro <= 9);
-        public bool EhTurmaEnsinoMedio => ModalidadeCodigo == Modalidade.Medio;
-        public bool EhTurmaInfantil => ModalidadeCodigo == Modalidade.EducacaoInfantil;
-
-        public bool EhTurmaHistorica => AnoLetivo < DateTime.Now.Year;
-
-        public bool EnsinoEspecial { get; set; }
-        public DateTime? DataInicio { get; set; }
-        public DateTime? DataFim { get; set; }
-        public bool Extinta { get; set; }
-
-        public int EtapaEJA { get; set; }
 
         public bool AulasReposicaoPrecisamAprovacao(int quantidadeAulasExistentesNoDia)
         {
@@ -107,13 +115,6 @@ namespace SME.SGP.Dominio
         public bool DeveVerificarRegraRegulares()
         {
             return TiposRegulares.Any(a => a == TipoTurma);
-        }
-        public int TurnoParaComponentesCurriculares
-        {
-            get
-            {
-                return ModalidadeCodigo == Modalidade.Fundamental ? QuantidadeDuracaoAula : 0;
-            }
         }
 
         public bool EhTurmaRegular()

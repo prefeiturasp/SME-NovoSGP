@@ -7,10 +7,10 @@ namespace SME.SGP.Dados.Mapeamentos
         public GradeDisciplinaMap()
         {
             ToTable("grade_disciplina");
-            Map(a => a.GradeId).ToColumn("grade_id");
-            Map(a => a.Ano).ToColumn("ano");
-            Map(a => a.ComponenteCurricularId).ToColumn("componente_curricular_id");
-            Map(a => a.QuantidadeAulas).ToColumn("quantidade_aulas");
+            Map(c => c.GradeId).ToColumn("grade_id");
+            Map(c => c.Ano).ToColumn("ano");
+            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
+            Map(c => c.QuantidadeAulas).ToColumn("quantidade_aulas");
         }
     }
 }

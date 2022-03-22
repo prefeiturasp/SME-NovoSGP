@@ -7,7 +7,9 @@ namespace SME.SGP.Dados
         public PlanoAEEObservacaoMap()
         {
             ToTable("plano_aee_observacao");
-            Map(a => a.PlanoAEEId).ToColumn("plano_aee_id");
+            Map(c => c.PlanoAEEId).ToColumn("plano_aee_id");
+            Map(c => c.Observacao).ToColumn("observacao");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

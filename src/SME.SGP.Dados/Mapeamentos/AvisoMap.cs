@@ -7,8 +7,11 @@ namespace SME.SGP.Dados
         public AvisoMap()
         {
             ToTable("aviso");
-            Map(a => a.AulaId).ToColumn("aula_id");
-            Map(a => a.AvisoClassroomId).ToColumn("aviso_classroom_id");
+            Map(c => c.AulaId).ToColumn("aula_id");
+            Map(c => c.AvisoClassroomId).ToColumn("aviso_classroom_id");
+            Map(c => c.Mensagem).ToColumn("mensagem");
+            Map(c => c.Email).ToColumn("email");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

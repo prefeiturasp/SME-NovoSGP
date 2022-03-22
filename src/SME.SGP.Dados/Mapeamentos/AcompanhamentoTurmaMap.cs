@@ -7,9 +7,9 @@ namespace SME.SGP.Dados.Mapeamentos
         public AcompanhamentoTurmaMap()
         {
             ToTable("acompanhamento_turma");
-            Map(a => a.TurmaId).ToColumn("turma_id");
-            Map(a => a.Semestre).ToColumn("semestre");
-            Map(a => a.ApanhadoGeral).ToColumn("apanhado_geral");
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.Semestre).ToColumn("semestre");
+            Map(c => c.ApanhadoGeral).ToColumn("apanhado_geral");
         }
     }
 }

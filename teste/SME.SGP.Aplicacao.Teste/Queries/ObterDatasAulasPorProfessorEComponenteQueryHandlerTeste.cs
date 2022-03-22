@@ -33,40 +33,29 @@ namespace SME.SGP.Aplicacao.Teste.Queries
         public async Task Deve_Obter_Datas_Aulas()
         {
             //Arrange
-            repositorioTurmaConsulta.Setup(x => x.ObterPorCodigo(It.IsAny<string>()))
-                .ReturnsAsync(new Dominio.Turma()
-                {
-                    AnoLetivo = 2020,
-                    CodigoTurma = "123",
-                });
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Turma() { AnoLetivo = 2020, CodigoTurma = "123" });
 
             var aula1 = new Aula() { DataAula = new DateTime(2020, 08, 05), Id = 1 };
             var aula2 = new Aula() { DataAula = new DateTime(2020, 08, 05), Id = 2 };
             var aula3 = new Aula() { DataAula = new DateTime(2020, 08, 06), Id = 3 };
 
-            repositorioAulaConsulta.Setup(x => x.ObterDatasDeAulasPorAnoTurmaEDisciplina(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
-                .Returns(new List<Aula>()
+            var listaAulas = new List<Aula>()
                 {
                     aula1, aula2, aula3
-                });
+                };
 
-            repositorioAula.Setup(x => x.ObterPorId(1))
-                .Returns(aula1);
+            repositorioAulaConsulta.Setup(x => x.ObterDatasDeAulasPorAnoTurmaEDisciplina(It.IsAny<IEnumerable<long>>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<bool>()))
+                .Returns(listaAulas);
 
-            repositorioAula.Setup(x => x.ObterPorId(2))
-                .Returns(aula2);
-
-            repositorioAula.Setup(x => x.ObterPorId(3))
-                .Returns(aula3);
+            mediator.Setup(x => x.Send(It.IsAny<ObterAulasPorIdsQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(listaAulas);
 
             mediator.Setup(x => x.Send(It.IsAny<ObterTipoCalendarioIdPorTurmaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(1);
 
             mediator.Setup(x => x.Send(It.IsAny<ObterPeriodosEscolaresPorTipoCalendarioQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<PeriodoEscolar>()
-                {
-                    new PeriodoEscolar() { Id = 1, Bimestre = 1},
-                });
+                .ReturnsAsync(new List<PeriodoEscolar>() { new PeriodoEscolar() { Id = 1, Bimestre = 1} });
 
             var usuario = new Usuario();
             usuario.DefinirPerfis(new List<PrioridadePerfil>());

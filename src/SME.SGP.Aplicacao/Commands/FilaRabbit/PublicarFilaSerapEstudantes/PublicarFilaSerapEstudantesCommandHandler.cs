@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SME.SGP.Infra;
@@ -10,25 +11,36 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicarFilaSerapEstudantesCommandHandler : IRequestHandler<PublicarFilaSerapEstudantesCommand, bool>
     {
-        private readonly IConnection conexaoRabbit;
+        private readonly IConfiguration configuration;
 
-        public PublicarFilaSerapEstudantesCommandHandler(IConnection conexaoRabbit)
+        public PublicarFilaSerapEstudantesCommandHandler(IConfiguration configuration)
         {
-            this.conexaoRabbit = conexaoRabbit ?? throw new System.ArgumentNullException(nameof(conexaoRabbit));
+            this.configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
         }
 
         public Task<bool> Handle(PublicarFilaSerapEstudantesCommand request, CancellationToken cancellationToken)
         {
-            using (IModel _channel = conexaoRabbit.CreateModel())
+            var factory = new ConnectionFactory
             {
-                var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
+                HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
+                UserName = configuration.GetSection("ConfiguracaoRabbit:UserName").Value,
+                Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
+                VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
+            };
+
+            using (var conexaoRabbit = factory.CreateConnection())
+            {
+                using (IModel _channel = conexaoRabbit.CreateModel())
                 {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
+                    var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
 
-                byte[] body = FormataBodyWorker(request);
+                    byte[] body = FormataBodyWorker(request);
 
-                _channel.BasicPublish(RotasRabbitSerapEstudantes.ExchangeSerapEstudantes, request.Fila, null, body);
+                    _channel.BasicPublish(RotasRabbitSerapEstudantes.ExchangeSerapEstudantes, request.Fila, null, body);
+                }
             }
 
             return Task.FromResult(true);

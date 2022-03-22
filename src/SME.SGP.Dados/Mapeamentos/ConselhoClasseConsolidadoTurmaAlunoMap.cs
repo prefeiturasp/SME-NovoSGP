@@ -7,10 +7,12 @@ namespace SME.SGP.Dados
         public ConselhoClasseConsolidadoTurmaAlunoMap()
         {
             ToTable("consolidado_conselho_classe_aluno_turma");
-            Map(a => a.DataAtualizacao).ToColumn("dt_atualizacao");
-            Map(a => a.AlunoCodigo).ToColumn("aluno_codigo");
-            Map(a => a.ParecerConclusivoId).ToColumn("parecer_conclusivo_id");
-            Map(a => a.TurmaId).ToColumn("turma_id");
+            Map(c => c.DataAtualizacao).ToColumn("dt_atualizacao");
+            Map(c => c.Status).ToColumn("status");
+            Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
+            Map(c => c.ParecerConclusivoId).ToColumn("parecer_conclusivo_id");
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.Bimestre).ToColumn("bimestre");
         }
     }
 }

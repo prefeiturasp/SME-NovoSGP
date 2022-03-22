@@ -166,7 +166,7 @@ namespace SME.SGP.Dados
             //Descobrir como obter a classe;;
             //var entidade = this. TEntity?.GetType()?.Name;
 
-            var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.GetAll<TEntity>(connection, buffered), "Postgres", $"GetAll Entidade ??", "GetAll");
+            var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.GetAll<TEntity>(connection, buffered: buffered), "Postgres", $"GetAll Entidade ??", "GetAll");
 
             return result;
         }
