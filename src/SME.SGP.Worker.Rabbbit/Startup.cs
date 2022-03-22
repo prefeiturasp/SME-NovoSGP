@@ -47,14 +47,14 @@ namespace SME.SGP.Worker.Rabbbit
             services.AddPolicies();
 
             ConfiguraVariaveisAmbiente(services);
-            RegistraDependencias.Registrar(services, configuracaoRabbitOptions);
+            new RegistraDependencias().Registrar(services, configuracaoRabbitOptions);
             ConfiguraGoogleClassroomSync(services);
             ConfiguraRabbitParaLogs(services);
 
-            services.AddRabbit(configuracaoRabbitOptions);            
+            services.AddRabbit(configuracaoRabbitOptions);
 
             var telemetriaOptions = ConfiguraTelemetria(services);
-            var serviceProvider = services.BuildServiceProvider();            
+            var serviceProvider = services.BuildServiceProvider();
 
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
 
@@ -192,7 +192,7 @@ namespace SME.SGP.Worker.Rabbbit
             services.AddHttpClient(name: "servicoServidorRelatorios", c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
-                c.DefaultRequestHeaders.Add("Accept", "application/json");                
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-sr-api-key", configuration.GetSection("ApiKeySr").Value);
             });
 
