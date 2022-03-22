@@ -33,7 +33,7 @@ namespace SME.SGP.Dados
 	                    , cc.*
 	                    , ft.*
 	                    , t.*
-                        ,pr.*
+                        , pe.*
                       from wf_aprovacao_nota_conselho nwf
                      inner join conselho_classe_nota ccn on ccn.id = nwf.conselho_classe_nota_id
                      inner join conselho_classe_aluno cca on cca.id = ccn.conselho_classe_aluno_id 
