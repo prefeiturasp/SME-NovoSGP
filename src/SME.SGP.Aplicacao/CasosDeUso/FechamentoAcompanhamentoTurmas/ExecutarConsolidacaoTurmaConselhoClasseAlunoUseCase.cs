@@ -21,12 +21,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
+
             var filtro = mensagemRabbit
-                .ObterObjetoMensagem<MensagemConsolidacaoConselhoClasseAlunoDto>();
+                    .ObterObjetoMensagem<MensagemConsolidacaoConselhoClasseAlunoDto>();
 
             if (filtro == null)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do conselho de clase da turma -> aluno. O id da turma bimestre aluno não foram informados", LogNivel.Critico, LogContexto.ConselhoClasse));                
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do conselho de clase da turma -> aluno. O id da turma bimestre aluno não foram informados", LogNivel.Critico, LogContexto.ConselhoClasse));
                 return false;
             }
 
@@ -60,7 +61,7 @@ namespace SME.SGP.Aplicacao
                         var fechamento = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = filtro.TurmaId });
                         var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamento.Id));
                         var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, filtro.AlunoCodigo));
-                        consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno != null ? conselhoClasseAluno.ConselhoClasseParecerId : null;
+                        consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno?.ConselhoClasseParecerId;
                     }
 
                     var turmasCodigos = new string[] { };
@@ -102,16 +103,15 @@ namespace SME.SGP.Aplicacao
             consolidadoTurmaAluno.Status = statusNovo;
 
             consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
-            
+
             if (filtro.Nota.HasValue) //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
                 consolidadoTurmaAluno.Nota = filtro.Nota;
 
             if (filtro.ConceitoId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
                 consolidadoTurmaAluno.ConceitoId = filtro.ConceitoId;
 
-            await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno);
-
-            return true;
+            return (await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno)) > 0;
+            
         }
     }
 }

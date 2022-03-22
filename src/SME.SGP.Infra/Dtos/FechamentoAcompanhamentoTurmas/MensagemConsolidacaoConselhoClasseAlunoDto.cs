@@ -2,6 +2,8 @@
 {
     public class MensagemConsolidacaoConselhoClasseAlunoDto
     {
+        public MensagemConsolidacaoConselhoClasseAlunoDto() { }
+
         public MensagemConsolidacaoConselhoClasseAlunoDto(string alunoCodigo, long turmaId, int bimestre, bool inativo, double? nota = null, long? conceitoId = null)
         {
             AlunoCodigo = alunoCodigo;
