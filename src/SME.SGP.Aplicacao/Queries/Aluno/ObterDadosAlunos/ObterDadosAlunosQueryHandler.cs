@@ -30,6 +30,7 @@ namespace SME.SGP.Aplicacao
             foreach (var dadoAluno in dadosAlunos)
             {
                 var dadosBasicos = (AlunoDadosBasicosDto)dadoAluno;
+                dadosBasicos.DataMatricula = dadoAluno.DataMatricula;
 
                 dadosBasicos.TipoResponsavel = ObterTipoResponsavel(dadoAluno.TipoResponsavel);
                 // se informado periodo escolar carrega marcadores no periodo
