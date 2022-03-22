@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
     {
         public int AnoLetivo { get; set; }
         public bool ConsideraHistorico { get; set; }
-        public IEnumerable<Modalidade> ModadlidadesQueSeraoIgnoradas { get; set; }
+        public IEnumerable<Modalidade> ModalidadesQueSeraoIgnoradas { get; set; }
         public string Login { get; set; }
         public Guid Perfil { get; set; }
 
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         public ObterModalidadesPorAnoQuery(int anoLetivo, bool consideraHistorico, string login, Guid perfil, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas)
             :this(anoLetivo, consideraHistorico, login, perfil)
         {
-            ModadlidadesQueSeraoIgnoradas = modadlidadesQueSeraoIgnoradas;
+            ModalidadesQueSeraoIgnoradas = modadlidadesQueSeraoIgnoradas;
         }
     }
 
