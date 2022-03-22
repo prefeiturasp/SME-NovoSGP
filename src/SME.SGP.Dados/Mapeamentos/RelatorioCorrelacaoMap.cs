@@ -14,6 +14,8 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Formato).ToColumn("tipo_formato");
             Map(c => c.UsuarioSolicitante).Ignore();
             Map(c => c.CorrelacaoJasper).Ignore();
+            Map(c => c.EhRelatorioJasper).Ignore();
+            Map(c => c.PrazoDownloadExpirado).Ignore();
         }
     }
 }
