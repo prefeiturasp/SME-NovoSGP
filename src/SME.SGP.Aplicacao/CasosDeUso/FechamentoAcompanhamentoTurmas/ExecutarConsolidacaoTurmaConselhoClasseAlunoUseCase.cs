@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 consolidadoTurmaAluno = new ConselhoClasseConsolidadoTurmaAluno
                 {
                     AlunoCodigo = filtro.AlunoCodigo,
-                    Bimestre = filtro.Bimestre,
+                    //Bimestre = filtro.Bimestre,
                     TurmaId = filtro.TurmaId,
                     Status = statusNovo
                 };
@@ -105,14 +105,14 @@ namespace SME.SGP.Aplicacao
 
             consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
 
-            if (filtro.ComponenteCurricularId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
-                consolidadoTurmaAluno.ComponenteCurricularId = filtro.ComponenteCurricularId;
+            //if (filtro.ComponenteCurricularId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                //consolidadoTurmaAluno.ComponenteCurricularId = filtro.ComponenteCurricularId;
 
-            if (filtro.Nota.HasValue) //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
-                consolidadoTurmaAluno.Nota = filtro.Nota;
+            //if (filtro.Nota.HasValue) //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+            //    consolidadoTurmaAluno.Nota = filtro.Nota;
 
-            if (filtro.ConceitoId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
-                consolidadoTurmaAluno.ConceitoId = filtro.ConceitoId;
+            //if (filtro.ConceitoId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+            //    consolidadoTurmaAluno.ConceitoId = filtro.ConceitoId;
 
             return (await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno)) > 0;
             

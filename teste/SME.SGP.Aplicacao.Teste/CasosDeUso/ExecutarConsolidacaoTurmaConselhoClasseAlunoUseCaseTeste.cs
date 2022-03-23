@@ -233,10 +233,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             return new ConselhoClasseConsolidadoTurmaAluno
             {
                 AlunoCodigo = alunoCodigo,
-                Bimestre = bimestre,
+                //Bimestre = bimestre,
                 TurmaId = turmaId,
-                Nota = nota,
-                ConceitoId = conceito,
+                //Nota = nota,
+                //ConceitoId = conceito,
                 Status = SituacaoConselhoClasse.NaoIniciado
             };
         }
