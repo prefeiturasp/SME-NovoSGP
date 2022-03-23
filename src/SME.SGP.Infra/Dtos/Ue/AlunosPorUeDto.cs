@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Dominio;
 using System;
-using System.Linq;
 
 namespace SME.SGP.Infra
 {
@@ -22,15 +21,5 @@ namespace SME.SGP.Infra
         public long CodigoTurma { get; set; }
         public long CodigoMatricula { get; set; }
         public int AnoLetivo { get; set; }
-
-        private readonly SituacaoMatriculaAluno[] SituacoesAtivas = new[]
-        {
-            SituacaoMatriculaAluno.Ativo,
-            SituacaoMatriculaAluno.PendenteRematricula,
-            SituacaoMatriculaAluno.Rematriculado,
-            SituacaoMatriculaAluno.SemContinuidade
-        };
-
-        public bool EstaAtivo(DateTime dataBase) => (SituacoesAtivas.Contains(CodigoSituacaoMatricula) && DataSituacao.Date <= dataBase);
     }
 }

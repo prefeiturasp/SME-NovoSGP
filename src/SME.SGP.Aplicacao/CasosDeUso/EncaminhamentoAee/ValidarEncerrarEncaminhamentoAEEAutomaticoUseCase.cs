@@ -24,7 +24,9 @@ namespace SME.SGP.Aplicacao
             if (matriculasTurmaAlunoEol == null || !matriculasTurmaAlunoEol.Any())
                 return false;
 
-            if (!matriculasTurmaAlunoEol.Any(c => c.EstaAtivo(DateTime.Today)))
+            var estaAtivo = matriculasTurmaAlunoEol.Any(c => SituacoesAtivas.Contains(c.CodigoSituacaoMatricula) && c.DataSituacao <= DateTime.Today);
+
+            if (!estaAtivo)
             {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaEncerrarEncaminhamentoAEEEncerrarAutomatico,
                     new FiltroAtualizarEncaminhamentoAEEEncerramentoAutomaticoDto(filtro.EncaminhamentoId), new Guid(), null));
@@ -34,5 +36,13 @@ namespace SME.SGP.Aplicacao
 
             return false;
         }
+
+        private readonly SituacaoMatriculaAluno[] SituacoesAtivas = new[]
+        {
+            SituacaoMatriculaAluno.Ativo,
+            SituacaoMatriculaAluno.PendenteRematricula,
+            SituacaoMatriculaAluno.Rematriculado,
+            SituacaoMatriculaAluno.SemContinuidade
+        };
     }
 }
