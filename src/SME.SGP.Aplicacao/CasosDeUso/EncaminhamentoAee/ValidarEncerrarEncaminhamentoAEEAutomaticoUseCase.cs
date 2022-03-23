@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             if (matriculasTurmaAlunoEol == null || !matriculasTurmaAlunoEol.Any())
                 return false;
 
-            var estaAtivo = matriculasTurmaAlunoEol.Any(c => SituacoesAtivas.Contains(c.CodigoSituacaoMatricula));
+            var estaAtivo = matriculasTurmaAlunoEol.Any(c => SituacoesAtivas.Contains(c.CodigoSituacaoMatricula) && c.DataSituacao <= DateTime.Today);
 
             if (!estaAtivo)
             {
