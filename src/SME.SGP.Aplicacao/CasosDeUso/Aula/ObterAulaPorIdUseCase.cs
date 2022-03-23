@@ -118,6 +118,9 @@ namespace SME.SGP.Aplicacao
                 EmManutencao = aulaEmManutencao,
                 PodeEditar = (usuarioLogado.EhProfessorCj() && aula.AulaCJ)
                           || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar()))
+                          || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPoed()
+                          || usuarioLogado.EhProfessorPosl()))
+                          || (usuarioLogado.EhProfessorPap() && aula.EhPAP)
             };
 
             return dto;
