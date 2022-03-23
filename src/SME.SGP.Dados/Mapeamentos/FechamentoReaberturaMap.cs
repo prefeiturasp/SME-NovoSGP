@@ -21,7 +21,13 @@ namespace SME.SGP.Dados.Mapeamentos
 
             Map(a => a.Aprovador).Ignore();
             Map(a => a.AprovadorId).ToColumn("aprovador_id");
-                        
+
+            Map(a => a.Descricao).ToColumn("descricao");
+            Map(a => a.Excluido).ToColumn("excluido");
+            Map(a => a.Fim).ToColumn("fim");
+            Map(a => a.Inicio).ToColumn("inicio");
+            Map(a => a.Migrado).ToColumn("migrado");
+            Map(a => a.Status).ToColumn("status");
             Map(a => a.AprovadoEm).ToColumn("aprovado_em");
         }
     }

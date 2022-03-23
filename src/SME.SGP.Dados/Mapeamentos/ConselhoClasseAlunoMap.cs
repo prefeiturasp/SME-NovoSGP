@@ -16,6 +16,8 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.RecomendacoesFamilia).ToColumn("recomendacoes_familia");
             Map(c => c.AnotacoesPedagogicas).ToColumn("anotacoes_pedagogicas");
             Map(c => c.ConselhoClasseParecerId).ToColumn("conselho_classe_parecer_id");
+            Map(c => c.Excluido).ToColumn("excluido");
+            Map(c => c.Migrado).ToColumn("migrado");
         }
     }
 }

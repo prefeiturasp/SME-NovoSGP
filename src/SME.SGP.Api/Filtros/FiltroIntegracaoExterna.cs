@@ -1,13 +1,13 @@
-﻿using SME.SGP.Api.Middlewares;
-using Swashbuckle.AspNetCore.Swagger;
+﻿using Microsoft.OpenApi.Models;
+using SME.SGP.Api.Middlewares;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Linq;
 
 namespace SME.SGP.Api.Filtros
 {
-    public class FiltroIntegracaoExterna : IOperationFilter
+	public class FiltroIntegracaoExterna : IOperationFilter
     {
-        public void Apply(Operation operation, OperationFilterContext context)
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
 
             var attributes = context.MethodInfo.DeclaringType.GetCustomAttributes(true)
@@ -17,11 +17,10 @@ namespace SME.SGP.Api.Filtros
             if (attributes != null && attributes.Any())
             {
 
-                operation.Parameters.Add(new NonBodyParameter
+                operation.Parameters.Add(new OpenApiParameter
                 {
                     Name = "x-sgp-api-key",
-                    In = "header",
-                    Type = "string",
+                    In = ParameterLocation.Header,
                     Required = false
                 });
             }

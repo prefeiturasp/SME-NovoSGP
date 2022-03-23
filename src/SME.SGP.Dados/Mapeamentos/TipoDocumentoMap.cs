@@ -8,7 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public TipoDocumentoMap()
         {
             ToTable("tipo_documento");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.Descricao).ToColumn("descricao");
         }
     }

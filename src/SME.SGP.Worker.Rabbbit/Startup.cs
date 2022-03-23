@@ -48,6 +48,7 @@ namespace SME.SGP.Worker.Rabbbit
 
             ConfiguraVariaveisAmbiente(services);
             RegistraDependencias.Registrar(services, configuracaoRabbitOptions);
+            RegistraDependencias.RegistrarGCA(services);
             ConfiguraGoogleClassroomSync(services);
             ConfiguraRabbitParaLogs(services);
 

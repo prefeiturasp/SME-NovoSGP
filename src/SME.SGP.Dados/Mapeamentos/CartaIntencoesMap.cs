@@ -10,10 +10,11 @@ namespace SME.SGP.Dados
         public CartaIntencoesMap()
         {
             ToTable("carta_intencoes");
-            Map(x => x.TurmaId).ToColumn("turma_id");
-            Map(x => x.PeriodoEscolarId).ToColumn("periodo_escolar_id");
-            Map(x => x.ComponenteCurricularId).ToColumn("componente_curricular_id");
-            Map(x => x.Planejamento).ToColumn("planejamento");
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.PeriodoEscolarId).ToColumn("periodo_escolar_id");
+            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
+            Map(c => c.Planejamento).ToColumn("planejamento");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task Executar(string turmaCodigo, int? bimestre)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaSync, new FiltroConsolidacaoTurmaDto(turmaCodigo, bimestre), Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitFechamento.ConsolidarTurmaSync, new FiltroConsolidacaoTurmaDto(turmaCodigo, bimestre), Guid.NewGuid(), null));
         }
     }
 }

@@ -10,8 +10,14 @@ namespace SME.SGP.Dados
         public QuestaoMap()
         {
             ToTable("questao");
-            Map(a => a.QuestionarioId).ToColumn("questionario_id");
-            Map(a => a.SomenteLeitura).ToColumn("somente_leitura");
+            Map(c => c.QuestionarioId).ToColumn("questionario_id");
+            Map(c => c.Ordem).ToColumn("ordem");
+            Map(c => c.Nome).ToColumn("nome");
+            Map(c => c.Observacao).ToColumn("observacao");
+            Map(c => c.Obrigatorio).ToColumn("obrigatorio");
+            Map(c => c.Tipo).ToColumn("tipo");
+            Map(c => c.Opcionais).ToColumn("opcionais");
+            Map(c => c.SomenteLeitura).ToColumn("somente_leitura");
         }
     }
 }
