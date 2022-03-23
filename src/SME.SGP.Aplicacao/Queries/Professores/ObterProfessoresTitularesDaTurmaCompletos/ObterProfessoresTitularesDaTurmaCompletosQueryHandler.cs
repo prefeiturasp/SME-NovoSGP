@@ -52,7 +52,8 @@ namespace SME.SGP.Aplicacao
                     DisciplinaId = professor.DisciplinaId,
                     DisciplinaNome = professor.DisciplinaNome,
                     ProfessorNome = professorNome[index].Trim(),
-                    ProfessorRf = professorRfs[index].Trim()
+                    ProfessorRf = professorRfs[index].Trim(),
+                    TurmaId = professor.TurmaId
                 });
             }
         }
