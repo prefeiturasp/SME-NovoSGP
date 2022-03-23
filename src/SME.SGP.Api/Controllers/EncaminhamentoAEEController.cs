@@ -132,7 +132,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> EncerrarEncaminhamento([FromBody] EncarramentoEncaminhamentoDto parametros, [FromServices] IEncerrarEncaminhamentoAEEUseCase useCase)
+        public async Task<IActionResult> EncerrarEncaminhamento([FromBody] EncerramentoEncaminhamentoDto parametros, [FromServices] IEncerrarEncaminhamentoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento));
         }
