@@ -169,6 +169,7 @@ namespace SME.SGP.Dominio.Servicos
                 AnoLetivo = turma.AnoLetivo,
                 Nota = fechamentoNota.Nota,
                 ConceitoId = fechamentoNota.ConceitoId,
+                ComponenteCurricularId = fechamentoNota.DisciplinaId
             });
         }
 

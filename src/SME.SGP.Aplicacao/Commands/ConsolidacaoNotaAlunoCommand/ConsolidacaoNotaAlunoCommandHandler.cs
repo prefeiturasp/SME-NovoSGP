@@ -28,7 +28,8 @@ namespace SME.SGP.Aplicacao
                                                                                                          request.Bimestre, 
                                                                                                          aluno.Inativo,
                                                                                                          request.Nota,
-                                                                                                         request.ConceitoId);
+                                                                                                         request.ConceitoId,
+                                                                                                         request.ComponenteCurricularId);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemConsolidacaoConselhoClasseAluno, Guid.NewGuid(), null));
 

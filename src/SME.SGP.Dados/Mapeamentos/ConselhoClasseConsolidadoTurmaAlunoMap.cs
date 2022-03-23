@@ -11,6 +11,9 @@ namespace SME.SGP.Dados
             Map(a => a.AlunoCodigo).ToColumn("aluno_codigo");
             Map(a => a.ParecerConclusivoId).ToColumn("parecer_conclusivo_id");
             Map(a => a.TurmaId).ToColumn("turma_id");
+            Map(a => a.Nota).ToColumn("nota");
+            Map(a => a.ConceitoId).ToColumn("conceito_id");
+            Map(a => a.ComponenteCurricularId).ToColumn("componente_curricular_id");
         }
     }
 }

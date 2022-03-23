@@ -13,6 +13,8 @@ namespace SME.SGP.Aplicacao
         public double? Nota { get; set; }
         public long? ConceitoId { get; set; }
 
+        public long ComponenteCurricularId { get; set; }
+
         public ConsolidacaoNotaAlunoCommand(ConsolidacaoNotaAlunoDto consolidacaoNotaAlunoDto)
         {
             AlunoCodigo = consolidacaoNotaAlunoDto.AlunoCodigo;
@@ -21,12 +23,13 @@ namespace SME.SGP.Aplicacao
             AnoLetivo = consolidacaoNotaAlunoDto.AnoLetivo;
             Nota = consolidacaoNotaAlunoDto.Nota;
             ConceitoId = consolidacaoNotaAlunoDto.ConceitoId;
+            ComponenteCurricularId = consolidacaoNotaAlunoDto.ComponenteCurricularId;
         }
     }
 
-    public class PersistirConselhoClasseNotaCommandValidator : AbstractValidator<ConsolidacaoNotaAlunoCommand>
+    public class ConsolidacaoNotaAlunoCommandValidator : AbstractValidator<ConsolidacaoNotaAlunoCommand>
     {
-        public PersistirConselhoClasseNotaCommandValidator()
+        public ConsolidacaoNotaAlunoCommandValidator()
         {
             RuleFor(a => a.AlunoCodigo)
                 .NotEmpty()
@@ -39,6 +42,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.Bimestre)
                 .NotEmpty()
                 .WithMessage("O bimestre deve ser informado");
+
+            RuleFor(a => a.ComponenteCurricularId)
+                .NotEmpty()
+                .WithMessage("O componente curricular deve ser informado");
         }
     }
 }

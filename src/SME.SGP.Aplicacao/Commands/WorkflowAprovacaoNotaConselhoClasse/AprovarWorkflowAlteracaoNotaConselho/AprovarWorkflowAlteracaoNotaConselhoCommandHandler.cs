@@ -68,6 +68,7 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre,
                 Nota = notaConselhoClasse.Nota,
                 ConceitoId = notaConselhoClasse.ConceitoId,
+                ComponenteCurricularId = notaConselhoClasse.ComponenteCurricularCodigo
             };
             await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
         }

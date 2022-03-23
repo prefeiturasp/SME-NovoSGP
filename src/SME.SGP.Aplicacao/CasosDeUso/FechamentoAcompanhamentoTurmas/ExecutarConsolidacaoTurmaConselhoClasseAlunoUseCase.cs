@@ -22,8 +22,9 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
 
+
             var filtro = mensagemRabbit
-                    .ObterObjetoMensagem<MensagemConsolidacaoConselhoClasseAlunoDto>();
+                        .ObterObjetoMensagem<MensagemConsolidacaoConselhoClasseAlunoDto>();
 
             if (filtro == null)
             {
@@ -103,6 +104,9 @@ namespace SME.SGP.Aplicacao
             consolidadoTurmaAluno.Status = statusNovo;
 
             consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
+
+            if (filtro.ComponenteCurricularId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                consolidadoTurmaAluno.ComponenteCurricularId = filtro.ComponenteCurricularId;
 
             if (filtro.Nota.HasValue) //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
                 consolidadoTurmaAluno.Nota = filtro.Nota;

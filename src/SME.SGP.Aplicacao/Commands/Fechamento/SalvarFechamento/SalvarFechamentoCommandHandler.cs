@@ -260,6 +260,7 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = turma.AnoLetivo,
                 Nota = fechamentoNota.Nota,
                 ConceitoId = fechamentoNota.ConceitoId,
+                ComponenteCurricularId = fechamentoNota.DisciplinaId
             });
         }
 

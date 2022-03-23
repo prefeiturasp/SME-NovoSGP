@@ -16,5 +16,6 @@ namespace SME.SGP.Dominio
         public int Bimestre { get; set; }
         public double? Nota { get; set; }
         public long? ConceitoId { get; set; }
+        public long? ComponenteCurricularId { get; set; }
     }
 }

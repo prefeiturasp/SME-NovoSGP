@@ -8,5 +8,6 @@ namespace SME.SGP.Dto
         public int AnoLetivo { get; set; }
         public double? Nota { get; set; }
         public long? ConceitoId { get; set; }
+        public long ComponenteCurricularId { get; set; }
     }
 }

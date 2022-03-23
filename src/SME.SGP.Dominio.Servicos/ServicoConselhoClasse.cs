@@ -204,6 +204,7 @@ namespace SME.SGP.Dominio.Servicos
                     AnoLetivo = turma.AnoLetivo,
                     Nota = conselhoClasseNotaDto.Nota,
                     ConceitoId = conselhoClasseNotaDto.Conceito,
+                    ComponenteCurricularId = conselhoClasseNotaDto.CodigoComponenteCurricular
                 };
                 await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
             }                
@@ -272,6 +273,7 @@ namespace SME.SGP.Dominio.Servicos
                     AnoLetivo = turma.AnoLetivo,
                     Nota = conselhoClasseNotaDto.Nota,
                     ConceitoId = conselhoClasseNotaDto.Conceito,
+                    ComponenteCurricularId = conselhoClasseNota.ComponenteCurricularCodigo
                 };
                 await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
             }
