@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Api.Middlewares;
 using SME.SGP.Infra;
+using System.Text.Json.Serialization;
 
 namespace SME.SGP.Api
 {
@@ -28,6 +29,7 @@ namespace SME.SGP.Api
                 options.Filters.Add(new FiltroExcecoesAttribute(mediator));
                 options.Filters.Add(new DisposeConnectionFilter(conexao));
             })
+                .AddJsonOptions(opt => opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
                 .AddFluentValidation()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
