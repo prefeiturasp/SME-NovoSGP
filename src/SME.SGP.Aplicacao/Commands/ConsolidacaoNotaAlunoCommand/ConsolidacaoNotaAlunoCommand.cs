@@ -33,19 +33,19 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.AlunoCodigo)
                 .NotEmpty()
-                .WithMessage("O código do aluno deve ser informado");
+                .WithMessage("O código do aluno deve ser informado para gerar a consolidação das notas");
 
             RuleFor(a => a.TurmaId)
                 .NotEmpty()
-                .WithMessage("O id da turma deve ser informado");
+                .WithMessage("O id da turma deve ser informado para gerar a consolidação das notas");
 
             RuleFor(a => a.Bimestre)
                 .NotEmpty()
-                .WithMessage("O bimestre deve ser informado");
+                .WithMessage("O bimestre deve ser informado para gerar a consolidação das notas");
 
             RuleFor(a => a.ComponenteCurricularId)
                 .NotEmpty()
-                .WithMessage("O componente curricular deve ser informado");
+                .WithMessage("O componente curricular deve ser informado para gerar a consilidação das notas");
         }
     }
 }

@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorio = repositorioConselhoClasseAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAlunoConsulta));
         }
-        public async Task<ConselhoClasseAluno> Handle(ObterConselhoClasseAlunoPorIdQuery request, CancellationToken cancellationToken)
+        public Task<ConselhoClasseAluno> Handle(ObterConselhoClasseAlunoPorIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorio.ObterConselhoClasseAlunoPorId(request.ConselhoClasseAlunoId);
+            return repositorio.ObterConselhoClasseAlunoPorId(request.ConselhoClasseAlunoId);
         }
     }
 }

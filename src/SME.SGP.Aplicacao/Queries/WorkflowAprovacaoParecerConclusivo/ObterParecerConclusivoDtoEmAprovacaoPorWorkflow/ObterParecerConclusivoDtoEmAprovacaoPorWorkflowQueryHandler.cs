@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioWFAprovacaoParecerConclusivo = repositorioWFAprovacaoParecerConclusivo ?? throw new ArgumentNullException(nameof(repositorioWFAprovacaoParecerConclusivo));
         }
 
-        public async Task<WFAprovacaoParecerConclusivoDto> Handle(ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery request, CancellationToken cancellationToken)
+        public Task<WFAprovacaoParecerConclusivoDto> Handle(ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioWFAprovacaoParecerConclusivo.ObterAprovacaoParecerConclusivoPorWorkflowId(request.WorkflowId);
+            return repositorioWFAprovacaoParecerConclusivo.ObterAprovacaoParecerConclusivoPorWorkflowId(request.WorkflowId);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.ConselhoClasseAlunoId)
                 .NotEmpty()
-                .WithMessage("O conselho de classe aluno deve ser informado.");
+                .WithMessage("Para obter as informações do conselho de classe do aluno, o id conselho de classe aluno deve ser informado.");
         }
     }
 }
