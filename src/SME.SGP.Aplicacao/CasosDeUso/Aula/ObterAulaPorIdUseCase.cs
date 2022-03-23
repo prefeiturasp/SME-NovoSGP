@@ -117,7 +117,9 @@ namespace SME.SGP.Aplicacao
                 SomenteLeitura = !usuarioAcessoAoComponente || !temPeriodoAberto,
                 EmManutencao = aulaEmManutencao,
                 PodeEditar = (usuarioLogado.EhProfessorCj() && aula.AulaCJ)
-                          || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPoed() || usuarioLogado.EhProfessorPosl()))
+                          || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPoed() 
+                          || usuarioLogado.EhProfessorPosl()))
+                          || (usuarioLogado.EhProfessorPap() && aula.EhPAP)
             };
 
             return dto;
