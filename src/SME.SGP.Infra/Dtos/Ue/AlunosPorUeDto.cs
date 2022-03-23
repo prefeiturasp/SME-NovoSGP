@@ -31,7 +31,6 @@ namespace SME.SGP.Infra
             SituacaoMatriculaAluno.SemContinuidade
         };
 
-        public bool EstaAtivo(DateTime dataBase) => (SituacoesAtivas.Contains(CodigoSituacaoMatricula) && DataSituacao.Date <= dataBase) ||
-            CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido);
+        public bool EstaAtivo(DateTime dataBase) => (SituacoesAtivas.Contains(CodigoSituacaoMatricula) && DataSituacao.Date <= dataBase);
     }
 }
