@@ -8,14 +8,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTotalAulasPorDisciplinaETurmaQueryHandler : IRequestHandler<ObterTotalAulasPorDisciplinaETurmaQuery, int>
     {
-        private readonly IRepositorioRegistroAusenciaAlunoConsulta repositorioConsulta;
+        private readonly IRepositorioRegistroFrequenciaAlunoConsulta repositorioConsulta;
 
-        public ObterTotalAulasPorDisciplinaETurmaQueryHandler(IRepositorioRegistroAusenciaAlunoConsulta repositorioConsulta)
+        public ObterTotalAulasPorDisciplinaETurmaQueryHandler(IRepositorioRegistroFrequenciaAlunoConsulta repositorioConsulta)
         {
             this.repositorioConsulta = repositorioConsulta ?? throw new ArgumentNullException(nameof(repositorioConsulta));
         }
 
-        public async Task<int> Handle(ObterTotalAulasPorDisciplinaETurmaQuery request, CancellationToken cancellationToken)
-            => await repositorioConsulta.ObterTotalAulasPorDisciplinaETurma(request.DataAula, request.DisciplinaId, request.TurmasId);
+        public Task<int> Handle(ObterTotalAulasPorDisciplinaETurmaQuery request, CancellationToken cancellationToken)
+            => repositorioConsulta.ObterTotalAulasPorDisciplinaETurma(request.DataAula, request.DisciplinaId, request.TurmasId);
     }
 }

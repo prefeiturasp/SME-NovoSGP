@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using Sentry;
+﻿using MediatR;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,16 +14,10 @@ namespace SME.SGP.Aplicacao
         {
             var command = mensagem.ObterObjetoMensagem<VerificaExclusaoPendenciasAusenciaAvaliacaoCommand>();
 
-            LogSentry(command, "Inicio");
             await mediator.Send(command);
-            LogSentry(command, "Fim");
 
             return true;
         }
 
-        private void LogSentry(VerificaExclusaoPendenciasAusenciaAvaliacaoCommand command, string mensagem)
-        {
-            SentrySdk.AddBreadcrumb($"Mensagem ExecutarExclusaoPendenciasAusenciaAvaliacao : {mensagem} - Turma:{command.TurmaCodigo} Tipo:{command.TipoPendencia.ToString()}", "Rabbit - ExecutarExclusaoPendenciasAusenciaAvaliacao");
-        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
@@ -13,8 +12,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Executar(MensagemRabbit mensagemRabbit)
         {
-            SentrySdk.AddBreadcrumb($"Mensagem NotificarUsuarioUseCase", "Rabbit - NotificarUsuarioUseCase");
-
             var command = mensagemRabbit.ObterObjetoMensagem<NotificarUsuarioCommand>();
 
             return await mediator.Send(command);

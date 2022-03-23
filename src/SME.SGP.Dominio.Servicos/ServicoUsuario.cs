@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using Sentry;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
@@ -80,6 +79,7 @@ namespace SME.SGP.Dominio
         public string ObterLoginAtual()
         {
             var loginAtual = contextoAplicacao.ObterVariavel<string>("login");
+            
             if (loginAtual == null)
                 throw new NegocioException("Não foi possível localizar o login no token");
 
@@ -144,13 +144,12 @@ namespace SME.SGP.Dominio
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(string.Empty, login));
 
             if (usuario == null)
-            {
                 throw new NegocioException("Usuário não encontrado.");
-            }
 
-            var perfisDoUsuario = await repositorioCache.Obter($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
+            var perfisDoUsuario = await repositorioCache.ObterAsync($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
 
             usuario.DefinirPerfis(perfisDoUsuario);
+            
             usuario.DefinirPerfilAtual(ObterPerfilAtual());
 
             return usuario;
@@ -172,6 +171,8 @@ namespace SME.SGP.Dominio
                 if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
                     usuario.CodigoRf = codigoRf;
 
+                usuario.Nome = usuario?.Nome ?? "";
+
                 if (!usuario.Nome.Equals(nome) || !usuario.CodigoRf.Equals(codigoRf))
                     await repositorioUsuario.SalvarAsync(usuario);
 
@@ -184,66 +185,6 @@ namespace SME.SGP.Dominio
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
 
             await repositorioUsuario.SalvarAsync(usuario);
-
-            return usuario;
-        }
-
-        public async Task<Usuario> ObterUsuarioPorCodigoRfLoginOuAdicionaAsync(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
-        {
-            var eNumero = long.TryParse(codigoRf, out long n);
-
-            codigoRf = eNumero ? codigoRf : null;
-
-            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));
-            
-            if (usuario != null)
-            {
-                if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
-                {
-                    usuario.Nome = nome;
-
-                    try
-                    {
-                        await repositorioUsuario.SalvarAsync(usuario);
-                    }
-                    catch (Exception e)
-                    {
-                        SentrySdk.CaptureException(e);
-                    }                    
-                }
-
-                if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
-                {
-                    usuario.CodigoRf = codigoRf;
-
-                    try
-                    {
-                        await repositorioUsuario.SalvarAsync(usuario);
-                    }
-                    catch (Exception e)
-                    {
-                        SentrySdk.CaptureException(e);
-                    }                    
-                }
-
-                return usuario;
-            }
-
-            if (string.IsNullOrEmpty(login))
-                login = codigoRf;
-
-
-            usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
-
-            try
-            {
-                await repositorioUsuario.SalvarAsync(usuario);
-            }
-            catch (Exception e)
-            {
-                SentrySdk.CaptureException(e);
-            }
-            
 
             return usuario;
         }

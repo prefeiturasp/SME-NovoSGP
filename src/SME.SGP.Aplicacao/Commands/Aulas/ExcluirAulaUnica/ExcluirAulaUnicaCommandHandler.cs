@@ -73,7 +73,6 @@ namespace SME.SGP.Aplicacao
             if (plano != null)
             {
                 await ExcluirArquivo(plano.Descricao, TipoArquivo.PlanoAula);
-                await ExcluirArquivo(plano.DesenvolvimentoAula, TipoArquivo.PlanoAulaDesenvolvimento);
                 await ExcluirArquivo(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
                 await ExcluirArquivo(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa); 
             }
@@ -85,10 +84,6 @@ namespace SME.SGP.Aplicacao
             if(diarioDeBordo?.Planejamento != null)
             {
                 await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
-            }
-            if (diarioDeBordo?.ReflexoesReplanejamento != null)
-            {
-                await ExcluirArquivo(diarioDeBordo.ReflexoesReplanejamento, TipoArquivo.DiarioBordo);
             }
         }
         private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)

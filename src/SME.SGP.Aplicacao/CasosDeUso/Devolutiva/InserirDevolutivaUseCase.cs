@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
             var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, turma.AnoLetivo == DateTime.Today.Year));
 
             if (!periodoAberto)
-                throw new NegocioException("Período dos diários de bordo não esta aberto");
+                throw new NegocioException("Apenas é possível consultar este registro pois o período não está em aberto.");
         }
 
         private async Task<int> ValidarBimestreDiarios(Turma turma, DateTime inicioEfetivo, DateTime fimEfetivo)

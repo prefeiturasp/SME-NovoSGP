@@ -1,12 +1,10 @@
-﻿using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SME.SGP.Infra.Dtos;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IObterDiarioBordoUseCase : IUseCase<long, DiarioBordoDto>
+    public interface IObterDiarioBordoUseCase
     {
+        Task<DiarioBordoDto> Executar(long aulaId, long componenteCurricularId);
     }
 }

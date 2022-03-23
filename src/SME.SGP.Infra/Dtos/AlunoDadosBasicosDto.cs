@@ -60,7 +60,7 @@ namespace SME.SGP.Infra
         public static explicit operator AlunoDadosBasicosDto(AlunoPorTurmaResposta dadosAluno)
             => dadosAluno == null ? null : new AlunoDadosBasicosDto()
             {
-                Nome = dadosAluno.NomeAluno,
+                Nome = dadosAluno.NomeValido(),
                 NumeroChamada = dadosAluno.NumeroAlunoChamada,
                 DataNascimento = dadosAluno.DataNascimento,
                 CodigoEOL = dadosAluno.CodigoAluno,

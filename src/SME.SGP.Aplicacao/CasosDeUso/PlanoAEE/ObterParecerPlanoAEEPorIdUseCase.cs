@@ -30,6 +30,12 @@ namespace SME.SGP.Aplicacao
                 null;
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            var usuarioCoreSSO = await mediator.Send(new ObterUsuarioCoreSSOQuery(responsavel.CodigoRf));
+
+            if (usuarioCoreSSO != null && !string.IsNullOrEmpty(usuarioCoreSSO.Nome))
+                responsavel.Nome = usuarioCoreSSO.Nome;
+
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
 
             return new PlanoAEEParecerDto()
@@ -46,7 +52,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> PodeAtribuirResponsavel(PlanoAEE planoAEE, Usuario usuario, Turma turma)
-            => planoAEE.Situacao == SituacaoPlanoAEE.AtribuicaoPAAI
+            => (planoAEE.Situacao == SituacaoPlanoAEE.AtribuicaoPAAI || planoAEE.Situacao == SituacaoPlanoAEE.ParecerPAAI)
             && await EhCoordenadorCEFAI(usuario, turma);
 
         private async Task<bool> EhCoordenadorCEFAI(Usuario usuarioLogado, Turma turma)

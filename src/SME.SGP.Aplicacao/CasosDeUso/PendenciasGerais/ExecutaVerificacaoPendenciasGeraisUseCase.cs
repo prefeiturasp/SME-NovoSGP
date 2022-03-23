@@ -12,20 +12,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            if (!await mediator.Send(new ProcessoEstaEmExecucaoQuery(Dominio.TipoProcesso.CriacaoDePendenciasGerais)))
-            {
-                var processoId = await mediator.Send(new IncluirProcessoEmExecucaoCommand(Dominio.TipoProcesso.CriacaoDePendenciasGerais));
-                try
-                {
-                    await mediator.Send(new VerificarPendenciaAulaDiasNaoLetivosCommand());
-                    await mediator.Send(new VerificaPendenciaCalendarioUeCommand());
-                    await mediator.Send(new VerificaPendenciaParametroEventoCommand());
-                }
-                finally
-                {
-                    await mediator.Send(new RemoverProcessoEmExecucaoPorIdCommand(processoId));
-                }
-            }
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.PendenciasGeraisAulas, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.PendenciasGeraisCalendario, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.PendenciasGeraisEventos, null));
 
             return true;
         }

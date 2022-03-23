@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,9 +113,10 @@ namespace SME.SGP.Dados.Repositorios
                                    INNER JOIN fechamento_aluno fa
                                            ON fa.fechamento_turma_disciplina_id = ftd.id
                                    INNER JOIN fechamento_nota fn
-                                           ON fn.fechamento_aluno_id = fa.id
+                                           ON fn.fechamento_aluno_id = fa.id and not fn.excluido
                                    inner join componente_curricular ccr on fn.disciplina_id = ccr.id
-                            WHERE  t.turma_id = ANY(@turmasCodigos)
+                            WHERE  not ft.excluido 
+                                   AND t.turma_id = ANY(@turmasCodigos)
                                    AND fa.aluno_codigo = @alunoCodigo
                                    AND pe.bimestre IS NULL
                                    and ccr.permite_lancamento_nota
@@ -133,7 +135,7 @@ namespace SME.SGP.Dados.Repositorios
                                    INNER JOIN conselho_classe_aluno cca
                                            ON cca.conselho_classe_id = cc.id
                                    INNER JOIN conselho_classe_nota ccn
-                                           ON ccn.conselho_classe_aluno_id = cca.id
+                                           ON ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                                    inner join componente_curricular ccr on ccn.componente_curricular_codigo  = ccr.id 
                                    LEFT JOIN fechamento_turma_disciplina ftd
                                           ON ftd.fechamento_turma_id = ft.id
@@ -143,7 +145,8 @@ namespace SME.SGP.Dados.Repositorios
                                    LEFT JOIN fechamento_nota fn
                                           ON fn.fechamento_aluno_id = fa.id
                                              AND ccn.componente_curricular_codigo = fn.disciplina_id
-                            WHERE  t.turma_id = ANY(@turmasCodigos)
+                            WHERE  not ft.excluido 
+                                   AND t.turma_id = ANY(@turmasCodigos)
                                    AND cca.aluno_codigo = @alunoCodigo
                                    AND bimestre IS NULL 
                                    and ccr.permite_lancamento_nota)  x";
@@ -184,6 +187,32 @@ namespace SME.SGP.Dados.Repositorios
                               and aluno_codigo = @alunoCodigo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { conselhoClasseId, alunoCodigo });
+        }
+
+        public Task<IEnumerable<ConselhoClasseFechamentoAlunoDto>> ObterConselhoClasseAlunosPorTurma(string turmaCodigo)
+        {
+            string sqlQuery = @";with tmp_conselhos_ajuste_parecer as
+                                (select distinct cca.conselho_classe_id,
+			                        cc.fechamento_turma_id,
+				                    cca.aluno_codigo
+	                            from conselho_classe_aluno cca
+		                        inner join conselho_classe cc
+			                        on cca.conselho_classe_id = cc.id
+		                        inner join fechamento_turma ft
+			                        on cc.fechamento_turma_id = ft.id
+		                        inner join turma t
+			                        on ft.turma_id = t.id
+		                        inner join ue
+			                        on t.ue_id = ue.id
+                                where not cca.excluido
+                                  and t.turma_id = @turmaCodigo)
+
+                            select conselho_classe_id as ConselhoClasseId,
+                                fechamento_turma_id as FechamentoTurmaId,
+                                aluno_codigo as AlunoCodigo
+                            from tmp_conselhos_ajuste_parecer";
+
+            return database.Conexao.QueryAsync<ConselhoClasseFechamentoAlunoDto>(sqlQuery, new { turmaCodigo });
         }
     }
 }

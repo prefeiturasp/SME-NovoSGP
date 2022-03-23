@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosFechamentoReabertura
     {
-        Task<string> Alterar(FechamentoReaberturaAlteracaoDto fechamentoReaberturaPersistenciaDto, long id, bool alteracaoHierarquicaConfirmacao);
+        Task<string> Alterar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto, long id);
 
         Task<string> Excluir(long[] ids);
 

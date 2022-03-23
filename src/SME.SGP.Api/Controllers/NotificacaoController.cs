@@ -97,9 +97,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("resumo")]
         [Permissao(Permissao.N_C, Policy = "Bearer")]
-        public IActionResult ObtenhaPorRFAnoLetivo(int anoLetivo, string usuarioRf)
+        public async Task<IActionResult> ObtenhaPorRFAnoLetivo(int anoLetivo, string usuarioRf)
         {
-            return Ok(consultasNotificacao.ObterNotificacaoBasicaLista(anoLetivo, usuarioRf));
+            return Ok(await consultasNotificacao.ObterNotificacaoBasicaLista(anoLetivo, usuarioRf));
         }
 
         [HttpPost]

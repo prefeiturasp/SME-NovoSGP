@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
             if (filtro == null)
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do fechamento da turma -> componente. O id da turma bimestre componente curricular não foram informados", Sentry.Protocol.SentryLevel.Error);
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível iniciar a consolidação do fechamento da turma -> componente. O id da turma bimestre componente curricular não foram informados.", LogNivel.Negocio, LogContexto.Turma));                
                 return false;
             }
 
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
             var atualizarConsolidado = false;
 
-            if (fechamento != null && consolidadoTurmaComponente != null) 
+            if (fechamento != null && consolidadoTurmaComponente != null)
                 atualizarConsolidado = consolidadoTurmaComponente.Status != fechamento.Situacao;
 
             consolidadoTurmaComponente = MapearFechamentoConsolidado(filtro, consolidadoTurmaComponente, fechamento, professoresDaTurma);
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             if (consolidadoTurmaComponente == null)
             {
                 var professorComponente = professoresDaTurma.FirstOrDefault(p => p.DisciplinaId == filtro.ComponenteCurricularId);
-               
+
                 consolidadoTurmaComponente = new FechamentoConsolidadoComponenteTurma()
                 {
                     Bimestre = filtro.Bimestre,

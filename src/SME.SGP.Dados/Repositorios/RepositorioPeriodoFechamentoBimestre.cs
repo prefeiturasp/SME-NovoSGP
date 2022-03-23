@@ -3,6 +3,7 @@ using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,7 +67,7 @@ namespace SME.SGP.Dados.Repositorios
                      inner join periodo_escolar e on e.id = b.periodo_escolar_id
                      inner join tipo_calendario t on t.id = e.tipo_calendario_id
                      where not t.excluido
-                       and e.bimestre = @bimestre
+                       and e.bimestre {BimestreConstants.ObterCondicaoBimestre(bimestre, modalidadeTipoCalendario == ModalidadeTipoCalendario.Infantil)}
                        and t.modalidade = @modalidade
                        and b.inicio_fechamento = @dataInicio 
                        and {filtroDre} 
@@ -82,15 +83,47 @@ namespace SME.SGP.Dados.Repositorios
                 }, new { modalidade = (int)modalidadeTipoCalendario, dataInicio, bimestre, dreId, ueId })).FirstOrDefault();
         }
 
-        public async Task<bool> ExistePeriodoFechamentoPorUePeriodoEscolar(long ueId, long periodoEscolarId)
+        public async Task<bool> ExistePeriodoFechamentoPorDataPeriodoEscolar(long periodoEscolarId, DateTime dataReferencia)
         {
             var query = @"select 1
                           from periodo_fechamento p 
                          inner join periodo_fechamento_bimestre b on b.periodo_fechamento_id = p.Id
-                        where p.ue_id = @ueId
-                          and b.periodo_escolar_id = @periodoEscolarId";
+                        where b.periodo_escolar_id = @periodoEscolarId 
+                            and TO_DATE(fr.inicio::TEXT, 'yyyy/mm/dd') <= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
+                            and TO_DATE(fr.fim::TEXT, 'yyyy/mm/dd') >= TO_DATE(@dataReferencia, 'yyyy/mm/dd')
+                            and fr.status = 1 
+                        ";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ueId, periodoEscolarId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { periodoEscolarId, dataReferencia });
+        }
+
+        public async Task<bool> ExistePeriodoFechamentoPorDataPeriodoIdEscolar(long periodoEscolarId, DateTime dataReferencia)
+        {
+            var query = @"select 1
+                          from periodo_fechamento p 
+                         inner join periodo_fechamento_bimestre b on b.periodo_fechamento_id = p.Id
+                        where b.periodo_escolar_id = @periodoEscolarId
+                            and b.inicio_fechamento <= @dataReferencia
+                            and b.final_fechamento >= @dataReferencia 
+                        ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { periodoEscolarId, dataReferencia });
+        }
+
+        public Task<PeriodoFechamentoBimestre> ObterPeriodoFechamanentoPorCalendarioDreUeBimestre(long tipoCalendarioId, int bimestre, long dreId, long ueId)
+        {
+            var query = @"select pfb.* 
+                      from periodo_fechamento_bimestre pfb 
+                     inner join periodo_fechamento pf on pf.id = pfb.periodo_fechamento_id 
+                     inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id 
+                     where pe.tipo_calendario_id = @tipoCalendarioId
+                       and pe.bimestre = @bimestre
+                       and (pf.dre_id is null
+                         or (pf.dre_id = @dreId
+                         and (pf.ue_id is null or pf.ue_id = @ueId)
+                         ))";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query, new { tipoCalendarioId, bimestre, dreId, ueId });
         }
     }
 }

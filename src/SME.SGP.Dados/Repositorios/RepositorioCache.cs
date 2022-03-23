@@ -11,209 +11,94 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioCache : IRepositorioCache
     {
 
-        private readonly IServicoLog servicoLog;
         private readonly IMemoryCache memoryCache;
+        private readonly ServicoTelemetria servicoTelemetria;
 
-        public RepositorioCache(IServicoLog servicoLog, IMemoryCache memoryCache)
+        public RepositorioCache(IMemoryCache memoryCache, ServicoTelemetria servicoTelemetria)
         {
-
-            this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+            this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
         }
-
         public string Obter(string nomeChave, bool utilizarGZip = false)
         {
-            var inicioOperacao = DateTime.UtcNow;
-            var timer = System.Diagnostics.Stopwatch.StartNew();
+            var cacheParaRetorno = servicoTelemetria.RegistrarComRetorno<string>(() => memoryCache.Get<string>(nomeChave), "Cache Obter", "", "");
 
-            try
+            if (utilizarGZip)
             {
-                var cacheParaRetorno = memoryCache.Get<string>("nomeChave");
-                timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Obtendo", inicioOperacao, timer.Elapsed, true);
-
-                if (utilizarGZip)
-                {
-                    cacheParaRetorno = UtilGZip.Descomprimir(Convert.FromBase64String(cacheParaRetorno));
-                }
-
-                return cacheParaRetorno;
+                cacheParaRetorno = UtilGZip.Descomprimir(Convert.FromBase64String(cacheParaRetorno));
             }
-            catch (Exception ex)
-            {
-                //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
-                servicoLog.Registrar(ex);
-                timer.Stop();
 
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, $"Obtendo - Erro {ex.Message}", inicioOperacao, timer.Elapsed, false);
-                return null;
-            }
+            return cacheParaRetorno;
         }
-
-        public async Task<T> Obter<T>(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720, bool utilizarGZip = false)
-        {
-            var inicioOperacao = DateTime.UtcNow;
-            var timer = System.Diagnostics.Stopwatch.StartNew();
-
-            try
-            {
-                var stringCache = memoryCache.Get<string>(nomeChave);
-
-                timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Obtendo", inicioOperacao, timer.Elapsed, true);
-
-                if (!string.IsNullOrWhiteSpace(stringCache))
-                {
-                    if (utilizarGZip)
-                    {
-                        stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
-                    }
-                    return JsonConvert.DeserializeObject<T>(stringCache);
-                }
-
-                var dados = await buscarDados();
-
-                await SalvarAsync(nomeChave, JsonConvert.SerializeObject(dados), minutosParaExpirar, utilizarGZip);
-
-                return dados;
-            }
-            catch (Exception ex)
-            {
-                servicoLog.Registrar(ex);
-                timer.Stop();
-
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, $"Obtendo - Erro {ex.Message}", inicioOperacao, timer.Elapsed, false);
-                return default;
-            }
-        }
-
-
-
         public async Task<T> ObterAsync<T>(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720, bool utilizarGZip = false)
         {
-            var inicioOperacao = DateTime.UtcNow;
-            var timer = System.Diagnostics.Stopwatch.StartNew();
+            var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => memoryCache.Get<string>(nomeChave), "Cache Obter async<T>", "", "");
 
-            try
+            if (!string.IsNullOrWhiteSpace(stringCache))
             {
-                var stringCache = memoryCache.Get<string>(nomeChave);
-
-                timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Obtendo", inicioOperacao, timer.Elapsed, true);
-
-                if (!string.IsNullOrWhiteSpace(stringCache))
+                if (utilizarGZip)
                 {
-                    if (utilizarGZip)
-                    {
-                        stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
-                    }
-                    return JsonConvert.DeserializeObject<T>(stringCache);
+                    stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
                 }
-
-                var dados = await buscarDados();
-
-                await SalvarAsync(nomeChave, JsonConvert.SerializeObject(dados), minutosParaExpirar, utilizarGZip);
-
-                return dados;
+                return JsonConvert.DeserializeObject<T>(stringCache);
             }
-            catch (Exception ex)
-            {
-                servicoLog.Registrar(ex);
-                timer.Stop();
 
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, $"Obtendo - Erro {ex.Message}", inicioOperacao, timer.Elapsed, false);
-                return default;
-            }
+            var dados = await buscarDados();
+
+            await SalvarAsync(nomeChave, JsonConvert.SerializeObject(dados), minutosParaExpirar, utilizarGZip);
+
+            return dados;
+
         }
 
         public async Task<string> ObterAsync(string nomeChave, bool utilizarGZip = false)
         {
-            var inicioOperacao = DateTime.UtcNow;
-            var timer = System.Diagnostics.Stopwatch.StartNew();
+            var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => memoryCache.Get<string>(nomeChave), "Cache Obter async<T>", "Cache Obter async<T>", "");
 
-            try
+            if (!string.IsNullOrWhiteSpace(stringCache))
             {
-                var stringCache = memoryCache.Get<string>(nomeChave);
-
-                timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Obtendo", inicioOperacao, timer.Elapsed, true);
-
-                if (!string.IsNullOrWhiteSpace(stringCache))
+                if (utilizarGZip)
                 {
-                    if (utilizarGZip)
-                    {
-                        stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
-                    }
-                    return stringCache;
+                    stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
                 }
-
-                return string.Empty;
-
+                return stringCache;
             }
-            catch (Exception ex)
-            {
-                servicoLog.Registrar(ex);
-                timer.Stop();
 
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, $"Obtendo - Erro {ex.Message}", inicioOperacao, timer.Elapsed, false);
-                return default;
-            }
+            return await Task.FromResult(string.Empty);
         }
 
         public async Task RemoverAsync(string nomeChave)
         {
-            var inicioOperacao = DateTime.UtcNow;
-            var timer = System.Diagnostics.Stopwatch.StartNew();
-
             try
             {
-                memoryCache.Remove(nomeChave);
-
-                timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
+                await Task.Factory.StartNew(() => servicoTelemetria.Registrar(() => memoryCache.Remove(nomeChave), "Cache Remover async", "Cache Remover async", ""));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
-                timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, false);
-                servicoLog.Registrar(ex);
-            }
+                                
+            }            
         }
 
         public void Salvar(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
         {
-            var inicioOperacao = DateTime.UtcNow;
-            var timer = System.Diagnostics.Stopwatch.StartNew();
-
+            if (utilizarGZip)
+            {
+                var valorComprimido = UtilGZip.Comprimir(valor);
+                valor = Convert.ToBase64String(valorComprimido);
+            }
             try
             {
-
-                if (utilizarGZip)
-                {
-                    var valorComprimido = UtilGZip.Comprimir(valor);
-                    valor = Convert.ToBase64String(valorComprimido);
-                }
-
-                memoryCache.Set(nomeChave, valor, TimeSpan.FromMinutes(minutosParaExpirar));
-
-                timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
-
+                servicoTelemetria.Registrar(() => memoryCache.Set(nomeChave, valor, TimeSpan.FromMinutes(minutosParaExpirar)), "Cache Obter async<T>", "", "");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Salvar", inicioOperacao, timer.Elapsed, false);
-                servicoLog.Registrar(ex);
+                                
             }
+            
         }
 
         public async Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
         {
-            var inicioOperacao = DateTime.UtcNow;
-            var timer = System.Diagnostics.Stopwatch.StartNew();
-
             try
             {
                 if (!string.IsNullOrWhiteSpace(valor) && valor != "[]")
@@ -225,17 +110,12 @@ namespace SME.SGP.Dados.Repositorios
                         valor = Convert.ToBase64String(valorComprimido);
                     }
 
-                    memoryCache.Set(nomeChave, valor, TimeSpan.FromMinutes(minutosParaExpirar));
-
-                    timer.Stop();
-                    servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
+                    await Task.Factory.StartNew(() => servicoTelemetria.Registrar(() => memoryCache.Set(nomeChave, valor, TimeSpan.FromMinutes(minutosParaExpirar)), "Cache Salvar async", "Cache Salvar async", ""));
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Salvar", inicioOperacao, timer.Elapsed, false);
-                servicoLog.Registrar(ex);
+
             }
         }
 

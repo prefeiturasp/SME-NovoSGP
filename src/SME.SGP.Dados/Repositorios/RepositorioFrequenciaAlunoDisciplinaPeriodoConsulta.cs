@@ -266,6 +266,29 @@ namespace SME.SGP.Dados
             });
         }
 
+        public async Task<FrequenciaAluno> ObterPorAlunoDisciplinaDataAsync(string codigoAluno, string disciplinaId, DateTime dataAtual, string turmaCodigo)
+        {
+            var query = @"select *
+                        from frequencia_aluno fa
+                        inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
+                        where codigo_aluno = @codigoAluno
+                            and disciplina_id = @disciplinaId
+	                        and tipo = 1
+	                        and pe.periodo_inicio <= @dataAtual
+	                        and pe.periodo_fim >= @dataAtual ";
+
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += "and fa.turma_id = @turmaCodigo";
+
+            return await database.QueryFirstOrDefaultAsync<FrequenciaAluno>(query, new
+            {
+                codigoAluno,
+                disciplinaId,
+                dataAtual,
+                turmaCodigo
+            });
+        }
+
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolar(string codigoTurma, string componenteCurricularId, TipoFrequenciaAluno tipoFrequencia, IEnumerable<long> periodosEscolaresIds)
         {
             const string sql = @"select 
@@ -308,7 +331,7 @@ namespace SME.SGP.Dados
                 });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaComponentesAlunoPorTurmas(string alunoCodigo, string[] codigosTurmas, long tipoCalendarioId)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaComponentesAlunoPorTurmas(string alunoCodigo, string[] codigosTurmas, long tipoCalendarioId, int bimestre = 0)
         {
             var query = new StringBuilder($@"select fa.* 
                             from frequencia_aluno fa
@@ -322,6 +345,9 @@ namespace SME.SGP.Dados
                 and t.turma_id = any(@codigosTurmas)
                 and t.tipo_turma in(1,2,7) ");
 
+            if (bimestre > 0)
+                query.AppendLine(" and fa.bimestre = @bimestre");
+
             if (tipoCalendarioId > 0)
                 query.AppendLine(" and pe.tipo_calendario_id = @tipoCalendarioId");
 
@@ -330,7 +356,8 @@ namespace SME.SGP.Dados
                 {
                     alunoCodigo,
                     codigosTurmas,
-                    tipoCalendarioId
+                    tipoCalendarioId,
+                    bimestre
                 });
         }
 

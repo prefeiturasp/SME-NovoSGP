@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasConselhoClasseNota consultasConselhoClasseNota;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;        
+        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IServicoConselhoClasse servicoConselhoClasse;
@@ -87,8 +87,6 @@ namespace SME.SGP.Aplicacao
             if (turma.AnoLetivo != 2020 && turma.AnoLetivo == DateTime.Now.Year && bimestre == 0 && !await ExisteConselhoClasseUltimoBimestreAsync(turma, alunoCodigo))
                 throw new NegocioException("Aluno não possui conselho de classe do último bimestre");
 
-
-
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma);
@@ -98,7 +96,8 @@ namespace SME.SGP.Aplicacao
             var gruposMatrizes = disciplinas.Where(x => !x.LancaNota && x.GrupoMatriz != null)
                                             .GroupBy(c => new { Id = c.GrupoMatriz?.Id, Nome = c.GrupoMatriz?.Nome });
 
-            var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaBimestresAsync(alunoCodigo, bimestre, turma.CodigoTurma);
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+            var frequenciaAluno = await mediator.Send(new ObterFrequenciasAlunoComponentePorTurmasQuery(alunoCodigo, new string[] { turma.CodigoTurma }, tipoCalendarioId, bimestre));
 
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
 
@@ -109,7 +108,7 @@ namespace SME.SGP.Aplicacao
                     periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
             }
 
-            var registrosFrequencia = await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, new string[] { turma.CodigoTurma }, disciplinas.Select(d => d.CodigoComponenteCurricular.ToString()).ToArray(),
+            var registrosFrequencia = await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, new string[] { turma.CodigoTurma }, disciplinas.Select(d => !d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : d.CodigoComponenteTerritorioSaber.ToString()).ToArray(),
                 periodoEscolar?.Id));
 
             foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key.Nome))
@@ -123,7 +122,10 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var componenteCurricular in grupoDisiplinasMatriz.Where(x => !x.LancaNota))
                 {
-                    var componenteCurricularDto = await MapearDto(frequenciaAluno, componenteCurricular, bimestre, registrosFrequencia, turma.ModalidadeCodigo);
+                    if (componenteCurricular.TerritorioSaber)
+                        componenteCurricular.Nome = disciplinas.First(d => d.CodigoComponenteCurricular == componenteCurricular.CodigoComponenteCurricular).Nome;
+
+                    var componenteCurricularDto = await MapearDto(frequenciaAluno, componenteCurricular, bimestre, registrosFrequencia, turma.ModalidadeCodigo, turma.AnoLetivo);
                     grupoMatriz.ComponenteSinteses.Add(componenteCurricularDto);
                 }
 
@@ -136,7 +138,7 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAlunoNotasConceitosRetornoDto> ObterNotasFrequencia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, bool consideraHistorico = false)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, turma.AnoLetivo != DateTime.Now.Year));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, consideraHistorico));
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
 
             if (fechamentoTurma != null) turma = fechamentoTurma?.Turma;
@@ -149,10 +151,13 @@ namespace SME.SGP.Aplicacao
             string[] turmasCodigos;
             long[] conselhosClassesIds;
 
-            if (turma.DeveVerificarRegraRegulares())
+            var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+
+            if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a=> a.Id == (int)turma.TipoTurma))
             {
-                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
+                var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
+                turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s=> s.Id));
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim));
                 if (!turmasCodigos.Any())
                     turmasCodigos = new string[1] { turma.CodigoTurma };
@@ -185,7 +190,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var conselhosClassesId in conselhosClassesIds)
                 {
-                    var notasParaAdicionar = await consultasConselhoClasseNota.ObterNotasAlunoAsync(conselhosClassesId, alunoCodigo);
+                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, alunoCodigo));
                     notasConselhoClasseAluno.AddRange(notasParaAdicionar);
                 }
             }
@@ -207,7 +212,7 @@ namespace SME.SGP.Aplicacao
             //Verificar as notas finais
             var notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
                await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)) :
-               await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigos, bimestre);
+               await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, alunoCodigo, bimestre));
 
             Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
 
@@ -248,6 +253,7 @@ namespace SME.SGP.Aplicacao
 
                         var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
                         FrequenciaAluno frequenciaAluno;
+                        var percentualFrequenciaPadrao = false;
                         if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
                             frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
                         else if (frequenciasAlunoParaTratar.Count() == 1)
@@ -263,6 +269,7 @@ namespace SME.SGP.Aplicacao
                             frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
                             frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
                             frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
+                            percentualFrequenciaPadrao = true;
                             frequenciasAlunoParaTratar
                                 .ToList()
                                 .ForEach(f =>
@@ -288,7 +295,7 @@ namespace SME.SGP.Aplicacao
                                                                                                     periodoEscolar, frequenciasAlunoParaTratar, registrosFrequencia);
 
 
-                            conselhoClasseAlunoNotas.ComponentesCurriculares.Add(ObterNotasFrequenciaComponente(disciplina.Nome,
+                            conselhoClasseAlunoNotas.ComponentesCurriculares.Add(await ObterNotasFrequenciaComponente(disciplina.Nome,
                                                                                                                 disciplina.CodigoComponenteCurricular,
                                                                                                                 frequenciaAluno,
                                                                                                                 periodoEscolar,
@@ -296,7 +303,8 @@ namespace SME.SGP.Aplicacao
                                                                                                                 notasConselhoClasseAluno,
                                                                                                                 notasFechamentoAluno,
                                                                                                                 turmaPossuiRegistroFrequencia,
-                                                                                                                disciplina.LancaNota));
+                                                                                                                disciplina.LancaNota,
+                                                                                                                percentualFrequenciaPadrao));
                         }
                     }
                 }
@@ -343,7 +351,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> VerificaSePodeEditarNota(string alunoCodigo, Turma turma, PeriodoEscolar periodoEscolar)
         {
-            var turmaFechamento = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma, turma.AnoLetivo);
+            var turmaFechamento = await servicoEOL.ObterAlunosAtivosPorTurma(turma.CodigoTurma, DateTimeExtension.HorarioBrasilia());
 
             if (turmaFechamento == null || !turmaFechamento.Any())
                 throw new NegocioException($"Não foi possível obter os dados da turma {turma.CodigoTurma}");
@@ -353,12 +361,12 @@ namespace SME.SGP.Aplicacao
             if (aluno == null)
                 throw new NegocioException($"Não foi possível obter os dados do aluno {alunoCodigo}");
 
-            PeriodoFechamentoBimestre periodoFechamentoBimestre = null;
+            var temPeriodoAberto = false;
 
             if (periodoEscolar != null)
-                periodoFechamentoBimestre = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre, periodoEscolar.Id);
+                temPeriodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, aluno.DataSituacao, periodoEscolar.Bimestre);
 
-            return aluno.PodeEditarNotaConceitoNoPeriodo(periodoEscolar, periodoFechamentoBimestre);
+            return aluno.PodeEditarNotaConceitoNoPeriodo(periodoEscolar, temPeriodoAberto);
         }
 
         public async Task<ParecerConclusivoDto> ObterParecerConclusivo(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, bool consideraHistorico = false)
@@ -383,20 +391,40 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Aluno não possui conselho de classe do último bimestre");
 
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
-            if (!turma.EhAnoAnterior() && (conselhoClasseAluno == null || !conselhoClasseAluno.ConselhoClasseParecerId.HasValue))
-                return await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo, consideraHistorico);
+            if (!turma.EhAnoAnterior() && (conselhoClasseAluno == null || !conselhoClasseAluno.ConselhoClasseParecerId.HasValue) && fechamentoTurma.PeriodoEscolarId == null)
+                return await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
 
-            return new ParecerConclusivoDto()
+            var parecerConclusivoDto = new ParecerConclusivoDto()
             {
                 Id = conselhoClasseAluno?.ConselhoClasseParecerId != null ? conselhoClasseAluno.ConselhoClasseParecerId.Value : 0,
-                Nome = conselhoClasseAluno?.ConselhoClasseParecer?.Nome
+                Nome = conselhoClasseAluno?.ConselhoClasseParecer?.Nome,
+                EmAprovacao = false
             };
+
+            await VerificaEmAprovacaoParecerConclusivo(conselhoClasseAluno?.Id, parecerConclusivoDto);
+
+            return parecerConclusivoDto;
+        }
+
+        private async Task VerificaEmAprovacaoParecerConclusivo(long? conselhoClasseAlunoId, ParecerConclusivoDto parecerConclusivoDto)
+        {
+            if(conselhoClasseAlunoId != null && conselhoClasseAlunoId > 0)
+            {
+                var wfAprovacaoParecerConclusivo = await mediator.Send(new ObterSePossuiParecerEmAprovacaoQuery(conselhoClasseAlunoId));
+
+                if (wfAprovacaoParecerConclusivo != null)
+                {
+                    parecerConclusivoDto.Id = wfAprovacaoParecerConclusivo.ConselhoClasseParecerId.Value;
+                    parecerConclusivoDto.Nome = wfAprovacaoParecerConclusivo.ConselhoClasseParecer.Nome;
+                    parecerConclusivoDto.EmAprovacao = true;
+                }
+            } 
         }
 
         public async Task<ConselhoClasseAluno> ObterPorConselhoClasseAsync(long conselhoClasseId, string alunoCodigo)
             => await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
 
-        private static DisciplinaDto MapeaderDisciplinasDto(DisciplinaResposta componenteCurricular)
+        private DisciplinaDto MapearDisciplinasDto(DisciplinaResposta componenteCurricular)
         {
             return new DisciplinaDto
             {
@@ -410,46 +438,45 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private static ConselhoDeClasseComponenteSinteseDto MapearConselhoDeClasseComponenteSinteseDto(DisciplinaResposta componenteCurricular, IEnumerable<FrequenciaAluno> frequenciaDisciplina, string percentualFrequencia, SinteseDto parecerFinal)
+        private ConselhoDeClasseComponenteSinteseDto MapearConselhoDeClasseComponenteSinteseDto(DisciplinaResposta componenteCurricular, FrequenciaAluno frequenciaDisciplina, string percentualFrequencia, SinteseDto parecerFinal)
         {
             return new ConselhoDeClasseComponenteSinteseDto
             {
                 Codigo = componenteCurricular.CodigoComponenteCurricular,
                 Nome = componenteCurricular.Nome,
-                TotalFaltas = frequenciaDisciplina.Sum(x => x.TotalAusencias),
+                TotalFaltas = frequenciaDisciplina?.TotalAusencias,
                 PercentualFrequencia = !String.IsNullOrEmpty(percentualFrequencia) ? $"{percentualFrequencia}%" : "",
                 ParecerFinal = parecerFinal?.Valor ?? string.Empty,
                 ParecerFinalId = (int)(parecerFinal?.Id ?? default)
             };
         }
 
-        private static IEnumerable<FrequenciaAluno> ObterFrequenciaPorDisciplina(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular)
-        {
-            return frequenciaAluno.Where(x => x.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString());
-        }
-
-        private static string ObterPercentualDeFrequencia(IEnumerable<FrequenciaAluno> frequenciaDisciplina)
+        private string ObterPercentualDeFrequencia(IEnumerable<FrequenciaAluno> frequenciaDisciplina)
         {
             var retorno = frequenciaDisciplina.Any() ? (frequenciaDisciplina.Sum(x => x.PercentualFrequencia) / frequenciaDisciplina.Count()).ToString() : "";
             return retorno;
         }
 
-        private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia, Modalidade modalidade)
+        private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia, Modalidade modalidade, int anoLetivo)
         {
-            var frequenciaDisciplina = ObterFrequenciaPorDisciplina(frequenciaAluno, componenteCurricular);
+            var dto = MapearDisciplinasDto(componenteCurricular);
 
-            var percentualFrequencia = ObterPercentualDeFrequencia(frequenciaDisciplina);
-            if (!frequenciaDisciplina.Any() && registrosFrequencia.Where(a => a.CodigoComponenteCurricular == componenteCurricular.CodigoComponenteCurricular).Any())
-                percentualFrequencia = "100";
-
-            var dto = MapeaderDisciplinasDto(componenteCurricular);
+            var frequenciaComponente = frequenciaAluno.FirstOrDefault(a => a.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString());
+            var percentualFrequencia = CalcularPercentualFrequenciaComponente(frequenciaComponente, componenteCurricular, anoLetivo);
 
             var parecerFinal = bimestre == 0 && EhEjaCompartilhada(componenteCurricular, modalidade) == false
-                                        ? await consultasFrequencia.ObterSinteseAluno(String.IsNullOrEmpty(percentualFrequencia) ? 0 : double.Parse(percentualFrequencia), dto)
+                                        ? await consultasFrequencia.ObterSinteseAluno(String.IsNullOrEmpty(percentualFrequencia) ? 0 : double.Parse(percentualFrequencia), dto, anoLetivo)
                                         : null;
 
-            var componenteSinteseAdicionar = MapearConselhoDeClasseComponenteSinteseDto(componenteCurricular, frequenciaDisciplina, percentualFrequencia, parecerFinal);
+            var componenteSinteseAdicionar = MapearConselhoDeClasseComponenteSinteseDto(componenteCurricular, frequenciaComponente, percentualFrequencia, parecerFinal);
             return componenteSinteseAdicionar;
+        }
+
+        private string CalcularPercentualFrequenciaComponente(FrequenciaAluno frequenciaComponente, DisciplinaResposta componenteCurricular, int anoLetivo)
+        {
+            return anoLetivo == 2020 ?
+                frequenciaComponente?.PercentualFrequenciaFinal.ToString() ?? "0" :
+                frequenciaComponente?.PercentualFrequencia.ToString() ?? "0";
         }
 
         private bool EhEjaCompartilhada(DisciplinaResposta componenteCurricular, Modalidade modalidade)
@@ -524,25 +551,46 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private NotaPosConselhoDto ObterNotaPosConselho(long componenteCurricularCodigo, int? bimestre, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool componenteLancaNota)
+        private async Task<NotaPosConselhoDto> ObterNotaPosConselho(long componenteCurricularCodigo, int? bimestre, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool componenteLancaNota)
         {
             // Busca nota do conselho de classe consultado
             var notaComponente = notasConselhoClasseAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo);
-            if (notaComponente == null)
+            var notaComponenteId = notaComponente?.Id;
+            if (notaComponente == null || !notaComponente.NotaConceito.HasValue)
             {
-                // Sugere nota final do fechamento
-                var notaComponenteComConselhoNota = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre && c.ConselhoClasseNotaId > 0);
-                if (notaComponenteComConselhoNota != null) notaComponente = notaComponenteComConselhoNota;
-                else
-                    notaComponente = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre);
+                var notaComponenteFechamento = 
+                    notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre && c.ConselhoClasseNotaId > 0)
+                    ?? notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre);
+                
+                notaComponente = notaComponenteFechamento;
             }
 
-            return new NotaPosConselhoDto()
+            var notaPosConselho = new NotaPosConselhoDto()
             {
-                Id = notaComponente?.Id,
+                Id = notaComponenteId,
                 Nota = notaComponente?.NotaConceito,
                 PodeEditar = componenteLancaNota
             };
+
+            if(notaComponenteId.HasValue)
+                await VerificaNotaEmAprovacao(notaComponenteId.Value, notaPosConselho);
+
+            return notaPosConselho;
+        }
+
+        private async Task VerificaNotaEmAprovacao(long conselhoClasseNotaId, NotaPosConselhoDto nota)
+        {
+            double notaConselhoEmAprovacao = await mediator.Send(new ObterNotaConselhoEmAprovacaoQuery(conselhoClasseNotaId));
+
+            if(notaConselhoEmAprovacao > 0)
+            {
+                nota.EmAprovacao = true;
+                nota.Nota = notaConselhoEmAprovacao;
+            }
+            else
+            {
+                nota.EmAprovacao = false;
+            }
         }
 
         private List<NotaBimestreDto> ObterNotasComponente(long componenteCurricularCodigo, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
@@ -574,9 +622,9 @@ namespace SME.SGP.Aplicacao
             return notasPeriodos;
         }
 
-        private ConselhoClasseComponenteFrequenciaDto ObterNotasFrequenciaComponente(string componenteCurricularNome, long componenteCurricularCodigo, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool turmaPossuiRegistroFrequencia, bool componenteLancaNota)
+        private async Task <ConselhoClasseComponenteFrequenciaDto> ObterNotasFrequenciaComponente(string componenteCurricularNome, long componenteCurricularCodigo, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool turmaPossuiRegistroFrequencia, bool componenteLancaNota, bool percentualFrequenciaPadrao)
         {
-            var percentualFrequencia = double.MinValue;  
+            var percentualFrequencia = double.MinValue;
 
             if (turmaPossuiRegistroFrequencia)
                 percentualFrequencia = Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
@@ -596,7 +644,7 @@ namespace SME.SGP.Aplicacao
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
                 Frequencia = percentualFrequencia < 0 || ((frequenciaAluno?.TotalAulas ?? 0) == 0 && (frequenciaAluno?.TotalAusencias ?? 0) == 0) ? null : percentualFrequencia.ToString(),
                 NotasFechamentos = ObterNotasComponente(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno),
-                NotaPosConselho = ObterNotaPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota)
+                NotaPosConselho = await ObterNotaPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota)
             };
 
             return conselhoClasseComponente;
@@ -608,6 +656,10 @@ namespace SME.SGP.Aplicacao
 
             if (componentesRegencia == null || !componentesRegencia.Any())
                 throw new NegocioException("Não foram encontrados componentes curriculares para a regência informada.");
+
+            // Excessão de disciplina ED. Fisica para modalidade EJA
+            if (turma.EhEJA())
+                componentesRegencia = componentesRegencia.Where(a => a.CodigoComponenteCurricular != 6);
 
             var percentualFrequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 0 : 0);
 
@@ -624,19 +676,19 @@ namespace SME.SGP.Aplicacao
             };
 
             foreach (var componenteRegencia in componentesRegencia)
-                conselhoClasseComponente.ComponentesCurriculares.Add(ObterNotasRegencia(componenteRegencia.Nome, componenteRegencia.CodigoComponenteCurricular, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota));
+                conselhoClasseComponente.ComponentesCurriculares.Add(await ObterNotasRegencia(componenteRegencia.Nome, componenteRegencia.CodigoComponenteCurricular, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota));
 
             return conselhoClasseComponente;
         }
 
-        private ConselhoClasseNotasComponenteRegenciaDto ObterNotasRegencia(string componenteCurricularNome, long componenteCurricularCodigo, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool componenteLancaNota)
+        private async Task<ConselhoClasseNotasComponenteRegenciaDto> ObterNotasRegencia(string componenteCurricularNome, long componenteCurricularCodigo, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool componenteLancaNota)
         {
             return new ConselhoClasseNotasComponenteRegenciaDto()
             {
                 Nome = componenteCurricularNome,
                 CodigoComponenteCurricular = componenteCurricularCodigo,
                 NotasFechamentos = ObterNotasComponente(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno),
-                NotaPosConselho = ObterNotaPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota)
+                NotaPosConselho = await ObterNotaPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota)
             };
         }
 
@@ -647,6 +699,30 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível localizar o período escolar do ultimo bimestre da turma");
 
             return periodoEscolarUltimoBimestre;
+        }
+
+        public async Task<ParecerConclusivoDto> ObterParecerConclusivoAlunoTurma(string codigoTurma, string alunoCodigo)
+        {
+            ParecerConclusivoDto parecerConclusivoDto;
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
+            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFiltrosAsync(codigoTurma, alunoCodigo, 0, true);
+            if (conselhoClasseAluno is null)
+                return new ParecerConclusivoDto();
+
+            if (!turma.EhAnoAnterior() && !conselhoClasseAluno.ConselhoClasseParecerId.HasValue)
+                parecerConclusivoDto = await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseAluno.ConselhoClasseId, conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, alunoCodigo);
+            else
+                parecerConclusivoDto = new ParecerConclusivoDto()
+                {
+                    Id = conselhoClasseAluno?.ConselhoClasseParecerId ?? 0,
+                    Nome = conselhoClasseAluno?.ConselhoClasseParecer?.Nome,
+                    EmAprovacao = false
+                };
+
+            await VerificaEmAprovacaoParecerConclusivo(conselhoClasseAluno?.Id, parecerConclusivoDto);
+
+            return parecerConclusivoDto;
+
         }
     }
 }

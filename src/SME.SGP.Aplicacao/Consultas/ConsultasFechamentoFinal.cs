@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
             retorno.EhSintese = !disciplinaEOL.LancaNota;
 
             var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { filtros.DisciplinaCodigo });
-            var notasFechamentosFinais = Enumerable.Empty<FechamentoNota>();
+            var notasFechamentosFinais = Enumerable.Empty<FechamentoNotaAlunoAprovacaoDto>();
             if (fechamentosTurmaDisciplina != null && fechamentosTurmaDisciplina.Any())
                 notasFechamentosFinais = await repositorioFechamentoNota.ObterPorFechamentosTurma(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray());
 
@@ -126,11 +126,7 @@ namespace SME.SGP.Aplicacao
                             a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
                             a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido))
                 .OrderBy(a => a.NumeroAlunoChamada)
-                .ThenBy(a => a.NomeValido());
-
-
-          
-            
+                .ThenBy(a => a.NomeValido());            
 
             foreach (var aluno in alunosValidosOrdenados)
             {
@@ -142,7 +138,7 @@ namespace SME.SGP.Aplicacao
 
                 if (retorno.EhSintese)
                 {
-                    var sinteseDto = await consultasFrequencia.ObterSinteseAluno(fechamentoFinalAluno.FrequenciaValor, disciplinaEOL);
+                    var sinteseDto = await consultasFrequencia.ObterSinteseAluno(fechamentoFinalAluno.FrequenciaValor, disciplinaEOL, turma.AnoLetivo);
                     fechamentoFinalAluno.Sintese = sinteseDto.Valor;
                 }
                 else
@@ -152,8 +148,10 @@ namespace SME.SGP.Aplicacao
                         foreach (var disciplinaParaAdicionar in disciplinas)
                         {
                             //BIMESTRE / NOTA / DISCIPLINA ID / ALUNO CODIGO
-                            var nota = notasFechamentosBimestres.FirstOrDefault(a => a.Bimestre == periodo.Bimestre && a.DisciplinaId == disciplinaParaAdicionar.CodigoComponenteCurricular && a.AlunoCodigo == aluno.CodigoAluno);
-                            var notaParaAdicionar = (nota == null ? null : nota.NotaConceito);
+                            var nota = notasFechamentosBimestres.FirstOrDefault(a => a.Bimestre == periodo.Bimestre 
+                                                                                && a.DisciplinaId == disciplinaParaAdicionar.CodigoComponenteCurricular 
+                                                                                && a.AlunoCodigo == aluno.CodigoAluno);
+                            var notaParaAdicionar = nota?.NotaConceito ?? "";
 
                             fechamentoFinalAluno.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                             {
@@ -166,18 +164,23 @@ namespace SME.SGP.Aplicacao
                         }
                     }
 
-                    foreach (var disciplinaParaAdicionar in disciplinas)
+                    foreach (var disciplina in disciplinas)
                     {
-                        var nota = notasFechamentosFinais.FirstOrDefault(a => a.DisciplinaId == disciplinaParaAdicionar.CodigoComponenteCurricular && a.FechamentoAluno.AlunoCodigo == aluno.CodigoAluno);
-                        string notaParaAdicionar = string.Empty;
-                        if (nota != null)
-                            notaParaAdicionar = (tipoNota.EhNota() ? nota.Nota.ToString() : nota.ConceitoId.ToString());
+                        var codigoComponenteCurricular = disciplina.CodigoComponenteCurricular;
+                        var nota = notasFechamentosFinais.FirstOrDefault(a => a.ComponenteCurricularId == codigoComponenteCurricular
+                                                                        && a.AlunoCodigo == aluno.CodigoAluno);
+
+                        string notaParaAdicionar = nota == null ? string.Empty :
+                                                tipoNota.EhNota() ? 
+                                                    nota.Nota : 
+                                                    nota.ConceitoId;
 
                         fechamentoFinalAluno.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                         {
-                            Disciplina = disciplinaParaAdicionar.Nome,
-                            DisciplinaCodigo = disciplinaParaAdicionar.CodigoComponenteCurricular,
-                            NotaConceito = notaParaAdicionar == string.Empty ? null : notaParaAdicionar,
+                            Disciplina = disciplina.Nome,
+                            DisciplinaCodigo = disciplina.CodigoComponenteCurricular,
+                            NotaConceito = notaParaAdicionar,
+                            EmAprovacao = nota?.EmAprovacao ?? false
                         });
                     }
                 }
@@ -190,8 +193,9 @@ namespace SME.SGP.Aplicacao
             retorno.AuditoriaAlteracao = MontaTextoAuditoriaAlteracao(fechamentosTurmaDisciplina.Any() ? fechamentosTurmaDisciplina.FirstOrDefault() : null, retorno.EhNota);
             retorno.AuditoriaInclusao = MontaTextoAuditoriaInclusao(fechamentosTurmaDisciplina.Any() ? fechamentosTurmaDisciplina.FirstOrDefault() : null, retorno.EhNota);
 
-            retorno.NotaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
-            retorno.FrequenciaMedia = await consultasFrequencia.ObterFrequenciaMedia(disciplinaEOL);
+            retorno.NotaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, turma.AnoLetivo)));
+            retorno.FrequenciaMedia = await consultasFrequencia.ObterFrequenciaMedia(disciplinaEOL, turma.AnoLetivo);
+            retorno.PeriodoAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, ultimoPeriodoEscolar.Bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result;
 
             return retorno;
         }
@@ -217,24 +221,21 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolares, bool ehNota)
         {
             var listaRetorno = new List<FechamentoNotaAlunoDto>();
+            var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { disciplinaCodigo });
+            var fechamentosIds = fechamentosTurmaDisciplina?.Select(a => a.Id).ToArray() ?? new long[] { };
+            var notasBimestrais = await repositorioFechamentoNota.ObterPorFechamentosTurma(fechamentosIds);
 
             //BIMESTRE / NOTA / DISCIPLINA ID / ALUNO CODIGO
-            foreach (var periodo in periodosEscolares)
+            foreach (var nota in notasBimestrais.Where(a => a.Bimestre.HasValue))
             {
-                var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { disciplinaCodigo }, periodo.Bimestre);
+                var notaParaAdicionar = ehNota ? 
+                                            nota?.Nota : 
+                                            nota?.ConceitoId;
 
-                foreach (var fechamentoTurmaDisciplina in fechamentosTurmaDisciplina)
-                {
-                    var notasDoBimestre = await repositorioFechamentoNota.ObterPorFechamentoTurma(fechamentoTurmaDisciplina.Id);
-                    if (notasDoBimestre != null && notasDoBimestre.Any())
-                    {
-                        foreach (var nota in notasDoBimestre)
-                        {
-                            var notaParaAdicionar = ehNota ? nota.Nota?.ToString() : nota.ConceitoId?.ToString();
-                            listaRetorno.Add(new FechamentoNotaAlunoDto(periodo.Bimestre, notaParaAdicionar, nota.DisciplinaId, nota.FechamentoAluno.AlunoCodigo));
-                        }
-                    }
-                }
+                listaRetorno.Add(new FechamentoNotaAlunoDto(nota.Bimestre.Value,
+                                                            notaParaAdicionar,
+                                                            nota.ComponenteCurricularId,
+                                                            nota.AlunoCodigo));
             }
 
             return listaRetorno;
@@ -242,21 +243,16 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> PodeEditarNotaOuConceitoPeriodoUsuario(Usuario usuarioLogado, PeriodoEscolar periodoEscolar, Turma turma, string codigoComponenteCurricular, DateTime data)
         {
-            if (!usuarioLogado.EhGestorEscolar())
+            if (!usuarioLogado.EhGestorEscolar() && !usuarioLogado.EhPerfilDRE() && !usuarioLogado.EhPerfilSME())
             {
                 var usuarioPodeEditar = await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turma.CodigoTurma, codigoComponenteCurricular, data);
                 if (!usuarioPodeEditar)
                     return false;
-            }               
+            }
 
-            var periodoFechamento = await consultasPeriodoFechamento.ObterPeriodoFechamentoTurmaAsync(turma, periodoEscolar.Bimestre, periodoEscolar.Id);
+            var temPeriodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolar.Bimestre);
 
-            var reabertura = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(periodoEscolar.Bimestre, DateTime.Today, periodoEscolar.TipoCalendarioId, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
-
-            var dentroPeriodo = (periodoFechamento != null && periodoFechamento.DataDentroPeriodo(DateTime.Today)) ||
-                (reabertura != null && reabertura.DataDentroPeriodo(DateTime.Now));
-
-            return dentroPeriodo;
+            return temPeriodoAberto;
         }
 
         private async Task<FechamentoFinalConsultaRetornoAlunoDto> TrataFrequenciaAluno(FechamentoFinalConsultaFiltroDto filtros, IEnumerable<PeriodoEscolar> periodosEscolares, AlunoPorTurmaResposta aluno, Turma turma)

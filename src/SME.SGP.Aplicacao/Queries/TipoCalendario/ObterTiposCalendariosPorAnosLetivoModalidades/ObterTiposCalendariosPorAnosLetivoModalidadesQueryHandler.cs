@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
-        public async Task<IEnumerable<TipoCalendarioBuscaDto>> Handle(ObterTiposCalendariosPorAnosLetivoModalidadesQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<TipoCalendarioBuscaDto>> Handle(ObterTiposCalendariosPorAnosLetivoModalidadesQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTipoCalendario.ListarPorAnosLetivoEModalidades(request.AnosLetivos, request.Modalidades);
+            return repositorioTipoCalendario.ListarPorAnosLetivoEModalidades(request.AnosLetivos, request.Modalidades, request.Descricao);
         }
     }
 }

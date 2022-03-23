@@ -1,8 +1,7 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,25 +17,17 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            try
-            {
-                if (!await ExecutarConsolidacao())
-                    return false;
+            if (!await ExecutarConsolidacao())
+                return false;
 
-                await ConsolidarMediaRegistroIndividual();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                SentrySdk.CaptureException(ex);
-                throw;
-            }
+            await ConsolidarMediaRegistroIndividual();
+            return true;
         }
 
         private async Task ConsolidarMediaRegistroIndividual()
         {
             var anoAtual = DateTime.Now.Year;
-            
+
             var turmasInfantil = await mediator.Send(new ObterTurmasComRegistrosIndividuaisPorModalidadeEAnoQuery(anoAtual));
 
             await mediator.Send(new LimparConsolidacaoMediaRegistroIndividualCommand(anoAtual));
@@ -59,8 +50,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.CaptureException(ex);
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Consolidacao Media Registros Individuais Turma UseCase", LogNivel.Critico, LogContexto.ConsolidacaoMatricula, ex.Message));                    
                 }
+                
             }
         }
 

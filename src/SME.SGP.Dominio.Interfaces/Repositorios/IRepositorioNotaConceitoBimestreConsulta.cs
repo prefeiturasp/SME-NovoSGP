@@ -6,8 +6,8 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioFechamentoNotaConsulta : IRepositorioBase<FechamentoNota>
     {
-        Task<IEnumerable<FechamentoNota>> ObterPorFechamentoTurma(long fechamentoTurmaDisciplinaId);
-        Task<IEnumerable<FechamentoNota>> ObterPorFechamentosTurma(long[] fechamentosTurmaDisciplinaId);
+        Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentoTurma(long fechamentoTurmaDisciplinaId);
+        Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentosTurma(long[] fechamentosTurmaDisciplinaId);
         Task<FechamentoNota> ObterPorAlunoEFechamento(long fechamentoTurmaDisciplinaId, string codigoAluno);
         Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacaoWf(long workFlowId);
         Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacaoPorFechamento(long fechamentoTurmaDisciplinaId);
@@ -16,5 +16,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo);
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAnoAsync(string turmaCodigo, string alunoCodigo);
         Task<IEnumerable<AlunosFechamentoNotaDto>> ObterComNotaLancadaPorPeriodoEscolarUE(long ueId, long periodoEscolarId);
+        Task<IEnumerable<FechamentoNotaAprovacaoDto>> ObterNotasEmAprovacaoPorIdsFechamento(IEnumerable<long> Ids);
     }
 }

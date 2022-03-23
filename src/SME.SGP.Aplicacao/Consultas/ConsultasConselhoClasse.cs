@@ -49,13 +49,15 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false, bool consideraHistorico = false)
         {
             var turma = await ObterTurma(turmaCodigo);
+            var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-            if (turma.EhTurmaEdFisicaOuItinerario())
+            if (turma.EhTurmaEdFisicaOuItinerario() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
             {
-                var tipos = new List<TipoTurma>() {
-                        TipoTurma.Regular
-                    };
+                var tipos = new List<int>();
+                tipos.AddRange(turma.ObterTiposRegularesDiferentes());
+                tipos.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
                 var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
+
                 turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
             }
 
@@ -67,7 +69,7 @@ namespace SME.SGP.Aplicacao
             }
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);
 
-            if (bimestre == 0 && !consideraHistorico && turma.AnoLetivo != 2020)
+            if (bimestre == 0 && !consideraHistorico && turma.AnoLetivo == DateTime.Now.Year)
             {
                 var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreTurmaQuery(turma));
                 if (!retornoConselhoBimestre.possuiConselho)
@@ -99,10 +101,9 @@ namespace SME.SGP.Aplicacao
 
             var bimestreFechamento = !ehFinal ? bimestre : (await ObterPeriodoUltimoBimestre(turma)).Bimestre;
 
-            PeriodoFechamentoBimestre periodoFechamentoBimestre = await consultasPeriodoFechamento
-                .ObterPeriodoFechamentoTurmaAsync(turma, bimestreFechamento, periodoEscolarId);
+            var periodoFechamentoVigente = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoVigente(turma, DateTimeExtension.HorarioBrasilia().Date, bimestreFechamento);
 
-            var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
+            var tipoNota = await ObterTipoNota(turma, periodoFechamentoVigente, consideraHistorico);
 
             var mediaAprovacao = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
@@ -116,18 +117,57 @@ namespace SME.SGP.Aplicacao
                 Bimestre = bimestre,
                 BimestrePeriodoInicio = periodoEscolar?.PeriodoInicio,
                 BimestrePeriodoFim = periodoEscolar?.PeriodoFim,
-                PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
-                PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
+                PeriodoFechamentoInicio = periodoFechamentoVigente?.PeriodoFechamentoInicio,
+                PeriodoFechamentoFim = periodoFechamentoVigente?.PeriodoFechamentoFim,
                 TipoNota = tipoNota,
                 Media = mediaAprovacao,
                 AnoLetivo = turma.AnoLetivo
             };
         }
 
-        private async Task<TipoNota> ObterTipoNota(Turma turma, PeriodoFechamentoBimestre periodoFechamentoBimestre, bool consideraHistorico = false)
+        public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurmaFinal(string turmaCodigo, string alunoCodigo, bool consideraHistorico = false)
         {
-            var dataReferencia = periodoFechamentoBimestre != null ?
-                periodoFechamentoBimestre.FinalDoFechamento :
+            var turma = await ObterTurma(turmaCodigo);
+            var bimestreFinal = 0;
+            var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+
+            if (turma.EhTurmaEdFisicaOuItinerario() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
+            {
+                var turmasCodigosParaConsulta = new List<int>();
+                turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
+                turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
+
+                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
+
+                turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
+            }
+                        
+            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestreFinal);
+
+            var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
+
+            var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
+
+            var ultimoBimestre = (await ObterPeriodoUltimoBimestre(turma));
+
+            var periodoFechamentoBimestre = await consultasPeriodoFechamento
+                .TurmaEmPeriodoDeFechamentoVigente(turma, DateTimeExtension.HorarioBrasilia().Date, ultimoBimestre.Bimestre);
+
+            var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
+
+            return new ConselhoClasseAlunoResumoDto()
+            {
+                FechamentoTurmaId = fechamentoTurma?.Id ?? 0,
+                ConselhoClasseId = conselhoClasse?.Id ?? 0,
+                ConselhoClasseAlunoId = conselhoClasseAluno?.Id ?? 0,
+                TipoNota = tipoNota
+            };
+        }
+
+        private async Task<TipoNota> ObterTipoNota(Turma turma, PeriodoFechamentoVigenteDto periodoFechamentoVigente, bool consideraHistorico = false)
+        {
+            var dataReferencia = periodoFechamentoVigente != null ?
+                periodoFechamentoVigente.PeriodoFechamentoFim :
                 (await ObterPeriodoUltimoBimestre(turma)).PeriodoFim;
 
             var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turma.Ano, turma.ModalidadeCodigo, dataReferencia));

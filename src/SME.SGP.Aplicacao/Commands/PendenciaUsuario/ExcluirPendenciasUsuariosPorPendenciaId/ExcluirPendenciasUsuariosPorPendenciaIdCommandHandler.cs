@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirPendenciasUsuariosPorPendenciaIdCommand request, CancellationToken cancellationToken)
         {
-            await repositorioPendenciaUsuario.ExcluirPorPendenciaId(request.PendenciaId);
+            await repositorioPendenciaUsuario.ExcluirPorPendenciaId(request.PendenciaPerfilId);
             return true;
         }
     }

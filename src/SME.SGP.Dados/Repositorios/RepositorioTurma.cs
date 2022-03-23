@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using Dommel;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -142,7 +141,32 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return resultado;
-        }        
+        }
+
+        private string GerarQueryCodigosTurmasForaLista(int anoLetivo, bool definirTurmasComoHistorica) =>
+            $@"select distinct t.turma_id
+	                from turma t
+		                inner join tipo_calendario tc
+			                on t.ano_letivo = tc.ano_letivo and
+			                   t.modalidade_codigo = t.modalidade_codigo 
+		                inner join periodo_escolar pe
+			                on tc.id = pe.tipo_calendario_id 			
+		                inner join (select id, data_inicio, modalidade_codigo
+					                    from turma
+					                where ano_letivo = {anoLetivo} and
+						                  turma_id not in (#idsTurmas)) t2
+			                on t.id = t2.id and
+			                   t.modalidade_codigo = t2.modalidade_codigo
+                where t.ano_letivo = {anoLetivo} and                      
+	                  pe.bimestre = 1 and                      
+	                  t.dt_fim_eol is not null and 
+                      t.dt_fim_eol {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas extintas após o 1º bimestre do ano letivo considerado serão marcadas como histórica
+
+        public async Task<IEnumerable<string>> ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(int anoLetivo, bool definirTurmasComoHistorica, string listaTurmas, IDbTransaction transacao)
+        {
+            var sqlQuery = GerarQueryCodigosTurmasForaLista(anoLetivo, true).Replace("#idsTurmas", listaTurmas);
+            return await contexto.Conexao.QueryAsync<string>(sqlQuery, transacao);
+        }
 
         private async Task AtualizarRemoverTurmasExtintasAsync(IEnumerable<Turma> entidades, int anoLetivo)
         {
@@ -178,34 +202,8 @@ namespace SME.SGP.Dados.Repositorios
             catch (Exception ex)
             {
                 var erro = new Exception("Erro ao atualizar ou excluir turmas extintas", ex);
-                SentrySdk.CaptureException(erro);
                 transacao.Rollback();
             }
-        }
-
-        private string GerarQueryCodigosTurmasForaLista(int anoLetivo, bool definirTurmasComoHistorica) =>
-            $@"select distinct t.turma_id
-	                from turma t
-		                inner join tipo_calendario tc
-			                on t.ano_letivo = tc.ano_letivo and
-			                   t.modalidade_codigo = t.modalidade_codigo 
-		                inner join periodo_escolar pe
-			                on tc.id = pe.tipo_calendario_id 			
-		                inner join (select id, data_inicio, modalidade_codigo
-					                    from turma
-					                where ano_letivo = {anoLetivo} and
-						                  turma_id not in (#idsTurmas)) t2
-			                on t.id = t2.id and
-			                   t.modalidade_codigo = t2.modalidade_codigo
-                where t.ano_letivo = {anoLetivo} and                      
-	                  pe.bimestre = 1 and                      
-	                  t.dt_fim_eol is not null and 
-                      t.dt_fim_eol {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas extintas após o 1º bimestre do ano letivo considerado serão marcadas como histórica
-
-        public async Task<IEnumerable<string>> ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(int anoLetivo, bool definirTurmasComoHistorica, string listaTurmas, IDbTransaction transacao)
-        {
-            var sqlQuery = GerarQueryCodigosTurmasForaLista(anoLetivo, true).Replace("#idsTurmas", listaTurmas);
-            return await contexto.Conexao.QueryAsync<string>(sqlQuery, transacao);
         }
         private string MapearParaCodigosQuerySql(IEnumerable<string> codigos)
         {
@@ -472,8 +470,7 @@ namespace SME.SGP.Dados.Repositorios
             }
             catch (Exception ex)
             {
-                var erro = new Exception("Erro ao atualizar ou excluir turmas extintas", ex);
-                SentrySdk.CaptureException(erro);
+                var erro = new Exception("Erro ao atualizar ou excluir turmas extintas", ex);                
                 transacao.Rollback();
             }
         }

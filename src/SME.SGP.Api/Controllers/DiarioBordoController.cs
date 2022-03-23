@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -24,9 +21,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(DiarioBordoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> Obter([FromServices] IObterDiarioBordoUseCase useCase, long aulaId)
+        public async Task<IActionResult> Obter([FromQuery] int componenteCurricularId, [FromServices] IObterDiarioBordoUseCase useCase, long aulaId)
         {
-            var result = await useCase.Executar(aulaId);
+            var result = await useCase.Executar(aulaId, componenteCurricularId);
             if (result == null)
                 return NoContent();
 				
@@ -56,6 +53,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_A, Policy = "Bearer")]
         public async Task<IActionResult> Alterar([FromServices] IAlterarDiarioBordoUseCase useCase, [FromBody] AlterarDiarioBordoDto diarioBordoDto)
+        {
+            return Ok(await useCase.Executar(diarioBordoDto));
+        }
+
+        [HttpPost("salvar")]
+        [ProducesResponseType(typeof(IEnumerable<AuditoriaDiarioBordoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_I, Policy = "Bearer")]
+        public async Task<IActionResult> SalvarVarios([FromServices] IInserirAlterarDiarioBordoUseCase useCase, [FromBody] IEnumerable<InserirAlterarDiarioBordoDto> diarioBordoDto)
         {
             return Ok(await useCase.Executar(diarioBordoDto));
         }
@@ -130,7 +136,22 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterUsuariosParaNotificar([FromQuery] ObterUsuarioNotificarDiarioBordoObservacaoDto dto, [FromServices] IObterUsuarioNotificarDiarioBordoObservacaoUseCase obterUsuarioNotificarDiarioBordoObservacaoUseCase)
         {
-            return Ok(await obterUsuarioNotificarDiarioBordoObservacaoUseCase.Executar(dto));
+            var retorno = await obterUsuarioNotificarDiarioBordoObservacaoUseCase.Executar(dto);
+            return Ok(retorno);
+        }
+
+
+        [HttpGet("turmas/{turmaCodigo}/inicio/{dataInicio}/fim/{dataFim}/componentes-curriculares/{componenteCurricularId}")]
+        [ProducesResponseType(typeof(IEnumerable<DiarioBordoPorPeriodoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterDatasDiarioPorPeriodo(string turmaCodigo, DateTime dataInicio, DateTime dataFim, long componenteCurricularId, [FromServices] IObterDatasDiarioBordoPorPeriodoUseCase useCase)
+        {
+            var result = await useCase.Executar(turmaCodigo, dataInicio, dataFim, componenteCurricularId);
+            if (result == null)
+                return NoContent();
+
+            return Ok(result);
         }
     }
 }

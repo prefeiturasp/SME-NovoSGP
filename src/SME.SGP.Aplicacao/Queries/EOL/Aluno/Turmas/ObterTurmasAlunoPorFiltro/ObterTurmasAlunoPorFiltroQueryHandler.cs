@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -14,9 +14,12 @@ namespace SME.SGP.Aplicacao
     public class ObterTurmasAlunoPorFiltroQueryHandler : IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        public ObterTurmasAlunoPorFiltroQueryHandler(IHttpClientFactory httpClientFactory)
+        private readonly IMediator mediator;
+
+        public ObterTurmasAlunoPorFiltroQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTurmasAlunoPorFiltroQuery request, CancellationToken cancellationToken)
         {
@@ -32,15 +35,17 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    string erro = $"Não foi possível obter os dados do aluno no EOL - HttpCode {(int)resposta.StatusCode}";
-                    SentrySdk.AddBreadcrumb(erro);
-                    throw new NegocioException(erro);
+                    string erro = $"Não foi possível obter os dados do aluno no EOL - HttpCode {(int)resposta.StatusCode} - erro: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
+
+                    await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, string.Empty));
+                    var respostaErro = resposta?.Content != null ? resposta?.Content?.ReadAsStringAsync()?.Result.ToString() : erro;
+                    throw new NegocioException(respostaErro);
                 }
             }
             catch (Exception e)
             {
-                SentrySdk.CaptureMessage($"Erro ao obter os dados do aluno no EOL - Código:{request.CodidoAluno}, Ano:{request.AnoLetivo}, FiltrarSituacaoMatricula:{request.FiltrarSituacaoMatricula} - Erro:{e.Message}");
-                SentrySdk.CaptureException(e);
+
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter os dados do aluno no EOL - Código:{request.CodidoAluno}, Ano:{request.AnoLetivo}, FiltrarSituacaoMatricula:{request.FiltrarSituacaoMatricula} - Erro:{e.Message}", LogNivel.Negocio, LogContexto.Turma, e.Message));
                 throw e;
             }
         }

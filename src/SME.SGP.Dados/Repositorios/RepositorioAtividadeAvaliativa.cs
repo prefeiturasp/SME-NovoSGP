@@ -89,6 +89,16 @@ namespace SME.SGP.Dados.Repositorios
             return database.Query<AtividadeAvaliativa>(sql.ToString(), new { ids = ids.ToArray() });
         }
 
+        public IEnumerable<AtividadeAvaliativa> ListarAtividadesIds(IEnumerable<long> ids)
+        {
+            var sql = new StringBuilder(@"select a.data_avaliacao from atividade_avaliativa a
+                                                inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id
+                                                inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = a.id
+                                                where a.id = ANY(@ids)
+                                                 ");
+            return database.Query<AtividadeAvaliativa>(sql.ToString(), new { ids = ids.ToArray() });
+        }
+
         public async Task<IEnumerable<AtividadeAvaliativa>> ListarPorTurmaDisciplinaPeriodo(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
             var sql = new StringBuilder();
@@ -494,13 +504,12 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("AND aar.disciplina_contida_regencia_id = ANY(@disciplinasContidaId)");
         }
 
-        public async Task<IEnumerable<TurmaEComponenteDto>> ObterTurmaEComponenteSemAvaliacaoNoPeriodo(long ueId, long tipoCalendarioId, DateTime dataInicio, DateTime dataFim)
+        public async Task<IEnumerable<TurmaEComponenteDto>> ObterTurmaEComponenteSemAvaliacaoNoPeriodo(long tipoCalendarioId, DateTime dataInicio, DateTime dataFim)
         {
             var query = @"select distinct a.turma_id as TurmaCodigo, t.id as TurmaId, a.disciplina_id as ComponenteCurricularId
                            from aula a
                           inner join turma t on t.turma_id = a.turma_id
                          where not a.excluido
-                           and t.ue_id = @ueId
                            and a.tipo_calendario_id = @tipoCalendarioId
                            and a.data_aula between @dataInicio and @dataFim
                            and not exists (
@@ -512,19 +521,21 @@ namespace SME.SGP.Dados.Repositorios
 	                             and ad.disciplina_id = a.disciplina_id
 	                             and aa.data_avaliacao between @dataInicio and @dataFim)";
 
-            return await database.Conexao.QueryAsync<TurmaEComponenteDto>(query, new { ueId, tipoCalendarioId, dataInicio, dataFim });
+            return await database.Conexao.QueryAsync<TurmaEComponenteDto>(query, new { tipoCalendarioId, dataInicio, dataFim });
         }
 
-        public async Task<IEnumerable<AvaliacoesPorTurmaComponenteDto>> ObterAvaliacoesTurmaComponentePorUeNoPeriodo(long ueId, DateTime dataInicio, DateTime dataFim)
+        public async Task<IEnumerable<AvaliacoesPorTurmaComponenteDto>> ObterAvaliacoesTurmaComponentePorUeNoPeriodo(long? ueId, DateTime dataInicio, DateTime dataFim)
         {
             var query = @"select t.id as TurmaId, ad.disciplina_id as DisciplinaId, count(distinct aa.id) QuantidadeAvaliacoes
                             from turma t 
-                           inner join atividade_avaliativa aa on aa.turma_id = t.turma_id
+                           inner join atividade_avaliativa aa on aa.turma_id = t.turma_id and not aa.excluido
                            inner join atividade_avaliativa_disciplina ad on ad.atividade_avaliativa_id = aa.id
-                           where t.ue_id = @ueId
-                             and aa.data_avaliacao between @dataInicio and @dataFim
-                          group by t.id , ad.disciplina_id";
+                           where aa.data_avaliacao between @dataInicio and @dataFim ";
 
+            if (ueId.HasValue)
+                query += " and t.ue_id = @ueId";
+
+            query += "group by t.id , ad.disciplina_id";
             return await database.Conexao.QueryAsync<AvaliacoesPorTurmaComponenteDto>(query, new { ueId, dataInicio, dataFim });
         }
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterPorTurmaDisciplinasPeriodoAsync(string turmaCodigo, string[] disciplinasId, DateTime inicioPeriodo, DateTime fimPeriodo)

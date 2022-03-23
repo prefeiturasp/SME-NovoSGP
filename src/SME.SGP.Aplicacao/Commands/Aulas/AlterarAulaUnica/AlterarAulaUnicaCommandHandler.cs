@@ -87,6 +87,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
             aula.Quantidade = request.Quantidade;
             aula.RecorrenciaAula = RecorrenciaAula.AulaUnica;
             aula.AulaPaiId = null;
+            aula.DisciplinaId = request.ComponenteCurricularCodigo.ToString();
         }
 
         private async Task AplicarValidacoes(AlterarAulaUnicaCommand request, Aula aula, Turma turma, Usuario usuarioLogado, IEnumerable<AulaConsultaDto> aulasExistentes)

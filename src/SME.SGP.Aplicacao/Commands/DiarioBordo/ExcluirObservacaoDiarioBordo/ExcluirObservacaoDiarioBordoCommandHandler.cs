@@ -22,10 +22,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirObservacaoDiarioBordoCommand request, CancellationToken cancellationToken)
         {
-            await repositorioDiarioBordoObservacao.ExcluirObservacoesPorDiarioBordoId(request.DiarioBordoId, request.UsuarioId);
+            await repositorioDiarioBordoObservacao.ExcluirObservacoesPorDiarioBordoId(request.DiarioBordoObservacaoId);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoDiarioBordo,
-                      new ExcluirNotificacaoDiarioBordoDto(request.DiarioBordoId), Guid.NewGuid(), null));
+                      new ExcluirNotificacaoDiarioBordoDto(request.DiarioBordoObservacaoId), Guid.NewGuid(), null));
 
             return true;
         }

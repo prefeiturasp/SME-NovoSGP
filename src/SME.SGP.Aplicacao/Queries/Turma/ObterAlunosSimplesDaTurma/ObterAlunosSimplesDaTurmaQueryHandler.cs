@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Codigo = alunoEOL.CodigoAluno,
                     NumeroChamada = alunoEOL.NumeroAlunoChamada,
-                    Nome = $"{alunoEOL.NomeAluno} {situacao}"
+                    Nome = $"{alunoEOL.NomeValido()} {situacao}"
                 };
             }
         }

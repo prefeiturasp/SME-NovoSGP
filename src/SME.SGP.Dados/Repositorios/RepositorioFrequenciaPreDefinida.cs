@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,12 +58,28 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<FrequenciaPreDefinidaDto>(query.ToString(), parametros);
         }
 
-        public async Task RemoverPorCCIdETurmaId(long componenteCurricularId, long turmaId)
+        public async Task<IEnumerable<FrequenciaPreDefinidaDto>> ObterPorTurmaEComponente(long turmaId, long componenteCurricularId)
+        {
+            var query = new StringBuilder(@"select fpd.codigo_aluno as CodigoAluno,
+                                                   fpd.tipo_frequencia as Tipo
+                                              from frequencia_pre_definida fpd
+                                             where fpd.turma_id = @turmaId
+                                               and fpd.componente_curricular_id = @componenteCurricularId ");
+
+            var parametros = new
+            {
+                turmaId,
+                componenteCurricularId,
+            };
+
+            return await database.Conexao.QueryAsync<FrequenciaPreDefinidaDto>(query.ToString(), parametros);
+        }
+
+        public async Task RemoverPorCCIdETurmaId(long componenteCurricularId, long turmaId, string[] alunosComFrequenciaRegistrada)
         {
             await database.Conexao.ExecuteAsync("DELETE FROM frequencia_pre_definida " +
-                "WHERE turma_id = @turmaId AND componente_curricular_id = @componenteCurricularId;",
-                new { turmaId, componenteCurricularId });
-
+            "WHERE turma_id = @turmaId AND componente_curricular_id = @componenteCurricularId and codigo_aluno = any(@alunosComFrequenciaRegistrada);",
+            new { turmaId, componenteCurricularId, alunosComFrequenciaRegistrada });            
         }
 
         public async Task Salvar(FrequenciaPreDefinida frequenciaPreDefinida)

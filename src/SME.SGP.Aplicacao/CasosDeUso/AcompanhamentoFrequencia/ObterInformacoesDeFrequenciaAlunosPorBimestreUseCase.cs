@@ -54,10 +54,8 @@ namespace SME.SGP.Aplicacao
             if (!alunos?.Any() ?? true)
                 throw new NegocioException("Os alunos da turma não foram encontrados.");
 
-            var alunosValidosComOrdenacao = alunos.Where(a => (a.NumeroAlunoChamada > 0 ||
-                                                         a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
-                                                         a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido)))
-                                                   .OrderBy(a => a.NumeroAlunoChamada)
+            var alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))
+                                                   .OrderBy(a => a.NomeAluno)
                                                    .ThenBy(a => a.NomeValido());
 
             return BimestreFinal == dto.Bimestre
@@ -68,7 +66,7 @@ namespace SME.SGP.Aplicacao
         private async Task<FrequenciaAlunosPorBimestreDto> ObterFrequenciaAlunosBimestresRegularesAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunos, long componenteCurricularId, long tipoCalendarioId, int? bimestre, PeriodoEscolar periodoEscolar)
         {
             var aulasPrevistas = await ObterAulasPrevistasAsync(turma, componenteCurricularId, tipoCalendarioId, periodoEscolar.Bimestre);
-            var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.Id, componenteCurricularId, tipoCalendarioId, periodoEscolar.Id));
+            var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, componenteCurricularId, tipoCalendarioId, periodoEscolar.Id));
 
             var frequenciaAlunosRegistrada = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, componenteCurricularId, periodoEscolar.Id));
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, componenteCurricularId.ToString(), periodoEscolar.Id));
@@ -104,7 +102,9 @@ namespace SME.SGP.Aplicacao
                 var compensacoes = frequenciaAlunoRegistrada?.TotalCompensacoes ?? default;
                 var marcador = periodoEscolar != null ? await mediator.Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, periodoEscolar, turma.ModalidadeCodigo)) : null;
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
-                
+                var remotos = frequenciaAlunoRegistrada?.TotalRemotos ?? default;
+                var presencas = frequenciaAlunoRegistrada?.TotalPresencas ?? default;
+
                 var percentualFrequencia = frequenciaAlunoRegistrada == null && turmaPossuiFrequenciaRegistrada
                 ?
                 "100"
@@ -122,10 +122,12 @@ namespace SME.SGP.Aplicacao
                     Compensacoes = compensacoes,
                     Frequencia = percentualFrequencia,
                     MarcadorFrequencia = marcador,
-                    Nome = aluno.NomeAluno,
+                    Nome = aluno.NomeValido(),
                     NumeroChamada = aluno.NumeroAlunoChamada,
                     PossuiJustificativas = ausencias > 0,
-                    EhAtendidoAEE = alunoPossuiPlanoAEE
+                    EhAtendidoAEE = alunoPossuiPlanoAEE,
+                    Remotos = remotos,
+                    Presencas = presencas
                 });
             }
 
@@ -149,11 +151,13 @@ namespace SME.SGP.Aplicacao
             var bimestres = periodosEscolares.Select(x => x.Bimestre);
 
             var aulasPrevistas = await ObterAulasPrevistasAsync(turma, componenteCurricularId, tipoCalendarioId);
-            var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.Id, componenteCurricularId, tipoCalendarioId, periodosEscolaresIds));
+            var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, componenteCurricularId, tipoCalendarioId, periodosEscolaresIds));
 
             var frequenciaAlunosRegistrada = await ObterFrequenciaAlunosRegistradaFinalAsync(turma, componenteCurricularId, tipoCalendarioId, periodosEscolaresIds, bimestres);
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestresQuery(turma.CodigoTurma, componenteCurricularId.ToString(), periodosEscolaresIds.ToArray()));
             var frequenciaAlunos = await DefinirFrequenciaAlunoListagemAsync(alunos, turma, frequenciaAlunosRegistrada, null, turmaPossuiFrequenciaRegistrada);
+
+
 
             return new FrequenciaAlunosPorBimestreDto
             {
@@ -168,11 +172,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosRegistradaFinalAsync(Turma turma, long componenteCurricularId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds, IEnumerable<int> bimestres)
         {
-            var frequenciaAlunosRegistrada = new List<FrequenciaAluno>();
-            frequenciaAlunosRegistrada.AddRange(
-                await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma,
+            var frequenciaAlunosRegistrada = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma,
                                                                                                     componenteCurricularId,
-                                                                                                    periodosEscolaresIds)));
+                                                                                                    periodosEscolaresIds));
 
             var aulasComponentesTurma = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(new[] { turma.CodigoTurma },
                                                                                                                         tipoCalendarioId,
@@ -201,6 +203,7 @@ namespace SME.SGP.Aplicacao
                         DisciplinaId = aulasComponente.ComponenteCurricularCodigo,
                         TurmaId = aulasComponente.TurmaCodigo,
                         TotalAulas = aulasComponente.AulasQuantidade,
+                        TotalPresencas = aulasComponente.AulasQuantidade,
                         Bimestre = aulasComponente.Bimestre,
                         PeriodoEscolarId = aulasComponente.PeriodoEscolarId
                     });
@@ -213,6 +216,8 @@ namespace SME.SGP.Aplicacao
                 TotalAulas = frequenciasAluno.Sum(y => y.TotalAulas),
                 TotalAusencias = frequenciasAluno.Sum(y => y.TotalAusencias),
                 TotalCompensacoes = frequenciasAluno.Sum(y => y.TotalCompensacoes),
+                TotalPresencas = frequenciasAluno.Sum(y => y.TotalPresencas),
+                TotalRemotos = frequenciasAluno.Sum(y => y.TotalRemotos),
             };
         }
 

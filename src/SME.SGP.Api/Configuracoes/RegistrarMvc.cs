@@ -1,4 +1,5 @@
 ﻿using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,21 +11,22 @@ namespace SME.SGP.Api
 {
     public static class RegistrarMvc
     {
-        public static void Registrar(IServiceCollection services, IConfiguration configuration)
+        public static void Registrar(IServiceCollection services, ServiceProvider serviceProvider)
         {
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
-
-            var conexao = services.BuildServiceProvider().GetService<ISgpContext>();
+            
+            var conexao = serviceProvider.GetService<ISgpContext>();
+            var mediator = serviceProvider.GetService<IMediator>();
 
             services.AddMvc(options =>
             {
                 options.AllowValidatingTopLevelNodes = false;
                 options.EnableEndpointRouting = true;
                 options.Filters.Add(new ValidaDtoAttribute());
-                options.Filters.Add(new FiltroExcecoesAttribute(configuration));
+                options.Filters.Add(new FiltroExcecoesAttribute(mediator));
                 options.Filters.Add(new DisposeConnectionFilter(conexao));
             })
                 .AddFluentValidation()

@@ -1,9 +1,8 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -41,9 +40,9 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureException(ex);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do calendário da UE.", LogNivel.Negocio, LogContexto.Calendario, ex.Message));
                 return false;
-            }        
+            }
         }
 
         private async Task VerificaPendenciasNoCalendario(long tipoCalendarioId, ModalidadeTipoCalendario modalidadeCalendario)
@@ -52,7 +51,7 @@ namespace SME.SGP.Aplicacao
             var tiposEscolasValidos = ObterTiposDeEscolasValidos();
             ues = ues?.Where(ue => tiposEscolasValidos.Contains(ue.TipoEscola)).ToList();
 
-            foreach(var ue in ues)
+            foreach (var ue in ues)
             {
                 try
                 {
@@ -65,8 +64,8 @@ namespace SME.SGP.Aplicacao
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.CaptureException(ex);
-                }            
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do calendário da UE.", LogNivel.Negocio, LogContexto.Calendario, ex.Message));
+                }
             }
         }
 
@@ -88,7 +87,7 @@ namespace SME.SGP.Aplicacao
             descricao.AppendLine($"<i>UE:</i><b> {ue.TipoEscola.ShortName()} - {ue.Nome}</b><br />");
             descricao.AppendLine($"<i>Calendário:</i><b> {nomeTipoCalendario}</b><br />");
             descricao.AppendLine($"<i>Quantidade de dias letivos:</i><b> {diasLetivos}</b><br />");
-            
+
             var instrucao = "Acesse a tela de Calendário Escolar e confira os eventos da sua UE.";
 
             await mediator.Send(new SalvarPendenciaCalendarioUeCommand(tipoCalendarioId, ue, descricao.ToString(), instrucao, TipoPendencia.CalendarioLetivoInsuficiente));

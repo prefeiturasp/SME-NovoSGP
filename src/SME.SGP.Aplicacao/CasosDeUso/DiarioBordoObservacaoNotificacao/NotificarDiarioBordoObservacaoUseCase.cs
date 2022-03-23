@@ -40,31 +40,22 @@ namespace SME.SGP.Aplicacao
 
             var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação no Diário de bordo do dia {dataAtual} da turma <strong>{diarioBordo.Aula.Turma.Nome}</strong> da <strong>{diarioBordo.Aula.Turma.Ue.TipoEscola}-{diarioBordo.Aula.Turma.Ue.Nome}</strong> ({diarioBordo.Aula.Turma.Ue.Dre.Abreviacao}).");
 
-            if (dadosMensagem.Observacao.Length > 200)
-            {
-                mensagem.AppendLine($"<br/><br/>Observação: Acesse o Diário de bordo de uma das aulas para consultar a observação.");
-            }
-            else
-            {
-                mensagem.AppendLine($"<br/><br/>Observação: {dadosMensagem.Observacao.TrimEnd('.').Trim()}.");
-            }
+            mensagem.AppendLine($"<br/><br/>Observação: {dadosMensagem.Observacao}.");
 
             var titulo = $"Nova observação no Diário de bordo da turma {diarioBordo.Aula.Turma.Nome} ({dataAtual})";
 
             if (dadosMensagem.UsuariosNotificacao != null && dadosMensagem.UsuariosNotificacao.Any())
             {
-                foreach (var usuario in dadosMensagem.UsuariosNotificacao)
+                foreach (var usuarioRf in dadosMensagem.UsuariosNotificacao)
                 {
-                    var codigoRf = usuario.CodigoRf;
-
-                    if (codigoRf != usuarioLogado.CodigoRf)
+                    if (usuarioRf != usuarioLogado.CodigoRf)
                     {
                         //if (usuario != null)
                         {
                             unitOfWork.IniciarTransacao();
                             var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
                                                                              mensagem.ToString(),
-                                                                             codigoRf,
+                                                                             usuarioRf,
                                                                              NotificacaoCategoria.Aviso,
                                                                              NotificacaoTipo.Planejamento));
 

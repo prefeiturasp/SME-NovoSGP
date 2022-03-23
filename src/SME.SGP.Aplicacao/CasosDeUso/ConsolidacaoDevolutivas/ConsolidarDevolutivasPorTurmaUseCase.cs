@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -15,42 +14,36 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            try
+
+            var filtro = mensagem.ObterObjetoMensagem<FiltroDevolutivaTurmaDTO>();
+
+
+            var devolutivaTurma = await mediator.Send(new ObterDevolutivaPorTurmaQuery(filtro.TurmaId, filtro.AnoLetivo));
+
+            var diarioBordoTurma = await mediator.Send(new ObterDiariosDeBordoPorAnoLetivoTurmaQuery(filtro.TurmaId, filtro.AnoLetivo));
+
+            if (diarioBordoTurma != null)
             {
-                var filtro = mensagem.ObterObjetoMensagem<FiltroDevolutivaTurmaDTO>();
 
+                var consolidacaoDevolutivaTurma = MapearDTO(devolutivaTurma, diarioBordoTurma);
 
-                var devolutivaTurma = await mediator.Send(new ObterDevolutivaPorTurmaQuery(filtro.TurmaId, filtro.AnoLetivo));
+                var periodoDeDiasDevolutivas = await mediator.Send(new ObterParametroSistemaPorTipoQuery(Dominio.TipoParametroSistema.PeriodoDeDiasDevolutiva));
+                if (periodoDeDiasDevolutivas == null)
+                    return false;
 
-                var diarioBordoTurma = await mediator.Send(new ObterDiariosDeBordoPorAnoLetivoTurmaQuery(filtro.TurmaId, filtro.AnoLetivo));
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(diarioBordoTurma.TurmaId));
+                if (turma == null)
+                    return false;
 
-                if (diarioBordoTurma != null)
-                {
+                var quantidadeDiarioBordoRegistrado = diarioBordoTurma == null ? 0 : diarioBordoTurma.QuantidadeDiarioBordoRegistrado;
 
-                    var consolidacaoDevolutivaTurma = MapearDTO(devolutivaTurma, diarioBordoTurma);
+                CalcularQuantidadeEstimadaDeDevolutivas(consolidacaoDevolutivaTurma, periodoDeDiasDevolutivas, quantidadeDiarioBordoRegistrado);
 
-                    var periodoDeDiasDevolutivas = await mediator.Send(new ObterParametroSistemaPorTipoQuery(Dominio.TipoParametroSistema.PeriodoDeDiasDevolutiva));
-                    if (periodoDeDiasDevolutivas == null)
-                        return false;
-
-                    var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(diarioBordoTurma.TurmaId));
-                    if (turma == null)
-                        return false;
-
-                    var quantidadeDiarioBordoRegistrado = diarioBordoTurma == null ? 0 : diarioBordoTurma.QuantidadeDiarioBordoRegistrado;
-
-                    CalcularQuantidadeEstimadaDeDevolutivas(consolidacaoDevolutivaTurma, periodoDeDiasDevolutivas, quantidadeDiarioBordoRegistrado);
-
-                    await RegistraConsolidacaoDevolutivasTurma(turma.Id, consolidacaoDevolutivaTurma.QuantidadeEstimadaDevolutivas, consolidacaoDevolutivaTurma.QuantidadeRegistradaDevolutivas);
-                }
-
-                return true;
+                await RegistraConsolidacaoDevolutivasTurma(turma.Id, consolidacaoDevolutivaTurma.QuantidadeEstimadaDevolutivas, consolidacaoDevolutivaTurma.QuantidadeRegistradaDevolutivas);
             }
-            catch (System.Exception ex)
-            {
-                SentrySdk.CaptureException(ex);
-                throw;
-            }
+
+            return true;
+
         }
 
         private static ConsolidacaoDevolutivaTurmaDTO MapearDTO(ConsolidacaoDevolutivaTurmaDTO devolutivaTurma, QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO diarioBordoTurma)

@@ -51,7 +51,6 @@ namespace SME.SGP.Aplicacao
                                                              from disciplina in avaliacao.Disciplinas
                                                              where componentesCurricularesDoDia.Contains(disciplina.DisciplinaId.ToString()) || avaliacao.ProfessorRf == request.UsuarioCodigoRf
                                                              where avaliacao.TipoAvaliacaoId != 18 
-                                                             where avaliacao.AtividadeClassroomId != null
                                                              select true);
 
                             if (temAvaliacaoComComponente.Any())

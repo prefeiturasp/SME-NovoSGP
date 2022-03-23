@@ -32,9 +32,10 @@ namespace SME.SGP.Aplicacao
             {
                 parametrosDoSistema = await repositorioParametrosSistema.ObterParametrosPorAnoAsync(request.Ano);
                 await repositorioCache.SalvarAsync(nomeCache, parametrosDoSistema);
-            } else parametrosDoSistema = JsonConvert.DeserializeObject<List<ParametrosSistema>>(parametrosNoCache);
-           
-            return parametrosDoSistema.FirstOrDefault(a => a.Tipo == request.Tipo).Valor;           
+            }
+            else parametrosDoSistema = JsonConvert.DeserializeObject<List<ParametrosSistema>>(parametrosNoCache);
+
+            return parametrosDoSistema.FirstOrDefault(a => a.Tipo == request.Tipo).Valor;
         }
     }
 }

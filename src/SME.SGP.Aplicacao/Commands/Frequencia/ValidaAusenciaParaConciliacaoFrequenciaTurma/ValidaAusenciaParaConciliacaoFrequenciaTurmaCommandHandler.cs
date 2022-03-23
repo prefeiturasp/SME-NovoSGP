@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Sentry;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureException(ex);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na consolidação de Frequência da turma.", LogNivel.Negocio, LogContexto.Frequencia, ex.Message));
                 throw;
             }
         }

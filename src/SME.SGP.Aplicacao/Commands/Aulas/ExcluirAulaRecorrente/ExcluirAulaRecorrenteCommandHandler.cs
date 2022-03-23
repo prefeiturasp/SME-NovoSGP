@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
     public class ExcluirAulaRecorrenteCommandHandler : IRequestHandler<ExcluirAulaRecorrenteCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioAulaConsulta repositorioAula;
+        private readonly IRepositorioAulaConsulta repositorioAulaConsulta;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
-        private readonly IServicoNotificacao servicoNotificacao;
+        private readonly IRepositorioAula repositorioAula;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
@@ -25,9 +25,9 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioDevolutiva repositorioDevolutiva;
 
         public ExcluirAulaRecorrenteCommandHandler(IMediator mediator,
-                                                   IRepositorioAulaConsulta repositorioAula,
+                                                   IRepositorioAulaConsulta repositorioAulaConsulta,
+                                                   IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
-                                                   IServicoNotificacao servicoNotificacao,
                                                    IRepositorioPlanoAula repositorioPlanoAula,
                                                    IRepositorioDiarioBordo repositorioDiarioBordo,
                                                    IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno,
@@ -35,9 +35,9 @@ namespace SME.SGP.Aplicacao
                                                    IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioAulaConsulta = repositorioAulaConsulta ?? throw new ArgumentNullException(nameof(repositorioAulaConsulta));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
@@ -47,12 +47,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
-            var aulaOrigem = await repositorioAula.ObterCompletoPorIdAsync(request.AulaId);
+            var aulaOrigem = await repositorioAulaConsulta.ObterCompletoPorIdAsync(request.AulaId);
             if (aulaOrigem == null)
                 throw new NegocioException("Não foi possível obter a aula.");
 
             var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(aulaOrigem.TipoCalendarioId, aulaOrigem.DataAula.Date, request.Recorrencia));
-            var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aulaOrigem.AulaPaiId ?? aulaOrigem.Id, aulaOrigem.Id, fimRecorrencia);
+            var aulasRecorrencia = await repositorioAulaConsulta.ObterAulasRecorrencia(aulaOrigem.AulaPaiId ?? aulaOrigem.Id, aulaOrigem.Id, fimRecorrencia);
             var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasRecorrencia);
 
             try
@@ -85,7 +85,6 @@ namespace SME.SGP.Aplicacao
             if (plano != null)
             {
                 await ExcluirArquivo(plano.Descricao, TipoArquivo.PlanoAula);
-                await ExcluirArquivo(plano.DesenvolvimentoAula, TipoArquivo.PlanoAulaDesenvolvimento);
                 await ExcluirArquivo(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
                 await ExcluirArquivo(plano.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa); 
             }
@@ -97,10 +96,6 @@ namespace SME.SGP.Aplicacao
             if(diarioDeBordo?.Planejamento != null)
             {
                 await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
-            }
-            if (diarioDeBordo?.ReflexoesReplanejamento != null)
-            {
-                await ExcluirArquivo(diarioDeBordo.ReflexoesReplanejamento, TipoArquivo.DiarioBordo);
             }
         }
         private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)
@@ -185,8 +180,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.AddBreadcrumb("Exclusao de Registro em Manutenção da Aula", "Alteração de Aula Recorrente");
-                SentrySdk.CaptureException(ex);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Exclusão de registro em manutenção de aula.", LogNivel.Critico, LogContexto.Aula, ex.Message));
             }
         }
 
@@ -229,27 +223,22 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = turma.Ue.Dre.CodigoDre,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuario.Id,
-                Tipo = NotificacaoTipo.Calendario,
-                Titulo = tituloMensagem,
-                TurmaId = turma.CodigoTurma,
-                UeId = turma.Ue.CodigoUe,
-            };
-
             unitOfWork.IniciarTransacao();
             try
             {
                 // Salva Notificação
-                servicoNotificacao.Salvar(notificacao);
+                var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(tituloMensagem, 
+                                                               mensagemUsuario.ToString(), 
+                                                               usuario.CodigoRf, 
+                                                               NotificacaoCategoria.Aviso, 
+                                                               NotificacaoTipo.Calendario, 
+                                                               turma.Ue.Dre.CodigoDre,
+                                                               turma.Ue.CodigoUe, 
+                                                               turma.CodigoTurma, 
+                                                               DateTime.Now.Year));
 
                 // Gera vinculo Notificacao x Aula
-                await repositorioNotificacaoAula.Inserir(notificacao.Id, aulaId);
+                await repositorioNotificacaoAula.Inserir(notificacaoId, aulaId);
 
                 unitOfWork.PersistirTransacao();
             }

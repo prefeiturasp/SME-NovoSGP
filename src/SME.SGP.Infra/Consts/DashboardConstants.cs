@@ -13,7 +13,7 @@
         public const string QuantidadeTotalDeDiariosDeBordoComDevolutivasDescricao = "Qtd. de diários com devolutiva";
 
         // Relatório de Acompanhamento de Aprendizagem
-        public const string QuantidadeComAcompanhamento = "Qtd. de crianças com relatório pedagógico registrado";
-        public const string QuantidadeSemAcompanhamento = "Qtd. de crianças com relatório pedagógico pendente";
+        public const string QuantidadeComAcompanhamento = "Registrados";
+        public const string QuantidadeSemAcompanhamento = "Pendentes";
     }
 }

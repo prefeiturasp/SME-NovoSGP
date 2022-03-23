@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -33,13 +33,12 @@ namespace SME.SGP.Aplicacao
                     var publicarTratamentoTipoEscola = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalTipoEscolaTratar, tipoEscola, param.CodigoCorrelacao, null));
                     if (!publicarTratamentoTipoEscola)
                     {
-                        var mensagem = $"Não foi possível inserir o Tipo de Escola : {tipoEscola} na fila de sync.";
-                        SentrySdk.CaptureMessage(mensagem);
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o Tipo de Escola : {tipoEscola} na fila de sync.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    SentrySdk.CaptureException(ex);
+                    
                 }
             }
 

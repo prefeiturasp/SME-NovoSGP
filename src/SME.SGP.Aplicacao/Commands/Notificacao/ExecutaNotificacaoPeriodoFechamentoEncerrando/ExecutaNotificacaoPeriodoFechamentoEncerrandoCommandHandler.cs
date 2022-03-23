@@ -22,14 +22,21 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand request, CancellationToken cancellationToken)
         {
-            var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(request.PeriodoFechamentoBimestre.PeriodoFechamento.UeId.Value,
-                                                                                                        DateTime.Now.Year,
-                                                                                                      request.PeriodoFechamentoBimestre.PeriodoFechamentoId,
-                                                                                                      request.ModalidadeTipoCalendario.ObterModalidadesTurma(), 0));
+            var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(request.PeriodoFechamentoBimestre.PeriodoFechamento.Ue.Id,
+                                                                                                       DateTime.Now.Year,
+                                                                                                       request.PeriodoFechamentoBimestre.PeriodoFechamentoId,
+                                                                                                       request.ModalidadeTipoCalendario.ObterModalidadesTurma(),
+                                                                                                       ObterSemestre(request)
+                                                                                                      ));
             if (turmas != null && turmas.Any())
                 await EnviarNotificacaoProfessores(turmas, request.PeriodoFechamentoBimestre.PeriodoEscolar, request.PeriodoFechamentoBimestre, request.PeriodoFechamentoBimestre.PeriodoFechamento.Ue);
 
             return true;
+        }
+
+        private static int ObterSemestre(ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand request)
+        {
+            return request.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? request.PeriodoFechamentoBimestre.PeriodoEscolar.Bimestre : 0;
         }
 
         private async Task EnviarNotificacaoProfessores(IEnumerable<Turma> turmas, PeriodoEscolar periodoEscolar, PeriodoFechamentoBimestre periodoFechamentoBimestre, Ue ue)
@@ -55,17 +62,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<long>> ObterProfessores(IEnumerable<Turma> turmas)
         {
-
             var listaUsuarios = new List<long>();
-            foreach (var turma in turmas)
-            {
-                var professores = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turma.CodigoTurma));
+            var professores = await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(turmas.Select(a => a.CodigoTurma)));
 
-                foreach (var professor in professores)
-                {
-                    if (professor != "")
-                        listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor)));
-                }
+            foreach (var professor in professores)
+            {
+                if (professor != "")
+                    listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor)));
             }
             return listaUsuarios.Distinct();
         }

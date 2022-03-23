@@ -20,6 +20,11 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;            
         }
 
+        public virtual async Task<IEnumerable<T>> ListarAsync()
+        {
+            return await database.Conexao.GetAllAsync<T>();
+        }
+
         public virtual IEnumerable<T> Listar()
         {
             return database.Conexao.GetAll<T>();

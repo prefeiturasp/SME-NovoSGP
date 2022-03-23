@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio
         private readonly IReadOnlyList<string> ComponentesDeAulaCompartilhada;
         private readonly IReadOnlyList<string> ComponentesDeRecuperacaoParalela;
         private readonly IReadOnlyList<string> ComponentesDeTecnologiaAprendizagem;
+        private readonly IReadOnlyList<string> ComponentesDeAulaPAP;
 
         public Aula()
         {
@@ -41,6 +42,9 @@ namespace SME.SGP.Dominio
             ComponentesDeAEEContraturno = new List<string> {
                 "1030",
             };
+            ComponentesDeAulaPAP = new List<string> {
+                "1322",
+            };
         }
 
         public bool AulaCJ { get; set; }
@@ -57,6 +61,7 @@ namespace SME.SGP.Dominio
         public bool EhRecuperacaoParalela => ComponentesDeRecuperacaoParalela.Any(c => c == DisciplinaId);
         public bool EhTecnologiaAprendizagem => ComponentesDeTecnologiaAprendizagem.Any(c => c == DisciplinaId);
         public bool EhDataSelecionadaFutura => DataAula.Date > DateTime.Now.Date;
+        public bool EhPAP => ComponentesDeAulaPAP.Any(c => c == DisciplinaId);
 
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
@@ -174,6 +179,11 @@ namespace SME.SGP.Dominio
         {
             if (AulaCJ && (usuario.EhProfessor() || usuario.EhProfessorCj()) && (usuario.CodigoRf != this.CriadoRF))
                 throw new NegocioException("Você não pode alterar esta Atividade Avaliativa.");
+        }
+
+        public bool EhReposicao()
+        {
+            return TipoAula == TipoAula.Reposicao;
         }
 
         public void ReprovarWorkflow()

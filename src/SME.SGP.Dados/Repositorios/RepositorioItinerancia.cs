@@ -375,10 +375,10 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     if (registroItinerancia == null)
                         registroItinerancia = itinerancia;
-
-                    ue.Dre = dre;
-
-                    return itinerancia;
+                    
+                    registroItinerancia.Ue = ue;
+                    registroItinerancia.Dre = dre;
+                    return registroItinerancia;
                 }, new { id });
 
             return registroItinerancia;

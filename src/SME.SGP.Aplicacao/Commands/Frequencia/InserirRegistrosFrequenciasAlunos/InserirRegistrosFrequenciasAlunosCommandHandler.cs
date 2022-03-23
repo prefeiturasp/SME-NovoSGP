@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,17 +31,26 @@ namespace SME.SGP.Aplicacao
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                await mediator.Send(new ExcluirFrequenciasAlunoPorRegistroFrequenciaIdCommand(request.RegistroFrequenciaId));
-                await mediator.Send(new ExcluirPreDefinicaoFrequenciaCommand(request.TurmaId, request.ComponenteCurricularId));
+                var alunosComFrequenciaRegistrada = request.Frequencias.Select(s => s.CodigoAluno).ToArray();
+
+                await mediator.Send(new ExcluirFrequenciasAlunoPorRegistroFrequenciaIdCommand(request.RegistroFrequenciaId, alunosComFrequenciaRegistrada));
+
+                await mediator.Send(new ExcluirPreDefinicaoFrequenciaCommand(request.TurmaId, request.ComponenteCurricularId, alunosComFrequenciaRegistrada));
+                
                 try
                 {
                     foreach (var frequencia in request.Frequencias)
                     {
-                        var preDefinida = frequencia.TipoFrequenciaPreDefinido != "" ? (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), frequencia.TipoFrequenciaPreDefinido) : TipoFrequencia.C;
+                        var preDefinida = !string.IsNullOrEmpty(frequencia.TipoFrequenciaPreDefinido) ? 
+                            (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), frequencia.TipoFrequenciaPreDefinido) : 
+                            TipoFrequencia.C;
 
                         foreach (var aulaRegistrada in frequencia.Aulas)
                         {
-                            var presenca = aulaRegistrada.TipoFrequencia != "" ? (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), aulaRegistrada.TipoFrequencia) : preDefinida;
+                            var presenca = !string.IsNullOrEmpty(aulaRegistrada.TipoFrequencia) ? 
+                                (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), aulaRegistrada.TipoFrequencia) : 
+                                preDefinida;
+
                             var entidade = new RegistroFrequenciaAluno()
                             {
                                 CodigoAluno = frequencia.CodigoAluno,

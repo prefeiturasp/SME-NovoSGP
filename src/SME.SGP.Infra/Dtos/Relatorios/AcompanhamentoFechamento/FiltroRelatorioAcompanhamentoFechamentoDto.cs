@@ -21,5 +21,6 @@ namespace SME.SGP.Infra
         public SituacaoConselhoClasse? SituacaoConselhoClasse { get; set; }
         public bool ListarPendencias { get; set; }
         public Usuario Usuario { get; set; }
+        public bool ExibirHistorico { get; set; }
     }
 }

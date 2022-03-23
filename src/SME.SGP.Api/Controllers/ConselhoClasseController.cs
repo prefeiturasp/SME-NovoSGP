@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -22,7 +23,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ConsultasConselhoClasseRecomendacaoConsultaDto), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRecomendacoesAlunoFamilia([FromServices] IConsultasConselhoClasseRecomendacao consultasConselhoClasseRecomendacao,
-            long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromQuery]bool consideraHistorico = false)
+            long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromQuery] bool consideraHistorico = false)
         { 
             var retorno = await consultasConselhoClasseRecomendacao.ObterRecomendacoesAlunoFamilia(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre, consideraHistorico);
             return Ok(retorno);
@@ -66,6 +67,21 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterConselhoClasseTurma(string turmaCodigo, int bimestre, string alunoCodigo, bool ehFinal, bool consideraHistorico, [FromServices] IConsultasConselhoClasse consultasConselhoClasse)
             => Ok(await consultasConselhoClasse.ObterConselhoClasseTurma(turmaCodigo, alunoCodigo, bimestre, ehFinal, consideraHistorico));
 
+        [HttpGet("turmas/{turmaCodigo}/alunos/{alunoCodigo}/consideraHistorico/{consideraHistorico}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(ConselhoClasseAlunoResumoDto), 200)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterConselhoClasseTurmaFinal(string turmaCodigo, string alunoCodigo, bool consideraHistorico, [FromServices] IConsultasConselhoClasse consultasConselhoClasse)
+        {
+            var retorno = (await consultasConselhoClasse.ObterConselhoClasseTurmaFinal(turmaCodigo, alunoCodigo, consideraHistorico));
+
+            if (retorno == null)
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/parecer/consideraHistorico/{consideraHistorico}")]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -73,6 +89,14 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, bool consideraHistorico, [FromServices] IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
             => Ok(await consultasConselhoClasseAluno.ObterParecerConclusivo(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, consideraHistorico));
+
+        [HttpGet("turmas/{codigoTurma}/alunos/{alunoCodigo}/parecer")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterParecerConclusivoPorTurmaAluno(string codigoTurma, string alunoCodigo, [FromServices] IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
+            => Ok(await consultasConselhoClasseAluno.ObterParecerConclusivoAlunoTurma(codigoTurma, alunoCodigo));
 
         [HttpPost("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/parecer")]
         [ProducesResponseType(401)]
@@ -141,6 +165,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ReprocessarSituacaoConselhoClasseAluno(int dreId, [FromServices] IServicoConselhoClasse servicoConselhoClasse)
         {
             await servicoConselhoClasse.ConsolidaConselhoClasse(dreId);
+            return Ok();
+        }
+
+        [HttpPost("turmas/anos-letivos/{anoLetivo}/parecer/reprocessar")]
+        [Permissao(Permissao.CC_I, Policy = "Bearer")]
+        public async Task<IActionResult> ReprocessarParecerConclusivo(int anoLetivo, [FromServices] IReprocessarParecerConclusivoPorAnoUseCase useCase)
+        {
+            await useCase.Executar(anoLetivo);
             return Ok();
         }
     }

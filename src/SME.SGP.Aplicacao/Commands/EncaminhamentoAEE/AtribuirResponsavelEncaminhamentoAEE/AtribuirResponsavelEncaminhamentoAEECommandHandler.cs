@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
-            await RemovePendencias(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id);
+            await RemovePendencias(encaminhamentoAEE.Id);
 
             if (await ParametroGeracaoPendenciaAtivo())
                 await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
@@ -53,13 +53,9 @@ namespace SME.SGP.Aplicacao
             return parametro != null && parametro.Ativo;
         }
 
-        private async Task RemovePendencias(long turmaId, long encaminhamentoAEEId)
+        private async Task RemovePendencias(long encaminhamentoAEEId)
         {
-            var ehCEFAI = await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECEFAICommand(turmaId, encaminhamentoAEEId));
-            if (!ehCEFAI)
-            {
-                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(turmaId, encaminhamentoAEEId));
-            }
+            await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(encaminhamentoAEEId));
         }
     }
 }

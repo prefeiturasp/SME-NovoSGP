@@ -37,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder();
             query.AppendLine("select * from prioridade_perfil where codigo_perfil = Any(@Ids) order by ordem");
 
-            return database.Conexao.Query<PrioridadePerfil>(query.ToString(), new { Ids = idsPerfis });
+            return database.Conexao.Query<PrioridadePerfil>(query.ToString(), new { Ids = idsPerfis }, queryName: "ObterPerfisPorIds");
         }
 
         public async Task<IEnumerable<PrioridadePerfil>> ObterPerfisPorTipo(int tipo)

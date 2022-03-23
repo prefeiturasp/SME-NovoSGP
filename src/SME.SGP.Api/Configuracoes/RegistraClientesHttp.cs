@@ -41,7 +41,7 @@ namespace SME.SGP.Api
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-integration-key", configuration.GetSection("AE_ChaveIntegracao").Value);
-            }).AddPolicyHandler(policy);            
+            }).AddPolicyHandler(policy);
 
             services.AddHttpClient<IServicoGithub, SevicoGithub>(c =>
             {

@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Sentry;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var uesCodigo = await mediator.Send(new ObterUesCodigoPorDreSincronizacaoInstitucionalQuery(request.DreCodigo));
 
-            if (uesCodigo == null || !uesCodigo.Any()) return true;            
+            if (uesCodigo == null || !uesCodigo.Any()) return true;
 
             foreach (var ueCodigo in uesCodigo)
             {
@@ -29,16 +29,15 @@ namespace SME.SGP.Aplicacao
                     var publicarSyncUe = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalUeTratar, ueCodigo, Guid.NewGuid(), null));
                     if (!publicarSyncUe)
                     {
-                        var mensagem = $"Não foi possível inserir a UE de codígo : {ueCodigo} na fila de sync.";
-                        SentrySdk.CaptureMessage(mensagem);
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir a UE de codígo : {ueCodigo} na fila de sync.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, "Sincronização Institucional de Dre"));
                     }
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.CaptureException(ex);
-                }                
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir a UE de codígo : {ueCodigo} na fila de sync.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, ex.Message));
+                }
             }
-            return true;            
+            return true;
         }
     }
 }

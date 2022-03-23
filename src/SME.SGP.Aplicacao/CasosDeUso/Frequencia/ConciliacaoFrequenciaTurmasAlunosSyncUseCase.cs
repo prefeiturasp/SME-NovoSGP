@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             if (turmasComponentesDoAnoLetivo != null && turmasComponentesDoAnoLetivo.Any())
             {
                 var turmasComponentesDoAnoLetivoAgrupados = turmasComponentesDoAnoLetivo.GroupBy(a => a.TurmaCodigo).ToList();
-                
+
                 foreach (var turmaComponenteDoAnoLetivoAgrupado in turmasComponentesDoAnoLetivoAgrupados)
                 {
                     var componentesDaTurma = turmaComponenteDoAnoLetivoAgrupado.Select(a => a.ComponenteCurricularId).Distinct().ToArray();
@@ -39,16 +39,13 @@ namespace SME.SGP.Aplicacao
 
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasAlunosBuscar, mensagemParaEnviar, Guid.NewGuid(), null));
                 }
-
-
-            } else
+            }
+            else
             {
-                SentrySdk.CaptureException(new System.Exception("Não foi possível obter as turmas e componentes para o cálculo de frequencia."));
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível obter as turmas e componentes para o cálculo de frequencia.", LogNivel.Negocio, LogContexto.Frequencia));
             }
 
             return true;
         }
     }
-
-
 }

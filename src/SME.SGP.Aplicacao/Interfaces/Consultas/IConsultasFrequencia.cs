@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
 
         FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual, string turmaId = "");
 
-        Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina);
+        Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina, int anoLetivo);
 
-        Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina);
+        Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina, int anoLetivo);
 
         Task<string> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "", int? semestre = null);
         Task<string> ObterFrequenciaGeralAlunoPorTurmas(string alunoCodigo, string[] turmasCodigos, string componenteCurricularCodigo = "", Turma turmaConsultada = null);

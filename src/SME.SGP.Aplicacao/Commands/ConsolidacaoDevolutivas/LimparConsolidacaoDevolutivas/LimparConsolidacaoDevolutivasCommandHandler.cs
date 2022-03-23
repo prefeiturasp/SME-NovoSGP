@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Sentry;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -10,10 +10,12 @@ namespace SME.SGP.Aplicacao
     public class LimparConsolidacaoDevolutivasCommandHandler : IRequestHandler<LimparConsolidacaoDevolutivasCommand, bool>
     {
         private readonly IRepositorioConsolidacaoDevolutivas repositorio;
+        private readonly IMediator mediator;
 
-        public LimparConsolidacaoDevolutivasCommandHandler(IRepositorioConsolidacaoDevolutivas repositorio)
+        public LimparConsolidacaoDevolutivasCommandHandler(IRepositorioConsolidacaoDevolutivas repositorio, IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(LimparConsolidacaoDevolutivasCommand request, CancellationToken cancellationToken)
@@ -24,9 +26,9 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureException(ex);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao limpar consolidação de devolutivas.", LogNivel.Negocio, LogContexto.Devolutivas, ex.Message));                
             }
-            
+
             return true;
         }
     }

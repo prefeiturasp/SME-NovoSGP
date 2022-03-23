@@ -19,13 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             return repositorioConselhoClasseNota.ObterPorId(id);
         }
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAsync(long conselhoClasseId, string alunoCodigo)
-            => await repositorioConselhoClasseNota.ObterNotasAlunoAsync(conselhoClasseId, alunoCodigo);
-
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisAlunoAsync(string alunoCodigo, string turmaCodigo)
             => await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turmaCodigo);
-
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisBimestresAlunoAsync(string alunoCodigo, string[] turmasCodigo, int bimestre=0)
-            => await repositorioConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigo, bimestre);
     }
 }

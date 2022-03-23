@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -29,7 +30,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<int> ObterQuantidadeTurmasSeriadas(long ueId, int ano);
         Ue ObterUEPorTurma(string turmaId);
 
-        Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades);
+        Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades, DateTime dataReferencia);
         Task<bool> ValidarUeEducacaoInfantil(long ueId);
 
         Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades, int anoLetivo = 0);
@@ -41,6 +42,9 @@ namespace SME.SGP.Dominio.Interfaces
         Task<Ue> ObterUeComDrePorId(long ueId);
         Task<IEnumerable<string>> ObterUesCodigosPorDreAsync(long dreId);
         Task<int> ObterQuantidadeUesPorAnoLetivoAsync(int anoLetivo);
-        Task<IEnumerable<string>> ObterUesCodigosPorModalidadeEAnoLetivo(Modalidade modalidade, int anoLetivo);
+        Task<IEnumerable<string>> ObterUesCodigosPorModalidadeEAnoLetivo(Modalidade modalidade, int anoLetivo, int pagina = 1);
+        Task<DreUeCodigoDto> ObterCodigosDreUePorId(long ueId);
+        Task<IEnumerable<long>> ObterTodosIds();
+        Task<IEnumerable<Ue>> ObterUEsComDREsPorModalidadeTipoCalendarioQuery(int[] modalidades, int anoLetivo = 0);
     }
 }

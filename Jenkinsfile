@@ -4,8 +4,7 @@ pipeline {
       kubeconfig = getKubeconf(env.branchname)
       registryCredential = 'jenkins_registry'
       deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"
-      deployment2 = "${env.branchname == 'release-r2' ? 'sme-pedagogico-worker-r2' : 'sme-pedagogico-worker' }"
-      deployment3 = "${env.branchname == 'release-r2' ? 'sme-workerservice-rc2' : 'sme-workerservice' }"
+      deployment2 = "${env.branchname == 'release-r2' ? 'sme-pedagogico-worker-r2' : 'sme-pedagogico-worker' }"      
       deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-rabbit-r2' : 'sme-worker-rabbit' }"
     }
   
@@ -32,33 +31,31 @@ pipeline {
           }
         }
       
-        //stage('AnaliseCodigo') {
-	     //   when { branch 'release' }
-         // steps {
-         //     withSonarQubeEnv('sonarqube-local'){
-         //       sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP-API-EOL"'
-         //       sh 'dotnet build SME.Pedagogico.API.sln'
-         //       sh 'dotnet-sonarscanner'
-         //   }
-         // }
-       // }
+        stage('Sonar') {
+	       when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
+	steps {
+             withSonarQubeEnv('sonarqube-local'){
+               sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados, **/*SME.SGP.Dominio, **/*SME.SGP.Dominio.Servicos, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api,**/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Worker.Rabbbit"'
+	       sh 'dotnet build SME.SGP.sln'
+               sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+               sh 'dotnet-sonarscanner'
+	     }
+	  }
+       }
 
         stage('Build') {
           when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; } } 
           steps {
             script {
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-sgp-backend"
-              imagename2 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-rabbit"
-              imagename3 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-workerservice"              
+              imagename2 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-rabbit"                            
               dockerImage1 = docker.build(imagename1, "-f src/SME.SGP.Api/Dockerfile .")
-              dockerImage2 = docker.build(imagename2, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")
-              dockerImage3 = docker.build(imagename3, "-f src/SME.SGP.WorkerService/Dockerfile .")
+              dockerImage2 = docker.build(imagename2, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")              
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
               dockerImage1.push()
-              dockerImage2.push()
-              dockerImage3.push()
+              dockerImage2.push()              
               }
-              sh "docker rmi $imagename1 $imagename2 $imagename3"
+              sh "docker rmi $imagename1 $imagename2"
             }
           }
         }
@@ -76,8 +73,7 @@ pipeline {
 					withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
 						sh('cp $config '+"$home"+'/.kube/config')
 						sh "kubectl rollout restart deployment/${deployment1} -n sme-novosgp"
-						sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"
-						sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"
+						sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"						
 						sh "kubectl rollout restart deployment/${deployment4} -n sme-novosgp"
 						sh('rm -f '+"$home"+'/.kube/config')
 					}
@@ -87,13 +83,50 @@ pipeline {
         	 
       stage('Flyway') {
         agent { label 'master' }
+        when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }
         steps{
           withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
             checkout scm
             sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
           }
         }		
-      }    
+      }
+
+      stage('Deploy Treinamento'){
+          when { anyOf { branch 'release'; } }        
+          steps {
+              script{
+                  try {
+                      withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
+                          sh('cp $config '+"$home"+'/.kube/config')
+                          sh "kubectl -n sme-novosgp-treino rollout restart deploy"
+                          sh('rm -f '+"$home"+'/.kube/config')
+                      }
+                  }
+                  catch (err) {
+                      echo err.getMessage()
+                  }
+              }
+          }           
+      }
+
+      stage('Treinamento Flyway') {
+        agent { label 'master' }
+        when { anyOf {  branch 'release'; } }
+        steps{
+          script{
+            try {
+                withCredentials([string(credentialsId: "flyway_sgp_treinamento", variable: 'url')]) {
+                checkout scm
+                sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+                }
+            } 
+            catch (err) {
+                echo err.getMessage()
+            }
+          }
+        }		
+      }        
     }
 
   post {

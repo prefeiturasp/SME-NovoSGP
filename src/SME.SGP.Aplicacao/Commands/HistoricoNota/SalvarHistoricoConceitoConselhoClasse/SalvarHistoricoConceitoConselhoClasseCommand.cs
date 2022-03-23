@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarHistoricoConceitoConselhoClasseCommand : IRequest<long>
     {
-        public SalvarHistoricoConceitoConselhoClasseCommand(long conselhoClasseNotaId, long conceitoAnteriorId, long conceitoNovoId)
+        public SalvarHistoricoConceitoConselhoClasseCommand(long conselhoClasseNotaId, long? conceitoAnteriorId, long conceitoNovoId)
         {
             ConselhoClasseNotaId = conselhoClasseNotaId;
             ConceitoAnteriorId = conceitoAnteriorId;
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public long ConselhoClasseNotaId { get; set; }
-        public long ConceitoAnteriorId { get; set; }
+        public long? ConceitoAnteriorId { get; set; }
         public long ConceitoNovoId { get; set; }
     }
 
@@ -27,10 +27,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.ConselhoClasseNotaId)
                   .NotEmpty()
                   .WithMessage("O id da nota do consecho de classe deve ser informada para geração do histórico!");
-
-            RuleFor(a => a.ConceitoAnteriorId)
-                  .NotEmpty()
-                  .WithMessage("O id do conceito anterior do conselho de classe deve ser informada para geração do histórico!");
 
             RuleFor(a => a.ConceitoNovoId)
                   .NotEmpty()

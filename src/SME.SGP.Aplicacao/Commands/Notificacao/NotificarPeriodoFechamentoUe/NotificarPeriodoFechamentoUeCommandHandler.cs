@@ -1,12 +1,10 @@
 ﻿using MediatR;
-using Sentry;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,18 +22,19 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(NotificarPeriodoFechamentoUeCommand request, CancellationToken cancellationToken)
         {
             var ues = await ObterUEsPorModalidade(request.ModalidadeTipoCalendario);
+            var existeAbertura = await ExistePeriodoFechamentoCadastrado(request.PeriodoFechamentoBimestre, DateTime.Now);
 
-            foreach(var ue in ues)
+            foreach (var ue in ues)
             {
-                if (!await ExistePeriodoFechamentoCadastrado(ue, request.PeriodoFechamentoBimestre))
+                if (existeAbertura)
                 {
                     try
                     {
                         await NotificarUe(ue, request.ModalidadeTipoCalendario);
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        SentrySdk.CaptureException(e);
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na consolidação de Frequência da turma.", LogNivel.Negocio, LogContexto.Fechamento, ex.Message));
                     }
                 }
             }
@@ -76,8 +75,8 @@ namespace SME.SGP.Aplicacao
         private Cargo[] ObterCargosGestaoEscola()
             => new[] { Cargo.CP, Cargo.AD, Cargo.Diretor };
 
-        private async Task<bool> ExistePeriodoFechamentoCadastrado(Ue ue, PeriodoFechamentoBimestre periodoFechamentoBimestre)
-            =>  await mediator.Send(new ExistePeriodoFechmantoPorUePeriodoEscolarQuery(ue.Id, periodoFechamentoBimestre.PeriodoEscolarId));
+        private async Task<bool> ExistePeriodoFechamentoCadastrado(PeriodoFechamentoBimestre periodoFechamentoBimestre, DateTime dataReferencia)
+            => await mediator.Send(new ExistePeriodoFechmantoPorUePeriodoEscolarQuery(periodoFechamentoBimestre.PeriodoEscolarId, dataReferencia));
 
         private async Task<IEnumerable<Ue>> ObterUEsPorModalidade(ModalidadeTipoCalendario modalidadeTipoCalendario)
             => await mediator.Send(new ObterUEsPorModalidadeCalendarioQuery(modalidadeTipoCalendario));

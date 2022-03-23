@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -86,7 +89,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("processar-pendentes/{anoLetivo}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]        
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ProcessarPendentes(int anoLetivo, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
         {
             await comandos.ProcessarPendentes(anoLetivo);
@@ -98,6 +101,51 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ProcessarPendentes([FromQuery] string turmaCodigo, [FromQuery] int? bimestre, [FromServices] IIniciaConsolidacaoTurmaGeralUseCase useCase)
         {
             await useCase.Executar(turmaCodigo, bimestre);
+            return Ok();
+        }
+
+        [HttpGet("listar")]
+        [ProducesResponseType(typeof(FechamentoNotaConceitoTurmaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarFechamentoTurma(string turmaCodigo, long componenteCurricularCodigo, int bimestre, int? semestre, [FromServices] IListarFechamentoTurmaBimestreUseCase useCase)
+        {
+            return Ok(await useCase.Executar(turmaCodigo, componenteCurricularCodigo, bimestre, semestre));
+        }
+
+        [HttpPost("salvar-fechamento")]
+        [ProducesResponseType(typeof(AuditoriaPersistenciaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> SalvarFechamento([FromBody] FechamentoFinalTurmaDisciplinaDto fechamentoTurma, [FromServices] IInserirFechamentoTurmaDisciplinaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(fechamentoTurma));
+        }
+
+        [HttpPost("consolidar-fechamento")]
+        [ProducesResponseType(typeof(AuditoriaPersistenciaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_A, Policy = "Bearer")]
+        public async Task<IActionResult> ConsolidarFechamentoTurma([FromBody] FechamentoTurmaConsolidacaoDto fechamentoTurmaConsolidacaoDto, [FromServices] IMediator mediator)
+        {
+            foreach (var idTurma in fechamentoTurmaConsolidacaoDto.IdsTurma)
+            {
+                try
+                {
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaFechamentoSync,
+                                                                   new ConsolidacaoTurmaDto(idTurma, fechamentoTurmaConsolidacaoDto.Bimestre),
+                                                                   Guid.NewGuid(),
+                                                                   null));
+                }
+                catch (Exception ex)
+                {
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao executar o fechamento da turma id: {idTurma}. Detalhes : {ex}", LogNivel.Critico, LogContexto.Fechamento));
+                }
+            }
+
             return Ok();
         }
     }

@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Utilitarios;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;

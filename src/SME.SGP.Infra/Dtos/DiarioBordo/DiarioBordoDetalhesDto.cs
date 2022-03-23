@@ -11,12 +11,12 @@ namespace SME.SGP.Infra
         public string Devolutivas { get; set; }
 
         public string Planejamento { get; set; }
-        public string ReflexoesReplanejamento { get; set; }
 
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
 
         public bool TemPeriodoAberto { get; set; }
+        public bool InseridoCJ { get; set; }
 
         public AuditoriaDto Auditoria { get; set; }
 

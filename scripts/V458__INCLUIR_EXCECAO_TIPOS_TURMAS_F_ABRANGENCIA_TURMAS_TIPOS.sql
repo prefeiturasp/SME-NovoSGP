@@ -1,3 +1,5 @@
+drop function f_abrangencia_turmas_tipos;
+
 CREATE OR REPLACE FUNCTION public.f_abrangencia_turmas_tipos(p_login character varying, 
 	p_perfil_id uuid, 
 	p_historico boolean, 

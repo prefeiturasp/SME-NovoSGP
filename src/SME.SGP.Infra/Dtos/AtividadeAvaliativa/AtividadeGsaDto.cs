@@ -12,5 +12,6 @@ namespace SME.SGP.Infra
         public string Descricao { get; set; }
         public DateTime DataCriacao { get; set; }
         public DateTime? DataAlteracao { get; set; }
+        public string Email { get; set; }
     }
 }

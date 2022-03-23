@@ -19,6 +19,5 @@ namespace SME.SGP.Dominio
         [Display(Name = "Supervisor Técnico")]
         SupervisorTecnico = 434
 
-
     }
 }

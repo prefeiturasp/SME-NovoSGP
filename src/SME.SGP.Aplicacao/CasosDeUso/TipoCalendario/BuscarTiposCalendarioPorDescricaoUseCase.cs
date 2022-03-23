@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                                                                               a == Modalidade.EducacaoInfantil ? (int)ModalidadeTipoCalendario.Infantil :
                                                                                 (int)ModalidadeTipoCalendario.FundamentalMedio).ToArray();             
 
-                return await mediator.Send(new ObterTiposCalendariosPorAnosLetivoModalidadesQuery(anosLetivosTipoCalendario.Distinct().ToArray(), modalidadesTipoCalendarioUes));
+                return await mediator.Send(new ObterTiposCalendariosPorAnosLetivoModalidadesQuery(anosLetivosTipoCalendario.Distinct().ToArray(), modalidadesTipoCalendarioUes, descricao));
             }
             else
                 return await mediator.Send(new ObterTipoCalendarioPorBuscaQuery(descricao));

@@ -50,6 +50,16 @@ namespace SME.SGP.Dominio
             TipoEvento = tipoEvento;
         }
 
+        public void AdicionarDre(Dre dre)
+        {
+            Dre = dre;
+        }
+
+        public void AdicionarUe(Ue ue)
+        {
+            Ue = ue;
+        }
+
         public void AprovarWorkflow()
         {
             if (Status != EntidadeStatus.AguardandoAprovacao)

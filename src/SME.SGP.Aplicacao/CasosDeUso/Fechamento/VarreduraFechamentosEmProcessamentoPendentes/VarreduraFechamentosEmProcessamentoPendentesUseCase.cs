@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -56,7 +55,6 @@ namespace SME.SGP.Aplicacao
             catch (Exception ex)
             {
                 unitOfWork.Rollback();
-                SentrySdk.CaptureException(ex);
             }
 
             return false;

@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Executar()
+        public async Task<bool> Executar(MensagemRabbit param)
         {
             return await mediator.Send(new PublicarFilaSerapEstudantesCommand(RotasRabbitSerapEstudantes.FilaProvaSync, string.Empty));
         }

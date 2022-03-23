@@ -23,7 +23,6 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-
             if (aula.DataAula.Date <= DateTime.Today && !usuarioLogado.EhProfessorCj() && !usuarioLogado.EhGestorEscolar())
             {
                 var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(dto.ComponenteCurricularId, aula.TurmaId, aula.DataAula, usuarioLogado));
@@ -31,7 +30,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente e data.");
             }
 
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(dto.CodigoAluno, aula.DataAula.Year, aula.TurmaId));
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(dto.CodigoAluno, aula.DataAula.Year, codigoTurma: aula.TurmaId));
             if (aluno == null)
                 throw new NegocioException($"{(dto.EhInfantil ? "Criança não encontrada" : "Aluno não encontrado")}.");
 

@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioPlanoAnualTerritorioSaber repositorioPlanoAnualTerritorioSaber;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IMediator mediator;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
+        private readonly IMediator mediator;
 
         public ConsultasPlanoAnualTerritorioSaber(IRepositorioPlanoAnualTerritorioSaber repositorioPlanoAnualTerritorioSaber,
                                                   IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-                                                  IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
+                                                  IRepositorioTipoCalendarioConsulta repositorioTipoCalendario, 
                                                   IMediator mediator)
         {
             this.repositorioPlanoAnualTerritorioSaber = repositorioPlanoAnualTerritorioSaber ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnualTerritorioSaber));
@@ -43,33 +44,44 @@ namespace SME.SGP.Aplicacao
         {
             var periodos = await ObterPeriodoEscolar(turmaId, anoLetivo);
             var dataAtual = DateTime.Now.Date;
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaId));
+            var bimestresAbertoFechado = new List<PeriodoEscolarPorTurmaDto>();
+            periodos.Select(s => s.Bimestre).Distinct().ToList().ForEach(bimestre =>
+            {
+                bimestresAbertoFechado.Add(new PeriodoEscolarPorTurmaDto()
+                {
+                    Bimestre = bimestre,
+                    PeriodoAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result,
+                });
+            });
             var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, territorioExperienciaId);
             if (listaPlanoAnual != null && listaPlanoAnual.Any())
             {
                 if (listaPlanoAnual.Count() != periodos.Count())
                 {
                     var periodosFaltantes = periodos.Where(c => !listaPlanoAnual.Any(p => p.Bimestre == c.Bimestre));
-                    var planosFaltantes = ObterNovoPlanoAnualTerritorioSaberCompleto(turmaId, anoLetivo, ueId, periodosFaltantes, dataAtual).ToList();
+                    var planosFaltantes = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodosFaltantes, dataAtual).ToList();
                     planosFaltantes.AddRange(listaPlanoAnual);
                     listaPlanoAnual = planosFaltantes;
                 }
             }
             else
-                listaPlanoAnual = ObterNovoPlanoAnualTerritorioSaberCompleto(turmaId, anoLetivo, ueId, periodos, dataAtual);
+                listaPlanoAnual = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodos, dataAtual);
+
+            listaPlanoAnual.ToList().ForEach(planoAnual =>
+            {
+                planoAnual.PeriodoAberto = bimestresAbertoFechado.FirstOrDefault(f => f.Bimestre == planoAnual.Bimestre).PeriodoAberto;
+            });
+
             return listaPlanoAnual.OrderBy(c => c.Bimestre);
         }
 
-        private IEnumerable<PlanoAnualTerritorioSaberCompletoDto> ObterNovoPlanoAnualTerritorioSaberCompleto(string turmaId, int anoLetivo, string ueId, IEnumerable<PeriodoEscolar> periodos, DateTime dataAtual)
+        private IEnumerable<PlanoAnualTerritorioSaberCompletoDto> ObterNovoPlanoAnualTerritorioSaberCompleto(Turma turma, int anoLetivo, string ueId, IEnumerable<PeriodoEscolar> periodos, DateTime dataAtual)
         {
             var listaPlanoAnual = new List<PlanoAnualTerritorioSaberCompletoDto>();
             foreach (var periodo in periodos)
             {
-                var obrigatorio = false;
-                if (periodo.PeriodoFim.Local() >= dataAtual && periodo.PeriodoInicio.Local() <= dataAtual)
-                {
-                    obrigatorio = true;
-                }
-                listaPlanoAnual.Add(ObterPlanoAnualPorBimestre(turmaId, anoLetivo, ueId, periodo.Bimestre, obrigatorio));
+                listaPlanoAnual.Add(ObterPlanoAnualPorBimestre(turma.CodigoTurma, anoLetivo, ueId, periodo.Bimestre));
             }
             return listaPlanoAnual;
         }
@@ -96,7 +108,7 @@ namespace SME.SGP.Aplicacao
             return periodos;
         }
 
-        private static PlanoAnualTerritorioSaberCompletoDto ObterPlanoAnualPorBimestre(string turmaId, int anoLetivo, string ueId, int bimestre, bool obrigatorio)
+        private static PlanoAnualTerritorioSaberCompletoDto ObterPlanoAnualPorBimestre(string turmaId, int anoLetivo, string ueId, int bimestre)
         {
             return new PlanoAnualTerritorioSaberCompletoDto
             {

@@ -101,15 +101,24 @@ namespace SME.SGP.Aplicacao
                    select EntidadeParaDto(t);
         }
 
-        public async Task<IEnumerable<TipoCalendarioDto>> ListarPorAnoLetivo(int anoLetivo)
+        public async Task<IEnumerable<TipoCalendarioDto>> ListarPorAnoLetivo(int anoLetivo, int? modalidade)
         {
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfil = servicoUsuario.ObterPerfilAtual();
+            int[] modalidades;
+            
+            if(modalidade == null || !modalidade.HasValue){
+                var login = servicoUsuario.ObterLoginAtual();
+                var perfil = servicoUsuario.ObterPerfilAtual();
 
-            var modalidadesUsuario = await repositorioAbrangencia.ObterModalidades(login, perfil, anoLetivo, false, null);
-            var modalidadesTipoCalendario = MapearModalidadesUsuario(modalidadesUsuario.Select(s => (Modalidade)s));
+                var modalidadesUsuario = await repositorioAbrangencia.ObterModalidades(login, perfil, anoLetivo, false, null);
+                var modalidadesTipoCalendario = MapearModalidadesUsuario(modalidadesUsuario.Select(s => (Modalidade)s));
+                modalidades = modalidadesTipoCalendario.Select(a => (int) a).ToArray();
+            }
+            else
+            {
+                modalidades = new []{modalidade.Value};
+            }
 
-            var retorno = await repositorio.ListarPorAnoLetivoEModalidades(anoLetivo, modalidadesTipoCalendario.Select(a => (int)a).ToArray());
+            var retorno = await repositorio.ListarPorAnoLetivoEModalidades(anoLetivo, modalidades);
             return from t in retorno
                    select EntidadeParaDto(t);
         }

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
 using System;
 using System.Threading;
@@ -18,7 +17,6 @@ namespace SME.SGP.Aplicacao.Commands.PendenciaRegistroIndividual.PublicarAtualiz
 
         protected override async Task Handle(PublicarAtualizacaoPendenciaRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
-            SentrySdk.AddBreadcrumb("Mensagem AtualizarPendenciaAusenciaRegistroIndividual", "Rabbit - AtualizarPendenciaAusenciaRegistroIndividual");
             var dto = new AtualizarPendenciaRegistroIndividualDto { TurmaId = request.TurmaId, CodigoAluno = request.CodigoAluno, DataRegistro = request.DataRegistro };
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAtualizarPendenciaAusenciaRegistroIndividual, dto, Guid.NewGuid(), null));
         }

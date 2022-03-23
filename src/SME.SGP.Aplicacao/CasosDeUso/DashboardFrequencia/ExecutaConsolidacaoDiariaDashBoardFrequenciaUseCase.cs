@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Linq;
@@ -20,7 +19,6 @@ namespace SME.SGP.Aplicacao
             if (filtro == null)
             {
                 var mensagem = $"Não foi possível iniciar a consolidação diária";
-                SentrySdk.CaptureMessage(mensagem);
                 throw new NegocioException(mensagem);
             }
             

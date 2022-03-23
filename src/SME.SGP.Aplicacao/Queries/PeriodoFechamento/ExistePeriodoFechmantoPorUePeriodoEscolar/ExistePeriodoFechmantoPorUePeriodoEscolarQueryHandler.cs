@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Handle(ExistePeriodoFechmantoPorUePeriodoEscolarQuery request, CancellationToken cancellationToken)
-            => await repositorioPeriodoFechamentoBimestre.ExistePeriodoFechamentoPorUePeriodoEscolar(request.UeId, request.PeriodoEscolarId);
+            => await repositorioPeriodoFechamentoBimestre.ExistePeriodoFechamentoPorDataPeriodoEscolar(request.PeriodoEscolarId, request.DataReferencia);
     }
 }

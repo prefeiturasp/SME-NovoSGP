@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
        Task<IEnumerable<TipoCalendarioDto>> Listar();
 
-        Task<IEnumerable<TipoCalendarioDto>> ListarPorAnoLetivo(int anoLetivo);
+        Task<IEnumerable<TipoCalendarioDto>> ListarPorAnoLetivo(int anoLetivo, int? modalidade);
 
         Task<TipoCalendario> ObterPorTurma(Turma turma);
 

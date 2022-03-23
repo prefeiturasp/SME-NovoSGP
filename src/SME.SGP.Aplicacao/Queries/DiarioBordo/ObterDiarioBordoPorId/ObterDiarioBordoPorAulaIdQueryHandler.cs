@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<DiarioBordo> Handle(ObterDiarioBordoPorAulaIdQuery request, CancellationToken cancellationToken)
         {
-            var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId);
+            var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId,request.ComponenteCurricularId);
 
             return diarioBordo;
         }

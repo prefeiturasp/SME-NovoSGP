@@ -1,6 +1,5 @@
 ﻿
 using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -55,7 +54,6 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(
                         new ObterAulasDaTurmaPorTipoCalendarioQuery(dadoTurma.TurmaCodigo, tipoCalendarioId));
 
-
                 var aulasCriadas = aulasCriadasPorUsuarios
                     .Where(a => !a.CriadoPor.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase))
                     .Select(a => Convert.ToInt64(a.DisciplinaId))
@@ -66,14 +64,16 @@ namespace SME.SGP.Aplicacao
                 if (idsDisciplinas == null || !idsDisciplinas.Any())
                     idsDisciplinas = aulas.Select(a => Convert.ToInt64(a.DisciplinaId));
 
-                var componentesCurricularesAulas = await mediator
-                    .Send(new ObterDisciplinasPorIdsQuery(idsDisciplinas.Distinct().ToArray()));
+                var componentesCurricularesAulas = idsDisciplinas != null && idsDisciplinas.Any() ? await mediator
+                    .Send(new ObterDisciplinasPorIdsQuery(idsDisciplinas.Distinct().ToArray())) : null;
 
-                var datasDesconsideradas = (from a in aulasCriadasPorUsuarios
+                var datasDesconsideradas = componentesCurricularesAulas != null && componentesCurricularesAulas.Any() ? (from a in aulasCriadasPorUsuarios
                                             join cc in componentesCurricularesAulas
                                             on a.DisciplinaId equals cc.CodigoComponenteCurricular.ToString()
-                                            where cc.Regencia
-                                            select a.DataAula);
+                                            where cc.Regencia && 
+                                            ((!a.CriadoPor.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase) && !a.Excluido) ||
+                                             (!(a.AlteradoPor?.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase) ?? true) && a.Excluido))
+                                            select a.DataAula) : Enumerable.Empty<DateTime>();
 
                 var professorTitular = await mediator
                     .Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(dadoTurma.TurmaCodigo, dadoTurma.ComponenteCurricularCodigo));
@@ -141,10 +141,7 @@ namespace SME.SGP.Aplicacao
 
             if (idsAulasAExcluir.Any())
                 contadorAulasExcluidas = await ExcluirAulas(contadorAulasExcluidas, idsAulasAExcluir);
-
-            SentrySdk.AddBreadcrumb($"Foram excluídas {contadorAulasExcluidas} aulas.");
-            SentrySdk.AddBreadcrumb($"Foram criadas {contadorAulasCriadas} aulas.");
-            SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Finalizada Rotina de manutenção de aulas do Infantil");
+            
             return true;
         }
 

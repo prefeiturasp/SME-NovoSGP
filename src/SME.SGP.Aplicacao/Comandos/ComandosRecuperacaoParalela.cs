@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
                 Ordenacao = recuperacaoParalelaDto.Ordenacao,
                 PeriodoId = recuperacaoParalelaDto.Periodo.Id,
                 TurmaId = turmaRecuperacaoParalelaId,
-                TurmaCodigo = long.Parse(turmaRecuperacaoParalela.Codigo)
+                TurmaCodigo = turmaRecuperacaoParalela.Codigo
             });
         }
 

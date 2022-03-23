@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -16,23 +15,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            try
-            {
+            if (!await ExecutarConsolidacaoFrequencia())
+                return false;
 
-                if (!await ExecutarConsolidacaoFrequencia())
-                    return false;
+            await ConsolidarFrequenciaTurmasHistorico();
 
-                await ConsolidarFrequenciaTurmasHistorico();
+            await ConsolidarFrequenciaTurmasAnoAtual();
 
-                await ConsolidarFrequenciaTurmasAnoAtual();
+            return true;
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                SentrySdk.CaptureException(ex);
-                throw;
-            }
         }
 
         private async Task<bool> ExecutarConsolidacaoFrequencia()

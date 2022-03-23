@@ -24,13 +24,14 @@ namespace SME.SGP.Aplicacao
             {
                 Ano = DateTime.Today.Year,
                 NotificacaoCategoria = request.CategoriaNotificacao,
-                Tipo = WorkflowAprovacaoTipo.Basica,
+                Tipo = request.TipoWorkflow,
                 DreId = request.DreCodigo,
                 UeId = request.UeCodigo,
                 TurmaId = request.TurmaCodigo,
                 NotificacaoTitulo = request.Titulo,
                 NotificacaoTipo = request.TipoNotificacao,
-                NotificacaoMensagem = request.Mensagem
+                NotificacaoMensagem = request.Mensagem,
+                EntidadeParaAprovarId = request.EntidadeId
             };
 
             foreach(var cargo in request.Cargos)

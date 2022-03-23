@@ -49,15 +49,13 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(planoAEE.AlunoCodigo, planoAEE.TurmaAno));
-
                     listaPlanosAEE.Add(new PlanoAEEResumoDto()
                     {
                         Id = planoAEE.Id,
                         Situacao = planoAEE.Situacao != 0 ? planoAEE.Situacao.Name() : "",
                         Turma = $"{planoAEE.TurmaModalidade.ShortName()} - {planoAEE.TurmaNome}",
-                        Numero = aluno?.NumeroAlunoChamada ?? 0,
-                        Nome = $"{aluno?.NomeAluno}",
+                        Numero = planoAEE.AlunoNumero,
+                        Nome = planoAEE.AlunoNome,
                         PossuiEncaminhamentoAEE = planoAEE.PossuiEncaminhamentoAEE,
                         EhAtendidoAEE = (planoAEE.Situacao != SituacaoPlanoAEE.Encerrado && planoAEE.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamento),
                         CriadoEm = planoAEE.CriadoEm,

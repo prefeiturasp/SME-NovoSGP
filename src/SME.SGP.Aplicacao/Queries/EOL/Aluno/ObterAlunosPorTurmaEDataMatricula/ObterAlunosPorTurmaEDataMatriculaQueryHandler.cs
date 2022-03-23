@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -33,14 +32,11 @@ namespace SME.SGP.Aplicacao
                 else
                 {
                     string erro = $"Não foi possível obter os alunos da turma de data aula no EOL - HttpCode {(int)resposta.StatusCode}";
-                    SentrySdk.AddBreadcrumb(erro);
                     throw new NegocioException(erro);
                 }
             }
             catch (Exception e)
             {
-                SentrySdk.CaptureMessage($"Não foi possível obter os alunos da turma de data aula no EOL - CódigoTurma:{request.CodigoTurma}, DataAula:{request.DataMatricula} - Erro:{e.Message}");
-                SentrySdk.CaptureException(e);
                 throw e;
             }
         }

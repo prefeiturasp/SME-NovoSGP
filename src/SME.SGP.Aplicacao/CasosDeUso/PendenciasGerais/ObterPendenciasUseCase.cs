@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Infra;
 
@@ -13,11 +10,11 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<PaginacaoResultadoDto<PendenciaDto>> Executar()
+        public async Task<PaginacaoResultadoDto<PendenciaDto>> Executar(string turmaCodigo, int tipoPendencia, string tituloPendencia)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
 
-            return await mediator.Send(new ObterPendenciasPorUsuarioQuery(usuarioId));
+            return await mediator.Send(new ObterPendenciasPorUsuarioQuery(usuarioId, turmaCodigo, tipoPendencia, tituloPendencia));
         }
     }
 }

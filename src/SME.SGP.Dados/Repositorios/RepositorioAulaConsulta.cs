@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Sentry;
 using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Dados.Repositorios
@@ -591,15 +590,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and t.ano_letivo = @anoLetivo");
 
             if (!string.IsNullOrWhiteSpace(usuarioRF))
-            {
-                query.AppendLine("and a.professor_rf = @usuarioRF ");
-            }
-
-            if (ehProfessor)
-            {
-                var filtroAulaCJ = aulaCJ ? "" : "not";
-                query.AppendLine($"and {filtroAulaCJ} a.aula_cj ");
-            }
+                query.AppendLine("and a.professor_rf = @usuarioRF ");            
 
             return database.Conexao.Query<Aula, Turma, Aula>(query.ToString(), (aula, turma) =>
             {
@@ -615,6 +606,45 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj)
+        {
+            var query = new StringBuilder("select distinct a.*, t.* ");
+            query.AppendLine("from aula a ");
+            query.AppendLine("inner join turma t on ");
+            query.AppendLine("a.turma_id = t.turma_id ");
+            query.AppendLine("inner join periodo_escolar pe on pe.id = ANY(@periodoEscolarId) ");
+            query.AppendLine("                and pe.periodo_inicio <= a.data_aula ");
+            query.AppendLine("                and pe.periodo_fim >= a.data_aula ");
+            query.AppendLine("where");
+            query.AppendLine("not a.excluido");
+            query.AppendLine("and a.turma_id = @turmaCodigo ");
+            query.AppendLine("and a.disciplina_id = @disciplinaId ");
+            query.AppendLine("and t.ano_letivo = @anoLetivo ");
+
+            if (aulaInicio.HasValue && aulaFim.HasValue)
+                query.AppendLine("and a.data_aula between @aulaInicio and @aulaFim ");
+
+            if (!string.IsNullOrWhiteSpace(usuarioRF))
+                query.AppendLine("and a.professor_rf = @usuarioRF ");
+
+            if (aulaCj)
+                query.AppendLine("and a.aula_cj = true");
+
+            return database.Conexao.Query<Aula, Turma, Aula>(query.ToString(), (aula, turma) =>
+            {
+                aula.Turma = turma;
+                return aula;
+            }, new
+            {
+                periodoEscolarId = periodosEscolaresId.Select(c => c).ToArray(),
+                usuarioRF,
+                anoLetivo,
+                turmaCodigo,
+                disciplinaId,
+                aulaInicio,
+                aulaFim
+            });
+        }
         public Aula ObterPorWorkflowId(long workflowId)
         {
             var query = @"select a.id,
@@ -830,11 +860,11 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId, string criadoPor = null)
         {
-            var query = @"select a.* 
+            var query = @"select a.*
                             from aula a
                                 inner join turma t
                                     on a.turma_id = t.turma_id
-                          where a.tipo_calendario_id = @tipoCalendarioId and 
+                          where a.tipo_calendario_id = @tipoCalendarioId and
                                 a.turma_id = @turmaId";
 
             var criadoRf = new string[] { criadoPor };
@@ -887,6 +917,12 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<Aula>(query, new { ccid = componenteCurricularId, turmaid = turmaId, data = data.Date })).FirstOrDefault();
         }
 
+        public async Task<long?> ObterAulaIdPorComponenteCurricularIdTurmaIdEDataProfessor(string componenteCurricularId, string turmaId, DateTime data, string professorRf)
+        {
+            var query = @"select a.id from aula a
+                                where a.disciplina_id  = @ccid and turma_id = @turmaid and data_aula::date = @data and a.professor_rf = @professorRf";
+            return (await database.Conexao.QueryAsync<long?>(query, new { ccid = componenteCurricularId, turmaid = turmaId, data = data.Date, professorRf })).FirstOrDefault();
+        }
         public async Task<IEnumerable<AulaReduzidaDto>> ObterQuantidadeAulasReduzido(long turmaId, string componenteCurricularId, long tipoCalendarioId, int bimestre, bool professorCJ)
         {
             var query = @"select
@@ -919,15 +955,12 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<int> ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolar(long turmaId, long componenteCurricularId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds)
+        public async Task<int> ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolar(string turmaCodigo, long componenteCurricularId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds)
         {
             const string sql = @"select 
 	                                sum(a.quantidade)
                                 from 
 	                                aula a 
-                                inner join
-	                                turma t
-	                                on a.turma_id = t.turma_id
                                 inner join 
 	                                periodo_escolar pe 
 	                                on a.data_aula BETWEEN pe.periodo_inicio AND pe.periodo_fim
@@ -936,12 +969,12 @@ namespace SME.SGP.Dados.Repositorios
 	                                on a.id = rf.aula_id
                                 where 
 	                                not a.excluido
-	                                and t.id = @turmaId
+	                                and a.turma_id = @turmaCodigo
 	                                and a.disciplina_id = @componenteCurricularId
                                     and a.tipo_calendario_id = @tipoCalendarioId
 	                                and pe.id = any(@periodosEscolaresIds)";
 
-            var parametros = new { turmaId, componenteCurricularId = componenteCurricularId.ToString(), tipoCalendarioId, periodosEscolaresIds = periodosEscolaresIds.ToList() };
+            var parametros = new { turmaCodigo, componenteCurricularId = componenteCurricularId.ToString(), tipoCalendarioId, periodosEscolaresIds = periodosEscolaresIds.ToList() };
             return await database.Conexao.QuerySingleOrDefaultAsync<int?>(sql, parametros) ?? default;
         }
 
@@ -1001,17 +1034,111 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<DataAulaDto> ObterAulaPorCodigoTurmaComponenteEData(string turmaId, string componenteCurricularId, DateTime dataCriacao)
         {
-            var query = @"select id as AulaId
-                            , data_aula as DataAula
-                        from aula 
-                       where not excluido 
-                         and turma_id = @turmaId
-                         and disciplina_id = @componenteCurricularId
-                         and data_aula >= @dataCriacao
-                       order by data_aula
-                       limit 1";
+            var query = @"select a.id as AulaId,
+                                 a.data_aula as DataAula,       
+                                 (t.modalidade_codigo = 1) as EhModalidadeInfantil   
+                         from aula a
+                         join turma t on a.turma_id = t.turma_id 
+                         where not a.excluido 
+                            and t.turma_id = @turmaId
+                            and a.disciplina_id = @componenteCurricularId
+                            and a.data_aula >= @dataCriacao
+                        order by data_aula
+                        limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DataAulaDto>(query, new { turmaId, componenteCurricularId, dataCriacao = dataCriacao.Date });
+        }
+
+        public Task<IEnumerable<Aula>> ObterAulasPorDataPeriodo(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId, bool aulaCj)
+        {
+            var query = new StringBuilder(@"select *
+                 from aula
+                where not excluido
+                  and DATE(data_aula) between Date(@dataInicio) and Date(@dataFim)
+                  and turma_id = @turmaId
+                  and disciplina_id = @disciplinaId");
+
+            if (aulaCj)
+                query.AppendLine(" and  aula_cj = true ");
+
+            return database.Conexao.QueryAsync<Aula>(query.ToString(), new
+            {
+                dataInicio = dataInicio.Date,
+                dataFim = dataFim.Date,
+                turmaId,
+                disciplinaId
+            });
+        }
+
+        public async Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterDatasAulaDiarioBordoPorPeriodo(string turmaCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select a.id as AulaId, 
+                            db.id as DiarioBordoId, 
+                            a.data_aula as DataAula, 
+                            db.planejamento as Planejamento 
+                            from aula a 
+                            left join diario_bordo db on db.aula_id = a.id 
+                            where a.turma_id = @turmaCodigo 
+                            and a.data_aula between @dataInicio and @dataFim
+                            and db.componente_curricular_id = @componenteCurricularId
+                            and not a.excluido and not db.excluido
+                            order by a.data_aula desc";
+
+            return await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto>(query, new { turmaCodigo, componenteCurricularId, dataInicio, dataFim });
+        }
+
+        public async Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterAulasDiariosPorPeriodo(string turmaCodigo, string componenteCurricularFilhoCodigo, string componenteCurricularPaiCodigo, DateTime dataFim, DateTime dataInicio)
+        {
+            try
+            {
+
+                var query = @"
+                         select db.id as DiarioBordoId, a.data_aula DataAula, a.id as AulaId, db.criado_rf CodigoRf,
+                                db.criado_por Nome, db.planejamento as Planejamento, 
+                                a.tipo_aula as Tipo, db.inserido_cj as InseridoCJ, 
+                                case when db.id is null then true else false end Pendente
+                                ,db.id, db.alterado_em as AlteradoEm, db.alterado_por as AlteradoPor, db.alterado_rf as AlteradoRF, db.criado_em as CriadoEm, db.criado_por as CriadoPor, db.criado_rf as CriadoRF
+                         from aula a
+                         inner join turma t on a.turma_id = t.turma_id
+                         left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilho
+                         where t.turma_id = @turmaCodigo
+                           and a.disciplina_id = @componenteCurricularPaiCodigo 
+                           and not a.excluido
+                           and a.data_aula >= @dataInicio
+                           and a.data_aula <= @dataFim ";
+
+                var lookup = new Dictionary<long, DiarioBordoPorPeriodoDto>();
+                await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto, AuditoriaDto, DiarioBordoPorPeriodoDto>(query,(diarioBordoPorPeriodoDto, auditoriaDto) =>
+                    {
+                        if (auditoriaDto != null)
+                            diarioBordoPorPeriodoDto.Auditoria = auditoriaDto;
+
+                        lookup.Add(diarioBordoPorPeriodoDto.AulaId, diarioBordoPorPeriodoDto);
+
+                        return diarioBordoPorPeriodoDto;
+                    }, new
+                    {
+                        turmaCodigo,
+                        componenteCurricularFilho = int.Parse(componenteCurricularFilhoCodigo),
+                        componenteCurricularPaiCodigo,
+                        dataFim,
+                        dataInicio
+                    });
+
+                return lookup.Values;
+
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<Aula>> ObterAulasPorIds(IEnumerable<long> aulasIds)
+        {
+            var query = "select * from aula where id = ANY(@aulasIds)";
+
+            return await database.Conexao.QueryAsync<Aula>(query, new { aulasIds = aulasIds.ToList() });
         }
     }
 }

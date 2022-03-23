@@ -1,6 +1,10 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Polly;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 using System;
 using System.Linq;
@@ -15,10 +19,12 @@ namespace SME.SGP.Aplicacao
     public class CriarNotificacaoEscolaAquiCommandHandler : IRequestHandler<CriarNotificacaoEscolaAquiCommand, bool>
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IMediator mediator;
 
-        public CriarNotificacaoEscolaAquiCommandHandler(IHttpClientFactory httpClientFactory)
+        public CriarNotificacaoEscolaAquiCommandHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(CriarNotificacaoEscolaAquiCommand request, CancellationToken cancellationToken)
@@ -27,6 +33,7 @@ namespace SME.SGP.Aplicacao
 
             MapearParaEntidadeServico(comunicadoServico, request.Comunicado);
             var httpClient = httpClientFactory.CreateClient("servicoAcompanhamentoEscolar");
+            
             var parametros = JsonConvert.SerializeObject(comunicadoServico);
 
             var resposta = await httpClient.PostAsync("v1/notificacao", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
@@ -34,13 +41,9 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 return true;
             else
-            {
-                Console.WriteLine($">>>> {resposta.Content.ReadAsStringAsync().Result}");
-                throw new Exception($"Não foi possivel criar a notificação para o comunucado de id : {request.Comunicado.Id}");
-            }
+                throw new Exception($"Não foi possivel criar a notificação para o comunucado de id : {request.Comunicado.Id}", new Exception($"Erro ao enviar a notificação para o App Aluno: {resposta.Content.ReadAsStringAsync().Result}"));
 
         }
-
         private void MapearParaEntidadeServico(ComunicadoInserirAeDto comunicadoServico, Comunicado comunicado)
         {
             comunicadoServico.Id = comunicado.Id;
@@ -54,7 +57,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.CriadoEm = comunicado.CriadoEm;
             comunicadoServico.CriadoPor = comunicado.CriadoPor;
             comunicadoServico.CriadoRF = comunicado.CriadoRF;
-            comunicadoServico.Alunos = comunicado.Alunos.Select(x => x.AlunoCodigo);
+            comunicadoServico.Alunos = comunicado?.Alunos?.Select(x => x.AlunoCodigo);
             comunicadoServico.AnoLetivo = comunicado.AnoLetivo;
             comunicadoServico.CodigoDre = comunicado.CodigoDre;
             comunicadoServico.CodigoUe = comunicado.CodigoUe;
@@ -62,8 +65,9 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.TipoComunicado = comunicado.TipoComunicado;
             comunicadoServico.Semestre = comunicado.Semestre;
             comunicadoServico.SeriesResumidas = comunicado.SeriesResumidas;
-            comunicadoServico.Modalidades = string.Join(",", comunicado.Modalidades.Select(x => x).ToArray());
-            comunicadoServico.TiposEscolas = string.Join(",", comunicado.TiposEscolas.Select(x => x).ToArray());
+            comunicadoServico.Modalidades = string.Join(",", comunicado?.Modalidades?.Select(x => x).ToArray());
+            if (comunicado.TiposEscolas != null)
+                comunicadoServico.TiposEscolas = string.Join(",", comunicado.TiposEscolas.Select(x => x).ToArray());
         }
     }
 }

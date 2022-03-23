@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
@@ -18,19 +18,16 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
-        private readonly IServicoNotificacao servicoNotificacao;
         private readonly IUnitOfWork unitOfWork;
 
         public AlterarAulaRecorrenteCommandHandler(IMediator mediator,
                                                    IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
-                                                   IServicoNotificacao servicoNotificacao,
                                                    IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
@@ -87,7 +84,7 @@ namespace SME.SGP.Aplicacao
                 listaAlteracoes.Add(await TratarAlteracaoAula(request, aulaOrigem, dataAula, turma));
 
                 var diasRecorrencia = ObterDiasDaRecorrencia(dataAula.AddDays(7), fimRecorrencia);
-                foreach(var diaAula in diasRecorrencia)
+                foreach (var diaAula in diasRecorrencia)
                 {
                     // Obter a aula na mesma semana da nova data
                     var aulaRecorrente = aulasDaRecorrencia.FirstOrDefault(c => UtilData.ObterSemanaDoAno(c.DataAula) == UtilData.ObterSemanaDoAno(diaAula));
@@ -131,8 +128,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.AddBreadcrumb("Exclusao de Registro em Manutenção da Aula", "Alteração de Aula Recorrente");
-                SentrySdk.CaptureException(ex);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Exclusao de Registro em Manutenção da Aula", LogNivel.Negocio, LogContexto.Aula, ex.Message));
             }
         }
 
@@ -160,9 +156,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception e)
             {
-                SentrySdk.AddBreadcrumb("Erro alterando aula recorrente", "Alteração de Aula Recorrente");
-                SentrySdk.CaptureException(e);
-                // retorna erro = true
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro alterando aula recorrente", LogNivel.Negocio, LogContexto.Aula, e.Message));
                 return (false, true, dataAula, e.Message);
             }
 
@@ -175,6 +169,7 @@ namespace SME.SGP.Aplicacao
             aula.DataAula = dataAula;
             aula.Quantidade = request.Quantidade;
             aula.RecorrenciaAula = request.RecorrenciaAula;
+            aula.DisciplinaId = request.ComponenteCurricularId.ToString();
 
             if (request.AulaId == aula.Id)
                 aula.AulaPaiId = null;
@@ -259,27 +254,22 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = turma.Ue.Dre.CodigoDre,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuario.Id,
-                Tipo = NotificacaoTipo.Calendario,
-                Titulo = tituloMensagem,
-                TurmaId = turma.CodigoTurma,
-                UeId = turma.Ue.CodigoUe,
-            };
-
             unitOfWork.IniciarTransacao();
             try
             {
                 // Salva Notificação
-                servicoNotificacao.Salvar(notificacao);
+                var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(tituloMensagem,
+                                                              mensagemUsuario.ToString(),
+                                                              usuario.CodigoRf,
+                                                              NotificacaoCategoria.Aviso,
+                                                              NotificacaoTipo.Calendario,
+                                                              turma.Ue.Dre.CodigoDre,
+                                                              turma.Ue.CodigoUe,
+                                                              turma.CodigoTurma,
+                                                              DateTime.Now.Year));
 
                 // Gera vinculo Notificacao x Aula
-                await repositorioNotificacaoAula.Inserir(notificacao.Id, aulaId);
+                await repositorioNotificacaoAula.Inserir(notificacaoId, aulaId);
 
                 unitOfWork.PersistirTransacao();
             }

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -79,37 +78,29 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         private async Task RemoverArquivosNaoUtilizados(List<EncaminhamentoAEESecaoDto> secoes)
         {
-            try
+            var resposta = new List<EncaminhamentoAEESecaoQuestaoDto>();
+            foreach (var s in secoes)
             {
-                var resposta = new List<EncaminhamentoAEESecaoQuestaoDto>();
-                foreach (var s in secoes)
+                foreach (var q in s.Questoes)
                 {
-                    foreach (var q in s.Questoes)
+                    if (string.IsNullOrEmpty(q.Resposta) && q.TipoQuestao == TipoQuestao.Upload)
                     {
-                        if (string.IsNullOrEmpty(q.Resposta) && q.TipoQuestao == TipoQuestao.Upload)
-                        {
-                            resposta.Add(q);
-                        }
-                    }
-                }
-
-                if (resposta != null && resposta.Any())
-                {
-                    foreach (var item in resposta)
-                    {
-                        var entidadeResposta = repositorioRespostaEncaminhamentoAEE.ObterPorId(item.RespostaEncaminhamentoId);
-                        if (entidadeResposta != null)
-                        {
-                            await mediator.Send(new ExcluirRespostaEncaminhamentoAEECommand(entidadeResposta));
-                        }
-
+                        resposta.Add(q);
                     }
                 }
             }
-            catch (Exception ex)
+
+            if (resposta != null && resposta.Any())
             {
-                SentrySdk.CaptureMessage($"1.0 RemoverArquivosNaoUtilizados - Falha ao deletar o arquivo {ex.Message} ");
-                SentrySdk.CaptureException(ex);
+                foreach (var item in resposta)
+                {
+                    var entidadeResposta = repositorioRespostaEncaminhamentoAEE.ObterPorId(item.RespostaEncaminhamentoId);
+                    if (entidadeResposta != null)
+                    {
+                        await mediator.Send(new ExcluirRespostaEncaminhamentoAEECommand(entidadeResposta));
+                    }
+
+                }
             }
         }
         public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE)

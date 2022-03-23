@@ -32,14 +32,14 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
 
             if (!request.ComponenteSemNota)
             {
-                await servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim);
-                await servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(request.FechamentoTurmaDisciplinaId, request.Justificativa, request.CriadoRF);
-                await servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.CriadoRF);
+                await servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre);
+                await servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(request.FechamentoTurmaDisciplinaId, request.Justificativa, request.CriadoRF, request.Bimestre);
+                await servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.CriadoRF, request.Bimestre);
             }
-            await servicoPendenciaFechamento.ValidarAulasReposicaoPendente(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim);
+            await servicoPendenciaFechamento.ValidarAulasReposicaoPendente(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre);
 
             if (request.RegistraFrequencia)
-                await servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim);
+                await servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre);
 
             var quantidadePendencias = servicoPendenciaFechamento.ObterQuantidadePendenciasGeradas();
             if (quantidadePendencias > 0)
@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
 
             var pendencias = FormatarPendenciasGeradas(servicoPendenciaFechamento.ObterDescricaoPendenciasGeradas());
 
-            await NotificarUsuarios($"Pendência no fechamento da turma {turma.Nome}",
+            await NotificarUsuarios($"Pendência no fechamento da turma {turma.Nome} - {bimestre}º bimestre",
                     $"O fechamento do {bimestre}º bimestre de {componentes.FirstOrDefault().Nome} da turma {turma.Nome} da {ue.Nome} ({dre.Nome}) gerou {servicoPendenciaFechamento.ObterQuantidadePendenciasGeradas()} pendência(s): " +
                     pendencias +
                     "Para consultar os detalhes da(s) pendência(s) acesse a tela 'Fechamento > Pendências do fechamento'", 

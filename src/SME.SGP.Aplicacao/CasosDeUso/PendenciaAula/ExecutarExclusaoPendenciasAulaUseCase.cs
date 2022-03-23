@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
-using Sentry;
+﻿using MediatR;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,11 +16,6 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new ExcluirTodasPendenciasAulaCommand(filtro.Id));
             return true;
-        }
-
-        private void LogSentry(ExcluirTodasPendenciasAulaCommand command, string mensagem)
-        {
-            SentrySdk.AddBreadcrumb($"Mensagem ExecutarExclusaoPendenciasAulaUseCase : {mensagem} - Aula:{command.AulaId}", "Rabbit - ExecutarExclusaoPendenciasAulaUseCase");
         }
     }
 }

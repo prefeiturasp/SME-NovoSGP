@@ -1,15 +1,11 @@
 ﻿using MediatR;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Sentry;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,9 +43,9 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureException(ex);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do calendário da UE.", LogNivel.Negocio, LogContexto.Aula, ex.Message));
                 return false;
-            }        
+            }
         }
 
         private async Task VerificaPendenciasAulaDiasNaoLetivos(long tipoCalendarioId, ModalidadeTipoCalendario modalidadeCalendario, int anoAtual)
@@ -82,10 +78,12 @@ namespace SME.SGP.Aplicacao
 
                         if (!pendenciaExistente)
                         {
-                            pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
+                            pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, ue.Id, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
+                            await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis())); 
+                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ue.Id), Guid.NewGuid()));
 
                             var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
-                            await mediator.Send(new RelacionaPendenciaUsuarioCommand(ObterPerfisUsuarios(), ue.CodigoUe, pendenciaId, professor.Id));
+                            await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, professor.Id));
                         }
 
                         foreach (var aula in turmas)
@@ -101,13 +99,14 @@ namespace SME.SGP.Aplicacao
                     }
                     catch (Exception ex)
                     {
-                        SentrySdk.CaptureException(ex);
-                    }                }
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"Erro na verificação da pendência do calendário da UE.", LogNivel.Negocio, LogContexto.Aula, ex.Message));
+                    }
+                }
             }
         }
 
-        private string[] ObterPerfisUsuarios()
-            => new[] { "Professor", "CP" };
+        private List<PerfilUsuario> ObterCodigoPerfis()
+                 => new List<PerfilUsuario> { PerfilUsuario.CP }; 
 
         private static TipoEscola[] ObterTiposDeEscolasValidos()
             => new[]

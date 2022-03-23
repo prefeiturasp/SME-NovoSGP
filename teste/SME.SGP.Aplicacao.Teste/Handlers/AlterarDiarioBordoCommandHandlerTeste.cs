@@ -37,16 +37,31 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 Planejamento = "01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
             };
 
+            repositorioDiarioBordo.Setup(a => a.ObterPorAulaId(It.IsAny<long>(), It.IsAny<long>()))
+                .ReturnsAsync(mockEntity);
+
             mediator.Setup(a => a.Send(It.IsAny<AulaExisteQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            repositorioDiarioBordo.Setup(a => a.ObterPorAulaId(1))
-                .ReturnsAsync(mockEntity);
+            mediator.Setup(a => a.Send(It.IsAny<ObterAulaPorIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Aula { Id = 1 });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Turma { Id = 1 , Ue = new Ue { Id = 1, CodigoUe = "101011", Dre = new Dre { Id = 1, CodigoDre = "101100" } } });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Usuario { CodigoRf = "123", PerfilAtual = Dominio.Perfis.PERFIL_PROFESSOR });
+
+            mediator.Setup(a => a.Send(It.IsAny<MoverArquivosTemporariosCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync("Teste");
+
+            mediator.Setup(a => a.Send(It.IsAny<RemoverArquivosExcluidosCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
             repositorioDiarioBordo.Setup(a => a.SalvarAsync(It.IsAny<DiarioBordo>()))
                 .ReturnsAsync(1);
-
             // Act
-            var auditoriaDto = inserirDiarioBordoCommandHandler.Handle(new AlterarDiarioBordoCommand(1, 1, "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111", ""), new System.Threading.CancellationToken());
+            var auditoriaDto = inserirDiarioBordoCommandHandler.Handle(new AlterarDiarioBordoCommand(1, 1, "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",1), new System.Threading.CancellationToken());
 
             // Assert
             repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<DiarioBordo>()), Times.Once);
@@ -56,7 +71,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         [Fact]
         public async Task Deve_Obrigar_Id()
         {
-            var command = new AlterarDiarioBordoCommand(0, 1, "", "");
+            var command = new AlterarDiarioBordoCommand(0, 1, "",1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Id);
@@ -65,7 +80,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         [Fact]
         public async Task Deve_Obrigar_Planejamento()
         {
-            var command = new AlterarDiarioBordoCommand(1, 1, "", "");
+            var command = new AlterarDiarioBordoCommand(1, 1, "", 1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Planejamento);
@@ -74,7 +89,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         [Fact]
         public async Task Deve_Exigir_Planejamento_Com_200_Caracteres()
         {
-            var command = new AlterarDiarioBordoCommand(1, 1, "0123456789", "");
+            var command = new AlterarDiarioBordoCommand(1, 1, "0123456789", 1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Planejamento);

@@ -3,6 +3,7 @@ using NpgsqlTypes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -44,6 +45,29 @@ namespace SME.SGP.Dados.Repositorios
                 writer.Complete();
             }
         }
+
+        public async Task Atualizar(ComponenteCurricularDto componenteCurricular)
+        {
+            try
+            {
+                var sql = @"UPDATE componente_curricular SET descricao = @descricao WHERE id = @id";
+
+                await database.Conexao.QueryAsync<string>(sql.ToString(), new { descricao = componenteCurricular.Descricao, id = long.Parse(componenteCurricular.Codigo) });
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }           
+
+        }
+
+        public async Task<string> ObterCodigoComponentePai(long componenteCurricularId)
+        {
+            var query = @"select componente_curricular_pai_id from componente_curricular where id = @componenteCurricularId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { componenteCurricularId });
+        }
     }
+    
 }
 

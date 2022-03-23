@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task Limpar(int anoLetivo);
         Task<IEnumerable<DashboardAcompanhamentoAprendizagemDto>> ObterConsolidacao(int anoLetivo, long dreId, long ueId, int semestre);
+        Task<IEnumerable<DashboardAcompanhamentoAprendizagemPorDreDto>> ObterConsolidacaoPorDre(int anoLetivo, int? semestre);
     }
 }

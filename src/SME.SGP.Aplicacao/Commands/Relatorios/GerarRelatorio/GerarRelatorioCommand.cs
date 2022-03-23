@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         /// <param name="tipoRelatorio">Endpoint do relatório no servidor de relatórios, descrito na tag DisplayName</param>
         /// <param name="filtros">Classe de filtro vindo do front</param>
         /// /// <param name="rotaRelatorio">Rota rabbit do relatório a ser gerado</param>
-        public GerarRelatorioCommand(TipoRelatorio tipoRelatorio, object filtros, Usuario usuario, string rotaRelatorio = RotasRabbitSgpRelatorios.RotaRelatoriosSolicitados, TipoFormatoRelatorio formato  = TipoFormatoRelatorio.Pdf)
+        public GerarRelatorioCommand(TipoRelatorio tipoRelatorio, object filtros, Usuario usuario, string rotaRelatorio = RotasRabbitSgpRelatorios.RotaRelatoriosSolicitados, TipoFormatoRelatorio formato  = TipoFormatoRelatorio.Pdf,bool notificarErroUsuario = false)
         {
             TipoRelatorio = tipoRelatorio;
             Filtros = filtros;
@@ -21,6 +21,7 @@ namespace SME.SGP.Aplicacao
             Formato = formato;
             PerfilUsuario = usuario.PerfilAtual.ToString();
             RotaRelatorio = rotaRelatorio;
+            NotificarErroUsuario = notificarErroUsuario;
         }
 
         /// <summary>
@@ -33,5 +34,6 @@ namespace SME.SGP.Aplicacao
         public TipoFormatoRelatorio Formato { get; set; }
         public string PerfilUsuario { get; }
         public string RotaRelatorio { get; set; }
+        public bool NotificarErroUsuario { get; set; }
     }
 }

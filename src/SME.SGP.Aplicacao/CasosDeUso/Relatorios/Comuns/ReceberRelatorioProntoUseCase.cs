@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -40,6 +41,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var mensagem = mensagemRabbit.ObterObjetoMensagem<MensagemRelatorioProntoDto>();
+            var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
             switch (relatorioCorrelacao.TipoRelatorio)
             {
                 case TipoRelatorio.RelatorioExemplo:
@@ -50,10 +52,13 @@ namespace SME.SGP.Aplicacao
                 case TipoRelatorio.ConselhoClasseAtaFinal:
                 case TipoRelatorio.Frequencia:
                 case TipoRelatorio.Pendencias:
-                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo);
+                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo, urlRedirecionamentoBase);
+                    break;
+                case TipoRelatorio.BoletimDetalhadoApp:
+                     await EnviarNotificacaoAutomatica(mensagem, urlRedirecionamentoBase);
                     break;
                 default:
-                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo);
+                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo, urlRedirecionamentoBase);
                     break;
             }
 
@@ -62,10 +67,14 @@ namespace SME.SGP.Aplicacao
             return await Task.FromResult(true);
         }
 
-        private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario, string mensagemTitulo)
+        private async Task EnviarNotificacaoAutomatica(MensagemRelatorioProntoDto relatorioPronto, string urlRedirecionamentoBase)
         {
-            var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
-
+            var parametros = JsonConvert.DeserializeObject<MensagemRelatorioBoletimAppDto>(relatorioPronto.MensagemDados.ToString());
+            await mediator.Send(new InserirComunicadoBoletimEscolaAquiCommand(relatorioPronto.MensagemUsuario,relatorioPronto.MensagemTitulo,parametros.AnoLetivo,parametros.TurmaCodigo,parametros.Modalidade,
+                parametros.Semestre,parametros.AlunoCodigo,parametros.CodigoArquivo, urlRedirecionamentoBase));
+        }
+        private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario, string mensagemTitulo,string urlRedirecionamentoBase)
+        {
             await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase, mensagemUsuario, mensagemTitulo));
         }
     }

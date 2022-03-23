@@ -1,0 +1,21 @@
+--> Atualizar total de presenças de anos anteriores - Atualizar por bimestre
+
+update frequencia_aluno fa
+set total_presencas = (total_aulas - total_ausencias)
+from periodo_escolar pe
+where pe.id = fa.periodo_escolar_id and EXTRACT(YEAR from pe.periodo_inicio) < 2021 and fa.bimestre = 1;
+
+update frequencia_aluno fa
+set total_presencas = (total_aulas - total_ausencias)
+from periodo_escolar pe
+where pe.id = fa.periodo_escolar_id and EXTRACT(YEAR from pe.periodo_inicio) < 2021 and fa.bimestre = 2;
+
+update frequencia_aluno fa
+set total_presencas = (total_aulas - total_ausencias)
+from periodo_escolar pe
+where pe.id = fa.periodo_escolar_id and EXTRACT(YEAR from pe.periodo_inicio) < 2021 and fa.bimestre = 3;
+
+update frequencia_aluno fa
+set total_presencas = (total_aulas - total_ausencias)
+from periodo_escolar pe
+where pe.id = fa.periodo_escolar_id and EXTRACT(YEAR from pe.periodo_inicio) < 2021 and fa.bimestre = 4;

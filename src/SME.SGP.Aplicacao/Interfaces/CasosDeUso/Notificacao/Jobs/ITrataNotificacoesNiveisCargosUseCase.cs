@@ -1,10 +1,6 @@
-﻿using SME.SGP.Infra;
-using System.Threading.Tasks;
-
-namespace SME.SGP.Aplicacao.Interfaces
+﻿namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface ITrataNotificacoesNiveisCargosUseCase
+    public interface ITrataNotificacoesNiveisCargosUseCase : IRabbitUseCase
     {
-        Task<bool> Executar(MensagemRabbit param);
     }
 }

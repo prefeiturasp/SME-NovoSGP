@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Sentry;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -10,10 +10,12 @@ namespace SME.SGP.Aplicacao
     public class LimparConsolidacaoAcompanhamentoAprendizagemCommandHandler : IRequestHandler<LimparConsolidacaoAcompanhamentoAprendizagemCommand, bool>
     {
         private readonly IRepositorioConsolidacaoAcompanhamentoAprendizagemAluno repositorio;
+        private readonly IMediator mediator;
 
-        public LimparConsolidacaoAcompanhamentoAprendizagemCommandHandler(IRepositorioConsolidacaoAcompanhamentoAprendizagemAluno repositorio)
+        public LimparConsolidacaoAcompanhamentoAprendizagemCommandHandler(IRepositorioConsolidacaoAcompanhamentoAprendizagemAluno repositorio, IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(LimparConsolidacaoAcompanhamentoAprendizagemCommand request, CancellationToken cancellationToken)
@@ -24,7 +26,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureException(ex);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Limpar consolidação de Acompanhamento de aprendizagem.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, ex.Message));
             }
 
             return true;

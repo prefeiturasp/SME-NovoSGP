@@ -32,11 +32,16 @@ namespace SME.SGP.Aplicacao
         {
             var notasConceitosDto = notaConceitoLista.NotasConceitos;
 
-            var alunos = notasConceitosDto.Select(x => x.AlunoId).ToList();
+            var alunos = notasConceitosDto
+                .Select(x => x.AlunoId)
+                .ToList();
 
-            var avaliacoes = notasConceitosDto.Select(x => x.AtividadeAvaliativaId).ToList();
+            var avaliacoes = notasConceitosDto
+                .Select(x => x.AtividadeAvaliativaId)
+                .ToList();
 
-            var notasBanco = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(avaliacoes, alunos, notaConceitoLista.DisciplinaId);
+            var notasBanco = repositorioNotasConceitos
+                .ObterNotasPorAlunosAtividadesAvaliativas(avaliacoes, alunos, notaConceitoLista.DisciplinaId);
 
             var professorRf = servicoUsuario.ObterRf();
 
@@ -45,18 +50,25 @@ namespace SME.SGP.Aplicacao
             else
                 await TratarInclusaoEdicaoNotas(notasConceitosDto, notasBanco, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId);
 
+            var atividades =  repositorioAtividadeAvaliativa
+                .ListarAtividadesIds(notasConceitosDto.Select(x => x.AtividadeAvaliativaId));
 
-            var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterPorIdAsync(notasConceitosDto.Select(x => x.AtividadeAvaliativaId).FirstOrDefault());
-            var aula = await mediator.Send(new ObterAulaPorComponenteCurricularIdTurmaIdEDataQuery(notaConceitoLista.DisciplinaId, notaConceitoLista.TurmaId, atividadeAvaliativa.DataAvaliacao));
-
-            if(aula != null)
-                await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Avaliacao));
+            foreach (var item in atividades)
+            {
+                var aulaId = await mediator.Send(new ObterAulaIdPorComponenteCurricularIdTurmaIdEDataProfessorQuery(notaConceitoLista.DisciplinaId, notaConceitoLista.TurmaId, item.DataAvaliacao, professorRf));
+                if (aulaId != null)
+                    await mediator.Send(new ExcluirPendenciaAulaCommand((long)aulaId, TipoPendencia.Avaliacao));
+            }
         }
 
         private async Task IncluirTodasNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, string professorRf, string turmaId, string disiplinaId)
         {
-            var notasSalvar = notasConceitosDto.Select(x => ObterEntidadeInclusao(x)).ToList();
-            await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disiplinaId);
+            var notasSalvar = notasConceitosDto
+                .Select(x => ObterEntidadeInclusao(x))
+                .ToList();
+
+            await servicosDeNotasConceitos
+                .Salvar(notasSalvar, professorRf, turmaId, disiplinaId);
         }
 
         private NotaConceito ObterEntidadeEdicao(NotaConceitoDto dto, NotaConceito entidade)

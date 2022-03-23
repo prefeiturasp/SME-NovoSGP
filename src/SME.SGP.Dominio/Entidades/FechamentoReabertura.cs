@@ -30,6 +30,9 @@ namespace SME.SGP.Dominio
         public WorkflowAprovacao WorkflowAprovacao { get; set; }
         public long? WorkflowAprovacaoId { get; set; }
         private List<FechamentoReaberturaBimestre> bimestres { get; set; }
+        public Usuario Aprovador { get; set; }
+        public long? AprovadorId { get; set; }
+        public DateTime? AprovadoEm { get; set; }
 
         public void Adicionar(FechamentoReaberturaBimestre bimestre)
         {
@@ -45,11 +48,18 @@ namespace SME.SGP.Dominio
         {
             bimestres.AddRange(listaBimestres);
         }
+        public void SobrescreverBimestres(IEnumerable<FechamentoReaberturaBimestre> listaBimestres)
+        {
+            bimestres = listaBimestres.ToList();
+        }
 
         public void AprovarWorkFlow()
         {
             if (Status == EntidadeStatus.AguardandoAprovacao)
+            {
                 Status = EntidadeStatus.Aprovado;
+                AprovadoEm = DateTime.Now;
+            }                
         }
 
         public void AtualizarDre(Dre dre)
@@ -79,9 +89,13 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public bool DeveCriarEventos()
+        public void AtualizarAprovador(Usuario aprovador)
         {
-            return EhParaUe() && Status == EntidadeStatus.Aprovado;
+            if (aprovador != null)
+            {
+                this.Aprovador = aprovador;
+                this.AprovadorId = aprovador.Id;
+            }
         }
 
         public bool EhParaDre()
@@ -136,18 +150,9 @@ namespace SME.SGP.Dominio
             if (Inicio > Fim)
                 throw new NegocioException("A data início não pode ser maior que a data fim.");
 
-            if (usuario.EhPerfilUE())
-            {
-                if (!EhParaUe())
-                    throw new NegocioException("Perfil Ue deverá somente cadastrar reabertura de fechamento para Ues.");
-            }
-            else if (usuario.EhPerfilDRE())
-            {
-                if (EhParaSme())
-                    throw new NegocioException("Perfil Dre deverá somente cadastrar reabertura de fechamento para Dres e Ues.");
-            }
-
-            VerificaFechamentosHierarquicos(fechamentosCadastrados);
+            if (usuario.EhPerfilDRE() && VerificaAnoAtual())
+                throw new NegocioException("Somente SME pode cadastrar reabertura no ano atual.");
+                        
             VerificaFechamentosNoMesmoPeriodo(fechamentosCadastrados);
         }
 
@@ -159,43 +164,20 @@ namespace SME.SGP.Dominio
 
         public void VerificaStatus()
         {
-            if (EhParaUe() && TipoCalendario.AnoLetivo < DateTime.Today.Year)
+            if (EhParaUe() && !VerificaAnoAtual())
             {
                 Status = EntidadeStatus.AguardandoAprovacao;
             }
+        }
+        public bool VerificaAnoAtual()
+        {
+            return TipoCalendario.AnoLetivo == DateTime.Today.Year;
         }
 
         private bool PodePersistirNesteNasDatas(IEnumerable<(DateTime, DateTime)> datasDosFechamentosSME)
         {
             return datasDosFechamentosSME.Any(a => (Inicio.Date >= a.Item1.Date && Inicio.Date <= a.Item2.Date) &&
                     (Fim.Date > a.Item1.Date && Fim.Date <= a.Item2.Date));
-        }
-
-        private void VerificaFechamentosHierarquicos(IEnumerable<FechamentoReabertura> fechamentosCadastrados)
-        {
-            if (EhParaDre())
-            {
-                var fechamentosSME = fechamentosCadastrados.Where(a => a.EhParaSme()).ToList();
-                if (fechamentosSME is null || !fechamentosSME.Any())
-                    throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME.");
-
-                if (!PodePersistirNesteNasDatas(fechamentosSME.Select(a => { return (a.Inicio.Date, a.Fim.Date); })))
-                    throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME para este período.");
-            }
-            else if (EhParaUe())
-            {
-                var fechamentos = fechamentosCadastrados.Where(a => a.EhParaDre() && a.DreId == DreId).ToList();
-
-                if (fechamentos is null || !fechamentos.Any())
-                {
-                    fechamentos = fechamentosCadastrados.Where(a => a.EhParaSme()).ToList();
-                    if (fechamentos is null && !fechamentos.Any())
-                        throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME ou pela Dre.");
-                }
-
-                if (!PodePersistirNesteNasDatas(fechamentos.Select(a => { return (a.Inicio.Date, a.Fim.Date); })))
-                    throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME ou pela Dre.");
-            }
         }
 
         private void VerificaFechamentosNoMesmoPeriodo(IEnumerable<FechamentoReabertura> fechamentosCadastrados)

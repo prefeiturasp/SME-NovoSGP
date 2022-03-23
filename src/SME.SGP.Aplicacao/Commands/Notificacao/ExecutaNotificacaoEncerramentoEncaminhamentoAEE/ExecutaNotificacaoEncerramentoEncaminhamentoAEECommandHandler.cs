@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -19,8 +18,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExecutaNotificacaoEncerramentoEncaminhamentoAEECommand request, CancellationToken cancellationToken)
         {
-            SentrySdk.AddBreadcrumb($"Mensagem NotificacaoEncerramentoEncaminhamentoAEECommand", "Rabbit - NotificacaoEncerramentoEncaminhamentoAEECommand");
-
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoEncerramentoEncaminhamentoAEE,
                 new NotificacaoEncaminhamentoAEEDto
                 {

@@ -14,7 +14,7 @@ namespace SME.SGP.Infra
     }
         
 
-        public class ListaNotasConceitosConsultaRefatoradaDto
+        public class ListaNotasConceitosDto
         {
             public int AnoLetivo { get; set; }
             public int Bimestre { get; set; }

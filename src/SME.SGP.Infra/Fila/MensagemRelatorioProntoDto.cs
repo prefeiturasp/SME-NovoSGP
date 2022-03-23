@@ -8,5 +8,6 @@ namespace SME.SGP.Infra
     {
         public string MensagemUsuario { get; set; }
         public string MensagemTitulo { get; set; }
+        public string MensagemDados { get; set; }
     }
 }

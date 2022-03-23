@@ -23,14 +23,17 @@ namespace SME.SGP.Aplicacao
             var parametroSistema = await mediator
                                          .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo,
                                                                                          turma.AnoLetivo));
+            var periodoEstahAberto = false;
 
-            var periodoEstahAberto = parametroSistema != null && parametroSistema.Ativo
-                                   ? turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year
-                                   : await mediator
+            if (parametroSistema != null && parametroSistema.Ativo)
+            {
+                periodoEstahAberto = turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year ||
+                                     await mediator
                                           .Send(new TurmaEmPeriodoAbertoQuery(turma,
                                                                               DateTimeExtension.HorarioBrasilia(),
                                                                               bimestre,
                                                                               true));
+            }
 
             return periodoEstahAberto;
         }

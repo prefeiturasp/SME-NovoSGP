@@ -12,6 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SME.SGP.Aplicacao.AlterarRecorrenciaEventosUseCase;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -142,7 +143,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
             {
-                SME.Background.Core.Cliente.Executar(() => AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AlterarRecorrenciaEventos, new AlterarRecorrenciaEventosParametro() { Evento = evento, AlterarRecorrenciaCompleta = alterarRecorrenciaCompleta }, Guid.NewGuid(), null));
             }
 
             // Verifica existencia de pendencia de calendario com dias letivos insuficientes
@@ -604,9 +605,7 @@ namespace SME.SGP.Dominio.Servicos
                                     if (temEventoFeriado)
                                         throw new NegocioException("Não é possível cadastrar o evento pois há feriado na data selecionada.");
                                     else if (temEventoSuspensaoAtividades)
-                                        throw new NegocioException("Não é possível cadastrar o evento pois há evento de suspensão de atividades na data informada.");
-                                    else if (evento.DataInicio.DayOfWeek == DayOfWeek.Sunday)
-                                        throw new NegocioException("Não é possível cadastrar o evento letivo no domingo.");
+                                        throw new NegocioException("Não é possível cadastrar o evento pois há evento de suspensão de atividades na data informada.");                                    
                                 }
                             }
                         }

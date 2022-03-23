@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
                 itineranciasAlunos = (await mediator.Send(new ObterAlunosCodigoPorItineranciasQuery(itineranciasIdsComAlunos))).ToList();
                 var alunosCodigos = itineranciasAlunos.Select(a => a.AlunoCodigo).ToArray();
 
-                alunosEol = (await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(alunosCodigos, anoLetivo))).ToList();
+                alunosEol = (await mediator.Send(new ObterAlunosEolPorCodigosQuery(alunosCodigos))).ToList();
 
                 var codigosDasTurmas = alunosEol.Select(al => al.CodigoTurma.ToString()).Distinct().ToArray();
                 turmas = (await mediator.Send(new ObterTurmasPorCodigosQuery(codigosDasTurmas))).ToList();

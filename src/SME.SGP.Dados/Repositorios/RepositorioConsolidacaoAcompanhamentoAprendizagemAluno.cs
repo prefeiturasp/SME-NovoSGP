@@ -54,5 +54,25 @@ namespace SME.SGP.Dominio
 
             return await database.Conexao.QueryAsync<DashboardAcompanhamentoAprendizagemDto>(query, new { anoLetivo, semestre, dreId, ueId });
         }
+
+        public async Task<IEnumerable<DashboardAcompanhamentoAprendizagemPorDreDto>> ObterConsolidacaoPorDre(int anoLetivo, int? semestre)
+        {
+            var filtroSemestre = semestre.HasValue ? "and c.semestre = @semestre" : "";
+
+            var query = $@"select 
+	                        RIGHT(dre.abreviacao,2) as Dre
+                            , sum(c.quantidade_com_acompanhamento) as QuantidadeComAcompanhamento
+                            , sum(c.quantidade_sem_acompanhamento) as QuantidadeSemAcompanhamento
+                          from consolidacao_acompanhamento_aprendizagem_aluno c
+                         inner join turma t on t.id = c.turma_id
+                         inner join ue on ue.id = t.ue_id 
+                         inner join dre on dre.id = ue.dre_id 
+                        where t.ano_letivo = @anoLetivo
+                           {filtroSemestre}
+                        group by dre.abreviacao, dre.dre_id 
+                        order by dre.dre_id";
+
+            return await database.Conexao.QueryAsync<DashboardAcompanhamentoAprendizagemPorDreDto>(query, new { anoLetivo, semestre });
+        }
     }
 }

@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 $"<br/><a href='{hostAplicacao}aee/plano/editar/{planoAEE.Id}'>Clique aqui</a> para acessar o plano. " +
                 $"<br/><br/>A pendência será resolvida automaticamente após a criação de uma nova versão do plano.";
 
-            await mediator.Send(new GerarPendenciaPlanoAEECommand(planoAEE.Id, usuarios, titulo, descricao));
+            await mediator.Send(new GerarPendenciaPlanoAEECommand(planoAEE.Id, usuarios, titulo, descricao, turma.UeId));
 
             return true;
         }

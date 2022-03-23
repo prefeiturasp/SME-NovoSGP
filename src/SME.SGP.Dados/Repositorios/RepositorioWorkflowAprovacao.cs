@@ -16,6 +16,13 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public async Task<string> ObterCriador(long workflowId)
+        {
+            var query = "select criado_rf from wf_aprovacao wa where id = @workflowId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { workflowId });
+        }
+
         public WorkflowAprovacao ObterEntidadeCompleta(long workflowId = 0, long notificacaoId = 0)
         {
             var query = new StringBuilder();

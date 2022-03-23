@@ -1,0 +1,85 @@
+version: '3'
+services:
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.7-management-alpine
+    hostname: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=bitnami
+    networks:
+      - sme-network
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  elasticsearch:
+    container_name: ElasticSearch
+    hostname: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.0-amd64 
+    environment: 
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+      - network.host=0.0.0.0
+      - cluster.name="elastic_stack_logging"
+      - node.name="elastic_stack_logging_data"
+      - discovery.zen.minimum_master_nodes=1
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
+    volumes: 
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -I -s -L http://localhost:9200 || exit 1"]
+      interval: 30s
+      timeout: 20s
+      retries: 5     
+    networks:
+      - sme-network
+
+  kibana:
+    container_name: Kibana
+    hostname: kibana
+    image: docker.elastic.co/kibana/kibana:7.13.0-amd64
+    environment:
+      - server.name=kibana
+      - server.host="0"
+      - elasticsearch.url=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -I -s -L http://localhost:5601/ || exit 1"]
+      interval: 30s
+      timeout: 20s
+      retries: 5     
+    networks:
+      - sme-network
+
+  logstash:
+    container_name: LogStash
+    hostname: logstash
+    build: 
+      context: ./logstash
+    command: logstash -f /config/logstash.conf  
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+    networks:
+      - sme-network
+
+volumes:
+  rabbitmq_data:
+  elasticsearch_data:
+
+networks:
+  sme-network:
+    external:
+      name: sme-network
+    driver: bridge

@@ -138,8 +138,19 @@ namespace SME.SGP.Dominio
         AtualizacaoDeAtividadesAvaliativas = 76,
         TipoAtividadeAvaliativaClassroom = 77,
 
+        AprovacaoAlteracaoNotaFechamento = 78,
+        AprovacaoAlteracaoNotaConselho = 79,
+        AprovacaoAlteracaoParecerConclusivo = 80,
+
+        ExecucaoConsolidacaoDiariosBordo = 81,
+        ExecucaoConsolidacaoRegistrosPedagogicos = 82,
+
+
         PermiteCompensacaoForaPeriodo = 83,
 
+        CJInfantilPodeEditarAulaTitular = 84,
+
+        ControlePlanejamentoDiarioInfantilComComponente = 85,
         //Sistema
         HabilitarServicosEmBackground = 100,
         ProcessarDeadletter = 101,

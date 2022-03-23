@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sentry;
 using SME.SGP.Infra;
 using System;
 using System.Threading;
@@ -26,18 +25,11 @@ namespace SME.SGP.Aplicacao
                 TipoPeriodo = request.TipoPeriodo
             };            
 
-            try
+            var publicar = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoDashBoardFrequencia, filtro, Guid.NewGuid(), null));
+            if (!publicar)
             {
-                var publicar = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoDashBoardFrequencia, filtro, Guid.NewGuid(), null));
-                if (!publicar)
-                {
-                    var mensagem = $"Não foi possível inserir a turma: {request.TurmaId} na fila de consolidação de frequência.";
-                    SentrySdk.CaptureMessage(mensagem);
-                }
-            }
-            catch (Exception ex)
-            {
-                SentrySdk.CaptureException(ex);
+                var mensagem = $"Não foi possível inserir a turma: {request.TurmaId} na fila de consolidação de frequência.";
+                await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, Dominio.Enumerados.LogNivel.Critico, Dominio.Enumerados.LogContexto.Frequencia));
             }
 
             return true;

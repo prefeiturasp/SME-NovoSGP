@@ -9,13 +9,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUesComDrePorModalidadeTurmasQuery : IRequest<IEnumerable<Ue>>
     {
-        public ObterUesComDrePorModalidadeTurmasQuery(Modalidade modalidade, int ano)
+        public ObterUesComDrePorModalidadeTurmasQuery(Modalidade[] modalidade, int ano)
         {
             Modalidade = modalidade;
             Ano = ano;
         }
 
-        public Modalidade Modalidade { get; set; }
+        public Modalidade[] Modalidade { get; set; }
         public int Ano { get; set; }
     }
 
