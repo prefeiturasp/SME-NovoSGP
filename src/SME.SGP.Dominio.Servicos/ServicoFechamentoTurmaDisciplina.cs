@@ -272,12 +272,12 @@ namespace SME.SGP.Dominio.Servicos
                     }
                 }
 
-                foreach(var consolidacaoNotaAlunoDto in consolidacaoNotasAlunos)
-                    await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
-
                 await EnviarNotasWfAprovacao(fechamentoTurmaDisciplina.Id, fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar, usuarioLogado, disciplinaEOL, turmaFechamento);
 
                 unitOfWork.PersistirTransacao();
+
+                foreach (var consolidacaoNotaAlunoDto in consolidacaoNotasAlunos)
+                    await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
 
                 if (alunosComNotaAlterada.Length > 0)
                 {
