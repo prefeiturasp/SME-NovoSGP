@@ -182,7 +182,7 @@ namespace SME.SGP.Aplicacao
         {
             SituacaoConselhoClasse statusAluno = SituacaoConselhoClasse.NaoIniciado;
 
-            var statusConselhoAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turma.Id, bimestre.Value, alunoCodigo);
+            var statusConselhoAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turma.Id, alunoCodigo);
 
             if (statusConselhoAluno != null)
                 statusAluno = statusConselhoAluno.Status;
