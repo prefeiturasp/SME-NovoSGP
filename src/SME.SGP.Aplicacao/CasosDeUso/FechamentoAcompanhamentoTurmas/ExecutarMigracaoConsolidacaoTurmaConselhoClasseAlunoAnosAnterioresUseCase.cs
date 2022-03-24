@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
                             var alunoNotas = await repositorioFechamentoNotaConsulta.ObterFechamentoNotaAlunoAsync(consolidacao.TurmaId, consolidacao.AlunoCodigo);
 
-                            var migracaoConsolidacaoTurmaCommand = new ExecutarMigracaoConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresCommand()
+                            var migracaoConsolidacaoTurmaCommand = new ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresCommand()
                             {
                                 ConsolidacaoId = consolidacao.ConsolidacaoId,
                                 AlunoNotas = alunoNotas,
