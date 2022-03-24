@@ -1,12 +1,10 @@
 ﻿using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Api.Middlewares;
 using SME.SGP.Infra;
-using System.Text.Json.Serialization;
 
 namespace SME.SGP.Api
 {
@@ -18,7 +16,7 @@ namespace SME.SGP.Api
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
-            
+
             var conexao = serviceProvider.GetService<ISgpContext>();
             var mediator = serviceProvider.GetService<IMediator>();
 
@@ -28,8 +26,8 @@ namespace SME.SGP.Api
                 options.Filters.Add(new ValidaDtoAttribute());
                 options.Filters.Add(new FiltroExcecoesAttribute(mediator));
                 options.Filters.Add(new DisposeConnectionFilter(conexao));
-            })
-                .AddJsonOptions(opt => opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
+            })                
+                .AddJsonOptions(opt => opt.JsonSerializerOptions.Converters.Add(new EnumParsingConverter()))
                 .AddFluentValidation()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
