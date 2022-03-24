@@ -20,8 +20,7 @@ from v_abrangencia_nivel_dre a
     inner join v_abrangencia_cadeia_turmas act on a.dre_id = act.dre_id
 where a.login = p_login
     and a.perfil_id = p_perfil_id
-    and act.turma_historica = p_historico
-    and a.historico = p_historico
+    and act.turma_historica = p_historico    
     and (
         p_modalidade_codigo = 0
         or (
@@ -84,8 +83,7 @@ from v_abrangencia_nivel_ue a
     inner join ue on act.ue_id = ue.id
 where a.login = p_login
     and a.perfil_id = p_perfil_id
-    and act.turma_historica = p_historico
-    and a.historico = p_historico
+    and act.turma_historica = p_historico    
     and (
         p_modalidade_codigo = 0
         or (
