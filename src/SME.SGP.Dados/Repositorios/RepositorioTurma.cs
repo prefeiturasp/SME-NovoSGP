@@ -181,21 +181,29 @@ namespace SME.SGP.Dados.Repositorios
             try
             {
                 var codigosTurmasParaHistorico = await ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(anoLetivo, true, listaTurmas, transacao);
-                var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
-                                        .Replace("#codigosTurmasParaHistorico", MapearParaCodigosQuerySql(codigosTurmasParaHistorico));
+                
+                if (codigosTurmasParaHistorico.Any())
+                {
+                    var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
+                        .Replace("#turmaId", MapearParaCodigosQuerySql(codigosTurmasParaHistorico));
 
-                await contexto.Conexao.ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, transacao);
+                    await contexto.Conexao.ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, transacao);
+                }
 
                 var codigosTurmasARemover = await ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(anoLetivo, false, listaTurmas, transacao);
-                var sqlExcluirTurmas = Delete.Replace("#queryIdsConselhoClasseTurmasForaListaCodigos", QueryIdsConselhoClasseTurmasForaListaCodigos)
-                                         .Replace("#queryFechamentoAlunoTurmasForaListaCodigos", QueryFechamentoAlunoTurmasForaListaCodigos)
-                                         .Replace("#queryIdsFechamentoTurmaTurmasForaListaCodigos", QueryIdsFechamentoTurmaTurmasForaListaCodigos)
-                                         .Replace("#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos", QueryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos)
-                                         .Replace("#queryIdsTurmasForaListaCodigos", QueryIdsTurmasForaListaCodigos)
-                                         .Replace("#queryIdsAulasTurmasForaListaCodigos", QueryAulasTurmasForaListaCodigos)
-                                         .Replace("#codigosTurmasARemover", MapearParaCodigosQuerySql(codigosTurmasARemover));
-                await contexto.Conexao
-                    .ExecuteAsync(sqlExcluirTurmas, transacao);
+                
+                if (codigosTurmasARemover.Any())
+                {
+                    var sqlExcluirTurmas = Delete.Replace("#queryIdsConselhoClasseTurmasForaListaCodigos", QueryIdsConselhoClasseTurmasForaListaCodigos)
+                         .Replace("#queryFechamentoAlunoTurmasForaListaCodigos", QueryFechamentoAlunoTurmasForaListaCodigos)
+                         .Replace("#queryIdsFechamentoTurmaTurmasForaListaCodigos", QueryIdsFechamentoTurmaTurmasForaListaCodigos)
+                         .Replace("#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos", QueryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos)
+                         .Replace("#queryIdsTurmasForaListaCodigos", QueryIdsTurmasForaListaCodigos)
+                         .Replace("#queryIdsAulasTurmasForaListaCodigos", QueryAulasTurmasForaListaCodigos)
+                         .Replace("#turmaId", MapearParaCodigosQuerySql(codigosTurmasARemover));
+                    await contexto.Conexao
+                        .ExecuteAsync(sqlExcluirTurmas, transacao);
+                }
 
                 transacao.Commit();
             }
@@ -627,17 +635,17 @@ namespace SME.SGP.Dados.Repositorios
                     delete from public.turma
                     where turma_id = #turmaId;";
 
-        private const string QueryIdsTurmasForaListaCodigos = "select id from public.turma where turma_id = #turmaId";
+        private const string QueryIdsTurmasForaListaCodigos = "select id from public.turma where turma_id in (#turmaId)";
 
         private const string QueryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos = @"select id
                                                                                          from public.fechamento_turma_disciplina
                                                                                          where fechamento_turma_id in (select id
                                                                                                                        from public.fechamento_turma
-                                                                                                                       where turma_id = #turmaId)";
+                                                                                                                       where turma_id in (#turmaId))";
 
         private const string QueryIdsFechamentoTurmaTurmasForaListaCodigos = @"select id
                                                                                from public.fechamento_turma
-                                                                               where turma_id = #turmaId";
+                                                                               where turma_id in (#turmaId)";
 
         private const string QueryIdsConselhoClasseTurmasForaListaCodigos = @"select id
                                                                               from public.conselho_classe
@@ -647,9 +655,9 @@ namespace SME.SGP.Dados.Repositorios
                                                                             from public.fechamento_aluno
                                                                             where fechamento_turma_disciplina_id in (#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos)";
 
-        private const string QueryAulasTurmasForaListaCodigos = @"select id from public.aula where turma_id = #turmaId";
+        private const string QueryAulasTurmasForaListaCodigos = @"select id from public.aula where turma_id in (#turmaId)";
 
         
-        private const string QueryDefinirTurmaHistorica = "update public.turma set historica = true where turma_id = #turmaId;";
+        private const string QueryDefinirTurmaHistorica = "update public.turma set historica = true where turma_id in (#turmaId);";
     }
 }
