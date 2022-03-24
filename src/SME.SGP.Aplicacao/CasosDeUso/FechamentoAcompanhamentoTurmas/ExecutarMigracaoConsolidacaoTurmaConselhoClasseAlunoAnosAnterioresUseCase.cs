@@ -26,33 +26,28 @@ namespace SME.SGP.Aplicacao
 
             try
             {
+                //Buscar no SGP as UE´s
+                var ues = new List<Ue>();
 
-                //RepositorioComponenteCurricularConsulta.ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre
-
-                var consolidacoesParaTatar = new List<ConsolidacaoConselhoClasseAlunoMigracaoDto>();
-
-                var fechamentosNotaParaTratar = new List<FechamentoNotaMigracaoDto>();
-
-                foreach (var consolidacaoAluno in consolidacoesParaTatar)
+                foreach (var ue in ues)
                 {
-                    var fechamentoNota = fechamentosNotaParaTratar.FirstOrDefault(f => f.Bimestre == consolidacaoAluno.Bimestre
-                                                                                      && f.TurmaId == consolidacaoAluno.TurmaId
-                                                                                      && f.Bimestre == consolidacaoAluno.Bimestre
-                                                                                      && f.AlunoCodigo.Equals(consolidacaoAluno.AlunoCodigo));
-
-                    mensagemConsolidacao = new MensagemConsolidacaoMigracaoDto()
+                    //Abrir uma fila por escola
+                    var turmas = new List<Turma>();
+                    foreach (var turma in turmas)
                     {
-                        AlunoCodigo = consolidacaoAluno.AlunoCodigo,
-                        Bimestre = consolidacaoAluno.Bimestre,
-                        TurmaId = consolidacaoAluno.TurmaId,
-                        ConsolidacaoId = consolidacaoAluno.ConsolidacaoId,
-                        Nota = fechamentoNota.Nota,
-                        ConceitoId = fechamentoNota.ConceitoId,
-                        DisciplinaId = fechamentoNota.DisciplinaId
-                    };
+                        //Abrir uma fila por turma
 
-                    var publicarFilaConsolidacaoConselhoClasseAluno = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null));
-                }
+                        //Buscar as consolidações por turma
+                        //RepositorioComponenteCurricularConsulta.ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre
+                        var consolidacoes = new List<ConsolidacaoConselhoClasseAlunoMigracaoDto>();
+
+                        foreach (var consolidacao in consolidacoes)
+                        {
+                            //Abrir uma fila por aluno
+                            //Montar um objeto e chamar command para atualizar a consolidacao
+                        }
+                    }
+                }                
             }
             catch (System.Exception ex)
             {
