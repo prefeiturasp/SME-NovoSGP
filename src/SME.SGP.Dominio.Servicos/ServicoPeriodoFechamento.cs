@@ -150,6 +150,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<FechamentoDto> ObterPorTipoCalendarioSme(long tipoCalendarioId)
         {
             var fechamentoSME = repositorioPeriodoFechamento.ObterPorFiltros(tipoCalendarioId, null);
+            DateTime periodoInicio, periodoFim;            
 
             if (fechamentoSME == null)
             {
@@ -166,10 +167,21 @@ namespace SME.SGP.Dominio.Servicos
 
                 foreach (var periodo in periodosEscolares)
                 {
+                    periodoInicio = periodo.PeriodoInicio;
+                    periodoFim = periodo.PeriodoFim;
+
                     periodo.AdicionarTipoCalendario(tipoCalendario);
-                    fechamentoSME.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamentoSME.Id, periodo, null, null));
+
+                    if (periodoInicio == null || periodoFim == null)
+                    {
+                        fechamentoSME.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamentoSME.Id, periodo, null, null));
+                    }
+                    else
+                    {
+                        fechamentoSME.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(fechamentoSME.Id, periodo, periodoInicio, periodoFim));
+                    }
                 }
-            }            
+            }
 
             return MapearParaDto(fechamentoSME);
         }
