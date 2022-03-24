@@ -20,9 +20,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemConsolidacaoConselhoClasseAlunoDto>();
+            //var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemConsolidacaoConselhoClasseAlunoDto>();
 
-            var mensagemConsolidacao = new MensagemConsolidacaoMigracaoDto();
+            //var mensagemConsolidacao = new MensagemConsolidacaoMigracaoDto();
 
             try
             {
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (System.Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
+                //await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
                 return false;
             }
 
