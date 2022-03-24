@@ -13,35 +13,36 @@ namespace SME.SGP.Aplicacao
     public class ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase : AbstractUseCase, IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase
     {
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
+        private readonly IRepositorioConselhoClasseConsolidadoNota repositorioConselhoClasseConsolidadoNota;
 
-        public ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(IMediator mediator, IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado) : base(mediator)
+        public ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(IMediator mediator, IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado, IRepositorioConselhoClasseConsolidadoNota repositorioConselhoClasseConsolidadoNota) : base(mediator)
         {
             this.repositorioConselhoClasseConsolidado = repositorioConselhoClasseConsolidado ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
+            this.repositorioConselhoClasseConsolidadoNota = repositorioConselhoClasseConsolidadoNota ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasseConsolidadoNota));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var filtro = mensagemRabbit
-                .ObterObjetoMensagem<MensagemConsolidacaoConselhoClasseAlunoDto>();
+            var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemConsolidacaoConselhoClasseAlunoDto>();
 
             if (filtro == null)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do conselho de clase da turma -> aluno. O id da turma bimestre aluno não foram informados", LogNivel.Critico, LogContexto.ConselhoClasse));                
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do conselho de clase da turma -> aluno. O id da turma bimestre aluno não foram informados", LogNivel.Critico, LogContexto.ConselhoClasse));
                 return false;
             }
 
             SituacaoConselhoClasse statusNovo = SituacaoConselhoClasse.NaoIniciado;
 
-            var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado
-                    .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo);
+            var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.AlunoCodigo);
 
             if (consolidadoTurmaAluno == null)
             {
-                consolidadoTurmaAluno = new ConselhoClasseConsolidadoTurmaAluno();
-                consolidadoTurmaAluno.AlunoCodigo = filtro.AlunoCodigo;
-                consolidadoTurmaAluno.Bimestre = filtro.Bimestre;
-                consolidadoTurmaAluno.TurmaId = filtro.TurmaId;
-                consolidadoTurmaAluno.Status = statusNovo;
+                consolidadoTurmaAluno = new ConselhoClasseConsolidadoTurmaAluno
+                {
+                    AlunoCodigo = filtro.AlunoCodigo,
+                    TurmaId = filtro.TurmaId,
+                    Status = statusNovo
+                };
             }
 
             if (!filtro.Inativo)
@@ -58,7 +59,7 @@ namespace SME.SGP.Aplicacao
                         var fechamento = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = filtro.TurmaId });
                         var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamento.Id));
                         var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, filtro.AlunoCodigo));
-                        consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno != null ? conselhoClasseAluno.ConselhoClasseParecerId : null;
+                        consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno?.ConselhoClasseParecerId;
                     }
 
                     var turmasCodigos = new string[] { };
@@ -101,10 +102,36 @@ namespace SME.SGP.Aplicacao
 
             consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
 
-            await repositorioConselhoClasseConsolidado
-                .SalvarAsync(consolidadoTurmaAluno);
+            try
+            {
+                var consolidadoTurmaAlunoId = await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno);
 
-            return true;
+                var consolidadoNota = await repositorioConselhoClasseConsolidadoNota.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoNotaAsync(consolidadoTurmaAlunoId, filtro.Bimestre);
+                if (consolidadoNota == null) 
+                    consolidadoNota = new ConselhoClasseConsolidadoTurmaAlunoNota() 
+                    { 
+                        ConselhoClasseConsolidadoTurmaAlunoId = consolidadoTurmaAlunoId,
+                        Bimestre = filtro.Bimestre,
+                    };
+
+                if (filtro.Nota.HasValue) //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                    consolidadoNota.Nota = filtro.Nota;
+
+                if (filtro.ComponenteCurricularId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                    consolidadoNota.ComponenteCurricularId = filtro.ComponenteCurricularId;
+
+                if (filtro.ConceitoId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                    consolidadoNota.ConceitoId = filtro.ConceitoId;
+
+                await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na persistência da consolidação do conselho de classe da turma aluno/nota", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
+                return false;
+            }
         }
     }
 }
