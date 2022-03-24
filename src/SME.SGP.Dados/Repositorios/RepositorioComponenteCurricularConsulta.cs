@@ -191,12 +191,12 @@ namespace SME.SGP.Dados.Repositorios
                            left join conselho_classe_nota ccn on
                            ccn.conselho_classe_aluno_id = cca.id
                            and ccn.componente_curricular_codigo = fn.disciplina_id
-                           where                           
+                           where
                            cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
                            and ft.turma_id = @turmaId ");
             if(bimestre != 0)
-                query.Append(" pe.bimestre = @bimestre ");
+                query.Append("and pe.bimestre = @bimestre ");
 
             query.Append(" union all ");
 
@@ -228,14 +228,14 @@ namespace SME.SGP.Dados.Repositorios
                            left join fechamento_nota fn on 
                            fn.fechamento_aluno_id = fa.id
                            and ccn.componente_curricular_codigo = fn.disciplina_id
-                           where                           
+                           where
                            cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
                            and ft.turma_id = @turmaId ");
             if (bimestre != 0)
-                query.Append(" pe.bimestre = @bimestre ");
+                query.Append("and pe.bimestre = @bimestre ");
 
-            query.Append(" ) x ");
+            query.Append(" ) x;");
 
             return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query.ToString(), new { bimestre, anoLetivo, turmaId, codigoAluno, }));
         }

@@ -70,9 +70,8 @@ namespace SME.SGP.Aplicacao
                         turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, turmasCodigosParaConsulta));
                     }
 
-                    if (turmasCodigos.Any())
+                    if (!turmasCodigos.Any())
                         turmasCodigos = new string[1] { turma.CodigoTurma };
-
 
                     var componentesComNotaFechamentoOuConselho = await mediator
                         .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, request.TurmaId, request.Bimestre, request.AlunoCodigo));
