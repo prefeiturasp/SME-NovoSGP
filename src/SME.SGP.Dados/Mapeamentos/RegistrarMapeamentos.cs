@@ -1,6 +1,7 @@
 ﻿using Dapper.FluentMap;
 using Dapper.FluentMap.Dommel;
-using SME.SGP.Dominio;
+using Dommel;
+using SME.SGP.Dados.Interceptors;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -202,6 +203,8 @@ namespace SME.SGP.Dados.Mapeamentos
 
                config.ForDommel();
            });
+
+           DommelMapper.SetPropertyResolver(new CustomDommelPropertyResolver());
         }
     }
 }
