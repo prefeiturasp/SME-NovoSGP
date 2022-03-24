@@ -13,6 +13,11 @@ ADD CONSTRAINT consolidado_conselho_classe_aluno_turma_nota
 FOREIGN KEY (consolidado_conselho_classe_aluno_turma_id) 
 REFERENCES public.consolidado_conselho_classe_aluno_turma(id);
 
+ALTER TABLE IF EXISTS public.consolidado_conselho_classe_aluno_turma_nota 
+ADD CONSTRAINT consolidado_conselho_classe_aluno_turma_nota_componente_Curricular 
+FOREIGN KEY (componente_curricular_id) 
+REFERENCES public.componente_curricular(id);
+
 --> Removendo as linhas que são de bimestres e mantendo somente final
 delete from consolidado_conselho_classe_aluno_turma where bimestre <> 0;
 

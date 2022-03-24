@@ -17,16 +17,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         private readonly Mock<IRepositorioConselhoClasseConsolidado> repositorioConselhoClasseConsolidado;
         private readonly Mock<IRepositorioConselhoClasseConsolidadoNota> repositorioConselhoClasseConsolidadoNota;
         private readonly Mock<IMediator> mediator;
-        private readonly Mock<IUnitOfWork> unitOfWork;
 
         public ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCaseTeste()
         {
 
             mediator = new Mock<IMediator>();
-            unitOfWork = new Mock<IUnitOfWork>();        
             repositorioConselhoClasseConsolidado = new Mock<IRepositorioConselhoClasseConsolidado>();
             repositorioConselhoClasseConsolidadoNota = new Mock<IRepositorioConselhoClasseConsolidadoNota>();
-            consolidacaoTurmaConselhoClasseAlunoUseCase = new ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(unitOfWork.Object,mediator.Object, repositorioConselhoClasseConsolidado.Object, repositorioConselhoClasseConsolidadoNota.Object);
+            consolidacaoTurmaConselhoClasseAlunoUseCase = new ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(mediator.Object, repositorioConselhoClasseConsolidado.Object, repositorioConselhoClasseConsolidadoNota.Object);
         }
 
         [Fact]

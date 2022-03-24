@@ -14,13 +14,11 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
         private readonly IRepositorioConselhoClasseConsolidadoNota repositorioConselhoClasseConsolidadoNota;
-        private readonly IUnitOfWork unitOfWork;
 
-        public ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado, IRepositorioConselhoClasseConsolidadoNota repositorioConselhoClasseConsolidadoNota) : base(mediator)
+        public ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(IMediator mediator, IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado, IRepositorioConselhoClasseConsolidadoNota repositorioConselhoClasseConsolidadoNota) : base(mediator)
         {
             this.repositorioConselhoClasseConsolidado = repositorioConselhoClasseConsolidado ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
             this.repositorioConselhoClasseConsolidadoNota = repositorioConselhoClasseConsolidadoNota ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasseConsolidadoNota));
-            this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
@@ -104,7 +102,6 @@ namespace SME.SGP.Aplicacao
 
             consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
 
-            unitOfWork.IniciarTransacao();
             try
             {
                 var consolidadoTurmaAlunoId = await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno);
@@ -128,15 +125,11 @@ namespace SME.SGP.Aplicacao
 
                 await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
 
-                unitOfWork.PersistirTransacao();
-
                 return true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                //await LogarErro("Erro ao persistir notas de fechamento", e, LogNivel.Critico);
-
-                unitOfWork.Rollback();
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na persistência da consolidação do conselho de classe da turma aluno/nota", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
                 return false;
             }
         }
