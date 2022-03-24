@@ -24,14 +24,14 @@ namespace SME.SGP.Aplicacao
             var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorIdQuery(request.ConselhoClasseAlunoId));
             conselhoClasseAluno.ConselhoClasseParecerId = request.ParecerConclusivoId;
 
-            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);            
+            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
-            var aluno = (await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(new long[] { long.Parse(conselhoClasseAluno.AlunoCodigo) }, request.AnoLetivo))).FirstOrDefault();
+            var alunoDaTurma = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(request.TurmaCodigo, conselhoClasseAluno.AlunoCodigo));
 
             var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(conselhoClasseAluno.AlunoCodigo, 
                                                                                                          request.TurmaId, 
-                                                                                                         request.Bimestre, 
-                                                                                                         aluno.Inativo);
+                                                                                                         request.Bimestre,
+                                                                                                         alunoDaTurma.Inativo);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemConsolidacaoConselhoClasseAluno, Guid.NewGuid(), null));
 

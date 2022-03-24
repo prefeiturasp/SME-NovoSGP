@@ -46,6 +46,7 @@ namespace SME.SGP.Aplicacao
                     ConselhoClasseAlunoCodigo = conselhoClasseAluno.AlunoCodigo,
                     ParecerConclusivoId = parecerConclusivo.Id,
                     TurmaId = turma.Id,
+                    TurmaCodigo = turma.CodigoTurma,
                     Bimestre = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre,
                     AnoLetivo = turma.AnoLetivo
                 };

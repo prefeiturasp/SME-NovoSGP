@@ -32,6 +32,7 @@ namespace SME.SGP.Aplicacao
                 ConselhoClasseAlunoCodigo = parecerEmAprovacao.AlunoCodigo,
                 ParecerConclusivoId = parecerEmAprovacao.ConselhoClasseParecerId,
                 TurmaId = parecerEmAprovacao.TurmaId,
+                TurmaCodigo = turmaCodigo,
                 Bimestre = parecerEmAprovacao.Bimestre,
                 AnoLetivo = parecerEmAprovacao.AnoLetivo
             };

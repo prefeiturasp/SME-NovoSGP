@@ -204,8 +204,14 @@ namespace SME.SGP.Aplicacao
                 await EnviarNotasAprovacao(notasEmAprovacao, fechamentoTurmaDisciplinaId, periodoEscolar, usuarioLogado, turma, componenteCurricular, fechamentoTurma.EhFinal);
                 unitOfWork.PersistirTransacao();
 
+                var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
+
                 foreach (var consolidacaoNotaAlunoDto in consolidacaoNotasAlunos)
+                {
+                    consolidacaoNotaAlunoDto.Inativo = alunosDaTurma.FirstOrDefault(f=> f.CodigoAluno.Equals(consolidacaoNotaAlunoDto.AlunoCodigo)).Inativo;
                     await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
+                }
+                    
 
                 if (alunosComNotaAlterada.Length > 0)
                 {

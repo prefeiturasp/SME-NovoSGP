@@ -21,12 +21,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ConsolidacaoNotaAlunoCommand request, CancellationToken cancellationToken)
         {
-            var aluno = (await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(new long[] { long.Parse(request.AlunoCodigo) }, request.AnoLetivo))).FirstOrDefault();
-
             var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(request.AlunoCodigo, 
                                                                                                          request.TurmaId, 
                                                                                                          request.Bimestre, 
-                                                                                                         aluno.Inativo,
+                                                                                                         request.Inativo,
                                                                                                          request.Nota,
                                                                                                          request.ConceitoId,
                                                                                                          request.ComponenteCurricularId);

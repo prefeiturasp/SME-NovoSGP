@@ -9,5 +9,6 @@ namespace SME.SGP.Dto
         public double? Nota { get; set; }
         public long? ConceitoId { get; set; }
         public long ComponenteCurricularId { get; set; }
+        public bool Inativo { get; set; }
     }
 }

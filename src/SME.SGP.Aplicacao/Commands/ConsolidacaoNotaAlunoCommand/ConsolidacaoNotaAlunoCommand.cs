@@ -14,6 +14,8 @@ namespace SME.SGP.Aplicacao
         public long? ConceitoId { get; set; }
 
         public long ComponenteCurricularId { get; set; }
+        public bool Inativo { get; set; }
+
 
         public ConsolidacaoNotaAlunoCommand(ConsolidacaoNotaAlunoDto consolidacaoNotaAlunoDto)
         {

@@ -8,5 +8,6 @@ namespace SME.SGP.Dto
         public long TurmaId { get; set; }
         public int Bimestre { get; set; }
         public int AnoLetivo { get; set; }
+        public string TurmaCodigo { get; set; }
     }
 }
