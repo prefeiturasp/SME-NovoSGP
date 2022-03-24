@@ -13,18 +13,19 @@ namespace SME.SGP.Aplicacao
     public class ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase : AbstractUseCase, IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase
     {
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
+        private readonly IRepositorioConselhoClasseConsolidadoNota repositorioConselhoClasseConsolidadoNota;
+        private readonly IUnitOfWork unitOfWork;
 
-        public ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(IMediator mediator, IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado) : base(mediator)
+        public ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado, IRepositorioConselhoClasseConsolidadoNota repositorioConselhoClasseConsolidadoNota) : base(mediator)
         {
             this.repositorioConselhoClasseConsolidado = repositorioConselhoClasseConsolidado ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
+            this.repositorioConselhoClasseConsolidadoNota = repositorioConselhoClasseConsolidadoNota ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasseConsolidadoNota));
+            this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-
-
-            var filtro = mensagemRabbit
-                        .ObterObjetoMensagem<MensagemConsolidacaoConselhoClasseAlunoDto>();
+            var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemConsolidacaoConselhoClasseAlunoDto>();
 
             if (filtro == null)
             {
@@ -34,15 +35,13 @@ namespace SME.SGP.Aplicacao
 
             SituacaoConselhoClasse statusNovo = SituacaoConselhoClasse.NaoIniciado;
 
-            var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado
-                    .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo);
+            var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.AlunoCodigo);
 
             if (consolidadoTurmaAluno == null)
             {
                 consolidadoTurmaAluno = new ConselhoClasseConsolidadoTurmaAluno
                 {
                     AlunoCodigo = filtro.AlunoCodigo,
-                    //Bimestre = filtro.Bimestre,
                     TurmaId = filtro.TurmaId,
                     Status = statusNovo
                 };
@@ -105,17 +104,41 @@ namespace SME.SGP.Aplicacao
 
             consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
 
-            //if (filtro.ComponenteCurricularId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
-                //consolidadoTurmaAluno.ComponenteCurricularId = filtro.ComponenteCurricularId;
+            unitOfWork.IniciarTransacao();
+            try
+            {
+                var consolidadoTurmaAlunoId = await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno);
 
-            //if (filtro.Nota.HasValue) //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
-            //    consolidadoTurmaAluno.Nota = filtro.Nota;
+                var consolidadoNota = await repositorioConselhoClasseConsolidadoNota.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoNotaAsync(consolidadoTurmaAlunoId, filtro.Bimestre);
+                if (consolidadoNota == null) 
+                    consolidadoNota = new ConselhoClasseConsolidadoTurmaAlunoNota() 
+                    { 
+                        ConselhoClasseConsolidadoTurmaAlunoId = consolidadoTurmaAlunoId,
+                        Bimestre = filtro.Bimestre,
+                    };
 
-            //if (filtro.ConceitoId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
-            //    consolidadoTurmaAluno.ConceitoId = filtro.ConceitoId;
+                if (filtro.Nota.HasValue) //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                    consolidadoNota.Nota = filtro.Nota;
 
-            return (await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno)) > 0;
-            
+                if (filtro.ComponenteCurricularId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                    consolidadoNota.ComponenteCurricularId = filtro.ComponenteCurricularId;
+
+                if (filtro.ConceitoId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                    consolidadoNota.ConceitoId = filtro.ConceitoId;
+
+                await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
+
+                unitOfWork.PersistirTransacao();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                //await LogarErro("Erro ao persistir notas de fechamento", e, LogNivel.Critico);
+
+                unitOfWork.Rollback();
+                return false;
+            }
         }
     }
 }

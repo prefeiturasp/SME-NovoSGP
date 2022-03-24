@@ -21,13 +21,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(PersistirParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
-            var conselhoClasse = await mediator.Send(new ObterConselhoClasseAlunoPorIdQuery(request.ConselhoClasseAlunoId));
+            var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorIdQuery(request.ConselhoClasseAlunoId));
+            conselhoClasseAluno.ConselhoClasseParecerId = request.ParecerConclusivoId;
 
-            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasse);            
+            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);            
 
-            var aluno = (await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(new long[] { long.Parse(conselhoClasse.AlunoCodigo) }, request.AnoLetivo))).FirstOrDefault();
+            var aluno = (await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(new long[] { long.Parse(conselhoClasseAluno.AlunoCodigo) }, request.AnoLetivo))).FirstOrDefault();
 
-            var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(conselhoClasse.AlunoCodigo, 
+            var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(conselhoClasseAluno.AlunoCodigo, 
                                                                                                          request.TurmaId, 
                                                                                                          request.Bimestre, 
                                                                                                          aluno.Inativo);
