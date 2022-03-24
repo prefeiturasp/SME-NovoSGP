@@ -18,6 +18,10 @@ ADD CONSTRAINT consolidado_conselho_classe_aluno_turma_nota_componente_Curricula
 FOREIGN KEY (componente_curricular_id) 
 REFERENCES public.componente_curricular(id);
 
+CREATE INDEX componente_curricular_idx ON public.consolidado_conselho_classe_aluno_turma_nota USING btree (componente_curricular_id);
+CREATE INDEX consolidado_conselho_classe_aluno_turma_idx ON public.consolidado_conselho_classe_aluno_turma_nota USING btree (consolidado_conselho_classe_aluno_turma_id);
+
+
 --> Removendo as linhas que são de bimestres e mantendo somente final
 delete from consolidado_conselho_classe_aluno_turma where bimestre <> 0;
 
