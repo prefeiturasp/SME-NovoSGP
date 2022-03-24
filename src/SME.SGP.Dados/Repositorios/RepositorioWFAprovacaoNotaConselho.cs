@@ -33,20 +33,23 @@ namespace SME.SGP.Dados
 	                    , cc.*
 	                    , ft.*
 	                    , t.*
+                        , pe.*
                       from wf_aprovacao_nota_conselho nwf
                      inner join conselho_classe_nota ccn on ccn.id = nwf.conselho_classe_nota_id
                      inner join conselho_classe_aluno cca on cca.id = ccn.conselho_classe_aluno_id 
                      inner join conselho_classe cc on cc.id = cca.conselho_classe_id 
                      inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id 
                      inner join turma t on t.id = ft.turma_id 
+                     inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id 
                      where nwf.wf_aprovacao_id = @workflowId";
 
             return (await database.Conexao
-                .QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, ConselhoClasseAluno, ConselhoClasse, FechamentoTurma, Turma, WFAprovacaoNotaConselho>(query,
-                (wfAprovacao, conselhoClasseNota, conselhoClasseAluno, conselhoClasse, fechamentoTurma, turma) => 
+                .QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, ConselhoClasseAluno, ConselhoClasse, FechamentoTurma, Turma, PeriodoEscolar, WFAprovacaoNotaConselho>(query,
+                (wfAprovacao, conselhoClasseNota, conselhoClasseAluno, conselhoClasse, fechamentoTurma, turma, periodoEscolar) => 
                 {
                     fechamentoTurma.Turma = turma;
                     conselhoClasse.FechamentoTurma = fechamentoTurma;
+                    conselhoClasse.FechamentoTurma.PeriodoEscolar = periodoEscolar;
                     conselhoClasseAluno.ConselhoClasse = conselhoClasse;
                     conselhoClasseNota.ConselhoClasseAluno = conselhoClasseAluno;
                     wfAprovacao.ConselhoClasseNota = conselhoClasseNota;
