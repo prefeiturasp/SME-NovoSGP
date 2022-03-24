@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dto;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,20 +19,31 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(AprovarWorkflowAlteracaoParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
-            var parecerEmAprovacao = await ObterParecerEmAprovacao(request.WorkflowId);
+            var parecerEmAprovacao = await mediator.Send(new ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery(request.WorkflowId));
             if (parecerEmAprovacao != null)
                 await AtualizarParecerConclusivo(parecerEmAprovacao, request.TurmaCodigo, request.CriadorRf, request.CriadorNome);
         }
 
-        private async Task AtualizarParecerConclusivo(WFAprovacaoParecerConclusivo parecerEmAprovacao, string turmaCodigo, string criadorRf, string criadorNome)
+        private async Task AtualizarParecerConclusivo(WFAprovacaoParecerConclusivoDto parecerEmAprovacao, string turmaCodigo, string criadorRf, string criadorNome)
         {
-            await AlterarParecer(parecerEmAprovacao);
-            await ExcluirWorkFlow(parecerEmAprovacao);
+            var persistirParecerConclusivoDto = new PersistirParecerConclusivoDto()
+            {
+                ConselhoClasseAlunoId = parecerEmAprovacao.ConselhoClasseAlunoId,
+                ConselhoClasseAlunoCodigo = parecerEmAprovacao.AlunoCodigo,
+                ParecerConclusivoId = parecerEmAprovacao.ConselhoClasseParecerId,
+                TurmaId = parecerEmAprovacao.TurmaId,
+                TurmaCodigo = turmaCodigo,
+                Bimestre = parecerEmAprovacao.Bimestre,
+                AnoLetivo = parecerEmAprovacao.AnoLetivo
+            };
+            await mediator.Send(new PersistirParecerConclusivoCommand(persistirParecerConclusivoDto));
+                        
+            await mediator.Send(new ExcluirWfAprovacaoParecerConclusivoCommand(parecerEmAprovacao.WorkFlowAprovacaoId));
 
             await NotificarAprovacao(parecerEmAprovacao, turmaCodigo, criadorRf, criadorNome);
         }
 
-        private async Task NotificarAprovacao(WFAprovacaoParecerConclusivo parecerEmAprovacao, string turmaCodigo, string criadorRf, string criadorNome)
+        private async Task NotificarAprovacao(WFAprovacaoParecerConclusivoDto parecerEmAprovacao, string turmaCodigo, string criadorRf, string criadorNome)
         {
             await mediator.Send(new NotificarAprovacaoParecerConclusivoCommand(parecerEmAprovacao,
                                                                                turmaCodigo,
@@ -38,21 +51,5 @@ namespace SME.SGP.Aplicacao
                                                                                criadorNome,
                                                                                true));
         }
-
-        private async Task AlterarParecer(WFAprovacaoParecerConclusivo parecerEmAprovacao)
-        {
-            var conselhoClasseAluno = parecerEmAprovacao.ConselhoClasseAluno;
-
-            conselhoClasseAluno.ConselhoClasseParecerId = parecerEmAprovacao.ConselhoClasseParecerId;
-            await mediator.Send(new SalvarConselhoClasseAlunoCommand(conselhoClasseAluno));
-        }
-
-        private async Task ExcluirWorkFlow(WFAprovacaoParecerConclusivo parecerEmAprovacao)
-        {
-            await mediator.Send(new ExcluirWfAprovacaoParecerConclusivoCommand(parecerEmAprovacao.Id));
-        }
-
-        private async Task<WFAprovacaoParecerConclusivo> ObterParecerEmAprovacao(long workflowId)
-            => await mediator.Send(new ObterParecerConclusivoEmAprovacaoPorWorkflowQuery(workflowId));
     }
 }
