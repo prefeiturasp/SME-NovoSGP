@@ -26,8 +26,8 @@ namespace SME.SGP.Api
                 options.Filters.Add(new ValidaDtoAttribute());
                 options.Filters.Add(new FiltroExcecoesAttribute(mediator));
                 options.Filters.Add(new DisposeConnectionFilter(conexao));
-            })                
-                .AddJsonOptions(opt => opt.JsonSerializerOptions.Converters.Add(new EnumParsingConverter()))
+            })
+                .AddNewtonsoftJson()
                 .AddFluentValidation()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
