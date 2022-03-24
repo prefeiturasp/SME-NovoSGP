@@ -152,6 +152,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<Turma>(query.ToString(), new { ueCodigo, modalidade, ano, ehHistorico });
         }
+        public async Task<IEnumerable<Turma>> ObterTurmasPorCodigoUe(string ueCodigo)
+        {
+            var query = @"select t.* from turma t
+                            inner join ue u
+                            on t.ue_id = u.id
+                            where u.ue_id = @ueCodigo";
+
+            return await contexto.QueryAsync<Turma>(query, new { ueCodigo });
+        }
 
         public Ue ObterUEPorTurma(string turmaId)
         {
@@ -358,5 +367,7 @@ namespace SME.SGP.Dados.Repositorios
                 return ue;
             }, new { modalidades, anoLetivo });
         }
+
+
     }
 }

@@ -184,5 +184,20 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<FechamentoNotaAprovacaoDto>(query, new { Ids = Ids.Select(i=>i).ToArray()});
         }
+
+        public async Task<IEnumerable<FechamentoNotaMigracaoDto>> ObterFechamentoNotaAlunoAsync(long turmaId, string alunoCodigo)
+        {
+            var query = $@"select distinct fn.disciplina_Id,fn.nota, fn.conceito_id, fa.aluno_codigo, ft.turma_id, pe.bimestre
+                            from fechamento_nota fn
+                            join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id
+                            join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id
+                            join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
+                            join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                            join turma t on t.id = ft.turma_id
+                            where fa.aluno_codigo = @alunoCodigo
+                            and t.id = @turmaId";
+
+            return await database.Conexao.QueryAsync<FechamentoNotaMigracaoDto>(query, new { turmaId, alunoCodigo });
+        }
     }
 }
