@@ -87,12 +87,12 @@ namespace SME.SGP.Aplicacao
             return EnumExtensao.ListarDto<NotificacaoCategoria>();
         }
 
-        public NotificacaoBasicaListaDto ObterNotificacaoBasicaLista(int anoLetivo, string usuarioRf)
+        public async Task<NotificacaoBasicaListaDto> ObterNotificacaoBasicaLista(int anoLetivo, string usuarioRf)
         {
             return new NotificacaoBasicaListaDto
             {
-                Notificacoes = ListarPorAnoLetivoRf(anoLetivo, usuarioRf).Result,
-                QuantidadeNaoLidas = QuantidadeNotificacoesNaoLidas(anoLetivo, usuarioRf).Result
+                Notificacoes = await ListarPorAnoLetivoRf(anoLetivo, usuarioRf),
+                QuantidadeNaoLidas = await QuantidadeNotificacoesNaoLidas(anoLetivo, usuarioRf)
             };
         }
 

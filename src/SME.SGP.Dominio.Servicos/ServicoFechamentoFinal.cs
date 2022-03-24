@@ -81,7 +81,7 @@ namespace SME.SGP.Dominio.Servicos
                                 if (turma.AnoLetivo == 2020)
                                     ValidarNotasFechamento2020(notaDto);
 
-                                var fechamentoNota = MapearNotaDto(notaDto, fechamentoAluno);
+                                var fechamentoNota = CarregarNota(notaDto, fechamentoAluno);
 
                                 if (emAprovacao)
                                     AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, notaDto, fechamentoAluno.AlunoCodigo);
@@ -96,9 +96,14 @@ namespace SME.SGP.Dominio.Servicos
                                                 await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota, notaDto.Nota, fechamentoNota.Id));
                                         }
                                         else
-                                        if (fechamentoNota.ConceitoId != notaDto.ConceitoId)
+                                        if (fechamentoNota.ConceitoId != null && fechamentoNota.ConceitoId != notaDto.ConceitoId)
                                             await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, notaDto.ConceitoId, fechamentoNota.Id));
                                     }
+
+                                    fechamentoNota.Nota = notaDto.Nota;
+                                    fechamentoNota.ConceitoId = notaDto.ConceitoId;
+                                    fechamentoNota.SinteseId = notaDto.SinteseId;
+                                    fechamentoNota.DisciplinaId = notaDto.ComponenteCurricularCodigo;
 
                                     await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
                                 }
@@ -145,7 +150,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private FechamentoNota MapearNotaDto(FechamentoFinalSalvarItemDto notaDto, FechamentoAluno fechamentoAluno)
+        private FechamentoNota CarregarNota(FechamentoFinalSalvarItemDto notaDto, FechamentoAluno fechamentoAluno)
             => fechamentoAluno.FechamentoNotas.FirstOrDefault(c => c.DisciplinaId == notaDto.ComponenteCurricularCodigo) ??
                 new FechamentoNota() { FechamentoAlunoId = fechamentoAluno.Id, FechamentoAluno = fechamentoAluno };
 
