@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.ApplicationInsights;
+using SME.SGP.Dados.Interceptors;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,9 @@ namespace SME.SGP.Dados
         
         public static void Init(ServicoTelemetria servicoTelemetriaSgp)
         {
-            servicoTelemetria = servicoTelemetriaSgp;            
+            servicoTelemetria = servicoTelemetriaSgp;
+
+            Dommel.DommelMapper.SetPropertyResolver(new CustomDommelPropertyResolver());
         }
         public static IEnumerable<dynamic> Query(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null, string queryName = "query")
         {
