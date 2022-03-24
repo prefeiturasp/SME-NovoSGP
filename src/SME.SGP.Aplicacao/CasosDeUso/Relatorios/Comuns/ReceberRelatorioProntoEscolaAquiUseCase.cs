@@ -21,8 +21,8 @@ namespace SME.SGP.Aplicacao
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public async  Task<bool> Executar(MensagemRabbit mensagemRabbit)
-        {
+        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
+       {
             var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
             if (relatorioCorrelacao == null)
             {
@@ -32,6 +32,7 @@ namespace SME.SGP.Aplicacao
             unitOfWork.IniciarTransacao();
 
             var mensagem = mensagemRabbit.ObterObjetoMensagem<MensagemRelatorioProntoDto>();
+            bool relatorioEscolaAqui = true;
             var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
             switch (relatorioCorrelacao.TipoRelatorio)
             {
@@ -42,14 +43,17 @@ namespace SME.SGP.Aplicacao
                     await MensagemAutomaticaEscolaAqui(mensagem, urlRedirecionamentoBase, TipoRelatorio.RaaEscolaAqui, TipoRelatorio.RaaEscolaAqui.ShortName());
                     break;
                 default:
+                    relatorioEscolaAqui = false;
                     break;
             }
-
             unitOfWork.PersistirTransacao();
 
-            return await Task.FromResult(true);
-
+            if (relatorioEscolaAqui)
+                return await Task.FromResult(true);
+            else
+                return await Task.FromResult(false);
         }
+
         private async Task MensagemAutomaticaEscolaAqui(MensagemRelatorioProntoDto relatorioPronto, string urlRedirecionamentoBase, TipoRelatorio tipoRelatorio, string nomeRelatorio)
         {
             var parametros = JsonConvert.DeserializeObject<MensagemRelatorioAutomaticoEscolaAquiDto>(relatorioPronto.MensagemDados);
