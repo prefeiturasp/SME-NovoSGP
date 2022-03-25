@@ -41,16 +41,99 @@ namespace SME.SGP.Dados
             return database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAluno>(query, new { turmaId, alunoCodigo });
         }
 
-        public async Task<IEnumerable<ConsolidacaoConselhoClasseAlunoMigracaoDto>> ObterConselhoClasseConsolidadoPorTurmaAsync(long turmaId)
+        public Task<IEnumerable<ConsolidacaoConselhoClasseAlunoMigracaoDto>> ObterFechamentoNotaAlunoOuConselhoClasseAsync(long turmaId)
+        {
+            var query = @"	                        
+                            SELECT DISTINCT *
+                            FROM   (SELECT fn.disciplina_id DisciplinaId,
+                                           fn.nota,
+                                           fn.conceito_id ConceitoId,
+                                           fa.aluno_codigo AlunoCodigo,
+                                           ft.turma_id TurmaId,
+                                           pe.bimestre,
+                                           cca.conselho_classe_parecer_id ParecerConclusivoId,
+                                           cca.criado_em criadoEm,
+                                           cca.criado_por criadoPor,
+                                           cca.criado_rf CriadoRf,
+                                           cca.id ConselhoClasseAlunoId,
+                                           fn.id  AS FechamentoNotaId
+                                    FROM   fechamento_turma ft
+                                           LEFT JOIN periodo_escolar pe
+                                                  ON pe.id = ft.periodo_escolar_id
+                                           INNER JOIN turma t
+                                                   ON t.id = ft.turma_id
+                                           INNER JOIN ue
+                                                   ON ue.id = t.ue_id
+                                           INNER JOIN fechamento_turma_disciplina ftd
+                                                   ON ftd.fechamento_turma_id = ft.id
+                                           INNER JOIN fechamento_aluno fa
+                                                   ON fa.fechamento_turma_disciplina_id = ftd.id
+                                           INNER JOIN fechamento_nota fn
+                                                   ON fn.fechamento_aluno_id = fa.id
+                                           INNER JOIN componente_curricular comp
+                                                   ON comp.id = fn.disciplina_id
+                                           INNER JOIN conselho_classe cc
+                                                   ON cc.fechamento_turma_id = ft.id
+                                           INNER JOIN conselho_classe_aluno cca
+                                                   ON cca.conselho_classe_id = cc.id
+                                                      AND cca.aluno_codigo = fa.aluno_codigo
+                                           LEFT JOIN conselho_classe_nota ccn
+                                                  ON ccn.conselho_classe_aluno_id = cca.id
+                                                     AND ccn.componente_curricular_codigo = fn.disciplina_id
+                                    WHERE  ft.turma_id = @turmaId 
+                                    UNION ALL
+                                    SELECT fn.disciplina_id DisciplinaId,
+                                           fn.nota,
+                                           fn.conceito_id ConceitoId,
+                                           fa.aluno_codigo AlunoCodigo,
+                                           ft.turma_id TurmaId,
+                                           pe.bimestre,
+                                           cca.conselho_classe_parecer_id ParecerConclusivoId,
+                                           cca.criado_em criadoEm,
+                                           cca.criado_por criadoPor,
+                                           cca.criado_rf CriadoRf,
+                                           cca.id ConselhoClasseAlunoId,
+                                           fn.id  AS FechamentoNotaId
+                                    FROM   fechamento_turma ft
+                                           LEFT JOIN periodo_escolar pe
+                                                  ON pe.id = ft.periodo_escolar_id
+                                           INNER JOIN turma t
+                                                   ON t.id = ft.turma_id
+                                           INNER JOIN ue
+                                                   ON ue.id = t.ue_id
+                                           INNER JOIN conselho_classe cc
+                                                   ON cc.fechamento_turma_id = ft.id
+                                           INNER JOIN conselho_classe_aluno cca
+                                                   ON cca.conselho_classe_id = cc.id
+                                           INNER JOIN conselho_classe_nota ccn
+                                                   ON ccn.conselho_classe_aluno_id = cca.id
+                                           INNER JOIN componente_curricular comp
+                                                   ON comp.id = ccn.componente_curricular_codigo
+                                           LEFT JOIN fechamento_turma_disciplina ftd
+                                                  ON ftd.fechamento_turma_id = ft.id
+                                           LEFT JOIN fechamento_aluno fa
+                                                  ON fa.fechamento_turma_disciplina_id = ftd.id
+                                                     AND cca.aluno_codigo = fa.aluno_codigo
+                                           LEFT JOIN fechamento_nota fn
+                                                  ON fn.fechamento_aluno_id = fa.id
+                                                     AND ccn.componente_curricular_codigo = fn.disciplina_id
+                                    WHERE  ft.turma_id = @turmaId) x   
+                                    WHERE x.DisciplinaId is not null";
+
+            return (database.Conexao.QueryAsync<ConsolidacaoConselhoClasseAlunoMigracaoDto>(query, new { turmaId }));
+        }
+
+        public Task<long> ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(long turmaId, string alunoCodigo)
         {
             var query = @"select id as ConsolidacaoId, 
                         turma_id as TurmaId,
                         aluno_codigo as AlunoCodigo
                         from consolidado_conselho_classe_aluno_turma 
                         where not excluido 
-                        and turma_id = @turmaId";
+                        and turma_id = @turmaId 
+                        and aluno_codigo = @alunoCodigo";
 
-            return await database.Conexao.QueryAsync<ConsolidacaoConselhoClasseAlunoMigracaoDto>(query, new { turmaId });
+            return database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, alunoCodigo });
         }
     }
 }

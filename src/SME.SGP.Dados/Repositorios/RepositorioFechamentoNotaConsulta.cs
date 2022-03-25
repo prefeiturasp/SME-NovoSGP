@@ -185,7 +185,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FechamentoNotaAprovacaoDto>(query, new { Ids = Ids.Select(i=>i).ToArray()});
         }
 
-        public async Task<IEnumerable<FechamentoNotaMigracaoDto>> ObterFechamentoNotaAlunoAsync(long turmaId, string alunoCodigo)
+        public async Task<IEnumerable<FechamentoNotaMigracaoDto>> ObterFechamentoNotaAlunoAsync(long turmaId)
         {
             var query = $@"select distinct fn.disciplina_Id DisciplinaId,fn.nota, fn.conceito_id ConceitoId, fa.aluno_codigo as AlunoCodigo, ft.turma_id TurmaId, pe.bimestre
                             from fechamento_nota fn
@@ -194,10 +194,9 @@ namespace SME.SGP.Dados.Repositorios
                             join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
                             join periodo_escolar pe on pe.id = ft.periodo_escolar_id
                             join turma t on t.id = ft.turma_id
-                            where fa.aluno_codigo = @alunoCodigo
-                            and t.id = @turmaId";
+                            where t.id = @turmaId";
 
-            return await database.Conexao.QueryAsync<FechamentoNotaMigracaoDto>(query, new { turmaId, alunoCodigo });
+            return await database.Conexao.QueryAsync<FechamentoNotaMigracaoDto>(query, new { turmaId });
         }
     }
 }

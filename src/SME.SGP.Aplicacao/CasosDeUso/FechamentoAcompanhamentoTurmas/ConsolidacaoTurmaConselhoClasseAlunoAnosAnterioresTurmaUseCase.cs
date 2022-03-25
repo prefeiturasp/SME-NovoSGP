@@ -3,8 +3,8 @@ using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -23,12 +23,15 @@ namespace SME.SGP.Aplicacao
             var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemConsolidarTurmaConselhoClasseAlunoPorTurmaDto>();
 
             try
-            {
-                var alunoConsolidacoes = await repositorio.ObterConselhoClasseConsolidadoPorTurmaAsync(filtro.TurmaId);
+            {                
+                var alunoNotas = await repositorio.ObterFechamentoNotaAlunoOuConselhoClasseAsync(filtro.TurmaId);
 
-                foreach (var alunoConsolidacao in alunoConsolidacoes)
+                var agrupamentoPorAluno = alunoNotas.GroupBy(g => new { g.AlunoCodigo }, (key, group) =>
+                new { key.AlunoCodigo, Result = group.Select(s => s).ToList() });
+
+                foreach (var alunoNota in agrupamentoPorAluno)
                 {
-                    var mensagemPorAluno = new MensagemConsolidarTurmaConselhoClasseAlunoPorAlunoDto(alunoConsolidacao.ConsolidacaoId, alunoConsolidacao.TurmaId, alunoConsolidacao.AlunoCodigo);
+                    var mensagemPorAluno = new MensagemConsolidarTurmaConselhoClasseAlunoPorAlunoDto(alunoNota.AlunoCodigo, filtro.TurmaId, alunoNota.Result);
 
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoTratar, JsonConvert.SerializeObject(mensagemPorAluno), mensagemRabbit.CodigoCorrelacao, null));
                 }

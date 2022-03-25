@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase : AbstractUseCase, IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase
     {
-        private readonly IRepositorioFechamentoNotaConsulta repositorio;
+        private readonly IRepositorioConselhoClasseConsolidado repositorio;
 
-        public ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase(IMediator mediator, IRepositorioFechamentoNotaConsulta repositorioFechamentoNotaConsulta) : base(mediator)
+        public ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase(IMediator mediator, IRepositorioConselhoClasseConsolidado repositorioFechamentoNotaConsulta) : base(mediator)
         {
             this.repositorio = repositorioFechamentoNotaConsulta;
         }
@@ -24,14 +24,34 @@ namespace SME.SGP.Aplicacao
 
             try
             {
-                var alunoNotas = await repositorio.ObterFechamentoNotaAlunoAsync(filtro.TurmaId, filtro.AlunoCodigo);
+                var alunoConsolidacoesPorAluno = await repositorio.ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(filtro.TurmaId, filtro.AlunoCodigo);
 
-                var migracaoConsolidacaoTurmaCommand = new ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresCommand()
+                foreach (var alunoNota in filtro.AlunoNotas)
                 {
-                    ConsolidacaoId = filtro.ConsolidacaoId,
-                    AlunoNotas = alunoNotas,
-                };
-                await mediator.Send(migracaoConsolidacaoTurmaCommand);
+                    if (alunoConsolidacoesPorAluno == 0)
+                    {
+                        var conselhoClasseAlunoTurma = new ConselhoClasseConsolidadoTurmaAluno()
+                        {
+                            AlunoCodigo = filtro.AlunoCodigo,
+                            CriadoEm = alunoNota.CriadoEm,
+                            CriadoPor = alunoNota.CriadoPor,
+                            CriadoRF = alunoNota.CriadoRf,
+                            DataAtualizacao = DateTimeExtension.HorarioBrasilia(),
+                            ParecerConclusivoId = alunoNota.ParecerConclusivoId,
+                            Status = 0,
+                            TurmaId = filtro.TurmaId
+                        };
+                        alunoConsolidacoesPorAluno = await repositorio.SalvarAsync(conselhoClasseAlunoTurma);
+                    }
+
+                    var migracaoConsolidacaoTurmaCommand = new ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresCommand()
+                    {
+                        ConsolidacaoId = alunoConsolidacoesPorAluno,
+                        AlunoNota = alunoNota
+                    };
+                    await mediator.Send(migracaoConsolidacaoTurmaCommand);
+                }
+                
                 return true;
             }
             catch (System.Exception ex)

@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var turma in turmas)
                 {
+                    
                     var mensagemPorTurma = new MensagemConsolidarTurmaConselhoClasseAlunoPorTurmaDto(turma.Id);
 
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaTratar, JsonConvert.SerializeObject(mensagemPorTurma), mensagemRabbit.CodigoCorrelacao, null));

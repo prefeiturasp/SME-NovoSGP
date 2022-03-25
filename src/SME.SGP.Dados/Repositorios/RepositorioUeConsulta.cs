@@ -154,9 +154,10 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<IEnumerable<Turma>> ObterTurmasPorCodigoUe(string ueCodigo, int anoLetivo)
         {
-            var query = @"select t.* from turma t
-                            inner join ue u
-                            on t.ue_id = u.id
+            var query = @"select distinct t.* from turma t
+                            join ue u on t.ue_id = u.id
+                            join fechamento_turma ft on t.id = ft.turma_id 
+                            join conselho_classe cc on cc.fechamento_turma_id = ft.id 
                             where u.ue_id = @ueCodigo 
                                   and ano_letivo = @anoLetivo";
 

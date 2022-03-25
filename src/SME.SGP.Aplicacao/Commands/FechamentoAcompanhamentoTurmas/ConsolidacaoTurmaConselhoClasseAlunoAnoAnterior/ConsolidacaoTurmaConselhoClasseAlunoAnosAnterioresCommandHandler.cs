@@ -26,28 +26,25 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                foreach (var alunoNota in request.AlunoNotas)
+                var consolidadoNota = await repositorioConselhoClasseConsolidadoNota.ObterConselhoClasseConsolidadoAlunoNotaPorConsolidadoBimestreDisciplinaAsync(request.ConsolidacaoId, request.AlunoNota.Bimestre, request.AlunoNota.DisciplinaId);
+                if (consolidadoNota == null)
                 {
-                    var consolidadoNota = await repositorioConselhoClasseConsolidadoNota.ObterConselhoClasseConsolidadoAlunoNotaPorConsolidadoBimestreDisciplinaAsync(request.ConsolidacaoId, alunoNota.Bimestre, alunoNota.DisciplinaId);
-                    if (consolidadoNota == null)
+                    var consolidadoAlunoNota = new ConselhoClasseConsolidadoTurmaAlunoNota()
                     {
-                        var consolidadoAlunoNota = new ConselhoClasseConsolidadoTurmaAlunoNota()
-                        {
-                            Bimestre = alunoNota.Bimestre,
-                            ComponenteCurricularId = alunoNota.DisciplinaId,
-                            ConceitoId = alunoNota.ConceitoId,
-                            Nota = alunoNota.Nota,
-                            ConselhoClasseConsolidadoTurmaAlunoId = request.ConsolidacaoId
-                        };
-                        await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoAlunoNota);
-                    }
+                        Bimestre = request.AlunoNota.Bimestre > 0 ? request.AlunoNota.Bimestre : null,
+                        ComponenteCurricularId = request.AlunoNota.DisciplinaId,
+                        ConceitoId = request.AlunoNota.ConceitoId,
+                        Nota = request.AlunoNota.Nota,
+                        ConselhoClasseConsolidadoTurmaAlunoId = request.ConsolidacaoId
+                    };
+                    await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoAlunoNota);
                 }
 
                 return true;
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o consolidado de conselho de classe aluno turma nota - Aluno Codigo: {request.AlunoNotas.FirstOrDefault().AlunoCodigo} - Consolidado: {request.ConsolidacaoId}", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o consolidado de conselho de classe aluno turma nota - Aluno Codigo: {request.AlunoNota.AlunoCodigo} - Consolidado: {request.ConsolidacaoId}", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
                 return false;
             }
         }

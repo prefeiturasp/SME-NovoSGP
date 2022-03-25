@@ -1,15 +1,17 @@
-﻿namespace SME.SGP.Infra
+﻿using System.Collections.Generic;
+
+namespace SME.SGP.Infra
 {
     public class MensagemConsolidarTurmaConselhoClasseAlunoPorAlunoDto
     {
-        public MensagemConsolidarTurmaConselhoClasseAlunoPorAlunoDto(long consolidacaoId, long turmaId, string alunoCodigo)
+        public MensagemConsolidarTurmaConselhoClasseAlunoPorAlunoDto(string alunoCodigo, long turmaId, IEnumerable<ConsolidacaoConselhoClasseAlunoMigracaoDto> alunoNotas)
         {
-            this.ConsolidacaoId = consolidacaoId;
-            this.TurmaId = turmaId;
             this.AlunoCodigo = alunoCodigo;
+            this.AlunoNotas = alunoNotas;
+            this.TurmaId = turmaId;
         }
 
-        public long ConsolidacaoId { get; set; }
+        public IEnumerable<ConsolidacaoConselhoClasseAlunoMigracaoDto> AlunoNotas { get; set; }
         public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }
     }
