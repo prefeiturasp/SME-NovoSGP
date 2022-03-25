@@ -102,15 +102,19 @@ namespace SME.SGP.Dados.Repositorios
                            and db.componente_curricular_id = @componenteCurricularCodigo
                            and a.data_aula between @periodoInicio and @periodoFim ";
 
-            var resultado = await database.Conexao.QueryAsync<Tuple<long, DateTime>>(query, new
-            {
-                turmaCodigo,
-                componenteCurricularCodigo = componenteCurricularCodigo,
-                periodoInicio,
-                periodoFim
-            });
-
-            return resultado;
+            return await database.Conexao.QueryAsync<long, DateTime, Tuple<long, DateTime>>(
+                query,
+                (id, data) =>
+                {
+                    return new Tuple<long, DateTime>(id, data);
+                },
+                new
+                {
+                    turmaCodigo,
+                    componenteCurricularCodigo = componenteCurricularCodigo,
+                    periodoInicio,
+                    periodoFim
+                }, null, true, splitOn: "*", null, null, "Query Postgres");
         }
 
         public async Task<IEnumerable<DateTime>> ObterDatasPorIds(IEnumerable<long> diariosBordoIds)
