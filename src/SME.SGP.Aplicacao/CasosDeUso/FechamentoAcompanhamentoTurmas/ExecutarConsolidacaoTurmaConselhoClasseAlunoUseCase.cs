@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
             {
                 var consolidadoTurmaAlunoId = await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno);
 
-                var consolidadoNota = await repositorioConselhoClasseConsolidadoNota.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoNotaAsync(consolidadoTurmaAlunoId, filtro.Bimestre);
+                var consolidadoNota = await repositorioConselhoClasseConsolidadoNota.ObterConselhoClasseConsolidadoAlunoNotaPorConsolidadoBimestreAsync(consolidadoTurmaAlunoId, filtro.Bimestre);
                 if (consolidadoNota == null) 
                     consolidadoNota = new ConselhoClasseConsolidadoTurmaAlunoNota() 
                     { 

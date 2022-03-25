@@ -10,6 +10,6 @@ namespace SME.SGP.Dominio
         Task<IEnumerable<ConselhoClasseConsolidadoTurmaAluno>> ObterConselhosClasseConsolidadoPorTurmaBimestreAsync(long turmaId, int situacaoConselhoClasse);
         Task<ConselhoClasseConsolidadoTurmaAluno> ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(long turmaId, string alunoCodigo);        
         
-        Task<IEnumerable<ConsolidacaoConselhoClasseAlunoMigracaoDto>> ObterConselhoClasseConsolidadoPorTurmaAsync(string turmaId);        
+        Task<IEnumerable<ConsolidacaoConselhoClasseAlunoMigracaoDto>> ObterConselhoClasseConsolidadoPorTurmaAsync(long turmaId);        
     }
 }

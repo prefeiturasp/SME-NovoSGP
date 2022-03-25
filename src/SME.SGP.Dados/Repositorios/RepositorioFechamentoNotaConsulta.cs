@@ -187,7 +187,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoNotaMigracaoDto>> ObterFechamentoNotaAlunoAsync(long turmaId, string alunoCodigo)
         {
-            var query = $@"select distinct fn.disciplina_Id,fn.nota, fn.conceito_id, fa.aluno_codigo, ft.turma_id, pe.bimestre
+            var query = $@"select distinct fn.disciplina_Id DisciplinaId,fn.nota, fn.conceito_id ConceitoId, fa.aluno_codigo as AlunoCodigo, ft.turma_id TurmaId, pe.bimestre
                             from fechamento_nota fn
                             join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id
                             join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id

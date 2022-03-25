@@ -152,14 +152,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<Turma>(query.ToString(), new { ueCodigo, modalidade, ano, ehHistorico });
         }
-        public async Task<IEnumerable<Turma>> ObterTurmasPorCodigoUe(string ueCodigo)
+        public async Task<IEnumerable<Turma>> ObterTurmasPorCodigoUe(string ueCodigo, int anoLetivo)
         {
             var query = @"select t.* from turma t
                             inner join ue u
                             on t.ue_id = u.id
-                            where u.ue_id = @ueCodigo";
+                            where u.ue_id = @ueCodigo 
+                                  and ano_letivo = @anoLetivo";
 
-            return await contexto.QueryAsync<Turma>(query, new { ueCodigo });
+            return await contexto.QueryAsync<Turma>(query, new { ueCodigo, anoLetivo });
         }
 
         public Ue ObterUEPorTurma(string turmaId)

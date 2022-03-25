@@ -32,20 +32,16 @@ namespace SME.SGP.Dados
         public Task<ConselhoClasseConsolidadoTurmaAluno> ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(long turmaId, string alunoCodigo)
         {
             var query = $@" select id, dt_atualizacao, status, aluno_codigo, parecer_conclusivo_id, turma_id,   
-                                   criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido
-            var query = $@"select id, dt_atualizacao, status, aluno_codigo, parecer_conclusivo_id, turma_id, bimestre,  
-                            criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido
+                                   criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido           
                             from consolidado_conselho_classe_aluno_turma 
                             where not excluido 
                             and turma_id = @turmaId
                             and aluno_codigo = @alunoCodigo";
 
             return database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAluno>(query, new { turmaId, alunoCodigo });
-        }     
-            return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAluno>(query, new { turmaId, bimestre, alunoCodigo });
         }
 
-        public async Task<IEnumerable<ConsolidacaoConselhoClasseAlunoMigracaoDto>> ObterConselhoClasseConsolidadoPorTurmaAsync(string turmaId)
+        public async Task<IEnumerable<ConsolidacaoConselhoClasseAlunoMigracaoDto>> ObterConselhoClasseConsolidadoPorTurmaAsync(long turmaId)
         {
             var query = @"select id as ConsolidacaoId, 
                         turma_id as TurmaId,
