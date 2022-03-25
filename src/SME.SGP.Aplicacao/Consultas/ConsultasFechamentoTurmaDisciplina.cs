@@ -117,7 +117,13 @@ namespace SME.SGP.Aplicacao
             }
 
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
-            return dadosAlunos.OrderBy(w => w.Nome);
+       
+            var dadosAlunosFiltrados = dadosAlunos.Where(x => x.Situacao.Equals("Ativo") ||
+                                           (!x.Situacao.Equals("Ativo") &&
+                                           x.DataSituacao >= periodosAberto.First().PeriodoInicio &&
+                                           x.DataSituacao <= periodosAberto.Last().PeriodoFim)).OrderBy(w => w.Nome);
+
+            return dadosAlunosFiltrados;
         }
 
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
