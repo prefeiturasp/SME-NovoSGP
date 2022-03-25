@@ -22,16 +22,15 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("boletim")]
-        public async Task<IActionResult> SolicitarBoletimEscolaAqui([FromBody] FiltroRelatorioBoletimEscolaAquiDto filtroRelatorioBoletimDto, [FromServices] IBoletimEscolaAquiUseCase boletimUseCase)
+        public async Task<IActionResult> SolicitarBoletimEscolaAqui([FromBody] FiltroRelatorioEscolaAquiDto filtroRelatorioBoletimDto, [FromServices] IBoletimEscolaAquiUseCase boletimUseCase)
         {
             return Ok(await boletimUseCase.Executar(filtroRelatorioBoletimDto));
         }
 
         [HttpPost("raa")]
-        public async Task<IActionResult> SolicitarRelatrioRaaEscolaAqui([FromBody] FiltroRelatorioAcompanhamentoAprendizagemDto filtro, [FromServices] IRelatorioAcompanhamentoAprendizagemUseCase relatorioUseCase)
+        public async Task<IActionResult> SolicitarRelatrioRaaEscolaAqui([FromBody] FiltroRelatorioEscolaAquiDto filtro, [FromServices] IRelatorioRaaEscolaAquiUseCase useCase)
         {
-            filtro.TipoRelatorio = TipoRelatorio.RaaEscolaAqui;
-            return Ok(await relatorioUseCase.Executar(filtro));
+            return Ok(await useCase.Executar(filtro));
         }
     }
 }

@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
         }
-        public async Task<bool> Executar(FiltroRelatorioBoletimEscolaAquiDto relatorioBoletimEscolaAquiDto)
+        public async Task<bool> Executar(FiltroRelatorioEscolaAquiDto relatorioBoletimEscolaAquiDto)
         {
             int usuarioLogadoId = 1;
             if (repositorioDre.ObterPorCodigo(relatorioBoletimEscolaAquiDto.DreCodigo) == null)
