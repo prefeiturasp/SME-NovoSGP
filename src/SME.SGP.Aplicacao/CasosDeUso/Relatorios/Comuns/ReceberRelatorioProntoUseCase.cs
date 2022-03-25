@@ -52,10 +52,7 @@ namespace SME.SGP.Aplicacao
                 case TipoRelatorio.ConselhoClasseAtaFinal:
                 case TipoRelatorio.Frequencia:
                 case TipoRelatorio.Pendencias:
-                    await MensagemAutomaticaBoletim(mensagem, urlRedirecionamentoBase, TipoRelatorio.BoletimDetalhadoApp, "Boletim");
-                    break;
-                case TipoRelatorio.RaaEscolaAqui:
-                    await MensagemAutomaticaBoletim(mensagem, urlRedirecionamentoBase, TipoRelatorio.RaaEscolaAqui, "RAA");
+                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo, urlRedirecionamentoBase);
                     break;
                 default:
                     await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo, urlRedirecionamentoBase);
@@ -65,14 +62,6 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
 
             return await Task.FromResult(true);
-        }
-
-        private async Task MensagemAutomaticaBoletim(MensagemRelatorioProntoDto relatorioPronto, string urlRedirecionamentoBase, TipoRelatorio tipoRelatorio, string nomeRelatorio)
-        {
-            var parametros = JsonConvert.DeserializeObject<MensagemRelatorioAutomaticoEscolaAquiDto>(relatorioPronto.MensagemDados.ToString());
-
-            await mediator.Send(new InserirComunicadoMensagemAutomaticaCommand(relatorioPronto.MensagemUsuario, relatorioPronto.MensagemTitulo, parametros.AnoLetivo, parametros.TurmaCodigo, parametros.Modalidade,
-                parametros.Semestre, parametros.AlunoCodigo, parametros.CodigoArquivo, urlRedirecionamentoBase, tipoRelatorio, nomeRelatorio));
         }
         private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario, string mensagemTitulo, string urlRedirecionamentoBase)
         {
