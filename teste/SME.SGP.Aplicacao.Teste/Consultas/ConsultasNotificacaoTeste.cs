@@ -1,9 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Contexto;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Consultas
@@ -40,24 +45,51 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         }
 
         [Fact(DisplayName = "ListarNotificacoesBasicaPorAnoLetivoRF")]
-        public void DeveListarNotificacoesBasicaPorAnoLetivoRF()
+        public async Task DeveListarNotificacoesBasicaPorAnoLetivoRF()
         {
-            consultasNotificacao.ListarPorAnoLetivoRf(2019, "1");
-            repositorioNotificacaoConsulta.Verify(r => r.ObterNotificacoesPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()));
+            mediator.Setup(a => a.Send(It.IsAny<ObterNotificacoesPorAnoLetivoERfQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Notificacao>()
+                {
+                    new Notificacao { Id = 1 },
+                });
+
+            var notificacoes = await consultasNotificacao.ListarPorAnoLetivoRf(2019, "1");
+
+            mediator.Verify(r => r.Send(It.IsAny<ObterNotificacoesPorAnoLetivoERfQuery>(), It.IsAny<CancellationToken>()));
+            Assert.True(notificacoes.Any());
+            Assert.True(notificacoes.First().Id == 1);
         }
 
         [Fact(DisplayName = "ObterNotificacaoBasicaListaPorAnoLetivoeRf")]
-        public void DeveObterPlanoAnualResumidoPorAnoLetivoeRf()
+        public async Task ObterNotificacaoBasicaListaPorAnoLetivoeRf()
         {
-            consultasNotificacao.ObterNotificacaoBasicaLista(2019, "1");
-            repositorioNotificacaoConsulta.Verify(r => r.ObterNotificacoesPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()));
+            mediator.Setup(a => a.Send(It.IsAny<ObterNotificacoesPorAnoLetivoERfQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Notificacao>()
+                {
+                    new Notificacao { Id = 1 },
+                });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterNotificacaoQuantNaoLidasPorAnoLetivoRfAnoLetivoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            var notificacoes = await consultasNotificacao.ObterNotificacaoBasicaLista(2019, "1");
+
+            mediator.Verify(r => r.Send(It.IsAny<ObterNotificacoesPorAnoLetivoERfQuery>(), It.IsAny<CancellationToken>()));
+            mediator.Verify(r => r.Send(It.IsAny<ObterNotificacaoQuantNaoLidasPorAnoLetivoRfAnoLetivoQuery>(), It.IsAny<CancellationToken>()));
+            Assert.True(notificacoes.Notificacoes.Any());
+            Assert.True(notificacoes.QuantidadeNaoLidas == 1);
         }
 
         [Fact(DisplayName = "ObterQuantidadeNaoLidasPorAnoERF")]
-        public void DeveObterQuantidadeNotificacoesNoLidasPorAnoERF()
+        public async Task DeveObterQuantidadeNotificacoesNoLidasPorAnoERF()
         {
-            consultasNotificacao.QuantidadeNotificacoesNaoLidas(2019, "1");
-            repositorioNotificacaoConsulta.Verify(r => r.ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>()));
+            mediator.Setup(a => a.Send(It.IsAny<ObterNotificacaoQuantNaoLidasPorAnoLetivoRfAnoLetivoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            var qtd = await consultasNotificacao.QuantidadeNotificacoesNaoLidas(2019, "1");
+
+            mediator.Verify(r => r.Send(It.IsAny<ObterNotificacaoQuantNaoLidasPorAnoLetivoRfAnoLetivoQuery>(), It.IsAny<CancellationToken>()));
+            Assert.True(qtd == 1);
         }
     }
 }

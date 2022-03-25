@@ -344,8 +344,8 @@ namespace SME.SGP.Aplicacao
                     {
                         var valorNota = tipoNota.EhNota() ? nota.Nota : nota.ConceitoId;
 
-                        if (valorNota != null)
-                            notaConceitoTurma.NotaConceito = double.Parse(valorNota);
+                        if (valorNota.HasValue)
+                            notaConceitoTurma.NotaConceito = valorNota;
                     }
                     fechamentoFinalAluno.NotasConceitoFinal.Add(notaConceitoTurma);
                 }
@@ -436,8 +436,8 @@ namespace SME.SGP.Aplicacao
             foreach (var nota in notasBimestrais.Where(a => a.Bimestre.HasValue))
             {
                 var notaParaAdicionar = ehNota ?
-                                            nota?.Nota :
-                                            nota?.ConceitoId;
+                                            nota?.Nota.Value.ToString() :
+                                            nota?.ConceitoId.Value.ToString();
 
                 listaRetorno.Add(new FechamentoNotaAlunoDto(nota.Bimestre.Value,
                                                             notaParaAdicionar,

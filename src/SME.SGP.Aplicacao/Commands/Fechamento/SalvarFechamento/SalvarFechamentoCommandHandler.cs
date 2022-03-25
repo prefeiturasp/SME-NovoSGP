@@ -61,13 +61,15 @@ namespace SME.SGP.Aplicacao
                                                                                                            turma.AnoLetivo, turma.Semestre));
             var ue = turma.Ue;
 
+            var bimestre = fechamentoTurma.EhFinal ? 4 : fechamentoTurma.Bimestre;
+
+            var periodos = await ObterPeriodoEscolarFechamentoReabertura(tipoCalendario, ue, bimestre);
+            periodoEscolar = periodos.periodoEscolar;
+            if (periodoEscolar == null)
+                throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {fechamentoTurma.Bimestre}º Bimestre");
+
             if (!fechamentoTurma.EhFinal)
             {
-                var periodos = await ObterPeriodoEscolarFechamentoReabertura(tipoCalendario, ue, fechamentoTurma.Bimestre);
-                periodoEscolar = periodos.periodoEscolar;
-                if (periodoEscolar == null)
-                    throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {fechamentoTurma.Bimestre}º Bimestre");
-
                 await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turma, periodoEscolar);
 
                 // Valida Permissão do Professor na Turma/Disciplina            

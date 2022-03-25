@@ -172,8 +172,8 @@ namespace SME.SGP.Aplicacao
 
                         string notaParaAdicionar = nota == null ? string.Empty :
                                                 tipoNota.EhNota() ? 
-                                                    nota.Nota : 
-                                                    nota.ConceitoId;
+                                                    nota.Nota.Value.ToString() : 
+                                                    nota.ConceitoId.Value.ToString();
 
                         fechamentoFinalAluno.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                         {
@@ -229,8 +229,8 @@ namespace SME.SGP.Aplicacao
             foreach (var nota in notasBimestrais.Where(a => a.Bimestre.HasValue))
             {
                 var notaParaAdicionar = ehNota ? 
-                                            nota?.Nota : 
-                                            nota?.ConceitoId;
+                                            nota?.Nota.Value.ToString() : 
+                                            nota?.ConceitoId.Value.ToString();
 
                 listaRetorno.Add(new FechamentoNotaAlunoDto(nota.Bimestre.Value,
                                                             notaParaAdicionar,

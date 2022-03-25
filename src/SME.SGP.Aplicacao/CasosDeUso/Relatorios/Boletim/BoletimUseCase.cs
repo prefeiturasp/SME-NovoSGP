@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -11,29 +12,23 @@ namespace SME.SGP.Aplicacao.CasosDeUso
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IRepositorioDreConsulta repositorioDre;
-        private readonly IRepositorioUeConsulta repositorioUe;
-        private readonly IRepositorioTurma repositorioTurma;
 
         public BoletimUseCase(IMediator mediator,
-                              IUnitOfWork unitOfWork,
-                              IRepositorioUeConsulta repositorioUe,
-                              IRepositorioDreConsulta repositorioDre,
-                              IRepositorioTurma repositorioTurma)
+                              IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
         public async Task<bool> Executar(FiltroRelatorioBoletimDto filtroRelatorioBoletimDto)
         {
-            if (repositorioDre.ObterPorCodigo(filtroRelatorioBoletimDto.DreCodigo) == null)
+            bool existeUe = await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioBoletimDto.UeCodigo));
+            bool existeDre = await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtroRelatorioBoletimDto.DreCodigo));
+
+            if (!existeDre)
                 throw new NegocioException("Não foi possível encontrar a DRE");
 
-            if (repositorioUe.ObterPorCodigo(filtroRelatorioBoletimDto.UeCodigo) == null)
+            if (!existeUe)
                 throw new NegocioException("Não foi possível encontrar a UE");
 
             if (!string.IsNullOrEmpty(filtroRelatorioBoletimDto.TurmaCodigo))
@@ -44,7 +39,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 else if (await mediator.Send(new ObterTurmaPorCodigoQuery(filtroRelatorioBoletimDto.TurmaCodigo)) == null)
                     throw new NegocioException("Não foi possível encontrar a turma");
             }
-
 
             unitOfWork.IniciarTransacao();
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());

@@ -1,8 +1,10 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,8 +12,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAEEPorIdUseCase : AbstractUseCase, IObterPlanoAEEPorIdUseCase
     {
-        public ObterPlanoAEEPorIdUseCase(IMediator mediator) : base(mediator)
+        private readonly IServicoEol _servicoEol;
+        public ObterPlanoAEEPorIdUseCase(IMediator mediator,
+            IServicoEol servicoEol) : base(mediator)
+
         {
+            _servicoEol = servicoEol;
         }
 
         public async Task<PlanoAEEDto> Executar(FiltroPesquisaQuestoesPorPlanoAEEIdDto filtro)
@@ -24,18 +30,27 @@ namespace SME.SGP.Aplicacao
             if (filtro.PlanoAEEId.HasValue && filtro.PlanoAEEId > 0)
             {
                 var entidadePlano = await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
-                int anoLetivo = 0;
+                var alunosTurma = await _servicoEol.ObterAlunosPorTurma(entidadePlano.Turma.CodigoTurma);
 
-                if (entidadePlano.AlteradoEm?.Year != null)
-                    anoLetivo = (int)entidadePlano.AlteradoEm?.Year;
+                var codigoSituacaoMatricula = alunosTurma.OrderByDescending(c => c.DataSituacao)
+                    .FirstOrDefault(c => c.CodigoAluno.ToString() == entidadePlano.AlunoCodigo)
+                    .CodigoSituacaoMatricula;
 
-                var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, false));
+                var anoLetivo = entidadePlano.Turma.AnoLetivo;
 
-                if (alunoPorTurmaResposta == null)
+                switch (codigoSituacaoMatricula)
                 {
-                    anoLetivo = entidadePlano.Turma.AnoLetivo;
-                    alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.EhTurmaHistorica, false));
+                    case SituacaoMatriculaAluno.Ativo:
+                    case SituacaoMatriculaAluno.Rematriculado:
+                        {
+                            if (entidadePlano.AlteradoEm?.Year != null)
+                                anoLetivo = (int)entidadePlano.AlteradoEm?.Year;
+    
+                            break;
+                        }
                 }
+
+                var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.EhTurmaHistorica, false));
 
                 if (alunoPorTurmaResposta == null)
                     throw new NegocioException("Aluno não localizado");
