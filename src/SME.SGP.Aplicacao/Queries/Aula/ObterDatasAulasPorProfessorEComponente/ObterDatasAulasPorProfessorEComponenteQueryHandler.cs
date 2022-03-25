@@ -34,6 +34,9 @@ namespace SME.SGP.Aplicacao
 
             var datasAulas = ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo,string.Empty);
 
+            if (datasAulas == null || !datasAulas.Any())
+                return default;
+
             var ids = datasAulas.Select(a => a.IdAula).ToList();
             var aulas = await mediator.Send(new ObterAulasPorIdsQuery(ids));
             
