@@ -10,7 +10,7 @@ pipeline {
     }
   
     agent {
-      node { label 'dotnet-3-rc' }
+      node { label 'dotnet-5-rc' }
     }
 
     options {
@@ -34,13 +34,14 @@ pipeline {
       
         stage('Sonar') {
 	       when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
-         steps {
+	steps {
              withSonarQubeEnv('sonarqube-local'){
-               sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP"'
-               sh 'dotnet build SME.SGP.sln'
+               sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados, **/*SME.SGP.Dominio, **/*SME.SGP.Dominio.Servicos, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api,**/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Worker.Rabbbit"'
+	       sh 'dotnet build SME.SGP.sln'
+               sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
                sh 'dotnet-sonarscanner'
-           }
-         }
+	     }
+	  }
        }
 
         stage('Build') {

@@ -100,7 +100,7 @@ namespace SME.SGP.Dominio.Servicos
                                                 await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota, notaDto.Nota, fechamentoNota.Id));
                                         }
                                         else
-                                        if (fechamentoNota.ConceitoId != notaDto.ConceitoId)
+                                        if (fechamentoNota.ConceitoId != null && fechamentoNota.ConceitoId != notaDto.ConceitoId)
                                             await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, notaDto.ConceitoId, fechamentoNota.Id));
                                     }
 

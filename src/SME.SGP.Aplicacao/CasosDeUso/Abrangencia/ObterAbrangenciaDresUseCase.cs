@@ -18,8 +18,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AbrangenciaDreRetornoDto>> Executar(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "")
         {
-            var login = await mediator.Send(new ObterLoginAtualQuery());
-            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+            var login = await mediator
+                .Send(new ObterLoginAtualQuery());
+
+            var perfil = await mediator
+                .Send(new ObterPerfilAtualQuery());
+
             var filtroEhCodigo = false;
 
             if (!string.IsNullOrWhiteSpace(filtro))
@@ -28,7 +32,8 @@ namespace SME.SGP.Aplicacao
                     filtroEhCodigo = true;
             }
 
-            return await mediator.Send(new ObterAbrangenciaDresQuery(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtro, filtroEhCodigo));
+            return await mediator
+                .Send(new ObterAbrangenciaDresQuery(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtro, filtroEhCodigo));
         }
     }
 }
