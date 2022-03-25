@@ -18,12 +18,16 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(FiltroRelatorioEscolaAquiDto filtro)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioPorIdQuery(1));
-            var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(filtro.TurmaCodigo));
-            filtro.Semestre = DateTimeExtension.Semestre(DateTime.Now);
-            filtro.TurmaId = turmaId;
+            filtro.TurmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(filtro.TurmaCodigo));
+            filtro.Semestre = await ObterSemestreMensagem(filtro.AlunoCodigo);
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RaaEscolaAqui, filtro,
             usuarioLogado, formato: TipoFormatoRelatorio.Html,
             rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRaaEscolaAqui, notificarErroUsuario: true));
+        }
+
+        private async Task<int> ObterSemestreMensagem(string alunoCodigo)
+        {
+            return await mediator.Send(new ObterSemestreAtualRelatorioQuery(alunoCodigo));
         }
     }
 }
