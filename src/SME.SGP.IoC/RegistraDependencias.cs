@@ -1081,6 +1081,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarConsolidacaoTurmaUseCase, ExecutarConsolidacaoTurmaUseCase>();
 
             services.TryAddScoped<IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase, ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase>();
+            services.TryAddScoped<IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUseCase, ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUseCase>();
+            services.TryAddScoped<IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeUseCase, ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeUseCase>();
+            services.TryAddScoped<IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaUseCase, ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaUseCase>();
+            services.TryAddScoped<IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase, ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase>();
 
             services.TryAddScoped<IObterDashboardInformacoesEscolaresPorMatriculaUseCase, ObterDashboardInformacoesEscolaresPorMatriculaUseCase>();
             services.TryAddScoped<IObterDashboardInformacoesEscolaresPorTurmaUseCase, ObterDashboardInformacoesEscolaresPorTurmaUseCase>();
