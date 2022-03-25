@@ -49,13 +49,7 @@ namespace SME.SGP.Aplicacao
 
             unitOfWork.IniciarTransacao();
             var usuarioLogado = repositorioUsuario.ObterPorId(usuarioLogadoId);
-            bool retorno;
-
-            if (relatorioBoletimEscolaAquiDto.Modelo == (int)ModeloBoletim.Detalhado)
-                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhadoApp, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui, notificarErroUsuario: true));
-            else
-                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimEscolaAqui));
-
+            var retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhadoApp, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui, notificarErroUsuario: true));
             unitOfWork.PersistirTransacao();
             return retorno;
         }

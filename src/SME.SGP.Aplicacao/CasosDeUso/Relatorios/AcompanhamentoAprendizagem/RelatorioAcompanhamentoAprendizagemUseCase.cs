@@ -16,9 +16,10 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AcompanhamentoAprendizagem, filtro,
+            return await mediator.Send(new GerarRelatorioCommand(filtro.TipoRelatorio, filtro,
                 usuarioLogado, formato: TipoFormatoRelatorio.Html,
-                rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRelatorioAcompanhamentoAprendizagem));
+                rotaRelatorio: filtro.TipoRelatorio != TipoRelatorio.RaaEscolaAqui ? RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRelatorioAcompanhamentoAprendizagem
+                                                                           : RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRaaEscolaAqui));
         }
     }
 }

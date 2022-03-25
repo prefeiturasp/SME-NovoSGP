@@ -1,11 +1,12 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirComunicadoBoletimEscolaAquiCommand : IRequest<bool>
+    public class InserirComunicadoMensagemAutomaticaCommand : IRequest<bool>
     {
-        public InserirComunicadoBoletimEscolaAquiCommand(string descricao, string titulo, int anoLetivo, string turma, int modalidade, int semestre, string aluno, Guid codigoArquivo, string urlRedirecionamentoBase)
+        public InserirComunicadoMensagemAutomaticaCommand(string descricao, string titulo, int anoLetivo, string turma, int modalidade, int semestre, string aluno, Guid codigoArquivo, string urlRedirecionamentoBase, TipoRelatorio tipoRelatorio, string nomeRelatorio)
         {
             DataEnvio = DateTime.Now;
             DataExpiracao = DateTime.Now;
@@ -19,6 +20,8 @@ namespace SME.SGP.Aplicacao
             Aluno = aluno;
             CodigoArquivo = codigoArquivo;
             UrlRedirecionamentoBase = urlRedirecionamentoBase;
+            TipoRelatorio = tipoRelatorio;
+            NomeRelatorio = nomeRelatorio;
         }
 
         public DateTime DataEnvio { get; set; }
@@ -33,5 +36,7 @@ namespace SME.SGP.Aplicacao
         public string Aluno { get; set; }
         public Guid CodigoArquivo { get; set; }
         public string UrlRedirecionamentoBase { get; set; }
+        public TipoRelatorio TipoRelatorio { get; set; }
+        public string NomeRelatorio { get; set; }
     }
 }
