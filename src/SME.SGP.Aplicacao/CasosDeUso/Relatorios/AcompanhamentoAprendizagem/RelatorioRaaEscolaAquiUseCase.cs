@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -18,6 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioPorIdQuery(1));
             var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(filtro.TurmaCodigo));
+            filtro.Semestre = DateTimeExtension.Semestre(DateTime.Now);
             filtro.TurmaId = turmaId;
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RaaEscolaAqui, filtro,
             usuarioLogado, formato: TipoFormatoRelatorio.Html,

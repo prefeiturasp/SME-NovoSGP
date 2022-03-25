@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
                     <p>O Relatório de Acompnhamento da Aprendizagem(RAA) do {semestre}° semestre do criança {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
                     <p>OBSERVA&Ccedil;&Atilde;O: O Download deve ser realizado em at&eacute; 24 horas, ap&oacute;s&nbsp; este prazo o arquivo ser&aacute; 
                     exclu&iacute;do e caso necessite voc&ecirc; dever&aacute solicitar novamente.</p>
-                    <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/pdf/Boletim.pdf/{CodigoArquivo.ToString()}' target='_blank'>RAA {semestre}° semestre</a></strong></p>";
+                    <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/pdf/RAA.pdf/{CodigoArquivo.ToString()}' target='_blank'>RAA {semestre}° Semestre</a></strong></p>";
 
             switch (tipoRelatorio)
             {
