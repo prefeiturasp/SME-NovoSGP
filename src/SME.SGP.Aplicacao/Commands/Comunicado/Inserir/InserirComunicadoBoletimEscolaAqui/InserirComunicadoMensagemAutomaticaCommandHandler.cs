@@ -41,12 +41,12 @@ namespace SME.SGP.Aplicacao
 
                 await mediator.Send(new CriarNotificacaoEscolaAquiCommand(comunicado));
                 unitOfWork.PersistirTransacao();
-                return true;
+                return await Task.FromResult(true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 unitOfWork.Rollback();
-                throw;
+                return await Task.FromResult(false);
             }
             throw new NotImplementedException();
         }
@@ -94,12 +94,11 @@ namespace SME.SGP.Aplicacao
         private static string MensagemRelatorioBoletim(string urlNotificacao, int anoLetivo, Guid CodigoArquivo,
             string nomeAluno)
         {
-            string mensagemBoletim = $@"<h3><strong>Boletim {anoLetivo} dispon&iacute;vel para download</strong></h3>
+            return $@"<h3><strong>Boletim {anoLetivo} dispon&iacute;vel para download</strong></h3>
                     <p>O boletim do ano de {anoLetivo} do estudante {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
                     <p>OBSERVA&Ccedil;&Atilde;O: O Download deve ser realizado em at&eacute; 24 horas, ap&oacute;s&nbsp; este prazo o arquivo ser&aacute; 
                     exclu&iacute;do e caso necessite voc&ecirc; dever solicitar um novo PDF de boletim.</p>
                     <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/pdf/Boletim.pdf/{CodigoArquivo.ToString()}' target='_blank'>Boletim {anoLetivo}</a></strong></p>";
-            return mensagemBoletim;
         }
         private static string MensagemRelatorioRaa(string urlNotificacao, Guid CodigoArquivo, string nomeAluno, int semestre)
         {
