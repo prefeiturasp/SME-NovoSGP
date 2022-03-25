@@ -45,18 +45,17 @@ namespace SME.SGP.Dados
         {
             var query = @"	                        
                             SELECT DISTINCT *
-                            FROM   (SELECT fn.disciplina_id DisciplinaId,
-                                           fn.nota,
-                                           fn.conceito_id ConceitoId,
-                                           fa.aluno_codigo AlunoCodigo,
+                            FROM   (SELECT fa.aluno_codigo AlunoCodigo,
                                            ft.turma_id TurmaId,
+			                               fn.disciplina_id DisciplinaId,
+                                           coalesce(ccn.nota,fn.nota) Nota,
+                                           coalesce(ccn.conceito_id,fn.conceito_id) as ConceitoId,               
                                            pe.bimestre,
                                            cca.conselho_classe_parecer_id ParecerConclusivoId,
-                                           cca.criado_em criadoEm,
-                                           cca.criado_por criadoPor,
-                                           cca.criado_rf CriadoRf,
-                                           cca.id ConselhoClasseAlunoId,
-                                           fn.id  AS FechamentoNotaId
+                                           coalesce(ccn.criado_em,fn.criado_em,cca.criado_em) criadoEm, 
+                                           coalesce(ccn.criado_por,fn.criado_por,cca.criado_por) CriadoPor,  
+                                           coalesce(ccn.criado_rf,fn.criado_rf,cca.criado_rf) CriadoRf,  
+                                           cca.id ConselhoClasseAlunoId
                                     FROM   fechamento_turma ft
                                            LEFT JOIN periodo_escolar pe
                                                   ON pe.id = ft.periodo_escolar_id
@@ -82,18 +81,17 @@ namespace SME.SGP.Dados
                                                      AND ccn.componente_curricular_codigo = fn.disciplina_id
                                     WHERE  ft.turma_id = @turmaId 
                                     UNION ALL
-                                    SELECT fn.disciplina_id DisciplinaId,
-                                           fn.nota,
-                                           fn.conceito_id ConceitoId,
-                                           fa.aluno_codigo AlunoCodigo,
-                                           ft.turma_id TurmaId,
-                                           pe.bimestre,
-                                           cca.conselho_classe_parecer_id ParecerConclusivoId,
-                                           cca.criado_em criadoEm,
-                                           cca.criado_por criadoPor,
-                                           cca.criado_rf CriadoRf,
-                                           cca.id ConselhoClasseAlunoId,
-                                           fn.id  AS FechamentoNotaId
+                                    SELECT fa.aluno_codigo AlunoCodigo,
+                                            ft.turma_id TurmaId,
+		                                    fn.disciplina_id DisciplinaId,
+                                            coalesce(ccn.nota,fn.nota) Nota,
+                                            coalesce(ccn.conceito_id,fn.conceito_id) as ConceitoId,               
+                                            pe.bimestre,
+                                            cca.conselho_classe_parecer_id ParecerConclusivoId,
+                                            coalesce(ccn.criado_em,fn.criado_em,cca.criado_em) criadoEm,               
+                                            coalesce(ccn.criado_por,fn.criado_por,cca.criado_por) CriadoPor,  
+                                            coalesce(ccn.criado_rf,fn.criado_rf,cca.criado_rf) CriadoRf,                 
+                                            cca.id ConselhoClasseAlunoId
                                     FROM   fechamento_turma ft
                                            LEFT JOIN periodo_escolar pe
                                                   ON pe.id = ft.periodo_escolar_id
@@ -118,7 +116,8 @@ namespace SME.SGP.Dados
                                                   ON fn.fechamento_aluno_id = fa.id
                                                      AND ccn.componente_curricular_codigo = fn.disciplina_id
                                     WHERE  ft.turma_id = @turmaId) x   
-                                    WHERE x.DisciplinaId is not null";
+                                    WHERE x.DisciplinaId is not null
+                                    ORDER BY AlunoCodigo asc ,bimestre asc ,criadoEm desc";
 
             return (database.Conexao.QueryAsync<ConsolidacaoConselhoClasseAlunoMigracaoDto>(query, new { turmaId }));
         }

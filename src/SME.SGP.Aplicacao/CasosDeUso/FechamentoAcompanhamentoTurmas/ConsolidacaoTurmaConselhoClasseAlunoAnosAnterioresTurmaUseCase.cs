@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,7 +32,9 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var alunoNota in agrupamentoPorAluno)
                 {
-                    var mensagemPorAluno = new MensagemConsolidarTurmaConselhoClasseAlunoPorAlunoDto(alunoNota.AlunoCodigo, filtro.TurmaId, alunoNota.Result);
+                    var parecerConclusivo = RetornarParecerConclusivo(alunoNota.Result);
+
+                    var mensagemPorAluno = new MensagemConsolidarTurmaConselhoClasseAlunoPorAlunoDto(alunoNota.AlunoCodigo, filtro.TurmaId, alunoNota.Result, parecerConclusivo);
 
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoTratar, JsonConvert.SerializeObject(mensagemPorAluno), mensagemRabbit.CodigoCorrelacao, null));
                 }
@@ -42,6 +45,12 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível executar a consolidacao turma conselho classe aluno anos anteriores por turma.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
                 return false;
             }
+        }
+
+        private long? RetornarParecerConclusivo(List<ConsolidacaoConselhoClasseAlunoMigracaoDto> alunoNotas)
+        {
+            var alunoNota = alunoNotas.FirstOrDefault(f => f.ParecerConclusivoId is not null && f.ParecerConclusivoId > 0);
+            return alunoNota?.ParecerConclusivoId;
         }
     }
 }

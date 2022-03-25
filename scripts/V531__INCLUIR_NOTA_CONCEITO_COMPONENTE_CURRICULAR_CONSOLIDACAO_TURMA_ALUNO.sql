@@ -1,10 +1,12 @@
+DROP TABLE IF EXISTS public.consolidado_conselho_classe_aluno_turma_nota;
+
 CREATE TABLE IF NOT EXISTS public.consolidado_conselho_classe_aluno_turma_nota (
 id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 consolidado_conselho_classe_aluno_turma_id int8 NOT NULL,
 bimestre int4 NULL,
 nota numeric(11, 2) NULL,
 conceito_id int8 NULL,
-componente_curricular_id int8 NULL,
+componente_curricular_id int8 NOT NULL,
 CONSTRAINT consolidado_conselho_classe_aluno_turma_nota_pk PRIMARY KEY (id)
 );
 

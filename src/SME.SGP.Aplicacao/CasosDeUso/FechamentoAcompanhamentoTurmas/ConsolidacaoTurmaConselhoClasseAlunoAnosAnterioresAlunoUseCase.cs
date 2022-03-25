@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -37,7 +38,7 @@ namespace SME.SGP.Aplicacao
                             CriadoPor = alunoNota.CriadoPor,
                             CriadoRF = alunoNota.CriadoRf,
                             DataAtualizacao = DateTimeExtension.HorarioBrasilia(),
-                            ParecerConclusivoId = alunoNota.ParecerConclusivoId,
+                            ParecerConclusivoId = filtro.ParecerConclusivo,
                             Status = 0,
                             TurmaId = filtro.TurmaId
                         };
