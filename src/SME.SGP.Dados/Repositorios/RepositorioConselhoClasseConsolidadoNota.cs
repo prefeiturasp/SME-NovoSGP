@@ -25,6 +25,17 @@ namespace SME.SGP.Dados
             return database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAlunoNota>(query, new { consolidadoTurmaAlunoId, bimestre, componenteCurricularId });
         }
 
+        public Task<ConselhoClasseConsolidadoTurmaAlunoNota> ObterConselhoClasseConsolidadoAlunoNotaPorConsolidadoBimestreDisciplinaAsync(long consolidacaoId, int bimestre, long disciplinaId)
+        {
+            var query = $@" select id,consolidado_conselho_classe_aluno_turma_id,bimestre,nota,conceito_id,componente_curricular_id    
+                            from consolidado_conselho_classe_aluno_turma_nota
+                            where consolidado_conselho_classe_aluno_turma_id = @consolidacaoId 
+                                  {(bimestre == 0 ? " and bimestre is null " : " and bimestre = @bimestre")} 
+                                  and componente_curricular_id = @disciplinaId";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAlunoNota>(query, new { consolidacaoId, bimestre, disciplinaId });
+        }
+
         public async Task<long> SalvarAsync(ConselhoClasseConsolidadoTurmaAlunoNota consolidadoNota)
         {
             try
