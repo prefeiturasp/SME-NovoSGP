@@ -260,7 +260,7 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAlunoPorTurmaEComponente(aluno.CodigoAluno, turma.CodigoTurma, filtros.DisciplinaCodigo.ToString());
 
-            var percentualFrequencia = frequenciaAluno?.PercentualFrequencia ?? 100;
+            var percentualFrequencia = frequenciaAluno?.PercentualFrequencia ?? 0;
 
             if (frequenciaAluno != null && turma.AnoLetivo.Equals(2020))
                 percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
