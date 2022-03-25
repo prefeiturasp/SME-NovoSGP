@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
         }
         private void MapearParaEntidade(InserirComunicadoMensagemAutomaticaCommand request, Comunicado comunicado, string nomeAluno, TipoRelatorio tipoRelatorio, string nomeRelatorio)
         {
-            var mensagem = FormatarMensagem(request.UrlRedirecionamentoBase, request.AnoLetivo, request.CodigoArquivo, nomeAluno,tipoRelatorio, request.Semestre);
+            var mensagem = FormatarMensagem(request.UrlRedirecionamentoBase, request.AnoLetivo, request.CodigoArquivo, nomeAluno, tipoRelatorio, request.Semestre);
             comunicado.DataEnvio = request.DataEnvio;
             comunicado.DataExpiracao = request.DataExpiracao;
             comunicado.Descricao = mensagem;
@@ -81,27 +81,35 @@ namespace SME.SGP.Aplicacao
         }
         private string FormatarMensagem(string urlNotificacao, int anoLetivo, Guid CodigoArquivo, string nomeAluno, TipoRelatorio tipoRelatorio, int semestre)
         {
+            switch (tipoRelatorio)
+            {
+                case TipoRelatorio.BoletimDetalhadoApp:
+                    return MensagemRelatorioBoletim(urlNotificacao, anoLetivo, CodigoArquivo, nomeAluno);
+                case TipoRelatorio.RaaEscolaAqui:
+                    return MensagemRelatorioRaa(urlNotificacao, CodigoArquivo, nomeAluno, semestre);
+                default:
+                    return string.Empty;
+            }
+        }
+        private static string MensagemRelatorioBoletim(string urlNotificacao, int anoLetivo, Guid CodigoArquivo,
+            string nomeAluno)
+        {
             string mensagemBoletim = $@"<h3><strong>Boletim {anoLetivo} dispon&iacute;vel para download</strong></h3>
                     <p>O boletim do ano de {anoLetivo} do estudante {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
                     <p>OBSERVA&Ccedil;&Atilde;O: O Download deve ser realizado em at&eacute; 24 horas, ap&oacute;s&nbsp; este prazo o arquivo ser&aacute; 
                     exclu&iacute;do e caso necessite voc&ecirc; dever solicitar um novo PDF de boletim.</p>
                     <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/pdf/Boletim.pdf/{CodigoArquivo.ToString()}' target='_blank'>Boletim {anoLetivo}</a></strong></p>";
-
-            string mensagemRaa = $@"<h3><strong>RAA dispon&iacute;vel para download</strong></h3>
+            return mensagemBoletim;
+        }
+        private static string MensagemRelatorioRaa(string urlNotificacao, Guid CodigoArquivo, string nomeAluno, int semestre)
+        {
+            return $@"<h3><strong>RAA dispon&iacute;vel para download</strong></h3>
                     <p>O Relatório de Acompnhamento da Aprendizagem(RAA) do {semestre}° semestre do criança {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
                     <p>OBSERVA&Ccedil;&Atilde;O: O Download deve ser realizado em at&eacute; 24 horas, ap&oacute;s&nbsp; este prazo o arquivo ser&aacute; 
                     exclu&iacute;do e caso necessite voc&ecirc; dever&aacute solicitar novamente.</p>
                     <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/pdf/RAA.pdf/{CodigoArquivo.ToString()}' target='_blank'>RAA {semestre}° Semestre</a></strong></p>";
-
-            switch (tipoRelatorio)
-            {
-                case TipoRelatorio.BoletimDetalhadoApp:
-                    return mensagemBoletim;
-                case TipoRelatorio.RaaEscolaAqui:
-                    return mensagemRaa;
-                default:
-                    return string.Empty;
-            }
         }
+
     }
 }
+

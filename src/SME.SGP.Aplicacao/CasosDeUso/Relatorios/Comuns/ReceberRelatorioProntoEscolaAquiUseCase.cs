@@ -36,10 +36,10 @@ namespace SME.SGP.Aplicacao
             switch (relatorioCorrelacao.TipoRelatorio)
             {
                 case TipoRelatorio.BoletimDetalhadoApp:
-                    await MensagemAutomaticaBoletim(mensagem, urlRedirecionamentoBase, TipoRelatorio.BoletimDetalhadoApp, "Boletim");
+                    await MensagemAutomaticaEscolaAqui(mensagem, urlRedirecionamentoBase, TipoRelatorio.BoletimDetalhadoApp, TipoRelatorio.BoletimDetalhadoApp.ShortName());
                     break;
                 case TipoRelatorio.RaaEscolaAqui:
-                    await MensagemAutomaticaBoletim(mensagem, urlRedirecionamentoBase, TipoRelatorio.RaaEscolaAqui, "RAA");
+                    await MensagemAutomaticaEscolaAqui(mensagem, urlRedirecionamentoBase, TipoRelatorio.RaaEscolaAqui, TipoRelatorio.RaaEscolaAqui.ShortName());
                     break;
                 default:
                     break;
@@ -50,9 +50,9 @@ namespace SME.SGP.Aplicacao
             return await Task.FromResult(true);
 
         }
-        private async Task MensagemAutomaticaBoletim(MensagemRelatorioProntoDto relatorioPronto, string urlRedirecionamentoBase, TipoRelatorio tipoRelatorio, string nomeRelatorio)
+        private async Task MensagemAutomaticaEscolaAqui(MensagemRelatorioProntoDto relatorioPronto, string urlRedirecionamentoBase, TipoRelatorio tipoRelatorio, string nomeRelatorio)
         {
-            var parametros = JsonConvert.DeserializeObject<MensagemRelatorioAutomaticoEscolaAquiDto>(relatorioPronto.MensagemDados.ToString());
+            var parametros = JsonConvert.DeserializeObject<MensagemRelatorioAutomaticoEscolaAquiDto>(relatorioPronto.MensagemDados);
 
             await mediator.Send(new InserirComunicadoMensagemAutomaticaCommand(relatorioPronto.MensagemUsuario, relatorioPronto.MensagemTitulo, parametros.AnoLetivo, parametros.TurmaCodigo, parametros.Modalidade,
                 parametros.Semestre, parametros.AlunoCodigo, parametros.CodigoArquivo, urlRedirecionamentoBase, tipoRelatorio, nomeRelatorio));
