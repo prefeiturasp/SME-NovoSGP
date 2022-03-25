@@ -507,6 +507,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IImpressaoConselhoClasseAlunoUseCase, ImpressaoConselhoClasseAlunoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseTurmaUseCase, ImpressaoConselhoClasseTurmaUseCase>();
             services.TryAddScoped<IReceberRelatorioProntoUseCase, ReceberRelatorioProntoUseCase>();
+            services.TryAddScoped<IReceberRelatorioProntoEscolaAquiUseCase, ReceberRelatorioProntoEscolaAquiUseCase>();
             services.TryAddScoped<IBoletimUseCase, BoletimUseCase>();
             services.TryAddScoped<IBoletimEscolaAquiUseCase, BoletimEscolaAquiUseCase>();
             services.TryAddScoped<IObterListaAlunosDaTurmaUseCase, ObterListaAlunosDaTurmaUseCase>();
@@ -1067,6 +1068,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDataConsolidacaoFrequenciaUseCase, ObterDataConsolidacaoFrequenciaUseCase>();
             services.TryAddScoped<IObterModalidadesPorUeUseCase, ObterModalidadesPorUeUseCase>();
             services.TryAddScoped<IRelatorioAcompanhamentoAprendizagemUseCase, RelatorioAcompanhamentoAprendizagemUseCase>();
+            services.TryAddScoped<IRelatorioRaaEscolaAquiUseCase, RelatorioRaaEscolaAquiUseCase>();
 
             services.TryAddScoped<IRelatorioRegistroIndividualUseCase, RelatorioRegistroIndividualUseCase>();
             services.TryAddScoped<IObterTurmasFechamentoAcompanhamentoUseCase, ObterTurmasFechamentoAcompanhamentoUseCase>();
