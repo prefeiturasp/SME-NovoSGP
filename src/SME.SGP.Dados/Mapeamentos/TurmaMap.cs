@@ -29,6 +29,13 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.DataInicio).ToColumn("data_inicio");
             Map(c => c.DataFim).ToColumn("dt_fim_eol");
             Map(c => c.EtapaEJA).ToColumn("etapa_eja");
+            Map(c => c.EhTurmaFund1).Ignore();
+            Map(c => c.EhTurmaFund2).Ignore();
+            Map(c => c.EhTurmaEnsinoMedio).Ignore();
+            Map(c => c.EhTurmaInfantil).Ignore();
+            Map(c => c.EhTurmaHistorica).Ignore();
+            Map(c => c.TurnoParaComponentesCurriculares).Ignore();
+            Map(c => c.AnoTurmaInteiro).Ignore();
         }
     }
 }

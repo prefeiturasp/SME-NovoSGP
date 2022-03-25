@@ -152,7 +152,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task Reprocessar(long fechamentoTurmaDisciplinaId, Usuario usuario = null)
         {
             var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorIdQuery(fechamentoTurmaDisciplinaId));
-                
+
             if (fechamentoTurmaDisciplina == null)
                 throw new NegocioException("Fechamento ainda não realizado para essa turma.");
 
@@ -219,7 +219,7 @@ namespace SME.SGP.Dominio.Servicos
             // Valida Permissão do Professor na Turma/Disciplina            
             if (!turmaFechamento.EhTurmaEdFisicaOuItinerario() && !usuarioLogado.EhGestorEscolar() && !usuarioLogado.EhPerfilSME() && !usuarioLogado.EhPerfilDRE())
                 await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim, periodos.periodoFechamento, entidadeDto.DisciplinaId.ToString(), usuarioLogado);
-            
+
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
 
             DisciplinaDto disciplinaEOL = await consultasDisciplina.ObterDisciplina(fechamentoTurmaDisciplina.DisciplinaId);
@@ -267,7 +267,8 @@ namespace SME.SGP.Dominio.Servicos
                         if (id > 0 && acimaDiasPermitidosAlteracao && notaAlunoAlterada != null && !alunosComNotaAlterada.Contains(fechamentoAluno.AlunoCodigo))
                         {
                             var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == fechamentoAluno.AlunoCodigo);
-                            alunosComNotaAlterada += $"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>";
+                            if (aluno != null)
+                                alunosComNotaAlterada += $"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>";
                         }
                     }
                 }
@@ -467,7 +468,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 fechamento = repositorioFechamentoTurmaDisciplina.ObterPorId(id);
                 fechamento.FechamentoTurma = repositorioFechamentoTurmaConsulta.ObterPorId(fechamento.FechamentoTurmaId);
-            }                
+            }
 
             fechamento.AtualizarSituacao(SituacaoFechamento.EmProcessamento);
             fechamento.DisciplinaId = fechamentoDto.DisciplinaId;
@@ -511,7 +512,7 @@ namespace SME.SGP.Dominio.Servicos
             return tipoEvento;
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula, PeriodoDto periodoFechamento,string disciplinaId, Usuario usuario = null)
+        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula, PeriodoDto periodoFechamento, string disciplinaId, Usuario usuario = null)
         {
             if (usuario == null)
                 usuario = await servicoUsuario.ObterUsuarioLogado();
