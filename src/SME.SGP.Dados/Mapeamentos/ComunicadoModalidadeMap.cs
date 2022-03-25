@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("comunicado_modalidade");
             Map(c => c.ComunicadoId).ToColumn("comunicado_id");
             Map(c => c.Modalidade).ToColumn("modalidade");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
         }
     }
 }
