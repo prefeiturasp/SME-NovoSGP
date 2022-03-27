@@ -78,12 +78,9 @@ namespace SME.SGP.Aplicacao
                 usuarioLogado.Login,
                 usuarioLogado.PerfilAtual);
             var componentes = await mediator.Send(obterComponentesQuery);
-            var naoPodeCriarAulaTurma = componentes == null || !componentes.Any() 
-                || componentes.Any(c => 
-                (!c.TerritorioSaber && c.Codigo != aulaRecorrente.ComponenteCurricularId) 
-                || ( c.TerritorioSaber && c.CodigoComponenteTerritorioSaber != aulaRecorrente.ComponenteCurricularId ));
+            var podeCriarAulaTurma = PodeCadastarAulaNaTurma(componentes, aulaRecorrente);                
 
-            if (naoPodeCriarAulaTurma)
+            if (!podeCriarAulaTurma)
             {
                 throw new NegocioException(MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA);
             }
@@ -96,6 +93,25 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MSG_NAO_PODE_ALTERAR_NESTA_TURMA);
 
             return atribuicao;
+        }
+
+        private static bool PodeCadastarAulaNaTurma(IEnumerable<ComponenteCurricularEol> componentes, InserirAulaRecorrenteCommand aulaRecorrente)
+        {
+            if (componentes == null || !componentes.Any())
+                return false;
+
+            var componente = componentes.FirstOrDefault(c => c.Codigo == aulaRecorrente.ComponenteCurricularId);
+
+            if(componente == null)
+                componente = componentes.FirstOrDefault(c => c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId);
+
+            if (componente == null) return false;
+
+            if (!componente.TerritorioSaber && (componente.Codigo != aulaRecorrente.ComponenteCurricularId)
+                || componente.TerritorioSaber && (componente.CodigoComponenteTerritorioSaber != aulaRecorrente.ComponenteCurricularId))
+                return false;
+
+            return true;
         }
 
         private async Task ValidaComponentesQuandoCj(InserirAulaRecorrenteCommand aulaRecorrente,
