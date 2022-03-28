@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao
             return atribuicao;
         }
 
-        private static bool PodeCadastarAulaNaTurma(IEnumerable<ComponenteCurricularEol> componentes, InserirAulaRecorrenteCommand aulaRecorrente)
+        private bool PodeCadastarAulaNaTurma(IEnumerable<ComponenteCurricularEol> componentes, InserirAulaRecorrenteCommand aulaRecorrente)
         {
             if (componentes == null || !componentes.Any())
                 return false;
