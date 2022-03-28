@@ -49,9 +49,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var aluno = new AlunoPorTurmaResposta
             {
                 CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
-                DataMatricula = DateTime.Parse("2022-01-01"),
+                DataMatricula = DateTime.Parse("2022-01-19"),
                 DataAtualizacaoContato = DateTime.Parse("2022-01-01"),
-                DataSituacao = DateTime.Parse("2022-01-19"),
+                DataSituacao = DateTime.Parse("2022-12-15"),
             };
 
             var naoExibirAlunoFrequencia = aluno.DeveMostrarNaChamada(DateTime.Parse("2022-01-18"), DateTime.Parse("2021-12-31"));
