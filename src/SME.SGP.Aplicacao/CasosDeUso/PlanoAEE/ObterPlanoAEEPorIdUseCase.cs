@@ -1,10 +1,8 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,40 +10,41 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAEEPorIdUseCase : AbstractUseCase, IObterPlanoAEEPorIdUseCase
     {
-        private readonly IServicoEol _servicoEol;
-        public ObterPlanoAEEPorIdUseCase(IMediator mediator,
-            IServicoEol servicoEol) : base(mediator)
-
+        public ObterPlanoAEEPorIdUseCase(IMediator mediator) : base(mediator)
         {
-            _servicoEol = servicoEol;
         }
 
         public async Task<PlanoAEEDto> Executar(FiltroPesquisaQuestoesPorPlanoAEEIdDto filtro)
         {
             var plano = new PlanoAEEDto();
-            var respostasPlano = Enumerable.Empty<RespostaQuestaoDto>();
 
             PlanoAEEVersaoDto ultimaVersao = null;
 
             if (filtro.PlanoAEEId.HasValue && filtro.PlanoAEEId > 0)
             {
                 var entidadePlano = await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
-                var alunosTurma = await _servicoEol.ObterAlunosPorTurma(entidadePlano.Turma.CodigoTurma);
+                var alunosTurma = await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(entidadePlano.AlunoCodigo)));
 
-                var codigoSituacaoMatricula = alunosTurma.OrderByDescending(c => c.DataSituacao)
-                    .FirstOrDefault(c => c.CodigoAluno.ToString() == entidadePlano.AlunoCodigo)
-                    .CodigoSituacaoMatricula;
+                if (alunosTurma == null || !alunosTurma.Any())
+                    throw new NegocioException("Não foi possível obter os alunos no eol");
+
+                var alunoTurma = alunosTurma.FirstOrDefault(c => c.CodigoAluno.ToString() == entidadePlano.AlunoCodigo);
+
+                if (alunoTurma == null)
+                    throw new NegocioException("Aluno não encontrado.");
+
+                var codigoSituacaoMatricula = alunoTurma.CodigoSituacaoMatricula;
 
                 var anoLetivo = entidadePlano.Turma.AnoLetivo;
 
                 switch (codigoSituacaoMatricula)
                 {
-                    case SituacaoMatriculaAluno.Ativo:
-                    case SituacaoMatriculaAluno.Rematriculado:
+                    case (int)SituacaoMatriculaAluno.Ativo:
+                    case (int)SituacaoMatriculaAluno.Rematriculado:
                         {
                             if (entidadePlano.AlteradoEm?.Year != null)
                                 anoLetivo = (int)entidadePlano.AlteradoEm?.Year;
-    
+
                             break;
                         }
                 }
@@ -55,6 +54,8 @@ namespace SME.SGP.Aplicacao
                 if (alunoPorTurmaResposta == null)
                     throw new NegocioException("Aluno não localizado");
 
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(alunoPorTurmaResposta.CodigoTurma.ToString()));
+
                 var aluno = new AlunoReduzidoDto()
                 {
                     Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
@@ -63,12 +64,12 @@ namespace SME.SGP.Aplicacao
                     DataSituacao = alunoPorTurmaResposta.DataSituacao,
                     CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
                     Situacao = alunoPorTurmaResposta.SituacaoMatricula,
-                    TurmaEscola = await OberterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma.ToString()),
+                    TurmaEscola = ObterNomeTurmaFormatado(turma),
                     NomeResponsavel = alunoPorTurmaResposta.NomeResponsavel,
                     TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel,
                     CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
                     DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato,
-                    EhAtendidoAEE = entidadePlano.Situacao != SituacaoPlanoAEE.Encerrado && entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamento
+                    EhAtendidoAEE = entidadePlano.Situacao != SituacaoPlanoAEE.Encerrado && entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente
                 };
 
                 plano.Id = filtro.PlanoAEEId.Value;
@@ -78,7 +79,6 @@ namespace SME.SGP.Aplicacao
                 plano.Situacao = entidadePlano.Situacao;
                 plano.SituacaoDescricao = entidadePlano.Situacao.Name();
 
-                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(alunoPorTurmaResposta.CodigoTurma.ToString()));
                 var ue = await mediator.Send(new ObterUeComDrePorIdQuery(turma.UeId));
 
                 plano.Turma = new TurmaAnoDto()
@@ -108,15 +108,9 @@ namespace SME.SGP.Aplicacao
             return plano;
         }
 
-        private async Task<string> OberterNomeTurmaFormatado(string turmaId)
+        private string ObterNomeTurmaFormatado(Turma turma)
         {
-            var turmaNome = "";
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
-
-            if (turma != null)
-                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
-
-            return turmaNome;
+            return turma != null ? turma.NomeComModalidade() : string.Empty;
         }
 
         private async Task<bool> PodeDevolverPlanoAEE(bool situacaoPodeDevolverPlanoAEE)
@@ -126,13 +120,7 @@ namespace SME.SGP.Aplicacao
             if (usuario == null)
                 throw new NegocioException("Usuário não localizado");
 
-            if (usuario.EhPerfilProfessor())
-                return false;
-
-            if (!situacaoPodeDevolverPlanoAEE)
-                return false;
-
-            return true;
+            return usuario.EhPerfilProfessor() || !situacaoPodeDevolverPlanoAEE ? false : true;
         }
     }
 }
