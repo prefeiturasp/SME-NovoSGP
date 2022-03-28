@@ -28,12 +28,11 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select t.id as TurmaId
                             , t.ano_letivo as AnoLetivo
                             , count(a.id) filter (where db.id is not null) as QuantidadePreenchidos
-                            , count(a.id) filter (where db.id is null) as QuantidadePendentes
+                            , count(a.id) filter (where db.id is null and a.data_aula < NOW()) as QuantidadePendentes
                           from aula a
                           left join diario_bordo db on db.aula_id = a.id and not db.excluido 
                          inner join turma t on t.turma_id = a.turma_id 
                          where not a.excluido 
-                           and a.data_aula < NOW()
                            and t.ue_id = @ueId
                            and t.ano_letivo = @anoLetivo
                         group by t.id, t.ano_letivo";
