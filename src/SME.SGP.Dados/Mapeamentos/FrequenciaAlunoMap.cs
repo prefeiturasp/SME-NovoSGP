@@ -21,8 +21,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.TotalRemotos).ToColumn("total_remotos");
             Map(c => c.TotalPresencas).ToColumn("total_presencas");
             Map(c => c.TotalCompensacoes).ToColumn("total_compensacoes");
-            Map(c => c.TurmaId).ToColumn("turma_id");
-            Map(c => c.PercentualFrequenciaFinal).Ignore();
+            Map(c => c.TurmaId).ToColumn("turma_id"); 
         }
     }
 }
