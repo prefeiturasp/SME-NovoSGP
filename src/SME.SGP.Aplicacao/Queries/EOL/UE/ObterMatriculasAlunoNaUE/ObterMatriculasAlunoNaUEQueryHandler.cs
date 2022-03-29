@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterMatriculasAlunoNaUEQueryHandler : IRequestHandler<ObterMatriculasAlunoNaUEQuery, IEnumerable<AlunosPorUeDto>>
+    public class ObterMatriculasAlunoNaUEQueryHandler : IRequestHandler<ObterMatriculasAlunoNaUEQuery, IEnumerable<AlunoPorUeDto>>
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
@@ -17,16 +17,16 @@ namespace SME.SGP.Aplicacao
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async System.Threading.Tasks.Task<IEnumerable<AlunosPorUeDto>> Handle(ObterMatriculasAlunoNaUEQuery request, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<IEnumerable<AlunoPorUeDto>> Handle(ObterMatriculasAlunoNaUEQuery request, CancellationToken cancellationToken)
         {
-            var alunos = new List<AlunosPorUeDto>();
+            var alunos = new List<AlunoPorUeDto>();
             var httpClient = _httpClientFactory.CreateClient("servicoEOL");
             var resposta = await httpClient.GetAsync($"escolas/{request.UeCodigo}/aluno/{request.AlunoCodigo}/matriculas");
 
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                alunos = JsonConvert.DeserializeObject<List<AlunosPorUeDto>>(json);
+                alunos = JsonConvert.DeserializeObject<List<AlunoPorUeDto>>(json);
             }
 
             return alunos;
