@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao
             {
                 Id = aula.Id,
                 DisciplinaId = aula.DisciplinaId,
-                DisciplinaCompartilhadaId = aula.DisciplinaCompartilhadaId,
+                DisciplinaCompartilhadaId = aula.DisciplinaCompartilhadaId??"0",
                 TurmaId = aula.TurmaId,
                 UeId = aula.UeId,
                 TipoCalendarioId = aula.TipoCalendarioId,
