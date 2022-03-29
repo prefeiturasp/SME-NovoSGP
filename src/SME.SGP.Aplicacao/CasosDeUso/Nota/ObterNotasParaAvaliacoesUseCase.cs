@@ -336,8 +336,7 @@ namespace SME.SGP.Aplicacao
                                                    "";
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }
-
-            IEnumerable<DisciplinaDto> disciplinas;            
+            
             var disciplinasNaoRegencia = Enumerable.Empty<DisciplinaDto>();
 
             if (!componenteReferencia.Regencia)
@@ -359,12 +358,24 @@ namespace SME.SGP.Aplicacao
 
                 avaliacaoDoBimestre.EhInterdisciplinar = avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar);
 
-                disciplinas = componenteReferencia.Regencia 
-                    ? disciplinasRegencia.Select(s => new DisciplinaDto() { Nome = s.Nome }) 
-                    : disciplinasNaoRegencia;
-
-                var nomesDisciplinas = disciplinas?.Select(d => d.Nome).ToArray();
-                avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
+                if (componenteReferencia.Regencia)
+                {
+                    var atividadeDisciplinas = await ObterDisciplinasAtividadeAvaliativa(avaliacao.Id, avaliacao.EhRegencia);
+                    var idsDisciplinas = atividadeDisciplinas?.Select(a => long.Parse(a.DisciplinaId)).ToArray();
+                    IEnumerable<DisciplinaDto> disciplinas;
+                    if (idsDisciplinas != null && idsDisciplinas.Any())
+                        disciplinas = await ObterDisciplinasPorIds(idsDisciplinas);
+                    else
+                    {
+                        disciplinas = await consultasDisciplina
+                            .ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(componenteReferencia.CodigoComponenteCurricular,
+                                                                                            turmaCompleta.CodigoTurma,
+                                                                                            turmaCompleta.TipoTurma == TipoTurma.Programa,
+                                                                                            componenteReferencia.Regencia);
+                    }
+                    var nomesDisciplinas = disciplinas?.Select(d => d.Nome).ToArray();
+                    avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
+                }
 
                 bimestreParaAdicionar.Avaliacoes.Add(avaliacaoDoBimestre);
 
