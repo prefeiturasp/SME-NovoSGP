@@ -47,7 +47,7 @@ namespace SME.SGP.Dados
                             SELECT DISTINCT *
                             FROM   (SELECT fa.aluno_codigo AlunoCodigo,
                                            ft.turma_id TurmaId,
-			                               coalesce(fn.disciplina_id, comp.id) DisciplinaId,
+			                               comp.id DisciplinaId,
                                            coalesce(ccn.nota,fn.nota) Nota,
                                            coalesce(ccn.conceito_id,fn.conceito_id) as ConceitoId,               
                                            pe.bimestre,
@@ -83,7 +83,7 @@ namespace SME.SGP.Dados
                                     UNION ALL
                                     SELECT fa.aluno_codigo AlunoCodigo,
                                             ft.turma_id TurmaId,
-		                                    coalesce(fn.disciplina_id, comp.id) DisciplinaId,
+		                                    comp.id DisciplinaId,
                                             coalesce(ccn.nota,fn.nota) Nota,
                                             coalesce(ccn.conceito_id,fn.conceito_id) as ConceitoId,               
                                             pe.bimestre,
