@@ -10,9 +10,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
         }
 
-        public async Task<SituacaoEncaminhamentoPorEstudanteDto> Executar(string codigoAluno)
+        public async Task<SituacaoEncaminhamentoPorEstudanteDto> Executar(FiltroEncaminhamentoAeeDto filtroEncaminhamentoAee)
         {
-            return await mediator.Send(new ObterSituacaoEncaminhamentoAEEPorEstudanteQuery(codigoAluno));
+            return await mediator.Send(new ObterSituacaoEncaminhamentoAEEPorEstudanteQuery(filtroEncaminhamentoAee.EstudanteCodigo,
+                filtroEncaminhamentoAee.UeCodigo));
         }
     }
 }
