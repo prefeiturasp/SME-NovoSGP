@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("raa")]
-        public async Task<IActionResult> SolicitarRelatrioRaaEscolaAqui([FromBody] FiltroRelatorioEscolaAquiDto filtro,[FromServices] IRelatorioRaaEscolaAquiUseCase useCase)
+        public async Task<IActionResult> SolicitarRelatrioRaaEscolaAqui([FromBody] FiltroRelatorioEscolaAquiDto filtro, [FromServices] IRelatorioRaaEscolaAquiUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
         }

@@ -49,7 +49,6 @@ namespace SME.SGP.Aplicacao
 
             unitOfWork.IniciarTransacao();
             var usuarioLogado = repositorioUsuario.ObterPorId(usuarioLogadoId);
-
             var retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhadoApp, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui, notificarErroUsuario: true));
             unitOfWork.PersistirTransacao();
             return retorno;
