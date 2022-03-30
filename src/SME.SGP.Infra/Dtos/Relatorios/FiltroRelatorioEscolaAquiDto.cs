@@ -12,7 +12,6 @@ namespace SME.SGP.Infra
         public int Semestre { get; set; }
 
         public string TurmaCodigo { get; set; }
-        public long? TurmaId { get; set; }
 
         public int AnoLetivo { get; set; }
 
