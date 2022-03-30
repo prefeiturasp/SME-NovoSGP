@@ -62,7 +62,6 @@ namespace SME.SGP.Aplicacao
 
             return await Task.FromResult(true);
         }
-
         private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario, string mensagemTitulo, string urlRedirecionamentoBase)
         {
             await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase, mensagemUsuario, mensagemTitulo));

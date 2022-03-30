@@ -122,11 +122,11 @@ namespace SME.SGP.Aplicacao
 
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, ultimoPeriodoEscolar, turma, filtros.DisciplinaCodigo.ToString(), retorno.EventoData);
             var alunosValidosOrdenados = alunosDaTurma
-                .Where(a => a.NumeroAlunoChamada > 0 || 
+                .Where(a => a.NumeroAlunoChamada > 0 ||
                             a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
                             a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido))
                 .OrderBy(a => a.NumeroAlunoChamada)
-                .ThenBy(a => a.NomeValido());            
+                .ThenBy(a => a.NomeValido());
 
             foreach (var aluno in alunosValidosOrdenados)
             {
@@ -148,10 +148,11 @@ namespace SME.SGP.Aplicacao
                         foreach (var disciplinaParaAdicionar in disciplinas)
                         {
                             //BIMESTRE / NOTA / DISCIPLINA ID / ALUNO CODIGO
-                            var nota = notasFechamentosBimestres.FirstOrDefault(a => a.Bimestre == periodo.Bimestre 
-                                                                                && a.DisciplinaId == disciplinaParaAdicionar.CodigoComponenteCurricular 
+                            var nota = notasFechamentosBimestres?.FirstOrDefault(a => a.Bimestre == periodo.Bimestre
+                                                                                && a.DisciplinaId == disciplinaParaAdicionar.CodigoComponenteCurricular
                                                                                 && a.AlunoCodigo == aluno.CodigoAluno);
                             var notaParaAdicionar = nota?.NotaConceito ?? "";
+
 
                             fechamentoFinalAluno.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                             {
@@ -159,21 +160,21 @@ namespace SME.SGP.Aplicacao
                                 Disciplina = disciplinaParaAdicionar.Nome,
                                 DisciplinaCodigo = disciplinaParaAdicionar.CodigoComponenteCurricular,
                                 NotaConceito = notaParaAdicionar,
-                                
+
                             });
+
                         }
                     }
 
                     foreach (var disciplina in disciplinas)
                     {
                         var codigoComponenteCurricular = disciplina.CodigoComponenteCurricular;
-                        var nota = notasFechamentosFinais.FirstOrDefault(a => a.ComponenteCurricularId == codigoComponenteCurricular
+                        var nota = notasFechamentosFinais?.FirstOrDefault(a => a.ComponenteCurricularId == codigoComponenteCurricular
                                                                         && a.AlunoCodigo == aluno.CodigoAluno);
 
                         string notaParaAdicionar = nota == null ? string.Empty :
-                                                tipoNota.EhNota() ? 
-                                                    nota.Nota.Value.ToString() : 
-                                                    nota.ConceitoId.Value.ToString();
+                                                   tipoNota.EhNota() ? nota.Nota.HasValue ? nota.Nota.Value.ToString() : ""
+                                                                     : nota.ConceitoId.HasValue ? nota.ConceitoId.Value.ToString() : "";
 
                         fechamentoFinalAluno.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                         {
@@ -182,8 +183,10 @@ namespace SME.SGP.Aplicacao
                             NotaConceito = notaParaAdicionar,
                             EmAprovacao = nota?.EmAprovacao ?? false
                         });
+
                     }
                 }
+
 
                 fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
                 fechamentoFinalAluno.Codigo = aluno.CodigoAluno;
@@ -221,16 +224,16 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolares, bool ehNota)
         {
             var listaRetorno = new List<FechamentoNotaAlunoDto>();
-            var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { disciplinaCodigo });
+            var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { disciplinaCodigo }, -1);
             var fechamentosIds = fechamentosTurmaDisciplina?.Select(a => a.Id).ToArray() ?? new long[] { };
             var notasBimestrais = await repositorioFechamentoNota.ObterPorFechamentosTurma(fechamentosIds);
 
             //BIMESTRE / NOTA / DISCIPLINA ID / ALUNO CODIGO
             foreach (var nota in notasBimestrais.Where(a => a.Bimestre.HasValue))
             {
-                var notaParaAdicionar = ehNota ? 
-                                            nota?.Nota.Value.ToString() : 
-                                            nota?.ConceitoId.Value.ToString();
+                var notaParaAdicionar = ehNota ?
+                                            nota?.Nota.ToString() :
+                                            nota?.ConceitoId.ToString();
 
                 listaRetorno.Add(new FechamentoNotaAlunoDto(nota.Bimestre.Value,
                                                             notaParaAdicionar,

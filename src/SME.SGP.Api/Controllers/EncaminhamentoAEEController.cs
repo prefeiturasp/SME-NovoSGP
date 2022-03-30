@@ -86,17 +86,10 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.AEE_I, Policy = "Bearer")]
         public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
         {
-            try
-            {
-                if (file.Length > 0)
-                    return Ok(await useCase.Executar(file, Dominio.TipoArquivo.EncaminhamentoAEE));
+            if (file.Length > 0)
+                return Ok(await useCase.Executar(file, Dominio.TipoArquivo.EncaminhamentoAEE));
 
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            return BadRequest();
         }
 
         [HttpGet]
@@ -139,7 +132,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> EncerrarEncaminhamento([FromBody] EncarramentoEncaminhamentoDto parametros, [FromServices] IEncerrarEncaminhamentoAEEUseCase useCase)
+        public async Task<IActionResult> EncerrarEncaminhamento([FromBody] EncerramentoEncaminhamentoDto parametros, [FromServices] IEncerrarEncaminhamentoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento));
         }
@@ -162,23 +155,25 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.RfResponsavel));
         }
 
-        [HttpGet("estudante/{codigoEstudante}/pode-cadastrar")]
+        [HttpGet("estudante/pode-cadastrar")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterEncaminhamento(string codigoEstudante, [FromServices] IVerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase useCase)
+        public async Task<IActionResult> ObterEncaminhamento([FromQuery] FiltroEncaminhamentoAeeDto filtroEncaminhamentoAee,
+            [FromServices] IVerificaPodeCadastrarEncaminhamentoAEEParaEstudanteUseCase useCase)
         {
-            return Ok(await useCase.Executar(codigoEstudante));
+            return Ok(await useCase.Executar(filtroEncaminhamentoAee));
         }
 
         [HttpGet]
-        [Route("estudante/{codigoEstudante}/situacao")]
+        [Route("estudante/situacao")]
         [ProducesResponseType(typeof(SituacaoEncaminhamentoPorEstudanteDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSituacaoEncaminhamentoPorEstudante(string codigoEstudante, [FromServices] IObterSituacaoEncaminhamentoPorEstudanteUseCase useCase)
+        public async Task<IActionResult> ObterSituacaoEncaminhamentoPorEstudante([FromQuery] FiltroEncaminhamentoAeeDto filtroEncaminhamentoAee,
+            [FromServices] IObterSituacaoEncaminhamentoPorEstudanteUseCase useCase)
         {
-            return Ok(await useCase.Executar(codigoEstudante));
+            return Ok(await useCase.Executar(filtroEncaminhamentoAee));
         }
 
         [HttpPost("remover-responsavel/{encaminhamentoId}")]
@@ -199,7 +194,6 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
-
 
         [HttpPost("concluir/{encaminhamentoId}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]

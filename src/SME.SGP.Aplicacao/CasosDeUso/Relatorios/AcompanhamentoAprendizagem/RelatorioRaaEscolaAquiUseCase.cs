@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -21,7 +22,7 @@ namespace SME.SGP.Aplicacao
             filtro.Semestre = await ObterSemestreMensagem(filtro.AlunoCodigo);
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RaaEscolaAqui, filtro,
             usuarioLogado, formato: TipoFormatoRelatorio.Html,
-            rotaRelatorio:  RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRaaEscolaAqui, notificarErroUsuario: true));
+            rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosRaaEscolaAqui, notificarErroUsuario: true));
         }
 
         private async Task<int> ObterSemestreMensagem(string alunoCodigo)
