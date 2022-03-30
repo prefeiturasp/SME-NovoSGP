@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Polly;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 using System;
 using System.Linq;
@@ -18,11 +19,12 @@ namespace SME.SGP.Aplicacao
     public class CriarNotificacaoEscolaAquiCommandHandler : IRequestHandler<CriarNotificacaoEscolaAquiCommand, bool>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly IConfiguration configuration;
-        public CriarNotificacaoEscolaAquiCommandHandler(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        private readonly IMediator mediator;
+
+        public CriarNotificacaoEscolaAquiCommandHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration)); ;
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(CriarNotificacaoEscolaAquiCommand request, CancellationToken cancellationToken)

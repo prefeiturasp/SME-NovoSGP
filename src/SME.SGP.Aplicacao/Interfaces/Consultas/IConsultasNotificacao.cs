@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         IEnumerable<EnumeradoRetornoDto> ObterCategorias();
 
-        NotificacaoBasicaListaDto ObterNotificacaoBasicaLista(int anoLetivo, string usuarioRf);
+        Task<NotificacaoBasicaListaDto> ObterNotificacaoBasicaLista(int anoLetivo, string usuarioRf);
 
         IEnumerable<EnumeradoRetornoDto> ObterStatus();
 

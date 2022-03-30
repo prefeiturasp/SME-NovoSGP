@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
 
                 var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(aula.TurmaId, turma.TipoTurma == TipoTurma.Programa);
                 
-                if (!disciplinas.Any(d => d.CodigoComponenteCurricular == long.Parse(aula.DisciplinaId)))
+                if (disciplinas.Any(d => d.CodigoComponenteCurricular == long.Parse(aula.DisciplinaId)))
                     return true;
             }
 
@@ -117,7 +117,10 @@ namespace SME.SGP.Aplicacao
                 SomenteLeitura = !usuarioAcessoAoComponente || !temPeriodoAberto,
                 EmManutencao = aulaEmManutencao,
                 PodeEditar = (usuarioLogado.EhProfessorCj() && aula.AulaCJ)
-                          || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPoed() || usuarioLogado.EhProfessorPosl()))
+                          || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar()))
+                          || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPoed()
+                          || usuarioLogado.EhProfessorPosl()))
+                          || (usuarioLogado.EhProfessorPap() && aula.EhPAP)
             };
 
             return dto;

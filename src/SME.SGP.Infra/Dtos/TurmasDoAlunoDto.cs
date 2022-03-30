@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Infra
 {
@@ -23,6 +24,6 @@ namespace SME.SGP.Infra
         public string ObterNomeComNumeroChamada()
         {
             return $"{NumeroAlunoChamada} - {ObterNomeFinalAluno()}";
-        }
+        }        
     }
 }

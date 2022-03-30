@@ -34,11 +34,12 @@ namespace SME.SGP.Aplicacao
 
             var datasAulas = ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo,string.Empty);
 
-            var aulas = new List<Aula>();
-            foreach (var item in datasAulas)
-                aulas.Add(await mediator.Send(new ObterAulaPorIdQuery(item.IdAula)));
-            
+            if (datasAulas == null || !datasAulas.Any())
+                return default;
 
+            var ids = datasAulas.Select(a => a.IdAula).ToList();
+            var aulas = await mediator.Send(new ObterAulasPorIdsQuery(ids));
+            
             var aulasPermitidas = new List<long>();
             bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(turma.AnoLetivo);
 
