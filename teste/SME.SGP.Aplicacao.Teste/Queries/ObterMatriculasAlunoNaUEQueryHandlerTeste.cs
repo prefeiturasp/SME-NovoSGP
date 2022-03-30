@@ -16,33 +16,19 @@ namespace SME.SGP.Aplicacao.Teste.Queries
 {
     public class ObterMatriculasAlunoNaUEQueryHandlerTeste
     {
+        private readonly Mock<IHttpClientFactory> _httpClientFactory;
+        private readonly ObterMatriculasAlunoNaUEQueryHandler _obterMatriculasAlunoNaUEQueryHandler;
+
+        public ObterMatriculasAlunoNaUEQueryHandlerTeste()
+        {
+            _httpClientFactory = new Mock<IHttpClientFactory>();
+            _obterMatriculasAlunoNaUEQueryHandler = new ObterMatriculasAlunoNaUEQueryHandler(_httpClientFactory.Object);
+        }
+
         [Fact]
-        public async Task Deve_Obter_Matriculas_Aluno_Na_Ue()
+        public async Task Deve_Obter_Mstriculas_Aluno_Na_Ue()
         {
             //-> Arrange
-            var httpClient = new HttpClient(new HttpMessageHandlerMock());
-            var resposta = await httpClient.GetAsync("https://api.eol.com.br/somefakeurl");
-
-            //-> Act
-            var alunos = new List<AlunoPorUeDto>();
-
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                alunos = JsonConvert.DeserializeObject<List<AlunoPorUeDto>>(json);
-            }
-
-            //-> Assert
-            Assert.True(alunos.Any(), "Existe matricula aluno.");
-        }
-    }
-
-    public class HttpMessageHandlerMock : HttpMessageHandler
-    {
-        private readonly List<AlunoPorUeDto> _matriculasAlunoUe;
-
-        public HttpMessageHandlerMock()
-        {
             var alunoPorUe = new AlunoPorUeDto()
             {
                 CodigoAluno = "4824410",
@@ -56,19 +42,49 @@ namespace SME.SGP.Aplicacao.Teste.Queries
                 AnoLetivo = 2022
             };
 
-            _matriculasAlunoUe = new List<AlunoPorUeDto>()
+            var _matriculasAlunoUe = new List<AlunoPorUeDto>()
             {
                 alunoPorUe
             };
+
+            var json = new StringContent(JsonConvert.SerializeObject(_matriculasAlunoUe), Encoding.UTF8, "application/json");
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (request, cancellationToken) =>
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = json
+                };
+
+                return await Task.FromResult(response);
+            }))
+            {
+                BaseAddress = new Uri("https://api.eol.com.br/somefakeurl")
+            };
+
+            _httpClientFactory.Setup(c => c.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+            //-> Act
+            var retorno = await _obterMatriculasAlunoNaUEQueryHandler.Handle(new ObterMatriculasAlunoNaUEQuery("094668", "4824410"), new CancellationToken());
+
+            //-> Assert
+            Assert.True(retorno.Any(), "Existe encaminhamento AEE vigente.");
+        }
+    }
+
+    public class HttpMessageHandlerStub : HttpMessageHandler
+    {
+        private readonly Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _sendAsync;
+
+        public HttpMessageHandlerStub(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> sendAsync)
+        {
+            _sendAsync = sendAsync;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new HttpResponseMessage()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonConvert.SerializeObject(_matriculasAlunoUe), Encoding.UTF8, "application/json")
-            });
+            return await _sendAsync(request, cancellationToken);
         }
     }
 }
