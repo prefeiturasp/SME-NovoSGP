@@ -121,10 +121,10 @@ namespace SME.SGP.Aplicacao
 
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
        
-            var dadosAlunosFiltrados = dadosAlunos.Where(x => x.Situacao.Equals("Ativo") ||
-                                           (!x.Situacao.Equals("Ativo") &&
-                                           x.DataSituacao >= periodosAberto.First().PeriodoInicio &&
-                                           x.DataSituacao <= periodosAberto.Last().PeriodoFim)).OrderBy(w => w.Nome);
+            var dadosAlunosFiltrados = dadosAlunos.Where(x => !x.EstaInativo() ||
+                                           (x.EstaInativo() &&
+                                           x.DataSituacao.Date >= periodosAberto.First().PeriodoInicio.Date &&
+                                           x.DataSituacao.Date <= periodosAberto.Last().PeriodoFim.Date)).OrderBy(w => w.Nome);
 
             return dadosAlunosFiltrados;
         }
