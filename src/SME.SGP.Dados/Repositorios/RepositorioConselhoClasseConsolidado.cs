@@ -47,7 +47,7 @@ namespace SME.SGP.Dados
                             SELECT DISTINCT *
                             FROM   (SELECT fa.aluno_codigo AlunoCodigo,
                                            ft.turma_id TurmaId,
-			                               fn.disciplina_id DisciplinaId,
+			                               coalesce(fn.disciplina_id, comp.id) DisciplinaId,
                                            coalesce(ccn.nota,fn.nota) Nota,
                                            coalesce(ccn.conceito_id,fn.conceito_id) as ConceitoId,               
                                            pe.bimestre,
@@ -83,7 +83,7 @@ namespace SME.SGP.Dados
                                     UNION ALL
                                     SELECT fa.aluno_codigo AlunoCodigo,
                                             ft.turma_id TurmaId,
-		                                    fn.disciplina_id DisciplinaId,
+		                                    coalesce(fn.disciplina_id, comp.id) DisciplinaId,
                                             coalesce(ccn.nota,fn.nota) Nota,
                                             coalesce(ccn.conceito_id,fn.conceito_id) as ConceitoId,               
                                             pe.bimestre,
@@ -115,8 +115,7 @@ namespace SME.SGP.Dados
                                            LEFT JOIN fechamento_nota fn
                                                   ON fn.fechamento_aluno_id = fa.id
                                                      AND ccn.componente_curricular_codigo = fn.disciplina_id
-                                    WHERE  ft.turma_id = @turmaId) x   
-                                    WHERE x.DisciplinaId is not null
+                                    WHERE  ft.turma_id = @turmaId) x  
                                     ORDER BY AlunoCodigo asc ,bimestre asc ,criadoEm desc";
 
             return (database.Conexao.QueryAsync<ConsolidacaoConselhoClasseAlunoMigracaoDto>(query, new { turmaId }));
