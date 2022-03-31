@@ -16,6 +16,7 @@ CREATE TABLE public.pendencia_diario_bordo (
 CREATE INDEX pendencia_diario_bordo_aula_idx ON public.pendencia_diario_bordo USING btree (aula_id);
 CREATE INDEX pendencia_diario_bordo_pendencia_idx ON public.pendencia_diario_bordo USING btree (pendencia_id);
 CREATE INDEX pendencia_diario_bordo_componente_idx ON public.pendencia_diario_bordo USING btree (componente_curricular_id);
+CREATE INDEX pendencia_diario_bordo_professor_idx ON public.pendencia_diario_bordo USING btree (professor_rf);
 
 ALTER TABLE public.pendencia_diario_bordo ADD CONSTRAINT pendencia_diario_bordo_pendencia_fk FOREIGN KEY (pendencia_id) REFERENCES public.pendencia(id);
 ALTER TABLE public.pendencia_diario_bordo ADD constraint pendencia_diario_bordo_aula_fk FOREIGN KEY (aula_id) REFERENCES public.aula(id);

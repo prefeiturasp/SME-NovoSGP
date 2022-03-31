@@ -13,7 +13,6 @@ namespace SME.SGP.Dados
         public PendenciaDiarioBordoMap()
         {
             ToTable("pendencia_diario_bordo");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.AulaId).ToColumn("aula_id");
             Map(c => c.PendenciaId).ToColumn("pendencia_id");
             Map(c => c.ComponenteId).ToColumn("componente_curricular_id");
