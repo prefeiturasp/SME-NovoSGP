@@ -3,7 +3,7 @@ using System;
 
 namespace SME.SGP.Infra
 {
-    public class AlunosPorUeDto
+    public class AlunoPorUeDto
     {
         private string _nomeAluno;
 
