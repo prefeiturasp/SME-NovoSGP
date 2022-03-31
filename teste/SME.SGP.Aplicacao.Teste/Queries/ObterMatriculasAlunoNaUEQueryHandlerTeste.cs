@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             var retorno = await _obterMatriculasAlunoNaUEQueryHandler.Handle(new ObterMatriculasAlunoNaUEQuery("094668", "4824410"), new CancellationToken());
 
             //-> Assert
-            Assert.True(retorno.Any(), "Existe encaminhamento AEE vigente.");
+            Assert.True(retorno.Any(), "Falha ao consultar matriculas do aluno no EOL.");
         }
     }
 
