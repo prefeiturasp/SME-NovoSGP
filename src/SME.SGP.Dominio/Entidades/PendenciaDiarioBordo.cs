@@ -12,8 +12,8 @@ namespace SME.SGP.Dominio
         public Pendencia Pendencia { get; set; }
         public long AulaId { get; set; }
         public Aula Aula{ get; set; }
-        public long DiarioBordoId { get; set; }
-        public DiarioBordo DiarioBordo { get; set; }
+        public long ComponenteId { get; set; }
+        public ComponenteCurricular ComponenteCurricular { get; set; }
         public string ProfessorRf { get; set; }
     }
 }
