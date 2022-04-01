@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         {
             var comunicado = new Comunicado();
             var aluno = await ObterNomeAluno(request.Aluno, request.AnoLetivo);
-            MapearParaEntidade(request, comunicado, aluno.Nome,request.TipoRelatorio,request.NomeRelatorio);
+            MapearParaEntidade(request, comunicado, aluno.Nome, request.TipoRelatorio, request.NomeRelatorio);
             try
             {
                 unitOfWork.IniciarTransacao();
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             comunicado.AdicionarTurma(request.Turma);
             comunicado.AdicionarAluno(request.Aluno);
         }
-        private string FormatarMensagem(string urlNotificacao, int anoLetivo, Guid CodigoArquivo, string nomeAluno, TipoRelatorio tipoRelatorio,int semestre)
+        private string FormatarMensagem(string urlNotificacao, int anoLetivo, Guid CodigoArquivo, string nomeAluno, TipoRelatorio tipoRelatorio, int semestre)
         {
             switch (tipoRelatorio)
             {
@@ -90,7 +90,6 @@ namespace SME.SGP.Aplicacao
                     return string.Empty;
             }
         }
-
         private static string MensagemRelatorioBoletim(string urlNotificacao, int anoLetivo, Guid CodigoArquivo,
             string nomeAluno)
         {
@@ -100,14 +99,14 @@ namespace SME.SGP.Aplicacao
                     exclu&iacute;do e caso necessite voc&ecirc; dever solicitar um novo PDF de boletim.</p>
                     <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/pdf/Boletim.pdf/{CodigoArquivo.ToString()}' target='_blank'>Boletim {anoLetivo}</a></strong></p>";
         }
-
         private static string MensagemRelatorioRaa(string urlNotificacao, Guid CodigoArquivo, string nomeAluno, int semestre)
         {
-            return  $@"<h3><strong>RAA dispon&iacute;vel para download</strong></h3>
-                    <p>O Relatório de Acompnhamento da Aprendizagem(RAA) do {semestre}° semestre do criança {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
+            return $@"<p>O Relatório de Acompanhamento da Aprendizagem(RAA) do {semestre}° semestre do criança {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
                     <p>OBSERVA&Ccedil;&Atilde;O: O Download deve ser realizado em at&eacute; 24 horas, ap&oacute;s&nbsp; este prazo o arquivo ser&aacute; 
                     exclu&iacute;do e caso necessite voc&ecirc; dever&aacute solicitar novamente.</p>
-                    <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/html/RAA.html/{CodigoArquivo.ToString()}' target='_blank'>RAA {semestre}° Semestre</a></strong></p>";
+                    <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/html/RAA/{CodigoArquivo.ToString()}' target='_blank'>RAA {semestre}° Semestre</a></strong></p>";
         }
+
     }
 }
+

@@ -38,6 +38,5 @@ namespace SME.SGP.Aplicacao
         public string UrlRedirecionamentoBase { get; set; }
         public TipoRelatorio TipoRelatorio { get; set; }
         public string NomeRelatorio { get; set; }
-
     }
 }

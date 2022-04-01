@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
                     TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel,
                     CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
                     DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato,
-                    EhAtendidoAEE = entidadePlano.Situacao != SituacaoPlanoAEE.Encerrado && entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamento
+                    EhAtendidoAEE = entidadePlano.Situacao != SituacaoPlanoAEE.Encerrado && entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente
                 };
 
                 plano.Id = filtro.PlanoAEEId.Value;

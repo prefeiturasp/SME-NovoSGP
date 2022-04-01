@@ -14,6 +14,7 @@ namespace SME.SGP.Dados
             Map(a => a.InseridoCJ).ToColumn("inserido_cj");
             Map(a => a.Excluido).ToColumn("excluido");
             Map(a => a.Migrado).ToColumn("migrado");
+            Map(c => c.Planejamento).ToColumn("planejamento");
         }
     }
 }

@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
-       {
+        {
             var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
             if (relatorioCorrelacao == null)
             {
@@ -46,14 +46,15 @@ namespace SME.SGP.Aplicacao
                     relatorioEscolaAqui = false;
                     break;
             }
+
             unitOfWork.PersistirTransacao();
 
             if (relatorioEscolaAqui)
                 return await Task.FromResult(true);
             else
                 return await Task.FromResult(false);
-        }
 
+        }
         private async Task MensagemAutomaticaEscolaAqui(MensagemRelatorioProntoDto relatorioPronto, string urlRedirecionamentoBase, TipoRelatorio tipoRelatorio, string nomeRelatorio)
         {
             var parametros = JsonConvert.DeserializeObject<MensagemRelatorioAutomaticoEscolaAquiDto>(relatorioPronto.MensagemDados);

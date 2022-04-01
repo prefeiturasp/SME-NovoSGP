@@ -5,11 +5,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterSituacaoEncaminhamentoAEEPorEstudanteQuery : IRequest<SituacaoEncaminhamentoPorEstudanteDto>
     {
-        public ObterSituacaoEncaminhamentoAEEPorEstudanteQuery(string codigoEstudante)
+        public ObterSituacaoEncaminhamentoAEEPorEstudanteQuery(string estudanteCodigo, string ueCodigo)
         {
-            CodigoEstudante = codigoEstudante;
+            EstudanteCodigo = estudanteCodigo;
+            UeCodigo = ueCodigo;
         }
 
-        public string CodigoEstudante { get; }
+        public string EstudanteCodigo { get; }
+        public string UeCodigo { get;  }
     }
 }
