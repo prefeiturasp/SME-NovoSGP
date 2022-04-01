@@ -45,11 +45,11 @@ namespace SME.SGP.Api.Teste.Controllers
             ObterDadosControllers(listaApiMethod, apiControllers, AssemblyName);
 
             var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0);
-            var semAuthorizeAttribute = listaApiMethod.Where(x => !x.Authorize);
+            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize == false);
+            var listAutorizecontrollerName = semAuthorizeAttribute.GroupBy(x => x.ControllerName).ToList();
             var listcontrollerName = listMetodos.GroupBy(c => c.ControllerName).ToList();
 
-
-            Assert.True(semAuthorizeAttribute.Count() == 0, $"Existe {semAuthorizeAttribute.Count()} Controller(s) Sem AuthorizeAttribute ou ChaveIntegracaoSgpApi");
+            Assert.True(semAuthorizeAttribute.Count() == 0, $"Existe {listAutorizecontrollerName.Count()} Controller(s) Sem AuthorizeAttribute ou ChaveIntegracaoSgpApi\n {string.Join("\n,", listAutorizecontrollerName.Select(c => c.First().ControllerName))}");
             Assert.True(listcontrollerName.Count == 0, $"{listMetodos.Count()} Método(s) em {listcontrollerName.Count} controller(s) sem permissionamento\n {string.Join("\n,", listcontrollerName.Select(c => c.First().ControllerName))}");
         }
         private static void ObterDadosControllers(List<ApiMethodDto> listaApiMethod, IEnumerable<TypeInfo> apiControllers, string assemblyName)
