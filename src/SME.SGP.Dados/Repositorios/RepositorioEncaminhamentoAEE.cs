@@ -316,7 +316,6 @@ namespace SME.SGP.Dados.Repositorios
                                     inner join ue u on (u.id = t.ue_id)
                                 where not ea.excluido
                                 and ea.situacao not in (5, 7, 8, 10)
-                                and ea.aluno_codigo = '4521179'
                                 order by ea.id";
 
             return await database.Conexao.QueryAsync<EncaminhamentoAEEVigenteDto>(sql);
