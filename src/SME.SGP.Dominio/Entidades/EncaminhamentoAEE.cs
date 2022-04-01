@@ -21,5 +21,9 @@ namespace SME.SGP.Dominio
         public Usuario Responsavel { get; set; }
         public List<EncaminhamentoAEESecao> Secoes { get; set; }
 
+        public void EncerrarAutomaticamente()
+        {
+            Situacao = SituacaoAEE.EncerradoAutomaticamente;
+        }
     }
 }
