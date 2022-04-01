@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dto;
@@ -12,6 +13,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/recuperacao-paralela/")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class RecuperacaoParalelaController : ControllerBase
     {
         private readonly IComandosRecuperacaoParalela comandosRecuperacaoParalela;
