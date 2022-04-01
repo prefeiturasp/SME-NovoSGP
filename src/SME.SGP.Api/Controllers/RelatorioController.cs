@@ -22,6 +22,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{codigoCorrelacao}")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous]
         public async Task<IActionResult> Download(Guid codigoCorrelacao, [FromServices] IReceberDadosDownloadRelatorioUseCase downloadRelatorioUseCase, [FromServices] ISevicoJasper servicoJasper)
         {
             var (relatorio, contentType, nomeArquivo) = await downloadRelatorioUseCase.Executar(codigoCorrelacao);
@@ -32,6 +33,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("conselhos-classe/atas-finais")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AFR_C,Policy = "Bearer")]
         public async Task<IActionResult> ConselhoClasseAtaFinal([FromBody]FiltroRelatorioConselhoClasseAtaFinalDto filtroRelatorioConselhoClasseAtaFinalDto, [FromServices] IRelatorioConselhoClasseAtaFinalUseCase relatorioConselhoClasseAtaFinalUseCase)
         {
             return Ok(await relatorioConselhoClasseAtaFinalUseCase.Executar(filtroRelatorioConselhoClasseAtaFinalDto));
@@ -40,6 +42,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("faltas-frequencia")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.FF_C, Policy = "Bearer")]
         public async Task<IActionResult> Frequencia([FromBody] FiltroRelatorioFrequenciaDto filtroRelatorioFaltasFrequenciaDto, [FromServices] IGerarRelatorioFrequenciaUseCase gerarRelatorioFrequenciaUseCase)
         {
             return Ok(await gerarRelatorioFrequenciaUseCase.Executar(filtroRelatorioFaltasFrequenciaDto));
@@ -48,6 +51,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("calendarios/impressao")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous]
         public async Task<IActionResult> Calendario([FromBody] FiltroRelatorioCalendarioDto filtroRelatorioCalendarioDto, [FromServices] IRelatorioCalendarioUseCase relatorioCalendarioUseCase)
         {
             return Ok(await relatorioCalendarioUseCase.Executar(filtroRelatorioCalendarioDto));
@@ -56,6 +60,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("resumopap/impressao")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RPG_C, Policy = "Bearer")]
         public async Task<IActionResult> ResumoPAP([FromBody] FiltroRelatorioResumoPAPDto filtroRelatorioResumoPAPDto, [FromServices] IRelatorioResumoPAPUseCase relatorioResumoPAPUseCase)
         {
             return Ok(await relatorioResumoPAPUseCase.Executar(filtroRelatorioResumoPAPDto));
@@ -64,6 +69,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("graficopap/impressao")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RPG_C, Policy = "Bearer")]
         public async Task<IActionResult> GraficoPAP([FromBody] FiltroRelatorioResumoPAPDto filtroRelatorioGraficoPAPDto, [FromServices] IRelatorioGraficoPAPUseCase relatorioGraficoPAPUseCase)
         {
             return Ok(await relatorioGraficoPAPUseCase.Executar(filtroRelatorioGraficoPAPDto));
@@ -72,6 +78,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("plano-aula")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous]
         public async Task<IActionResult> PlanoAula([FromBody] FiltroRelatorioPlanoAulaDto filtro, [FromServices] IRelatorioPlanoAulaUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
@@ -80,6 +87,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("controle-grade/impressao")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RCG_C, Policy = "Bearer")]
         public async Task<IActionResult> ControleGrade([FromBody] FiltroRelatorioControleGrade filtro, [FromServices] IRelatorioControleGradeUseCase relatorioUseCase)
         {
             return Ok(await relatorioUseCase.Executar(filtro));
@@ -98,6 +106,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("usuarios/impressao")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.M_C, Policy = "Bearer")]
         public async Task<IActionResult> Usuarios([FromBody] FiltroRelatorioUsuarios filtro, [FromServices] IRelatorioUsuariosUseCase relatorioUseCase)
         {
             return Ok(await relatorioUseCase.Executar(filtro));
@@ -107,6 +116,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.ACJ_C, Policy = "Bearer")]
         public async Task<IActionResult> Gerar(FiltroRelatorioAtribuicaoCJDto filtros, [FromServices] IRelatorioAtribuicaoCJUseCase relatorioAtribuicaoCJUseCase)
         {
             return Ok(await relatorioAtribuicaoCJUseCase.Executar(filtros));
@@ -115,6 +125,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("historico-alteracao-notas")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RNCF_C, Policy = "Bearer")]
         public async Task<IActionResult> AlteracaoNotas([FromBody] FiltroRelatorioAlteracaoNotas filtro, [FromServices] IRelatorioAlteracaoNotasUseCase relatorioUseCase)
         {
             if (filtro.ModalidadeTurma == Dominio.Modalidade.EducacaoInfantil)
@@ -125,6 +136,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("ae/adesao")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RDE_C, Policy = "Bearer")]
         public async Task<IActionResult> AdesaoApp([FromBody] FiltroRelatorioAEAdesaoDto filtro, [FromServices] IRelatorioAEAdesaoUseCase relatorioUseCase)
         {
             return Ok(await relatorioUseCase.Executar(filtro));
@@ -133,6 +145,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("escola-aqui/dados-leitura")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RDE_C, Policy = "Bearer")]
         public async Task<IActionResult> LeituraComunicados([FromBody] FiltroRelatorioLeituraComunicados filtro, [FromServices] IRelatorioLeituraComunicadosUseCase relatorioUseCase)
         {            
             return Ok(await relatorioUseCase.Executar(filtro));
@@ -141,6 +154,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("diario-classe/planejamento-diario")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RCP_C, Policy = "Bearer")]
         public async Task<IActionResult> PlanejamentoDiario([FromBody] FiltroRelatorioPlanejamentoDiario filtro, [FromServices] IRelatorioPlanejamentoDiarioUseCase relatorioUseCase)
         {
             return Ok(await relatorioUseCase.Executar(filtro));
@@ -150,6 +164,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("devolutivas")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RD_C, Policy = "Bearer")]
         public async Task<IActionResult> Devolutivas([FromBody] FiltroRelatorioDevolutivas filtro, [FromServices] IRelatorioDevolutivasUseCase relatorioUseCase)
         {
             return Ok(await relatorioUseCase.Executar(filtro));
@@ -158,6 +173,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("itinerancias")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RI_C, Policy = "Bearer")]
         public async Task<IActionResult> Itinerancias([FromBody] IEnumerable<long> itinerancias, [FromServices] IRelatorioItineranciasUseCase relatorioUseCase)
         {
             return Ok(await relatorioUseCase.Executar(itinerancias));
@@ -166,6 +182,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("registros-individuais")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.REI_C, Policy = "Bearer")]
         public async Task<IActionResult> RegistroIndividual([FromBody] FiltroRelatorioRegistroIndividualDto filtro, [FromServices] IRelatorioRegistroIndividualUseCase relatorioUseCase)
         {
             return Ok(await relatorioUseCase.Executar(filtro));
@@ -174,6 +191,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("acompanhamento-aprendizagem")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RAA_C, Policy = "Bearer")]
         public async Task<IActionResult> AcompanhamentoAprendizagem([FromBody] FiltroRelatorioAcompanhamentoAprendizagemDto filtro, [FromServices] IRelatorioAcompanhamentoAprendizagemUseCase relatorioUseCase)
         {
             return Ok(await relatorioUseCase.Executar(filtro));
@@ -182,6 +200,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("acompanhamento-fechamento")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ACF_C, Policy = "Bearer")]
         public async Task<IActionResult> AcompanhamentoFechamento([FromBody] FiltroRelatorioAcompanhamentoFechamentoDto filtro, [FromServices] IRelatorioAcompanhamentoFechamentoUseCase relatorioUseCase)
         {
             return Ok(await relatorioUseCase.Executar(filtro));
@@ -191,6 +210,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.RPF_C, Policy = "Bearer")]
         public async Task<IActionResult> Gerar(FiltroRelatorioPendenciasDto filtroRelatorioPendenciasFechamentoDto, [FromServices] IRelatorioPendenciasUseCase relatorioPendenciasFechamentoUseCase)
         {
             return Ok(await relatorioPendenciasFechamentoUseCase.Executar(filtroRelatorioPendenciasFechamentoDto));
@@ -199,6 +219,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("pendencias/tipos")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.RPF_C, Policy = "Bearer")]
         public IActionResult ObterTipoPendencias([FromQuery] bool opcaoTodos, [FromServices] IRelatorioPendenciasUseCase relatorioPendenciasFechamentoUseCase)
         {
             return Ok(relatorioPendenciasFechamentoUseCase.ListarTodosTipos(opcaoTodos));
@@ -208,6 +229,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.ABR_C, Policy = "Bearer")]
         public async Task<IActionResult> Gerar(FiltroRelatorioAtaBimestralDto filtro, [FromServices] IRelatorioAtaBimestralUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
@@ -216,6 +238,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("acompanhamento-registros-pedagogicos")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RRP_C, Policy = "Bearer")]
         public async Task<IActionResult> AcompanhamentoRegistrosPedagogicos(FiltroRelatorioAcompanhamentoRegistrosPedagogicosDto filtro, [FromServices] IRelatorioAcompanhamentoRegistrosPedagogicosUseCase relatorioRegistrosPedagogicos)
         {
             return Ok(await relatorioRegistrosPedagogicos.Executar(filtro));
@@ -225,6 +248,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("acompanhamento-frequencia")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AFQ_C, Policy = "Bearer")]
         public async Task<IActionResult> ImprimirAcompanhamentoFrequencia(FiltroAcompanhamentoFrequenciaJustificativaDto filtro,[FromServices] IRelatorioAcompanhamentoDeFrequênciaUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
@@ -234,6 +258,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("ocorrencias")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.OCO_C, Policy = "Bearer")]
         public async Task<IActionResult> ImprimirRelatorioOcorrencias(FiltroImpressaoOcorrenciaDto filtro, [FromServices] IRelatorioOcorrenciasUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));

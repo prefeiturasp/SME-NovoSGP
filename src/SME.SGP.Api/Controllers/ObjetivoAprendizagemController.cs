@@ -53,6 +53,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterDisciplinasBimestrePlano([FromQuery] DateTime dataAula, long turmaId, long componenteId)
         {
             var disciplinas = await consultasObjetivoAprendizagem.ObterDisciplinasDoBimestrePlanoAnual(dataAula, turmaId, componenteId);
@@ -68,6 +69,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ObjetivosAprendizagemPorComponenteDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterObjetivosPorDisciplina([FromServices] IObterObjetivosPorDisciplinaUseCase UseCase, long turmaId, long componenteId, long disciplinaId, [FromQuery] DateTime dataReferencia, [FromQuery] bool regencia)
         {
             var objetivos = await UseCase.Executar(dataReferencia, turmaId, componenteId, disciplinaId, regencia);
@@ -81,6 +83,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [Route("sincronizar-jurema")]
         [ProducesResponseType(200)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
         public async Task<IActionResult> SincronizarObjetivos([FromServices] IServicoObjetivosAprendizagem servicoObjetivosAprendizagem)
         {
             await servicoObjetivosAprendizagem.SincronizarObjetivosComJurema();

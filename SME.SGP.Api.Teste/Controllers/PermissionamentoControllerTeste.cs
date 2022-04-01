@@ -18,25 +18,61 @@ namespace SME.SGP.Api.Teste.Controllers
             AssemblyName = typeof(SME.SGP.Api.Program).Assembly.GetName().Name;
         }
 
-        [Fact]
-        public async Task Verificar_Se_Existe_Permissao_Ou_AllowAnonymou()
+        [Fact(DisplayName = "Verificar se os Controllers que Herdam de  ControllerBase possuem permissionamento e authorize")]
+        public async Task Verificar_Se_Existe_Permissao_Ou_AllowAnonymou_Authorize_ControllerBase()
         {
             var listaApiMethod = new List<ApiMethodDto>();
             var assembly = Assembly.Load(AssemblyName);
             var apiControllers = assembly.DefinedTypes.Where(a => a.BaseType == typeof(ControllerBase));
 
+            ObterDadosControllers(listaApiMethod, apiControllers, AssemblyName);
+
+            var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0);
+            var semAuthorizeAttribute = listMetodos.Where(x => !x.Authorize);
+            var listcontrollerName = listMetodos.GroupBy(c => c.ControllerName).ToList();
+
+            Assert.True(semAuthorizeAttribute.Count() == 0, $"Existe {semAuthorizeAttribute.Count()} Controller(s) Sem AuthorizeAttribute ou ChaveIntegracaoSgpApi");
+            Assert.True(listcontrollerName.Count == 0, $"{listMetodos.Count()} Método(s) em {listcontrollerName.Count} controller(s) sem permissionamento\n {string.Join("\n,", listcontrollerName.Select(c => c.First().ControllerName))}");
+        }
+        [Fact(DisplayName = "Verificar se os Controllers que Herdam de  Controller possuem permissionamento e authorize")]
+        public async Task Verificar_Se_Existe_Permissao_Ou_AllowAnonymou_Authorize_Controller()
+        {
+            var listaApiMethod = new List<ApiMethodDto>();
+            var assembly = Assembly.Load(AssemblyName);
+            var apiControllers = assembly.DefinedTypes.Where(a => a.BaseType == typeof(Controller));
+
+            ObterDadosControllers(listaApiMethod, apiControllers, AssemblyName);
+
+            var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0);
+            var semAuthorizeAttribute = listMetodos.Where(x => !x.Authorize);
+            var listcontrollerName = listMetodos.GroupBy(c => c.ControllerName).ToList();
+
+
+            Assert.True(semAuthorizeAttribute.Count() == 0, $"Existe {semAuthorizeAttribute.Count()} Controller(s) Sem AuthorizeAttribute ou ChaveIntegracaoSgpApi");
+            Assert.True(listcontrollerName.Count == 0, $"{listMetodos.Count()} Método(s) em {listcontrollerName.Count} controller(s) sem permissionamento\n {string.Join("\n,", listcontrollerName.Select(c => c.First().ControllerName))}");
+        }
+        private static void ObterDadosControllers(List<ApiMethodDto> listaApiMethod, IEnumerable<TypeInfo> apiControllers, string assemblyName)
+        {
+            bool contemAutorize = false;
             foreach (var item in apiControllers)
             {
-                var customAttributeName = new List<string>();
                 var routePrefixAttrib = item.GetCustomAttributes(typeof(System.Web.Http.RoutePrefixAttribute)).FirstOrDefault() as System.Web.Http.RoutePrefixAttribute;
 
                 var routePrefix = routePrefixAttrib?.Prefix ?? string.Empty;
 
                 var metodos = item.GetMethods();
 
+
+                if (item.CustomAttributes.Where(x => x.AttributeType.Name == "AuthorizeAttribute").Count() > 0 ||
+                    item.CustomAttributes.Where(x => x.AttributeType.Name == "ChaveIntegracaoSgpApi").Count() > 0)
+                {
+                    contemAutorize = true;
+                }
+
                 foreach (var metodo in metodos)
                 {
-                    if (!metodo.IsPublic)
+                    var customAttributeName = new List<string>();
+                    if (!metodo.IsPublic || metodo.IsSpecialName || !metodo.Module.Name.StartsWith(assemblyName))
                         continue;
 
                     var httpVerb = ObterHttpMetodo(metodo);
@@ -64,29 +100,25 @@ namespace SME.SGP.Api.Teste.Controllers
                         ParameterList = signature,
                         CustomAttributeName = customAttributeName,
                         HttpVerbo = httpVerb,
+                        Authorize = contemAutorize
                     };
 
                     listaApiMethod.Add(apiMethod);
 
                 }
             }
-
-            var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0);
-            var listcontrollerName = listMetodos.GroupBy(c => c.ControllerName).ToList();
-
-            Assert.True(listMetodos.Count() == 0,$"{listMetodos.Count()} Métodos em {listcontrollerName.Count} controllers não possuem permissionamento\n {string.Join("\n,", listcontrollerName.Select(c => c.First().ControllerName))}");
         }
 
         private static HttpVerbo ObterHttpMetodo(MethodInfo metodo)
         {
-            var getAttrib = metodo.GetCustomAttributes(typeof(System.Web.Http.HttpGetAttribute)).FirstOrDefault();
-            var postAttrib = metodo.GetCustomAttributes(typeof(System.Web.Http.HttpPostAttribute)).FirstOrDefault();
-            var putAttrib = metodo.GetCustomAttributes(typeof(System.Web.Http.HttpPutAttribute)).FirstOrDefault();
-            var deleteAttrib = metodo.GetCustomAttributes(typeof(System.Web.Http.HttpDeleteAttribute)).FirstOrDefault();
-            var acceptVerbsAttrib = metodo.GetCustomAttributes(typeof(System.Web.Http.AcceptVerbsAttribute)).FirstOrDefault() as System.Web.Http.AcceptVerbsAttribute;
+            var getAttrib = metodo.GetCustomAttributes(typeof(HttpGetAttribute)).FirstOrDefault();
+            var postAttrib = metodo.GetCustomAttributes(typeof(HttpPostAttribute)).FirstOrDefault();
+            var putAttrib = metodo.GetCustomAttributes(typeof(HttpPutAttribute)).FirstOrDefault();
+            var deleteAttrib = metodo.GetCustomAttributes(typeof(HttpDeleteAttribute)).FirstOrDefault();
+            var acceptVerbsAttrib = metodo.GetCustomAttributes(typeof(AcceptVerbsAttribute)).FirstOrDefault() as AcceptVerbsAttribute;
 
-            var verbo = acceptVerbsAttrib == null || acceptVerbsAttrib.HttpMethods.Count == 0 ? HttpVerbo.GET
-                                    : (HttpVerbo)Enum.Parse(typeof(HttpVerbo), acceptVerbsAttrib.HttpMethods[0].Method.ToUpperInvariant());
+            var verbo = acceptVerbsAttrib == null || acceptVerbsAttrib.HttpMethods.Count() == 0 ? HttpVerbo.GET
+                                    : (HttpVerbo)Enum.Parse(typeof(HttpVerbo), acceptVerbsAttrib.HttpMethods.ToList()[0].ToUpperInvariant());
 
 
             var httpVerb = getAttrib != null ? HttpVerbo.GET : postAttrib != null ? HttpVerbo.POST : putAttrib != null ? HttpVerbo.PUT : deleteAttrib != null ? HttpVerbo.DELETE : verbo;

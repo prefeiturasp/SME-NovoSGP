@@ -11,5 +11,6 @@ namespace SME.SGP.Infra
         public string ParameterList { get; set; }
         public List<string> CustomAttributeName { get; set; }
         public HttpVerbo HttpVerbo { get; set; }
+        public bool Authorize { get; set; }
     }
 }

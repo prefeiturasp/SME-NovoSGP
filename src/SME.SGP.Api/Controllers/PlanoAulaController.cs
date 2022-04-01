@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
@@ -11,6 +12,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/planos/aulas")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class PlanoAulaController : ControllerBase
     {
         [HttpPost("migrar")]

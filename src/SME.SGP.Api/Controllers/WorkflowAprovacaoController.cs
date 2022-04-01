@@ -26,7 +26,8 @@ namespace SME.SGP.Api.Controllers
         [HttpPut]
         [Route("notificacoes/{notificacaoId}/aprova")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous]
         public async Task<IActionResult> Aprovar(long notificacaoId, [FromBody] WorkflowAprovacaoAprovacaoDto workflowAprovacaoAprovacaoDto)
         {            
             var retornoValidacao = await comandosWorkflowAprovacao.ValidarWorkflowAprovacao(notificacaoId);
@@ -42,6 +43,7 @@ namespace SME.SGP.Api.Controllers
         [Route("notificacoes/{id}/linha-tempo")]
         [ProducesResponseType(typeof(IEnumerable<WorkflowAprovacaoTimeRespostaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous]
         public IActionResult ObterLinhaDoTempo(long id)
         {
             return Ok(consultasWorkflowAprovacao.ObtemTimelinePorCodigoNotificacao(id));
@@ -50,6 +52,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous]
         public async Task<IActionResult> Post(WorkflowAprovacaoDto workflowAprovaNivelDto)
         {
             await comandosWorkflowAprovacao.Salvar(workflowAprovaNivelDto);

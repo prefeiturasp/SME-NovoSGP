@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,6 +11,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/fechamentos/pendencias")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class PendenciasFechamentosController : ControllerBase
     {
         [HttpGet("listar")]

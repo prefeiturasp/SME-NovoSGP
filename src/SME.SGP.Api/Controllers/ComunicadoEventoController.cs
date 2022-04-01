@@ -17,6 +17,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EventoCalendarioRetornoDto>), 200)]
         [ProducesResponseType(typeof(IEnumerable<EventoCalendarioRetornoDto>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous]
         public async Task<IActionResult> ListarEventosPorCalendario([FromBody] ListarEventoPorCalendarioDto filtro, [FromServices] IListarEventosPorCalendarioUseCase useCase)
         {
             var retorno = await useCase.Executar(filtro);

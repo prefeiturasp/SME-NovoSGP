@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
@@ -10,11 +7,15 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/fechamentos/turmas")]
+    [Authorize("Bearer")]
     public class FechamentoTurmaController : ControllerBase
     {
         [HttpPost()]
@@ -83,6 +84,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAlunos(string codigoTurma, int anoLetivo, int semestre, [FromServices] IConsultasFechamentoTurmaDisciplina consultas)
            => Ok(await consultas.ObterDadosAlunos(codigoTurma, anoLetivo, semestre));
 
@@ -90,6 +92,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ProcessarPendentes(int anoLetivo, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
         {
             await comandos.ProcessarPendentes(anoLetivo);
@@ -98,6 +101,7 @@ namespace SME.SGP.Api.Controllers
 
         [HttpPost("consolidar")]
         [ProducesResponseType(200)]
+        [Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ProcessarPendentes([FromQuery] string turmaCodigo, [FromQuery] int? bimestre, [FromServices] IIniciaConsolidacaoTurmaGeralUseCase useCase)
         {
             await useCase.Executar(turmaCodigo, bimestre);

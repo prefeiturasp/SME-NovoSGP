@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
 using System;
@@ -8,12 +9,14 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/relatorios/recuperacao-paralela")]
+    [Authorize("Bearer")]
     public class RelatorioRecuperacaoParalelaController : ControllerBase
     {
         [HttpPost]        
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [AllowAnonymous]
         public async Task<IActionResult> Gerar(FiltroRelatorioRecuperacaoParalelaDto filtro, [FromServices] IRelatorioRecuperacaoParalelaUseCase relatorioRecuperacaoParalelaUseCase)
         {
             return Ok(await relatorioRecuperacaoParalelaUseCase.Executar(filtro));

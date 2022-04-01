@@ -7,15 +7,11 @@ using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Prometheus;
-using RabbitMQ.Client;
 using SME.SGP.Api.HealthCheck;
-using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
@@ -29,7 +25,7 @@ using System.IO.Compression;
 
 namespace SME.SGP.Api
 {
-	public class Startup
+    public class Startup
     {
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
