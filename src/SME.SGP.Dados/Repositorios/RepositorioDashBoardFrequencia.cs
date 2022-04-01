@@ -19,9 +19,10 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<IEnumerable<FrequenciaAlunoDashboardDto>> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, DateTime dataAula, DateTime dataInicioSemana, DateTime datafimSemana, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
+        public async Task<IEnumerable<FrequenciaAlunoDashboardDto>> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataAula, DateTime dataInicioSemana, DateTime datafimSemana, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
         {
-            var query = new StringBuilder();
+            var query = new StringBuilder();            
+            var anoTurmaModalidade = "";
 
             if (visaoDre)
                 query.AppendLine("select dre_abreviacao as Descricao, ");
@@ -50,6 +51,13 @@ namespace SME.SGP.Dados.Repositorios
             if (semestre > 0)
                 query.AppendLine("and semestre = @semestre ");
 
+            if (!string.IsNullOrEmpty(anoTurma) && !anoTurma.Contains("-99"))
+            {
+                var modalidadeEnum = ((Modalidade)modalidade);
+                anoTurmaModalidade = $"{modalidadeEnum.ShortName()}-{anoTurma}";
+                query.AppendLine("and turma_ano = @anoTurma ");
+            }
+
             if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
                 query.AppendLine("and data_aula = @dataAula ");
 
@@ -74,13 +82,14 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo,
                 modalidade,
                 semestre,
+                anoTurma = anoTurmaModalidade,
                 dataAula,
                 dataInicioSemana,
                 datafimSemana,
                 mes,
                 tipoPeriodo = tipoPeriodoDashboard
             });
-        }        
+        }
 
         public async Task<DadosParaConsolidacaoDashBoardFrequenciaDto> ObterDadosParaConsolidacao(int anoLetivo, long turmaId, int modalidade, int tipoPeriodo, DateTime dataAula, DateTime? dataInicioSemana, DateTime? datafimSemana, int? mes)
         {
