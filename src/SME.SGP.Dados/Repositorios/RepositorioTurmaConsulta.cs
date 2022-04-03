@@ -645,11 +645,11 @@ namespace SME.SGP.Dados.Repositorios
             return query.ToString();
         }
 
-        public async Task<IEnumerable<TurmaModalidadeDto>> ObterTurmasComModalidadePorAno(int ano)
+        public async Task<IEnumerable<TurmaModalidadeDto>> ObterTurmasComModalidadePorAnoUe(int ano, long ueId)
         {
-            var query = @"select id as TurmaId, turma_id as TurmaCodigo, modalidade_codigo as Modalidade from turma where ano_letivo = @ano";
+            var query = @"select id as TurmaId, turma_id as TurmaCodigo, modalidade_codigo as Modalidade from turma where ano_letivo = @ano and ue_id = @ueId";
 
-            return await contexto.Conexao.QueryAsync<TurmaModalidadeDto>(query, new { ano });
+            return await contexto.Conexao.QueryAsync<TurmaModalidadeDto>(query, new { ano, ueId });
         }
 
         public async Task<IEnumerable<TurmaConsolidacaoFechamentoGeralDto>> ObterTurmasConsolidacaoFechamentoGeralAsync(string turmaCodigo)

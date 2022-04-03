@@ -208,7 +208,9 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.NotificarCompensacaoAusencia, new ComandoRabbit("Notificar Compensação Ausência", typeof(INotificarCompensacaoAusenciaUseCase)));
 
             comandos.Add(RotasRabbitSgp.ConsolidacaoFrequenciasTurmasCarregar, new ComandoRabbit("Consolidação de Registros de Frequência das Turmas - Carregar", typeof(IConsolidarFrequenciaTurmasUseCase)));
-            comandos.Add(RotasRabbitSgp.ConsolidarFrequenciasTurmasNoAno, new ComandoRabbit("Consolidar Registros de Frequência das Turmas", typeof(IConsolidarFrequenciaTurmasPorAnoUseCase)));
+            comandos.Add(RotasRabbitSgp.ConsolidarFrequenciasTurmasNoAno, new ComandoRabbit("Consolidar Registros de Frequência das Turmas no Ano", typeof(IConsolidarFrequenciaTurmasPorAnoUseCase)));
+            comandos.Add(RotasRabbitSgp.ConsolidarFrequenciasTurmasPorDre, new ComandoRabbit("Consolidar Registros de Frequência das Turmas por UE", typeof(IConsolidarFrequenciaTurmasPorDREUseCase)));
+            comandos.Add(RotasRabbitSgp.ConsolidarFrequenciasTurmasPorUe, new ComandoRabbit("Consolidar Registros de Frequência das Turmas por UE", typeof(IConsolidarFrequenciaTurmasPorUEUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarFrequenciasPorTurma, new ComandoRabbit("Consolidar Registros de Frequência por Turma", typeof(IConsolidarFrequenciaPorTurmaUseCase)));
 
             comandos.Add(RotasRabbitSgp.ConsolidacaoMatriculasTurmasDreCarregar, new ComandoRabbit("Carrega os dados de todas as Dres para consolidação de matrículas", typeof(ICarregarDresConsolidacaoMatriculaUseCase)));
