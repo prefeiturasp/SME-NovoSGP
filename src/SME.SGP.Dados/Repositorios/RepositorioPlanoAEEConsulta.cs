@@ -171,11 +171,11 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<PlanoAEE>(query);
         }
 
-        public async Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false, NotificacaoPlanoAEETipo tipo = NotificacaoPlanoAEETipo.PlanoCriado)
+        public async Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false, NotificacaoPlanoAEETipo tipoNotificacao = NotificacaoPlanoAEETipo.PlanoCriado)
         {
             var joinPendecias = desconsiderarPendencias ? @"left join pendencia_plano_aee ppa on ppa.plano_aee_id = pa.id
                                                             left join pendencia p on ppa.pendencia_id = p.id and not p.excluido": string.Empty;
-            var joinNotificacoes = desconsiderarNotificados ? "left join notificacao_plano_aee npa on npa.plano_aee_id = pa.id and npa.tipo = @tipo" : string.Empty;
+            var joinNotificacoes = desconsiderarNotificados ? "left join notificacao_plano_aee npa on npa.plano_aee_id = pa.id and npa.tipo = @tipoNotificacao" : string.Empty;
 
             var condicaoPendencias = desconsiderarPendencias ? $"and (ppa.id is null or p.id is null or p.situacao = {(int)SituacaoPendencia.Resolvida})" : string.Empty;
             var condicaoNotificacoes = desconsiderarNotificados ? "and npa.id is null" : string.Empty;
@@ -184,17 +184,17 @@ namespace SME.SGP.Dados.Repositorios
                           from plano_aee pa
                          inner join plano_aee_versao pav on pav.id in (select max(id) from plano_aee_versao where plano_aee_id = pa.id)
                          inner join plano_aee_questao paq on paq.plano_aee_versao_id = pav.id
-                         inner join questao q on q.id = paq.questao_id and q.ordem = 1 and q.tipo = 12
+                         inner join questao q on q.id = paq.questao_id and q.ordem = 1 and q.tipo = @tipoQuestao
                          inner join plano_aee_resposta par on par.plano_questao_id = paq.id
                          inner join periodo_escolar pe on pe.id = par.texto::bigint
                           {joinPendecias}
                           {joinNotificacoes}
                          where pe.periodo_fim <= @dataFim
-                           and pa.situacao in (1,3,8)
+                           and pa.situacao = @situacaoPlano
                            {condicaoPendencias}
                            {condicaoNotificacoes}";
 
-            return await database.Conexao.QueryAsync<PlanoAEE>(query, new { dataFim, tipo });
+            return await database.Conexao.QueryAsync<PlanoAEE>(query, new { dataFim, tipoNotificacao, tipoQuestao = (int)TipoQuestao.PeriodoEscolar, situacaoPlano = (int)SituacaoPlanoAEE.Validado });
         }
 
         public async Task<IEnumerable<PlanoAEEReduzidoDto>> ObterPlanosAEEAtivosComTurmaEVigencia()
