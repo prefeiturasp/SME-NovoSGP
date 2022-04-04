@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Infra.Dtos;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -8,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<WFAprovacaoParecerConclusivo> ObterPorWorkflowId(long workflowId);
         Task<WFAprovacaoParecerConclusivo> ObterPorConselhoClasseAlunoId(long conselhoClasseAlunoId);
         Task Excluir(long id);
+        Task<WFAprovacaoParecerConclusivoDto> ObterAprovacaoParecerConclusivoPorWorkflowId(long workflowId);
     }
 }

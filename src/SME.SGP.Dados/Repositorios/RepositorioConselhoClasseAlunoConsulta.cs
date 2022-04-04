@@ -214,5 +214,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.QueryAsync<ConselhoClasseFechamentoAlunoDto>(sqlQuery, new { turmaCodigo });
         }
+
+        public Task<ConselhoClasseAluno> ObterConselhoClasseAlunoPorId(long conselhoClasseAlunoId)
+        {
+            var query = @"select c.* 
+                            from conselho_classe_aluno c 
+                           where c.id = @conselhoClasseAlunoId";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseAluno>(query, new { conselhoClasseAlunoId });
+        }
     }
 }

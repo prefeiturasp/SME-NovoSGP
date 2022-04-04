@@ -1,12 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
     public class NotificarAprovacaoParecerConclusivoCommand : IRequest
     {
-        public NotificarAprovacaoParecerConclusivoCommand(WFAprovacaoParecerConclusivo parecerEmAprovacao, string turmaCodigo, string criadorRf, string criadorNome, bool aprovado, string motivo = "")
+        public NotificarAprovacaoParecerConclusivoCommand(WFAprovacaoParecerConclusivoDto parecerEmAprovacao, string turmaCodigo, string criadorRf, string criadorNome, bool aprovado, string motivo = "")
         {
             ParecerEmAprovacao = parecerEmAprovacao;
             TurmaCodigo = turmaCodigo;
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             Motivo = motivo;
         }
 
-        public WFAprovacaoParecerConclusivo ParecerEmAprovacao { get; }
+        public WFAprovacaoParecerConclusivoDto ParecerEmAprovacao { get; }
         public string TurmaCodigo { get; }
         public string CriadorRf { get; }
         public string CriadorNome { get; }
