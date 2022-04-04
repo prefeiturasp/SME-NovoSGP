@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 using SME.SGP.Api.HealthCheck;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
