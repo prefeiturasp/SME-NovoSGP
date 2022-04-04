@@ -36,8 +36,7 @@ namespace SME.SGP.Dominio
         {
             return this.MemberwiseClone();
         }
-
-        public bool EhRelatorioJasper => TipoRelatorio.EhUmDosValores(TipoRelatorio.Boletim, TipoRelatorio.ConselhoClasseAluno, TipoRelatorio.ConselhoClasseTurma, TipoRelatorio.HistoricoEscolarFundamental);
+        public bool EhRelatorioJasper => TipoRelatorio.EhUmDosValores(TipoRelatorio.ConselhoClasseAluno, TipoRelatorio.ConselhoClasseTurma, TipoRelatorio.HistoricoEscolarFundamental);
 
         public bool PrazoDownloadExpirado => (DateTime.Now - CriadoEm).Days > 1;
     }

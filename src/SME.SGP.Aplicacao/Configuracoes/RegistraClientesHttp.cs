@@ -8,13 +8,12 @@ using System;
 using System.Net;
 using System.Net.Http;
 
-namespace SME.SGP.Api
+namespace SME.SGP.Aplicacao
 {
     public static class RegistraClientesHttp
     {
         public static void Registrar(IServiceCollection services, IConfiguration configuration)
         {
-
             var policy = ObterPolicyBaseHttp();
 
             services.AddHttpClient<IServicoJurema, ServicoJurema>(c =>

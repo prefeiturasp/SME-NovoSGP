@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -191,6 +192,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             notasEnvioWfAprovacao = new List<FechamentoNotaDto>();
 
+            var consolidacaoNotasAlunos = new List<ConsolidacaoNotaAlunoDto>();
+
             var fechamentoTurmaDisciplina = MapearParaEntidade(id, entidadeDto);
 
             await CarregarTurma(entidadeDto.TurmaId);
@@ -254,6 +257,8 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                         await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+
+                        ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turmaFechamento, fechamentoAluno.AlunoCodigo, fechamentoNota);
                     }
 
                     if (!componenteSemNota)
@@ -271,6 +276,9 @@ namespace SME.SGP.Dominio.Servicos
                 await EnviarNotasWfAprovacao(fechamentoTurmaDisciplina.Id, fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar, usuarioLogado, disciplinaEOL, turmaFechamento);
 
                 unitOfWork.PersistirTransacao();
+
+                foreach (var consolidacaoNotaAlunoDto in consolidacaoNotasAlunos)
+                    await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
 
                 if (alunosComNotaAlterada.Length > 0)
                 {
@@ -310,6 +318,20 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private static void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota)
+        {
+            consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
+            {
+                AlunoCodigo = AlunoCodigo,
+                TurmaId = turma.Id,
+                Bimestre = bimestre,
+                AnoLetivo = turma.AnoLetivo,
+                Nota = fechamentoNota.Nota,
+                ConceitoId = fechamentoNota.ConceitoId,
+                ComponenteCurricularId = fechamentoNota.DisciplinaId
+            });
         }
 
         private async Task<IEnumerable<FechamentoAluno>> AtualizaSinteseAlunos(long fechamentoTurmaDisciplinaId, DateTime dataReferencia, DisciplinaDto disciplina, int anoLetivo)

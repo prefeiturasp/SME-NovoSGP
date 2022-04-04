@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,7 +23,6 @@ namespace SME.SGP.Aplicacao
         {
             var correlacao = new RelatorioCorrelacao(request.TipoRelatorio, request.IdUsuarioLogado, request.Formato);
             repositorioCorrelacaoRelatorio.Salvar(correlacao);
-
             await mediator.Send(new PublicaFilaWorkerServidorRelatoriosCommand(request.RotaRelatorio, request.Filtros, request.TipoRelatorio.Name(), correlacao.Codigo, request.UsuarioLogadoRf, false, request.PerfilUsuario));
 
             return true;

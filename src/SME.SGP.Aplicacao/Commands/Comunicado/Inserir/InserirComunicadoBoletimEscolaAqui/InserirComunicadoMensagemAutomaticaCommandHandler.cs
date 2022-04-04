@@ -48,7 +48,6 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.Rollback();
                 return await Task.FromResult(false);
             }
-            throw new NotImplementedException();
         }
         private async Task InserirComunicadoTurma(Comunicado comunicado)
         {
@@ -102,7 +101,7 @@ namespace SME.SGP.Aplicacao
         }
         private static string MensagemRelatorioRaa(string urlNotificacao, Guid CodigoArquivo, string nomeAluno, int semestre)
         {
-            return $@"<p>O Relatório de Acompnhamento da Aprendizagem(RAA) do {semestre}° semestre do criança {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
+            return $@"<p>O Relatório de Acompanhamento da Aprendizagem(RAA) do {semestre}° semestre do criança {nomeAluno.ToUpper()} est&aacute; dispon&iacute;vel, clique no bot&atilde;o abaixo para fazer o download do arquivo.</p>
                     <p>OBSERVA&Ccedil;&Atilde;O: O Download deve ser realizado em at&eacute; 24 horas, ap&oacute;s&nbsp; este prazo o arquivo ser&aacute; 
                     exclu&iacute;do e caso necessite voc&ecirc; dever&aacute solicitar novamente.</p>
                     <p><strong><a href='{urlNotificacao}/api/v1/downloads/sgp/html/RAA/{CodigoArquivo.ToString()}' target='_blank'>RAA {semestre}° Semestre</a></strong></p>";
