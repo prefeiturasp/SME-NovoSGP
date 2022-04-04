@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("semestres")]
         [ProducesResponseType(typeof(IEnumerable<AcompanhamentoAlunoSemestreAuditoriaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
+        [Permissao(Permissao.AFQ_C,Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromServices] ISalvarAcompanhamentoAlunoUseCase useCase, [FromBody] AcompanhamentoAlunoDto dto)
         {
             return Ok(await useCase.Executar(dto));
@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AcompanhamentoAlunoTurmaSemestreDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
+        [Permissao(Permissao.AFQ_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAcompanhamentoAluno([FromQuery] long turmaId, string alunoId, int semestre, long componenteCurricularId, [FromServices] IObterAcompanhamentoAlunoUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroAcompanhamentoTurmaAlunoSemestreDto(turmaId, alunoId, semestre, componenteCurricularId)));
