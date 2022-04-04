@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;

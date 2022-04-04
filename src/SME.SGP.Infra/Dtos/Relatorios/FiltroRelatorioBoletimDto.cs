@@ -23,5 +23,6 @@ namespace SME.SGP.Infra
         public Usuario Usuario { get; set; }
 
         public bool ConsideraHistorico { get; set; }
+        public bool ConsideraInativo { get; set; }
     }
 }

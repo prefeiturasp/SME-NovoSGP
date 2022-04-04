@@ -7,15 +7,12 @@ using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Prometheus;
-using RabbitMQ.Client;
 using SME.SGP.Api.HealthCheck;
-using SME.SGP.Aplicacao.Servicos;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
@@ -29,7 +26,7 @@ using System.IO.Compression;
 
 namespace SME.SGP.Api
 {
-	public class Startup
+    public class Startup
     {
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
@@ -45,7 +42,7 @@ namespace SME.SGP.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseElasticApm(Configuration, 
+            app.UseElasticApm(Configuration,
                 new SqlClientDiagnosticSubscriber(),
                 new HttpDiagnosticsSubscriber());
 
@@ -98,7 +95,7 @@ namespace SME.SGP.Api
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });         
+            });
 
         }
 
@@ -141,7 +138,7 @@ namespace SME.SGP.Api
             RegistraDocumentacaoSwagger.Registrar(services);
             services.AddPolicies();
 
-            DefaultTypeMap.MatchNamesWithUnderscores = true;            
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddHealthChecks()
                     .AddNpgSql(
@@ -154,7 +151,7 @@ namespace SME.SGP.Api
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
-            });            
+            });
 
             DapperExtensionMethods.Init(servicoTelemetria);
 
