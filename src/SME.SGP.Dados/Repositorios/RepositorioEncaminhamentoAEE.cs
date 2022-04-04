@@ -178,7 +178,7 @@ namespace SME.SGP.Dados.Repositorios
                 }, new { encaminhamentoId })).FirstOrDefault();
         }
 
-        public async Task<EncaminhamentoAEEAlunoTurmaDto> ObterEncaminhamentoPorEstudante(string codigoEstudante)
+        public async Task<EncaminhamentoAEEAlunoTurmaDto> ObterEncaminhamentoPorEstudante(string estudanteCodigo, string ueCodigo)
         {
             var sql = @"select ea.id 
                             , ea.aluno_codigo as AlunoCodigo 
@@ -193,9 +193,10 @@ namespace SME.SGP.Dados.Repositorios
                          inner join ue on t.ue_id = ue.id 
                      where not ea.excluido 
                        and ea.situacao not in (4, 5)
-                       and ea.aluno_codigo = @codigoEstudante ";
+                       and ea.aluno_codigo = @estudanteCodigo
+                       and ue.ue_id = @ueCodigo";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoAEEAlunoTurmaDto>(sql, new { codigoEstudante });
+            return await database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoAEEAlunoTurmaDto>(sql, new { estudanteCodigo, ueCodigo });
         }
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int anoLetivo, int? situacao)
@@ -274,7 +275,7 @@ namespace SME.SGP.Dados.Repositorios
             var sql = @"select count(ea.id)
                          from encaminhamento_aee ea 
                      where not ea.excluido 
-                       and ea.situacao not in (4, 5, 8)
+                       and ea.situacao not in (4, 5, 8, 10)
                        and ea.aluno_codigo = @codigoEstudante ";
 
             var existeEncaminhamentoAEEAluno = await database.Conexao.QueryFirstOrDefaultAsync<int>(sql, new { codigoEstudante });
@@ -299,6 +300,25 @@ namespace SME.SGP.Dados.Repositorios
 	                        ea.id = @encaminhamentoId";
 
             return await database.Conexao.QueryAsync<EncaminhamentoAEECodigoArquivoDto>(sql.ToString(),new { encaminhamentoId });
+        }
+
+        public async Task<IEnumerable<EncaminhamentoAEEVigenteDto>> ObterEncaminhamentosVigentes()
+        {
+            const string sql = @"select ea.id as encaminhamentoid,
+                                        ea.aluno_codigo as alunocodigo,
+                                        ea.turma_id as turmaid,
+                                        t.turma_id as turmacodigo,
+                                        t.ano_letivo as anoletivo,
+                                        t.ue_id as ueid,
+                                        u.ue_id as uecodigo
+                                from encaminhamento_aee ea
+                                    inner join turma t on (t.id = ea.turma_id)
+                                    inner join ue u on (u.id = t.ue_id)
+                                where not ea.excluido
+                                and ea.situacao not in (5, 7, 8, 10)
+                                order by ea.id";
+
+            return await database.Conexao.QueryAsync<EncaminhamentoAEEVigenteDto>(sql);
         }
     }
 }

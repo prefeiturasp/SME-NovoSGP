@@ -358,5 +358,12 @@ namespace SME.SGP.Dados.Repositorios
                 return ue;
             }, new { modalidades, anoLetivo });
         }
+
+        public Task<IEnumerable<long>> ObterIdsPorDre(long dreId)
+        {
+            var query = "select id from UE where dre_id = @dreId";
+
+            return contexto.Conexao.QueryAsync<long>(query, new { dreId });
+        }
     }
 }

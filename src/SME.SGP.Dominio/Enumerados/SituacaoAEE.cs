@@ -22,5 +22,7 @@ namespace SME.SGP.Dominio.Enumerados
         Indeferido = 8,
         [Display(Name = "Devolvido pela coordenação")]
         Devolvido = 9,
+        [Display(Name = "Encerrado automaticamente")]
+        EncerradoAutomaticamente = 10
     }
 }
