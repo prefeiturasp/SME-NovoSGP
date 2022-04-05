@@ -18,7 +18,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ModalidadeRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterModalidedes([FromServices] IObterModalidadesPorUeUseCase obterModalidadesPorUeUseCase, string codigoUe, [FromQuery]int ano, [FromQuery] bool consideraNovasModalidades = false)
         {
             return Ok(await obterModalidadesPorUeUseCase.Executar(codigoUe, ano, consideraNovasModalidades));
@@ -28,7 +27,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TurmaRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterTurmas(string codigoUe, int idModalidade, [FromQuery]int ano, [FromQuery] bool historico, [FromServices]IConsultasUe consultasUe)
         {
             return Ok(await consultasUe.ObterTurmas(codigoUe, idModalidade, ano, historico));
@@ -39,7 +37,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterUesAtribuicoes(string codigoDre, [FromQuery] int anoLetivo, [FromServices] IConsultasAtribuicoes consultasAtribuicoes)
         {
             return Ok(await consultasAtribuicoes.ObterUes(codigoDre, anoLetivo));
@@ -48,7 +45,6 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("dres/{dreCodigo}/ues/{ueCodigo}/tipos-escolas")]
         [ProducesResponseType(typeof(IEnumerable<TipoEscolaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterTipoEscolaPorDreEUe(string dreCodigo, string ueCodigo, [FromQuery] int[] modalidades, [FromServices] IObterTipoEscolaPorDreEUeUseCase useCase)
         {
             return Ok(await useCase.Executar(dreCodigo, ueCodigo, modalidades));

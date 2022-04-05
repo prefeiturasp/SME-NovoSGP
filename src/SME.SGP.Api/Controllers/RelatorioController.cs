@@ -51,7 +51,6 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("calendarios/impressao")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> Calendario([FromBody] FiltroRelatorioCalendarioDto filtroRelatorioCalendarioDto, [FromServices] IRelatorioCalendarioUseCase relatorioCalendarioUseCase)
         {
             return Ok(await relatorioCalendarioUseCase.Executar(filtroRelatorioCalendarioDto));
@@ -78,7 +77,6 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("plano-aula")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> PlanoAula([FromBody] FiltroRelatorioPlanoAulaDto filtro, [FromServices] IRelatorioPlanoAulaUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));

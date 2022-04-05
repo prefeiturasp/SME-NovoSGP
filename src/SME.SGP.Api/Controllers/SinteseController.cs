@@ -17,7 +17,6 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{anoLetivo}")]
         [ProducesResponseType(typeof(IEnumerable<SinteseDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ListarSintesesPorAnoLetivo([FromServices] IObterSintesePorAnoLetivoUseCase obterSintesePorAnoLetivoUseCase, int anoLetivo)
          => Ok(await obterSintesePorAnoLetivoUseCase.Executar(anoLetivo));
     }

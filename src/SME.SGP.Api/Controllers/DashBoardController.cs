@@ -16,7 +16,6 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<DashBoard>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> Obter([FromServices] IObterDashBoardUseCase useCase)
         {
             return Ok(await useCase.Executar());

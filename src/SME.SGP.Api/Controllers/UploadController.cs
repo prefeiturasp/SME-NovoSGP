@@ -19,7 +19,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> Editor([FromServices] IUploadArquivoEditorUseCase useCase)
         {
             var files = Request.Form.Files;

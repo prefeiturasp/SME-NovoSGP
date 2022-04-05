@@ -91,6 +91,9 @@ namespace SME.SGP.Api.Teste.Controllers
                         if (customAttribute.AttributeType.Name.Equals("AllowAnonymousAttribute") || customAttribute.AttributeType.Name.Equals("PermissaoAttribute")
                                 || customAttribute.AttributeType.Name.Equals("ChaveIntegracaoSgpApi"))
                             customAttributeName.Add(customAttribute.AttributeType.Name);
+                        else if (contemAutorize)
+                            customAttributeName.Add("AuthorizeAttribute");
+
                     }
 
                     var apiMethod = new ApiMethodDto

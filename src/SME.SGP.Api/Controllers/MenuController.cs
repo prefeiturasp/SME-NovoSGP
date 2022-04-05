@@ -15,7 +15,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(IEnumerable<MenuRetornoDto>), 200)]
-        [AllowAnonymous]
         public IActionResult Get([FromServices]IServicoMenu servicoMenu)
         {
             return Ok(servicoMenu.ObterMenu());

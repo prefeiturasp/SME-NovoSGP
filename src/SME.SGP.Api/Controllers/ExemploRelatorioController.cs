@@ -12,7 +12,6 @@ namespace SME.SGP.Api.Controllers
     public class ExemploRelatorioController : ControllerBase
     {
         [HttpPost("games")]
-        [AllowAnonymous]
         public async Task<IActionResult> ExemploGames([FromBody] FiltroRelatorioGamesDto filtroRelatorioGamesDto, [FromServices] IGamesUseCase gamesUseCase)
         {
             return Ok(await gamesUseCase.Executar(filtroRelatorioGamesDto));

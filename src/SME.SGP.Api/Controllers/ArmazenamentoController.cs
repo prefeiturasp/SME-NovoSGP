@@ -17,7 +17,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         //[RequestSizeLimit(200 * 1024 * 1024)]
         public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
         {
@@ -38,7 +37,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> Download(Guid codigoArquivo, [FromServices] IDownloadDeArquivoUseCase useCase)
         {
             var (arquivo, contentType, nomeArquivo) = await useCase.Executar(codigoArquivo);
@@ -49,7 +47,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> Delete(Guid codigoArquivo, [FromServices] IExcluirArquivoUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoArquivo));

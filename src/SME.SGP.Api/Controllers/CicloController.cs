@@ -23,7 +23,6 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("filtro")]
         [ProducesResponseType(typeof(IEnumerable<CicloDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public IActionResult Filtrar(FiltroCicloDto filtroCicloDto)
         {
             return Ok(consultasCiclo.Listar(filtroCicloDto));

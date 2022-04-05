@@ -27,7 +27,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(401)]
-        [AllowAnonymous]
         public async Task<IActionResult> SincronizarAulasTurma([FromQuery] long? codigoTurma)
         {
             var dados = new DadosCriacaoAulasAutomaticasCarregamentoDto() { CodigoTurma = codigoTurma?.ToString() };

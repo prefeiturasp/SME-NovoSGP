@@ -22,7 +22,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PaginacaoResultadoDto<AlunoSimplesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterAlunos(FiltroBuscaEstudanteDto filtroBuscaAlunosDto, [FromServices] IObterAlunosPorCodigoEolNomeUseCase obterAlunosPorCodigoEolNomeUseCase)
         {
             return Ok(await obterAlunosPorCodigoEolNomeUseCase.Executar(filtroBuscaAlunosDto));
@@ -33,7 +32,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PaginacaoResultadoDto<AlunoSimplesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterAlunosParAutoCompleteAtivos(FiltroBuscaEstudantesAtivoDto filtroBuscaAlunosDto, [FromServices] IObterAlunosAtivosPorUeENomeUseCase obterAlunosAtivosPorUeENomeUseCase)
         {
             return Ok(await obterAlunosAtivosPorUeENomeUseCase.Executar(filtroBuscaAlunosDto));
@@ -43,7 +41,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterInformacoesEscolaresDoAluno([FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromServices] IObterInformacoesEscolaresDoAlunoUseCase ObterInformacoesEscolaresDoAlunoUseCase)
         {
             return Ok(await ObterInformacoesEscolaresDoAlunoUseCase.Executar(codigoAluno, codigoTurma));
@@ -53,7 +50,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AlunoReduzidoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterAlunosPorCodigo(string codigoAluno, int anoLetivo, [FromServices] IObterAlunoPorCodigoEolEAnoLetivoUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoAluno, anoLetivo));
@@ -63,7 +59,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ArquivoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterFotoAluno(string codigoAluno, [FromServices] IObterEstudanteFotoUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoAluno));
@@ -73,7 +68,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ArquivoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> SalvarFotoAluno(string codigoAluno, [FromForm] IFormFile file, [FromServices] ISalvarFotoEstudanteUseCase useCase)
         {
             if (file.Length > 0)
@@ -87,7 +81,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ArquivoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ExcluirFotoAluno(string codigoAluno, [FromServices] IExcluirEstudanteFotoUseCase useCase)
         {
 

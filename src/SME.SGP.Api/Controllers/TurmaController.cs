@@ -17,7 +17,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterAlunosTurma(string turmaCodigo, int anoLetivo, [FromServices] IConsultasTurma consultas)
            => Ok(await consultas.ObterDadosAlunos(turmaCodigo, anoLetivo));
 
@@ -25,7 +24,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioSugestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterSugestaoTipoCalendario(string turmaCodigo, [FromServices] IMediator mediator)
         {
             return Ok(await ObterTipoDeCalendarioDaTurmaUseCase.Executar(mediator, new ObterTipoDeCalendarioDaTurmaEntrada() { TurmaCodigo = turmaCodigo }));
@@ -34,7 +32,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TurmaModalidadeCodigoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterModalidades([FromQuery] string[] turmasCodigo, [FromServices] IObterTurmaModalidadesPorCodigosUseCase obterTurmaModalidadesPorCodigos)
         {
             return Ok(await obterTurmaModalidadesPorCodigos.Executar(turmasCodigo));
@@ -43,7 +40,6 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("listagem-turmas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> Listar([FromQuery]FiltroTurmaDto filtroTurmaDto, [FromServices] IListarTurmasComComponentesUseCase listarTurmasComComponentesUseCase)
         {
             var retorno = await listarTurmasComComponentesUseCase.Executar(filtroTurmaDto);

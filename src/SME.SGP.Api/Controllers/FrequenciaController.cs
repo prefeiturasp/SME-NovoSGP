@@ -51,7 +51,6 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("frequencias/notificar/alunos/faltosos")]
-        [AllowAnonymous]
         public async Task<IActionResult> NotificarAlunosFaltosos([FromServices] IServicoNotificacaoFrequencia servico)
         {
             await servico.NotificarAlunosFaltosos();
@@ -60,7 +59,6 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("frequencias/notificar/alunos/faltosos/bimestre")]
-        [AllowAnonymous]
         public async Task<IActionResult> NotificarAlunosFaltososBimestre([FromServices] IServicoNotificacaoFrequencia servico)
         {
             await servico.NotificarAlunosFaltososBimestre();

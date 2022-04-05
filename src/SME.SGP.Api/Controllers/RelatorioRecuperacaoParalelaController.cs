@@ -16,7 +16,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> Gerar(FiltroRelatorioRecuperacaoParalelaDto filtro, [FromServices] IRelatorioRecuperacaoParalelaUseCase relatorioRecuperacaoParalelaUseCase)
         {
             return Ok(await relatorioRecuperacaoParalelaUseCase.Executar(filtro));

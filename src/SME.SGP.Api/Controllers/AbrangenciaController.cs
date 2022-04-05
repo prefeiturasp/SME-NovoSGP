@@ -49,7 +49,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaFiltroRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterAbrangenciaAutoComplete(string filtro, [FromQuery]bool consideraAnosTurmasInfantil = false)
         {
             if (filtro.Length < 2)
@@ -65,7 +64,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterAnosLetivos(string codigoUe, int modalidade)
         {
             var retorno = (await consultasAbrangencia.ObterAnosTurmasPorUeModalidade(codigoUe, (Modalidade)modalidade, ConsideraHistorico));
@@ -80,7 +78,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterAnosLetivos([FromQuery] int anoMinimo)
         {
             int[] retorno = (await consultasAbrangencia.ObterAnosLetivos(ConsideraHistorico, anoMinimo)).ToArray();
@@ -95,7 +92,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterAnosLetivosTodos()
         {
             int[] retorno = (await consultasAbrangencia.ObterAnosLetivosTodos()).ToArray();
@@ -110,7 +106,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetornoDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterDres([FromServices] IObterAbrangenciaDresUseCase useCase, [FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery]  string filtro = "")
         {
              if (filtro.Length < 3)
@@ -128,7 +123,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterModalidades([FromServices] IObterModalidadesPorAnoUseCase obterModalidadesPorAnoUseCase, int anoLetivo, bool consideraNovasModalidades = false)
         {
             var retorno = await obterModalidadesPorAnoUseCase.Executar(anoLetivo, ConsideraHistorico, consideraNovasModalidades);
@@ -142,7 +136,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterSemestres([FromQuery] FiltroSemestreDto filtroSemestreDto)
         {
             var retorno = await consultasAbrangencia
@@ -159,7 +152,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] int[] tipos = null, [FromQuery] bool consideraNovosAnosInfantil = false)
         {
             IEnumerable<AbrangenciaTurmaRetorno> turmas;
@@ -180,7 +172,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterTurmasRegulares(string codigoUe, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0)
         {
             var turmas = await consultasAbrangencia.ObterTurmasRegulares(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo);
@@ -196,7 +187,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterUes([FromServices] IObterUEsPorDreUseCase useCase, string codigoDre, [FromQuery] Modalidade? modalidade, [FromQuery] int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] bool consideraNovasUEs = false, [FromQuery] bool filtrarTipoEscolaPorAnoLetivo = false, string filtro = "")
         {
 
@@ -216,7 +206,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> UsuarioAdm([FromServices] IUsuarioPossuiAbrangenciaAdmUseCase useCase)
         {
             return Ok(await useCase.Executar());
@@ -226,7 +215,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> PodeAcessarSondagem(string usuarioRF, Guid usuarioPerfil, [FromServices] IUsuarioPossuiAbrangenciaAcessoSondagemUseCase useCase)
         {
             return Ok(await useCase.Executar(usuarioRF, usuarioPerfil));
@@ -236,7 +224,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> SincronizarAbrangenciaTurmasHistoricas(string professorRf, int anoLetivo)
         {
             return Ok(await servicoAbrangencia.SincronizarAbrangenciaHistorica(anoLetivo, professorRf));
@@ -247,7 +234,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterTurmasNaoHistoricas([FromServices] IObterTurmasNaoHistoricasUseCase useCase)
         {
             return Ok(await useCase.Executar());

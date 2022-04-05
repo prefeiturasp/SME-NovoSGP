@@ -38,7 +38,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> DeletarFotos(Guid codigoFoto, [FromServices] IExcluirFotoAlunoUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoFoto));
@@ -52,7 +51,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [RequestSizeLimit(5 * 1024 * 1024)]
-        [AllowAnonymous]
         public async Task<IActionResult> UploadFoto([FromForm][FromBody] AcompanhamentoAlunoDto dto, [FromServices] ISalvarFotoAcompanhamentoAlunoUseCase useCase)
         {
             if (dto.File.Length > 0)
@@ -65,7 +63,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ArquivoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterFotos(long acompanhamentoAlunoSemestreId, [FromServices] IObterFotosSemestreAlunoUseCase useCase)
         {
             return Ok(await useCase.Executar(acompanhamentoAlunoSemestreId));

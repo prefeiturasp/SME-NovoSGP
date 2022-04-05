@@ -11,7 +11,6 @@ namespace SME.SGP.Api.Controllers
     public class VersaoController : ControllerBase
     {
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterUltimaVersao([FromServices]IObterUltimaVersaoUseCase obterUltimaVersaoUseCase)
         {
             return Ok(await obterUltimaVersaoUseCase.Executar());

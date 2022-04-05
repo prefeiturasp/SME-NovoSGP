@@ -16,7 +16,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AEESituacaoEncaminhamentoDto), 200)]
         [ProducesResponseType(typeof(AEESituacaoEncaminhamentoDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterSituacoesEncaminhamentos([FromQuery] int anoLetivo, [FromQuery] long dreId, long ueId, [FromServices] IObterEncaminhamentoAEESituacoesUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroDashboardAEEDto() { AnoLetivo = anoLetivo, 
@@ -28,7 +27,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AEETurmaDto), 200)]
         [ProducesResponseType(typeof(AEETurmaDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterEncaminhamentosDeferidos([FromQuery] int anoLetivo, [FromQuery] long dreId, long ueId, [FromServices] IObterEncaminhamentosAEEDeferidosUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroDashboardAEEDto()
@@ -43,7 +41,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AEESituacaoPlanoDto), 200)]
         [ProducesResponseType(typeof(AEESituacaoPlanoDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterSituacoesPlanos([FromQuery] int anoLetivo, [FromQuery] long dreId, long ueId, [FromServices] IObterPlanoAEESituacoesUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroDashboardAEEDto()
@@ -58,7 +55,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AEETurmaDto), 200)]
         [ProducesResponseType(typeof(AEETurmaDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterPlanosVigentes([FromQuery] int anoLetivo, [FromQuery] long dreId, long ueId, [FromServices] IObterPlanosAEEVigentesUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroDashboardAEEDto()
@@ -73,7 +69,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AEEAcessibilidadeRetornoDto), 200)]
         [ProducesResponseType(typeof(AEEAcessibilidadeRetornoDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterPlanosAcessibilidades([FromQuery] int anoLetivo, [FromQuery] long dreId, long ueId, [FromServices] IObterPlanosAEEAcessibilidadesUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroDashboardAEEDto()
@@ -88,7 +83,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AEEAcessibilidadeRetornoDto), 200)]
         [ProducesResponseType(typeof(AEEAcessibilidadeRetornoDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterAlunosMatriculadosSRMPAEE([FromQuery] int anoLetivo, [FromQuery] string dreCodigo, string ueCodigo, [FromServices] IObterAlunosMatriculadosSRMPAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroDashboardAEEDto()

@@ -17,7 +17,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
         public async Task<IActionResult> Gerar(FiltroRelatorioParecerConclusivoDto filtroRelatorioParecerConclusivoDto, [FromServices] IRelatorioParecerConclusivoUseCase relatorioParecerConclusivoUseCase)
         {
             return Ok(await relatorioParecerConclusivoUseCase.Executar(filtroRelatorioParecerConclusivoDto));

@@ -17,7 +17,6 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> Salvar([FromServices] ISalvarAcompanhamentoTurmaUseCase useCase, [FromBody] AcompanhamentoTurmaDto dto)
              => Ok(await useCase.Executar(dto));
 
@@ -26,7 +25,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AcompanhamentoTurmaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
-        [AllowAnonymous]
         public async Task<IActionResult> Obter([FromQuery] FiltroAcompanhamentoTurmaApanhadoGeral dto, [FromServices] IObterAcompanhamentoTurmaApanhadoGeralUseCase useCase)
         {
             return Ok(await useCase.Executar(dto));
@@ -36,7 +34,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ParametroQuantidadeUploadImagemDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
-        [AllowAnonymous]
         public async Task<IActionResult> ObterParametroQuantidadeImagens([FromQuery] int ano, [FromServices] IObterParametroQuantidadeImagensPercursoColetivoTurmaUseCase useCase)
         {
             return Ok(await useCase.Executar(ano));
