@@ -22,7 +22,6 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{codigoCorrelacao}")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> Download(Guid codigoCorrelacao, [FromServices] IReceberDadosDownloadRelatorioUseCase downloadRelatorioUseCase, [FromServices] ISevicoJasper servicoJasper)
         {
             var (relatorio, contentType, nomeArquivo) = await downloadRelatorioUseCase.Executar(codigoCorrelacao);
