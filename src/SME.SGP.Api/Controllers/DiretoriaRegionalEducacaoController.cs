@@ -24,6 +24,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<CicloDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_C, Policy = "Bearer")]
         public IActionResult Get()
         {
             return Ok(consultaDres.ObterTodos());

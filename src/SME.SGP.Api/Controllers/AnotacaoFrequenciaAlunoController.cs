@@ -4,7 +4,6 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,7 +19,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AnotacaoFrequenciaAlunoCompletoDto), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-
+        [Permissao(Permissao.PDA_C, Permissao.PDA_I, Permissao.PDA_A, Permissao.PDA_E, Policy = "Bearer")]
         public async Task<IActionResult> ObterJustificativaCompleto(long id, [FromServices] IObterAnotacaoFrequenciaAlunoPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(id));
@@ -64,7 +63,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-
+        [Permissao(Permissao.PDA_C, Permissao.PDA_I, Permissao.PDA_A, Permissao.PDA_E, Policy = "Bearer")]
         public async Task<IActionResult> ListarMotivos([FromServices] IObterMotivosAusenciaUseCase useCase)
         {
             var motivsoAusencia = await useCase.Executar();            

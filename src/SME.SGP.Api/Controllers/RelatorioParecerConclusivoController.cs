@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
@@ -9,6 +10,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/relatorios/pareceres-conclusivos")]
+    [Authorize("Bearer")]
     public class RelatorioParecerConclusivoController : ControllerBase
     {
         [HttpPost]

@@ -4,12 +4,14 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/acompanhamento/turmas")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class AcompanhamentoTurmaController : Controller
     {
         [HttpPost("")]

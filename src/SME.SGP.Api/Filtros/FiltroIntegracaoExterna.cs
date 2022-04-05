@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SME.SGP.Api.Filtros
 {
-	public class FiltroIntegracaoExterna : IOperationFilter
+    public class FiltroIntegracaoExterna : IOperationFilter
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
