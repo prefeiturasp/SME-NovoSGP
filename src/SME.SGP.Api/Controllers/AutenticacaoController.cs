@@ -135,7 +135,6 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("revalidar")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(UsuarioReinicioSenhaDto), 200)]
-        [AllowAnonymous]
         public async Task<IActionResult> Revalidar()
         {
             var tokenRetorno = await comandosUsuario.RevalidarLogin();
@@ -149,7 +148,6 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("sair")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public IActionResult Sair()
         {
             comandosUsuario.Sair();
@@ -159,7 +157,6 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("solicitar-recuperacao-senha")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
         public async Task<IActionResult> SolicitarRecuperacaoSenha(string login)
         {
             return Ok(await comandosUsuario.SolicitarRecuperacaoSenha(login));
