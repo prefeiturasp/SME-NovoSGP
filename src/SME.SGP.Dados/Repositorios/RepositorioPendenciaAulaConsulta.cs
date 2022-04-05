@@ -77,7 +77,7 @@ namespace SME.SGP.Dados.Repositorios
             }, splitOn: "Id", commandTimeout: 60);
         }
 
-        public async Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, int bimestre, bool professorCj,bool professorTitular,string professorRf="")
+        public async Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, int bimestre, bool professorCj, bool professorTitular, string professorRf = "")
         {
             var sqlQuery = new StringBuilder(@"select 1 
                           from pendencia_aula pa
@@ -105,15 +105,45 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula between pe.periodo_inicio and pe.periodo_fim
                            limit 1");
 
-                return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
-                new
-                {
-                    turmaId,
-                    disciplinaId,
-                    tipo = (int)tipoPendenciaAula,
-                    bimestre,
-                    professorRf
-                }, commandTimeout: 60);
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
+            new
+            {
+                turmaId,
+                disciplinaId,
+                tipo = (int)tipoPendenciaAula,
+                bimestre,
+                professorRf
+            }, commandTimeout: 60);
+        }
+
+        public async Task<bool> PossuiPendenciaDiarioBordo(string disciplinaId, string turmaId, int bimestre, bool professorCj, bool professorTitular, string professorRf = "")
+        {
+            var sqlQuery = new StringBuilder(@"select 1 
+                          from pendencia_diario_bordo pdb
+                         inner join aula a on a.id = pdb.aula_id 
+                         inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id ");
+
+            if (professorTitular)
+                sqlQuery.AppendLine(" and not a.aula_cj ");
+            else if (professorCj)
+                sqlQuery.AppendLine(" and a.aula_cj and pdb.professor_rf = @professorRf");
+
+            sqlQuery.AppendLine(@" where pe.bimestre = @bimestre
+                           and a.turma_id = @turmaId
+                           and pdb.componente_curricular_id = @compCurricularId 
+                           and a.data_aula between pe.periodo_inicio and pe.periodo_fim
+                           limit 1");
+
+            int compCurricularId = Convert.ToInt32(disciplinaId);
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
+            new
+            {
+                turmaId,
+                compCurricularId,
+                bimestre,
+                professorRf
+            }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, int anoLetivo)
