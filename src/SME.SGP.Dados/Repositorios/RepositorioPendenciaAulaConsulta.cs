@@ -116,33 +116,37 @@ namespace SME.SGP.Dados.Repositorios
             }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<PossuiPendenciaDiarioBordoDto>> PossuiPendenciaDiarioBordo(string disciplinaId, bool professorCj, string turmaId, string professorRf = "")
+        public async Task<IEnumerable<PossuiPendenciaDiarioBordoDto>> TurmasPendenciaDiarioBordo(IEnumerable<long> aulasId, string turmaId, int bimestre)
         {
-            var sqlQuery = new StringBuilder(@"select  DISTINCT (pe.bimestre) as Bimestre , a.aula_cj as AulaCJ
-                          from pendencia_diario_bordo pdb
-                         inner join aula a on a.id = pdb.aula_id 
-                         inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id ");
+            var sqlQuery = new StringBuilder(@"select DISTINCT a.turma_id as TurmaId, a.aula_cj as AulaCJ
+                                                  from aula a
+                                                  inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id ");
 
-            if (professorCj)
-                sqlQuery.AppendLine(" and a.aula_cj and pdb.professor_rf = @professorRf");
+            sqlQuery.AppendLine(@" where a.data_aula between pe.periodo_inicio and pe.periodo_fim
+                                    and a.turma_id = @turmaId and pe.bimestre = @bimestre and a.id = ANY(@aulas) ");
 
-            sqlQuery.AppendLine(@" where pdb.componente_curricular_id = @compCurricularId 
-                                   and a.data_aula between pe.periodo_inicio and pe.periodo_fim
-                                    and a.turma_id = @turmaId limit 4 
+            return await database.Conexao.QueryAsync<PossuiPendenciaDiarioBordoDto>(sqlQuery.ToString(),
+               new
+               {
+                   turmaId,
+                   aulas = aulasId.ToArray(),
+               }, commandTimeout: 60);
+        }
 
-");
+        public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf)
+        {
+            var sqlQuery = new StringBuilder(@"select distinct pdb.aula_id
+                                                    from pendencia_diario_bordo pdb
+                                            where pdb.componente_curricular_id = @disciplinaId and pdb.professor_rf = @professorRf");
 
-            int compCurricularId = Convert.ToInt32(disciplinaId);
+            var disciplinaId = Convert.ToInt32(componenteCurricularId);
 
-           return await database.Conexao.QueryAsync<PossuiPendenciaDiarioBordoDto>(sqlQuery.ToString(),
-           new
-           {
-               turmaId,
-               compCurricularId,
-               professorRf
-           }, commandTimeout: 60);
-
-
+            return await database.Conexao.QueryAsync<long>(sqlQuery.ToString(),
+               new
+               {
+                   professorRf,
+                   disciplinaId
+               }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, int anoLetivo)
