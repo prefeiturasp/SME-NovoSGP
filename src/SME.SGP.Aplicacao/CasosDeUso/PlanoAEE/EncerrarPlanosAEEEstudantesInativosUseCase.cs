@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                     if (turma != null && (turma.AnoLetivo != anoLetivo))
                         etapaConcluida = DeterminaEtapaConcluida(matriculas, planoAEE.AlunoCodigo, turma, turmaAtual, ref ultimaMatricula);
 
-                    if (!matriculas?.Any(a => a.EstaAtivo(DateTime.Today)) ?? true || etapaConcluida)
+                    if ((!matriculas?.Any(a => a.EstaAtivo(DateTime.Today)) ?? true) || etapaConcluida)
                     {
                         if (ultimaMatricula == null)
                             ultimaMatricula = matriculas?.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
