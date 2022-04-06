@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
                 var alunoTurma = await mediator
                     .Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo));
-                
+
                 if (alunoTurma == null)
                     throw new NegocioException("Aluno não encontrado.");
 
@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var alunoPorTurmaResposta = await mediator
-                    .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.EhTurmaHistorica, false));
+                    .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, false));
 
                 if (alunoPorTurmaResposta == null)
                     throw new NegocioException("Aluno não localizado");
