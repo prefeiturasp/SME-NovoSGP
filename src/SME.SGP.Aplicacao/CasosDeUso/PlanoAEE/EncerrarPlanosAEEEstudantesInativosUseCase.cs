@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
+    /// <summary>
+    /// Método de encerramento de planos para alunos que estejam inativos e com situação concluída.
+    /// </summary>
     public class EncerrarPlanosAEEEstudantesInativosUseCase : AbstractUseCase, IEncerrarPlanosAEEEstudantesInativosUseCase
     {
         public EncerrarPlanosAEEEstudantesInativosUseCase(IMediator mediator)
@@ -34,7 +37,7 @@ namespace SME.SGP.Aplicacao
                     if (turma != null && (turma.AnoLetivo != anoLetivo))
                         etapaConcluida = DeterminaEtapaConcluida(matriculas, planoAEE.AlunoCodigo, turma, turmaAtual, ref ultimaMatricula);
 
-                    if (!matriculas?.Any(a => a.EstaAtivo(DateTime.Today)) ?? true || etapaConcluida)
+                    if ((!matriculas?.Any(a => a.EstaAtivo(DateTime.Today)) ?? true) || etapaConcluida)
                     {
                         if (ultimaMatricula == null)
                             ultimaMatricula = matriculas?.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
