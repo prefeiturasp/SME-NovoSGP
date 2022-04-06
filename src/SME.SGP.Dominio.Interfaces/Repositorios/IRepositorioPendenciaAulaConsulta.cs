@@ -21,6 +21,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long> ObterPendenciaAulaIdPorAulaId(long aulaId, TipoPendencia tipoPendencia);
         Task<IEnumerable<long>> ObterPendenciaIdPorAula(long aulaId, TipoPendencia tipoPendencia);
         Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, int bimestre,bool professorCj, bool professorNaoCj, string professorRf = "");
-        Task<bool> PossuiPendenciaDiarioBordo(string disciplinaId, string turmaId, int bimestre, bool professorCj, bool professorTitular, string professorRf = "");
+        Task<IEnumerable<PossuiPendenciaDiarioBordoDto>> PossuiPendenciaDiarioBordo(string disciplinaId, bool professorCj, string turmaId, string professorRf = "");
     }
 }
