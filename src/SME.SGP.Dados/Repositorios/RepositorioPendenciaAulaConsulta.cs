@@ -267,29 +267,37 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<long>(query, new { aulaId, tipoPendencia });
         }
 
-        public async Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil)
+        public async Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil, long[] componentesCurricularesId)
         {
-            var sql = ehInfantil ? $@"select 1
-                        from aula
-                        inner join turma on aula.turma_id = turma.turma_id
-	                    left join registro_frequencia rf on aula.id = rf.aula_id
-                        where not aula.excluido
-	                        and aula.id = ANY(@aulas)
-                            and aula.data_aula::date < @hoje
-                            and (rf.id is null)
-	                        " :
-                               $@"select 1
-                        from aula
-                        inner join turma on aula.turma_id = turma.turma_id
-                        inner join componente_curricular cc on cc.id = aula.disciplina_id::bigint
-	                    left join registro_frequencia rf on aula.id = rf.aula_id
-                        where not aula.excluido
-	                        and aula.id = ANY(@aulas)
-                            and aula.data_aula::date < @hoje
-                            and rf.id is null 
-                            and cc.permite_registro_frequencia";
+            string sql;
+            if (ehInfantil)
+            {
+                sql = @"SELECT 1  
+                        FROM aula
+                        INNER JOIN turma ON aula.turma_id = turma.turma_id
+                        LEFT JOIN registro_frequencia rf ON aula.id = rf.aula_id
+                        LEFT JOIN pendencia_diario_bordo pdb ON pdb.aula_id = aula.id
+                        LEFT JOIN componente_curricular cc ON cc.id = pdb.componente_curricular_id and pdb.componente_curricular_id = any(@componentesCurricularesId)
+                        WHERE NOT aula.excluido
+                        AND aula.id = ANY(@aulas)
+                        AND aula.data_aula::date < @hoje
+                        AND (rf.id is null or pdb.id is not null) ";
+            }
+            else
+            {
+                sql = @"SELECT 1 FROM aula
+                        INNER JOIN turma ON aula.turma_id = turma.turma_id
+                        INNER JOIN componente_curricular cc ON cc.id = aula.disciplina_id::bigint
+	                    LEFT JOIN registro_frequencia rf ON aula.id = rf.aula_id
+                        WHERE NOT aula.excluido
+	                    AND aula.id = ANY(@aulas)
+                        AND aula.data_aula::date < @hoje
+                        AND rf.id is null 
+                        AND cc.permite_registro_frequencia ";
+            }
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date, componentesCurricularesId }));
+
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
