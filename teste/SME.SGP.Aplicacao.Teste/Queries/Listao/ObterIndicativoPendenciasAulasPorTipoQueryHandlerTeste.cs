@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Moq;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,11 +27,20 @@ namespace SME.SGP.Aplicacao.Teste.Queries
         }
 
         [Fact]
-        public async Task Deve_Verificar_Se_Nao_Ha_Pendencia_Diario_Bordo()
+        public async Task Deve_Verificar_Se_Ha_Pendencia_Diario_Bordo()
         {
             //Arrange
-            repositorioPendenciaAula.Setup(x => x.PossuiPendenciaDiarioBordo("512", "2386241", 1, false, true, ""))
-                .ReturnsAsync(false);
+
+            var dados = new List<PossuiPendenciaDiarioBordoDto>();
+            dados.Add(new PossuiPendenciaDiarioBordoDto()
+            {
+                TurmaId = "2386241",
+                Bimestre = 1,
+                AulaCJ = false
+            });
+
+            repositorioPendenciaAula.Setup(x => x.PossuiPendenciaDiarioBordo("512", false, "2386241", ""))
+                .ReturnsAsync(dados);
 
             mediator.Setup(x => x.Send(It.IsAny<ObterIndicativoPendenciasAulasPorTipoQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(new Infra.PendenciaPaginaInicialListao() { PendenciaDiarioBordo = true }) ;
@@ -40,7 +50,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
 
             // Assert
             Assert.NotNull(retornoConsulta);
-            Assert.False(retornoConsulta.PendenciaDiarioBordo,"O usuário não possui nenhuma pendência do diário a ser resolvida!");
+            Assert.True(retornoConsulta.PendenciaDiarioBordo,"O usuário possui pendência do diário a ser resolvida!");
         }
     }
 }

@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,9 +20,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PendenciaPaginaInicialListao> Handle(ObterIndicativoPendenciasAulasPorTipoQuery request, CancellationToken cancellationToken)
         {
+            var pendenciasDiarioBordo = await repositorioPendenciaAula.PossuiPendenciaDiarioBordo(request.DisciplinaId, request.ProfessorCj, request.TurmaId, request.ProfessorRf);
+            if (request.ProfessorNaoCj)
+                pendenciasDiarioBordo = pendenciasDiarioBordo.Where(p => !p.AulaCJ);
 
-            var temPendenciaDiarioBordo = request.VerificaDiarioBordo &&
-            await repositorioPendenciaAula.PossuiPendenciasPorTipo(request.DisciplinaId, request.TurmaId, TipoPendencia.DiarioBordo, request.Bimestre, request.ProfessorCj, request.ProfessorNaoCj, request.ProfessorRf);
+            bool validaSeTemPendenciaDiarioBordo = pendenciasDiarioBordo.Any(p => p.TurmaId == request.TurmaId && p.Bimestre == request.Bimestre);
+
+            var temPendenciaDiarioBordo = request.VerificaDiarioBordo && validaSeTemPendenciaDiarioBordo;
 
             var temPendenciaAvaliacao = request.VerificaAvaliacao &&
                 await repositorioPendenciaAula.PossuiPendenciasPorTipo(request.DisciplinaId, request.TurmaId, TipoPendencia.Avaliacao, request.Bimestre, request.ProfessorCj, request.ProfessorNaoCj, request.ProfessorRf);
