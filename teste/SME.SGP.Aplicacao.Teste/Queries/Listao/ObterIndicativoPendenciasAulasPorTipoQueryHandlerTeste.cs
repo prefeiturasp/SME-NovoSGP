@@ -39,7 +39,13 @@ namespace SME.SGP.Aplicacao.Teste.Queries
                 AulaCJ = false
             });
 
-            repositorioPendenciaAula.Setup(x => x.PossuiPendenciaDiarioBordo("512", false, "2386241", ""))
+            var aulas = new List<long>();
+            aulas.Add(123);
+
+            repositorioPendenciaAula.Setup(x => x.TrazerAulasComPendenciasDiarioBordo("512","7941706"))
+                .ReturnsAsync(aulas);
+
+            repositorioPendenciaAula.Setup(x => x.TurmasPendenciaDiarioBordo(aulas, "2386241", 1))
                 .ReturnsAsync(dados);
 
             mediator.Setup(x => x.Send(It.IsAny<ObterIndicativoPendenciasAulasPorTipoQuery>(), It.IsAny<CancellationToken>()))
