@@ -13,11 +13,13 @@ namespace SME.SGP.Dados
             this.database = database;
         }
 
-        public Task<ConselhoClasseConsolidadoTurmaAlunoNota> ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoNotaAsync(long consolidadoTurmaAlunoId, int bimestre, long? componenteCurricularId)
+        public Task<ConselhoClasseConsolidadoTurmaAlunoNota> ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoNotaAsync(long consolidadoTurmaAlunoId, int? bimestre, long? componenteCurricularId)
         {
             var query = $@" select id,consolidado_conselho_classe_aluno_turma_id,bimestre,nota,conceito_id,componente_curricular_id    
                             from consolidado_conselho_classe_aluno_turma_nota
-                            where consolidado_conselho_classe_aluno_turma_id = @consolidadoTurmaAlunoId and bimestre = @bimestre";
+                            where consolidado_conselho_classe_aluno_turma_id = @consolidadoTurmaAlunoId ";
+
+            query += (bimestre.HasValue && bimestre.Value > 0) ? " and bimestre = @bimestre " : " and bimestre is null ";
 
             if (componenteCurricularId.HasValue)
                 query += " and componente_curricular_id = @componenteCurricularId";
