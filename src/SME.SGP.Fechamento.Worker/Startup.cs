@@ -35,7 +35,7 @@ namespace SME.SGP.Fechamento.Worker
             services.AddApplicationInsightsTelemetry(configuration);
             services.AddPolicies();
             ConfiguraVariaveisAmbiente(services);
-            RegistraDependencias.Registrar(services, configuracaoRabbitOptions);
+            new RegistraDependencias().Registrar(services, configuracaoRabbitOptions);
 
             ConfiguraRabbitParaLogs(services);
             ConfiguraTelemetria(services);

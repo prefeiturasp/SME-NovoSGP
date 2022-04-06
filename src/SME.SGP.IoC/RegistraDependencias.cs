@@ -61,7 +61,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutaSyncGsaGoogleClassroomUseCase, ExecutaSyncGsaGoogleClassroomUseCase>();
         }
 
-        private virtual void RegistrarRabbit(IServiceCollection services, ConfiguracaoRabbitOptions configRabbit)
+        public virtual void RegistrarRabbit(IServiceCollection services, ConfiguracaoRabbitOptions configRabbit)
         {
             services.AddRabbit(configRabbit);
         }
@@ -498,7 +498,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoFechamentoFinal, ServicoFechamentoFinal>();
             services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
-            services.TryAddScoped<IServicoFila, FilaRabbit>();
             services.TryAddScoped<IServicoTelemetria, ServicoTelemetria>();
         }
 

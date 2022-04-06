@@ -228,7 +228,7 @@ namespace SME.SGP.Aplicacao
             var fechamentosIds = fechamentosTurmaDisciplina?.Select(a => a.Id).ToArray() ?? new long[] { };
             var notasBimestrais = await repositorioFechamentoNota.ObterPorFechamentosTurma(fechamentosIds);
 
-            foreach (var periodoEscolar in periodosEscolares)
+            foreach (var nota in notasBimestrais.Where(a => a.Bimestre.HasValue))
             {
                 var notaParaAdicionar = ehNota ?
                                             nota?.Nota.ToString() :
