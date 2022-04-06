@@ -38,6 +38,7 @@ namespace SME.SGP.Aplicacao
                 {
                     case SituacaoMatriculaAluno.Ativo:
                     case SituacaoMatriculaAluno.Rematriculado:
+                    case SituacaoMatriculaAluno.Concluido:
                         {
                             if (entidadePlano.AlteradoEm?.Year != null)
                                 anoLetivo = (int)entidadePlano.AlteradoEm?.Year;
