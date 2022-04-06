@@ -118,7 +118,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PossuiPendenciaDiarioBordoDto>> PossuiPendenciaDiarioBordo(string disciplinaId, bool professorCj, string turmaId, string professorRf = "")
         {
-            var sqlQuery = new StringBuilder(@"select a.turma_id, pe.bimestre 
+            var sqlQuery = new StringBuilder(@"select  DISTINCT (pe.bimestre) as Bimestre , a.aula_cj as AulaCJ
                           from pendencia_diario_bordo pdb
                          inner join aula a on a.id = pdb.aula_id 
                          inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id ");
