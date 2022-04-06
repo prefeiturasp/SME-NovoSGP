@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
+    /// <summary>
+    /// Método de encerramento de planos para alunos que estejam inativos e com situação concluída.
+    /// </summary>
     public class EncerrarPlanosAEEEstudantesInativosUseCase : AbstractUseCase, IEncerrarPlanosAEEEstudantesInativosUseCase
     {
         public EncerrarPlanosAEEEstudantesInativosUseCase(IMediator mediator)
