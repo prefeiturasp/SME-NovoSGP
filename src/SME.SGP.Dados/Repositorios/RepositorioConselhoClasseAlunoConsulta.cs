@@ -154,7 +154,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoFechamentoConselhoFinalDto>(query, new { turmasCodigos, alunoCodigo });
         }
 
-        public async Task<IEnumerable<long>> ObterComponentesPorAlunoTurmaBimestreAsync(string alunoCodigo, int bimestre, long turmaId)
+        public async Task<IEnumerable<long>> ObterComponentesPorAlunoTurmaBimestreAsync(string alunoCodigo, int? bimestre, long turmaId)
         {
             var query = new StringBuilder(@"select coalesce(ccn.componente_curricular_codigo, ftd.disciplina_id) as ComponenteCurricularId 
                             from conselho_classe_aluno cca 
@@ -171,7 +171,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        where cca.aluno_codigo = @alunoCodigo
 	                        and ft.turma_id  = @turmaId");
 
-            if (bimestre > 0)
+            if (bimestre.HasValue)
                 query.AppendLine(" and pe.bimestre = @bimestre ");
             else
                 query.AppendLine(" and ft.periodo_escolar_id is null ");

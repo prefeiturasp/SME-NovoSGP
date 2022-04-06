@@ -1,15 +1,13 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesComNotaDeFechamentoOuConselhoQuery : IRequest<IEnumerable<ComponenteCurricularDto>>
     {
-        public ObterComponentesComNotaDeFechamentoOuConselhoQuery(int anoLetivo, long turmaId, int bimestre, string codigoAluno)
+        public ObterComponentesComNotaDeFechamentoOuConselhoQuery(int anoLetivo, long turmaId, int? bimestre, string codigoAluno)
         {
             AnoLetivo = anoLetivo;
             TurmaId = turmaId;
@@ -19,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public int AnoLetivo;
         public long TurmaId;
-        public int Bimestre;
+        public int? Bimestre;
         public string CodigoAluno;
 
 

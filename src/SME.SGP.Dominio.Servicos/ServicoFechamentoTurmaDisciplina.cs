@@ -326,7 +326,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 AlunoCodigo = AlunoCodigo,
                 TurmaId = turma.Id,
-                Bimestre = bimestre,
+                Bimestre = bimestre > 0 ? bimestre : null,
                 AnoLetivo = turma.AnoLetivo,
                 Nota = fechamentoNota.Nota,
                 ConceitoId = fechamentoNota.ConceitoId,

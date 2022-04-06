@@ -6,7 +6,5 @@
         {
             return ehModalidadeInfantil ? (bimestre <= 2 ? " <=2 " : " > 2") : " = @bimestre";
         }
-
-        public const int AbaFinal = 0;
     }
 }
