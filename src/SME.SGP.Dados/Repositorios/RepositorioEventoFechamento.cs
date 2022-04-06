@@ -9,12 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Consts;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioEventoFechamento : RepositorioBase<EventoFechamento>, IRepositorioEventoFechamento
     {
-        public RepositorioEventoFechamento(ISgpContextConsultas database) : base(database)
+        public RepositorioEventoFechamento(ISgpContext database) : base(database)
         {
         }        
     }

@@ -166,9 +166,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [AllowAnonymous]
-        public IActionResult TokenRecuperacaoSenhaEstaValido(Guid token)
+        public async Task<IActionResult> TokenRecuperacaoSenhaEstaValidoAsync(Guid token)
         {
-            return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(token));
+            return Ok(await comandosUsuario.TokenRecuperacaoSenhaEstaValido(token));
         }
     }
 }

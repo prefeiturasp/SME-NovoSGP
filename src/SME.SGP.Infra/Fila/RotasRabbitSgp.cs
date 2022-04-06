@@ -106,6 +106,8 @@
 
         public const string ConsolidacaoFrequenciasTurmasCarregar = "sgp.frequencia.turma.carregar";
         public const string ConsolidarFrequenciasTurmasNoAno = "sgp.frequencia.turma.ano.consolidar";
+        public const string ConsolidarFrequenciasTurmasPorDre = "sgp.frequencia.turma.dre.consolidar";
+        public const string ConsolidarFrequenciasTurmasPorUe = "sgp.frequencia.turma.ue.consolidar";
         public const string ConsolidarFrequenciasPorTurma = "sgp.frequencia.turma.consolidar";
 
         public const string ConsolidacaoMatriculasTurmasDreCarregar = "sgp.matricula.turma.consolidar.dre.carregar";

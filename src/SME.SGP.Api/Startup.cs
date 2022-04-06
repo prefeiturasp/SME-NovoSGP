@@ -124,7 +124,7 @@ namespace SME.SGP.Api
             ConfiguraRabbitParaLogs(services);
             var telemetriaOptions = ConfiguraTelemetria(services);
 
-            RegistraDependencias.Registrar(services, configuracaoRabbitOptions);
+            new RegistraDependencias().Registrar(services, configuracaoRabbitOptions);
 
             var serviceProvider = services.BuildServiceProvider();
 
