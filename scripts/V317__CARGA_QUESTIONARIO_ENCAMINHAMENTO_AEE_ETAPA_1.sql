@@ -29,17 +29,17 @@ begin
 		values(questionarioId, 2, 'Estudante está ou esteve matriculado em classe ou escola especializada', '', true, 3, '', NOW(), 'SISTEMA', '0')
 		RETURNING id INTO questaoId;
 
-	-- 3 - Qual último período/ano em que o estudante frequentou ​classe ou escola especializada (Obrigatório)
+	-- 3 - Qual o último período/ano em que o estudante frequentou classe ou escola especializada (Obrigatório)
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf)
-		values(questionarioId, 3, 'Qual último período/ano em que o estudante frequentou ​classe ou escola especializada', '', true, 2, '', NOW(), 'SISTEMA', '0')
+		values(questionarioId, 3, 'Qual o último período/ano em que o estudante frequentou classe ou escola especializada', '', true, 2, '', NOW(), 'SISTEMA', '0')
 		RETURNING id INTO questaoComplementarId;
 
 	insert into opcao_resposta (questao_id, questao_complementar_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, questaoComplementarId, 1, 'Sim', NOW(), 'SISTEMA', '0');
 
-	-- 3 - Qual último período/ano em que o estudante frequentou ​classe ou escola especializada (Não Obrigatório)
+	-- 3 - Qual o último período/ano em que o estudante frequentou classe ou escola especializada (Não Obrigatório)
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf)
-		values(questionarioId, 3, 'Qual último período/ano em que o estudante frequentou ​classe ou escola especializada', '', false, 2, '', NOW(), 'SISTEMA', '0')
+		values(questionarioId, 3, 'Qual o último período/ano em que o estudante frequentou classe ou escola especializada', '', false, 2, '', NOW(), 'SISTEMA', '0')
 		RETURNING id INTO questaoComplementarId;
 
 	insert into opcao_resposta (questao_id, questao_complementar_id, ordem, nome, criado_em, criado_por, criado_rf)

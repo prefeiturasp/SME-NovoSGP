@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var usuarioCoreSSO = await mediator.Send(new ObterUsuarioCoreSSOQuery(responsavel.CodigoRf));
+            var usuarioCoreSSO = responsavel != null ? await mediator.Send(new ObterUsuarioCoreSSOQuery(responsavel.CodigoRf)) : null;
 
             if (usuarioCoreSSO != null && !string.IsNullOrEmpty(usuarioCoreSSO.Nome))
                 responsavel.Nome = usuarioCoreSSO.Nome;

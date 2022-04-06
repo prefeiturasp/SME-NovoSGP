@@ -11,6 +11,10 @@ namespace SME.SGP.Aplicacao
         {
             CodigosAluno = codigosAluno;
         }
+        public ObterAlunosEolPorCodigosQuery(long codigoAluno)
+        {
+            CodigosAluno = new long[] { codigoAluno } ;
+        }
 
         public long[] CodigosAluno { get; set; }
     }

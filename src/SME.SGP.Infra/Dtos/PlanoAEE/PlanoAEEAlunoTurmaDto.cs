@@ -19,5 +19,17 @@ namespace SME.SGP.Infra
         public DateTime CriadoEm { get; set; }
         public int Versao { get; set; }
         public DateTime DataVersao { get; set; }
+
+        public string ObterVersaoPlano()
+            => $"v{Versao} ({DataVersao:dd/MM/yyyy})";
+
+        public bool EhAtendidoAEE()
+            => (Situacao != SituacaoPlanoAEE.Encerrado && Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente);
+
+        public string NomeTurmaFormatado()
+            => $"{TurmaModalidade.ShortName()} - {TurmaNome}";
+
+        public string SituacaoPlano()
+            => Situacao != 0 ? Situacao.Name() : "";
     }
 }

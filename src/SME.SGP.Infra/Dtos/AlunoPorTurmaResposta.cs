@@ -37,7 +37,7 @@ namespace SME.SGP.Infra
         public string TipoResponsavel { get; set; }
         public string CelularResponsavel { get; set; }
         public DateTime DataAtualizacaoContato { get; set; }
-                
+
         public bool Inativo
         {
             get => !(new[] { SituacaoMatriculaAluno.Ativo,

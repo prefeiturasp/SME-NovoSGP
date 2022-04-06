@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosEolPorCodigos
         {
             var alunos = new List<TurmasDoAlunoDto>();
 
-            var codigosAlunos = String.Join("&codigosAluno=", request.CodigosAluno);
+            var codigosAlunos = string.Join("&codigosAluno=", request.CodigosAluno);
 
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var resposta = await httpClient.GetAsync($"alunos/alunos?codigosAluno={codigosAlunos}");
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosEolPorCodigos
                 var json = await resposta.Content.ReadAsStringAsync();
                 alunos = JsonConvert.DeserializeObject<List<TurmasDoAlunoDto>>(json);
             }
-            return alunos;
+            return alunos.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderByDescending(a => a.DataSituacao).Take(1));
         }
     }
 }
