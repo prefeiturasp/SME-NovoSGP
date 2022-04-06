@@ -16,7 +16,7 @@ namespace SME.SGP.TesteIntegracao.Setup
 {
     public class RegistradorDependencias : RegistraDependencias
     {
-        protected override void RegistrarRabbit(IServiceCollection services, ConfiguracaoRabbitOptions configRabbit)
+        public override void RegistrarRabbit(IServiceCollection services, ConfiguracaoRabbitOptions configRabbit)
         {
             //Não registra Rabbit
         }
