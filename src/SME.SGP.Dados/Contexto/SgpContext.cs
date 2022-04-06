@@ -9,14 +9,21 @@ namespace SME.SGP.Dados.Contexto
 {
     public class SgpContext : ISgpContext
     {
-        private readonly NpgsqlConnection conexao;
+        private readonly IDbConnection conexao; //Raphael - Trocado classe concreta de PgConnection pra IDbConnection
         private readonly IContextoAplicacao contextoAplicacao;
-        
+
         public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao, string stringConexao = "SGP_Postgres")
         {
             conexao = new NpgsqlConnection(configuration.GetConnectionString(stringConexao));
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
             Open();
+        }
+
+        //Ctor para ser usado com o teste.
+        public SgpContext(IDbConnection conexao, IContextoAplicacao contextoAplicacao)
+        {
+            this.conexao = conexao;
+            this.contextoAplicacao = contextoAplicacao;
         }
 
         public IDbConnection Conexao
