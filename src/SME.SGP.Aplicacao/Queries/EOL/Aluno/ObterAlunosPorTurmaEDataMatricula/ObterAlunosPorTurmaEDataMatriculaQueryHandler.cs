@@ -20,9 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEDataMatriculaQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $"turmas/{request.CodigoTurma}/data-matricula-ticks/{request.DataMatricula.Ticks}";
-            try
-            {
+            var url = $"turmas/{request.CodigoTurma}/data-matricula-ticks/{request.DataMatricula.Ticks}";            
                 var resposta = await httpClient.GetAsync(url);
                 if (resposta.IsSuccessStatusCode)
                 {
@@ -33,12 +31,7 @@ namespace SME.SGP.Aplicacao
                 {
                     string erro = $"Não foi possível obter os alunos da turma de data aula no EOL - HttpCode {(int)resposta.StatusCode}";
                     throw new NegocioException(erro);
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+                }           
         }
     }
 }
