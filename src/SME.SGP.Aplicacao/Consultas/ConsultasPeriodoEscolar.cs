@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao.Consultas
             if (periodoAtual != null)
                 periodos.Add(periodoAtual);
 
-            periodos.AddRange(await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(ueId));
+            periodos.AddRange(await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(ueId, anoLetivo));
 
             return periodos;
         }
@@ -163,7 +163,7 @@ namespace SME.SGP.Aplicacao.Consultas
 
         public async Task<PeriodoEscolar> ObterUltimoPeriodoAbertoAsync(Turma turma)
         {
-            var periodosAberto = await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(turma.UeId);
+            var periodosAberto = await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(turma.UeId, turma.AnoLetivo);
 
             var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre)
                 ?? throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");

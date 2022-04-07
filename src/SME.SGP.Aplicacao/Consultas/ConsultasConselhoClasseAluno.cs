@@ -245,7 +245,8 @@ namespace SME.SGP.Aplicacao
                 Enumerable.Empty<RegistroFrequenciaAlunoBimestreDto>();
 
             var gruposMatrizes = disciplinasDaTurma.Where(c => c.GrupoMatrizNome != null && c.LancaNota).OrderBy(d => d.GrupoMatrizId).GroupBy(c => c.GrupoMatrizId).ToList();
-            var visualizaNotas = (!dadosAluno.EstaInativo() && dadosAluno.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date) || 
+            var visualizaNotas = (periodoEscolar is null && !dadosAluno.EstaInativo()) ||
+                                 (!dadosAluno.EstaInativo() && dadosAluno.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date) || 
                                  (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date > periodoEscolar.PeriodoFim.Date);
 
             foreach (var grupoDisiplinasMatriz in gruposMatrizes)
