@@ -28,12 +28,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task ConsolidarFrequenciasTurmas(int ano, double percentualMinimo, double percentualMinimoInfantil)
         {
-            var turmas = await mediator.Send(new ObterTurmasComModalidadePorAnoQuery(ano));
-            foreach (var turma in turmas)
-            {
-                var filtro = new FiltroConsolidacaoFrequenciaTurma(turma.TurmaId, turma.TurmaCodigo, turma.ModalidadeInfantil ? percentualMinimoInfantil : percentualMinimo);
+            var dres = await mediator.Send(new ObterIdsDresQuery());
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarFrequenciasPorTurma, filtro, Guid.NewGuid(), null));
+            foreach(var dre in dres)
+            {
+                var filtro = new FiltroConsolidacaoFrequenciaTurmaPorDre(ano, dre, percentualMinimo, percentualMinimoInfantil);
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarFrequenciasTurmasPorDre, filtro, Guid.NewGuid(), null));
             }
         }
     }

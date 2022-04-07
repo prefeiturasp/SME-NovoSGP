@@ -76,6 +76,9 @@
         public const string RotaNotificacaoRegistroConclusaoEncaminhamentoAEE = "notificacao.registro.conclusao.encaminhamentoaee";
         public const string RotaNotificacaoEncerramentoEncaminhamentoAEE = "notificacao.encerramento.encaminhamentoaee";
         public const string RotaNotificacaoDevolucaoEncaminhamentoAEE = "notificacao.devolucao.encaminhamentoaee";
+        public const string RotaEncerrarEncaminhamentoAEEAutomaticoSync = "sgp.encaminhamento.aee.encerrar.automatico.sync";
+        public const string RotaValidarEncerrarEncaminhamentoAEEAutomatico = "sgp.encaminhamento.aee.encerrar.automatico.validar";
+        public const string RotaEncerrarEncaminhamentoAEEEncerrarAutomatico = "sgp.encaminhamento.aee.encerrar.automatico.encerrar";
 
         public const string EncerrarPlanoAEEEstudantesInativos = "plano.aee.encerrar.inativos";
         public const string GerarPendenciaValidadePlanoAEE = "plano.aee.pendencia.validade";
@@ -103,6 +106,8 @@
 
         public const string ConsolidacaoFrequenciasTurmasCarregar = "sgp.frequencia.turma.carregar";
         public const string ConsolidarFrequenciasTurmasNoAno = "sgp.frequencia.turma.ano.consolidar";
+        public const string ConsolidarFrequenciasTurmasPorDre = "sgp.frequencia.turma.dre.consolidar";
+        public const string ConsolidarFrequenciasTurmasPorUe = "sgp.frequencia.turma.ue.consolidar";
         public const string ConsolidarFrequenciasPorTurma = "sgp.frequencia.turma.consolidar";
 
         public const string ConsolidacaoMatriculasTurmasDreCarregar = "sgp.matricula.turma.consolidar.dre.carregar";

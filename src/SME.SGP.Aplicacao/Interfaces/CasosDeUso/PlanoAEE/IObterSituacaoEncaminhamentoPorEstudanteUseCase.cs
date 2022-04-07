@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterSituacaoEncaminhamentoPorEstudanteUseCase : IUseCase<string, SituacaoEncaminhamentoPorEstudanteDto>
+    public interface IObterSituacaoEncaminhamentoPorEstudanteUseCase : IUseCase<FiltroEncaminhamentoAeeDto, SituacaoEncaminhamentoPorEstudanteDto>
     {
     }
 }

@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio.Enumerados
         [Display(Name = "Aguardando parecer do CEFAI")]
         ParecerPAAI = 6,
         [Display(Name = "Encerrado Automaticamente")]
-        EncerradoAutomaticamento = 7,
+        EncerradoAutomaticamente = 7,
         [Display(Name = "Expirado")]
         Expirado = 8,
         [Display(Name = "Devolvido")]

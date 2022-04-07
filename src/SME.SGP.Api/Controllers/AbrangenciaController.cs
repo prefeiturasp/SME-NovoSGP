@@ -141,6 +141,12 @@ namespace SME.SGP.Api.Controllers
             var retorno = await consultasAbrangencia
                 .ObterSemestres(filtroSemestreDto.Modalidade, ConsideraHistorico, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo);
 
+            if ((retorno == null || !retorno.Any()) && !ConsideraHistorico)
+            {
+                retorno = await consultasAbrangencia
+                    .ObterSemestres(filtroSemestreDto.Modalidade, true, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo);
+            }
+
             if (!retorno.Any())
                 return NoContent();
 
@@ -157,7 +163,7 @@ namespace SME.SGP.Api.Controllers
             IEnumerable<AbrangenciaTurmaRetorno> turmas;
             turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil);
             
-            if(turmas == null && !turmas.Any() && !ConsideraHistorico)
+            if((turmas == null || !turmas.Any()) && !ConsideraHistorico)
                 turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil);
 
             if (!turmas.Any())
