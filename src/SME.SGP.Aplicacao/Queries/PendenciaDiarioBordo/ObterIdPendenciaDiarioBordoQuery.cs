@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.Queries.PendenciaDiarioBordo
         {
             RuleFor(c => c.PendenciaID)
                .NotEmpty()
-               .WithMessage("O Id da pendencia deve ser informado.");
+               .WithMessage("O Id deve ser informado para obter a pendência.");
 
         }
     }

@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao.Commands.PendenciaDiarioBordo
         {
             RuleFor(x => x.PendenciaId)
                     .NotEmpty()
-                    .WithMessage("A Pendencia deve ser informada.");
+                    .WithMessage("O Id da pendência deve ser informado para executar a exclusão.");
         }
     }
 }
