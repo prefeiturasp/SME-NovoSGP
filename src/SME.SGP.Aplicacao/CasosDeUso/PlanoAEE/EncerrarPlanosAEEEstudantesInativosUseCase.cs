@@ -30,12 +30,11 @@ namespace SME.SGP.Aplicacao
                 {
                     var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, anoLetivo));
                     var turma = await ObterTurma(planoAEE.TurmaId);
-                    Turma turmaAtual = null;
                     var etapaConcluida = false;
                     AlunoPorTurmaResposta ultimaMatricula = null;
 
                     if (turma != null && (turma.AnoLetivo != anoLetivo))
-                        etapaConcluida = DeterminaEtapaConcluida(matriculas, planoAEE.AlunoCodigo, turma, turmaAtual, ref ultimaMatricula);
+                        etapaConcluida = DeterminaEtapaConcluida(matriculas, planoAEE.AlunoCodigo, turma, ref ultimaMatricula);
 
                     if ((!matriculas?.Any(a => a.EstaAtivo(DateTime.Today)) ?? true) || etapaConcluida)
                     {
@@ -129,7 +128,7 @@ namespace SME.SGP.Aplicacao
         private async Task<Turma> ObterTurma(long turmaId)
             => await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
 
-        private bool DeterminaEtapaConcluida(IEnumerable<AlunoPorTurmaResposta> matriculas, string alunoCodigo, Turma turma, Turma turmaAtual, ref AlunoPorTurmaResposta ultimaMatricula)
+        private bool DeterminaEtapaConcluida(IEnumerable<AlunoPorTurmaResposta> matriculas, string alunoCodigo, Turma turma, ref AlunoPorTurmaResposta ultimaMatricula)
         {
             var matriculasAnoTurma = mediator
                 .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(alunoCodigo, turma.AnoLetivo)).Result;
@@ -139,14 +138,11 @@ namespace SME.SGP.Aplicacao
 
             if (concluiuTurma)
             {
-                if (turmaAtual == null)
-                    return true;
-
                 var ultimaMatriculaAtual = matriculas
                     .OrderBy(m => m.DataMatricula)
                     .LastOrDefault();
 
-                turmaAtual = ultimaMatriculaAtual != null ?
+                var turmaAtual = ultimaMatriculaAtual != null ?
                     mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaMatriculaAtual.CodigoTurma.ToString())).Result : null;
 
                 ultimaMatricula = matriculasAnoTurma
