@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio
 { 
     public interface IRepositorioPendenciaDiarioBordo : IRepositorioBase<PendenciaDiarioBordo>
     {
+        Task<IEnumerable<Aula>> ListarPendenciasDiario(long dreId, int anoLetivo);
     }
 }
