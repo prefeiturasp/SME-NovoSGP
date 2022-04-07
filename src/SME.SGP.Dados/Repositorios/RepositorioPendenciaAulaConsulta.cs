@@ -362,7 +362,7 @@ namespace SME.SGP.Dados.Repositorios
 	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
                                     ELSE 0
                               END PossuiPendenciaFrequencia,
-                              CASE WHEN tr.id is null THEN 1
+                              CASE WHEN db.id is null THEN 1
                                     ELSE 0
                                END PossuiPendenciaDiarioBordo 
                            from
@@ -373,13 +373,13 @@ namespace SME.SGP.Dados.Repositorios
 	                        	aula.disciplina_id = cc.id::varchar
 	                        left join registro_frequencia rf on
 	                            aula.id = rf.aula_id
-                            left join diario_bordo tr on
-                                aula.id =  tr.aula_id
+                            left join diario_bordo db on
+                                aula.id =  db.aula_id
                             where
 	                            not aula.excluido
 	                            and aula.id = @aula
                                 and aula.data_aula::date < @hoje
-                                and (rf.id is null or tr.id is null) " :
+                                and (rf.id is null or db.id is null) " :
 
                                 $@"select
 	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
