@@ -6,8 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio 
-{ 
+{
     public interface IRepositorioPendenciaDiarioBordo : IRepositorioBase<PendenciaDiarioBordo>
     {
+        Task Excluir(long pendenciaId);
     }
 }

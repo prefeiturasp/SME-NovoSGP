@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dados.Repositorios;
+﻿using Dapper;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -13,6 +14,11 @@ namespace SME.SGP.Dados
     {
         public RepositorioPendenciaDiarioBordo(ISgpContext conexao) : base(conexao)
         {
+        }
+
+        public async Task Excluir(long pendenciaId)
+        {
+            await database.Conexao.ExecuteScalarAsync("delete from pendencia_diario_bordo where id = @pendenciaId", new { pendenciaId }, commandTimeout: 60);
         }
     }
 }
