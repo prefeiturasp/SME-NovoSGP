@@ -117,11 +117,15 @@ namespace SME.SGP.Aplicacao
             }
 
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
+
+            var retorno = dadosAlunos.FirstOrDefault(f => f.CodigoEOL.Equals("6510114"));
        
             var dadosAlunosFiltrados = dadosAlunos.Where(x => !x.EstaInativo() ||
                                            (x.EstaInativo() &&
-                                           x.DataSituacao.Date >= periodosAberto.First().PeriodoInicio.Date &&
-                                           x.DataSituacao.Date <= periodosAberto.Last().PeriodoFim.Date)).OrderBy(w => w.Nome);
+                                           x.DataSituacao.Date >= periodosAberto.Min(p=> p.PeriodoInicio.Date) &&
+                                           x.DataSituacao.Date <= periodosAberto.Max(p=> p.PeriodoFim.Date))
+                                           )
+                                           .OrderBy(w => w.Nome);
 
             return dadosAlunosFiltrados;
         }
