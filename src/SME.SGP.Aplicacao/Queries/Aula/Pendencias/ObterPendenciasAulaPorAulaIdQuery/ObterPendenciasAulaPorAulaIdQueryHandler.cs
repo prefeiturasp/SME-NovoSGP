@@ -26,7 +26,8 @@ namespace SME.SGP.Aplicacao
                 AulaId = request.AulaId,
                 PossuiPendenciaFrequencia = pendencias.PossuiPendenciaFrequencia,
                 PossuiPendenciaPlanoAula = pendencias.PossuiPendenciaPlanoAula,
-                PossuiPendenciaAtividadeAvaliativa = false
+                PossuiPendenciaAtividadeAvaliativa = false,
+                PossuiPendenciaDiarioBordo = pendencias.PossuiPendenciaDiarioBordo
             };
             pendencias.PossuiPendenciaAtividadeAvaliativa = request.TemAtividadeAvaliativa && await repositorioPendenciaAula.PossuiPendenciasAtividadeAvaliativaPorAulaId(request.AulaId);
 
