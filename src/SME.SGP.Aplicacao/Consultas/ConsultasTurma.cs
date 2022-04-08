@@ -131,6 +131,7 @@ namespace SME.SGP.Aplicacao
             foreach (var dadoAluno in dadosAlunos)
             {
                 var dadosBasicos = (AlunoDadosBasicosDto)dadoAluno;
+                dadosBasicos.DataMatricula = dadoAluno.DataMatricula;
 
                 if ((TipoResponsavel)Convert.ToInt32(dadoAluno.TipoResponsavel) == TipoResponsavel.ProprioEstudante &&
                     !string.IsNullOrEmpty(dadoAluno.NomeSocialAluno) && dadoAluno.Maioridade)
