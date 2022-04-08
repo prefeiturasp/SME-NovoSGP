@@ -217,8 +217,8 @@ namespace SME.SGP.Aplicacao
             if (turmasComMatriculasValidas.Contains(codigoTurma))
             {
                 notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
-                    await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre, dadosAluno.DataMatricula, dadosAluno.SituacaoCodigo == SituacaoMatriculaAluno.Concluido ? periodoFim : dadosAluno.DataSituacao)) :
-                    await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(new string[] { codigoTurma }, alunoCodigo, dadosAluno.DataMatricula, dadosAluno.SituacaoCodigo == SituacaoMatriculaAluno.Concluido ? periodoFim : dadosAluno.DataSituacao, bimestre));
+                    await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao)) :
+                    await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(new string[] { codigoTurma }, alunoCodigo, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, bimestre));
             }
 
             var usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
