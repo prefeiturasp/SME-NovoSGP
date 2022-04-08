@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,16 +18,20 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var filtro = param.ObterObjetoMensagem<DreUeDto>();
-            var aulas = await mediator.Send(new ObterPendenciasDiarioBordoQuery(filtro.DreId));
+            var uesDre = await mediator.Send(new ObterUesCodigosPorDreQuery(filtro.DreId));
 
-            if (aulas != null && aulas.Any())
-                await RegistraPendencia(aulas);
+            var codigoTurmas = new List<string>();
+            foreach (var ue in uesDre)
+            {
+                var turmasUe = await mediator.Send(new ObterTurmasInfantilPorUEQuery(DateTimeExtension.HorarioBrasilia().Year, ue));
+                if (turmasUe.Any())
+                    codigoTurmas.AddRange(turmasUe.Select(t => t.TurmaCodigo));
+            }
 
+            foreach (var turma in codigoTurmas)         
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurma, turma));    
+            
             return true;
         }
-
-        private async Task RegistraPendencia(IEnumerable<Aula> aulas)
-         => await mediator.Send(new SalvarPendenciaDiarioBordoCommand(aulas));
-
     }
 }

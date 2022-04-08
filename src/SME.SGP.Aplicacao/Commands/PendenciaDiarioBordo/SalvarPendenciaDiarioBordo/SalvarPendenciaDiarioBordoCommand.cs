@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,13 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaDiarioBordoCommand : IRequest
     {
-        public SalvarPendenciaDiarioBordoCommand(IEnumerable<Aula> aulas)
+        public SalvarPendenciaDiarioBordoCommand(IEnumerable<AulaComComponenteDto> aulas, List<ProfessorEComponenteInfantilDto> professores)
         {
             Aulas = aulas;
+            ProfessoresComponentes = professores;
         }
-        public IEnumerable<Aula> Aulas { get; set; }
+        public IEnumerable<AulaComComponenteDto> Aulas { get; set; }
+        public List<ProfessorEComponenteInfantilDto> ProfessoresComponentes { get; set; }
     }
 
     public class SalvarPendenciaDiarioBordoCommandValidator : AbstractValidator<SalvarPendenciaDiarioBordoCommand>

@@ -25,6 +25,7 @@
 
         public const string RotaExecutaPendenciasAula = "sgp.pendencias.aulas.executa";
         public const string RotaExecutaPendenciasAulaDiarioBordo = "sgp.pendencias.aulas.diario.bordo.executa";
+        public const string RotaExecutaPendenciasAulaDiarioBordoTurma = "sgp.pendencias.aulas.diario.bordo.turma.executa";
         public const string RotaExecutaPendenciasAulaAvaliacao = "sgp.pendencias.aulas.avaliacao.executa";
         public const string RotaExecutaPendenciasAulaFrequencia = "sgp.pendencias.aulas.frequencia.executa";
         public const string RotaExecutaPendenciasAulaPlanoAula = "sgp.pendencias.aulas.plano.aula.executa";
