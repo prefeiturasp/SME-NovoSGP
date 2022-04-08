@@ -44,8 +44,6 @@ namespace SME.SGP.Aplicacao
                     throw;
                 }
             }
-
-            return true;
         }
 
 
