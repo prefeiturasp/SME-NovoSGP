@@ -43,23 +43,17 @@ namespace SME.SGP.Aplicacao
             var aulaExemplo = aulas.First();
             Guid perfilProfessorInfantil = Guid.Parse(PerfilUsuario.PROFESSOR_INFANTIL.ObterNome());
             var componenteProfessorEol = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaExemplo.TurmaId, professor.CodigoRf, perfilProfessorInfantil));
-            try
-            {
-                foreach (var aula in aulas)
-                {
-                    var pendenciaDiarioBordo = new PendenciaDiarioBordo()
-                    {
-                        PendenciaId = pendenciaId,
-                        ProfessorRf = professor.CodigoRf,
-                        ComponenteId = componenteProfessorEol != null ? componenteProfessorEol.First().Codigo : Convert.ToInt64(aula.DisciplinaId),
-                        AulaId = aula.Id
-                    };
-                    await repositorioDiarioBordo.SalvarAsync(pendenciaDiarioBordo);
-                }
-            }
-            catch (Exception ex)
-            {
 
+            foreach (var aula in aulas)
+            {
+                var pendenciaDiarioBordo = new PendenciaDiarioBordo()
+                {
+                    PendenciaId = pendenciaId,
+                    ProfessorRf = professor.CodigoRf,
+                    ComponenteId = componenteProfessorEol != null ? componenteProfessorEol.First().Codigo : Convert.ToInt64(aula.DisciplinaId),
+                    AulaId = aula.Id
+                };
+                await repositorioDiarioBordo.SalvarAsync(pendenciaDiarioBordo);
             }
 
             return true;
