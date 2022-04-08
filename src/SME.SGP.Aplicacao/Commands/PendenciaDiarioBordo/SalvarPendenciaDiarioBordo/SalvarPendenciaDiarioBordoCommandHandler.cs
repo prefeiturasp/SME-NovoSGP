@@ -24,16 +24,28 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(SalvarPendenciaDiarioBordoCommand request, CancellationToken cancellationToken)
         {
+
             var aulasAgrupadas = request.Aulas.GroupBy(x => new { x.TurmaId, x.DisciplinaId });
             foreach (var item in aulasAgrupadas)
             {
                 unitOfWork.IniciarTransacao();
 
-                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.DiarioBordo));
-                await SalvarPendenciaDiario(pendenciaId, item);
+                try
+                {
+                    var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.DiarioBordo));
+                    await SalvarPendenciaDiario(pendenciaId, item);
 
-                unitOfWork.PersistirTransacao();
+                    unitOfWork.PersistirTransacao();
+                }
+                catch (Exception)
+                {
+                    unitOfWork.Rollback();
+
+                    throw;
+                }
             }
+
+            return true;
         }
 
 
@@ -43,7 +55,7 @@ namespace SME.SGP.Aplicacao
             var aulaExemplo = aulas.First();
             Guid perfilProfessorInfantil = Guid.Parse(PerfilUsuario.PROFESSOR_INFANTIL.ObterNome());
             var componenteProfessorEol = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaExemplo.TurmaId, professor.CodigoRf, perfilProfessorInfantil));
-
+            
             foreach (var aula in aulas)
             {
                 var pendenciaDiarioBordo = new PendenciaDiarioBordo()
