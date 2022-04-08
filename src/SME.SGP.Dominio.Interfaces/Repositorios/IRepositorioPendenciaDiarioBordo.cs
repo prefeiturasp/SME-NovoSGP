@@ -11,6 +11,6 @@ namespace SME.SGP.Dominio
     public interface IRepositorioPendenciaDiarioBordo : IRepositorioBase<PendenciaDiarioBordo>
     {
         Task Excluir(long pendenciaId);
-        Task<IEnumerable<Aula>> ListarPendenciasDiario(long dreId, int anoLetivo);
+        Task<IEnumerable<AulaComComponenteDto>> ListarPendenciasDiario(string turmaId, long[] componentesCurricularesId);
     }
 }
