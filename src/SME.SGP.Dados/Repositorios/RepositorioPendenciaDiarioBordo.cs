@@ -41,6 +41,11 @@ namespace SME.SGP.Dados
             sqlQuery.AppendLine($"  		on db.aula_id = a.id");
             sqlQuery.AppendLine($"  	left join pendencia_diario_bordo pdb");
             sqlQuery.AppendLine($"  		on pdb.aula_id = a.id");
+            sqlQuery.AppendLine("  		left join pendencia p");
+            sqlQuery.AppendLine("  			on p.id = pdb.pendencia_id");
+            sqlQuery.AppendLine("  			and not p.excluido");
+            sqlQuery.AppendLine("  			and p.tipo = @tipoPendencia");
+
 
             sqlQuery.AppendLine("  where not a.excluido");
             sqlQuery.AppendLine("	and a.data_aula < @hoje");
@@ -48,6 +53,7 @@ namespace SME.SGP.Dados
 
             sqlQuery.AppendLine("	and pdb.id is null");
             sqlQuery.AppendLine("	and db.id is null");
+            sqlQuery.AppendLine("   and p.id is null");
 
             return await database.Conexao.QueryAsync<Aula, Turma, Aula>(sqlQuery.ToString(), (aula, turma) =>
             {
@@ -58,7 +64,8 @@ namespace SME.SGP.Dados
                 anoLetivo,
                 hoje = DateTime.Today.Date,
                 dreId,
-                modalidadeCodigo = Modalidade.EducacaoInfantil
+                modalidadeCodigo = Modalidade.EducacaoInfantil,
+                tipoPendencia = TipoPendencia.DiarioBordo
             }, splitOn: "Id", commandTimeout: 200);
         }
     }

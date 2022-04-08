@@ -20,15 +20,13 @@ namespace SME.SGP.Aplicacao
             var aulas = await mediator.Send(new ObterPendenciasDiarioBordoQuery(filtro.DreId));
 
             if (aulas != null && aulas.Any())
-                await RegistraPendencia(aulas, TipoPendencia.DiarioBordo);
+                await RegistraPendencia(aulas);
 
             return true;
         }
 
-        private async Task RegistraPendencia(IEnumerable<Aula> aulas, TipoPendencia tipoPendenciaAula)
-        {
-            await mediator.Send(new SalvarPendenciaDiarioBordoCommand(aulas));
-        }
+        private async Task RegistraPendencia(IEnumerable<Aula> aulas)
+         => await mediator.Send(new SalvarPendenciaDiarioBordoCommand(aulas));
 
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPendenciaDiarioBordoCommand : IRequest<bool>
+    public class SalvarPendenciaDiarioBordoCommand : IRequest
     {
         public SalvarPendenciaDiarioBordoCommand(IEnumerable<Aula> aulas)
         {
