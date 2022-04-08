@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPendenciasDiarioBordoQuery : IRequest<IEnumerable<Aula>>
+    public class ObterPendenciasDiarioBordoQuery : IRequest<IEnumerable<AulaComComponenteDto>>
     {
-        public long DreId { get; set; }
-        public int AnoLetivo { get; set; }
+        public string TurmaId { get; set; }
+        public long[] ComponentesCurricularesId { get; set; }
 
-        public ObterPendenciasDiarioBordoQuery(long dreId, int? anoLetivo = null)
+        public ObterPendenciasDiarioBordoQuery(string turmaId, long[] componentesCurricularesId)
         {
-            DreId = dreId;
-            AnoLetivo = anoLetivo ?? DateTime.Today.Year;
+            TurmaId = turmaId;
+            ComponentesCurricularesId = componentesCurricularesId;
         }
     }
 
@@ -25,9 +26,9 @@ namespace SME.SGP.Aplicacao
     {
         public ObterPendenciasDiarioBordoQueryValidator()
         {
-            RuleFor(a => a.DreId)
+            RuleFor(a => a.TurmaId)
                 .NotEmpty()
-                .WithMessage("É necessário informar o id da dre para obter as pendências de diário de bordo");
+                .WithMessage("É necessário informar o id da turma para obter as pendências de diário de bordo");
         }        
     }
 }
