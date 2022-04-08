@@ -31,7 +31,8 @@ namespace SME.SGP.Aplicacao
 
             var dadosAlunosDto = new List<AlunoDadosBasicosDto>();
 
-            var periodosAberto = await repositorioEventoFechamento.ObterPeriodosFechamentoEmAberto(request.Turma.UeId, DateTime.Now.Date);
+            var periodosAberto = await repositorioEventoFechamento
+                .ObterPeriodosFechamentoEmAberto(request.Turma.UeId, DateTime.Now.Date, request.Turma.AnoLetivo);
 
             // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(request.Turma.AnoLetivo, request.Turma.ModalidadeTipoCalendario, request.Turma.Semestre);
