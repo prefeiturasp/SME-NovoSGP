@@ -18,24 +18,28 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public Task<IEnumerable<PeriodoEscolar>> ObterPeriodosFechamentoEmAberto(long ueId, DateTime dataReferencia)
+        public Task<IEnumerable<PeriodoEscolar>> ObterPeriodosFechamentoEmAberto(long ueId, DateTime dataReferencia, int anoLetivo)
         {
             var query = @"select pe.*
                           from periodo_fechamento_bimestre pfb  
                           join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
+                          join tipo_calendario tc on pe.tipo_calendario_id = tc.id
                          where pfb.inicio_fechamento <= @dataReferencia
                            and pfb.final_fechamento >= @dataReferencia
+                           and tc.ano_letivo = @anoLetivo
                         union all
                         select pe.*
                           from fechamento_reabertura fr 
                           left join ue on fr.ue_id = ue.id
                           join fechamento_reabertura_bimestre frb on frb.fechamento_reabertura_id = fr.id
                           join periodo_escolar pe on pe.tipo_calendario_id = fr.tipo_calendario_id and pe.bimestre = frb.bimestre
+                          join tipo_calendario tc on pe.tipo_calendario_id = tc.id
                          where fr.inicio <= @dataReferencia
                            and fr.fim >= @dataReferencia
+                           and tc.ano_letivo = @anoLetivo
                            and (ue.id is null or ue.id = @ueId)";
 
-            return database.Conexao.QueryAsync<PeriodoEscolar>(query, new { ueId, dataReferencia });
+            return database.Conexao.QueryAsync<PeriodoEscolar>(query, new { ueId, dataReferencia, anoLetivo });
         }
 
         public async Task<EventoFechamento> ObterPorIdFechamento(long fechamentoId)
