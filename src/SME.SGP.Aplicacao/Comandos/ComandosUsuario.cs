@@ -293,9 +293,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> TokenRecuperacaoSenhaEstaValido(Guid token)
         {
-            Usuario usuario = await mediator.Send(new ObterUsuarioPorTokenRecuperacaoSenhaQuery(token));
-            
-            return usuario != null && usuario.TokenRecuperacaoSenhaEstaValido();
+            return await mediator.Send(new ValidarTokenRecuperacaoSenhaCommand(token));
         }
 
     }
