@@ -1,0 +1,43 @@
+﻿using MediatR;
+using Newtonsoft.Json;
+using SME.SGP.Dominio.Enumerados;
+using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace SME.SGP.Aplicacao
+{
+    public class ValidarTokenRecuperacaoSenhaCommandHandler : IRequestHandler<ValidarTokenRecuperacaoSenhaCommand, bool>
+    {
+        private readonly IHttpClientFactory httpClientFactory;
+        private readonly IMediator mediator;
+
+        public ValidarTokenRecuperacaoSenhaCommandHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
+        {
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+
+        public async Task<bool> Handle(ValidarTokenRecuperacaoSenhaCommand request, CancellationToken cancellationToken)
+        {
+            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var resposta = await httpClient.GetAsync($"autenticacao/RecuperarSenha/token/validar/{request.Token}");
+
+            if (!resposta.IsSuccessStatusCode)
+                await RegistraLogErro(resposta, request.Token);
+
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<bool>(json);
+        }
+
+        private async Task RegistraLogErro(HttpResponseMessage resposta, Guid token)
+        {
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+            await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao validar token de recuperação de senha no EOL",
+                                                              LogNivel.Critico,
+                                                              LogContexto.ApiEol,
+                                                              $"código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"}, Token:{token}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}"));
+        }
+    }
+}
