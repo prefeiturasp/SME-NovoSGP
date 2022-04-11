@@ -126,8 +126,8 @@ namespace SME.SGP.Aplicacao
 
             var dadosAlunosFiltrados = dadosAlunos.Where(x => !x.EstaInativo() ||
                                            (x.EstaInativo() &&
-                                           x.DataSituacao.Date >= periodosAberto.First().PeriodoInicio.Date &&
-                                           x.DataSituacao.Date <= periodosAberto.Last().PeriodoFim.Date)).OrderBy(w => w.Nome);
+                                           x.DataSituacao.Date >= periodoEscolar.PeriodoInicio.Date &&
+                                           x.DataSituacao.Date <= periodoEscolar.PeriodoFim.Date)).OrderBy(w => w.Nome);
 
             return dadosAlunosFiltrados;
         }
