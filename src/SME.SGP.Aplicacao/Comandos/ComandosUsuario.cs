@@ -288,30 +288,10 @@ namespace SME.SGP.Aplicacao
             repositorioCache.SalvarAsync(chaveRedis, string.Empty);
         }
 
-        public async Task<string> SolicitarRecuperacaoSenha(string login)
+        public Task<string> SolicitarRecuperacaoSenha(string login)
         {
-            string loginRecuperar = login.Replace(" ","");
-            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(null, loginRecuperar));
-            
-            var usuarioCore = await servicoEOL.ObterMeusDados(loginRecuperar);
-
-            if (usuarioCore == null && usuario == null)
-                throw new NegocioException("Usuário ou RF não encontrado");
-
-            if (usuario == null)
-                usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, loginRecuperar, usuarioCore.Nome, usuarioCore.Email);
-
-            if (usuario.Perfis == null || !usuario.Perfis.Any())
-            {
-                await servicoEOL.RelecionarUsuarioPerfis(loginRecuperar);
-            }
-
-            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(loginRecuperar));
-            usuario.DefinirEmail(usuarioCore.Email);
-            usuario.IniciarRecuperacaoDeSenha();
-            repositorioUsuario.Salvar(usuario);
-            EnviarEmailRecuperacao(usuario, usuarioCore.Email);
-            return usuarioCore.Email;
+            string loginRecuperar = login.Replace(" ", "");
+            return mediator.Send(new RecuperarSenhaCommand(loginRecuperar));
         }
 
         public async Task<bool> TokenRecuperacaoSenhaEstaValido(Guid token)
