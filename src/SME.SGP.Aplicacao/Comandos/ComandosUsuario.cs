@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioHistoricoEmailUsuario repositorioHistoricoEmailUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
-        private readonly IServicoEmail servicoEmail;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoPerfil servicoPerfil;
         private readonly IServicoTokenJwt servicoTokenJwt;
@@ -35,7 +34,6 @@ namespace SME.SGP.Aplicacao
             IServicoPerfil servicoPerfil,
             IServicoEol servicoEOL,
             IServicoTokenJwt servicoTokenJwt,
-            IServicoEmail servicoEmail,
             IConfiguration configuration,
             IRepositorioCache repositorioCache,
             IServicoAbrangencia servicoAbrangencia,
@@ -54,7 +52,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioHistoricoEmailUsuario = repositorioHistoricoEmailUsuario ?? throw new ArgumentNullException(nameof(repositorioHistoricoEmailUsuario));
-            this.servicoEmail = servicoEmail ?? throw new ArgumentNullException(nameof(servicoEmail));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -301,36 +298,5 @@ namespace SME.SGP.Aplicacao
             return usuario != null && usuario.TokenRecuperacaoSenhaEstaValido();
         }
 
-        private void EnviarEmailRecuperacao(Usuario usuario, string email)
-        {
-            string caminho = $"{Directory.GetCurrentDirectory()}/wwwroot/ModelosEmail/RecuperacaoSenha.txt";
-            var textoArquivo = File.ReadAllText(caminho);
-            var urlFrontEnd = configuration["UrlFrontEnd"];
-            var textoEmail = textoArquivo
-                .Replace("#NOME", usuario.Nome)
-                .Replace("#RF", usuario.CodigoRf)
-                .Replace("#URL_BASE#", urlFrontEnd)
-                .Replace("#LINK", $"{urlFrontEnd}redefinir-senha/{usuario.TokenRecuperacaoSenha.ToString()}");
-            servicoEmail.Enviar(email, "Recuperação de senha do SGP", textoEmail);
-        }
-
-        private async Task<IEnumerable<Guid>> ValidarPerfilCJ(string codigoRF, Guid codigoUsuarioCore, IEnumerable<Guid> perfilsAtual, string login)
-        {
-            var atribuicaoCJ = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRF);
-
-            if (atribuicaoCJ != null && atribuicaoCJ.Any())
-                return perfilsAtual;
-
-            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(codigoRF);
-
-            if (atribuicaoEsporadica != null && !string.IsNullOrWhiteSpace(atribuicaoEsporadica.ProfessorRf) && atribuicaoEsporadica.DataFim > DateTime.Today)
-                return perfilsAtual;
-
-            await servicoEOL.RemoverCJSeNecessario(codigoUsuarioCore);
-
-            var usuarioEol = await servicoEOL.ObterPerfisPorLogin(login);
-
-            return usuarioEol.Perfis;
-        }
     }
 }
