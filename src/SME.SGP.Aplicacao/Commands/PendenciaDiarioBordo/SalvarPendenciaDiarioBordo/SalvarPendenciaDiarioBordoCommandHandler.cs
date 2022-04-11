@@ -30,8 +30,9 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.DiarioBordo));
+                await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, request.Aulas.Select(a => a.Id)));
                 await SalvarPendenciaDiario(pendenciaId, request.Aulas, request.ProfessoresComponentes);
-
+                
                 unitOfWork.PersistirTransacao();
             }
             catch (Exception)
