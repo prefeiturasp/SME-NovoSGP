@@ -86,28 +86,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<UsuarioAutenticacaoRetornoDto> AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
-            Usuario usuario = await mediator.Send(new ObterUsuarioPorTokenRecuperacaoSenhaQuery(recuperacaoSenhaDto.Token));
-                
-            if (usuario == null)
-                throw new NegocioException("Usuário não encontrado.");
+            var login = await mediator.Send(new AlterarSenhaComTokenRecuperacaoCommand(recuperacaoSenhaDto.Token, recuperacaoSenhaDto.NovaSenha));
 
-
-            if (!usuario.TokenRecuperacaoSenhaEstaValido())
-                throw new NegocioException("Este link expirou. Clique em continuar para solicitar um novo link de recuperação de senha.", 403);
-
-
-            usuario.ValidarSenha(recuperacaoSenhaDto.NovaSenha);
-
-            var retornoApi = await servicoEOL.AlterarSenha(usuario.Login, recuperacaoSenhaDto.NovaSenha);
-
-            if (!retornoApi.SenhaAlterada)
-                throw new NegocioException(retornoApi.Mensagem, retornoApi.StatusRetorno);
-
-
-            usuario.FinalizarRecuperacaoSenha();
-            repositorioUsuario.Salvar(usuario);
-
-            return await Autenticar(usuario.Login, recuperacaoSenhaDto.NovaSenha);
+            return await Autenticar(login, recuperacaoSenhaDto.NovaSenha);
         }
 
         public async Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)

@@ -51,8 +51,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha)
         {
-
-
             var valoresParaEnvio = new List<KeyValuePair<string, string>> {
                 { new KeyValuePair<string, string>("usuario", login) },
                 { new KeyValuePair<string, string>("senha", novaSenha) }};
