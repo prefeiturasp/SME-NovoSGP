@@ -37,10 +37,13 @@ namespace SME.SGP.Aplicacao
         private async Task RegistraLogErro(HttpResponseMessage resposta, string login)
         {
             var mensagem = await resposta.Content.ReadAsStringAsync();
-            await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao Recuperar Senha no EOL",
+            var titulo = "Ocorreu um erro ao Solicitar Recuperação de Senha no EOL";
+            await mediator.Send(new SalvarLogViaRabbitCommand(titulo,
                                                               LogNivel.Critico,
                                                               LogContexto.ApiEol,
                                                               $"código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"}, Usuario:{login}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}"));
+
+            throw new Exception(titulo);
         }
     }
 }
