@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -46,7 +47,7 @@ namespace SME.SGP.Aplicacao
                                                               LogContexto.ApiEol,
                                                               $"código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"}, Token:{token}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}"));
 
-            throw new Exception(titulo);
+            throw new NegocioException(mensagem ?? titulo);
         }
     }
 }
