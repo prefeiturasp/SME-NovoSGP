@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,8 +23,10 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Handle(RecuperarSenhaCommand request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"autenticacao/RecuperarSenha/usuario/{request.Login}");
 
+            var parametros = JsonConvert.SerializeObject(request.Login);
+            var resposta = await httpClient.PostAsync($"autenticacao/RecuperarSenha/usuario?sistema=1", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+            
             if (!resposta.IsSuccessStatusCode)
                 await RegistraLogErro(resposta, request.Login);
 
