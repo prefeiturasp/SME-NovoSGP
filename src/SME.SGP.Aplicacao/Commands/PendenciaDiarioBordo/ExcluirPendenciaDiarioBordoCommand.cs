@@ -10,21 +10,27 @@ namespace SME.SGP.Aplicacao.Commands.PendenciaDiarioBordo
 {
     public class ExcluirPendenciaDiarioBordoCommand : IRequest<bool>
     {
-        public ExcluirPendenciaDiarioBordoCommand(long pendenciaId)
+        public ExcluirPendenciaDiarioBordoCommand(long aulaId, long componenteCurricularId)
         {
-            PendenciaId = pendenciaId;
+            AulaId = aulaId;
+            ComponenteCurricularId = componenteCurricularId;
         }
 
-        public long PendenciaId { get; set; }
+        public long AulaId { get; set; }
+        public long ComponenteCurricularId { get; set; }
     }
 
     public class ExcluirPendenciaDiarioBordoCommandValidator : AbstractValidator<ExcluirPendenciaDiarioBordoCommand>
     {
         public ExcluirPendenciaDiarioBordoCommandValidator()
         {
-            RuleFor(x => x.PendenciaId)
+            RuleFor(x => x.AulaId)
                     .NotEmpty()
-                    .WithMessage("O Id da pendência deve ser informado para executar a exclusão da pendência de diário de bordo.");
+                    .WithMessage("O Id da aula deve ser informado para executar a exclusão da pendência de diário de bordo.");
+
+            RuleFor(x => x.ComponenteCurricularId)
+                    .NotEmpty()
+                    .WithMessage("O Id do componente curricular deve ser informado para executar a exclusão da pendência de diário de bordo.");
         }
     }
 }

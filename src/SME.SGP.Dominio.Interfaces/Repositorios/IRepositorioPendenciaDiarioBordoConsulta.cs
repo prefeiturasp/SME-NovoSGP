@@ -8,6 +8,6 @@ namespace SME.SGP.Dominio.Interfaces.Repositorios
 {
     public interface IRepositorioPendenciaDiarioBordoConsulta
     {
-        Task<bool> ExisteIdPendenciaDiarioBordo(long pendenciaId);
+        Task<long> ExisteIdPendenciaDiarioBordo(long aulaId, long componenteCurricularId);
     }
 }

@@ -8,21 +8,26 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.PendenciaDiarioBordo
 {
-    public class ObterIdPendenciaDiarioBordoQuery : IRequest<bool>
+    public class ObterIdPendenciaDiarioBordoQuery : IRequest<long>
     {
-        public ObterIdPendenciaDiarioBordoQuery(long pendenciaId)
+        public ObterIdPendenciaDiarioBordoQuery(long aulaId, long componenteCurricularId)
         {
-            PendenciaID = pendenciaId;
+            AulaId = aulaId;
+            ComponenteCurricularId = componenteCurricularId;
         }
-        public long PendenciaID { get; set; }
+        public long AulaId { get; set; }
+        public long ComponenteCurricularId { get; set; }
     }
     public class ObterIdPendenciaDiarioBordoQueryValidator : AbstractValidator<ObterIdPendenciaDiarioBordoQuery>
     {
         public ObterIdPendenciaDiarioBordoQueryValidator()
         {
-            RuleFor(c => c.PendenciaID)
+            RuleFor(c => c.AulaId)
                .NotEmpty()
-               .WithMessage("O Id deve ser informado para obter a pendência de diário de bordo.");
+               .WithMessage("O Id da aula ser informado para obter a pendência de diário de bordo.");
+            RuleFor(c => c.ComponenteCurricularId)
+               .NotEmpty()
+               .WithMessage("O Id do componente curricular deve ser informado para obter a pendência de diário de bordo.");
 
         }
     }
