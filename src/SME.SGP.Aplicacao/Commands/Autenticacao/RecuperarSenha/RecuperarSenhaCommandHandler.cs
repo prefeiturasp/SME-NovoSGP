@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                                                               LogContexto.ApiEol,
                                                               $"código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"}, Usuario:{login}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}"));
 
-            throw new NegocioException(titulo);
+            throw new NegocioException(mensagem ?? titulo);
         }
     }
 }
