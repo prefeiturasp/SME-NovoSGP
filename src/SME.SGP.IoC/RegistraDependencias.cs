@@ -207,7 +207,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioUsuarioConsulta, RepositorioUsuarioConsulta>();
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
             services.TryAddScoped<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
-            services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
             services.TryAddScoped<IRepositorioAbrangencia, RepositorioAbrangencia>();
             services.TryAddScoped<IRepositorioTipoCalendario, RepositorioTipoCalendario>();
             services.TryAddScoped<IRepositorioTipoCalendarioConsulta, RepositorioTipoCalendarioConsulta>();
@@ -468,7 +467,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
             services.TryAddScoped<IServicoAutenticacao, ServicoAutenticacao>();
             services.TryAddScoped<IServicoPerfil, ServicoPerfil>();
-            services.TryAddScoped<IServicoEmail, ServicoEmail>();
             services.TryAddScoped<IServicoTokenJwt, ServicoTokenJwt>();
             services.TryAddScoped<IServicoMenu, ServicoMenu>();
             services.TryAddScoped<IServicoPeriodoEscolar, ServicoPeriodoEscolar>();

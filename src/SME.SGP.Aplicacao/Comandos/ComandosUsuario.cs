@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioHistoricoEmailUsuario repositorioHistoricoEmailUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
-        private readonly IServicoEmail servicoEmail;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoPerfil servicoPerfil;
         private readonly IServicoTokenJwt servicoTokenJwt;
@@ -35,7 +34,6 @@ namespace SME.SGP.Aplicacao
             IServicoPerfil servicoPerfil,
             IServicoEol servicoEOL,
             IServicoTokenJwt servicoTokenJwt,
-            IServicoEmail servicoEmail,
             IConfiguration configuration,
             IRepositorioCache repositorioCache,
             IServicoAbrangencia servicoAbrangencia,
@@ -54,7 +52,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioHistoricoEmailUsuario = repositorioHistoricoEmailUsuario ?? throw new ArgumentNullException(nameof(repositorioHistoricoEmailUsuario));
-            this.servicoEmail = servicoEmail ?? throw new ArgumentNullException(nameof(servicoEmail));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -89,28 +86,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<UsuarioAutenticacaoRetornoDto> AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
-            Usuario usuario = await mediator.Send(new ObterUsuarioPorTokenRecuperacaoSenhaQuery(recuperacaoSenhaDto.Token));
-                
-            if (usuario == null)
-                throw new NegocioException("Usuário não encontrado.");
+            var login = await mediator.Send(new AlterarSenhaComTokenRecuperacaoCommand(recuperacaoSenhaDto.Token, recuperacaoSenhaDto.NovaSenha));
 
-
-            if (!usuario.TokenRecuperacaoSenhaEstaValido())
-                throw new NegocioException("Este link expirou. Clique em continuar para solicitar um novo link de recuperação de senha.", 403);
-
-
-            usuario.ValidarSenha(recuperacaoSenhaDto.NovaSenha);
-
-            var retornoApi = await servicoEOL.AlterarSenha(usuario.Login, recuperacaoSenhaDto.NovaSenha);
-
-            if (!retornoApi.SenhaAlterada)
-                throw new NegocioException(retornoApi.Mensagem, retornoApi.StatusRetorno);
-
-
-            usuario.FinalizarRecuperacaoSenha();
-            repositorioUsuario.Salvar(usuario);
-
-            return await Autenticar(usuario.Login, recuperacaoSenhaDto.NovaSenha);
+            return await Autenticar(login, recuperacaoSenhaDto.NovaSenha);
         }
 
         public async Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
@@ -288,69 +266,16 @@ namespace SME.SGP.Aplicacao
             repositorioCache.SalvarAsync(chaveRedis, string.Empty);
         }
 
-        public async Task<string> SolicitarRecuperacaoSenha(string login)
+        public Task<string> SolicitarRecuperacaoSenha(string login)
         {
-            string loginRecuperar = login.Replace(" ","");
-            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(null, loginRecuperar));
-            
-            var usuarioCore = await servicoEOL.ObterMeusDados(loginRecuperar);
-
-            if (usuarioCore == null && usuario == null)
-                throw new NegocioException("Usuário ou RF não encontrado");
-
-            if (usuario == null)
-                usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, loginRecuperar, usuarioCore.Nome, usuarioCore.Email);
-
-            if (usuario.Perfis == null || !usuario.Perfis.Any())
-            {
-                await servicoEOL.RelecionarUsuarioPerfis(loginRecuperar);
-            }
-
-            usuario.DefinirPerfis(await servicoUsuario.ObterPerfisUsuario(loginRecuperar));
-            usuario.DefinirEmail(usuarioCore.Email);
-            usuario.IniciarRecuperacaoDeSenha();
-            repositorioUsuario.Salvar(usuario);
-            EnviarEmailRecuperacao(usuario, usuarioCore.Email);
-            return usuarioCore.Email;
+            string loginRecuperar = login.Replace(" ", "");
+            return mediator.Send(new RecuperarSenhaCommand(loginRecuperar));
         }
 
         public async Task<bool> TokenRecuperacaoSenhaEstaValido(Guid token)
         {
-            Usuario usuario = await mediator.Send(new ObterUsuarioPorTokenRecuperacaoSenhaQuery(token));
-            
-            return usuario != null && usuario.TokenRecuperacaoSenhaEstaValido();
+            return await mediator.Send(new ValidarTokenRecuperacaoSenhaCommand(token));
         }
 
-        private void EnviarEmailRecuperacao(Usuario usuario, string email)
-        {
-            string caminho = $"{Directory.GetCurrentDirectory()}/wwwroot/ModelosEmail/RecuperacaoSenha.txt";
-            var textoArquivo = File.ReadAllText(caminho);
-            var urlFrontEnd = configuration["UrlFrontEnd"];
-            var textoEmail = textoArquivo
-                .Replace("#NOME", usuario.Nome)
-                .Replace("#RF", usuario.CodigoRf)
-                .Replace("#URL_BASE#", urlFrontEnd)
-                .Replace("#LINK", $"{urlFrontEnd}redefinir-senha/{usuario.TokenRecuperacaoSenha.ToString()}");
-            servicoEmail.Enviar(email, "Recuperação de senha do SGP", textoEmail);
-        }
-
-        private async Task<IEnumerable<Guid>> ValidarPerfilCJ(string codigoRF, Guid codigoUsuarioCore, IEnumerable<Guid> perfilsAtual, string login)
-        {
-            var atribuicaoCJ = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRF);
-
-            if (atribuicaoCJ != null && atribuicaoCJ.Any())
-                return perfilsAtual;
-
-            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(codigoRF);
-
-            if (atribuicaoEsporadica != null && !string.IsNullOrWhiteSpace(atribuicaoEsporadica.ProfessorRf) && atribuicaoEsporadica.DataFim > DateTime.Today)
-                return perfilsAtual;
-
-            await servicoEOL.RemoverCJSeNecessario(codigoUsuarioCore);
-
-            var usuarioEol = await servicoEOL.ObterPerfisPorLogin(login);
-
-            return usuarioEol.Perfis;
-        }
     }
 }
