@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
 
             var parametros = JsonConvert.SerializeObject(request.Login);
-            var resposta = await httpClient.PostAsync($"autenticacao/RecuperarSenha/usuario?sistema=1", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+            var resposta = await httpClient.PostAsync($"v1/autenticacao/RecuperarSenha/usuario?sistema=1", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
             
             if (!resposta.IsSuccessStatusCode)
                 await RegistraLogErro(resposta, request.Login);

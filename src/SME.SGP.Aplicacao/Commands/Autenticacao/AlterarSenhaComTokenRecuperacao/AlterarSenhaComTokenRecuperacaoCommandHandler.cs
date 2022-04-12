@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 { new KeyValuePair<string, string>("senha", request.Senha) }};
 
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.PostAsync($"autenticacao/AlterarSenha/", new FormUrlEncodedContent(valoresParaEnvio));
+            var resposta = await httpClient.PostAsync($"v1/autenticacao/AlterarSenha/", new FormUrlEncodedContent(valoresParaEnvio));
 
             if (!resposta.IsSuccessStatusCode)
                 await RegistraLogErro(resposta, request.Token);
