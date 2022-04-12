@@ -77,7 +77,7 @@ namespace SME.SGP.Dados.Repositorios
             }, splitOn: "Id", commandTimeout: 60);
         }
 
-        public async Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, int bimestre, bool professorCj,bool professorTitular,string professorRf="")
+        public async Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, int bimestre, bool professorCj, bool professorTitular, string professorRf = "")
         {
             var sqlQuery = new StringBuilder(@"select 1 
                           from pendencia_aula pa
@@ -105,15 +105,48 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula between pe.periodo_inicio and pe.periodo_fim
                            limit 1");
 
-                return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
-                new
-                {
-                    turmaId,
-                    disciplinaId,
-                    tipo = (int)tipoPendenciaAula,
-                    bimestre,
-                    professorRf
-                }, commandTimeout: 60);
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sqlQuery.ToString(),
+            new
+            {
+                turmaId,
+                disciplinaId,
+                tipo = (int)tipoPendenciaAula,
+                bimestre,
+                professorRf
+            }, commandTimeout: 60);
+        }
+
+        public async Task<IEnumerable<PossuiPendenciaDiarioBordoDto>> TurmasPendenciaDiarioBordo(IEnumerable<long> aulasId, string turmaId, int bimestre)
+        {
+            var sqlQuery = new StringBuilder(@"select DISTINCT a.turma_id as TurmaId, a.aula_cj as AulaCJ
+                                                  from aula a
+                                                  inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id ");
+
+            sqlQuery.AppendLine(@" where a.data_aula between pe.periodo_inicio and pe.periodo_fim
+                                    and a.turma_id = @turmaId and pe.bimestre = @bimestre and a.id = ANY(@aulas) ");
+
+            return await database.Conexao.QueryAsync<PossuiPendenciaDiarioBordoDto>(sqlQuery.ToString(),
+               new
+               {
+                   turmaId,
+                   aulas = aulasId.ToArray(),
+               }, commandTimeout: 60);
+        }
+
+        public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf)
+        {
+            var sqlQuery = new StringBuilder(@"select distinct pdb.aula_id
+                                                    from pendencia_diario_bordo pdb
+                                            where pdb.componente_curricular_id = @disciplinaId and pdb.professor_rf = @professorRf");
+
+            var disciplinaId = Convert.ToInt32(componenteCurricularId);
+
+            return await database.Conexao.QueryAsync<long>(sqlQuery.ToString(),
+               new
+               {
+                   professorRf,
+                   disciplinaId
+               }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, int anoLetivo)
@@ -237,29 +270,37 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<long>(query, new { aulaId, tipoPendencia });
         }
 
-        public async Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil)
+        public async Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil, long[] componentesCurricularesId)
         {
-            var sql = ehInfantil ? $@"select 1
-                        from aula
-                        inner join turma on aula.turma_id = turma.turma_id
-	                    left join registro_frequencia rf on aula.id = rf.aula_id
-                        where not aula.excluido
-	                        and aula.id = ANY(@aulas)
-                            and aula.data_aula::date < @hoje
-                            and (rf.id is null)
-	                        " :
-                               $@"select 1
-                        from aula
-                        inner join turma on aula.turma_id = turma.turma_id
-                        inner join componente_curricular cc on cc.id = aula.disciplina_id::bigint
-	                    left join registro_frequencia rf on aula.id = rf.aula_id
-                        where not aula.excluido
-	                        and aula.id = ANY(@aulas)
-                            and aula.data_aula::date < @hoje
-                            and rf.id is null 
-                            and cc.permite_registro_frequencia";
+            string sql;
+            if (ehInfantil)
+            {
+                sql = @"SELECT 1  
+                        FROM aula
+                        INNER JOIN turma ON aula.turma_id = turma.turma_id
+                        LEFT JOIN registro_frequencia rf ON aula.id = rf.aula_id
+                        LEFT JOIN pendencia_diario_bordo pdb ON pdb.aula_id = aula.id
+                        LEFT JOIN componente_curricular cc ON cc.id = pdb.componente_curricular_id and pdb.componente_curricular_id = any(@componentesCurricularesId)
+                        WHERE NOT aula.excluido
+                        AND aula.id = ANY(@aulas)
+                        AND aula.data_aula::date < @hoje
+                        AND (rf.id is null or pdb.id is not null) ";
+            }
+            else
+            {
+                sql = @"SELECT 1 FROM aula
+                        INNER JOIN turma ON aula.turma_id = turma.turma_id
+                        INNER JOIN componente_curricular cc ON cc.id = aula.disciplina_id::bigint
+	                    LEFT JOIN registro_frequencia rf ON aula.id = rf.aula_id
+                        WHERE NOT aula.excluido
+	                    AND aula.id = ANY(@aulas)
+                        AND aula.data_aula::date < @hoje
+                        AND rf.id is null 
+                        AND cc.permite_registro_frequencia ";
+            }
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date, componentesCurricularesId }));
+
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
@@ -324,7 +365,7 @@ namespace SME.SGP.Dados.Repositorios
 	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
                                     ELSE 0
                               END PossuiPendenciaFrequencia,
-                              CASE WHEN tr.id is null THEN 1
+                              CASE WHEN db.id is null THEN 1
                                     ELSE 0
                                END PossuiPendenciaDiarioBordo 
                            from
@@ -335,13 +376,13 @@ namespace SME.SGP.Dados.Repositorios
 	                        	aula.disciplina_id = cc.id::varchar
 	                        left join registro_frequencia rf on
 	                            aula.id = rf.aula_id
-                            left join diario_bordo tr on
-                                aula.id =  tr.aula_id
+                            left join diario_bordo db on
+                                aula.id =  db.aula_id
                             where
 	                            not aula.excluido
 	                            and aula.id = @aula
                                 and aula.data_aula::date < @hoje
-                                and (rf.id is null or tr.id is null) " :
+                                and (rf.id is null or db.id is null) " :
 
                                 $@"select
 	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1

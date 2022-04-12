@@ -26,8 +26,7 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.IniciarTransacao();
 
                 try
-                {
-
+                { 
                     var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendenciaAula));
                     await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, item.Select(x => x.Id)));
                     await SalvarPendenciaUsuario(pendenciaId, item.First().ProfessorRf);

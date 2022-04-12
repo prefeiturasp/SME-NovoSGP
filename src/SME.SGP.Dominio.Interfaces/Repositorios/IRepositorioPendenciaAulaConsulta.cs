@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long[]> ListarPendenciasPorAulaId(long aulaId);
         Task<long[]> ListarPendenciasPorAulasId(long[] aulasId);
         Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil);
-        Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil);
+        Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil, long[] componentesCurricularesId);
         Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId);
         Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId);
         Task<bool> PossuiAtividadeAvaliativaSemNotaPorAulasId(long[] aulasId);
@@ -21,6 +21,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long> ObterPendenciaAulaIdPorAulaId(long aulaId, TipoPendencia tipoPendencia);
         Task<IEnumerable<long>> ObterPendenciaIdPorAula(long aulaId, TipoPendencia tipoPendencia);
         Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, int bimestre,bool professorCj, bool professorNaoCj, string professorRf = "");
+        Task<IEnumerable<PossuiPendenciaDiarioBordoDto>> TurmasPendenciaDiarioBordo(IEnumerable<long> aulasId, string turmaId, int bimestre);
 
+        Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf);
     }
 }
