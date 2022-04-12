@@ -37,10 +37,13 @@ namespace SME.SGP.Aplicacao
         private async Task RegistraLogErro(HttpResponseMessage resposta, Guid token)
         {
             var mensagem = await resposta.Content.ReadAsStringAsync();
-            await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao validar token de recuperação de senha no EOL",
+            var titulo = "Ocorreu um erro ao validar token de recuperação de senha no EOL";
+            await mediator.Send(new SalvarLogViaRabbitCommand(titulo,
                                                               LogNivel.Critico,
                                                               LogContexto.ApiEol,
                                                               $"código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"}, Token:{token}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}"));
+
+            throw new Exception(titulo);
         }
     }
 }
