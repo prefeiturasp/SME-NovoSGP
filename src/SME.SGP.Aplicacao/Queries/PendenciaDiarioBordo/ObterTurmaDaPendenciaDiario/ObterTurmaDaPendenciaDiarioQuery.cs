@@ -4,9 +4,9 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmaDaPendenciaAulaQuery : IRequest<Turma>
+    public class ObterTurmaDaPendenciaDiarioQuery : IRequest<Turma>
     {
-        public ObterTurmaDaPendenciaAulaQuery(long pendenciaId)
+        public ObterTurmaDaPendenciaDiarioQuery(long pendenciaId)
         {
             PendenciaId = pendenciaId;
         }
@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
         public long PendenciaId { get; set; }
     }
 
-    public class ObterTurmaDaPendenciaQueryValidator : AbstractValidator<ObterTurmaDaPendenciaDiarioQuery>
+    public class ObterTurmaDaPendenciaDiarioQueryValidator : AbstractValidator<ObterTurmaDaPendenciaDiarioQuery>
     {
-        public ObterTurmaDaPendenciaQueryValidator()
+        public ObterTurmaDaPendenciaDiarioQueryValidator()
         {
             RuleFor(c => c.PendenciaId)
             .NotEmpty()
