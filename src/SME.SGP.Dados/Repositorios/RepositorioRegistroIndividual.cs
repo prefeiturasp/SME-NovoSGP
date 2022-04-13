@@ -65,13 +65,20 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<RegistroIndividual>> ObterPorAlunoPeriodoPaginado(long turmaId, long componenteCurricularId, long alunoCodigo, DateTime dataInicio, DateTime dataFim, Paginacao paginacao)
         {
-            var condicao = @" from registro_individual 
-                       where not excluido 
-                        and turma_id = @turmaId
-                        and componente_curricular_id = @componenteCurricularId
-                        and aluno_codigo = @alunoCodigo
-                        and data_registro::date between @dataInicio and @dataFim ";
-            var orderBy = "order by data_registro desc";
+            var obtempai = @"select componente_curricular_pai_id 
+                            from componente_curricular cc 
+                            where cc.id = @componenteCurricularId";
+
+            var componentePai = await database.Conexao.QueryFirstOrDefaultAsync<int>(obtempai, new { componenteCurricularId });
+
+            var condicao = @" from registro_individual ri
+                                  inner join componente_curricular cc on ri.componente_curricular_id = cc.id
+                                   where not ri.excluido 
+                                    and ri.turma_id = @turmaId
+                                    and cc.componente_curricular_pai_id = @componentePai
+                                    and ri.aluno_codigo = @alunoCodigo
+                                    and ri.data_registro::date between @dataInicio and @dataFim ";
+            var orderBy = "order by ri.data_registro desc";
 
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
@@ -79,24 +86,24 @@ namespace SME.SGP.Dados.Repositorios
             var query = $"select count(0) {condicao}";
 
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
-                new { turmaId, componenteCurricularId, alunoCodigo, dataInicio, dataFim });
+                new { turmaId, componentePai, alunoCodigo, dataInicio, dataFim });
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
-            query = $@"select id,
-                              turma_id,
-	                          aluno_codigo,
-	                          componente_curricular_id,
-	                          data_registro,
-	                          registro,
-	                          criado_em,
-	                          criado_por,
-	                          criado_rf,
-	                          alterado_em,
-	                          alterado_por,
-	                          alterado_rf,
-	                          excluido,
-	                          migrado {condicao} {orderBy} {offSet} ";
+            query = $@"select ri.id,
+                              ri.turma_id,
+                              ri.aluno_codigo,
+                              ri.componente_curricular_id,
+                              ri.data_registro,
+                              ri.registro,
+                              ri.criado_em,
+                              ri.criado_por,
+                              ri.criado_rf,
+                              ri.alterado_em,
+                              ri.alterado_por,
+                              ri.alterado_rf,
+                              ri.excluido,
+                              ri.migrado {condicao} {orderBy} {offSet} ";
 
             return new PaginacaoResultadoDto<RegistroIndividual>()
             {
@@ -104,7 +111,7 @@ namespace SME.SGP.Dados.Repositorios
                                                   new
                                                   {
                                                       turmaId,
-                                                      componenteCurricularId,
+                                                      componentePai,
                                                       alunoCodigo,
                                                       dataInicio,
                                                       dataFim,
