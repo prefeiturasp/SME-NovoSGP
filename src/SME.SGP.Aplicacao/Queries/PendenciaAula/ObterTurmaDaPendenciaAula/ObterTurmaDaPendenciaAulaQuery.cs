@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public long PendenciaId { get; set; }
     }
 
-    public class ObterTurmaDaPendenciaQueryValidator : AbstractValidator<ObterTurmaDaPendenciaDiarioQuery>
+    public class ObterTurmaDaPendenciaQueryValidator : AbstractValidator<ObterTurmaDaPendenciaAulaQuery>
     {
         public ObterTurmaDaPendenciaQueryValidator()
         {
