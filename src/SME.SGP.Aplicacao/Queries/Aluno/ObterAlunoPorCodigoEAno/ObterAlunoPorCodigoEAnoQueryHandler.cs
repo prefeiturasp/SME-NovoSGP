@@ -35,7 +35,8 @@ namespace SME.SGP.Aplicacao
                 DataNascimento = alunoPorTurmaResposta.DataNascimento,
                 DataSituacao = alunoPorTurmaResposta.DataSituacao,
                 CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
-                Situacao = alunoPorTurmaResposta.SituacaoMatricula,
+                CodigoSituacaoMatricula = alunoPorTurmaResposta.CodigoSituacaoMatricula,
+                Situacao = alunoPorTurmaResposta.SituacaoMatricula,               
                 TurmaEscola = await OberterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma)
             };
 

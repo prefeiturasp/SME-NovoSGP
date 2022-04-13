@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,7 +11,8 @@ namespace SME.SGP.Infra.Dtos
         public string Nome { get; set; }        
         public int NumeroAlunoChamada { get; set; }
         public DateTime DataNascimento { get; set; }
-        public DateTime DataSituacao { get; set; }        
+        public DateTime DataSituacao { get; set; }
+        public SituacaoMatriculaAluno CodigoSituacaoMatricula { get; set; }
         public string Situacao { get; set; }
         public string TurmaEscola { get; set; }
         public string NomeResponsavel { get; set; }
