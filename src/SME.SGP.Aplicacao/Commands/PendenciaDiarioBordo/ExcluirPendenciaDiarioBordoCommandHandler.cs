@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries.PendenciaDiarioBordo;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,25 +9,37 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Commands.PendenciaDiarioBordo
+namespace SME.SGP.Aplicacao
 {
     public class ExcluirPendenciaDiarioBordoCommandHandler : IRequestHandler<ExcluirPendenciaDiarioBordoCommand, bool>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioPendenciaDiarioBordo repositorioPendenciaDiarioBordo;
-        public ExcluirPendenciaDiarioBordoCommandHandler(IMediator mediator, IRepositorioPendenciaDiarioBordo repositorioPendenciaDiarioBordo)
+        private readonly IRepositorioPendencia repositorioPendencia;
+        public ExcluirPendenciaDiarioBordoCommandHandler(IMediator mediator, IRepositorioPendenciaDiarioBordo repositorioPendenciaDiarioBordo, IRepositorioPendencia repositorioPendencia)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioPendenciaDiarioBordo = repositorioPendenciaDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioPendenciaDiarioBordo));
+            this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
         }
         public async Task<bool> Handle(ExcluirPendenciaDiarioBordoCommand request, CancellationToken cancellationToken)
         {
-            var existePendencia = await mediator.Send(new ObterIdPendenciaDiarioBordoQuery(request.PendenciaId), cancellationToken);
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var pendenciaId = await mediator.Send(new ObterIdPendenciaDiarioBordoQuery(request.AulaId, request.ComponenteCurricularId), cancellationToken);
 
-            if (existePendencia)
-                await repositorioPendenciaDiarioBordo.Excluir(request.PendenciaId);
-            return true;
+            if (pendenciaId > 0)
+            {
+                await repositorioPendenciaDiarioBordo.Excluir(request.AulaId, request.ComponenteCurricularId);
+                await mediator.Send(new ExcluirPendenciaUsuarioPorPendenciaIdEUsuarioIdCommand(pendenciaId, usuario.Id));
 
+                var existePendencia = await mediator.Send(new VerificaSeExistePendenciaDiarioComPendenciaIdQuery(pendenciaId), cancellationToken);
+
+                if (!existePendencia)
+                    repositorioPendencia.ExclusaoLogicaPendencia(pendenciaId);
+
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,9 +16,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             this.database = database;
         }
-        public async Task<bool> ExisteIdPendenciaDiarioBordo(long pendenciaId)
+        public async Task<long> ExisteIdPendenciaDiarioBordo(long aulaId, long componenteCurricularId)
         {
-            return await database.Conexao.ExecuteAsync("select id from pendencia_diario_bordo where id = @pendenciaId", new { pendenciaId }, commandTimeout: 60) > 0;
+            var sql = "select pendencia_id from pendencia_diario_bordo where aula_id = @aulaId and componente_curricular_id = @componenteCurricularId ";
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { aulaId, componenteCurricularId }, commandTimeout: 60);
         }
 
     }

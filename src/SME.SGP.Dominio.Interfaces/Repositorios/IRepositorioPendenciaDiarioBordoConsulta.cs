@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Dominio.Interfaces.Repositorios
+namespace SME.SGP.Dominio
 {
     public interface IRepositorioPendenciaDiarioBordoConsulta
     {
-        Task<bool> ExisteIdPendenciaDiarioBordo(long pendenciaId);
+        Task<long> ExisteIdPendenciaDiarioBordo(long aulaId, long componenteCurricularId);
     }
 }
