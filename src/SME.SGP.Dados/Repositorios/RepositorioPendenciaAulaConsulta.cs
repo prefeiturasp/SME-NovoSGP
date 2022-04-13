@@ -224,6 +224,18 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { pendenciaId });
         }
 
+        public async Task<Turma> ObterTurmaPorPendenciaDiario(long pendenciaId)
+        {
+            var query = @"select t.* 
+                         from pendencia_diario_bordo pdb
+                        inner join aula a on a.id = pdb.aula_id 
+                        inner join turma t on t.turma_id = a.turma_id
+                        where pdb.pendencia_id = @pendenciaId ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { pendenciaId });
+        }
+
+
         public async Task<IEnumerable<PendenciaAulaDto>> ObterPendenciasAulasPorPendencia(long pendenciaId)
         {
             var query = @"select a.data_aula as DataAula, pa.Motivo

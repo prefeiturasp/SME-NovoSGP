@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -22,5 +23,16 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { aulaId, componenteCurricularId }, commandTimeout: 60);
         }
 
+        public async Task<IEnumerable<PendenciaDiarioBordoDescricaoDto>> ObterPendenciasDiarioPorPendencia(long pendenciaId, string codigoRf)
+        {
+            var query = @"select a.data_aula as DataAula, coalesce(cc.descricao_infantil , cc.descricao_sgp, cc.descricao) as ComponenteCurricular
+                           from pendencia_diario_bordo pdb
+                          inner join aula a on a.id = pdb.aula_id
+                          inner join componente_curricular cc on cc.id = pdb.componente_curricular_id 
+                          where pdb.pendencia_id = @pendenciaId and pdb.professor_rf = @codigoRf
+                          order by a.data_aula desc";
+
+            return await database.Conexao.QueryAsync<PendenciaDiarioBordoDescricaoDto>(query, new { pendenciaId, codigoRf });
+        }
     }
 }
