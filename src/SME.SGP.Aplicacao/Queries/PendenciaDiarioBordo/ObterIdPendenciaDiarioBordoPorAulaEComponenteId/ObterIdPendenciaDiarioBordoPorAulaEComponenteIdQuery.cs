@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.PendenciaDiarioBordo
+namespace SME.SGP.Aplicacao
 {
-    public class ObterIdPendenciaDiarioBordoQuery : IRequest<long>
+    public class ObterIdPendenciaDiarioBordoPorAulaEComponenteIdQuery : IRequest<long>
     {
-        public ObterIdPendenciaDiarioBordoQuery(long aulaId, long componenteCurricularId)
+        public ObterIdPendenciaDiarioBordoPorAulaEComponenteIdQuery(long aulaId, long componenteCurricularId)
         {
             AulaId = aulaId;
             ComponenteCurricularId = componenteCurricularId;
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Queries.PendenciaDiarioBordo
         public long AulaId { get; set; }
         public long ComponenteCurricularId { get; set; }
     }
-    public class ObterIdPendenciaDiarioBordoQueryValidator : AbstractValidator<ObterIdPendenciaDiarioBordoQuery>
+    public class ObterIdPendenciaDiarioBordoQueryValidator : AbstractValidator<ObterIdPendenciaDiarioBordoPorAulaEComponenteIdQuery>
     {
         public ObterIdPendenciaDiarioBordoQueryValidator()
         {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.PendenciaDiarioBordo
+namespace SME.SGP.Aplicacao
 {
     public class VerificaSeExistePendenciaDiarioComPendenciaIdQuery : IRequest<bool>
     {

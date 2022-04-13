@@ -7,18 +7,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.PendenciaDiarioBordo
+namespace SME.SGP.Aplicacao
 {
-    public class ObterIdPendenciaDiarioBordoQueryHandler : IRequestHandler<ObterIdPendenciaDiarioBordoQuery, long>
+    public class ObterIdPendenciaDiarioBordoPorAulaEComponenteIdQueryHandler : IRequestHandler<ObterIdPendenciaDiarioBordoPorAulaEComponenteIdQuery, long>
     {
         private readonly IRepositorioPendenciaDiarioBordoConsulta repositorioPendenciaDiarioBordoConsulta;
 
-        public ObterIdPendenciaDiarioBordoQueryHandler(IRepositorioPendenciaDiarioBordoConsulta repositorioPendenciaDiarioBordoConsulta)
+        public ObterIdPendenciaDiarioBordoPorAulaEComponenteIdQueryHandler(IRepositorioPendenciaDiarioBordoConsulta repositorioPendenciaDiarioBordoConsulta)
         {
             this.repositorioPendenciaDiarioBordoConsulta = repositorioPendenciaDiarioBordoConsulta ?? throw new ArgumentNullException(nameof(repositorioPendenciaDiarioBordoConsulta));
         }
 
-        public async Task<long> Handle(ObterIdPendenciaDiarioBordoQuery request, CancellationToken cancellationToken)
+        public async Task<long> Handle(ObterIdPendenciaDiarioBordoPorAulaEComponenteIdQuery request, CancellationToken cancellationToken)
         {
             return await repositorioPendenciaDiarioBordoConsulta.ExisteIdPendenciaDiarioBordo(request.AulaId, request.ComponenteCurricularId);
 

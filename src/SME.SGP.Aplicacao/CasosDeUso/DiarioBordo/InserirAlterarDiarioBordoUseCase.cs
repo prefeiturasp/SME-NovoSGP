@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                 if(param.Id == 0)    
                 {
                     dadosAuditoria = await mediator.Send(new InserirDiarioBordoCommand(param.AulaId, param.Planejamento, param.ComponenteCurricularId));
-                    await mediator.Send(new ExcluirPendenciaDiarioBordoCommand(param.AulaId, param.ComponenteCurricularId));
+                    await mediator.Send(new ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand(param.AulaId, param.ComponenteCurricularId));
                 }
                 else
                 {
