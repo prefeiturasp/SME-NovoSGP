@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Commands.PendenciaDiarioBordo
+namespace SME.SGP.Aplicacao
 {
     public class ExcluirPendenciaDiarioBordoCommandHandler : IRequestHandler<ExcluirPendenciaDiarioBordoCommand, bool>
     {
@@ -24,14 +24,17 @@ namespace SME.SGP.Aplicacao.Commands.PendenciaDiarioBordo
         }
         public async Task<bool> Handle(ExcluirPendenciaDiarioBordoCommand request, CancellationToken cancellationToken)
         {
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             var pendenciaId = await mediator.Send(new ObterIdPendenciaDiarioBordoQuery(request.AulaId, request.ComponenteCurricularId), cancellationToken);
 
             if (pendenciaId > 0)
             {
                 await repositorioPendenciaDiarioBordo.Excluir(request.AulaId, request.ComponenteCurricularId);
+                await mediator.Send(new ExcluirPendenciaUsuarioPorPendenciaIdEUsuarioIdCommand(pendenciaId, usuario.Id));
+
                 var existePendencia = await mediator.Send(new VerificaSeExistePendenciaDiarioComPendenciaIdQuery(pendenciaId), cancellationToken);
 
-                if (existePendencia)
+                if (!existePendencia)
                     repositorioPendencia.ExclusaoLogicaPendencia(pendenciaId);
 
                 return true;

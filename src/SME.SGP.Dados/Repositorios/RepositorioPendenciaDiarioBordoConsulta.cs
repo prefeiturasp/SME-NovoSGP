@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;

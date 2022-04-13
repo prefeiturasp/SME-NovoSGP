@@ -31,7 +31,8 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            var componentesCurriculares = await servicoEol.ObterComponentesCurricularesPorLoginEIdPerfil(usuarioLogado.Login, usuarioLogado.PerfilAtual);
+            var componentesCurriculares = await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
+
             var componentesCurricularesId = componentesCurriculares.Select(x => x.Codigo).ToArray();
 
             for (int i = 1; i < qntDiasMes + 1; i++)

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Dominio.Interfaces.Repositorios
+namespace SME.SGP.Dominio
 {
     public interface IRepositorioPendenciaDiarioBordoConsulta
     {

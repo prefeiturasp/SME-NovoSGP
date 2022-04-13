@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, int anoLetivo);
         Task<long[]> ListarPendenciasPorAulaId(long aulaId);
         Task<long[]> ListarPendenciasPorAulasId(long[] aulasId);
-        Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil);
+        Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil, Usuario usuarioLogado);
         Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil, long[] componentesCurricularesId);
         Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId);
         Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId);
