@@ -124,8 +124,9 @@ namespace SME.SGP.Aplicacao
 
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
 
-            var dadosAlunosFiltrados = dadosAlunos.Where(x => !x.EstaInativo() ||
-                                           (x.EstaInativo() &&
+            var dadosAlunosFiltrados = dadosAlunos.Where(x => !x.EstaInativo() || 
+                                           !x.SituacaoCodigo.Equals(SituacaoMatriculaAluno.VinculoIndevido) ||
+                                           (
                                            x.DataSituacao.Date >= periodoEscolar.PeriodoInicio.Date &&
                                            x.DataSituacao.Date <= periodoEscolar.PeriodoFim.Date)).OrderBy(w => w.Nome);
 
