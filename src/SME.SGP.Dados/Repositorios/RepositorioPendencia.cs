@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -91,46 +92,57 @@ namespace SME.SGP.Dados.Repositorios
         {
             var situacao = SituacaoPendencia.Pendente;
             bool queryMontadaParaTurma = false;
-            string queryPendencias = string.Empty;
             int totalRegistrosDaQuery = 0;
+            var queryPendencias = new StringBuilder();        
+            var queryUsuario = new StringBuilder();
+            var where = new StringBuilder();
+            var queryTurmaFiltrada = new StringBuilder();
 
-            var query = @"from pendencia p
-                          left join pendencia_perfil pp on pp.pendencia_id = p.id
-                          left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
-                          left join pendencia_usuario pu on pu.pendencia_id = p.id ";
+            var queryPerfil = new StringBuilder( @"from pendencia p
+                          inner join pendencia_perfil pp on pp.pendencia_id = p.id
+                          inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id ");
            
 
             if (!string.IsNullOrEmpty(turmaCodigo) && tiposPendencias.Count() == 0)
             {
-                query = MontaQueryTurmaFiltrada(turmaCodigo, usuarioId, situacao);
+                queryTurmaFiltrada.Append(MontaQueryTurmaFiltrada(turmaCodigo, usuarioId, situacao));
                 queryMontadaParaTurma = true;
             }
                 
             if (!string.IsNullOrEmpty(turmaCodigo) && tiposPendencias.Count() > 0)
-                query += RetornaQueryTurmaParaUnicoTipo((TipoPendenciaGrupo)tipoGrupo.Value, turmaCodigo);
+            {
+                queryPerfil.AppendLine(RetornaQueryTurmaParaUnicoTipo((TipoPendenciaGrupo)tipoGrupo.Value));
+                queryUsuario.AppendLine(RetornaQueryTurmaParaUnicoTipo((TipoPendenciaGrupo)tipoGrupo.Value));
+            }              
             
             if (!queryMontadaParaTurma)
             {
-                query += @"where not p.excluido 
-                           and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
-                           and p.situacao = @situacao";
+                var orderBy = "order by Datas desc";
+
+                where.AppendLine(@"where not p.excluido   
+                                        and p.situacao = @situacao");
 
                 if (tiposPendencias.Length > 0)
-                    query = $"{query} and p.tipo = any(@tiposPendencias) ";
+                    where.AppendLine($" and p.tipo = any(@tiposPendencias) ");
 
                 if (!string.IsNullOrEmpty(tituloPendencia))
-                    query = $"{query} and UPPER(p.titulo) like UPPER('%" + tituloPendencia + "%')";
+                    where.AppendLine( $" and UPPER(p.titulo) like UPPER('%" + tituloPendencia + "%')");
 
                 if (!string.IsNullOrEmpty(turmaCodigo) && (TipoPendenciaGrupo)tipoGrupo.Value != TipoPendenciaGrupo.AEE)
-                    query += $" AND t.turma_id = '{turmaCodigo}'";
+                    where.AppendLine($" AND t.turma_id = '{turmaCodigo}'");
 
-                var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
+                queryPerfil.AppendLine($" {where} and ppu.usuario_id = @usuarioId");
 
-                queryPendencias = $@"select distinct coalesce(p.alterado_em, p.criado_em), p.* {query} {orderBy}
-                    offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;";
+                queryPendencias.AppendLine(" select * from (");
+                queryPendencias.AppendLine($@"select distinct coalesce(p.alterado_em, p.criado_em) Datas, p.* {queryPerfil}");
+                queryPendencias.AppendLine(" union all");
+                queryPendencias.AppendLine($@"select distinct coalesce(p.alterado_em, p.criado_em) Datas, p.* from pendencia p ");
+                queryPendencias.AppendLine($" inner join pendencia_usuario pu on pu.pendencia_id = p.id {queryUsuario} {where} and pu.usuario_id = @usuarioId ) t");    
+                queryPendencias.AppendLine($" {orderBy} offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;");
 
-                var queryTotalRegistros = $"select count(distinct p.id) {query}";
-                totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId, situacao, tiposPendencias, tituloPendencia });
+                var queryTotalRegistros = RetornaQueryTotalRegistros(queryPerfil, where);
+
+                totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros.ToString(), new { usuarioId, situacao, tiposPendencias, tituloPendencia });
             }
 
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
@@ -151,20 +163,34 @@ namespace SME.SGP.Dados.Repositorios
 
             if (queryMontadaParaTurma)
             {        
-                var dadosRelatorio = await database.Conexao.QueryAsync<Pendencia>(query, parametros);
+                var dadosRelatorio = await database.Conexao.QueryAsync<Pendencia>(queryTurmaFiltrada.ToString(), parametros);
                 totalRegistrosDaQuery = dadosRelatorio.Count();
 
-                query += " offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only";
-                retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(query, parametros);
+                queryTurmaFiltrada.AppendLine(" offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only");
+                retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryTurmaFiltrada.ToString(), parametros);
             } 
             else
-                retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendencias, parametros);
+                retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendencias.ToString(), parametros);
 
             retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
             retornoPaginado.Items = retornoPaginado.Items.Count() > 0 ? retornoPaginado.Items.OrderByDescending(rp => rp.CriadoEm) : retornoPaginado.Items;
             return retornoPaginado;
+        }
+
+        public string RetornaQueryTotalRegistros(StringBuilder queryPerfil, StringBuilder where)
+        {
+            var queryTotalRegistros = new StringBuilder();
+            queryTotalRegistros.AppendLine("select sum (total) TotalPendencias");
+            queryTotalRegistros.AppendLine(" from ( ");
+            queryTotalRegistros.AppendLine($" select count(distinct p.id) total {queryPerfil}");
+            queryTotalRegistros.AppendLine(" union all ");
+            queryTotalRegistros.AppendLine($" select count(distinct p.id) total from pendencia p ");
+            queryTotalRegistros.AppendLine($" inner join pendencia_usuario pu on pu.pendencia_id = p.id {where} and pu.usuario_id = @usuarioId ");
+            queryTotalRegistros.AppendLine(" ) t ");
+
+            return queryTotalRegistros.ToString();
         }
 
         public async Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)
@@ -215,7 +241,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { pendenciaId, turmaId });
         }
 
-        public string RetornaQueryTurmaParaUnicoTipo(TipoPendenciaGrupo tipoGrupo, string turmaCodigo)
+        public string RetornaQueryTurmaParaUnicoTipo(TipoPendenciaGrupo tipoGrupo)
         {
             string query = string.Empty;
 
@@ -248,60 +274,96 @@ namespace SME.SGP.Dados.Repositorios
 
         public string MontaQueryTurmaFiltrada(string turmaCodigo, long usuarioId, SituacaoPendencia situacao)
         {
-            string query = string.Empty;
+            var query = new StringBuilder();
 
             if (!string.IsNullOrEmpty(turmaCodigo))
             {
-                query = $@"select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo 
+                query.AppendLine($@"select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo 
 						                              from pendencia p 
-					                                  left join pendencia_perfil pp on pp.pendencia_id = p.id
-                                                      left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
-                                                      left join pendencia_usuario pu on pu.pendencia_id = p.id   
+					                                  inner join pendencia_perfil pp on pp.pendencia_id = p.id
+                                                      inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id   
                                                       inner join pendencia_fechamento pf ON pf.pendencia_id = p.id
 	                                                  inner join fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
 	                                                  inner join fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
 	                                                  inner join turma t ON t.id = ft.turma_id 
 	                                                  where not p.excluido 
-                                                       and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
+                                                       and ppu.usuario_id = @usuarioId
                                                        and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'
                             union all 
                             select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo
                                                       from pendencia p 
-					                                  left join pendencia_perfil pp on pp.pendencia_id = p.id
-                                                      left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
-                                                      left join pendencia_usuario pu on pu.pendencia_id = p.id   
+					                                  inner join pendencia_perfil pp on pp.pendencia_id = p.id
+                                                      inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
 	                                                  inner join pendencia_professor ppf ON ppf.pendencia_id = p.id
                                                       inner join pendencia_aula pa ON pa.pendencia_id = p.id
 	                                                  inner join turma t ON t.id = ppf.turma_id 
 	                                                  where not p.excluido 
-                                                       and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
+                                                       and ppu.usuario_id = @usuarioId
                                                        and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'
                             union all 
                             select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo
                                                       from pendencia p 
-					                                  left join pendencia_perfil pp on pp.pendencia_id = p.id
-                                                      left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
-                                                      left join pendencia_usuario pu on pu.pendencia_id = p.id   
+					                                  inner join pendencia_perfil pp on pp.pendencia_id = p.id
+                                                      inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
 						                              inner join pendencia_aula pa ON pa.pendencia_id = p.id
                                                       inner join aula a on a.id = pa.aula_id 
                                                       inner join turma t ON t.turma_id = a.turma_id 
                                                       where not p.excluido 
-                                                      and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
+                                                      and ppu.usuario_id = @usuarioId
                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'
                             union all 
                             select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo 
                                                       from pendencia p  
-					                                  left join pendencia_perfil pp on pp.pendencia_id = p.id
-                                                      left join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
-                                                      left join pendencia_usuario pu on pu.pendencia_id = p.id   
+					                                  inner join pendencia_perfil pp on pp.pendencia_id = p.id
+                                                      inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id 
 						                              inner join pendencia_registro_individual pri ON pri.pendencia_id = p.id
                                                       inner join turma t ON t.id = pri.turma_id 
                                                       where not p.excluido 
-                                                       and (ppu.usuario_id = @usuarioId or pu.usuario_id = @usuarioId)
-                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'";
+                                                       and ppu.usuario_id = @usuarioId
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'");
+                query.AppendLine(" union all ");
+                query.AppendLine($@"select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo 
+						                              from pendencia p 
+					                                  inner join pendencia_usuario pu on pu.pendencia_id = p.id 
+                                                      inner join pendencia_fechamento pf ON pf.pendencia_id = p.id
+	                                                  inner join fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
+	                                                  inner join fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
+	                                                  inner join turma t ON t.id = ft.turma_id 
+	                                                  where not p.excluido 
+                                                       and pu.usuario_id = @usuarioId
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'
+                            union all 
+                            select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo
+                                                      from pendencia p 
+					                                  inner join pendencia_usuario pu on pu.pendencia_id = p.id 
+	                                                  inner join pendencia_professor ppf ON ppf.pendencia_id = p.id
+                                                      inner join pendencia_aula pa ON pa.pendencia_id = p.id
+	                                                  inner join turma t ON t.id = ppf.turma_id 
+	                                                  where not p.excluido 
+                                                       and pu.usuario_id = @usuarioId
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'
+                            union all 
+                            select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo
+                                                      from pendencia p 
+					                                  inner join pendencia_usuario pu on pu.pendencia_id = p.id  
+						                              inner join pendencia_aula pa ON pa.pendencia_id = p.id
+                                                      inner join aula a on a.id = pa.aula_id 
+                                                      inner join turma t ON t.turma_id = a.turma_id 
+                                                      where not p.excluido 
+                                                       and pu.usuario_id = @usuarioId
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'
+                            union all 
+                            select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo 
+                                                      from pendencia p  
+					                                  inner join pendencia_usuario pu on pu.pendencia_id = p.id 
+						                              inner join pendencia_registro_individual pri ON pri.pendencia_id = p.id
+                                                      inner join turma t ON t.id = pri.turma_id 
+                                                      where not p.excluido 
+                                                       and pu.usuario_id = @usuarioId
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'");
             }
 
-            return query;
+            return query.ToString();
         }
 
         public async Task<Pendencia> FiltrarListaPendenciasUsuario(string turmaCodigo, Pendencia pendencia)
