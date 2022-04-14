@@ -27,6 +27,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.WorkflowAprovacaoId).ToColumn("wf_aprovacao_id");
             Map(c => c.EhAEE).Ignore();
+            Map(c => c.EhPAP).Ignore();
             Map(c => c.EhAEEContraturno).Ignore();
             Map(c => c.EhAulaCompartilhada).Ignore();
             Map(c => c.EhRecuperacaoParalela).Ignore();

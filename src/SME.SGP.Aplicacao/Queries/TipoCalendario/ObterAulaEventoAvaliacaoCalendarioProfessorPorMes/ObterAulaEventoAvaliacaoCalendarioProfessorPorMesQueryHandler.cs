@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -12,9 +14,13 @@ namespace SME.SGP.Aplicacao
     public class ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler : IRequestHandler<ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery, IEnumerable<EventoAulaDiaDto>>
     {
         private readonly IMediator mediator;
-        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler(IMediator mediator)
+        private readonly IServicoUsuario servicoUsuario;
+        private readonly IServicoEol servicoEol;
+        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler(IMediator mediator, IServicoUsuario servicoUsuario, IServicoEol servicoEol)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
         public async Task<IEnumerable<EventoAulaDiaDto>> Handle(ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery request, CancellationToken cancellationToken)
         {
@@ -23,6 +29,11 @@ namespace SME.SGP.Aplicacao
             var listaRetorno = new List<EventoAulaDiaDto>();
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
+
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            var componentesCurriculares = await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
+
+            var componentesCurricularesId = componentesCurriculares.Select(x => x.Codigo).ToArray();
 
             for (int i = 1; i < qntDiasMes + 1; i++)
             {
@@ -67,7 +78,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     if (aulasId != null && aulasId.Any())
-                        eventoAula.PossuiPendencia = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasId, turma.ModalidadeCodigo));
+                        eventoAula.PossuiPendencia = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasId, turma.ModalidadeCodigo, componentesCurricularesId));
                     else
                         eventoAula.PossuiPendencia = false;
                 }

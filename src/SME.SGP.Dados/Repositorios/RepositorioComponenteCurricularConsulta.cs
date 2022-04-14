@@ -191,7 +191,7 @@ namespace SME.SGP.Dados.Repositorios
                            ccn.conselho_classe_aluno_id = cca.id
                            and ccn.componente_curricular_codigo = fn.disciplina_id
                            where
-                           {(bimestre.HasValue && bimestre.Value > 0 ? " and pe.bimestre = @bimestre " : " and pe.bimestre is null ")} 
+                           {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
                            and cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
                            and ft.turma_id = @turmaId
@@ -226,7 +226,7 @@ namespace SME.SGP.Dados.Repositorios
                            fn.fechamento_aluno_id = fa.id
                            and ccn.componente_curricular_codigo = fn.disciplina_id
                            where
-                            {(bimestre.HasValue && bimestre.Value > 0 ? " and pe.bimestre = @bimestre " : " and pe.bimestre is null ")} 
+                            {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
                            and cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
                            and ft.turma_id = @turmaId ) x   ";
