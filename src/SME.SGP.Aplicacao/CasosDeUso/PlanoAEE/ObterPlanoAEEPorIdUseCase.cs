@@ -50,6 +50,12 @@ namespace SME.SGP.Aplicacao
                 var alunoPorTurmaResposta = await mediator
                     .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, false));
 
+                if (alunoPorTurmaResposta == null && entidadePlano.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente)
+                {
+                    alunoPorTurmaResposta = await mediator
+                        .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, entidadePlano.Turma.EhTurmaHistorica, false));
+                }
+
                 if (alunoPorTurmaResposta == null)
                     throw new NegocioException("Aluno não localizado");
 
