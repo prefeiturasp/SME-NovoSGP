@@ -216,7 +216,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorData(long tipoCalendarioId, string turmaCodigo, string ueCodigo, DateTime dataDaAula)
+        public async Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorData(string turmaCodigo, string ueCodigo, DateTime dataDaAula)
         {
             StringBuilder query = new StringBuilder();
 
@@ -227,18 +227,18 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.disciplina_id,");
             query.AppendLine("a.quantidade,");
             query.AppendLine("a.status,");
-            query.AppendLine("a.professor_rf");
+            query.AppendLine("a.professor_rf,");
+            query.AppendLine("a.tipo_calendario_id ");
             query.AppendLine("FROM public.aula a");
             query.AppendLine("WHERE a.excluido = false");
             query.AppendLine("AND a.status <> 3");
-            query.AppendLine("AND a.tipo_calendario_id = @tipoCalendarioId");
             query.AppendLine("AND a.turma_id = @turmaCodigo");
             query.AppendLine("AND a.data_aula::date = @dataDaAula");
 
-            return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaCodigo, ueCodigo, dataDaAula }));
+            return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new {turmaCodigo, ueCodigo, dataDaAula }));
         }
 
-        public async Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorMes(long tipoCalendarioId, string turmaCodigo, string ueCodigo, int mes)
+        public async Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorMes(string turmaCodigo, string ueCodigo, int mes)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("SELECT a.id,");
@@ -246,18 +246,18 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("       a.tipo_aula,");
             query.AppendLine("       a.aula_cj,");
             query.AppendLine("       a.disciplina_id,");
-            query.AppendLine("       a.professor_rf");
+            query.AppendLine("       a.professor_rf,");
+            query.AppendLine("       a.tipo_calendario_id");
             query.AppendLine("  FROM public.aula a");
             query.AppendLine("      INNER JOIN turma t");
             query.AppendLine("          ON a.turma_id = t.turma_id");
             query.AppendLine("WHERE a.excluido = false");
             query.AppendLine("AND a.status <> 3");
-            query.AppendLine("AND a.tipo_calendario_id = @tipoCalendarioId");
             query.AppendLine("AND a.turma_id = @turmaCodigo");
             query.AppendLine("AND extract(month from a.data_aula) = @mes");
             query.AppendLine("AND extract(year from a.data_aula) = t.ano_letivo");
 
-            return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaCodigo, ueCodigo, mes }));
+            return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new {turmaCodigo, ueCodigo, mes }));
         }
 
         public async Task<IEnumerable<Aula>> ObterAulasRecorrencia(long aulaPaiId, long? aulaIdInicioRecorrencia = null, DateTime? dataFinal = null)
