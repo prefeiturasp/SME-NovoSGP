@@ -13,13 +13,15 @@ namespace SME.SGP.Aplicacao
         public IEnumerable<Modalidade> ModalidadesQueSeraoIgnoradas { get; set; }
         public string Login { get; set; }
         public Guid Perfil { get; set; }
+        public bool ConsideraHistorico { get; set; }
 
-        public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(string codigoUe, string login, Guid perfil, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas)
+        public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(string codigoUe, string login, Guid perfil, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas, bool consideraHistorico = false)
         {
             CodigoUe = codigoUe;
             Login = login;
             Perfil = perfil;
             ModalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradas;
+            ConsideraHistorico = consideraHistorico;
         }
     }
 
