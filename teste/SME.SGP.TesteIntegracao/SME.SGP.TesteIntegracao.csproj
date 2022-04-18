@@ -33,4 +33,10 @@
       <ProjectReference Include="..\..\src\SME.SGP.IoC\SME.SGP.IoC.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Setup\appsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

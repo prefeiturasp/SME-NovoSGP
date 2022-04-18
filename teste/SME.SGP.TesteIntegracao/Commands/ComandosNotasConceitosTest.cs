@@ -5,6 +5,9 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Shouldly;
+using SME.SGP.Api.Controllers;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Commands
@@ -19,11 +22,6 @@ namespace SME.SGP.TesteIntegracao.Commands
         public async Task Lancar_Conceito_Para_Componentrse_Regencia_de_Classe_Eja()
         {
             var command = ServiceProvider.GetService<IComandosNotasConceitos>();
-            var notasConceitosConsulta = ServiceProvider.GetService<IRepositorioNotasConceitosConsulta>();
-            var atividadeAvaliativa = ServiceProvider.GetService<IRepositorioAtividadeAvaliativa>();
-
-            var servicoUsuario = ServiceProvider.GetService<IServicoUsuario>();
-            var servicoDeNotasConceitos = ServiceProvider.GetService<IServicoDeNotasConceitos>();
 
             var listaDeNotas = new List<NotaConceitoDto>()
             {
@@ -41,7 +39,13 @@ namespace SME.SGP.TesteIntegracao.Commands
                 TurmaId = "2366531",
                 NotasConceitos = listaDeNotas
             };
-            await command.Salvar(dto);
+            
+            var controller = ServiceProvider.GetService<NotasConceitosController>();
+            var retorno = (await controller.Post(dto, command)) as JsonResult;
+
+            retorno.StatusCode.ShouldBe(200);
+            var valorRetornadoPelaController = (IEnumerable<PeriodosParaConsultaNotasDto>) retorno.Value;
+            valorRetornadoPelaController.ShouldNotBeEmpty();
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Data;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,8 +28,18 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessorFake>();
             services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
-            services.TryAddScoped<ISgpContext, SgpContext>();
-            services.TryAddScoped<ISgpContextConsultas, SgpContextConsultas>();
+            services.TryAddScoped<ISgpContext>(provider =>
+            {
+                var connection = provider.GetService<IDbConnection>();
+                var contextoAplicacao = provider.GetService<IContextoAplicacao>();
+                return new SgpContext(connection, contextoAplicacao);
+            });
+            services.TryAddScoped<ISgpContextConsultas>(provider =>
+            {
+                var connection = provider.GetService<IDbConnection>();
+                var contextoAplicacao = provider.GetService<IContextoAplicacao>();
+                return new SgpContextConsultas(connection, contextoAplicacao);
+            });
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
             services.AddPolicies();
         }
