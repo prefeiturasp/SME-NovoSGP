@@ -63,7 +63,9 @@ namespace SME.SGP.Aplicacao
                     {
                         AulaId = a.IdAula,
                         AulaCJ = a.AulaCJ,
-                        PodeEditar = (usuarioLogado.EhProfessorCj() && a.AulaCJ || usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar) || (!a.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPosl() || usuarioLogado.EhProfessorPoed())),
+                        PodeEditar = (usuarioLogado.EhProfessorCj() && a.AulaCJ || usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar) 
+                        || (!a.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPosl() 
+                        || usuarioLogado.EhProfessorPoed()) || usuarioLogado.EhProfessorPap()),
                         ProfessorRf = a.ProfessorRf,
                         CriadoPor = a.CriadoPor,
                         PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula)),
