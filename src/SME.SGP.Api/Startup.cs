@@ -63,10 +63,10 @@ namespace SME.SGP.Api
             app.UseRouting();
             app.UseAuthorization();
 
-            app.UseSwagger();                                             //comentar
-            app.UseSwaggerUI(c =>                                         //comentar
-            {                                                             //comentar
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGP Api"); //comentar
+            app.UseSwagger();                                         
+            app.UseSwaggerUI(c =>                                         
+            {                                                             
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGP Api");
             });
 
             //TODO: Ajustar para as os origins que irão consumir
@@ -125,7 +125,7 @@ namespace SME.SGP.Api
             ConfiguraRabbitParaLogs(services);
             var telemetriaOptions = ConfiguraTelemetria(services);
 
-            new RegistraDependencias().Registrar(services, configuracaoRabbitOptions); //comentar
+            new RegistraDependencias().Registrar(services, configuracaoRabbitOptions);
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -133,11 +133,11 @@ namespace SME.SGP.Api
 
             var servicoTelemetria = new ServicoTelemetria(clientTelemetry, telemetriaOptions);
 
-            RegistraClientesHttp.Registrar(services, Configuration);  //comentar
-            RegistraAutenticacao.Registrar(services, Configuration);  //comentar
-            RegistrarMvc.Registrar(services, serviceProvider);        //comentar
+            RegistraClientesHttp.Registrar(services, Configuration);
+            RegistraAutenticacao.Registrar(services, Configuration);
+            RegistrarMvc.Registrar(services, serviceProvider); 
 
-            RegistraDocumentacaoSwagger.Registrar(services);          //comentar
+            RegistraDocumentacaoSwagger.Registrar(services); 
 
             services.AddPolicies();
 

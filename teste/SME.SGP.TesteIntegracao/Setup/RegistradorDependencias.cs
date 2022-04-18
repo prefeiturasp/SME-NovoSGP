@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
@@ -34,6 +35,7 @@ namespace SME.SGP.TesteIntegracao.Setup
         protected override void RegistrarServicos(IServiceCollection services)
         {
             services.TryAddScoped<IServicoTelemetria, TelemetriaFake>();
+            services.TryAddScoped<IServicoEol, ServicoEOLFake>();
             base.RegistrarServicos(services);
         }
     }

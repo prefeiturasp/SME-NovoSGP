@@ -1,11 +1,8 @@
-﻿using Shouldly;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -22,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.Commands
         [Fact]
         public async Task Lancar_Conceito_Para_Componente_Regencia_de_Classe_Eja()
         {
-            var usuarioLogado = testFixture.Autenticar("6926886", "Sgp@1234");
+            var useCase = ServiceProvider.GetService<IComandosNotasConceitos>();
             var listNota = new List<NotaConceitoDto>()
             {
              new NotaConceitoDto()
@@ -37,11 +34,9 @@ namespace SME.SGP.TesteIntegracao.Commands
             {
                 DisciplinaId = "1114",
                 TurmaId = "2366531",
-                NotasConceitos =listNota
+                NotasConceitos = listNota
             };
-            var response = await testFixture.Client.PostAsJsonAsync("api/v1/avaliacoes/notas/", dto);
-            response.EnsureSuccessStatusCode();
-            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            await useCase.Salvar(dto);
         }
     }
 }
