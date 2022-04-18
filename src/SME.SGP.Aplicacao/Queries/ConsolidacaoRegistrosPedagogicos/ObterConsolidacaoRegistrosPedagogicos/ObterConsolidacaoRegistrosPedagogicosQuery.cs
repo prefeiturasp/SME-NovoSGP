@@ -31,7 +31,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.AnoLetivo)
                 .NotEmpty()
                 .WithMessage("O ano letivo deve ser informado para consolidar os registros pedagógicos");
-
         }
     }
 }

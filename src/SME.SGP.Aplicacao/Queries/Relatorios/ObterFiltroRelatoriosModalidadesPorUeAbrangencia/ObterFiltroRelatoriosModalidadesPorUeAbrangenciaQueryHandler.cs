@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 return todasAsModalidades.Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
             }
 
-            var modalidades = await repositorioAbrangencia.ObterModalidadesPorUeAbrangencia(request.CodigoUe, request.Login, request.Perfil, request.ModalidadesQueSeraoIgnoradas);
+            var modalidades = await repositorioAbrangencia.ObterModalidadesPorUeAbrangencia(request.CodigoUe, request.Login, request.Perfil, request.ModalidadesQueSeraoIgnoradas, request.ConsideraHistorico);
             return modalidades?.Select(c => new OpcaoDropdownDto(((int)c).ToString(), c.Name()));
         }
     }

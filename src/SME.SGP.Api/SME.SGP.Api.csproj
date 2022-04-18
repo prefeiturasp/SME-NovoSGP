@@ -43,13 +43,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\ModelosEmail\RecuperacaoSenha.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Imagens\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

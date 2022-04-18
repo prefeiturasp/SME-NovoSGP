@@ -9,6 +9,8 @@ namespace SME.SGP.Infra
     {
         public IList<AlunosFechamentoNotaConceitoTurmaDto> Alunos { get; set; }
         public long FechamentoId { get; set; }
+        public long PeriodoEscolarId { get; set; }
+        public bool PossuiAvaliacao { get; set; }
         public DateTime DataFechamento { get; set; }
         public DateTime PeriodoFim { get; set; }
         public double MediaAprovacaoBimestre { get; set; }

@@ -203,7 +203,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(relatorioPendenciasFechamentoUseCase.ListarTodosTipos(opcaoTodos));
         }
-        
+
         [HttpPost("atas-bimestrais")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -216,11 +216,11 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("acompanhamento-registros-pedagogicos")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> AcompanhamentoRegistrosPedagogicos(FiltroRelatorioAcompanhamentoRegistrosPedagogicosDto filtro, [FromServices] IRelatorioAcompanhamentoRegistrosPedagogicosUseCase relatorioRegistrosPedagogicos)
+        public async Task<IActionResult> AcompanhamentoRegistrosPedagogicos(FiltroRelatorioAcompanhamentoRegistrosPedagogicosDto filtro,
+            [FromServices] IRelatorioAcompanhamentoRegistrosPedagogicosUseCase relatorioRegistrosPedagogicos)
         {
             return Ok(await relatorioRegistrosPedagogicos.Executar(filtro));
         }
-
 
         [HttpPost("acompanhamento-frequencia")]
         [ProducesResponseType(typeof(Boolean), 200)]
@@ -229,7 +229,6 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
-
 
         [HttpPost("ocorrencias")]
         [ProducesResponseType(typeof(Boolean), 200)]

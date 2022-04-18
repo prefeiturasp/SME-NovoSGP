@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -157,7 +158,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, long turmaId, int bimestre, string codigoAluno)
         {
-            var query = @"	                        
+            var query = new StringBuilder(@"	                        
                            select
                            distinct *
                            from
@@ -191,13 +192,15 @@ namespace SME.SGP.Dados.Repositorios
                            ccn.conselho_classe_aluno_id = cca.id
                            and ccn.componente_curricular_codigo = fn.disciplina_id
                            where
-                           pe.bimestre = @bimestre
-                           and cca.aluno_codigo = @codigoAluno
+                           cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
-                           and ft.turma_id = @turmaId
-                           union all
-                           
-                           select 
+                           and ft.turma_id = @turmaId ");
+            if(bimestre != 0)
+                query.Append("and pe.bimestre = @bimestre ");
+
+            query.Append(" union all ");
+
+            query.Append(@"select 
                            ccn.componente_curricular_codigo as Codigo,
                            comp.descricao as Descricao, 
                            comp.permite_lancamento_nota as LancaNota
@@ -226,12 +229,15 @@ namespace SME.SGP.Dados.Repositorios
                            fn.fechamento_aluno_id = fa.id
                            and ccn.componente_curricular_codigo = fn.disciplina_id
                            where
-                           pe.bimestre = @bimestre
-                           and cca.aluno_codigo = @codigoAluno
+                           cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
-                           and ft.turma_id = @turmaId ) x   ";
+                           and ft.turma_id = @turmaId ");
+            if (bimestre != 0)
+                query.Append("and pe.bimestre = @bimestre ");
 
-            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { bimestre, anoLetivo, turmaId, codigoAluno, }));
+            query.Append(" ) x;");
+
+            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query.ToString(), new { bimestre, anoLetivo, turmaId, codigoAluno, }));
         }
 
         public async Task<string> ObterDescricaoPorId(long id)
