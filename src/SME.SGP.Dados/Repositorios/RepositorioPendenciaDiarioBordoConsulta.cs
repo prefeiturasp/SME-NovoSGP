@@ -23,6 +23,15 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { aulaId, componenteCurricularId }, commandTimeout: 60);
         }
 
+        public async Task<IEnumerable<PendenciaUsuarioDto>> ObterIdPendenciaDiarioBordoPorAulaId(long aulaId)
+        {
+            var sql = @"select pdb.pendencia_id as PendenciaId, u.id as UsuarioId 
+                                from pendencia_diario_bordo pdb
+                                inner join usuario u on u.rf_codigo = pdb.professor_rf
+                                where pdb.aula_id = @aulaId";
+            return await database.Conexao.QueryAsync<PendenciaUsuarioDto>(sql, new { aulaId}, commandTimeout: 60);
+        }
+
         public async Task<IEnumerable<PendenciaDiarioBordoDescricaoDto>> ObterPendenciasDiarioPorPendencia(long pendenciaId, string codigoRf)
         {
             var query = @"select a.data_aula as DataAula, coalesce(cc.descricao_infantil , cc.descricao_sgp, cc.descricao) as ComponenteCurricular

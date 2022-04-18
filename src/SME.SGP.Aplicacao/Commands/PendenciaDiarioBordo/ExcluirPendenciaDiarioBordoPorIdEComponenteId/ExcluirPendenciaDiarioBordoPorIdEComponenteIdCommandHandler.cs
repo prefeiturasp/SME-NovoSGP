@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Queries.PendenciaDiarioBordo;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirPendenciaDiarioBordoCommandHandler : IRequestHandler<ExcluirPendenciaDiarioBordoCommand, bool>
+    public class ExcluirPendenciaDiarioBordoCommandHandler : IRequestHandler<ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand, bool>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioPendenciaDiarioBordo repositorioPendenciaDiarioBordo;
@@ -22,10 +21,10 @@ namespace SME.SGP.Aplicacao
             this.repositorioPendenciaDiarioBordo = repositorioPendenciaDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioPendenciaDiarioBordo));
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
         }
-        public async Task<bool> Handle(ExcluirPendenciaDiarioBordoCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand request, CancellationToken cancellationToken)
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var pendenciaId = await mediator.Send(new ObterIdPendenciaDiarioBordoQuery(request.AulaId, request.ComponenteCurricularId), cancellationToken);
+            var pendenciaId = await mediator.Send(new ObterIdPendenciaDiarioBordoPorAulaEComponenteIdQuery(request.AulaId, request.ComponenteCurricularId), cancellationToken);
 
             if (pendenciaId > 0)
             {
