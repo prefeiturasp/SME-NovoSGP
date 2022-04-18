@@ -105,7 +105,11 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(turmaCodigo) && tiposPendencias.Count() == 0)
             {
-                queryTurmaFiltrada.Append(MontaQueryTurmaFiltrada(turmaCodigo, usuarioId, situacao));
+                string whereTitulo = string.Empty;
+                if (!string.IsNullOrEmpty(tituloPendencia))
+                    whereTitulo = $" and UPPER(p.titulo) like UPPER('%" + tituloPendencia + "%')";
+
+                queryTurmaFiltrada.Append(MontaQueryTurmaFiltrada(turmaCodigo, usuarioId, situacao, whereTitulo));
                 queryMontadaParaTurma = true;
             }
                 
@@ -113,8 +117,8 @@ namespace SME.SGP.Dados.Repositorios
             {
                 queryPerfil.AppendLine(RetornaQueryTurmaParaUnicoTipo((TipoPendenciaGrupo)tipoGrupo.Value));
                 queryUsuario.AppendLine(RetornaQueryTurmaParaUnicoTipo((TipoPendenciaGrupo)tipoGrupo.Value));
-            }              
-            
+            }
+
             if (!queryMontadaParaTurma)
             {
                 var orderBy = "order by Datas desc";
@@ -140,7 +144,7 @@ namespace SME.SGP.Dados.Repositorios
                 queryPendencias.AppendLine($" inner join pendencia_usuario pu on pu.pendencia_id = p.id {queryUsuario} {where} and pu.usuario_id = @usuarioId ) t");    
                 queryPendencias.AppendLine($" {orderBy} offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;");
 
-                var queryTotalRegistros = RetornaQueryTotalRegistros(queryPerfil, where);
+                var queryTotalRegistros = RetornaQueryTotalRegistros(queryPerfil, where, queryUsuario);
 
                 totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros.ToString(), new { usuarioId, situacao, tiposPendencias, tituloPendencia });
             }
@@ -179,14 +183,14 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
-        public string RetornaQueryTotalRegistros(StringBuilder queryPerfil, StringBuilder where)
+        public string RetornaQueryTotalRegistros(StringBuilder queryPerfil, StringBuilder where, StringBuilder queryUsuario)
         {
             var queryTotalRegistros = new StringBuilder();
             queryTotalRegistros.AppendLine("select sum (total) TotalPendencias");
             queryTotalRegistros.AppendLine(" from ( ");
             queryTotalRegistros.AppendLine($" select count(distinct p.id) total {queryPerfil}");
             queryTotalRegistros.AppendLine(" union all ");
-            queryTotalRegistros.AppendLine($" select count(distinct p.id) total from pendencia p ");
+            queryTotalRegistros.AppendLine($" select count(distinct p.id) total from pendencia p {queryUsuario}");
             queryTotalRegistros.AppendLine($" inner join pendencia_usuario pu on pu.pendencia_id = p.id {where} and pu.usuario_id = @usuarioId ");
             queryTotalRegistros.AppendLine(" ) t ");
 
@@ -272,7 +276,7 @@ namespace SME.SGP.Dados.Repositorios
             return query;
         }
 
-        public string MontaQueryTurmaFiltrada(string turmaCodigo, long usuarioId, SituacaoPendencia situacao)
+        public string MontaQueryTurmaFiltrada(string turmaCodigo, long usuarioId, SituacaoPendencia situacao, string tituloPendencia)
         {
             var query = new StringBuilder();
 
@@ -288,7 +292,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                                  inner join turma t ON t.id = ft.turma_id 
 	                                                  where not p.excluido 
                                                        and ppu.usuario_id = @usuarioId
-                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}' {tituloPendencia}
                             union all 
                             select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo
                                                       from pendencia p 
@@ -299,7 +303,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                                  inner join turma t ON t.id = ppf.turma_id 
 	                                                  where not p.excluido 
                                                        and ppu.usuario_id = @usuarioId
-                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}' {tituloPendencia}
                             union all 
                             select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo
                                                       from pendencia p 
@@ -310,7 +314,7 @@ namespace SME.SGP.Dados.Repositorios
                                                       inner join turma t ON t.turma_id = a.turma_id 
                                                       where not p.excluido 
                                                       and ppu.usuario_id = @usuarioId
-                                                      and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'
+                                                      and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}' {tituloPendencia}
                             union all 
                             select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo 
                                                       from pendencia p  
@@ -320,7 +324,7 @@ namespace SME.SGP.Dados.Repositorios
                                                       inner join turma t ON t.id = pri.turma_id 
                                                       where not p.excluido 
                                                        and ppu.usuario_id = @usuarioId
-                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'");
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}' {tituloPendencia}");
                 query.AppendLine(" union all ");
                 query.AppendLine($@"select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo 
 						                              from pendencia p 
@@ -331,7 +335,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                                  inner join turma t ON t.id = ft.turma_id 
 	                                                  where not p.excluido 
                                                        and pu.usuario_id = @usuarioId
-                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}' {tituloPendencia}
                             union all 
                             select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo
                                                       from pendencia p 
@@ -341,7 +345,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                                  inner join turma t ON t.id = ppf.turma_id 
 	                                                  where not p.excluido 
                                                        and pu.usuario_id = @usuarioId
-                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}' {tituloPendencia}
                             union all 
                             select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo
                                                       from pendencia p 
@@ -351,7 +355,7 @@ namespace SME.SGP.Dados.Repositorios
                                                       inner join turma t ON t.turma_id = a.turma_id 
                                                       where not p.excluido 
                                                        and pu.usuario_id = @usuarioId
-                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}' {tituloPendencia}
                             union all 
                             select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo 
                                                       from pendencia p  
@@ -360,7 +364,7 @@ namespace SME.SGP.Dados.Repositorios
                                                       inner join turma t ON t.id = pri.turma_id 
                                                       where not p.excluido 
                                                        and pu.usuario_id = @usuarioId
-                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}'");
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}' {tituloPendencia}");
             }
 
             return query.ToString();
