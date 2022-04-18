@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
@@ -10,17 +11,21 @@ namespace SME.SGP.TesteIntegracao.Commands
 {
     public class ComandosNotasConceitosTest : TesteBase
     {
-        private readonly TestFixture testFixture;
         public ComandosNotasConceitosTest(TestFixture testFixture) : base(testFixture)
         {
-            this.testFixture = testFixture;
         }
 
         [Fact]
-        public async Task Lancar_Conceito_Para_Componente_Regencia_de_Classe_Eja()
+        public async Task Lancar_Conceito_Para_Componentrse_Regencia_de_Classe_Eja()
         {
-            var useCase = ServiceProvider.GetService<IComandosNotasConceitos>();
-            var listNota = new List<NotaConceitoDto>()
+            var command = ServiceProvider.GetService<IComandosNotasConceitos>();
+            var notasConceitosConsulta = ServiceProvider.GetService<IRepositorioNotasConceitosConsulta>();
+            var atividadeAvaliativa = ServiceProvider.GetService<IRepositorioAtividadeAvaliativa>();
+
+            var servicoUsuario = ServiceProvider.GetService<IServicoUsuario>();
+            var servicoDeNotasConceitos = ServiceProvider.GetService<IServicoDeNotasConceitos>();
+
+            var listaDeNotas = new List<NotaConceitoDto>()
             {
              new NotaConceitoDto()
                  {
@@ -34,9 +39,9 @@ namespace SME.SGP.TesteIntegracao.Commands
             {
                 DisciplinaId = "1114",
                 TurmaId = "2366531",
-                NotasConceitos = listNota
+                NotasConceitos = listaDeNotas
             };
-            await useCase.Salvar(dto);
+            await command.Salvar(dto);
         }
     }
 }

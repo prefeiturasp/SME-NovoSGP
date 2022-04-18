@@ -17,15 +17,15 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
-        public ComandosNotasConceitos(IServicoDeNotasConceitos servicosDeNotasConceitos, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa, IRepositorioNotasConceitosConsulta repositorioNotasConceitos, IServicoUsuario servicoUsuario,
+        public ComandosNotasConceitos(
             IMediator mediator)
         {
-            this.servicosDeNotasConceitos = servicosDeNotasConceitos ?? throw new System.ArgumentNullException(nameof(servicosDeNotasConceitos));
-            this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new System.ArgumentNullException(nameof(repositorioNotasConceitos));
-            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            //this.servicosDeNotasConceitos = servicosDeNotasConceitos ?? throw new System.ArgumentNullException(nameof(servicosDeNotasConceitos));
+            //this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new System.ArgumentNullException(nameof(repositorioNotasConceitos));
+            //this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
-            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
-            
+            ///this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
+
         }
 
         public async Task Salvar(NotaConceitoListaDto notaConceitoLista)
