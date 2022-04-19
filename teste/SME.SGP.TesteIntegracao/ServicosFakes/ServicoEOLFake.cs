@@ -1,11 +1,14 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Enumerados;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
@@ -72,9 +75,23 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<AbrangenciaCompactaVigenteRetornoEOLDTO> ObterAbrangenciaCompactaVigente(string login, Guid perfil)
+        public async Task<AbrangenciaCompactaVigenteRetornoEOLDTO> ObterAbrangenciaCompactaVigente(string login, Guid perfil)
         {
-            throw new NotImplementedException();
+            return new AbrangenciaCompactaVigenteRetornoEOLDTO
+            {
+                Login = login,
+                Abrangencia = new AbrangenciaCargoRetornoEolDTO
+                {
+                    GrupoID = new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
+                    CargosId = new List<int>
+                    {
+                        3239, 3255, 3263, 3271, 3280, 3298, 3301, 3336, 3344, 3840, 3859, 3867, 3874, 3883, 3884, 3310, 3131, 3212, 3213, 3220, 3247, 3395, 3425, 3433, 3450, 3816, 3875, 3877, 3880
+                    },
+                    Grupo = GruposSGP.Professor,
+                    Abrangencia = Infra.Enumerados.Abrangencia.Professor,
+                },
+                IdTurmas = new List<string> {"2366531"}.ToArray(),
+            };
         }
 
         public Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds)
@@ -102,9 +119,36 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, bool consideraInativos = false)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, bool consideraInativos = false)
         {
-            throw new NotImplementedException();
+            return new List<AlunoPorTurmaResposta> {
+                new AlunoPorTurmaResposta
+                {
+                      Ano=0,
+                      CodigoAluno = "7128291",
+                      CodigoComponenteCurricular=0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=0,
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(2021,11,09,17,25,31),
+                      DataMatricula= new DateTime(2021,11,09,17,25,31),
+                      EscolaTransferencia=null,
+                      NomeAluno="ANA RITA ANDRADE FERREIRA DOS SANTOS",
+                      NomeSocialAluno=null,
+                      NumeroAlunoChamada=1,
+                      ParecerConclusivo=null,
+                      PossuiDeficiencia=false,
+                      SituacaoMatricula="Ativo",
+                      Transferencia_Interna=false,
+                      TurmaEscola=null,
+                      TurmaRemanejamento=null,
+                      TurmaTransferencia=null,
+                      NomeResponsavel="ANA RITA ANDRADE FERREIRA DOS SANTOS,",
+                      TipoResponsavel="4",
+                      CelularResponsavel="11961861993",
+                      DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
+                }
+            };
         }
 
         public Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesCurriculares()
@@ -147,9 +191,28 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<DadosTurmaEolDto> ObterDadosTurmaPorCodigo(string codigoTurma)
+        public async Task<DadosTurmaEolDto> ObterDadosTurmaPorCodigo(string codigoTurma)
         {
-            throw new NotImplementedException();
+            return new DadosTurmaEolDto
+            {
+                Ano = '\u0000',
+                AnoLetivo = 2022,
+                Codigo = 2366531,
+                CodigoModalidade = 0,
+                DataFim = null,
+                DataInicioTurma = DateTime.Now,
+                DuracaoTurno = 7,
+                Ehistorico = false,
+                EnsinoEspecial = false,
+                EtapaEJA = 0,
+                Extinta = false,
+                Modalidade = null,
+                NomeTurma = "2A",
+                Semestre = 0,
+                SerieEnsino = null,
+                TipoTurma = TipoTurma.Regular,
+                TipoTurno = 5,
+            };
         }
 
         public Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil)
@@ -204,7 +267,22 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
         {
-            throw new NotImplementedException();
+            return new List<UsuarioEolRetornoDto>{
+                new UsuarioEolRetornoDto
+                {
+                    CodigoRf="7921489",
+                    NomeServidor = "ALEXANDRE AFRANIO HOKAMA SILVA",
+                    CodigoFuncaoAtividade = 0,
+                    EstaAfastado = false
+                },
+                new UsuarioEolRetornoDto
+                {
+                    CodigoRf="7549610",
+                    NomeServidor = "FILIPE EMMANUEL ADOLPHO ECARD",
+                    CodigoFuncaoAtividade = 0,
+                    EstaAfastado = false
+                },
+            };
         }
 
         public Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorCargoUeAsync(string ueId, long cargoId)
@@ -252,9 +330,30 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login)
+        public async Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login)
         {
-            throw new NotImplementedException();
+            var listaUsuarios = new List<UsuarioEolAutenticacaoRetornoDto>
+            {
+                new UsuarioEolAutenticacaoRetornoDto
+                {
+                    CodigoRf = "6926886",
+                    Perfis = new List<Guid>
+                    {
+                        new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
+                        new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
+                    }
+                },
+                new UsuarioEolAutenticacaoRetornoDto
+                {
+                    CodigoRf = "8012229",
+                    Perfis = new List<Guid>
+                    {
+                        new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
+                        new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
+                    }
+                },
+            };
+            return listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault();
         }
 
         public Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid)
@@ -272,9 +371,32 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo, DateTime? dataReferencia = null, string professorRf = null, bool realizaAgrupamento = true)
+        public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo, DateTime? dataReferencia = null, string professorRf = null, bool realizaAgrupamento = true)
         {
-            throw new NotImplementedException();
+            return new List<ProfessorTitularDisciplinaEol>
+            {
+                new ProfessorTitularDisciplinaEol
+                {
+                    ProfessorRf ="",
+                    ProfessorNome ="Não há professor titular.",
+                    DisciplinaNome = "INFORMATICA - OIE",
+                    DisciplinaId = 1060
+                },
+                new ProfessorTitularDisciplinaEol
+                {
+                    ProfessorRf ="6118232",
+                    ProfessorNome ="MARLEI LUCIANE BERNUN",
+                    DisciplinaNome = "LEITURA - OSL",
+                    DisciplinaId = 1061
+                },
+                new ProfessorTitularDisciplinaEol
+                {
+                    ProfessorRf = "6926886",
+                    ProfessorNome = "ESTER CUSTODIA DOS SANTOS",
+                    DisciplinaNome = "REG CLASSE EJA ETAPA BASICA",
+                    DisciplinaId = 1114
+                },
+            };
         }
 
         public Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesPorTurmas(IEnumerable<string> codigosTurmas)
@@ -327,9 +449,10 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data)
+        public async Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data)
         {
-            throw new NotImplementedException();
+
+            return true;
         }
 
         public Task<bool> PodePersistirTurmaNoPeriodo(string professorRf, string codigoTurma, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
