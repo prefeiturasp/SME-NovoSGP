@@ -291,23 +291,16 @@ namespace SME.SGP.Dados.Repositorios
    	                         or d.id is null 
    	                         or cc.id is null 
    	                         or cc.situacao = @situacaoConselho)";
-            try
+            return await contexto.Conexao.QueryAsync<Turma>(query, new
             {
-                return await contexto.Conexao.QueryAsync<Turma>(query, new
-                {
-                    ueId,
-                    anoLetivo,
-                    periodoEscolarId,
-                    modalidades,
-                    semestre,
-                    situacoes = new int[] { (int)SituacaoFechamento.EmProcessamento, (int)SituacaoFechamento.ProcessadoComPendencias },
-                    situacaoConselho = (int)SituacaoConselhoClasse.EmAndamento
-                });
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+                ueId,
+                anoLetivo,
+                periodoEscolarId,
+                modalidades,
+                semestre,
+                situacoes = new int[] { (int)SituacaoFechamento.EmProcessamento, (int)SituacaoFechamento.ProcessadoComPendencias },
+                situacaoConselho = (int)SituacaoConselhoClasse.EmAndamento
+            });
         }
 
         public async Task<IEnumerable<Turma>> ObterTurmasComInicioFechamento(long ueId, long periodoEscolarId, int[] modalidades)
