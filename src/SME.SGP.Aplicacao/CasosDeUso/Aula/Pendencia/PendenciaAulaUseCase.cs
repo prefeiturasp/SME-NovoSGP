@@ -20,18 +20,22 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var dadosParametroGeracaoPendencias = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.DataInicioGeracaoPendencias, DateTimeExtension.HorarioBrasilia().Year));
-            DateTime dataDefinida = Convert.ToDateTime(dadosParametroGeracaoPendencias.Valor);
             
-            if(DateTimeExtension.HorarioBrasilia() >= dataDefinida)
+            if(dadosParametroGeracaoPendencias != null)
             {
-                var dres = await mediator.Send(new ObterIdsDresQuery());
+                DateTime dataDefinida = Convert.ToDateTime(dadosParametroGeracaoPendencias.Valor);
 
-                foreach (var dreId in dres)
+                if (DateTimeExtension.HorarioBrasilia() >= dataDefinida)
                 {
-                    await VerificaPendenciasDiarioDeBordo(dreId);
-                    await VerificaPendenciasAvaliacao(dreId);
-                    await VerificaPendenciasFrequencia(dreId);
-                    await VerificaPendenciasPlanoAula(dreId);
+                    var dres = await mediator.Send(new ObterIdsDresQuery());
+
+                    foreach (var dreId in dres)
+                    {
+                        await VerificaPendenciasDiarioDeBordo(dreId);
+                        await VerificaPendenciasAvaliacao(dreId);
+                        await VerificaPendenciasFrequencia(dreId);
+                        await VerificaPendenciasPlanoAula(dreId);
+                    }
                 }
             }
 
