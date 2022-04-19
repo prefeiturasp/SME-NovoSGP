@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExecutaNotificacaoAndamentoFechamentoCommand request, CancellationToken cancellationToken)
         {
-            var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(request.PeriodoEncerrandoBimestre.PeriodoFechamento.UeId.Value,
+            var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(request.PeriodoEncerrandoBimestre.PeriodoFechamento.UeId,
                                                                                                        DateTime.Now.Year,
                                                                                                        request.PeriodoEncerrandoBimestre.PeriodoEscolarId,
                                                                                                        request.ModalidadeTipoCalendario.ObterModalidadesTurma(),
@@ -36,22 +36,34 @@ namespace SME.SGP.Aplicacao
 
         private async Task EnviarNotificacaoTurmas(IEnumerable<Turma> turmas, IEnumerable<ComponenteCurricularDto> componentes, PeriodoEscolar periodoEscolar, Ue ue)
         {
+            var ues = new List<Ue>();
             var titulo = $"Situação do processo de fechamento ({periodoEscolar.Bimestre}º Bimestre)";
-            var mensagem = new StringBuilder($"Segue abaixo o situação do processo de fechamento do <b>{periodoEscolar.Bimestre}° bimestre da {ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao}):</b>");
 
-            mensagem.Append("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
-            foreach (var turmasPorModalidade in turmas.GroupBy(c => c.ModalidadeCodigo))
+            if (ue != null)
+                ues.Add(ue);
+            else
             {
-                mensagem.Append(ObterHeaderModalidade(turmasPorModalidade.Key.Name()));
-
-                foreach (var turma in turmasPorModalidade)
+                turmas.Select(t => t.UeId).Distinct().ToList().ForEach(ueId =>
                 {
-                    mensagem.Append(await MontarLinhaDaTurma(turma, componentes, ue, periodoEscolar));
-                }
+                    var ueLocalizada = mediator.Send(new ObterUePorIdQuery(ueId)).Result;
+                    ueLocalizada.Dre = mediator.Send(new ObterDREPorIdQuery(ueLocalizada.DreId)).Result;
+                    ues.Add(ueLocalizada);
+                });
             }
-            mensagem.Append("</table>");
 
-            await EnviarNotificacao(titulo, mensagem.ToString(), ue.Dre.CodigoDre, ue.CodigoUe);
+            foreach (var ueAtual in ues)
+            {
+                var mensagem = new StringBuilder($"Segue abaixo a situação do processo de fechamento do <b>{periodoEscolar.Bimestre}° bimestre da {ueAtual.TipoEscola.ShortName()} {ueAtual.Nome} ({ueAtual.Dre.Abreviacao}):</b>");
+                mensagem.Append("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
+                foreach (var turmasPorModalidade in turmas.Where(t => t.UeId == ueAtual.Id).GroupBy(c => c.ModalidadeCodigo))
+                {
+                    mensagem.Append(ObterHeaderModalidade(turmasPorModalidade.Key.Name()));
+                    foreach (var turma in turmasPorModalidade.OrderBy(t => t.Nome))
+                        mensagem.Append(await MontarLinhaDaTurma(turma, componentes, ueAtual, periodoEscolar));
+                }
+                mensagem.Append("</table>");
+                await EnviarNotificacao(titulo, mensagem.ToString(), ueAtual.Dre.CodigoDre, ueAtual.CodigoUe);
+            }
         }
 
         private async Task EnviarNotificacao(string titulo, string mensagem, string codigoDre, string codigoUe)
@@ -62,9 +74,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> MontarLinhaDaTurma(Turma turma, IEnumerable<ComponenteCurricularDto> componentes, Ue ue, PeriodoEscolar periodoEscolar)
         {
-            var mensagem = new StringBuilder();
+            var mensagem = new StringBuilder();            
             var componentesDaTurma = await ObterComponentesDaTurma(turma, ue);
-            var componentesCurriculares = componentes.Where(c => componentesDaTurma.Any(t => t.Codigo == c.Codigo));
+            var componentesCurriculares = componentes.Where(c => componentesDaTurma.Any(t => t.Codigo == c.Codigo)).OrderBy(cc => cc.Descricao);
 
             foreach (var componenteCurricular in componentesCurriculares)
             {
