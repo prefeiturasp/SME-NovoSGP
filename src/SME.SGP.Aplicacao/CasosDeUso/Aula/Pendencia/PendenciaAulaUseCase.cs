@@ -36,22 +36,34 @@ namespace SME.SGP.Aplicacao
         #region Metodos Privados
         private async Task VerificaPendenciasDiarioDeBordo(long dreId)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordo, new DreUeDto(dreId)));
+            var dadosParametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecutaPendenciaAulaDiarioBordo, DateTimeExtension.HorarioBrasilia().Year));
+            
+            if(dadosParametro?.Ativo == true)
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordo, new DreUeDto(dreId)));
         }
 
         private async Task VerificaPendenciasAvaliacao(long dreId)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaAvaliacao, new DreUeDto(dreId)));
+            var dadosParametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecutaPendenciaAulaAvaliacao, DateTimeExtension.HorarioBrasilia().Year));
+
+            if (dadosParametro?.Ativo == true)
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaAvaliacao, new DreUeDto(dreId)));
         }
 
         private async Task VerificaPendenciasFrequencia(long dreId)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaFrequencia, new DreUeDto(dreId)));
+            var dadosParametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecutaPendenciaAulaFrequencia, DateTimeExtension.HorarioBrasilia().Year));
+
+            if (dadosParametro?.Ativo == true)
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaFrequencia, new DreUeDto(dreId)));
         }
 
         private async Task VerificaPendenciasPlanoAula(long dreId)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaPlanoAula, new DreUeDto(dreId)));
+            var dadosParametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecutaPendenciaPlanoAula, DateTimeExtension.HorarioBrasilia().Year));
+
+            if (dadosParametro?.Ativo == true)
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaPlanoAula, new DreUeDto(dreId)));
         }
         #endregion
     }
