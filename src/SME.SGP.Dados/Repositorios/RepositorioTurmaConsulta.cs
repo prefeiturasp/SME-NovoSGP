@@ -269,7 +269,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long ueId, int anoLetivo, long? periodoEscolarId, int[] modalidades, int semestre)
+        public async Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long? ueId, int anoLetivo, long? periodoEscolarId, int[] modalidades, int semestre)
         {
             var joinFechamentoTurma = periodoEscolarId.HasValue ?
                 "left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id = @periodoEscolarId" :
@@ -282,17 +282,25 @@ namespace SME.SGP.Dados.Repositorios
                          {joinFechamentoTurma}
                          left join fechamento_turma_disciplina d on d.fechamento_turma_id = ft.id
                          left join conselho_classe cc on cc.fechamento_turma_id = ft.id
-                         where t.ue_id = @ueId
+                         where (@ueId is null or (@ueId is not null and t.ue_id = @ueId))
                            and t.ano_letivo  = @anoLetivo
                            and t.modalidade_codigo = ANY(@modalidades)
                            and t.ano between '1' and '9'
                            and (t.semestre = 0 or t.semestre = @semestre)
-                           and (d.situacao in (1,2) 
+                           and (d.situacao = ANY(@situacoes) 
    	                         or d.id is null 
    	                         or cc.id is null 
-   	                         or cc.situacao = 1)";
-
-            return await contexto.Conexao.QueryAsync<Turma>(query, new { ueId, anoLetivo, periodoEscolarId, modalidades, semestre });
+   	                         or cc.situacao = @situacaoConselho)";
+            return await contexto.Conexao.QueryAsync<Turma>(query, new
+            {
+                ueId,
+                anoLetivo,
+                periodoEscolarId,
+                modalidades,
+                semestre,
+                situacoes = new int[] { (int)SituacaoFechamento.EmProcessamento, (int)SituacaoFechamento.ProcessadoComPendencias },
+                situacaoConselho = (int)SituacaoConselhoClasse.EmAndamento
+            });
         }
 
         public async Task<IEnumerable<Turma>> ObterTurmasComInicioFechamento(long ueId, long periodoEscolarId, int[] modalidades)
@@ -451,7 +459,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49)
                             order by coalesce(t.nome_filtro,t.nome)
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
-            }            
+            }
 
             query.AppendLine(@"select count(distinct (t.id))
                                     from turma t 
