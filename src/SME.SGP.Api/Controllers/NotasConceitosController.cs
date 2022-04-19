@@ -15,7 +15,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/avaliacoes/notas")]
     [ValidaDto]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class NotasConceitosController : ControllerBase
     {
 
@@ -75,11 +75,17 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NC_A, Permissao.NC_I, Policy = "Bearer")]
+        //[Permissao(Permissao.NC_A, Permissao.NC_I, Policy = "Bearer")]
         public async Task<IActionResult> Post([FromBody] NotaConceitoListaDto notaConceitoListaDto, [FromServices] IComandosNotasConceitos comandosNotasConceitos)
         {
             await comandosNotasConceitos.Salvar(notaConceitoListaDto);
 
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post2()
+        {
             return Ok();
         }
 
