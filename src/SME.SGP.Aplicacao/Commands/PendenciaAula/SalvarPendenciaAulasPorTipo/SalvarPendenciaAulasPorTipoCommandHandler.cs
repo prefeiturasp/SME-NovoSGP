@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                                 {
                                     if (periodoEscolar != null)
                                     {
-                                        long pendenciaIdExistente = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id));
+                                        long pendenciaIdExistente = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula));
 
                                         var pendenciaId = pendenciaIdExistente > 0 ? pendenciaIdExistente : await mediator.Send(new SalvarPendenciaCommand(request.TipoPendenciaAula));
                                         await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, item.Select(x => x.Id)));
@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
 
                                         if (!String.IsNullOrEmpty(codigoRfProfessor))
                                         {
-                                            long pendenciaIdExistente = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(item.First().DisciplinaId, codigoRfProfessor, periodoEscolar.Id));
+                                            long pendenciaIdExistente = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(item.First().DisciplinaId, codigoRfProfessor, periodoEscolar.Id, request.TipoPendenciaAula));
 
                                             var pendenciaId = pendenciaIdExistente > 0 ? pendenciaIdExistente : await mediator.Send(new SalvarPendenciaCommand(request.TipoPendenciaAula));
 
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
                         }
                         else
                         {
-                            long pendenciaIdExistenteCJ = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(item.First().DisciplinaId, item.First().ProfessorRf, periodoEscolar.Id));
+                            long pendenciaIdExistenteCJ = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(item.First().DisciplinaId, item.First().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula));
 
                             var pendenciaId = pendenciaIdExistenteCJ > 0 ? pendenciaIdExistenteCJ : await mediator.Send(new SalvarPendenciaCommand(request.TipoPendenciaAula));
                             await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, item.Select(x => x.Id)));

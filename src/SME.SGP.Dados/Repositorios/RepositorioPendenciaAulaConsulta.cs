@@ -368,7 +368,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }
 
-        public async Task<long> ObterPendenciaIdPorComponenteProfessorEBimestre(string componenteCurricularId, string codigoRf, long periodoEscolarId)
+        public async Task<long> ObterPendenciaIdPorComponenteProfessorEBimestre(string componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia)
         {
             var sql = @"select p.id from pendencia p 
                             inner join pendencia_aula pa on pa.id  = p.id 
@@ -377,10 +377,10 @@ namespace SME.SGP.Dados.Repositorios
                             inner join aula a on a.id = pa.aula_id 
                             inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
                             where u.rf_codigo = @codigoRf and a.disciplina_id = @componenteCurricularId 
-                            and pe.id = @periodoEscolarId 
+                            and pe.id = @periodoEscolarId and p.tipo = @tipoPendencia 
                             order by p.criado_em desc";
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, tipoPendencia }));
         }
     }
 }
