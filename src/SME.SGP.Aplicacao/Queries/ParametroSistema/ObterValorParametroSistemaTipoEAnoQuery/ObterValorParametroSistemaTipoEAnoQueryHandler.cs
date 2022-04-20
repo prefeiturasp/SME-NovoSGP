@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             }
             else parametrosDoSistema = JsonConvert.DeserializeObject<List<ParametrosSistema>>(parametrosNoCache);
 
-            return parametrosDoSistema.FirstOrDefault(a => a.Tipo == request.Tipo).Valor;
+            return parametrosDoSistema.FirstOrDefault(a => a.Tipo == request.Tipo)?.Valor;
         }
     }
 }
