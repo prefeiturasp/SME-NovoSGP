@@ -173,7 +173,7 @@ namespace SME.SGP.Dominio
 
                 usuario.Nome = usuario?.Nome ?? "";
 
-                if (!usuario.Nome.Equals(nome) || !usuario.CodigoRf.Equals(codigoRf))
+                if (!usuario.Nome.Equals(nome) || (usuario.CodigoRf != null && !usuario.CodigoRf.Equals(codigoRf)))
                     await repositorioUsuario.SalvarAsync(usuario);
 
                 return usuario;
