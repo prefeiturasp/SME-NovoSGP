@@ -9,6 +9,7 @@ using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -29,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             var command = ServiceProvider.GetService<IComandosNotasConceitos>();
             await CriarUsuarioLogadoEja();
             CriarClaimEja();
-            await CriarItensBasicos();
+            await InserirDadosNoBanco();
             var listaDeNotas = new List<NotaConceitoDto>()
             {
              new NotaConceitoDto()
@@ -43,7 +44,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             var dto = new NotaConceitoListaDto
             {
                 DisciplinaId = "1114",
-                TurmaId = "2366531",
+                TurmaId = "1",
                 NotasConceitos = listaDeNotas
             };
 
@@ -57,32 +58,30 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
 
 
-        private async Task CriarItensBasicos()
+        private async Task InserirDadosNoBanco()
         {
             await InserirNaBase(new Dre
             {
                 Id = 1,
                 CodigoDre = "1"
             });
-
             await InserirNaBase(new Ue
             {
                 Id = 1,
                 CodigoUe = "1",
                 DreId = 1
             });
-
             await InserirNaBase(new Turma
             {
-                Id = 2366531,
+                Id = 1,
                 UeId = 1,
                 Ano = "2",
-                CodigoTurma = "2366531"
+                CodigoTurma = "1",
+                Historica = true
             });
-
             await InserirNaBase(new PrioridadePerfil
             {
-                Id = 29,
+                Id = 1,
                 CodigoPerfil = new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
                 NomePerfil = "Professor",
                 Ordem = 290,
@@ -92,7 +91,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             });
             await InserirNaBase(new PrioridadePerfil
             {
-                Id = 32,
+                Id = 2,
                 CodigoPerfil = new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
                 NomePerfil = "Professor CJ",
                 Ordem = 320,
@@ -119,7 +118,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 DreId = "1",
                 UeId = "1",
                 ProfessorRf = "6926886",
-                TurmaId = "2366531",
+                TurmaId = "1",
                 Categoria = CategoriaAtividadeAvaliativa.Normal,
                 TipoAvaliacaoId = 1,
                 NomeAvaliacao = "Avaliação 04",
@@ -137,16 +136,47 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriadoPor = "ESTER CUSTODIA DOS SANTOS",
                 CriadoRF = "6926886"
             });
-
             await InserirNaBase(new Abrangencia
             {
                 Id = 1,
                 UsuarioId = 1,
                 DreId = 1,
                 UeId = 1,
-                TurmaId = 2366531,
-                Historico = false
+                TurmaId = 1,
+                Historico = true,
+                Perfil = new Guid("40e1e074-37d6-e911-abd6-f81654fe895d")
             });
+
+            await InserirNaBase(new Ciclo {Id=1,Descricao = "Alfabetização"});
+            await InserirNaBase(new Ciclo {Descricao = "Interdisciplinar"});
+            await InserirNaBase(new Ciclo {Descricao = "Autoral"});
+            await InserirNaBase(new Ciclo {Descricao = "Médio"});
+            await InserirNaBase(new Ciclo {Descricao = "EJA - Alfabetização"});
+            await InserirNaBase(new Ciclo {Descricao = "EJA - Básica"});
+            await InserirNaBase(new Ciclo {Descricao = "EJA - Complementar"});
+            await InserirNaBase(new Ciclo {Descricao = "EJA - Final"});
+
+
+            await InserirNaBase(new CicloAno { Id = 1, CicloId = 1, Modalidade = Modalidade.Fundamental, Ano = "1" });
+            await InserirNaBase(new CicloAno { Id = 2, CicloId = 1, Modalidade = Modalidade.Fundamental, Ano = "2" });
+            await InserirNaBase(new CicloAno { Id = 3, CicloId = 1, Modalidade = Modalidade.Fundamental, Ano = "3" });
+            await InserirNaBase(new CicloAno { Id = 4, CicloId = 2, Modalidade = Modalidade.Fundamental, Ano = "4" });
+            await InserirNaBase(new CicloAno { Id = 5, CicloId = 2, Modalidade = Modalidade.Fundamental, Ano = "5" });
+            await InserirNaBase(new CicloAno { Id = 6, CicloId = 2, Modalidade = Modalidade.Fundamental, Ano = "6" });
+            await InserirNaBase(new CicloAno { Id = 7, CicloId = 3, Modalidade = Modalidade.Fundamental, Ano = "7" });
+            await InserirNaBase(new CicloAno { Id = 8, CicloId = 3, Modalidade = Modalidade.Fundamental, Ano = "8" });
+            await InserirNaBase(new CicloAno { Id = 9, CicloId = 3, Modalidade = Modalidade.Fundamental, Ano = "9" });
+            await InserirNaBase(new CicloAno { Id = 10, CicloId = 4, Modalidade = Modalidade.Medio, Ano = "1" });
+            await InserirNaBase(new CicloAno { Id = 11, CicloId = 4, Modalidade = Modalidade.Medio, Ano = "2" });
+            await InserirNaBase(new CicloAno { Id = 12, CicloId = 4, Modalidade = Modalidade.Medio, Ano = "3" });
+            await InserirNaBase(new CicloAno { Id = 13, CicloId = 5, Modalidade = Modalidade.EJA, Ano = "1" });
+            await InserirNaBase(new CicloAno { Id = 14, CicloId = 6, Modalidade = Modalidade.EJA, Ano = "2" });
+            await InserirNaBase(new CicloAno { Id = 15, CicloId = 7, Modalidade = Modalidade.EJA, Ano = "3" });
+            await InserirNaBase(new CicloAno { Id = 16, CicloId = 8, Modalidade = Modalidade.EJA, Ano = "4" });
+            await InserirNaBase(new CicloAno { Id = 17, CicloId = 4, Modalidade = Modalidade.Medio, Ano = "4" });
+
+
+
         }
 
         private void CriarClaimEja()
