@@ -96,7 +96,7 @@ namespace SME.SGP.Dominio
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.hostAplicacao = configuration["UrlFrontEnd"];
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));            
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
@@ -208,6 +208,7 @@ namespace SME.SGP.Dominio
                     // Notifica todos os CPs da UE
                     foreach (var usuarioCP in usuariosCPs)
                     {
+
                         servicoNotificacao.Salvar(new Notificacao()
                         {
                             Ano = atividadeAvaliativa.CriadoEm.Year,
@@ -326,7 +327,7 @@ namespace SME.SGP.Dominio
             var notasMultidisciplina = new List<NotaConceito>();
             var alunosNotasExtemporaneas = new StringBuilder();
             var nota = notasConceitos.FirstOrDefault();
-            var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(turma.CodigoTurma, true);            
+            var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(turma.CodigoTurma, true);
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
             var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
             var dataAtual = DateTime.Now;

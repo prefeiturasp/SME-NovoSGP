@@ -97,7 +97,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<AulaConsultaDto> ObterAulaIntervaloTurmaDisciplina(DateTime dataInicio, DateTime dataFim, string turmaId, long atividadeAvaliativaId)
         {
-            var query = @"select *
+            var query = @"select *,tipo_calendario_id AS TipoCalendarioId
                  from aula
                 where not excluido
                   and DATE(data_aula) between @dataInicio and @dataFim
