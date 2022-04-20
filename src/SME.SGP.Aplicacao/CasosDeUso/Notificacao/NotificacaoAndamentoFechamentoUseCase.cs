@@ -32,9 +32,7 @@ namespace SME.SGP.Aplicacao
         {
             var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoBimestrePorDataFinalQuery(modalidade, DateTime.Now.Date.AddDays(diasParaEncerramento)));
             foreach (var periodoEncerrando in periodosEncerrando)
-            {
                 await mediator.Send(new ExecutaNotificacaoAndamentoFechamentoCommand(periodoEncerrando, modalidade));
-            }
         }
     }
 }
