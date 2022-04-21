@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -349,9 +350,34 @@ namespace SME.SGP.Dados.Repositorios
                           and dre.id = @dreId 
                           and pe.bimestre in (1,2,3)
                           and tc.id in (24,25,26,27)");
-            
+
             return await database.Conexao
                 .QueryAsync<objConsolidacaoConselhoAluno>(query.ToString(), new { dreId });
+        }
+
+        public async Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNotaPorBimestre(string codigoTurma, int bimestre)
+        {
+            var sql = @"select fa.disciplina_id as DisciplinaID, cc.descricao as Descricao , SUM(total_compensacoes) as TotalCompensacoes from frequencia_aluno fa 
+                        join componente_curricular cc on cc.id = fa.disciplina_id::int8
+                        where cc.permite_lancamento_nota = false 
+                        and fa.turma_id = @codigoTurma
+                        and fa.bimestre = @bimestre
+                        and fa.tipo  = 1
+                        group by fa.disciplina_id , cc.descricao ";
+
+            return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, bimestre }, commandTimeout: 60);
+        }
+
+        public async Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNota(string codigoTurma)
+        {
+            var sql = @"select fa.disciplina_id as DisciplinaID, cc.descricao as Descricao , SUM(total_compensacoes) as TotalCompensacoes from frequencia_aluno fa 
+                        join componente_curricular cc on cc.id = fa.disciplina_id::int8
+                        where cc.permite_lancamento_nota = false 
+                        and fa.turma_id = @codigoTurma
+                        and fa.tipo  = 1
+                        group by fa.disciplina_id , cc.descricao ";
+
+            return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma }, commandTimeout: 60);
         }
     }
 }
