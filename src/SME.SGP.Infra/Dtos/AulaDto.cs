@@ -17,7 +17,7 @@ namespace SME.SGP.Infra
 
         public string DisciplinaCompartilhadaId { get; set; }
 
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [Required(ErrorMessage = "A quantidade de aulas deve ser informada")]
         [Range(1, int.MaxValue, ErrorMessage = "A quantidade de aulas deve ser maior que zero")]
@@ -39,5 +39,6 @@ namespace SME.SGP.Infra
         public string UeId { get; set; }
 
         public bool AulaCJ { get; set; }
+        public string ProfessorRf { get; set; }
     }
 }
