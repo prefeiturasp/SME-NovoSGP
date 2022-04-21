@@ -5,6 +5,7 @@ using SME.SGP.Api.Controllers;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
@@ -22,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         public LancarNotaBimestreTeste(TestFixture testFixture) : base(testFixture)
         {
         }
-        [Fact]
+        //[Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Diferente_Regencia_Eja()
         {
 
@@ -106,16 +107,17 @@ namespace SME.SGP.TesteIntegracao.Nota
             retorno.ShouldNotBeNull();
             Assert.IsType<OkResult>(retorno);
         }
+        //[Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Regencia_Fundamental()
         {
 
         }
-        [Fact]
+        //[Fact]
         public async Task Dev_Lancar_Conceitos_50_de_percentual_Estudantes_NS_Para_Inserir_Justificativa()
         {
 
         }
-        [Fact]
+        //[Fact]
         public async Task Dev_Lancar_Conceitos_Regencia_50_de_percentual_Estudantes_NS_Para_Inserir_Justificativa()
         {
 

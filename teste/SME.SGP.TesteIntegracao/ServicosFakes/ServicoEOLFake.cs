@@ -424,6 +424,13 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     DisciplinaNome = "REG CLASSE EJA ETAPA BASICA",
                     DisciplinaId = 1114
                 },
+                new ProfessorTitularDisciplinaEol
+                {
+                    ProfessorRf = "6737544",
+                    ProfessorNome = "GENILDO CLEBER DA SILVA",
+                    DisciplinaNome = "Disciplina Fundamental",
+                    DisciplinaId = 1114
+                },
             };
         }
 

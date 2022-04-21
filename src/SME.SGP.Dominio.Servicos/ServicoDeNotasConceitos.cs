@@ -205,6 +205,7 @@ namespace SME.SGP.Dominio
                 // Avalia se a quantidade de alunos com nota/conceito suficientes esta abaixo do percentual parametrizado para notificação
                 if (quantidadeAlunosSuficientes < (quantidadeAlunos * percentualAlunosInsuficientes / 100))
                 {
+                    _usuariosCPs = null;
                     // Notifica todos os CPs da UE
                     foreach (var usuarioCP in usuariosCPs)
                     {
