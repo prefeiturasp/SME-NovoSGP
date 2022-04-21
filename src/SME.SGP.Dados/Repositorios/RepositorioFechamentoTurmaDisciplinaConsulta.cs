@@ -613,5 +613,18 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("		  ftd.disciplina_id");
             sqlQuery.AppendLine("having count(0) > 1)");
         }
+
+        public async Task<IEnumerable<TurmaFechamentoDisciplinaDto>> ObterFechamentosTurmaPorTurmaId(long turmaId)
+        {
+            var sqlQuery = @"select ft.turma_id TurmaId, ft.periodo_escolar_id PeriodoEscolarId, ftd.disciplina_id DisciplinaId, ftd.situacao Situacao
+                                from fechamento_turma ft 
+                                join fechamento_turma_disciplina ftd on ft.id = ftd.fechamento_turma_id                                 
+                                join periodo_fechamento_bimestre pfb on ft.periodo_escolar_id = pfb.periodo_escolar_id                                
+                                where not ft.excluido 
+                                      and not ftd.excluido 
+                                      and ft.turma_id = @turmaId ";
+
+            return await database.Conexao.QueryAsync<TurmaFechamentoDisciplinaDto>(sqlQuery, new { turmaId });
+        }
     }
 }
