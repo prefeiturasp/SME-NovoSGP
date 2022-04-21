@@ -121,14 +121,40 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, bool consideraInativos = false)
         {
-            return new List<AlunoPorTurmaResposta> {
+            var alunos = new List<AlunoPorTurmaResposta> {
                 new AlunoPorTurmaResposta
                 {
                       Ano=0,
                       CodigoAluno = "7128291",
                       CodigoComponenteCurricular=0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=0,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(2021,11,09,17,25,31),
+                      DataMatricula= new DateTime(2021,11,09,17,25,31),
+                      EscolaTransferencia=null,
+                      NomeAluno="ANA RITA ANDRADE FERREIRA DOS SANTOS",
+                      NomeSocialAluno=null,
+                      NumeroAlunoChamada=1,
+                      ParecerConclusivo=null,
+                      PossuiDeficiencia=false,
+                      SituacaoMatricula="Ativo",
+                      Transferencia_Interna=false,
+                      TurmaEscola=null,
+                      TurmaRemanejamento=null,
+                      TurmaTransferencia=null,
+                      NomeResponsavel="ANA RITA ANDRADE FERREIRA DOS SANTOS,",
+                      TipoResponsavel="4",
+                      CelularResponsavel="11961861993",
+                      DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
+                },
+                new AlunoPorTurmaResposta
+                {
+                      Ano=0,
+                      CodigoAluno = "6523614",
+                      CodigoComponenteCurricular=0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= new DateTime(2021,11,09,17,25,31),
                       DataMatricula= new DateTime(2021,11,09,17,25,31),
@@ -149,6 +175,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                       DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
                 }
             };
+
+            return alunos.Where(x => x.CodigoTurma.ToString() == turmaId);
         }
 
         public Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesCurriculares()
@@ -345,7 +373,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 },
                 new UsuarioEolAutenticacaoRetornoDto
                 {
-                    CodigoRf = "8012229",
+                    CodigoRf = "6737544",
                     Perfis = new List<Guid>
                     {
                         new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
