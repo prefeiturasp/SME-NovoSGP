@@ -27,13 +27,10 @@ namespace SME.SGP.Aplicacao
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesQuery());
 
             var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoEscolasPorDataFinalQuery(DateTime.Now.Date.AddDays(request.DiasParaGeracaoDePendencia)));
-            foreach (var periodoEncerrando in periodosEncerrando)
+            foreach (var periodoEncerrando in periodosEncerrando.Where(w=> w.PeriodoEscolar.TipoCalendario.Modalidade != ModalidadeTipoCalendario.Infantil))
             {
                 try
                 {
-                    if (periodoEncerrando.PeriodoEscolar.TipoCalendario.Modalidade == ModalidadeTipoCalendario.Infantil)
-                        continue;
-
                     var turmas = await mediator.Send(new ObterTurmasPorUeModalidadesAnoQuery(periodoEncerrando.PeriodoFechamento.UeId,
                                                                                              periodoEncerrando.PeriodoEscolar.TipoCalendario.Modalidade.ObterModalidadesTurma(),
                                                                                              periodoEncerrando.PeriodoEscolar.TipoCalendario.AnoLetivo));
@@ -49,23 +46,22 @@ namespace SME.SGP.Aplicacao
                         {
                             var professoresTurma = await servicoEol.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
 
-                            foreach (var professorComponenteTurma in professoresTurma)
-                            {
-                                if (string.IsNullOrEmpty(professorComponenteTurma.ProfessorRf))
-                                    continue;
+                            var fechamentosDaTurma = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdQuery(long.Parse(turma.CodigoTurma)));
 
+                            foreach (var professorComponenteTurma in professoresTurma.Where(w=> !string.IsNullOrEmpty(w.ProfessorRf)))
+                            {
                                 try
                                 {
                                     var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == professorComponenteTurma.DisciplinaId.ToString()
                                                                                                && c.LancaNota);
 
-                                    if (componenteCurricular != null)
+                                    if (componenteCurricular != null && !turmasComAvaliacao.Any(c => c.TurmaId == turma.Id && c.ComponenteCurricularId == professorComponenteTurma.DisciplinaId))
                                     {
-                                        if (turmasComAvaliacao.Any(c => c.TurmaId == turma.Id && c.ComponenteCurricularId == professorComponenteTurma.DisciplinaId))
-                                            continue;
-
-                                        if (!await ExistePendenciaProfessor(turma, professorComponenteTurma, periodoEncerrando.PeriodoEscolar.Id))
-                                            await IncluirPendenciaProfessor(turma, professorComponenteTurma.DisciplinaId, professorComponenteTurma.ProfessorRf, periodoEncerrando.PeriodoEscolar.Bimestre, componenteCurricular.Descricao, periodoEncerrando.PeriodoEscolar.Id);
+                                        if (!fechamentosDaTurma.Any(a=> a.DisciplinaId == professorComponenteTurma.DisciplinaId && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId))
+                                        {
+                                            if (!await ExistePendenciaProfessor(turma, professorComponenteTurma, periodoEncerrando.PeriodoEscolar.Id))
+                                                await IncluirPendenciaProfessor(turma, professorComponenteTurma.DisciplinaId, professorComponenteTurma.ProfessorRf, periodoEncerrando.PeriodoEscolar.Bimestre, componenteCurricular.Descricao, periodoEncerrando.PeriodoEscolar.Id);
+                                        }
                                     }
                                 }
                                 catch (Exception ex)
