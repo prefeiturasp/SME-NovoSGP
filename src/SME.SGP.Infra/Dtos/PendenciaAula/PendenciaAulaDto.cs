@@ -33,5 +33,10 @@ namespace SME.SGP.Infra
         }
         public DateTime DataAula { get; set; }
         public string Motivo { get; set; }
+        public bool EhReposicao { get; set; }
+        public string TurmaId { get; set; }
+        public string UeId { get; set; }
+        public string DisciplinaId { get; set; }
+        public string TituloAvaliacao { get; set; }
     }
 }

@@ -50,5 +50,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<int>> BuscarAnosLetivosComTurmasVigentes(string codigoUe);
         Task<bool> VerificaSeVirouHistorica(long turmaId);
         Task<IEnumerable<RetornoConsultaTurmaNomeFiltroDto>> ObterTurmasNomeFiltro(string[] turmasCodigos);
+        Task<IEnumerable<Turma>> ObterTurmasDreUeCompletaPorCodigos(string[] turmasCodigo);
     }
 }
