@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
             NotasConceitoBimestre = new List<FechamentoConsultaNotaConceitoTurmaListaoDto>();
             NotasConceitoFinal = new List<FechamentoConsultaNotaConceitoTurmaListaoDto>();
             PodeEditar = true;
+            PossuiAnotacao = false;
         }
 
         public string Nome { get; set; }
@@ -20,6 +21,7 @@ namespace SME.SGP.Infra
         public string Frequencia { get; set; }
         public bool EhAtendidoAEE { get; set; }
         public bool PodeEditar { get; set; }
+        public bool PossuiAnotacao { get; set; }
         public MarcadorFrequenciaDto Marcador { get; set; }
         public IList<FechamentoConsultaNotaConceitoTurmaListaoDto> NotasConceitoBimestre { get; set; }
         public IList<FechamentoConsultaNotaConceitoTurmaListaoDto> NotasConceitoFinal { get; set; }

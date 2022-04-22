@@ -197,6 +197,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PendenciaPerfilUsuarioMap());
                config.AddMap(new AtividadeInfantilMap());
                config.AddMap(new ConsolidacaoDashBoardFrequenciaMap());
+               config.AddMap(new AnotacaoFechamentoAlunoMap());
 
                config.ForDommel();
            });

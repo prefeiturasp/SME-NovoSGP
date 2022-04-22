@@ -96,7 +96,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosFechamentoFinal, ComandosFechamentoFinal>();
             services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
             services.TryAddScoped<IComandosPendenciaFechamento, ComandosPendenciaFechamento>();
-            services.TryAddScoped<IComandosFechamentoAluno, ComandosFechamentoAluno>();
             services.TryAddScoped<IComandosFechamentoTurma, ComandosFechamentoTurma>();
             services.TryAddScoped<IComandosConselhoClasse, ComandosConselhoClasse>();
             services.TryAddScoped<IComandosConselhoClasseAluno, ComandosConselhoClasseAluno>();
@@ -372,6 +371,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioEventoTipo, RepositorioEventoTipo>();
             services.TryAddScoped<IRepositorioPerfilEventoTipo, RepositorioPerfilEventoTipo>();
 
+            // Fechamento
+            services.TryAddScoped<IRepositorioAnotacaoFechamentoAluno, RepositorioAnotacaoFechamentoAluno>();
+
             // Pendencias do EncaminhamentoAEE
             services.TryAddScoped<IRepositorioPendenciaEncaminhamentoAEE, RepositorioPendenciaEncaminhamentoAEE>();
 
@@ -621,6 +623,7 @@ namespace SME.SGP.IoC
 
             // Atividades
             services.TryAddScoped<IImportarAtividadesGsaUseCase, ImportarAtividadesGsaUseCase>();
+            services.TryAddScoped<IObterAtividadesNotasAlunoPorTurmaPeriodoUseCase, ObterAtividadesNotasAlunoPorTurmaPeriodoUseCase>();
 
             // Atividade Infantil
             services.TryAddScoped<IObterAtividadesInfantilUseCase, ObterAtividadesInfantilUseCase>();
@@ -669,6 +672,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
             services.TryAddScoped<IVarreduraFechamentosEmProcessamentoPendentesUseCase, VarreduraFechamentosEmProcessamentoPendentesUseCase>();
             services.TryAddScoped<IInserirFechamentoTurmaDisciplinaUseCase, InserirFechamentoTurmaDisciplinaUseCase>();
+            services.TryAddScoped<IObterFechamentoIdPorTurmaBimestreUseCase, ObterFechamentoIdPorTurmaBimestreUseCase>();
+
+            // Fechamento Aluno
+            services.TryAddScoped<ISalvarAnotacaoFechamentoAlunoUseCase, SalvarAnotacaoFechamentoAlunoUseCase>();
 
             //Fechamento Reabertura
             services.TryAddScoped<INotificacaoPeriodoFechamentoReaberturaIniciando, NotificacaoPeriodoFechamentoReaberturaIniciandoUseCase>();
@@ -797,6 +804,7 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<INotificacaoFrequenciaUeUseCase, NotificacaoFrequenciaUeUseCase>();
             services.TryAddScoped<INotificacaoAndamentoFechamentoUseCase, NotificacaoAndamentoFechamentoUseCase>();
+            services.TryAddScoped<INotificacaoAndamentoFechamentoPorUeUseCase, NotificacaoAndamentoFechamentoPorUeUseCase>();
             services.TryAddScoped<INotificacaoUeFechamentosInsuficientesUseCase, NotificacaoUeFechamentosInsuficientesUseCase>();
             services.TryAddScoped<INotificacaoInicioFimPeriodoFechamentoUseCase, NotificacaoInicioFimPeriodoFechamentoUseCase>();
             services.TryAddScoped<INotificacaoInicioPeriodoFechamentoUEUseCase, NotificacaoInicioPeriodoFechamentoUEUseCase>();
@@ -1113,6 +1121,7 @@ namespace SME.SGP.IoC
             // Consolidação de Registros Pedagógicos
             services.TryAddScoped<IConsolidarRegistrosPedagogicosUseCase, ConsolidarRegistrosPedagogicosUseCase>();
             services.TryAddScoped<IConsolidarRegistrosPedagogicosPorUeTratarUseCase, ConsolidarRegistrosPedagogicosPorUeTratarUseCase>();
+            services.TryAddScoped<IConsolidarRegistrosPedagogicosPorTurmaTratarUseCase, ConsolidarRegistrosPedagogicosPorTurmaTratarUseCase>();
             services.TryAddScoped<IRelatorioAcompanhamentoRegistrosPedagogicosUseCase, RelatorioAcompanhamentoRegistrosPedagogicosUseCase>();
 
             //Acompanhamento de Frequencia
