@@ -357,10 +357,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> ObterTotalAulasPorAlunoTurma(string codigoAluno, string codigoTurma)
         {
-            var sql = @"select disciplina_id as disciplinaid, cc.descricao as descricao, sum(total_aulas) as totalaulas from frequencia_aluno fa 
-                        join componente_curricular cc on cc.id = cast( fa.disciplina_id as bigint ) 
-                        where tipo = 1 and codigo_aluno = @codigoAluno and turma_id =@codigoTurma 
-                        group by disciplina_id,cc.descricao ";
+            var sql = @"select disciplina_id as disciplinaid,  sum(total_aulas) as totalaulas from frequencia_aluno fa 
+                         where tipo = 1 and codigo_aluno =@codigoAluno  and turma_id =@codigoTurma
+                        group by disciplina_id";
 
             return await database.Conexao.QueryAsync<TotalAulasPorAlunoTurmaDto>(sql, new { codigoAluno, codigoTurma }, commandTimeout: 60);
         }
@@ -369,13 +368,13 @@ namespace SME.SGP.Dados.Repositorios
         {
             var dataAtual = DateTime.Now.ToString("yyyy-MM-dd");
 
-            var sql = $@"select disciplina_id as disciplinaid, cc.descricao as descricao, SUM(quantidade) as totalaulas from aula a
+            var sql = $@"select disciplina_id as disciplinaid,SUM(quantidade) as totalaulas from aula a
                         join componente_curricular cc on cc.id = a.disciplina_id::int8 
                         where cc.permite_registro_frequencia  = false 
                         and a.turma_id = @codigoTurma
                         and a.data_aula <= '{dataAtual}'
                         and not a.excluido 
-                        group by a.disciplina_id,cc.descricao";
+                        group by a.disciplina_id";
 
             return await database.Conexao.QueryAsync<TotalAulasPorAlunoTurmaDto>(sql, new { codigoTurma }, commandTimeout: 60);
         }
