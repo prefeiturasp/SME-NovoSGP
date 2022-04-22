@@ -83,13 +83,16 @@ namespace SME.SGP.Aplicacao
                         }
                         else
                         {
-                            long pendenciaIdExistenteCJ = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(item.First().DisciplinaId, item.First().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula));
+                            if (!String.IsNullOrEmpty(item.First().ProfessorRf))
+                            {
+                                long pendenciaIdExistenteCJ = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(item.First().DisciplinaId, item.First().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula));
 
-                            var pendenciaId = pendenciaIdExistenteCJ > 0 ? pendenciaIdExistenteCJ : await mediator.Send(new SalvarPendenciaCommand(request.TipoPendenciaAula));
-                            await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, item.Select(x => x.Id)));
-                            await SalvarPendenciaUsuario(pendenciaId, item.First().ProfessorRf);
+                                var pendenciaId = pendenciaIdExistenteCJ > 0 ? pendenciaIdExistenteCJ : await mediator.Send(new SalvarPendenciaCommand(request.TipoPendenciaAula));
+                                await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, item.Select(x => x.Id)));
+                                await SalvarPendenciaUsuario(pendenciaId, item.First().ProfessorRf);
 
-                            unitOfWork.PersistirTransacao();
+                                unitOfWork.PersistirTransacao();
+                            } 
                         }
                     }
                 }

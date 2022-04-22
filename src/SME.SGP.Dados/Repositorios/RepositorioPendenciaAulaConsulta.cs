@@ -371,7 +371,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<long> ObterPendenciaIdPorComponenteProfessorEBimestre(string componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia)
         {
             var sql = @"select p.id from pendencia p 
-                            inner join pendencia_aula pa on pa.id  = p.id 
+                            inner join pendencia_aula pa on pa.pendencia_id = p.id 
                             inner join pendencia_usuario pu on pu.pendencia_id = p.id 
                             inner join usuario u on u.id = pu.usuario_id 
                             inner join aula a on a.id = pa.aula_id 
