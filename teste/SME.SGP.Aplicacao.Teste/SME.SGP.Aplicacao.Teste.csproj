@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <Folder Include="ArquivosTestes\" />
+    <Folder Include="CasosDeUso\ConselhodeClasse\" />
   </ItemGroup>
 
   <ItemGroup>

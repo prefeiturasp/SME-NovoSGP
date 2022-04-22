@@ -17,7 +17,9 @@ namespace SME.SGP.TesteIntegracao.IntegracaoAPI._01___Testes
         public ConselhoClasseTeste(TesteIntegracaoFixture<Startup> integrationTestFixture)
         {
             _integrationTestFixture = integrationTestFixture;
-            _integrationTestFixture.Client.DefaultRequestHeaders.Add("Authorization", "Bearer " + TOKEN);
+
+            if (!_integrationTestFixture.Client.DefaultRequestHeaders.Any())
+                _integrationTestFixture.Client.DefaultRequestHeaders.Add("Authorization", "Bearer " + TOKEN);
         }
 
 
