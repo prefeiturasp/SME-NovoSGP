@@ -178,10 +178,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> EncerrarPlanos([FromServices] IEncerrarPlanosAEEEstudantesInativosUseCase encerrarPlanosAEEEstudantesInativosUseCase)
+        public async Task<IActionResult> EncerrarPlanos()
         {
-            //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.EncerrarPlanoAEEEstudantesInativos, Guid.NewGuid()));
-            await encerrarPlanosAEEEstudantesInativosUseCase.Executar(null);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.EncerrarPlanoAEEEstudantesInativos, Guid.NewGuid()));
             return Ok();
         }
 
