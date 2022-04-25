@@ -214,5 +214,32 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and a.turma_id = any(@turmasId) ");
             return query.ToString();
         }
+
+        public async Task<IEnumerable<RegistroFrequenciaAlunoPorTurmaEMesDto>> ObterRegistroFrequenciaAlunosPorTurmaEMes(string turmaCodigo, int mes)
+        {
+            const string query = @"select t.id as TurmaId,
+                                        rfa.codigo_aluno as AlunoCodigo,
+                                        extract(month from a.data_aula) as Mes,
+                                        count(a.id) as QuantidadeAulas,
+                                        count(distinct(rfa.registro_frequencia_id * rfa.numero_aula)) filter (where rfa.valor = 2) as QuantidadeAusencias,
+                                        sum(0) as QuantidadeCompensacoes,
+                                        t.ano_letivo
+                                    from registro_frequencia_aluno rfa
+                                        inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id and not rf.excluido
+                                        inner join aula a on a.id = rf.aula_id and not rf.excluido and not a.excluido
+                                        inner join turma t on t.turma_id = a.turma_id
+                                    where not rfa.excluido
+                                    and a.turma_id = @turmaCodigo
+                                    and extract(month from a.data_aula) = @mes
+                                    group by rfa.codigo_aluno,
+                                        extract(month from a.data_aula),
+                                        t.id,
+                                        t.ano_letivo
+                                    order by t.ano_letivo, extract(month from a.data_aula), rfa.codigo_aluno";
+
+            var parametros = new { turmaCodigo, mes };
+
+            return await database.Conexao.QueryAsync<RegistroFrequenciaAlunoPorTurmaEMesDto>(query, parametros);
+        }
     }
 }
