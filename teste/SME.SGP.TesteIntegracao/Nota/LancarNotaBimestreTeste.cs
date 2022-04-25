@@ -26,10 +26,37 @@ namespace SME.SGP.TesteIntegracao.Nota
         //[Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Diferente_Regencia_Eja()
         {
+            var command = ServiceProvider.GetService<IComandosNotasConceitos>();
+            await CriarUsuarioLogadoRegenciaEja();
+            CriarClaimRegenciaEja();
+            await InserirDadosBasicosNoBanco();
+            await CriarTurmaEja();
+            await CriarAbrangenciaEja();
+            await CriarTipoCalendarioEja();
+            await CriarAulaProfRegenciaEja();
+            await CriarAtividadeAvaliativaEja();
+            await CriarPeriodoEscolar();
+            await CriarParametroSistema();
 
+            //var listaDeNotas = new List<NotaConceitoDto>()
+            //{
+            // new NotaConceitoDto()
+            //     {
+            //         AlunoId = "6523614",
+            //         AtividadeAvaliativaId = 1,
+            //         Conceito = 2,
+            //         Nota=null
+            //     },
+            //};
+            //var dto = new NotaConceitoListaDto
+            //{
+            //    DisciplinaId = "1114",
+            //    TurmaId = "1",
+            //    NotasConceitos = listaDeNotas
+            //};
         }
         [Fact]
-        public async Task Deve_Lancar_Conceito_Para_Componente_Nao_Regencia_Fundamental()
+        public async Task Deve_Lancar_Conceito_Para_Componente_Diferente_Regencia_Fundamental()
         {
             // Arrange
             var command = ServiceProvider.GetService<IComandosNotasConceitos>();
@@ -107,7 +134,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             retorno.ShouldNotBeNull();
             Assert.IsType<OkResult>(retorno);
         }
-        //[Fact]
+         //[Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Regencia_Fundamental()
         {
 
