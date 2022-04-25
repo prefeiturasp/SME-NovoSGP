@@ -5,7 +5,7 @@ CREATE TABLE public.consolidacao_frequencia_aluno_mensal (
 	turma_id int8 NOT NULL,
 	aluno_codigo varchar(15) not null,
 	mes int4 not null,
-	percentual int4 not null,
+	percentual numeric(5,2) not null,
 	quantidade_aulas int4 not null,
 	quantidade_ausencias int4 not null,
 	quantidade_compensacoes int4 not null,
