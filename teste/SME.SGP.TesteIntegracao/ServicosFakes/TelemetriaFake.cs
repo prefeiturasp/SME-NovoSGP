@@ -6,9 +6,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
     public class TelemetriaFake : IServicoTelemetria
     {
-        public async Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
+        public void Registrar(Action acao, string acaoNome, string telemetriaNome, string telemetriaValor)
         {
-            return await acao();
+            acao();
+        }
+
+        public Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor)
+        {
+            throw new NotImplementedException();
         }
 
         public dynamic RegistrarComRetorno<T>(Func<object> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
@@ -16,14 +21,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             return acao();
         }
 
-        public void Registrar(Action acao, string acaoNome, string telemetriaNome, string telemetriaValor)
+        public async Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
-            acao();
-        }
-
-        public async Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor)
-        {
-            await acao();
+            return await acao();
         }
     }
 }
