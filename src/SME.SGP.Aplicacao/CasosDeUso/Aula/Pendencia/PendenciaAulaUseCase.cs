@@ -36,10 +36,12 @@ namespace SME.SGP.Aplicacao
                         await VerificaPendenciasFrequencia(dreId);
                         await VerificaPendenciasPlanoAula(dreId);
                     }
+
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
         #endregion
 
