@@ -23,9 +23,10 @@ namespace SME.SGP.TesteIntegracao.Nota
         public LancarNotaBimestreTeste(TestFixture testFixture) : base(testFixture)
         {
         }
-        //[Fact]
+        [Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Diferente_Regencia_Eja()
         {
+            // Arrange
             var command = ServiceProvider.GetService<IComandosNotasConceitos>();
             await CriarUsuarioLogadoRegenciaEja();
             CriarClaimRegenciaEja();
@@ -38,22 +39,8 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarPeriodoEscolar();
             await CriarParametroSistema();
 
-            //var listaDeNotas = new List<NotaConceitoDto>()
-            //{
-            // new NotaConceitoDto()
-            //     {
-            //         AlunoId = "6523614",
-            //         AtividadeAvaliativaId = 1,
-            //         Conceito = 2,
-            //         Nota=null
-            //     },
-            //};
-            //var dto = new NotaConceitoListaDto
-            //{
-            //    DisciplinaId = "1114",
-            //    TurmaId = "1",
-            //    NotasConceitos = listaDeNotas
-            //};
+            //Act
+            //Assert
         }
         [Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Diferente_Regencia_Fundamental()
@@ -134,17 +121,17 @@ namespace SME.SGP.TesteIntegracao.Nota
             retorno.ShouldNotBeNull();
             Assert.IsType<OkResult>(retorno);
         }
-         //[Fact]
+        [Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Regencia_Fundamental()
         {
 
         }
-        //[Fact]
+        [Fact]
         public async Task Dev_Lancar_Conceitos_50_de_percentual_Estudantes_NS_Para_Inserir_Justificativa()
         {
 
         }
-        //[Fact]
+        [Fact]
         public async Task Dev_Lancar_Conceitos_Regencia_50_de_percentual_Estudantes_NS_Para_Inserir_Justificativa()
         {
 
