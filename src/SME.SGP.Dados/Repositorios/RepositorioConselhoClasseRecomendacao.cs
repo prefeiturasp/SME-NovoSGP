@@ -19,5 +19,13 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ConselhoClasseRecomendacao>(query);
         }
+
+        public async Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterIdRecomendacoesETipoAsync()
+        {
+            var query = @"select ccr.id as Id, ccr.recomendacao as Recomendacao, ccr.tipo as Tipo
+                            from conselho_classe_recomendacao ccr where ccr.excluido = false";
+
+            return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(query);
+        }
     }
 }
