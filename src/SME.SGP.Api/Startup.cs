@@ -62,9 +62,10 @@ namespace SME.SGP.Api
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
+
+            app.UseSwagger();                                         
+            app.UseSwaggerUI(c =>                                         
+            {                                                             
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGP Api");
             });
 
@@ -134,8 +135,10 @@ namespace SME.SGP.Api
 
             RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
-            RegistrarMvc.Registrar(services, serviceProvider);
-            RegistraDocumentacaoSwagger.Registrar(services);
+            RegistrarMvc.Registrar(services, serviceProvider); 
+
+            RegistraDocumentacaoSwagger.Registrar(services); 
+
             services.AddPolicies();
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
