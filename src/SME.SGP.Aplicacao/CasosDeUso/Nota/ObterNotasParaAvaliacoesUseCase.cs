@@ -169,7 +169,7 @@ namespace SME.SGP.Aplicacao
             else
                 periodoFechamentoBimestre = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoAnoAnterior(turmaCompleta, filtro.Bimestre);
 
-            foreach (var aluno in alunosAtivos.Where(a => a.CodigoAluno == "7445184"))
+            foreach (var aluno in alunosAtivos)
             {
                 var notaConceitoAluno = new NotasConceitosAlunoRetornoDto()
                 {
