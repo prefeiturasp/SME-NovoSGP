@@ -382,13 +382,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasNaoLancamNotaPorBimestreTurma(string codigoTurma, int bimestre)
         {
-            var sql = @"select fa.disciplina_id as DisciplinaID, cc.descricao , SUM(total_aulas) as TotalAulas from frequencia_aluno fa 
+            var sql = @"select fa.disciplina_id as DisciplinaID, SUM(total_aulas) as TotalAulas from frequencia_aluno fa 
                         join componente_curricular cc on cc.id = fa.disciplina_id::int8
                         where cc.permite_lancamento_nota = false 
                         and fa.turma_id = @codigoTurma
                         and fa.bimestre = @bimestre
                         and fa.tipo  = 1
-                        group by fa.disciplina_id , cc.descricao ";
+                        group by fa.disciplina_id ";
 
             return await database.Conexao.QueryAsync<TotalAulasNaoLancamNotaDto>(sql, new { codigoTurma, bimestre }, commandTimeout: 60);
         }
