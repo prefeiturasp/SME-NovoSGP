@@ -22,9 +22,6 @@ namespace SME.SGP.Aplicacao
             if (usuario == null)
                 throw new NegocioException("Não foi possível localizar o usuário.");
 
-            filtro.NomeUsuario = usuario.Nome;
-            filtro.CodigoRf = usuario.CodigoRf;
-
             return await _mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FrequenciaMensal, filtro, usuario,
                 RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequenciaMensal, filtro.TipoFormatoRelatorio));
         }
