@@ -18,6 +18,7 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class NotasConceitosController : ControllerBase
     {
+
         [HttpGet]
         [ProducesResponseType(typeof(NotasConceitosRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -81,7 +82,6 @@ namespace SME.SGP.Api.Controllers
 
             return Ok();
         }
-
         [HttpGet("conceitos")]
         [ProducesResponseType(typeof(IEnumerable<ConceitoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
