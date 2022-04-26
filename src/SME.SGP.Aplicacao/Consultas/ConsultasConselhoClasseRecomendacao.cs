@@ -125,6 +125,7 @@ namespace SME.SGP.Aplicacao
             var recomendacaoFamilia = new StringBuilder();
             var anotacoesPedagogicas = new StringBuilder();
             var auditoriaListaDto = new List<AuditoriaDto>();
+            var listaRecomendacoes = new List<RecomendacoesAlunoFamiliaDto>();
 
             if (conselhosClassesIds != null)
             {
@@ -137,7 +138,6 @@ namespace SME.SGP.Aplicacao
                         if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno))
                             recomendacaoAluno.AppendLine(conselhoClasseAluno.RecomendacoesAluno);
 
-
                         if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
                             recomendacaoFamilia.AppendLine(conselhoClasseAluno.RecomendacoesFamilia);
 
@@ -149,17 +149,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-
-            if (recomendacaoAluno.Length == 0 || recomendacaoFamilia.Length == 0)
-            {
-                var recomendacoes = await mediator.Send(new ObterTextoRecomendacoesAlunoFamiliaQuery());
-
-                if (recomendacaoAluno.Length == 0)
-                    recomendacaoAluno.AppendLine(recomendacoes.recomendacoesAluno);
-
-                if (recomendacaoFamilia.Length == 0)
-                    recomendacaoFamilia.AppendLine(recomendacoes.recomendacoesFamilia);
-            }
+            var recomendacoesAlunoFamiliaSelecionado = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery(alunoCodigo, bimestre.Value, fechamentoTurmaId));
 
             var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(alunoCodigo, bimestre, turma);
 
@@ -170,8 +160,9 @@ namespace SME.SGP.Aplicacao
             var auditoria = auditoriaListaDto.Any() ? auditoriaListaDto.OrderBy(a => a.AlteradoEm).ThenBy(a => a.CriadoEm).FirstOrDefault() : null;
 
             consultasConselhoClasseRecomendacaoConsultaDto.Auditoria = auditoria;
-            consultasConselhoClasseRecomendacaoConsultaDto.RecomendacaoAluno = recomendacaoAluno.ToString();
-            consultasConselhoClasseRecomendacaoConsultaDto.RecomendacaoFamilia = recomendacaoFamilia.ToString();
+            consultasConselhoClasseRecomendacaoConsultaDto.RecomendacoesAlunoFamilia = recomendacoesAlunoFamiliaSelecionado;
+            consultasConselhoClasseRecomendacaoConsultaDto.TextoRecomendacaoAluno = recomendacaoAluno.ToString();
+            consultasConselhoClasseRecomendacaoConsultaDto.TextoRecomendacaoFamilia = recomendacaoFamilia.ToString();
             consultasConselhoClasseRecomendacaoConsultaDto.SomenteLeitura = !emFechamento;
             consultasConselhoClasseRecomendacaoConsultaDto.MatriculaAtiva = turmasComMatriculasValidas.Any();
 
