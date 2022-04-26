@@ -87,6 +87,29 @@ namespace SME.SGP.TesteIntegracao
         {
             var mediator = ServiceProvider.GetService<IMediator>();
 
+            await DadosConselhoClasse();
+
+            var retorno = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery("12345", 1, 1));
+
+            retorno.ShouldNotBeEmpty();
+            retorno.First().Tipo.ShouldBe((int)ConselhoClasseRecomendacaoTipo.Aluno);
+        }
+
+        [Fact]
+        public async Task Deve_gravar_recomendacao_aluno()
+        {
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            await DadosConselhoClasse();
+
+            var dadosGravados = ObterTodos<ConselhoClasseAlunoRecomendacao>();
+
+            dadosGravados.ShouldNotBeNull();
+            dadosGravados.First().ConselhoClasseAlunoId.ShouldBe(1);
+        }
+
+        public async Task DadosConselhoClasse()
+        {
             await InserirNaBase(new TipoCalendario()
             {
                 Id = 1,
@@ -104,8 +127,8 @@ namespace SME.SGP.TesteIntegracao
             {
                 Id = 1,
                 Bimestre = 1,
-                PeriodoFim = new DateTime(2022,01,05),
-                PeriodoInicio = new DateTime(2022,01,02),
+                PeriodoFim = new DateTime(2022, 01, 05),
+                PeriodoInicio = new DateTime(2022, 01, 02),
                 TipoCalendarioId = 1,
                 CriadoEm = new DateTime(2022, 01, 01),
                 CriadoPor = "",
@@ -134,13 +157,13 @@ namespace SME.SGP.TesteIntegracao
                 Id = 1,
                 DreId = 1,
                 Nome = "Ue Teste",
-                DataAtualizacao = new DateTime(2020,1,1),
+                DataAtualizacao = new DateTime(2020, 1, 1),
             });
 
             await InserirNaBase(new Turma()
             {
                 Id = 1,
-                DataAtualizacao = new DateTime(2022,1,1),
+                DataAtualizacao = new DateTime(2022, 1, 1),
                 Historica = false,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
                 UeId = 1
@@ -191,11 +214,38 @@ namespace SME.SGP.TesteIntegracao
                 ConselhoClasseRecomendacaoId = 1
             });
 
-            var retorno = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery("12345", 1, 1));
+            await InserirNaBase(new ConselhoClasseRecomendacao()
+            {
+                Id = 2,
+                Recomendacao = "recomendação família teste 2",
+                Tipo = ConselhoClasseRecomendacaoTipo.Familia,
+                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoPor = "",
+                CriadoRF = ""
+            });
 
-            retorno.ShouldNotBeEmpty();
-            retorno.First().Tipo.ShouldBe((int)ConselhoClasseRecomendacaoTipo.Aluno);
+            await InserirNaBase(new ConselhoClasseRecomendacao()
+            {
+                Id = 4,
+                Recomendacao = "recomendação familia teste 1",
+                Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
+                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+
+            await InserirNaBase(new ConselhoClasseRecomendacao()
+            {
+                Id = 3,
+                Recomendacao = "recomendação aluno teste 2",
+                Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
+                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+           
         }
+
 
     }
 }
