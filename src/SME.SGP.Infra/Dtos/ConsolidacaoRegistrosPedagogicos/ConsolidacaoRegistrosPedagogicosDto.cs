@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -11,6 +9,7 @@ namespace SME.SGP.Infra
         public string TurmaCodigo { get; set; }
         public int AnoLetivo { get; set; }
         public long ComponenteCurricularId { get; set; }
+        public string ComponenteCurricular { get; set; }
         public int QuantidadeAulas { get; set; }
         public int FrequenciasPendentes { get; set; }
         public DateTime? DataUltimaFrequencia { get; set; }
@@ -25,16 +24,19 @@ namespace SME.SGP.Infra
 
         public ConsolidacaoRegistrosPedagogicosDto()
         {
-
         }
 
-        public ConsolidacaoRegistrosPedagogicosDto(long periodoEscolarId, long turmaId, string turmaCodigo, int anoLetivo, long componenteCurricularId, int quantidadeAulas, int frequenciasPendentes, DateTime? dataUltimaFrequencia, DateTime? dataUltimoPlanoAula, DateTime? dataUltimoDiarioBordo, int diarioBordoPendentes, int planoAulaPendentes, string nomeProfessor, string rFProfessor, int modalidadeCodigo)
+        public ConsolidacaoRegistrosPedagogicosDto(long periodoEscolarId, long turmaId, string turmaCodigo,
+            int anoLetivo, long componenteCurricularId, string componenteCurricular, int quantidadeAulas, int frequenciasPendentes,
+            DateTime? dataUltimaFrequencia, DateTime? dataUltimoPlanoAula, DateTime? dataUltimoDiarioBordo,
+            int diarioBordoPendentes, int planoAulaPendentes, string nomeProfessor, string rFProfessor, int modalidadeCodigo)
         {
             PeriodoEscolarId = periodoEscolarId;
             TurmaId = turmaId;
             TurmaCodigo = turmaCodigo;
             AnoLetivo = anoLetivo;
             ComponenteCurricularId = componenteCurricularId;
+            ComponenteCurricular = componenteCurricular;
             QuantidadeAulas = quantidadeAulas;
             FrequenciasPendentes = frequenciasPendentes;
             DataUltimaFrequencia = dataUltimaFrequencia;
