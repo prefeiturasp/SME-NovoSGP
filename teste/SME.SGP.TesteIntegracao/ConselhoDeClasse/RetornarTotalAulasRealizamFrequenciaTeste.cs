@@ -84,7 +84,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoRF = "0",
                 AlteradoRF = null,
                 Nome = "Teste"
-
             });
 
             await InserirNaBase(new PeriodoEscolar
@@ -101,7 +100,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoRF = "0",
                 AlteradoRF = null,
                 Migrado = false
-
             });
             await InserirNaBase(new FrequenciaAluno
             {
@@ -127,6 +125,5 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Tipo = TipoFrequenciaAluno.PorDisciplina
             });
         }
-
     }
 }

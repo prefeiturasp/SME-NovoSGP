@@ -83,7 +83,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoRF = "0",
                 AlteradoRF = null,
                 Nome = "Teste"
-
             });
 
             await InserirNaBase(new Aula
@@ -104,7 +103,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Migrado = false,
                 AulaCJ = false
             });
-
         }
     }
 }
