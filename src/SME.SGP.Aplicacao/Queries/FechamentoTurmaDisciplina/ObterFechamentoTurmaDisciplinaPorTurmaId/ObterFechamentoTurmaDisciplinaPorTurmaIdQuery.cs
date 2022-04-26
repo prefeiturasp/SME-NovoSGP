@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFechamentoTurmaDisciplinaPorTurmaIdQuery : IRequest<IEnumerable<TurmaFechamentoDisciplinaDto>>
+    public class ObterFechamentoTurmaDisciplinaPorTurmaIdQuery : IRequest<IEnumerable<TurmaFechamentoDisciplinaSituacaoDto>>
     {
         public long TurmaId { get; set; }
 
