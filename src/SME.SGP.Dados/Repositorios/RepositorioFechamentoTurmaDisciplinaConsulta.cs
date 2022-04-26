@@ -618,11 +618,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sqlQuery = @"select ft.turma_id TurmaId, ft.periodo_escolar_id PeriodoEscolarId, ftd.disciplina_id DisciplinaId, ftd.situacao Situacao
                                 from fechamento_turma ft 
-                                join fechamento_turma_disciplina ftd on ft.id = ftd.fechamento_turma_id                                 
-                                join periodo_fechamento_bimestre pfb on ft.periodo_escolar_id = pfb.periodo_escolar_id                                
+                                join fechamento_turma_disciplina ftd on ft.id = ftd.fechamento_turma_id                                                                 
                                 where not ft.excluido 
                                       and not ftd.excluido 
-                                      and ft.turma_id = @turmaId ";
+                                      and ft.turma_id = @turmaId 
+                                      and ft.periodo_escolar_id is not null ";
 
             return await database.Conexao.QueryAsync<TurmaFechamentoDisciplinaSituacaoDto>(sqlQuery, new { turmaId });
         }
