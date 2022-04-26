@@ -12,29 +12,11 @@ namespace SME.SGP.TesteIntegracao.Setup
 {
     public class TestFixture : IDisposable
     {
-        private readonly IServiceCollection _services;
-        public readonly InMemoryDatabase Database;
-        public readonly ServiceProvider ServiceProvider;
-        public TestFixture()
-        {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-            _services = new ServiceCollection();
-
-            Database = new InMemoryDatabase();
-            _services.AddScoped<IDbConnection>(x=> Database.Conexao);
-
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
-            _services.AddSingleton<IConfiguration>(config);
-            _services.AddMemoryCache();
-            new RegistradorDependencias().Registrar(_services, null);
-
-            ServiceProvider = _services.BuildServiceProvider();
-            DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
-        }
+    //RaphaelDias. Removi o que estava nessa classe para passar pro CollectionFixture. 
+    //Se for necessário paralelizar os testes, o ideal é que passe o controle do banco de dados
+    //pra cá para cada classe ter o seu e ser possível paralelizar. Neste momento, não é necessário.
         public void Dispose()
         {
-            Database.Dispose();
         }
     }
 }
