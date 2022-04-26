@@ -129,7 +129,7 @@ namespace SME.SGP.Infra
             }            
         }
 
-        public async Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor)
+        public async Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
             DateTime inicioOperacao = default;
             Stopwatch temporizador = default;           
@@ -147,6 +147,7 @@ namespace SME.SGP.Infra
                 await transactionElk.CaptureSpan(telemetriaNome, acaoNome, async (span) =>
                 {
                     span.SetLabel(telemetriaNome, telemetriaValor);
+                    span.SetLabel("Parametros", parametros);
                     await acao();
                 });
             }
