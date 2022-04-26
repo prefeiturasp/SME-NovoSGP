@@ -70,6 +70,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AlunoPorTurmaResposta>), 200)]
         [ProducesResponseType(typeof(IEnumerable<AlunoPorTurmaResposta>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CO_C, Policy = "Bearer")]
         public async Task<IActionResult> BuscarAlunos(string codigoTurma, int anoLetivo, [FromServices] IObterAlunosPorTurmaEAnoLetivoEscolaAquiUseCase obterAlunosPorTurmaEscolaAquiUseCase)
         {
             var retorno = await obterAlunosPorTurmaEscolaAquiUseCase.Executar(codigoTurma, anoLetivo);
@@ -108,6 +109,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>), 200)]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CO_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterComunicadosDoAluno(long turmaId, int semestre, long alunoCodigo, [FromServices] IObterComunicadosPaginadosAlunoUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroTurmaAlunoSemestreDto(turmaId, alunoCodigo, semestre)));
@@ -136,6 +138,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<int>), 200)]
+        [Permissao(Permissao.CO_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSemestres(bool consideraHistorico, [FromQuery] int modalidade, [FromQuery] int anoLetivo, [FromQuery] string ueCodigo, [FromServices] IObterSemestresPorAnoLetivoModalidadeEUeCodigoUseCase useCase)
         {
             return Ok(await useCase.Executar(consideraHistorico, modalidade, anoLetivo, ueCodigo));

@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
                                     fechamentoNota.FechamentoAluno = fechamentoAluno;
                                     await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
 
-                                    ConsolidacaoNotasAlunos(!fechamentoTurma.EhFinal, periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
+                                    ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
                                 }
                             }
                             catch (NegocioException e)
@@ -175,7 +175,7 @@ namespace SME.SGP.Aplicacao
                                 fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                                 var fechamentoNotaId = await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
 
-                                ConsolidacaoNotasAlunos(!fechamentoTurma.EhFinal, periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
+                                ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
                             }
                             catch (NegocioException e)
                             {
@@ -258,18 +258,23 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private static void ConsolidacaoNotasAlunos(bool fechamentoBimestre, int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota)
+        private void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota)
         {
             consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
             {
                 AlunoCodigo = AlunoCodigo,
                 TurmaId = turma.Id,
-                Bimestre = fechamentoBimestre ? bimestre : BimestreConstants.AbaFinal,
+                Bimestre = ObterBimestre(bimestre),
                 AnoLetivo = turma.AnoLetivo,
                 Nota = fechamentoNota.Nota,
                 ConceitoId = fechamentoNota.ConceitoId,
                 ComponenteCurricularId = fechamentoNota.DisciplinaId
             });
+        }
+
+        private int? ObterBimestre(int? bimestre)
+        {
+            return bimestre.HasValue ? bimestre.Value > 0 ? bimestre : null : null;
         }
 
         private Task GerarPendenciasFechamento(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, Usuario usuario, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, long turmaId, bool componenteSemNota = false, bool registraFrequencia = true)

@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     var modalidadeTurma = await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(request.TurmaCodigo));
-                    eventoAulaDto.Pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id, atividadesAvaliativasDaAula.Any(), modalidadeTurma == Modalidade.EducacaoInfantil));
+                    eventoAulaDto.Pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id, usuarioLogado, atividadesAvaliativasDaAula.Any(), modalidadeTurma == Modalidade.EducacaoInfantil));
 
                     retorno.Add(eventoAulaDto);
                 }

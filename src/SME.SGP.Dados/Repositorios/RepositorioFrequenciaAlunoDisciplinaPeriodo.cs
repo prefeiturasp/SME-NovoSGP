@@ -18,10 +18,10 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly string connectionString;
 
-        public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IConfiguration configuration) : base(database)
+        public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database) : base(database)
         {
-            this.connectionString = configuration.GetConnectionString("SGP_Postgres");
-        } 
+            this.connectionString = database.ConnectionString; //Raphael. Troquei uma connectionstring que pegava das configurações, pela connectionstring do contexto
+        }
 
         public async Task SalvarVariosAsync(IEnumerable<FrequenciaAluno> entidades)
         {

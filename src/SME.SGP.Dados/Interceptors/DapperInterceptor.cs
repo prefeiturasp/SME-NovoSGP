@@ -11,11 +11,11 @@ namespace SME.SGP.Dados
 
     public static class DapperExtensionMethods
     {
-        private static ServicoTelemetria servicoTelemetria;
-        
-        public static void Init(ServicoTelemetria servicoTelemetriaSgp)
+        private static IServicoTelemetria servicoTelemetria;
+
+        public static void Init(IServicoTelemetria servicoTelemetriaSgp)
         {
-            servicoTelemetria = servicoTelemetriaSgp;            
+            servicoTelemetria = servicoTelemetriaSgp;
         }
         public static IEnumerable<dynamic> Query(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null, string queryName = "query")
         {
@@ -36,7 +36,7 @@ namespace SME.SGP.Dados
             //    transactionElk.CaptureSpan("Query", "Postgres", () =>
             //    {
             //        result = SqlMapper.Query(cnn, sql, param, transaction, buffered, commandTimeout, commandType);
-            //    });                
+            //    });
 
             //    timer.Stop();
 

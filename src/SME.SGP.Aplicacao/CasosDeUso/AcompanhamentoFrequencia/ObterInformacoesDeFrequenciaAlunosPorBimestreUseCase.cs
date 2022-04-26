@@ -54,9 +54,14 @@ namespace SME.SGP.Aplicacao
             if (!alunos?.Any() ?? true)
                 throw new NegocioException("Os alunos da turma não foram encontrados.");
 
-            var alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))
+            IEnumerable<AlunoPorTurmaResposta> alunosValidosComOrdenacao = null;
+
+            if(turma.AnoLetivo == DateTime.Now.Year)
+                alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))
                                                    .OrderBy(a => a.NomeAluno)
                                                    .ThenBy(a => a.NomeValido());
+            else
+                alunosValidosComOrdenacao = alunos.OrderBy(a => a.NomeAluno).ThenBy(a => a.NomeValido());            
 
             return BimestreFinal == dto.Bimestre
                 ? await ObterFrequenciaAlunosBimestreFinalAsync(turma, alunosValidosComOrdenacao, dto.ComponenteCurricularId, tipoCalendarioId)

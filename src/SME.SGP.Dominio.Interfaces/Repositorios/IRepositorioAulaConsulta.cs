@@ -39,9 +39,9 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<bool> ObterTurmaInfantilPorAula(long aulaId);
 
-        Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorData(long tipoCalendarioId, string turmaCodigo, string ueCodigo, DateTime dataDaAula);
+        Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorData(string turmaCodigo, string ueCodigo, DateTime dataDaAula);
 
-        Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorMes(long tipoCalendarioId, string turmaCodigo, string ueCodigo, int mes);
+        Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorMes(string turmaCodigo, string ueCodigo, int mes);
 
         Task<IEnumerable<Aula>> ObterAulasRecorrencia(long aulaPaiId, long? aulaIdInicioRecorrencia = null, DateTime? dataFinal = null);
 

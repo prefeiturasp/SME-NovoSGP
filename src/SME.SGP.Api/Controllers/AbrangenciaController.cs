@@ -141,6 +141,12 @@ namespace SME.SGP.Api.Controllers
             var retorno = await consultasAbrangencia
                 .ObterSemestres(filtroSemestreDto.Modalidade, ConsideraHistorico, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo);
 
+            if ((retorno == null || !retorno.Any()) && !ConsideraHistorico)
+            {
+                retorno = await consultasAbrangencia
+                    .ObterSemestres(filtroSemestreDto.Modalidade, true, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo);
+            }
+
             if (!retorno.Any())
                 return NoContent();
 
@@ -157,7 +163,7 @@ namespace SME.SGP.Api.Controllers
             IEnumerable<AbrangenciaTurmaRetorno> turmas;
             turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil);
             
-            if(turmas == null && !turmas.Any() && !ConsideraHistorico)
+            if((turmas == null || !turmas.Any()) && !ConsideraHistorico)
                 turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil);
 
             if (!turmas.Any())
@@ -210,21 +216,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar());
         }
-        [HttpGet("/api/v1/abrangencias/{usuarioRF}/perfis/{usuarioPerfil}/acesso-sondagem")]
-        [ProducesResponseType(typeof(bool), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [AllowAnonymous]
-        public async Task<IActionResult> PodeAcessarSondagem(string usuarioRF, Guid usuarioPerfil, [FromServices] IUsuarioPossuiAbrangenciaAcessoSondagemUseCase useCase)
-        {
-            return Ok(await useCase.Executar(usuarioRF, usuarioPerfil));
-        }
         [HttpPost("/api/v1/abrangencias/sincronizar-abrangencia/{professorRf}/{anoLetivo}/turmas-historicas")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]        
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> SincronizarAbrangenciaTurmasHistoricas(string professorRf, int anoLetivo)
         {
             return Ok(await servicoAbrangencia.SincronizarAbrangenciaHistorica(anoLetivo, professorRf));

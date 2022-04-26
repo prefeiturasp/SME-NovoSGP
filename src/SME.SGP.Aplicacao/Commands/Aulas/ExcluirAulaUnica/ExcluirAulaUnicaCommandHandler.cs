@@ -49,7 +49,8 @@ namespace SME.SGP.Aplicacao
                 RotasRabbitSgp.PlanoAulaDaAulaExcluir,
                 RotasRabbitSgp.AnotacoesFrequenciaDaAulaExcluir,
                 RotasRabbitSgp.DiarioBordoDaAulaExcluir,
-                RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula
+                RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula,
+                RotasRabbitSgp.RotaExecutaExclusaoPendenciaDiarioBordoAula
             };
 
             await PulicaFilaSgp(filas, aula.Id, request.Usuario);

@@ -155,9 +155,9 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>("select permite_lancamento_nota from componente_curricular where id = @id", new { id });
         }
 
-        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, long turmaId, int bimestre, string codigoAluno)
+        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, long turmaId, int? bimestre, string codigoAluno)
         {
-            var query = @"	                        
+            var query = $@"	                        
                            select
                            distinct *
                            from
@@ -191,7 +191,7 @@ namespace SME.SGP.Dados.Repositorios
                            ccn.conselho_classe_aluno_id = cca.id
                            and ccn.componente_curricular_codigo = fn.disciplina_id
                            where
-                           pe.bimestre = @bimestre
+                           {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
                            and cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
                            and ft.turma_id = @turmaId
@@ -226,7 +226,7 @@ namespace SME.SGP.Dados.Repositorios
                            fn.fechamento_aluno_id = fa.id
                            and ccn.componente_curricular_codigo = fn.disciplina_id
                            where
-                           pe.bimestre = @bimestre
+                            {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
                            and cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
                            and ft.turma_id = @turmaId ) x   ";

@@ -131,7 +131,7 @@ namespace SME.SGP.Dominio
 
             var dataConsiderada = atividadesAvaliativas.Any() ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao.Date : DateTime.Today;
 
-            alunos = alunos.Where(a => a.EstaAtivo(dataConsiderada) || (a.Inativo && a.DataSituacao.Date >= dataConsiderada));
+            alunos = alunos.Where(a => a.EstaAtivo(dataConsiderada) || (a.Inativo && a.DataSituacao.Date <= dataConsiderada));
 
             if (!usuario.EhGestorEscolar())
                 await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, dataConsiderada, usuario);

@@ -34,7 +34,11 @@ namespace SME.SGP.Aplicacao
 
             var datasAulas = ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo,string.Empty);
 
-            var aulas = await mediator.Send(new ObterAulasPorIdsQuery(datasAulas.Select(a => a.IdAula)));
+            if (datasAulas == null || !datasAulas.Any())
+                return default;
+
+            var ids = datasAulas.Select(a => a.IdAula).ToList();
+            var aulas = await mediator.Send(new ObterAulasPorIdsQuery(ids));
             
             var aulasPermitidas = new List<long>();
             bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(turma.AnoLetivo);
@@ -59,7 +63,7 @@ namespace SME.SGP.Aplicacao
                     {
                         AulaId = a.IdAula,
                         AulaCJ = a.AulaCJ,
-                        PodeEditar = (usuarioLogado.EhProfessorCj() && a.AulaCJ || usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar) || (!a.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar())),
+                        PodeEditar = (usuarioLogado.EhProfessorCj() && a.AulaCJ || usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar) || (!a.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPosl() || usuarioLogado.EhProfessorPoed())),
                         ProfessorRf = a.ProfessorRf,
                         CriadoPor = a.CriadoPor,
                         PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula)),

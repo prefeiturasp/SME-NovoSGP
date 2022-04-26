@@ -200,14 +200,14 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     AlunoCodigo = alunoCodigo,
                     TurmaId = turma.Id,
-                    Bimestre = bimestre ?? BimestreConstants.AbaFinal,
+                    Bimestre = ObterBimestre(bimestre),
                     AnoLetivo = turma.AnoLetivo,
                     Nota = conselhoClasseNotaDto.Nota,
                     ConceitoId = conselhoClasseNotaDto.Conceito,
                     ComponenteCurricularId = conselhoClasseNotaDto.CodigoComponenteCurricular
                 };
                 await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
-            }                
+            }
 
             var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()
             {
@@ -219,6 +219,11 @@ namespace SME.SGP.Dominio.Servicos
             };
 
             return conselhoClasseNotaRetorno;
+        }
+
+        private int? ObterBimestre(int? bimestre)
+        {
+            return bimestre.HasValue ? bimestre.Value > 0 ? bimestre : null : null;
         }
 
         private async Task<ConselhoClasseNotaRetornoDto> InserirConselhoClasseNota(FechamentoTurma fechamentoTurma, string alunoCodigo, Turma turma, ConselhoClasseNotaDto conselhoClasseNotaDto, int? bimestre, Usuario usuarioLogado)
@@ -269,7 +274,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     AlunoCodigo = alunoCodigo,
                     TurmaId = turma.Id,
-                    Bimestre = bimestre ?? BimestreConstants.AbaFinal,
+                    Bimestre = ObterBimestre(bimestre),
                     AnoLetivo = turma.AnoLetivo,
                     Nota = conselhoClasseNotaDto.Nota,
                     ConceitoId = conselhoClasseNotaDto.Conceito,

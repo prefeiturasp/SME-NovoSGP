@@ -164,8 +164,7 @@ namespace SME.SGP.Dominio.Servicos
             consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
             {
                 AlunoCodigo = AlunoCodigo,
-                TurmaId = turma.Id,
-                Bimestre = BimestreConstants.AbaFinal,
+                TurmaId = turma.Id,                
                 AnoLetivo = turma.AnoLetivo,
                 Nota = fechamentoNota.Nota,
                 ConceitoId = fechamentoNota.ConceitoId,

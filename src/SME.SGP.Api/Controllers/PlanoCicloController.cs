@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Api.Controllers
@@ -9,6 +9,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/planos/ciclo")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class PlanoCicloController : ControllerBase
     {
         private readonly IComandosPlanoCiclo comandosPlanoCiclo;
