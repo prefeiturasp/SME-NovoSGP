@@ -69,11 +69,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task SalvarPendenciaAulaUsuario(string disciplinaId, string codigoRfProfessor, long periodoEscolarId, TipoPendencia tipoPendencia, IEnumerable<long> aulasIds)
         {
+            long pendenciaIdExistente = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(disciplinaId, codigoRfProfessor, periodoEscolarId, tipoPendencia));
+
             try
             {
                 unitOfWork.IniciarTransacao();
-
-                long pendenciaIdExistente = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(disciplinaId, codigoRfProfessor, periodoEscolarId, tipoPendencia));
 
                 var pendenciaId = pendenciaIdExistente > 0
                     ? pendenciaIdExistente
