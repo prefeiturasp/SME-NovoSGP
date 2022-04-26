@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             acao();
         }
 
-        public async Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor)
+        public async Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
             await acao();
         }
