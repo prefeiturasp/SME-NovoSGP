@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -10,23 +11,50 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsolidarRegistrosPedagogicosPorUeTratarUseCase : AbstractUseCase, IConsolidarRegistrosPedagogicosPorUeTratarUseCase
     {
-        public ConsolidarRegistrosPedagogicosPorUeTratarUseCase(IMediator mediator) : base(mediator)
+        private readonly IRepositorioUeConsulta repositorioUe;
+
+        public ConsolidarRegistrosPedagogicosPorUeTratarUseCase(IMediator mediator, IRepositorioUeConsulta repositorioUe) : base(mediator)
         {
+            this.repositorioUe = repositorioUe;
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<FiltroConsolidacaoRegistrosPedagogicosPorUeDto>();
 
-            var consolidacoes = await mediator.Send(new ObterConsolidacaoRegistrosPedagogicosQuery(filtro.UeId, filtro.AnoLetivo));
+            var dataReferencia = filtro.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year
+                ? DateTimeExtension.HorarioBrasilia().Date
+                : new DateTime(filtro.AnoLetivo, 12, 31, 0, 0, 0, DateTimeKind.Utc);
 
-            if (consolidacoes.Any())
+            var consolidacoes = Enumerable.Empty<ConsolidacaoRegistrosPedagogicosDto>();
+
+            if (await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.SepararDiarioBordoPorComponente, filtro.AnoLetivo)) != null)
             {
-                var consolidacaoCompleta = await AtribuiProfessorEConsolida(consolidacoes);
+                var ue = await repositorioUe.ObterUePorId(filtro.UeId);
+                var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorUeQuery(ue.CodigoUe, dataReferencia));
 
-                foreach (var consolidacao in consolidacaoCompleta.Distinct())
-                    await mediator.Send(new ConsolidarRegistrosPedagogicosCommand(consolidacao));
+                var professoresTitularesAgrupadoTurma = professoresTitulares.GroupBy(c => c.TurmaId);
+
+                foreach (var agrupadoTurma in professoresTitularesAgrupadoTurma)
+                {
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarRegistrosPedagogicosPorTurmaTratar, 
+                        new FiltroConsolidacaoRegistrosPedagogicosPorTurmaDto(agrupadoTurma.Key.ToString(), filtro.AnoLetivo,
+                        agrupadoTurma), new Guid(), null));
+                }
             }
+            else
+            {
+                consolidacoes = await mediator.Send(new ObterConsolidacaoRegistrosPedagogicosQuery(filtro.UeId, filtro.AnoLetivo));
+
+                if (consolidacoes.Any())
+                {
+                    var consolidacaoCompleta = await AtribuiProfessorEConsolida(consolidacoes);
+
+                    foreach (var consolidacao in consolidacaoCompleta.Distinct())
+                        await mediator.Send(new ConsolidarRegistrosPedagogicosCommand(consolidacao));
+                }
+            }
+
             return true;
         }
 
@@ -41,9 +69,7 @@ namespace SME.SGP.Aplicacao
 
                 if (professoresDaTurma.Any())
                 {
-                    var bimestres = consolidacaoAgrupado.Select(c => c.PeriodoEscolarId).Distinct();
-
-                    foreach (var bimestre in bimestres)
+                    foreach (var bimestre in consolidacaoAgrupado.Select(c => c.PeriodoEscolarId).Distinct())
                     {
                         foreach (var professor in professoresDaTurma.GroupBy(pt => pt.DisciplinaId))
                         {
@@ -56,7 +82,7 @@ namespace SME.SGP.Aplicacao
                                 string rfProfessor = string.Empty;
                                 bool possui2Professores = false;
 
-                                var consolidacao = consolidacaoAgrupado.Where(c => c.ComponenteCurricularId == dadosProfessor.DisciplinaId && c.PeriodoEscolarId == bimestre).FirstOrDefault();
+                                var consolidacao = consolidacaoAgrupado.FirstOrDefault(c => c.ComponenteCurricularId == dadosProfessor.DisciplinaId && c.PeriodoEscolarId == bimestre);
                                 var consolidacaoInfantil = consolidacaoAgrupado.Where(c => c.ComponenteCurricularId == dadosProfessor.DisciplinaId && c.PeriodoEscolarId == bimestre);
 
                                 var dadosProfessorTitularDisciplina = professoresDaTurma.Where(p => p.DisciplinaId == consolidacao.ComponenteCurricularId)
@@ -172,12 +198,9 @@ namespace SME.SGP.Aplicacao
                                 };
                                 listaConsolidados.Add(consolidacaoZerada);
                             }
-
                         }
                     }
-
                 }
-
             }
             return listaConsolidados;
         }
@@ -208,7 +231,6 @@ namespace SME.SGP.Aplicacao
                 consolidacao.CJ = false;
                 return nomeProfessor;
             }
-
         }
 
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ProfessoresTitularesTurma(string codigoTurma)

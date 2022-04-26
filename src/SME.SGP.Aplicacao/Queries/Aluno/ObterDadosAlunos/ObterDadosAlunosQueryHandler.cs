@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoDadosBasicosDto>> Handle(ObterDadosAlunosQuery request, CancellationToken cancellationToken)
         {
-            var dadosAlunos = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaCodigo));
+            var dadosAlunos = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaCodigo, request.ConsideraInativos));
             if (dadosAlunos == null || !dadosAlunos.Any())
                 throw new NegocioException($"Não foram localizados dados dos alunos para turma {request.TurmaCodigo} no EOL para o ano letivo {request.AnoLetivo}");
 

@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
         }
         private async Task<ParametrosSistema> BuscarDadosParametroConsolidacao(int anoLetivo)
         {
-            return await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.ExecucaoConsolidacaoRegistrosPedagogicos, anoLetivo));
+            return await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoRegistrosPedagogicos, anoLetivo));
         }
     }
 }

@@ -13,5 +13,6 @@ namespace SME.SGP.Infra
         public string UsuarioNome { get; set; }
         public string UsuarioRF { get; set; }
         public bool ExibirDetalhes { get; set; }
+        public long ComponenteCurricular { get; set; }
     }
 }

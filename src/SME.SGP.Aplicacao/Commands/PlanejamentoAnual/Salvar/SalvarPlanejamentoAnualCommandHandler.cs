@@ -127,8 +127,8 @@ namespace SME.SGP.Aplicacao
                                         PlanejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolar.Id,
                                     };
                                 }
-                                listaDescricao.Add(new PlanejamentoAnualComponenteResumidoDto() { DescricaoNovo = componente.Descricao,DescricaoAtual = planejamentoAnualComponente.Descricao });
-                                planejamentoAnualComponente.Descricao = componente.Descricao = componente.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanejamentoAnual.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/"); ;
+
+                                planejamentoAnualComponente.Descricao = componente.Descricao = await MoverRemoverExcluidos(componente.Descricao, planejamentoAnualComponente.Descricao);
                                 await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
                                 auditoria.Componentes.Add(new PlanejamentoAnualComponenteDto
                                 {
@@ -149,9 +149,7 @@ namespace SME.SGP.Aplicacao
                     var str = new StringBuilder();
                     str.AppendLine($"Os seguintes erros foram encontrados: ");
                     foreach (var t in excessoes)
-                    {
                         str.AppendLine($"- {t}");
-                    }
 
                     throw new NegocioException(str.ToString());
                 }
@@ -159,7 +157,7 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.PersistirTransacao();
                 foreach (var item in listaDescricao)
                 {
-                    MoverRemoverExcluidos(item.DescricaoNovo, item.DescricaoAtual);
+                    await MoverRemoverExcluidos(item.DescricaoNovo, item.DescricaoAtual);
                 }
             }
             catch (Exception ex)
@@ -171,16 +169,17 @@ namespace SME.SGP.Aplicacao
             return auditorias;
         }
 
-        private void MoverRemoverExcluidos(string novo, string atual)
+        private async Task<string> MoverRemoverExcluidos(string novo, string atual)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(novo))
-            {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanejamentoAnual, atual, novo));
-            }
+            caminho = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanejamentoAnual, atual, novo));
+
             if (!string.IsNullOrEmpty(atual))
-            {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.PlanejamentoAnual.Name()));
-            }
+                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.PlanejamentoAnual.Name()));
+
+            return caminho;
         }
     }
 }

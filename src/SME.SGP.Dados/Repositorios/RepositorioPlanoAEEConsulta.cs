@@ -37,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao)
+        private string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao)
         {
             StringBuilder sql = new StringBuilder();
 
@@ -50,27 +50,40 @@ namespace SME.SGP.Dados.Repositorios
             return sql.ToString();
         }
 
-        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao)
+        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao)
         {
             ObtenhaCabecalho(sql, contador);
 
             ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao);
 
             if (!contador)
-                sql.AppendLine(" order by pa.aluno_nome ");
+            {
+                sql.AppendLine("group by pa.id ");
+                sql.AppendLine("       , pa.aluno_codigo");
+                sql.AppendLine("       , pa.aluno_numero");
+                sql.AppendLine("       , pa.aluno_nome");
+                sql.AppendLine("       , t.turma_id");
+                sql.AppendLine("       , t.nome");
+                sql.AppendLine("       , t.modalidade_codigo");
+                sql.AppendLine("       , t.ano_letivo");
+                sql.AppendLine("       , ea.id ");
+                sql.AppendLine("       , pa.situacao ");
+                sql.AppendLine("       , pa.criado_em");
+                sql.AppendLine("        order by pa.aluno_nome ");
+            }
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
 
-        private static void ObtenhaCabecalho(StringBuilder sql, bool contador)
+        private void ObtenhaCabecalho(StringBuilder sql, bool contador)
         {
             sql.AppendLine("select ");
             if (contador)
-                sql.AppendLine(" count(pa.id) ");
+                sql.AppendLine(" count(distinct pa.id) ");
             else
             {
-                sql.AppendLine(" pa.id ");
+                sql.AppendLine("  pa.id ");
                 sql.AppendLine(", pa.aluno_codigo as AlunoCodigo ");
                 sql.AppendLine(", pa.aluno_numero as AlunoNumero ");
                 sql.AppendLine(", pa.aluno_nome as AlunoNome ");
@@ -84,18 +97,18 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("  END as PossuiEncaminhamentoAEE ");
                 sql.AppendLine(", pa.situacao ");
                 sql.AppendLine(", pa.criado_em as CriadoEm ");
-                sql.AppendLine(", pav.numero as Versao ");
-                sql.AppendLine(", pav.criado_em as DataVersao ");
+                sql.AppendLine(", max(pav.numero) as Versao ");
+                sql.AppendLine(", max(pav.criado_em) as DataVersao ");
             }
 
             sql.AppendLine(" from plano_aee pa ");
             sql.AppendLine(" left join encaminhamento_aee ea on ea.aluno_codigo = pa.aluno_codigo and not ea.excluido and ea.situacao not in(4,5,7,8) ");
             sql.AppendLine(" inner join turma t on t.id = pa.turma_id");
             sql.AppendLine(" inner join ue on t.ue_id = ue.id");
-            sql.AppendLine(" inner join plano_aee_versao pav on pav.id = (select max(id) from plano_aee_versao where plano_aee_id = pa.id)");
+            sql.AppendLine(" inner join plano_aee_versao pav on pa.id = pav.plano_aee_id");
         }
 
-        private static void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao)
+        private void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao)
         {
             sql.AppendLine(" where ue.dre_id = @dreId and not pa.excluido ");
 
