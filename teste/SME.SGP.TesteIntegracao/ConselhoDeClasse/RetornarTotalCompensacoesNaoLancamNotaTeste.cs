@@ -16,22 +16,22 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao
 {
-    public class RetornarTotalAulasNaoLancamNotaTeste : TesteBase
+    public class RetornarTotalCompensacoesNaoLancamNotaTeste : TesteBase
     {
-        public RetornarTotalAulasNaoLancamNotaTeste(TestFixture testFixture) : base(testFixture) { }
+        public RetornarTotalCompensacoesNaoLancamNotaTeste(TestFixture testFixture) : base(testFixture) { }
 
         [Fact]
-        public async Task Deve_Retornar_Total_Aulas_Que_Nao_Lancam_Nota()
+        public async Task Deve_Retornar_Total_Compensacoes_Que_Nao_Lancam_Nota()
         {
             //Arrange
-            var useCase = ServiceProvider.GetService<IObterTotalAulasNaoLancamNotaUseCase>();
+            var useCase = ServiceProvider.GetService<IObterTotalCompensacoesComponenteNaoLancaNotaUseCase>();
             await CriarUsuarioLogado();
             CriarClaimFundamental();
-            await CriarAulaQueNaoLancaNota();
+            await CriarCompensacaoQueNaoLancaNota();
 
             //Act
             var controller = new ConselhoClasseController();
-            var retorno = await controller.ObterTotalAulasNaoLancamNotasPorTurmaBimestre("2370993", 1, useCase);
+            var retorno = await controller.ObterTotalCompensacoesComponentesNaoLancamNota("2370993", 1, useCase);
 
             //Assert
             retorno.ShouldNotBeNull();
@@ -67,7 +67,7 @@ namespace SME.SGP.TesteIntegracao
             contextoAplicacao.AdicionarVariaveis(variaveis);
         }
 
-        private async Task CriarAulaQueNaoLancaNota()
+        private async Task CriarCompensacaoQueNaoLancaNota()
         {
             await InserirNaBase(new TipoCalendario
             {

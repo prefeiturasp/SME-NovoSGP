@@ -209,5 +209,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoTurma, bimestre));
         }
+
+        [HttpGet("TotalCompensacoesComponentesNaoLancamNota/turma/{codigoTurma}/bimestre/{bimestre}")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterTotalCompensacoesComponentesNaoLancamNota(string codigoTurma, int bimestre, [FromServices] IObterTotalCompensacoesComponenteNaoLancaNotaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoTurma,bimestre));
+        }
     }
 }
