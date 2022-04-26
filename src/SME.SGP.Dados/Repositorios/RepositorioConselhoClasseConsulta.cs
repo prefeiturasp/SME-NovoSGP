@@ -387,10 +387,11 @@ namespace SME.SGP.Dados.Repositorios
                         where cc.permite_lancamento_nota = false 
                         and fa.turma_id = @codigoTurma
                         and fa.bimestre = @bimestre
-                        and fa.tipo  = 1
+                        and fa.tipo  = @tipo
                         group by fa.disciplina_id ";
 
-            return await database.Conexao.QueryAsync<TotalAulasNaoLancamNotaDto>(sql, new { codigoTurma, bimestre }, commandTimeout: 60);
+            return await database.Conexao
+                                .QueryAsync<TotalAulasNaoLancamNotaDto>(sql, new { codigoTurma, bimestre, tipo = (int)TipoAula.Normal }, commandTimeout: 60);
         }
     }
 }
