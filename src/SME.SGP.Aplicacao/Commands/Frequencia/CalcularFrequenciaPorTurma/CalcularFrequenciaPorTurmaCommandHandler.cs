@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                                                                   LogContexto.Frequencia,
                                                                   JsonSerializer.Serialize(request),
                                                                   rastreamento: e.StackTrace,
-                                                                  excecaoInterna: e.InnerException.ToString()));
+                                                                  excecaoInterna: e.InnerException?.ToString()));
                 throw;
             }
 
