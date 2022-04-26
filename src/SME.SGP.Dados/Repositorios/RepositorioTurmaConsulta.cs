@@ -719,6 +719,24 @@ namespace SME.SGP.Dados.Repositorios
             return retorno.FirstOrDefault();
         }
 
+        public async Task<IEnumerable<Turma>> ObterTurmasDreUeCompletaPorCodigos(string[] turmasCodigo)
+        {
+            var query = @"select turma.*, ue.*, dre.* 
+                         from turma
+                        inner join ue on ue.id = turma.ue_id
+                        inner join dre on dre.id = ue.dre_id
+                        where turma_id = Any(@turmasCodigo)";
+
+            var retorno = await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                turma.AdicionarUe(ue);
+                return turma;
+            }, new { turmasCodigo });
+
+            return retorno;
+        }
+
         public async Task<IEnumerable<TurmaModalidadeCodigoDto>> ObterModalidadePorCodigos(string[] turmasCodigo)
         {
             var query = @"select t.turma_id as TurmaCodigo, t.modalidade_codigo as ModalidadeCodigo from turma t where t.turma_id = Any(@turmasCodigo) ";

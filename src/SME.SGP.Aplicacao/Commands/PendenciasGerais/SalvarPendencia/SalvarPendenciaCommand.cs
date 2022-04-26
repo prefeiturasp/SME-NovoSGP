@@ -16,12 +16,17 @@ namespace SME.SGP.Aplicacao
             UeId = ueId;
         }
 
+        public SalvarPendenciaCommand(){}
+
         public TipoPendencia TipoPendencia { get; set; }
         public string Titulo { get; set; }
         public string Descricao { get; set; }
         public string Instrucao { get; set; }
         public string DescricaoHtml { get; set; }
         public long? UeId { get; set; }
+        public string DescricaoComponenteCurricular { get; set; }
+        public string TurmaAnoComModalidade { get; set; }
+        public string DescricaoUeDre { get; set; }
     }
 
     public class SalvarPendenciaCommandValidator : AbstractValidator<SalvarPendenciaCommand>
