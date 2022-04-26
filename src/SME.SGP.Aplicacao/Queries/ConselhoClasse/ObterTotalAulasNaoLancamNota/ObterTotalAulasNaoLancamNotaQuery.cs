@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.ConselhoClasse.ObterTotalAulasNaoLancamNota
+namespace SME.SGP.Aplicacao
 {
     public class ObterTotalAulasNaoLancamNotaQuery : IRequest<IEnumerable<TotalAulasNaoLancamNotaDto>>
     {

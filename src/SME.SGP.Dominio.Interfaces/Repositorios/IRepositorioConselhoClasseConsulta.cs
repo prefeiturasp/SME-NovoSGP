@@ -1,4 +1,6 @@
 ﻿using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.ConselhoClasse;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
