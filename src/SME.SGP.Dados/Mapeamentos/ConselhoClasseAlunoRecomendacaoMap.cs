@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
-    class ConselhoClasseAlunoRecomendacaoMap : DommelEntityMap<ConselhoClasseAlunoRecomendacao>
+    public class ConselhoClasseAlunoRecomendacaoMap : DommelEntityMap<ConselhoClasseAlunoRecomendacao>
     {
         public ConselhoClasseAlunoRecomendacaoMap()
         {
             ToTable("conselho_classe_aluno_recomendacao");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey(); 
             Map(c => c.ConselhoClasseAlunoId).ToColumn("conselho_classe_aluno_id");
             Map(c => c.ConselhoClasseRecomendacaoId).ToColumn("conselho_classe_recomendacao_id");
         }
