@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFechamentoTurmaDisciplinaPorTurmaIdQueryHandler : IRequestHandler<ObterFechamentoTurmaDisciplinaPorTurmaIdQuery, IEnumerable<TurmaFechamentoDisciplinaDto>>
+    public class ObterFechamentoTurmaDisciplinaPorTurmaIdQueryHandler : IRequestHandler<ObterFechamentoTurmaDisciplinaPorTurmaIdQuery, IEnumerable<TurmaFechamentoDisciplinaSituacaoDto>>
     {
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioFechamentoTurmaDisciplina = repositorio;
         }
-        public async  Task<IEnumerable<TurmaFechamentoDisciplinaDto>> Handle(ObterFechamentoTurmaDisciplinaPorTurmaIdQuery request, CancellationToken cancellationToken)
+        public async  Task<IEnumerable<TurmaFechamentoDisciplinaSituacaoDto>> Handle(ObterFechamentoTurmaDisciplinaPorTurmaIdQuery request, CancellationToken cancellationToken)
             => await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaPorTurmaId(request.TurmaId);
     }
 }

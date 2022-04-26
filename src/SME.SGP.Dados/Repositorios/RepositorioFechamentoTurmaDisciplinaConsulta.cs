@@ -614,7 +614,7 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("having count(0) > 1)");
         }
 
-        public async Task<IEnumerable<TurmaFechamentoDisciplinaDto>> ObterFechamentosTurmaPorTurmaId(long turmaId)
+        public async Task<IEnumerable<TurmaFechamentoDisciplinaSituacaoDto>> ObterFechamentosTurmaPorTurmaId(long turmaId)
         {
             var sqlQuery = @"select ft.turma_id TurmaId, ft.periodo_escolar_id PeriodoEscolarId, ftd.disciplina_id DisciplinaId, ftd.situacao Situacao
                                 from fechamento_turma ft 
@@ -624,7 +624,7 @@ namespace SME.SGP.Dados.Repositorios
                                       and not ftd.excluido 
                                       and ft.turma_id = @turmaId ";
 
-            return await database.Conexao.QueryAsync<TurmaFechamentoDisciplinaDto>(sqlQuery, new { turmaId });
+            return await database.Conexao.QueryAsync<TurmaFechamentoDisciplinaSituacaoDto>(sqlQuery, new { turmaId });
         }
     }
 }
