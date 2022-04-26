@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.ConselhoClasse.ObterTotalAulasPorAlunoTurmaQuery
+namespace SME.SGP.Aplicacao
 {
     public class ObterTotalAulasPorAlunoTurmaQueryHandler : IRequestHandler<ObterTotalAulasPorAlunoTurmaQuery, IEnumerable<TotalAulasPorAlunoTurmaDto>>
     {

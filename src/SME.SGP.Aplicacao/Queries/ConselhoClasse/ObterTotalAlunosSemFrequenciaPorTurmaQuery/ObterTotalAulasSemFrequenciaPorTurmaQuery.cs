@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.ConselhoClasse.ObterTotalAlunosSemFrequenciaPorTurmaQuery
+namespace SME.SGP.Aplicacao
 {
     public class ObterTotalAulasSemFrequenciaPorTurmaQuery : IRequest<IEnumerable<TotalAulasPorAlunoTurmaDto>>
     {

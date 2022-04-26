@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ConselhoClasse;
-using SME.SGP.Aplicacao.Queries.ConselhoClasse.ObterTotalAlunosSemFrequenciaPorTurmaQuery;
 using SME.SGP.Infra.Dtos.ConselhoClasse;
 using System;
 using System.Collections.Generic;
@@ -8,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.ConselhoClasse
+namespace SME.SGP.Aplicacao
 {
     public class ObterTotalAulasSemFrequenciaPorTurmaUseCase : IObterTotalAulasSemFrequenciaPorTurmaUseCase
     {

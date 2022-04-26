@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Api.Controllers;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.ConselhoClasse;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
+namespace SME.SGP.TesteIntegracao
 {
     public class RetornarTotalAulasNaoRealizamFrequenciaTeste : TesteBase
     {
