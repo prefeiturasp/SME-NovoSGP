@@ -358,7 +358,7 @@ namespace SME.SGP.Worker.RabbitMQ
                                                     "RabbitMQ",
                                                     rota,
                                                     rota,
-                                                    mensagemRabbit.ToString());
+                                                    mensagem);
 
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
                     }
