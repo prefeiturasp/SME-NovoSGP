@@ -64,11 +64,6 @@ namespace SME.SGP.TesteIntegracao.Setup
             {
                 cmd.ExecuteNonQuery();
             }
-            
-            /*using (var cmd = new NpgsqlCommand("Select * from pg_tables where tablename in ('ue', 'dre')", Conexao))
-            {
-                var r = cmd.ExecuteReader();
-            }*/
         }
 
         public void Dispose()
