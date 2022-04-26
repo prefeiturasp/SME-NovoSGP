@@ -149,7 +149,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var recomendacoesAlunoFamiliaSelecionado = await 
+            var recomendacoesAlunoFamiliaSelecionado = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery(alunoCodigo, bimestre.Value, fechamentoTurmaId));
 
             var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(alunoCodigo, bimestre, turma);
 
@@ -160,6 +160,7 @@ namespace SME.SGP.Aplicacao
             var auditoria = auditoriaListaDto.Any() ? auditoriaListaDto.OrderBy(a => a.AlteradoEm).ThenBy(a => a.CriadoEm).FirstOrDefault() : null;
 
             consultasConselhoClasseRecomendacaoConsultaDto.Auditoria = auditoria;
+            consultasConselhoClasseRecomendacaoConsultaDto.RecomendacoesAlunoFamilia = recomendacoesAlunoFamiliaSelecionado;
             consultasConselhoClasseRecomendacaoConsultaDto.TextoRecomendacaoAluno = recomendacaoAluno.ToString();
             consultasConselhoClasseRecomendacaoConsultaDto.TextoRecomendacaoFamilia = recomendacaoFamilia.ToString();
             consultasConselhoClasseRecomendacaoConsultaDto.SomenteLeitura = !emFechamento;

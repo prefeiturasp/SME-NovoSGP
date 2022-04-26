@@ -13,13 +13,13 @@ namespace SME.SGP.Aplicacao
     {
         public string AlunoCodigo { get; set; }
         public int Bimestre { get; set; }
-        public long TurmaId { get; set; }
+        public long FechamentoTurmaId { get; set; }
 
-        public ObterRecomendacoesPorAlunoConselhoQuery(string alunoCodigo, int bimestre, long turmaId)
+        public ObterRecomendacoesPorAlunoConselhoQuery(string alunoCodigo, int bimestre, long fechamentoTurmaId)
         {
             AlunoCodigo = alunoCodigo;
             Bimestre = bimestre;
-            TurmaId = turmaId;
+            FechamentoTurmaId = fechamentoTurmaId;
         }
     }
 
@@ -29,7 +29,15 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.AlunoCodigo)
                 .NotEmpty()
-                .WithMessage("É necessário informar o código do aluno para consultar as recomendações gravadas para ele nesse conselho de classe");
+                .WithMessage("É necessário informar o código do aluno para consultar as recomendações gravadas para o estudante nesse conselho de classe");
+
+            RuleFor(a => a.Bimestre)
+                .NotEmpty()
+                .WithMessage("É necessário informar o bimestre do conselho para consultar as recomendações gravadas para o estudante nesse conselho de classe");
+
+            RuleFor(a => a.FechamentoTurmaId)
+               .NotEmpty()
+               .WithMessage("É necessário informar a turma do conselho para consultar as recomendações gravadas para o estudante nesse conselho de classe");
         }
     }
 }
