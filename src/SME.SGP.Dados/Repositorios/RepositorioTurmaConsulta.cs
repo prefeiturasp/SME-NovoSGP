@@ -287,6 +287,7 @@ namespace SME.SGP.Dados.Repositorios
                            and t.modalidade_codigo = ANY(@modalidades)
                            and t.ano between '1' and '9'
                            and (t.semestre = 0 or t.semestre = @semestre)
+                           and not t.historica
                            and (d.situacao = ANY(@situacoes) 
    	                         or d.id is null 
    	                         or cc.id is null 
