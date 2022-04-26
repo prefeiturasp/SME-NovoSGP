@@ -31,6 +31,8 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("                a.disciplina_id DisciplinaId,");
             sqlQuery.AppendLine("                a.turma_id TurmaId,");
             sqlQuery.AppendLine("                a.professor_rf ProfessorRf,");
+            sqlQuery.AppendLine("                a.tipo_calendario_id TipoCalendarioId,");
+            sqlQuery.AppendLine("                a.data_aula DataAula,");
             sqlQuery.AppendLine("                t.id Id,");
             sqlQuery.AppendLine("                t.modalidade_codigo ModalidadeCodigo");
             sqlQuery.AppendLine("  	from aula a");
@@ -118,7 +120,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, int anoLetivo)
         {
-            var sqlQuery = @"select distinct a.id, a.turma_id, a.disciplina_id, a.professor_rf
+            var sqlQuery = @"select distinct a.id, a.turma_id, a.disciplina_id, a.professor_rf,
+                                    a.tipo_calendario_id, a.data_aula
 	                from atividade_avaliativa aa
 	                inner join dre on dre.dre_id = aa.dre_id
 	                inner join atividade_avaliativa_disciplina aad
@@ -363,6 +366,21 @@ namespace SME.SGP.Dados.Repositorios
                                 and rf.id is null";
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
+        }
+
+        public async Task<long> ObterPendenciaIdPorComponenteProfessorEBimestre(string componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia)
+        {
+            var sql = @"select p.id from pendencia p 
+                            inner join pendencia_aula pa on pa.pendencia_id = p.id 
+                            inner join pendencia_usuario pu on pu.pendencia_id = p.id 
+                            inner join usuario u on u.id = pu.usuario_id 
+                            inner join aula a on a.id = pa.aula_id 
+                            inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
+                            where u.rf_codigo = @codigoRf and a.disciplina_id = @componenteCurricularId 
+                            and pe.id = @periodoEscolarId and p.tipo = @tipoPendencia 
+                            order by p.criado_em desc";
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, tipoPendencia }));
         }
     }
 }
