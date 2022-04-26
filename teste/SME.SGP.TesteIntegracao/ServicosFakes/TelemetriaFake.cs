@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
-            return await acao();
+            await acao();
         }
         
         public async Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
