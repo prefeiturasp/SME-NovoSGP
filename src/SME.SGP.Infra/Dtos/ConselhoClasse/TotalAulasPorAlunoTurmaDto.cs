@@ -10,6 +10,5 @@ namespace SME.SGP.Infra.Dtos.ConselhoClasse
     {
         public string DisciplinaId { get; set; }
         public string TotalAulas { get; set; }
-        public string Descricao { get; set; }
     }
 }

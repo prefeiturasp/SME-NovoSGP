@@ -210,12 +210,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoTurma, bimestre));
         }
 
-        [HttpGet("turmas/{turmaId}/bimestres")]
+        [HttpGet("TotalCompensacoesComponentesNaoLancamNota/turma/{codigoTurma}/bimestre/{bimestre}")]
         [ProducesResponseType(401)]
-        [ProducesResponseType(typeof(IEnumerable<BimestreComConselhoClasseTurmaDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterTotalCompensacoesComponentesNaoLancamNota(string codigoTurma, int bimestre, [FromServices] IObterBimestresComConselhoClasseTurmaUseCase obterBimestresComConselhoClasseTurmaUseCase)
-  => Ok(await obterBimestresComConselhoClasseTurmaUseCase.Executar(turmaId));
+        public async Task<IActionResult> ObterTotalCompensacoesComponentesNaoLancamNota(string codigoTurma, int bimestre, [FromServices] IObterTotalCompensacoesComponenteNaoLancaNotaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoTurma,bimestre));
+        }
     }
 }

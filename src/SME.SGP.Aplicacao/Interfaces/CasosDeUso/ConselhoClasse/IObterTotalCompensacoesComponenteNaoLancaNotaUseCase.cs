@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.ConselhoClasse
+namespace SME.SGP.Aplicacao
 {
     public interface IObterTotalCompensacoesComponenteNaoLancaNotaUseCase
     {

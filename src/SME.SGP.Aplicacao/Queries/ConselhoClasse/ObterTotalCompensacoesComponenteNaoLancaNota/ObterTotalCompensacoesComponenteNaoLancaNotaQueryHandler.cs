@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.ConselhoClasse.ObterTotalCompensacoesComponenteNaoLancaNota
+namespace SME.SGP.Aplicacao
 {
     public class ObterTotalCompensacoesComponenteNaoLancaNotaQueryHandler : IRequestHandler<ObterTotalCompensacoesComponenteNaoLancaNotaQuery, IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>>
     {

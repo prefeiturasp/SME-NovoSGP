@@ -396,27 +396,27 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNotaPorBimestre(string codigoTurma, int bimestre)
         {
-            var sql = @"select fa.disciplina_id as DisciplinaID, cc.descricao as Descricao , SUM(total_compensacoes) as TotalCompensacoes from frequencia_aluno fa 
+            var sql = @"select fa.disciplina_id as DisciplinaID, SUM(total_compensacoes) as TotalCompensacoes from frequencia_aluno fa 
                         join componente_curricular cc on cc.id = fa.disciplina_id::int8
                         where cc.permite_lancamento_nota = false 
                         and fa.turma_id = @codigoTurma
                         and fa.bimestre = @bimestre
-                        and fa.tipo  = 1
-                        group by fa.disciplina_id , cc.descricao ";
+                        and fa.tipo  = @tipo
+                        group by fa.disciplina_id ";
 
-            return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, bimestre }, commandTimeout: 60);
+            return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, bimestre, tipo = (int)TipoAula.Normal }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNota(string codigoTurma)
         {
-            var sql = @"select fa.disciplina_id as DisciplinaID, cc.descricao as Descricao , SUM(total_compensacoes) as TotalCompensacoes from frequencia_aluno fa 
+            var sql = @"select fa.disciplina_id as DisciplinaID, SUM(total_compensacoes) as TotalCompensacoes from frequencia_aluno fa 
                         join componente_curricular cc on cc.id = fa.disciplina_id::int8
                         where cc.permite_lancamento_nota = false 
                         and fa.turma_id = @codigoTurma
-                        and fa.tipo  = 1
-                        group by fa.disciplina_id , cc.descricao ";
+                        and fa.tipo  = @tipo
+                        group by fa.disciplina_id ";
 
-            return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma }, commandTimeout: 60);
+            return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, tipo = (int)TipoAula.Normal }, commandTimeout: 60);
         }
     }
 }

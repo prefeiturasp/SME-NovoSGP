@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using Moq;
-using SME.SGP.Aplicacao.CasosDeUso.ConselhoClasse;
-using SME.SGP.Aplicacao.Queries.ConselhoClasse.ObterTotalAulasNaoLancamNota;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
