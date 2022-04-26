@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.ConselhoClasse;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System.Collections.Generic;
@@ -197,6 +198,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterTotalAulasSemFrequenciaPorTurma(string codigoTurma, [FromServices] IObterTotalAulasSemFrequenciaPorTurmaUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoTurma));
+        }
+
+        [HttpGet("TotalAulasNaoLancamNota/turma/{codigoTurma}/bimestre/{bimestre}")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(IEnumerable<TotalAulasNaoLancamNotaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterTotalAulasNaoLancamNotasPorTurmaBimestre(string codigoTurma, int bimestre, [FromServices] IObterTotalAulasNaoLancamNotaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoTurma, bimestre));
         }
     }
 }
