@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/conselhos-classe")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class ConselhoClasseController : ControllerBase
     {
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/bimestres/{bimestre}/recomendacoes")]
@@ -182,7 +182,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<RecomendacoesAlunoFamiliaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
-        //[Permissao(Permissao.PA_C, Policy = "Bearer")]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRecomendacoes([FromServices] IObterRecomendacoesAlunoFamiliaUseCase useCase)
         {
             var recomendacoes = await useCase.Executar();
