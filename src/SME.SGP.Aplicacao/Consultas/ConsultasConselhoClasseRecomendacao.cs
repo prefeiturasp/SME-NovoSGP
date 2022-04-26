@@ -149,17 +149,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-
-            if (recomendacaoAluno.Length == 0 || recomendacaoFamilia.Length == 0)
-            {
-                var recomendacoes = await mediator.Send(new ObterTextoRecomendacoesAlunoFamiliaQuery());
-
-                if (recomendacaoAluno.Length == 0)
-                    recomendacaoAluno.AppendLine(recomendacoes.recomendacoesAluno);
-
-                if (recomendacaoFamilia.Length == 0)
-                    recomendacaoFamilia.AppendLine(recomendacoes.recomendacoesFamilia);
-            }
+            var recomendacoesAlunoFamiliaSelecionado = await 
 
             var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(alunoCodigo, bimestre, turma);
 
