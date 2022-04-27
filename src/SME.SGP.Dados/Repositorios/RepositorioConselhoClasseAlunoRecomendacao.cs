@@ -39,19 +39,13 @@ namespace SME.SGP.Dados.Repositorios
             const string comando = @"insert into public.conselho_classe_aluno_recomendacao (conselho_classe_aluno_id, conselho_classe_recomendacao_id)
                                         values (@conselhoClasseAlunoId, @recomendacaoId)";
 
-            try
-            {
-                database.Conexao.Execute(comando,
-                    new
-                    {
-                        recomendacaoId,
-                        conselhoClasseAlunoId
-                    });
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+
+            database.Conexao.Execute(comando,
+                new
+                {
+                    recomendacaoId,
+                    conselhoClasseAlunoId
+                });
 
         }
     }
