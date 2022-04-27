@@ -8,6 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConsolidacaoDashBoardFrequenciaMap()
         {
             ToTable("consolidado_dashboard_frequencia");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.TurmaNome).ToColumn("turma_nome");
             Map(c => c.TurmaAno).ToColumn("turma_ano");

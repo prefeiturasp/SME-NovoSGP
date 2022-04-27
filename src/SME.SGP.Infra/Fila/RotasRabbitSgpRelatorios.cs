@@ -24,6 +24,7 @@
         public const string RotaRelatoriosSolicitadosPapGraficos = "sr.relatorios.solicitados.papgraficos";
         public const string RotaRelatoriosSolicitadosPapRelatorioSemestral = "sr.relatorios.solicitados.paprelatoriosemestral";
         public const string RotaRelatoriosSolicitadosFrequencia = "sr.relatorios.solicitados.frequencia";
+        public const string RotaRelatoriosSolicitadosFrequenciaMensal = "sr.relatorios.solicitados.frequenciamensal";
         public const string RotaRelatoriosSolicitadosCompensacaoAusencia = "sr.relatorios.solicitados.compensacaoausencia";
         public const string RotaRelatoriosSolicitadosControleGrade = "sr.relatorios.solicitados.controlegrade";
         public const string RotaRelatoriosSolicitadosControlePlanejamentoDiario = "sr.relatorios.solicitados.controleplanejamentodiario";
