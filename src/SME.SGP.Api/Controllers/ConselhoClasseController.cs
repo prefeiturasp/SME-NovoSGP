@@ -219,5 +219,20 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoTurma, bimestre));
         }
+
+        [HttpGet("obter-recomendacoes")]
+        [ProducesResponseType(typeof(IEnumerable<RecomendacoesAlunoFamiliaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(204)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterRecomendacoes([FromServices] IObterRecomendacoesAlunoFamiliaUseCase useCase)
+        {
+            var recomendacoes = await useCase.Executar();
+            if (recomendacoes != null)
+                return Ok(recomendacoes);
+            else
+                return StatusCode(204);
+        }
     }
+
 }

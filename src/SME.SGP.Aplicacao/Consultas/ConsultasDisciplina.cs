@@ -87,17 +87,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            var chaveCache = $"Disciplinas-{codigoTurma}-{usuarioLogado.PerfilAtual}-{realizarAgrupamentoComponente}";
-
-            var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
-
-            if (!usuarioLogado.EhProfessor())
-            {
-                var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
-
-                if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-                    return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
-            }
+            var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));            
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
 
@@ -139,9 +129,6 @@ namespace SME.SGP.Aplicacao
                     d.CdComponenteCurricularPai = componenteEOL.CodigoComponenteCurricularPai;
                     d.NomeComponenteInfantil = componenteEOL.ExibirComponenteEOL ? d.NomeComponenteInfantil : d.Nome;
                 });
-
-                if (!usuarioLogado.EhProfessor())
-                    await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
             }
 
             //Exceção para disciplinas 1060 e 1061 que são compartilhadas entre EF e EJA
@@ -153,8 +140,9 @@ namespace SME.SGP.Aplicacao
                 
                 foreach(var disciplina in disciplinasDto)
                 {
+                    disciplina.PossuiObjetivos = false;
                     if (disciplina.CodigoComponenteCurricular == idComponenteInformaticaOie || disciplina.CodigoComponenteCurricular == idComponenteLeituraOsl)
-                        disciplina.RegistraFrequencia = false;
+                        disciplina.RegistraFrequencia = false;                    
                 }
             }
 

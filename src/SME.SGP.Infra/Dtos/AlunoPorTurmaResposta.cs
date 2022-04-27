@@ -80,8 +80,9 @@ namespace SME.SGP.Infra
         /// </summary>
         /// <param name="dataBase">Data a se considerar para verificar a situação do aluno, Ex: Data da aula</param>
         /// <returns></returns>
-        public bool EstaAtivo(DateTime dataBase) => (SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date <= dataBase.Date) ||                                                    
-            CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido;
+        public bool EstaAtivo(DateTime dataBase) => TratarExcepcionalmenteSituacaoAtivo(dataBase) ? SituacoesAtiva.Contains(CodigoSituacaoMatricula) :
+                                                    (SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataMatricula.Date <= dataBase.Date) ||
+                                                    (!SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date >= dataBase.Date);
 
         /// <summary>
         /// Verifica se o aluno está inativo
@@ -111,5 +112,16 @@ namespace SME.SGP.Infra
         {
             return PodeEditarNotaConceito() || temPeriodoAberto;
         }
+
+        /// <summary>
+        /// Identifica se o aluno precisa de um tratamento excepcional ao feito comumente,
+        /// pois nos deparamos com a situaçã de alunos de uma turma possuírem a data de matrícula e situação praticamente iguais e com
+        /// ano posterior ao ano da turma. Dessa forma não é possível determinar quando cada aluno iniciou e terminou na turma.
+        /// </summary>
+        /// <param name="dataReferencia">Data de referência utilzada para verificar se o ano coincide com os anos de matricula e situação.</param>
+        /// <returns></returns>
+        private bool TratarExcepcionalmenteSituacaoAtivo(DateTime dataReferencia)
+            => DataMatricula.Year.Equals(DataSituacao.Year) && DataMatricula.Year > dataReferencia.Year;
+        
     }
 }

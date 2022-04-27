@@ -16,7 +16,7 @@ using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using SME.SGP.IoC.Extensions;
 using SME.SGP.TesteIntegracao.ServicosFakes;
-
+using System.Data;
 namespace SME.SGP.TesteIntegracao.Setup
 {
     public class RegistradorDependencias : RegistraDependencias

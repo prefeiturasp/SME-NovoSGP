@@ -166,9 +166,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(bool), 200)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ConciliarFrequencia([FromQuery] DateTime dataReferencia, string turmaCodigo)
+        public async Task<IActionResult> ConciliarFrequencia([FromQuery] DateTime dataReferencia, string turmaCodigo, bool bimestral = true, bool mensal = false)
         {
-            var mensagem = new ConciliacaoFrequenciaTurmasSyncDto(dataReferencia, turmaCodigo);
+            var mensagem = new ConciliacaoFrequenciaTurmasSyncDto(dataReferencia, turmaCodigo, bimestral, mensal);
             
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasSync, mensagem, Guid.NewGuid(), null));
             
@@ -180,11 +180,11 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(bool), 200)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ConciliarFrequenciaTurmas([FromQuery] DateTime dataReferencia, string[] turmasCodigos)
+        public async Task<IActionResult> ConciliarFrequenciaTurmas([FromQuery] DateTime dataReferencia, string[] turmasCodigos, bool bimestral = true, bool mensal = false)
         {
             foreach(var turmaCodigo in turmasCodigos)
             {
-                var mensagem = new ConciliacaoFrequenciaTurmasSyncDto(dataReferencia, turmaCodigo);
+                var mensagem = new ConciliacaoFrequenciaTurmasSyncDto(dataReferencia, turmaCodigo, bimestral, mensal);
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasSync, mensagem, Guid.NewGuid(), null));
             }

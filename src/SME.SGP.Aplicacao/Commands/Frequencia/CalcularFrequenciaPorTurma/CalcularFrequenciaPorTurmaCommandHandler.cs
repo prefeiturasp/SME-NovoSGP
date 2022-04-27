@@ -9,6 +9,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,7 +40,10 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand("Erro ao calcular Frequência da Turma: " + e.Message,
                                                                   LogNivel.Critico,
-                                                                  LogContexto.Frequencia));
+                                                                  LogContexto.Frequencia,
+                                                                  JsonSerializer.Serialize(request),
+                                                                  rastreamento: e.StackTrace,
+                                                                  excecaoInterna: e.InnerException?.ToString()));
                 throw;
             }
 
