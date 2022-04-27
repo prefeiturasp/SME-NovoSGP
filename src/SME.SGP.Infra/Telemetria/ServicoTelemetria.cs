@@ -18,7 +18,7 @@ namespace SME.SGP.Infra
             this.telemetriaOptions = telemetriaOptions ?? throw new ArgumentNullException(nameof(telemetriaOptions));
         }
 
-        public async Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor)
+        public async Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
             DateTime inicioOperacao = default;
             Stopwatch temporizador = default;
@@ -38,6 +38,7 @@ namespace SME.SGP.Infra
                 await transactionElk.CaptureSpan(telemetriaNome, acaoNome, async (span) =>
                  {
                      span.SetLabel(telemetriaNome, telemetriaValor);
+                     span.SetLabel("Parametros", parametros);
                      result = (await acao()) as dynamic;
                  });
             }
@@ -56,7 +57,7 @@ namespace SME.SGP.Infra
             return result;
         }
 
-        public dynamic RegistrarComRetorno<T>(Func<object> acao, string acaoNome, string telemetriaNome, string telemetriaValor)
+        public dynamic RegistrarComRetorno<T>(Func<object> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
             DateTime inicioOperacao = default;
             Stopwatch temporizador = default;
@@ -76,6 +77,7 @@ namespace SME.SGP.Infra
                 transactionElk.CaptureSpan(telemetriaNome, acaoNome, (span) =>
                 {
                     span.SetLabel(telemetriaNome, telemetriaValor);
+                    span.SetLabel("Parametros", parametros);
                     result = acao();
                 });
             }
@@ -127,7 +129,7 @@ namespace SME.SGP.Infra
             }            
         }
 
-        public async Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor)
+        public async Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
             DateTime inicioOperacao = default;
             Stopwatch temporizador = default;           
@@ -145,6 +147,7 @@ namespace SME.SGP.Infra
                 await transactionElk.CaptureSpan(telemetriaNome, acaoNome, async (span) =>
                 {
                     span.SetLabel(telemetriaNome, telemetriaValor);
+                    span.SetLabel("Parametros", parametros);
                     await acao();
                 });
             }

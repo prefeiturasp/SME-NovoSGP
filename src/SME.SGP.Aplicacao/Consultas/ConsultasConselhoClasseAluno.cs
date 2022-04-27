@@ -236,18 +236,18 @@ namespace SME.SGP.Aplicacao
 
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
 
-            var frequenciasAluno = turmasComMatriculasValidas.Contains(codigoTurma) && (dadosAluno.DataSituacao.Date >= periodoFim || dadosAluno.SituacaoCodigo == SituacaoMatriculaAluno.Concluido) ?
+            var frequenciasAluno = turmasComMatriculasValidas.Contains(codigoTurma) ?
                 await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, alunoCodigo, tipoCalendario.Id, bimestre) :
                 Enumerable.Empty<FrequenciaAluno>();
 
-            var registrosFrequencia = turmasComMatriculasValidas.Contains(codigoTurma) && (dadosAluno.DataSituacao.Date >= periodoFim || dadosAluno.SituacaoCodigo == SituacaoMatriculaAluno.Concluido) ?
+            var registrosFrequencia = turmasComMatriculasValidas.Contains(codigoTurma) ?
                 await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, turmasCodigos, disciplinasCodigo.Select(d => d.ToString()).ToArray(), periodoEscolar?.Id)) :
                 Enumerable.Empty<RegistroFrequenciaAlunoBimestreDto>();
 
             var gruposMatrizes = disciplinasDaTurma.Where(c => c.GrupoMatrizNome != null && c.LancaNota).OrderBy(d => d.GrupoMatrizId).GroupBy(c => c.GrupoMatrizId).ToList();
             var visualizaNotas = (periodoEscolar is null && !dadosAluno.EstaInativo()) ||
                                  (!dadosAluno.EstaInativo() && dadosAluno.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date) || 
-                                 (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date > periodoEscolar.PeriodoFim.Date);
+                                 (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date > periodoEscolar.PeriodoInicio.Date);
 
             foreach (var grupoDisiplinasMatriz in gruposMatrizes)
             {
