@@ -12,5 +12,7 @@ namespace SME.SGP.Infra
         public string AnotacoesPedagogicas { get; set; }
         public string RecomendacaoAluno { get; set; }
         public string RecomendacaoFamilia { get; set; }
+        public IEnumerable<long> RecomendacaoAlunoIds { get; set; }
+        public IEnumerable<long> RecomendacaoFamiliaIds { get; set; }
     }
 }

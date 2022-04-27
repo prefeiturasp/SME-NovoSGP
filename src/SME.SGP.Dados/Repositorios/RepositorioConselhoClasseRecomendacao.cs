@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -18,6 +19,14 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select * from conselho_classe_recomendacao where excluido = false";
 
             return await database.Conexao.QueryAsync<ConselhoClasseRecomendacao>(query);
+        }
+
+        public async Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterIdRecomendacoesETipoAsync()
+        {
+            var query = @"select ccr.id as Id, ccr.recomendacao as Recomendacao, ccr.tipo as Tipo
+                            from conselho_classe_recomendacao ccr where ccr.excluido = false";
+
+            return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(query);
         }
     }
 }
