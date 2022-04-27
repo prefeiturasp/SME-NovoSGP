@@ -351,7 +351,8 @@ namespace SME.SGP.Worker.RabbitMQ
                             await metodo.InvokeAsync(casoDeUso, new object[] { mensagemRabbit }),
                                                     "RabbitMQ",
                                                     rota,
-                                                    rota);
+                                                    rota,
+                                                    mensagem);
 
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
                     }

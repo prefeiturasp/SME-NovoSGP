@@ -30,7 +30,6 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new WorkflowAprovacaoNivelUsuarioMap());
                config.AddMap(new UsuarioMap());
                config.AddMap(new PrioridadePerfilMap());
-               config.AddMap(new ConfiguracaoEmailMap());
                config.AddMap(new TipoCalendarioMap());
                config.AddMap(new FeriadoCalendarioMap());
                config.AddMap(new EventoMap());
@@ -201,6 +200,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConsolidacaoDashBoardFrequenciaMap());
                config.AddMap(new AnotacaoFechamentoAlunoMap());
                config.AddMap(new PendenciaDiarioBordoMap());
+               config.AddMap(new ConselhoClasseAlunoRecomendacaoMap());
                config.AddMap(new ConsolidacaoFrequenciaAlunoMensalMap());
                config.ForDommel();
            });

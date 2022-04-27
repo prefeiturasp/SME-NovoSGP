@@ -75,6 +75,18 @@ namespace SME.SGP.Aplicacao
             return await TurmaEmPeriodoDeFechamentoVigente(turma, tipoCalendario, dataReferencia, bimestre);
         }
 
+        public async Task<PeriodoFechamentoVigenteDto> TurmaEmPeriodoDeFechamentoAnoAnterior(Turma turma, int bimestre = 0)
+        {
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
+
+            var periodoFechamentoBimestre = await repositorioEventoFechamento.UeEmFechamentoBimestre(tipoCalendario.Id, turma.EhTurmaInfantil, bimestre);
+
+            if (periodoFechamentoBimestre != null)
+                return new PeriodoFechamentoVigenteDto() { PeriodoFechamentoInicio = periodoFechamentoBimestre.InicioDoFechamento, PeriodoFechamentoFim = periodoFechamentoBimestre.FinalDoFechamento };
+
+            return null;
+        }
+
         public async Task<bool> TurmaEmPeriodoDeFechamentoAula(Turma turma, DateTime dataReferencia, int bimestre = 0, int bimestreAlteracao = 0)
         {
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);

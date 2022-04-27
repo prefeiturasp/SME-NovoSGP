@@ -610,14 +610,26 @@ namespace SME.SGP.Dados.Repositorios
             return dados.OrderBy(x => x.Descricao);
         }
 
-        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas)
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas, bool consideraHistorico = false)
         {
-            var query = @"select distinct vau.modalidade_codigo from v_abrangencia_usuario vau 
+            var query = "";
+            if (consideraHistorico)
+            {
+                query = @"select distinct vau.modalidade_codigo from v_abrangencia_historica vau 
                             where vau.login = @login
                             and usuario_perfil  = @perfilAtual
                             and vau.ue_codigo = @codigoUe
                             and (@modalidadesQueSeraoIgnoradasArray::int4[] is null or not(vau.modalidade_codigo = ANY(@modalidadesQueSeraoIgnoradasArray::int4[])))";
-
+            }
+            else
+            {
+                query = @"select distinct vau.modalidade_codigo from v_abrangencia_usuario vau 
+                            where vau.login = @login
+                            and usuario_perfil  = @perfilAtual
+                            and vau.ue_codigo = @codigoUe
+                            and (@modalidadesQueSeraoIgnoradasArray::int4[] is null or not(vau.modalidade_codigo = ANY(@modalidadesQueSeraoIgnoradasArray::int4[])))";
+            }
+            
             var modalidadesQueSeraoIgnoradasArray = modadlidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
 
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray });

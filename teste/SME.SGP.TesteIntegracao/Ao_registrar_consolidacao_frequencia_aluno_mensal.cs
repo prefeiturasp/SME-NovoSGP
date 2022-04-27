@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao
 {
     public class Ao_registrar_consolidacao_frequencia_aluno_mensal : TesteBase
     {
-        public Ao_registrar_consolidacao_frequencia_aluno_mensal(TestFixture testFixture) : base(testFixture)
+        public Ao_registrar_consolidacao_frequencia_aluno_mensal(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
