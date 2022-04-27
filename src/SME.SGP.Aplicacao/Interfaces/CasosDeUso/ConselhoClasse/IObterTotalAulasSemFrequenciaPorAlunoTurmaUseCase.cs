@@ -9,6 +9,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterTotalAulasSemFrequenciaPorTurmaUseCase
     {
-        Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> Executar(string codigoTurma);
+        Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> Executar(string disciplinaId, string codigoTurma);
     }
 }

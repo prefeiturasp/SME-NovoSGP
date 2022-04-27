@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> Executar(string codigoTurma)
+        public async Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> Executar(string disciplinaId, string codigoTurma)
         {
-            return await mediator.Send(new ObterTotalAulasSemFrequenciaPorTurmaQuery(codigoTurma));
+            return await mediator.Send(new ObterTotalAulasSemFrequenciaPorTurmaQuery(disciplinaId, codigoTurma));
         }
     }
 }

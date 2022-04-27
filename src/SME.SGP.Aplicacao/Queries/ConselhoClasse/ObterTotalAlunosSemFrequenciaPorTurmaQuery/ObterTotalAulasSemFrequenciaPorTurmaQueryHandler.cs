@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> Handle(ObterTotalAulasSemFrequenciaPorTurmaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasse.ObterTotalAulasSemFrequenciaPorTurma(request.CodigoTurma);
+            return await repositorioConselhoClasse.ObterTotalAulasSemFrequenciaPorTurma(request.DisciplinaId, request.CodigoTurma);
         }
     }
 }

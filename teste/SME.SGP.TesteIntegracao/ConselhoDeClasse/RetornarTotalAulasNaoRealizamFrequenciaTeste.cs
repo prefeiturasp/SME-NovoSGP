@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao
 
             //Act
             var controller = new ConselhoClasseController();
-            var retorno = await controller.ObterTotalAulasSemFrequenciaPorTurma("2370993", useCase);
+            var retorno = await controller.ObterTotalAulasSemFrequenciaPorTurma("2370993",useCase);
 
             //Assert
             retorno.ShouldNotBeNull();

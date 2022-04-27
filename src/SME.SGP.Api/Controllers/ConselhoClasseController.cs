@@ -197,7 +197,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterTotalAulasSemFrequenciaPorTurma(string codigoTurma, [FromServices] IObterTotalAulasSemFrequenciaPorTurmaUseCase useCase)
         {
-            return Ok(await useCase.Executar(codigoTurma));
+            return Ok(await useCase.Executar("1106", codigoTurma));
         }
 
         [HttpGet("TotalAulasNaoLancamNota/turma/{codigoTurma}/bimestre/{bimestre}")]
@@ -217,7 +217,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterTotalCompensacoesComponentesNaoLancamNota(string codigoTurma, int bimestre, [FromServices] IObterTotalCompensacoesComponenteNaoLancaNotaUseCase useCase)
         {
-            return Ok(await useCase.Executar(codigoTurma,bimestre));
+            return Ok(await useCase.Executar(codigoTurma, bimestre));
         }
     }
 }

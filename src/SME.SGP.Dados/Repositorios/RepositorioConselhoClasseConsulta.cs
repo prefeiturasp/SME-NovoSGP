@@ -356,16 +356,24 @@ namespace SME.SGP.Dados.Repositorios
                 .QueryAsync<objConsolidacaoConselhoAluno>(query.ToString(), new { dreId });
         }
 
-        public async Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> ObterTotalAulasPorAlunoTurma(string codigoAluno, string codigoTurma)
+        //public async Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> ObterTotalAulasPorAlunoTurma(string codigoAluno, string codigoTurma)
+        //{
+        //    var sql = @"select disciplina_id as disciplinaid,  sum(total_aulas) as totalaulas from frequencia_aluno fa 
+        //                 where tipo = 1 and codigo_aluno =@codigoAluno  and turma_id =@codigoTurma
+        //                group by disciplina_id";
+
+        //    return await database.Conexao.QueryAsync<TotalAulasPorAlunoTurmaDto>(sql, new { codigoAluno, codigoTurma }, commandTimeout: 60);
+        //}
+        public async Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> ObterTotalAulasPorAlunoTurma(string disciplinaId, string codigoTurma)
         {
             var sql = @"select disciplina_id as disciplinaid,  sum(total_aulas) as totalaulas from frequencia_aluno fa 
-                         where tipo = 1 and codigo_aluno =@codigoAluno  and turma_id =@codigoTurma
+                         where tipo = 1 and disciplina_id = @disciplinaId  and turma_id =@codigoTurma
                         group by disciplina_id";
 
-            return await database.Conexao.QueryAsync<TotalAulasPorAlunoTurmaDto>(sql, new { codigoAluno, codigoTurma }, commandTimeout: 60);
+            return await database.Conexao.QueryAsync<TotalAulasPorAlunoTurmaDto>(sql, new { disciplinaId, codigoTurma }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> ObterTotalAulasSemFrequenciaPorTurma(string codigoTurma)
+        public async Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> ObterTotalAulasSemFrequenciaPorTurma(string disciplinaId, string codigoTurma)
         {
             var dataAtual = DateTime.Now.ToString("yyyy-MM-dd");
 
@@ -375,9 +383,10 @@ namespace SME.SGP.Dados.Repositorios
                         and a.turma_id = @codigoTurma
                         and a.data_aula <= '{dataAtual}'
                         and not a.excluido 
+                        and a.disciplina_id =@disciplinaId
                         group by a.disciplina_id";
 
-            return await database.Conexao.QueryAsync<TotalAulasPorAlunoTurmaDto>(sql, new { codigoTurma }, commandTimeout: 60);
+            return await database.Conexao.QueryAsync<TotalAulasPorAlunoTurmaDto>(sql, new { codigoTurma, disciplinaId }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasNaoLancamNotaPorBimestreTurma(string codigoTurma, int bimestre)
