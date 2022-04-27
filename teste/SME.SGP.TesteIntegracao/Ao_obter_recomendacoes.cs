@@ -1,22 +1,19 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.TesteIntegracao.Setup;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using Xunit;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using MediatR;
+using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao
 {
     public class Ao_obter_recomendacoes : TesteBase
     {
-        public Ao_obter_recomendacoes(TestFixture testFixture) : base(testFixture)
+        public Ao_obter_recomendacoes(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
