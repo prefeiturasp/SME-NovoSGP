@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(x => x.CodigoTurma).NotEmpty().WithMessage("O código da turma deve ser informado para obter o total de compensações");
             RuleFor(x => x.Bimestre).GreaterThanOrEqualTo(0).WithMessage("O bimestre  deve ser maior ou igual a 0 para obter o total de compensações");
-            RuleFor(x => x.Bimestre).NotEmpty().WithMessage("O bimestre  deve ser informado para obter o total de compensações");
+
         }
     }
 }

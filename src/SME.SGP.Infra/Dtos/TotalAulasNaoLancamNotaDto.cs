@@ -2,7 +2,7 @@
 {
     public class TotalAulasNaoLancamNotaDto
     {
-        public string DiscinplinaId { get; set; }
+        public long DisciplinaId { get; set; }
         public string TotalAulas { get; set; }
     }
 }
