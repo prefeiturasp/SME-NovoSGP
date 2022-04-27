@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = param.ObterObjetoMensagem<DreUeDto>();
 
-            var aulas = await mediator.Send(new ObterPendenciasAtividadeAvaliativaQuery(filtro.DreId));
+            var aulas = await mediator.Send(new ObterPendenciasAtividadeAvaliativaQuery(filtro.DreId, filtro.UeId));
             if (aulas != null && aulas.Any())
                 await RegistraPendencia(aulas, TipoPendencia.Avaliacao);
 
