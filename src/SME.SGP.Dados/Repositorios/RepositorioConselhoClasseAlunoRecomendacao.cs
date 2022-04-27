@@ -37,18 +37,15 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql.ToString(), new { alunoCodigo, bimestre, fechamentoTurmaId });
         }
 
-        public async Task SalvarRecomendacaoAlunoFamilia(long recomendacaoId, long conselhoClasseAlunoId)
+        public async Task InserirRecomendacaoAlunoFamilia(long recomendacaoId, long conselhoClasseAlunoId)
         {
-            const string comando = @"insert into public.conselho_classe_aluno_recomendacao (conselho_classe_aluno_id, conselho_classe_recomendacao_id)
-                                        values (@conselhoClasseAlunoId, @recomendacaoId)";
+            var recomendacaoAluno = new ConselhoClasseAlunoRecomendacao()
+            {
+                ConselhoClasseRecomendacaoId = recomendacaoId,
+                ConselhoClasseAlunoId = conselhoClasseAlunoId
+            };
 
-
-            database.Conexao.Execute(comando,
-                new
-                {
-                    recomendacaoId,
-                    conselhoClasseAlunoId
-                });
+           await database.Conexao.InsertAsync(recomendacaoAluno);
 
         }
     }

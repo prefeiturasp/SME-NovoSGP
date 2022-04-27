@@ -11,6 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioConselhoClasseAlunoRecomendacao 
     {
         Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterRecomendacoesDoAlunoPorConselho(string alunoCodigo, int bimestre, long fechamentoTurmaId);
-        Task SalvarRecomendacaoAlunoFamilia(long recomendacaoId, long conselhoClasseAlunoId);
+        Task InserirRecomendacaoAlunoFamilia(long recomendacaoId, long conselhoClasseAlunoId);
     }
 }

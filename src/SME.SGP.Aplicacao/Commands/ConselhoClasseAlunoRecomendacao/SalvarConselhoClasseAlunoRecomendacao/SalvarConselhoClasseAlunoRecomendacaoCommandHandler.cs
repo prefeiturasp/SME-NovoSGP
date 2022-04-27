@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             foreach(var recomendacaoId in recomendacoesAlunoFamilia)
             {
-                await repositorioConselhoClasseAlunoRecomendacao.SalvarRecomendacaoAlunoFamilia(recomendacaoId, request.ConselhoClasseAlunoId);
+                await repositorioConselhoClasseAlunoRecomendacao.InserirRecomendacaoAlunoFamilia(recomendacaoId, request.ConselhoClasseAlunoId);
             }
         }
     }
