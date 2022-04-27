@@ -43,7 +43,6 @@ namespace SME.SGP.Dominio
             => new TipoPendencia[] {
                 TipoPendencia.Frequencia,
                 TipoPendencia.PlanoAula,
-                TipoPendencia.DiarioBordo,
                 TipoPendencia.Avaliacao,
                 TipoPendencia.AulaNaoLetivo
             }.Contains(Tipo);
@@ -58,6 +57,11 @@ namespace SME.SGP.Dominio
         public bool EhPendenciaCalendarioUe()
             => new TipoPendencia[] {
                 TipoPendencia.CalendarioLetivoInsuficiente
+            }.Contains(Tipo);
+
+        public bool EhPendenciaDiarioBordo()
+            => new TipoPendencia[] {
+                TipoPendencia.DiarioBordo
             }.Contains(Tipo);
 
         public bool EhPendenciaCadastroEvento()

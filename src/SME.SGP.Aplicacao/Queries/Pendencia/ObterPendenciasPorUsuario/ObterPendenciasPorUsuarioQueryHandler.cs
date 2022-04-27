@@ -86,6 +86,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PendenciaDto>> MapearParaDto(IEnumerable<Pendencia> pendencias)
         {
             var listaPendenciasDto = new List<PendenciaDto>();
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             foreach (var pendencia in pendencias)
             {
@@ -93,7 +94,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Tipo = pendencia.Tipo.GroupName(),
                     Titulo = !string.IsNullOrEmpty(pendencia.Titulo) ? pendencia.Titulo : pendencia.Tipo.Name(),
-                    Detalhe = await ObterDescricaoPendencia(pendencia),
+                    Detalhe = await ObterDescricaoPendencia(pendencia, usuarioLogado.CodigoRf),
                     Turma = await ObterNomeTurma(pendencia),
                     Bimestre = await ObterBimestreTurma(pendencia)
                 });
@@ -110,6 +111,8 @@ namespace SME.SGP.Aplicacao
                         await ObterDescricaoTurmaPendenciaFechamento(pendencia.Id) :
                     pendencia.EhPendenciaProfessor() ?
                         await ObterDescricaoTurmaPendenciaProfessor(pendencia.Id) :
+                    pendencia.EhPendenciaDiarioBordo() ?
+                        await ObterDescricaoTurmaPendenciaDiarioBordo(pendencia.Id) :
                         "";
         }
 
@@ -121,6 +124,8 @@ namespace SME.SGP.Aplicacao
                          await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendencia.Id)) :
                     pendencia.EhPendenciaProfessor() ?
                         await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendencia.Id)) :
+                    pendencia.EhPendenciaDiarioBordo()?
+                         await mediator.Send(new ObterTurmaDaPendenciaDiarioQuery(pendencia.Id)) :
                         null;
 
             if (turma == null)
@@ -134,6 +139,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterDescricaoTurmaPendenciaAula(long pendenciaId)
             => ObterNomeTurma(await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendenciaId)));
+
+        private async Task<string> ObterDescricaoTurmaPendenciaDiarioBordo(long pendenciaId)
+            => ObterNomeTurma(await mediator.Send(new ObterTurmaDaPendenciaDiarioQuery(pendenciaId)));
 
         private async Task<string> ObterDescricaoTurmaPendenciaProfessor(long pendenciaId)
             => ObterNomeTurma(await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendenciaId)));
@@ -150,7 +158,7 @@ namespace SME.SGP.Aplicacao
         private string ObterNomeBimestre(int bimestre)
             => bimestre == 0 ? "Final" : $"{bimestre}º Bimestre";
 
-        private async Task<string> ObterDescricaoPendencia(Pendencia pendencia)
+        private async Task<string> ObterDescricaoPendencia(Pendencia pendencia, string codigoRfProfessor)
         {
             if (pendencia.EhPendenciaAula())
                 return await ObterDescricaoPendenciaAula(pendencia);
@@ -160,6 +168,9 @@ namespace SME.SGP.Aplicacao
                 return await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia);
             if (pendencia.EhPendenciaAusenciaDeRegistroIndividual())
                 return await ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(pendencia);
+            if (pendencia.EhPendenciaDiarioBordo())
+                return await ObterDescricaoPendenciaDiarioBordo(pendencia, codigoRfProfessor);
+
 
             return ObterDescricaoPendenciaGeral(pendencia);
         }
@@ -219,6 +230,23 @@ namespace SME.SGP.Aplicacao
             foreach (var pendenciaAula in pendenciasAulas)
             {
                 descricao.AppendLine($"<li>{pendenciaAula.DataAula:dd/MM} - {pendenciaAula.Motivo}</li>");
+            }
+            descricao.AppendLine("</ul>");
+            descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
+
+            return descricao.ToString();
+        }
+
+        private async Task<string> ObterDescricaoPendenciaDiarioBordo(Pendencia pendencia, string codigoRfProfessor)
+        {
+            var pendenciasDiarios = await mediator.Send(new ObterPendenciasDiarioPorPendenciaIdEProfessorQuery(pendencia.Id, codigoRfProfessor));
+
+            var descricao = new StringBuilder(pendencia.Descricao);
+            descricao.AppendLine("<br /><ul>");
+
+            foreach (var pendenciaDiario in pendenciasDiarios)
+            {
+                descricao.AppendLine($"<li>{pendenciaDiario.DataAula:dd/MM}</li>");
             }
             descricao.AppendLine("</ul>");
             descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");

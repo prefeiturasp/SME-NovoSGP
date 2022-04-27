@@ -8,7 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConsolidacaoFrequenciaTurmaMap()
         {
             ToTable("consolidacao_frequencia_turma");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey(); 
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.QuantidadeAcimaMinimoFrequencia).ToColumn("quantidade_acima_minimo_frequencia");
             Map(c => c.QuantidadeAbaixoMinimoFrequencia).ToColumn("quantidade_abaixo_minimo_frequencia");

@@ -894,8 +894,11 @@ namespace SME.SGP.Dados.Repositorios
             if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
             {
                 var ues = retorno.Select(u => u.Id).ToList();
+                var uesComplementares = (from da in dadosAbrangenciaSupervisor select new { da.CodigoUe, da.UeNome, da.TipoEscola, da.UeId});
 
-                var uesComplementares = (from da in dadosAbrangenciaSupervisor
+                if (modalidade > 0)
+                {
+                    uesComplementares = (from da in dadosAbrangenciaSupervisor
                                          where (Modalidade)da.Modalidade == modalidade &&
                                                da.CodigoDre == dre &&
                                                !tiposEscolasIgnoradas.Contains((int)da.TipoEscola) &&
@@ -908,6 +911,23 @@ namespace SME.SGP.Dados.Repositorios
                                              da.TipoEscola,
                                              da.UeId
                                          }).Distinct();
+                }
+                else
+                {
+                    uesComplementares = (from da in dadosAbrangenciaSupervisor
+                                             where da.CodigoDre == dre &&
+                                                   !tiposEscolasIgnoradas.Contains((int)da.TipoEscola) &&
+                                                   (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                                   !ues.Contains(da.UeId)
+                                             select new
+                                             {
+                                                 da.CodigoUe,
+                                                 da.UeNome,
+                                                 da.TipoEscola,
+                                                 da.UeId
+                                             }).Distinct();
+                }
+                
 
                 var listaDistinta = uesComplementares
                    .Select(u => new AbrangenciaUeRetorno()

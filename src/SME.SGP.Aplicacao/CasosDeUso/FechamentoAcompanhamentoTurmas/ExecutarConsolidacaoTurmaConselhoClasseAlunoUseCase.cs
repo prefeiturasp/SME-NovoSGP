@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
 
-                    if (filtro.Bimestre == 0)
+                    if (!filtro.Bimestre.HasValue || filtro.Bimestre == 0)
                     {
                         var fechamento = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = filtro.TurmaId });
                         var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamento.Id));

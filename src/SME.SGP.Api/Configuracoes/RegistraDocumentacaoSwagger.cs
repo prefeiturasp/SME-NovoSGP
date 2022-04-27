@@ -5,7 +5,7 @@ using SME.SGP.Aplicacao.Integracoes;
 
 namespace SME.SGP.Api
 {
-	public static class RegistraDocumentacaoSwagger
+    public static class RegistraDocumentacaoSwagger
     {
         public static void Registrar(IServiceCollection services)
         {

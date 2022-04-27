@@ -39,6 +39,7 @@ namespace SME.SGP.Aplicacao
                 await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
             else
             {
+                var bimestre = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar == null ? (int?)null : conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre;
                 conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
                 var persistirParecerConclusivoDto = new PersistirParecerConclusivoDto()
                 {
@@ -47,7 +48,7 @@ namespace SME.SGP.Aplicacao
                     ParecerConclusivoId = parecerConclusivo.Id,
                     TurmaId = turma.Id,
                     TurmaCodigo = turma.CodigoTurma,
-                    Bimestre = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre,
+                    Bimestre = bimestre,
                     AnoLetivo = turma.AnoLetivo
                 };
                 await mediator.Send(new PersistirParecerConclusivoCommand(persistirParecerConclusivoDto)); 

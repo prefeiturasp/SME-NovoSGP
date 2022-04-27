@@ -16,6 +16,11 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public void ExclusaoLogicaPendencia(long pendenciaId)
+        {
+            database.Conexao.Execute("update pendencia set excluido = true where id = @pendenciaId", new { pendenciaId });
+        }
+
         public void AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia)
         {
             var query = @"update pendencia p

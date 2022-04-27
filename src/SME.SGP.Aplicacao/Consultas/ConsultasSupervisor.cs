@@ -54,6 +54,9 @@ namespace SME.SGP.Aplicacao
 
             var nomeServidoresAtribuidos = await servicoEOL.ObterListaNomePorListaRF(supervisoresAtribuidos?.Select(s => s.SupervisorId));
 
+            if (nomeServidoresAtribuidos == null || !nomeServidoresAtribuidos.Any())
+                throw new NegocioException("A API/EOL não retornou os nomes dos supervisores atribuídos.");
+
             var lstSupervisores = new List<SupervisorDto>();
 
             if (string.IsNullOrEmpty(supervisorNome))

@@ -19,5 +19,11 @@ namespace SME.SGP.Dados
 
             await database.Conexao.ExecuteScalarAsync(command, new { pendenciaPerfilId });
         }
+
+        public async Task ExcluirPorPendenciaIdEUsuario(long pendenciaId, long usuarioId)
+        {
+            var command = @"delete from pendencia_usuario where pendencia_id = @pendenciaId and usuario_id = @usuarioId";
+            await database.Conexao.ExecuteScalarAsync(command, new { pendenciaId, usuarioId });
+        }
     }
 }

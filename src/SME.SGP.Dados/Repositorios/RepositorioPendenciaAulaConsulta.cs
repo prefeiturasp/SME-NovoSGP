@@ -224,6 +224,18 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { pendenciaId });
         }
 
+        public async Task<Turma> ObterTurmaPorPendenciaDiario(long pendenciaId)
+        {
+            var query = @"select t.* 
+                         from pendencia_diario_bordo pdb
+                        inner join aula a on a.id = pdb.aula_id 
+                        inner join turma t on t.turma_id = a.turma_id
+                        where pdb.pendencia_id = @pendenciaId ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { pendenciaId });
+        }
+
+
         public async Task<IEnumerable<PendenciaAulaDto>> ObterPendenciasAulasPorPendencia(long pendenciaId)
         {
             var query = @"select a.data_aula as DataAula, pa.Motivo
@@ -279,8 +291,7 @@ namespace SME.SGP.Dados.Repositorios
                         FROM aula
                         INNER JOIN turma ON aula.turma_id = turma.turma_id
                         LEFT JOIN registro_frequencia rf ON aula.id = rf.aula_id
-                        LEFT JOIN pendencia_diario_bordo pdb ON pdb.aula_id = aula.id
-                        LEFT JOIN componente_curricular cc ON cc.id = pdb.componente_curricular_id and pdb.componente_curricular_id = any(@componentesCurricularesId)
+                        LEFT JOIN pendencia_diario_bordo pdb ON pdb.aula_id = aula.id and pdb.componente_curricular_id = any(@componentesCurricularesId)
                         WHERE NOT aula.excluido
                         AND aula.id = ANY(@aulas)
                         AND aula.data_aula::date < @hoje
@@ -358,14 +369,17 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }
 
-        public async Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil)
+        public async Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil, Usuario usuarioLogado)
         {
 
-            var sql = ehInfantil ? $@"select
+            var sql = new StringBuilder();
+            if (ehInfantil)
+            {
+                sql.AppendLine($@"select
 	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
                                     ELSE 0
                               END PossuiPendenciaFrequencia,
-                              CASE WHEN db.id is null THEN 1
+                              CASE WHEN pdb.id is not null THEN 1
                                     ELSE 0
                                END PossuiPendenciaDiarioBordo 
                            from
@@ -376,15 +390,23 @@ namespace SME.SGP.Dados.Repositorios
 	                        	aula.disciplina_id = cc.id::varchar
 	                        left join registro_frequencia rf on
 	                            aula.id = rf.aula_id
-                            left join diario_bordo db on
-                                aula.id =  db.aula_id
-                            where
+                            left join pendencia_diario_bordo pdb on
+                                aula.id =  pdb.aula_id");
+
+                if (usuarioLogado.EhProfessorInfantilOuCjInfantil())
+                {
+                    sql.AppendLine(@" and pdb.professor_rf = @usuarioLogadoRf");
+                }
+                     
+                sql.AppendLine(@"  where
 	                            not aula.excluido
 	                            and aula.id = @aula
                                 and aula.data_aula::date < @hoje
-                                and (rf.id is null or db.id is null) " :
-
-                                $@"select
+                                and (rf.id is null or pdb.id is not null)");
+            }
+            else
+            {
+                sql.AppendLine($@"select
 	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
                                     ELSE 0
                               END PossuiPendenciaFrequencia,
@@ -401,9 +423,10 @@ namespace SME.SGP.Dados.Repositorios
 	                            not aula.excluido
 	                            and aula.id = @aula
                                 and aula.data_aula::date < @hoje
-                                and rf.id is null";
+                                and rf.id is null");
+            }
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql.ToString(), new { aula = aulaId, hoje = DateTime.Today.Date, usuarioLogadoRf = usuarioLogado.CodigoRf}));
         }
     }
 }

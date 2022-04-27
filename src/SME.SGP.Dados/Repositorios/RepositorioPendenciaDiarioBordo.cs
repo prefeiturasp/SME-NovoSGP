@@ -18,9 +18,24 @@ namespace SME.SGP.Dados
         {
         }
 
-        public async Task Excluir(long pendenciaId)
+        public async Task Excluir(long aulaId, long componenteCurricularId)
         {
-            await database.Conexao.ExecuteScalarAsync("delete from pendencia_diario_bordo where id = @pendenciaId", new { pendenciaId }, commandTimeout: 60);
+            var sql = @"delete from pendencia_diario_bordo where aula_id = @aulaId and componente_curricular_id = @componenteCurricularId ";
+
+            await database.Conexao.ExecuteScalarAsync(sql, new { aulaId, componenteCurricularId }, commandTimeout: 60);
+        }
+
+        public async Task ExcluirPorAulaId(long aulaId)
+        {
+            var sql = @"delete from pendencia_diario_bordo where aula_id = @aulaId";
+
+            await database.Conexao.ExecuteScalarAsync(sql, new { aulaId }, commandTimeout: 60);
+        }
+
+        public async Task<bool> VerificarSeExistePendenciaDiarioComPendenciaId(long pendenciaId)
+        {
+            var sql = @"select count(id) from pendencia_diario_bordo where pendencia_id = @pendenciaId";
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { pendenciaId }) > 0;
         }
 
         public async Task<IEnumerable<AulaComComponenteDto>> ListarPendenciasDiario(string turmaId, long[] componentesCurricularesId)
@@ -64,7 +79,7 @@ namespace SME.SGP.Dados
                     tipoPendencia = TipoPendencia.DiarioBordo
                 }, commandTimeout: 200);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return null;
             }

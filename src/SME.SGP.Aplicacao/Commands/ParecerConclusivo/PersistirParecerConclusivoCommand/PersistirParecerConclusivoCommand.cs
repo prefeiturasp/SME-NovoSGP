@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class PersistirParecerConclusivoCommand : IRequest<bool>
     {
-        public int Bimestre { get; set; }
+        public int? Bimestre { get; set; }
         public long TurmaId { get; set; }
         public long ParecerConclusivoId { get; set; }
         public long ConselhoClasseAlunoId { get; set; }
@@ -30,10 +30,6 @@ namespace SME.SGP.Aplicacao
     {
         public PersistirParecerConclusivoCommandValidator()
         {
-            RuleFor(a => a.Bimestre)
-                .NotEmpty()
-                .WithMessage("O bimestre deve ser informado para gerar seu parecer conclusivo");
-
             RuleFor(a => a.TurmaId)
                 .NotEmpty()
                 .WithMessage("A turmaId deve ser informado para gerar seu parecer conclusivo");

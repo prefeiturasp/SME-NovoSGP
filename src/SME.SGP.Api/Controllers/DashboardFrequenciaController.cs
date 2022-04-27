@@ -4,7 +4,6 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -15,6 +14,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Authorize("Bearer")]
     [Route("api/v1/dashboard/frequencias")]
+    [Authorize("Bearer")]
     public class DashboardFrequenciaController : Controller
     {
         [HttpGet("consolidacao")]
@@ -78,6 +78,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoAusenciasComJustificativaResultadoDto>), 200)]
+        [Permissao(Permissao.DF_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAusenciasComJustificativa(int anoLetivo, long dreId, long ueId, Modalidade modalidade, int semestre, [FromServices] IObterDadosDashboardAusenciasComJustificativaUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre));
@@ -107,6 +108,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(bool), 200)]
+        [Permissao(Permissao.DF_C, Policy = "Bearer")]
         public async Task<IActionResult> ConsolidarFrequenciasParaDashBorad([FromQuery] FiltroConsolicacaoGeralDashBoardFrequenciaDto filtro, [FromServices] IExecutaConsolidacaoDashBoardFrequenciaUseCase useCase)
         {
             await useCase.Executar(filtro);

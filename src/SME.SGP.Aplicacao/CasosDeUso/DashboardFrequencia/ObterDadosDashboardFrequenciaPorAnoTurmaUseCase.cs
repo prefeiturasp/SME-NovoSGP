@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -30,7 +29,7 @@ namespace SME.SGP.Aplicacao
                                                                                                               datafim,
                                                                                                               mes,
                                                                                                               tipoPeriodoDashboard,
-                                                                                                              visaoDre));            
+                                                                                                              visaoDre));
 
             if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any())
                 return null;
@@ -97,27 +96,28 @@ namespace SME.SGP.Aplicacao
         {
             var dadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>();
 
-            foreach (var frequencia in frequenciasAlunos.OrderBy(f => f.DreCodigo))
+            foreach (var frequenciasGroup in frequenciasAlunos.GroupBy(f => f.Descricao))
             {
+                var frequencia = frequenciasGroup.FirstOrDefault();
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Presentes.Name(),
                     TurmaAno = frequencia.Descricao,
-                    Quantidade = frequencia.Presentes
-                });
+                    Quantidade = frequenciasGroup.Select(f => f.Presentes).Sum()
+                }); ;
 
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Remotos.Name(),
                     TurmaAno = frequencia.Descricao,
-                    Quantidade = frequencia.Remotos
+                    Quantidade = frequenciasGroup.Select(f => f.Remotos).Sum()
                 });
 
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Ausentes.Name(),
                     TurmaAno = frequencia.Descricao,
-                    Quantidade = frequencia.Ausentes
+                    Quantidade = frequenciasGroup.Select(f => f.Ausentes).Sum()
                 });
 
                 if (visaoDre)
@@ -137,7 +137,7 @@ namespace SME.SGP.Aplicacao
                         TurmaAno = frequencia.Descricao,
                         Quantidade = totalEstudantesAgrupado != null ? (totalEstudantesAgrupado.FirstOrDefault(c => c.Key == frequencia.Descricao) != null ? totalEstudantesAgrupado.First(c => c.Key == frequencia.Descricao).Select(x => x.Quantidade).Sum() : 0) : 0
                     });
-                }                
+                }
             }
 
             return new GraficoFrequenciaAlunoDto()
@@ -146,6 +146,6 @@ namespace SME.SGP.Aplicacao
                 TotalFrequenciaFormatado = tagTotalFrequencia,
                 DadosFrequenciaDashboard = dadosFrequenciaDashboard
             };
-        }        
+        }
     }
 }

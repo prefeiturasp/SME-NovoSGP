@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
 
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, aula.DisciplinaId, periodoEscolar.Id));
             
-            foreach (var aluno in alunosDaTurmaFiltrados.Where(a => a.DeveMostrarNaChamada(aula.DataAula, periodoEscolar.PeriodoInicio)).OrderBy(c => c.NomeAluno))
+            foreach (var aluno in alunosDaTurmaFiltrados.Where(a => a.EstaAtivo(aula.DataAula)).OrderBy(c => c.NomeAluno))
             {
                 var tipoFrequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(turma.Id, long.Parse(aula.DisciplinaId), aluno.CodigoAluno));
 

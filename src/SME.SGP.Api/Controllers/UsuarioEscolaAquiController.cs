@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha;
 using SME.SGP.Infra;
@@ -9,13 +11,13 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/escola-aqui/usuarios")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class UsuarioEscolaAquiController : ControllerBase
     {
         [HttpPut("reiniciar-senha")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Authorize(Policy = "Bearer")]
+        [Permissao(Permissao.ASP_C,Policy = "Bearer")]
         public async Task<IActionResult> ReiniciarSenha([FromBody] SolicitarReiniciarSenhaEscolaAquiDto solicitarReiniciarSenhaDto, [FromServices] ISolicitarReiniciarSenhaEscolaAquiUseCase solicitarReiniciarSenhaEscolaAquiUseCase)
         {
             return Ok(await solicitarReiniciarSenhaEscolaAquiUseCase.Executar(solicitarReiniciarSenhaDto.Cpf));
@@ -25,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 200)]
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Authorize(Policy = "Bearer")]
+        [Permissao(Permissao.ASP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterUsuarioPorCpf(string codigoDre, long codigoUe, string cpf, [FromServices] IObterUsuarioPorCpfUseCase obterUsuarioPorCpfUseCase)
         {
             return Ok(await obterUsuarioPorCpfUseCase.Executar(codigoDre, codigoUe, cpf));

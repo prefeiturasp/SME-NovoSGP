@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
     {
         public string AlunoCodigo { get; }
         public long TurmaId { get; }
-        public int Bimestre { get; }
+        public int? Bimestre { get; }
         public int AnoLetivo { get; set; }
         public double? Nota { get; set; }
         public long? ConceitoId { get; set; }
@@ -40,10 +40,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.TurmaId)
                 .NotEmpty()
                 .WithMessage("O id da turma deve ser informado para gerar a consolidação das notas");
-
-            RuleFor(a => a.Bimestre)
-                .NotEmpty()
-                .WithMessage("O bimestre deve ser informado para gerar a consolidação das notas");
 
             RuleFor(a => a.ComponenteCurricularId)
                 .NotEmpty()

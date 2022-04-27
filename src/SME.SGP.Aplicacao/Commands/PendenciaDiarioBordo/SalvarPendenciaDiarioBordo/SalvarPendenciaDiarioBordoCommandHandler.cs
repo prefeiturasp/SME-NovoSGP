@@ -30,7 +30,6 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.DiarioBordo));
-                await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, request.Aulas.Select(a => a.Id)));
                 await SalvarPendenciaDiario(pendenciaId, request.Aulas, request.ProfessoresComponentes);
 
                 unitOfWork.PersistirTransacao();
@@ -61,6 +60,9 @@ namespace SME.SGP.Aplicacao
 
                 foreach(var professorComPendencia in professoresParaGravar.DistinctBy(p=> p.CodigoRf))
                 {
+                    var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professorComPendencia.CodigoRf));
+                    await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
+
                     var pendenciaDiarioBordo = new PendenciaDiarioBordo()
                     {
                         PendenciaId = pendenciaId,
