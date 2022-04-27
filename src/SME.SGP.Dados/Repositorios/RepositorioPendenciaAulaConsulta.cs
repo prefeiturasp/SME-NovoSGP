@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
         }
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, int anoLetivo)
+        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int anoLetivo)
         {
             var listaRetorno = new List<Aula>();
             var sqlQuery = new StringBuilder();
@@ -65,6 +65,9 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("	and p.id is null");
             sqlQuery.AppendLine("	and tf.id is null");
 
+            if (ueId > 0)
+                sqlQuery.AppendLine("    and ue.id = @ueId");
+
             return await database.Conexao.QueryAsync<Aula, Turma, Aula>(sqlQuery.ToString(), (aula, turma) =>
             {
                 aula.Turma = turma;
@@ -75,7 +78,8 @@ namespace SME.SGP.Dados.Repositorios
                 hoje = DateTime.Today.Date,
                 tipo = tipoPendenciaAula,
                 modalidades,
-                dreId
+                dreId,
+                ueId,
             }, splitOn: "Id", commandTimeout: 60);
         }
 
