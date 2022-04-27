@@ -24,14 +24,27 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var periodosPorModalidade = await ObterPeriodosPassadosPorModalidade(request.Data);
+                var meses = ObtenhaTodosMesPosteriores(request.Data);
 
                 foreach (var modalidade in periodosPorModalidade)
                 {
                     var turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year, request.TurmaCodigo)).ToList();
 
                     if (turmasDaModalidade != null && turmasDaModalidade.Any())
-                        foreach (var periodoEscolar in modalidade)
-                            await PublicarFilaConciliacaoPeriodo(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim, request.ComponenteCurricularId);
+                    {
+                        if (request.Bimestral)
+                        {
+                            foreach (var periodoEscolar in modalidade)
+                                await PublicarFilaConciliacaoPeriodo(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim, request.ComponenteCurricularId);
+                        }
+
+                        if (request.Mensal)
+                        {
+                            foreach (var mes in meses)
+                                await PublicarFilaConciliacaoMensal(turmasDaModalidade, mes);
+                        }
+                    }
+
                 };
 
                 return true;
@@ -49,6 +62,12 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaPorPeriodo, dto, Guid.NewGuid(), null));
         }
 
+        private async Task PublicarFilaConciliacaoMensal(List<string> turmasDaModalidade, int mes)
+        {
+            var dto = new ConciliacaoFrequenciaTurmaMensalDto(turmasDaModalidade, mes);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaMes, dto, Guid.NewGuid(), null));
+        }
+
         private async Task<IEnumerable<string>> ObterTurmasPorModalidade(ModalidadeTipoCalendario modalidadeTipoCalendario, int ano, string turmaCodigo)
         {
             var modalidades = modalidadeTipoCalendario.ObterModalidades();
@@ -61,6 +80,14 @@ namespace SME.SGP.Aplicacao
             var modalidadesPeriodosPassados = await mediator.Send(new ObterModalidadeEPeriodosPassadosNoAnoQuery(data));
 
             return modalidadesPeriodosPassados.GroupBy(a => a.Modalidade);
+        }
+
+        private IEnumerable<int> ObtenhaTodosMesPosteriores(DateTime data)
+        {
+            for (var mes = 0; mes <= data.Month; mes++)
+            {
+                yield return mes;
+            }
         }
     }
 }
