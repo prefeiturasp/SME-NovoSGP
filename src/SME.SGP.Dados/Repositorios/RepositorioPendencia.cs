@@ -220,7 +220,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { pendenciaId, turmaId });
         }
 
-        public string RetornaQueryTurmaParaUnicoTipo(TipoPendenciaGrupo tipoGrupo)
+        public string RetornaQueryTurmaParaUnicoTipo(TipoPendenciaGrupo tipoGrupo, string turmaCodigo)
         {
             string query = string.Empty;
 
