@@ -118,7 +118,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/acompanhamento-aprendizagem-escolaaqui", ShortName = "RAA", Description = "Relatório do Acompanhamento da Aprendizagem Escola Aqui")]
         RaaEscolaAqui = 39,
 
-        [Display(Name = "relatorios/frequencia-mensal", ShortName = "RelatorioFrequenciaMensal", Description = "Relatório de frequência mensal")]
+        [Display(Name = "relatorios/frequencia-global", ShortName = "RelatorioFrequenciaMensal", Description = "Relatório de frequência mensal")]
         FrequenciaMensal = 40
     }
 }
