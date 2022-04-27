@@ -50,5 +50,13 @@ namespace SME.SGP.Dominio
         SUPERVISOR_TECNICO = 22,
         [Display(Name = "4ae1e074-37d6-e911-abd6-f81654fe895d")]
         PAAI = 23,
+        [Display(Name = "65E1E074-37D6-E911-ABD6-F81654FE895D")]
+        COORDENADOR_NAAPA = 24,
+        [Display(Name = "66E1E074-37D6-E911-ABD6-F81654FE895D")]
+        PSICOLOGO_ESCOLAR = 25,
+        [Display(Name = "67E1E074-37D6-E911-ABD6-F81654FE895D")]
+        PSICOPEDAGOGO = 26,
+        [Display(Name = "68E1E074-37D6-E911-ABD6-F81654FE895D")]
+        ASSISTENTE_SOCIAL = 27
     }
 }

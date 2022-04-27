@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirPendenciaDiarioBordoCommand : IRequest<bool>
+    public class ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand : IRequest<bool>
     {
-        public ExcluirPendenciaDiarioBordoCommand(long aulaId, long componenteCurricularId)
+        public ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand(long aulaId, long componenteCurricularId)
         {
             AulaId = aulaId;
             ComponenteCurricularId = componenteCurricularId;
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public long ComponenteCurricularId { get; set; }
     }
 
-    public class ExcluirPendenciaDiarioBordoCommandValidator : AbstractValidator<ExcluirPendenciaDiarioBordoCommand>
+    public class ExcluirPendenciaDiarioBordoCommandValidator : AbstractValidator<ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand>
     {
         public ExcluirPendenciaDiarioBordoCommandValidator()
         {

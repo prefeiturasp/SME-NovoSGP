@@ -20,7 +20,6 @@ namespace SME.SGP.Aplicacao
         {
             await mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.Frequencia));
             await mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.PlanoAula));
-            await mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.DiarioBordo));
             await mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.Avaliacao));
             await mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.AulaNaoLetivo));
 

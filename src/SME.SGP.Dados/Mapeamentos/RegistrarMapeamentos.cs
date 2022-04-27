@@ -200,8 +200,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new AtividadeInfantilMap());
                config.AddMap(new ConsolidacaoDashBoardFrequenciaMap());
                config.AddMap(new AnotacaoFechamentoAlunoMap());
-               config.AddMap(new PendenciaDiarioBordoMap())
-               ;
+               config.AddMap(new PendenciaDiarioBordoMap());
+               config.AddMap(new ConsolidacaoFrequenciaAlunoMensalMap());
                config.ForDommel();
            });
         }
