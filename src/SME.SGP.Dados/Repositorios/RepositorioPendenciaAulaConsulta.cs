@@ -122,7 +122,7 @@ namespace SME.SGP.Dados.Repositorios
                 }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, int anoLetivo)
+        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo)
         {
             var sqlQuery = @"select distinct a.id, a.turma_id, a.disciplina_id, a.professor_rf,
                                     a.tipo_calendario_id, a.data_aula
@@ -135,7 +135,8 @@ namespace SME.SGP.Dados.Repositorios
 		                    aa.data_avaliacao::date = a.data_aula::date and
 		                    aad.disciplina_id = a.disciplina_id and 
 		                    a.professor_rf = aa.professor_rf 
-	                inner join turma t on t.turma_id = a.turma_id 
+	                inner join turma t on t.turma_id = a.turma_id
+                    inner join ue u on u.id = t.ue_id 
 
 	                left join notas_conceito nc 
 		                on nc.atividade_avaliativa = aa.id
@@ -155,13 +156,17 @@ namespace SME.SGP.Dados.Repositorios
                     and nc.id is null 
                     and p.id is null ";
 
+            if (ueId > 0)
+                sqlQuery += " and u.id = @ueId";
+
             return await database.Conexao
                 .QueryAsync<Aula>(sqlQuery.ToString(), new
                 {
                     anoLetivo,
                     hoje = DateTime.Today.Date,
                     tipo = TipoPendencia.Avaliacao,
-                    dreId
+                    dreId,
+                    ueId
                 }, commandTimeout: 120);
 
         }
