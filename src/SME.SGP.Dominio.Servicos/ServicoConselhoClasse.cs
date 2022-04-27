@@ -129,10 +129,12 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<ConselhoClasseNotaRetornoDto> AlterarConselhoClasse(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, Turma turma, ConselhoClasseNotaDto conselhoClasseNotaDto, int? bimestre, Usuario usuarioLogado)
         {
-            var conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
             AuditoriaDto auditoria = null;
             long conselhoClasseAlunoId = 0;
             bool enviarAprovacao = false;
+
+            var conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta
+                .ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);           
 
             unitOfWork.IniciarTransacao();
             try
@@ -143,7 +145,8 @@ namespace SME.SGP.Dominio.Servicos
 
                 await mediator.Send(new InserirTurmasComplementaresCommand(turma.Id, conselhoClasseAlunoId, alunoCodigo));
 
-                var conselhoClasseNota = await repositorioConselhoClasseNotaConsulta.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
+                var conselhoClasseNota = await repositorioConselhoClasseNotaConsulta
+                    .ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
 
                 double? notaAnterior = null;
                 long? conceitoIdAnterior = null;
@@ -162,7 +165,7 @@ namespace SME.SGP.Dominio.Servicos
                         if (conselhoClasseNota.Nota != null && conselhoClasseNota.Nota != conselhoClasseNotaDto.Nota.Value)
                             await mediator.Send(new SalvarHistoricoNotaConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.Nota.Value, conselhoClasseNotaDto.Nota.Value));
 
-                        conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;
+                        conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;                        
                     }
                     else conselhoClasseNota.Nota = null;
 
@@ -184,9 +187,12 @@ namespace SME.SGP.Dominio.Servicos
                     await GerarWFAprovacao(conselhoClasseNota, turma, bimestre, usuarioLogado, alunoCodigo, notaAnterior, conceitoIdAnterior);
                 else
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
-                unitOfWork.PersistirTransacao();
 
-                auditoria = (AuditoriaDto)conselhoClasseNota;
+                await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
+
+                auditoria = (AuditoriaDto)conselhoClasseAluno;
+
+                unitOfWork.PersistirTransacao();
             }
             catch (Exception e)
             {
