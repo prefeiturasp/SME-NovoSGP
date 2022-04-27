@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = new StringBuilder();
 
-            sql.AppendLine("select ccar.id as Id, ccr.recomendacao as Recomendacao, ccr.tipo as Tipo from conselho_classe_aluno_recomendacao ccar");
+            sql.AppendLine("select ccr.id as Id, ccr.recomendacao as Recomendacao, ccr.tipo as Tipo from conselho_classe_aluno_recomendacao ccar");
             sql.AppendLine(" inner join conselho_classe_recomendacao ccr on ccr.id = ccar.conselho_classe_recomendacao_id");
             sql.AppendLine(" inner join conselho_classe_aluno cca on cca.id = ccar.conselho_classe_aluno_id");
             sql.AppendLine(" inner join conselho_classe cc on cc.id = cca.conselho_classe_id");
@@ -31,20 +31,28 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@" and pe.bimestre = @bimestre");
             sql.AppendLine(@" and ft.id = @fechamentoTurmaId");
 
-            return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql.ToString(), new { alunoCodigo, bimestre, fechamentoTurmaId});
+            return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql.ToString(), new { alunoCodigo, bimestre, fechamentoTurmaId });
         }
 
         public async Task SalvarRecomendacaoAlunoFamilia(long recomendacaoId, long conselhoClasseAlunoId)
         {
             const string comando = @"insert into public.conselho_classe_aluno_recomendacao (conselho_classe_aluno_id, conselho_classe_recomendacao_id)
-                                        values (@recomendacaoId, @conselhoClasseAlunoId)";
+                                        values (@conselhoClasseAlunoId, @recomendacaoId)";
 
-            database.Conexao.Execute(comando,
-                new
-                {
-                    recomendacaoId,
-                    conselhoClasseAlunoId
-                });
+            try
+            {
+                database.Conexao.Execute(comando,
+                    new
+                    {
+                        recomendacaoId,
+                        conselhoClasseAlunoId
+                    });
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
     }
 }
