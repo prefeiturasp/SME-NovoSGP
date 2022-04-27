@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             StringBuilder url = new StringBuilder();
 
-            url.Append($"professores/{turma.CodigoTurma}/titulares");
+            url.Append($"professores/titulares?codigosTurmas={turma.CodigoTurma}");
 
             //Ao passar o RF do professor, o endpoint retorna todas as disciplinas que o professor não é titular para evitar
             //que o professor se atribua como CJ da própria da turma que ele é titular da disciplina
