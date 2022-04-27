@@ -42,6 +42,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int? bimestre, bool consideraHistorico = false)
         {
+            //Tratamento do bimestre que pode vir zero quando é aba final e endpoint não permite passar null
+            bimestre = bimestre.HasValue && bimestre.Value > 0 ? bimestre.Value : null;
+
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
@@ -54,7 +57,7 @@ namespace SME.SGP.Aplicacao
                 turma = fechamentoTurma?.Turma;
             else
             {
-                if (bimestre > 0)
+                if (bimestre.HasValue)
                 {
                     periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre.Value));
                     if (periodoEscolar == null) throw new NegocioException("Período escolar não encontrado");
@@ -148,8 +151,8 @@ namespace SME.SGP.Aplicacao
                     }
                 }
             }
-
-            var recomendacoesAlunoFamiliaSelecionado = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery(alunoCodigo, bimestre.Value, fechamentoTurmaId));
+                        
+            var recomendacoesAlunoFamiliaSelecionado = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery(alunoCodigo, bimestre, fechamentoTurmaId));
 
             var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(alunoCodigo, bimestre, turma);
 
