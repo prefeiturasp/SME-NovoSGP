@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao
 {
     public class Ao_calcular_frequencia : TesteBase
     {
-        public Ao_calcular_frequencia(TestFixture testFixture) : base(testFixture)
+        public Ao_calcular_frequencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
         
