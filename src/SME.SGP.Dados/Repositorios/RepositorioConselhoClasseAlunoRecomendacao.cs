@@ -26,9 +26,12 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" inner join conselho_classe_aluno cca on cca.id = ccar.conselho_classe_aluno_id");
             sql.AppendLine(" inner join conselho_classe cc on cc.id = cca.conselho_classe_id");
             sql.AppendLine(" inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id");
-            sql.AppendLine(" inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id");
+            sql.AppendLine(" left join periodo_escolar pe on pe.id = ft.periodo_escolar_id");
             sql.AppendLine(@" where cca.aluno_codigo = @alunoCodigo");
-            sql.AppendLine(@" and pe.bimestre = @bimestre");
+
+            if(bimestre > 0)
+                sql.AppendLine(@" and pe.bimestre = @bimestre");
+
             sql.AppendLine(@" and ft.id = @fechamentoTurmaId");
 
             return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql.ToString(), new { alunoCodigo, bimestre, fechamentoTurmaId });
