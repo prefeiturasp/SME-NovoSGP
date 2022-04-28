@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 {
     public class LancarNotaBimestreTeste : TesteBase
     {
-        public LancarNotaBimestreTeste(TestFixture testFixture) : base(testFixture)
+        public LancarNotaBimestreTeste(CollectionFixture testFixture) : base(testFixture)
         {
         }
         [Fact]

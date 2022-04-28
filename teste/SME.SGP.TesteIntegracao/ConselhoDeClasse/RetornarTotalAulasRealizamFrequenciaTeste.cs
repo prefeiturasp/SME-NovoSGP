@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao
 {
     public class RetornarAulasComESemFrequenciaTeste : TesteBase
     {
-        public RetornarAulasComESemFrequenciaTeste(TestFixture testFixture) : base(testFixture) { }
+        public RetornarAulasComESemFrequenciaTeste(CollectionFixture testFixture) : base(testFixture) { }
 
         [Fact]
         public async Task Deve_Retornar_Total_Aulas_Que_Lancam_Frequencia()
