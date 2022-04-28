@@ -20,28 +20,10 @@ namespace SME.SGP.TesteIntegracao.Nota
 {
     public class LancarNotaBimestreTeste : TesteBase
     {
-        public LancarNotaBimestreTeste(CollectionFixture testFixture) : base(testFixture)
+        public LancarNotaBimestreTeste(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
-        [Fact]
-        public async Task Deve_Lancar_Conceito_Para_Componente_Diferente_Regencia_Eja()
-        {
-            // Arrange
-            var command = ServiceProvider.GetService<IComandosNotasConceitos>();
-            await CriarUsuarioLogadoRegenciaEja();
-            CriarClaimRegenciaEja();
-            await InserirDadosBasicosNoBanco();
-            await CriarTurmaEja();
-            await CriarAbrangenciaEja();
-            await CriarTipoCalendarioEja();
-            await CriarAulaProfRegenciaEja();
-            await CriarAtividadeAvaliativaEja();
-            await CriarPeriodoEscolar();
-            await CriarParametroSistema();
 
-            //Act
-            //Assert
-        }
         [Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Diferente_Regencia_Fundamental()
         {
@@ -121,21 +103,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             retorno.ShouldNotBeNull();
             Assert.IsType<OkResult>(retorno);
         }
-        [Fact]
-        public async Task Deve_Lancar_Conceito_Para_Componente_Regencia_Fundamental()
-        {
 
-        }
-        [Fact]
-        public async Task Dev_Lancar_Conceitos_50_de_percentual_Estudantes_NS_Para_Inserir_Justificativa()
-        {
-
-        }
-        [Fact]
-        public async Task Dev_Lancar_Conceitos_Regencia_50_de_percentual_Estudantes_NS_Para_Inserir_Justificativa()
-        {
-
-        }
         #region Massa de Dados
         private async Task CriarTurmaFundamental()
         {
