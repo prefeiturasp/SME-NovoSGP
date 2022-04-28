@@ -289,7 +289,8 @@ namespace SME.SGP.Aplicacao
                             frequenciaAluno = new FrequenciaAluno()
                             {
                                 DisciplinaId = disciplina.CodigoComponenteCurricular.ToString(),
-                                CodigoAluno = alunoCodigo
+                                CodigoAluno = alunoCodigo,
+                                TurmaId = turma.CodigoTurma,
                             };
 
                             frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
@@ -663,9 +664,9 @@ namespace SME.SGP.Aplicacao
                 percentualFrequencia = Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
 
             if (componentePermiteFrequencia && bimestre == (int)Bimestre.Final)
-                totalAulas = await mediator.Send(new ObterTotalAulasPorAlunoTurmaQuery(componenteCurricularCodigo.ToString(), frequenciaAluno.TurmaId));
+                totalAulas = await mediator.Send(new ObterTotalAulasPorAlunoTurmaQuery(componenteCurricularCodigo.ToString(), turma.CodigoTurma));
             else if (!componentePermiteFrequencia && bimestre == (int)Bimestre.Final)
-                totalAulas = await mediator.Send(new ObterTotalAulasSemFrequenciaPorTurmaQuery(componenteCurricularCodigo.ToString(), frequenciaAluno.TurmaId));
+                totalAulas = await mediator.Send(new ObterTotalAulasSemFrequenciaPorTurmaQuery(componenteCurricularCodigo.ToString(), turma.CodigoTurma));
 
 
             // Cálculo de frequência particular do ano de 2020
