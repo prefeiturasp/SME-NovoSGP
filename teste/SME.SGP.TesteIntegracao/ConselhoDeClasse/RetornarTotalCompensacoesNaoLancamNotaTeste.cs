@@ -18,7 +18,7 @@ namespace SME.SGP.TesteIntegracao
 {
     public class RetornarTotalCompensacoesNaoLancamNotaTeste : TesteBase
     {
-        public RetornarTotalCompensacoesNaoLancamNotaTeste(TestFixture testFixture) : base(testFixture) { }
+        public RetornarTotalCompensacoesNaoLancamNotaTeste(CollectionFixture testFixture) : base(testFixture) { }
 
         [Fact]
         public async Task Deve_Retornar_Total_Compensacoes_Que_Nao_Lancam_Nota()
