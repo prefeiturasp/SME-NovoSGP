@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dados.Repositorios;
+﻿using Dapper;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -47,6 +48,24 @@ namespace SME.SGP.Dados.Repositorios
 
            await database.Conexao.InsertAsync(recomendacaoAluno);
 
+        }
+
+        public async Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterRecomendacoesDoAlunoPorConselhoAlunoId(long conselhoClasseAlunoId)
+        {
+            var sql = new StringBuilder();
+
+            sql.AppendLine("select * from conselho_classe_aluno_recomendacao where conselho_classe_aluno_id = @conselhoClasseAlunoId");
+
+            return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql.ToString(), new { conselhoClasseAlunoId });
+        }
+
+        public async Task ExcluirRecomendacoesPorConselhoAlunoId (long conselhoClasseAlunoId)
+        {
+            var sql = new StringBuilder();
+
+            sql.AppendLine("delete from conselho_classe_aluno_recomendacao where conselho_classe_aluno_id = @conselhoClasseAlunoId");
+
+            await database.Conexao.ExecuteScalarAsync(sql.ToString(), new { conselhoClasseAlunoId });
         }
     }
 }

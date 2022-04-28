@@ -21,6 +21,11 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(SalvarConselhoClasseAlunoRecomendacaoCommand request, CancellationToken cancellationToken)
         {
+            var verificaSeHaRecomendacoesAluno = await repositorioConselhoClasseAlunoRecomendacao.ObterRecomendacoesDoAlunoPorConselhoAlunoId(request.ConselhoClasseAlunoId);
+
+            if (verificaSeHaRecomendacoesAluno.Any())
+                await repositorioConselhoClasseAlunoRecomendacao.ExcluirRecomendacoesPorConselhoAlunoId(request.ConselhoClasseAlunoId);
+
             var recomendacoesAlunoFamilia = new List<long>();
 
             recomendacoesAlunoFamilia.AddRange(request.RecomendacoesAlunoId);
