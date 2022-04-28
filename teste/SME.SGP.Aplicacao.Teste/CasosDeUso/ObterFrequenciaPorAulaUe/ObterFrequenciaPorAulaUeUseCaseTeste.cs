@@ -137,5 +137,53 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             Assert.True(naoExibirAlunoFrequencia, "Aluno transferido no bimestre com número de chamada");
         }
+
+        [Fact]
+        public async Task Deve_Exibir_Aluno_Excepcionalmente_Ativo_Em_Bimestre_Ano_Anterior()
+        {
+            var aluno = new AlunoPorTurmaResposta
+            {
+                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Concluido,
+                DataMatricula = DateTime.Parse("2022-01-07"),
+                DataAtualizacaoContato = DateTime.Parse("2022-01-07"),
+                DataSituacao = DateTime.Parse("2022-01-07"),
+            };
+
+            var exibirAlunoFrequencia = aluno.DeveMostrarNaChamada(DateTime.Parse("2021-05-05"), DateTime.Parse("2022-04-01"));
+
+            Assert.True(exibirAlunoFrequencia, "Aluno concluiu turma com data de matricula e situação no ano posterir");
+        }
+
+        [Fact]
+        public async Task Deve_Exibir_Aluno_Transferido_Dentro_Bimestre_Ano_Anterior()
+        {
+            var aluno = new AlunoPorTurmaResposta
+            {
+                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Transferido,
+                DataMatricula = DateTime.Parse("2021-04-20"),
+                DataAtualizacaoContato = DateTime.Parse("2022-01-07"),
+                DataSituacao = DateTime.Parse("2022-01-07"),
+            };
+
+            var exibirAlunoFrequencia = aluno.DeveMostrarNaChamada(DateTime.Parse("2021-05-05"), DateTime.Parse("2022-04-01"));
+
+            Assert.True(exibirAlunoFrequencia, "Aluno transferido no ano anterior dentro do bimestre");
+        }
+
+        [Fact]
+        public async Task Nao_Deve_Exibir_Aluno_Concluido_Data_Matricula_Posterior_Data_Base_Ano_Anterior()
+        {
+            var aluno = new AlunoPorTurmaResposta
+            {
+                CodigoSituacaoMatricula = SituacaoMatriculaAluno.Concluido,
+                DataMatricula = DateTime.Parse("2021-05-06"),
+                DataAtualizacaoContato = DateTime.Parse("2022-01-07"),
+                DataSituacao = DateTime.Parse("2022-01-07"),
+            };
+
+            var exibirAlunoFrequencia = aluno.DeveMostrarNaChamada(DateTime.Parse("2021-05-05"), DateTime.Parse("2022-04-01"));
+
+            Assert.False(exibirAlunoFrequencia, "Aluno transferido no ano anterior fora do bimestre");
+        }
     }
 }

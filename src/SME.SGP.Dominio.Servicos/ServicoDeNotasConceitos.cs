@@ -96,7 +96,7 @@ namespace SME.SGP.Dominio
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.hostAplicacao = configuration["UrlFrontEnd"];
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));            
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
@@ -131,7 +131,7 @@ namespace SME.SGP.Dominio
 
             var dataConsiderada = atividadesAvaliativas.Any() ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao.Date : DateTime.Today;
 
-            alunos = alunos.Where(a => a.EstaAtivo(dataConsiderada) || (a.Inativo && a.DataSituacao.Date <= dataConsiderada));
+            alunos = alunos.Where(a => a.EstaAtivo(dataConsiderada));
 
             if (!usuario.EhGestorEscolar())
                 await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, dataConsiderada, usuario);
@@ -205,9 +205,11 @@ namespace SME.SGP.Dominio
                 // Avalia se a quantidade de alunos com nota/conceito suficientes esta abaixo do percentual parametrizado para notificação
                 if (quantidadeAlunosSuficientes < (quantidadeAlunos * percentualAlunosInsuficientes / 100))
                 {
+                    _usuariosCPs = null;
                     // Notifica todos os CPs da UE
                     foreach (var usuarioCP in usuariosCPs)
                     {
+
                         servicoNotificacao.Salvar(new Notificacao()
                         {
                             Ano = atividadeAvaliativa.CriadoEm.Year,
@@ -326,7 +328,7 @@ namespace SME.SGP.Dominio
             var notasMultidisciplina = new List<NotaConceito>();
             var alunosNotasExtemporaneas = new StringBuilder();
             var nota = notasConceitos.FirstOrDefault();
-            var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(turma.CodigoTurma, true);            
+            var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(turma.CodigoTurma, true);
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
             var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
             var dataAtual = DateTime.Now;

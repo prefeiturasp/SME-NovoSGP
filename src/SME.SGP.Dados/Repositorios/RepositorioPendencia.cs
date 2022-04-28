@@ -6,6 +6,7 @@ using SME.SGP.Infra.Dtos.PendenciaPendente;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -157,6 +158,20 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Pendencia>(query, new { pendenciasFiltradas }, commandTimeout: 120);
         }
 
+        public string RetornaQueryTotalRegistros(StringBuilder queryPerfil, StringBuilder where, StringBuilder queryUsuario)
+        {
+            var queryTotalRegistros = new StringBuilder();
+            queryTotalRegistros.AppendLine("select sum (total) TotalPendencias");
+            queryTotalRegistros.AppendLine(" from ( ");
+            queryTotalRegistros.AppendLine($" select count(distinct p.id) total {queryPerfil}");
+            queryTotalRegistros.AppendLine(" union all ");
+            queryTotalRegistros.AppendLine($" select count(distinct p.id) total from pendencia p {queryUsuario}");
+            queryTotalRegistros.AppendLine($" inner join pendencia_usuario pu on pu.pendencia_id = p.id {where} and pu.usuario_id = @usuarioId ");
+            queryTotalRegistros.AppendLine(" ) t ");
+
+            return queryTotalRegistros.ToString();
+        }
+
         public async Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)
         {
             var query = @"select p.id 
@@ -293,7 +308,7 @@ namespace SME.SGP.Dados.Repositorios
                             AND pri.pendencia_id = any(@pendencias) ";
             }
 
-            return query;
+            return query.ToString();
         }
 
         public async Task<Pendencia> FiltrarListaPendenciasUsuario(string turmaCodigo, Pendencia pendencia)

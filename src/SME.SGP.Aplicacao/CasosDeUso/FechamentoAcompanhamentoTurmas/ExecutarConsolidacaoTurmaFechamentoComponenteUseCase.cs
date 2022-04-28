@@ -33,6 +33,8 @@ namespace SME.SGP.Aplicacao
             var fechamentos = await mediator.Send(new ObterFechamentosTurmaComponentesQuery(filtro.TurmaId, new long[] { filtro.ComponenteCurricularId }, filtro.Bimestre));
 
             var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(filtro.TurmaId));
+            if (professoresDaTurma is null || !professoresDaTurma.Any())
+                return false;
 
             var fechamento = fechamentos?.FirstOrDefault();
 

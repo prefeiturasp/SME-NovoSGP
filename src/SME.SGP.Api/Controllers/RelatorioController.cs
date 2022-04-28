@@ -47,6 +47,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(await gerarRelatorioFrequenciaUseCase.Executar(filtroRelatorioFaltasFrequenciaDto));
         }
 
+        [HttpPost("faltas-frequencia-mensal")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RFM_C, Policy = "Bearer")]
+        public async Task<IActionResult> FrequenciaMensal([FromBody] FiltroRelatorioFrequenciaMensalDto filtroRelatorioFaltasFrequenciaMensalDto,
+            [FromServices] IGerarRelatorioFrequenciaMensalUseCase gerarRelatorioFrequenciaMensalUseCase)
+        {
+            return Ok(await gerarRelatorioFrequenciaMensalUseCase.Executar(filtroRelatorioFaltasFrequenciaMensalDto));
+        }
+
         [HttpPost("calendarios/impressao")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

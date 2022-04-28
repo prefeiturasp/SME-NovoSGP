@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<Evento>> Handle(ObterEventosCalendarioProfessorPorMesDiaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioEvento.ObterEventosCalendarioProfessorPorMesDia(request.TipoCalendarioId, request.DreCodigo, request.UeCodigo, request.DataConsulta, true);
+            return await repositorioEvento.ObterEventosCalendarioProfessorPorMesDia(request.DreCodigo, request.UeCodigo, request.DataConsulta, true);
         }
     }
 }

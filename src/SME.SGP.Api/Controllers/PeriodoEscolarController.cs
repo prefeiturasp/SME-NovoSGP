@@ -66,7 +66,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAtual(int modalidade, [FromServices] IConsultasPeriodoEscolar consultas)
         {
             return Ok(await consultas.ObterBimestre(DateTime.Today, (Dominio.Modalidade)modalidade));
@@ -75,7 +74,6 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/{turmaId}")]
         [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarPorTurmaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterBimetresPeriodosEscolaresTurma([FromServices] IObterPeriodoEscolarPorTurmaUseCase useCase, long turmaId)
         {
             return Ok(await useCase.Executar(turmaId));
@@ -85,7 +83,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterBimestresModalidadeEAno(int modalidade, int anoLetivo, [FromServices] IObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase useCase)
         {
             return Ok(await useCase.Executar((Dominio.Modalidade)modalidade, anoLetivo, 0));
@@ -95,7 +92,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(BimestreDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PE_C, Policy = "Bearer")]
         public async Task<IActionResult> BimestreAtual(long turmaId, [FromServices] IObterBimestreAtualPorTurmaIdUseCase useCase)
         {
             var bimestre = await useCase.Executar(turmaId);
@@ -110,7 +106,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(PeriodoEscolarLetivoTurmaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPeriodoLetivoTurma(string turmaCodigo, [FromServices] IObterPeriodoLetivoTurmaUseCase useCase)
         {
             return Ok(await useCase.Executar(turmaCodigo));
@@ -120,7 +115,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarComponenteDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPeriodoPorComponente(string turmaCodigo, long componenteCurricularId, bool ehRegencia, int bimestre,[FromServices] IObterPeriodosPorComponenteUseCase useCase, [FromQuery] bool exibirDataFutura = false)
         {
             return Ok(await useCase.Executar(turmaCodigo, componenteCurricularId, ehRegencia, bimestre, exibirDataFutura));

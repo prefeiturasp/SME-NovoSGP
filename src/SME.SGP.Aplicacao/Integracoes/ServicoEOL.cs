@@ -51,8 +51,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha)
         {
-
-
             var valoresParaEnvio = new List<KeyValuePair<string, string>> {
                 { new KeyValuePair<string, string>("usuario", login) },
                 { new KeyValuePair<string, string>("senha", novaSenha) }};
@@ -825,7 +823,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var dataString = data.ToString("s");
 
-            var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{disciplinaId}/atribuicao/verificar/data?dataConsulta={dataString}");
+            var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{disciplinaId}/atribuicao/verificar/data?={dataString}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");

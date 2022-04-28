@@ -25,6 +25,13 @@ namespace SME.SGP.Dados
             await database.Conexao.ExecuteScalarAsync(sql, new { aulaId, componenteCurricularId }, commandTimeout: 60);
         }
 
+        public async Task ExcluirPorAulaId(long aulaId)
+        {
+            var sql = @"delete from pendencia_diario_bordo where aula_id = @aulaId";
+
+            await database.Conexao.ExecuteScalarAsync(sql, new { aulaId }, commandTimeout: 60);
+        }
+
         public async Task<bool> VerificarSeExistePendenciaDiarioComPendenciaId(long pendenciaId)
         {
             var sql = @"select count(id) from pendencia_diario_bordo where pendencia_id = @pendenciaId";
