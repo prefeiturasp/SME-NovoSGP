@@ -298,7 +298,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
 
-            query.AppendLine("SELECT max(n.codigo)");
+            query.AppendLine("SELECT coalesce(max(n.codigo), 0)");
             query.AppendLine("FROM notificacao n");
             query.AppendLine("where EXTRACT(year FROM n.criado_em) = @ano");
 
