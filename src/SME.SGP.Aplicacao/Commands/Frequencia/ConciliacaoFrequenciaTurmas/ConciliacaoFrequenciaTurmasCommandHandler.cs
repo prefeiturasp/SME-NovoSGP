@@ -82,12 +82,16 @@ namespace SME.SGP.Aplicacao
             return modalidadesPeriodosPassados.GroupBy(a => a.Modalidade);
         }
 
-        private IEnumerable<int> ObtenhaTodosMesPosteriores(DateTime data)
+        private List<int> ObtenhaTodosMesPosteriores(DateTime data)
         {
-            for (var mes = 0; mes <= data.Month; mes++)
+            var lista = new List<int>();
+
+            for (var mes = 1; mes <= data.Month; mes++)
             {
-                yield return mes;
+                lista.Add(mes);
             }
+
+            return lista;
         }
     }
 }
