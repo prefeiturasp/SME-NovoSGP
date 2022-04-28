@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
-        public async Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterRecomendacoesDoAlunoPorConselho(string alunoCodigo, int bimestre, long fechamentoTurmaId)
+        public async Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterRecomendacoesDoAlunoPorConselho(string alunoCodigo, int? bimestre, long fechamentoTurmaId)
         {
             var sql = new StringBuilder();
 
@@ -29,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" left join periodo_escolar pe on pe.id = ft.periodo_escolar_id");
             sql.AppendLine(@" where cca.aluno_codigo = @alunoCodigo");
 
-            if(bimestre > 0)
+            if(bimestre.HasValue)
                 sql.AppendLine(@" and pe.bimestre = @bimestre");
 
             sql.AppendLine(@" and ft.id = @fechamentoTurmaId");
