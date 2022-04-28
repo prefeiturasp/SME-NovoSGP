@@ -33,6 +33,7 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("                a.professor_rf ProfessorRf,");
             sqlQuery.AppendLine("                a.tipo_calendario_id TipoCalendarioId,");
             sqlQuery.AppendLine("                a.data_aula DataAula,");
+            sqlQuery.AppendLine("                a.aula_cj AulaCJ,");
             sqlQuery.AppendLine("                t.id Id,");
             sqlQuery.AppendLine("                t.modalidade_codigo ModalidadeCodigo");
             sqlQuery.AppendLine("  	from aula a");
