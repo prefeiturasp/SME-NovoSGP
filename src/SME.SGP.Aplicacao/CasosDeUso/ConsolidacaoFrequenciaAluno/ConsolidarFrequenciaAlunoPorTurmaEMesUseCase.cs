@@ -20,18 +20,17 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaAlunoMensal>();
-            var frequenciasAlunosTurmasEMeses = await mediator.Send(new ObterFrequenciaAlunosPorTurmaEMesQuery(filtro.TurmaCodigo, filtro.Mes));
+            var frequenciasAlunosTurmaEMes = await mediator.Send(new ObterFrequenciaAlunosPorTurmaEMesQuery(filtro.TurmaCodigo, filtro.Mes));
 
             _unitOfWork.IniciarTransacao();
             try
             {
-                var turmasIds = frequenciasAlunosTurmasEMeses.Select(c => c.TurmaId).Distinct().ToArray();
-                var meses = frequenciasAlunosTurmasEMeses.Select(c => c.Mes).Distinct().ToArray();
+                var turmasIds = frequenciasAlunosTurmaEMes.Select(c => c.TurmaId).Distinct().ToArray();
 
-                await mediator.Send(new LimparConsolidacaoFrequenciaAlunoPorTurmasEMesesCommand(turmasIds, meses));
+                await mediator.Send(new LimparConsolidacaoFrequenciaAlunoPorTurmasEMesesCommand(turmasIds, new int[] { filtro.Mes }));
 
-                foreach (var frequencia in frequenciasAlunosTurmasEMeses)
-                    await RegistrarConsolidacaoFrequenciaAlunoMensal(frequencia);
+                foreach (var frequencia in frequenciasAlunosTurmaEMes)
+                    await RegistrarConsolidacaoFrequenciaAlunoMensal(frequencia, filtro.Mes);
 
                 _unitOfWork.PersistirTransacao();
             }
@@ -44,10 +43,10 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task RegistrarConsolidacaoFrequenciaAlunoMensal(RegistroFrequenciaAlunoPorTurmaEMesDto frequencia)
+        private async Task RegistrarConsolidacaoFrequenciaAlunoMensal(RegistroFrequenciaAlunoPorTurmaEMesDto frequencia, int mes)
         {            
             await mediator.Send(new RegistrarConsolidacaoFrequenciaAlunoMensalCommand(frequencia.TurmaId, frequencia.AlunoCodigo,
-                frequencia.Mes, frequencia.Percentual, frequencia.QuantidadeAulas, frequencia.QuantidadeAusencias, frequencia.QuantidadeCompensacoes));
+                mes, frequencia.Percentual, frequencia.QuantidadeAulas, frequencia.QuantidadeAusencias, frequencia.QuantidadeCompensacoes));
         }
     }
 }
