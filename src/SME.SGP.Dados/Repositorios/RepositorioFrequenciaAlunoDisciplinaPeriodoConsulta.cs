@@ -253,7 +253,7 @@ namespace SME.SGP.Dados
 	                        and tipo = 1
 	                        and pe.periodo_inicio <= @dataAtual
 	                        and pe.periodo_fim >= @dataAtual ";
-            
+
             if (!string.IsNullOrEmpty(turmaCodigo))
                 query += "and fa.turma_id = @turmaCodigo";
 
@@ -443,11 +443,9 @@ namespace SME.SGP.Dados
                 turmasCodigo
             });
         }
-        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmasDisciplinasDataAsync(string codigoAluno, TipoFrequenciaAluno tipoFrequencia,string[] disciplinasId, string[] turmasCodigo, int[] bimestres)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmasDisciplinasDataAsync(string codigoAluno, TipoFrequenciaAluno tipoFrequencia, string[] disciplinasId, string[] turmasCodigo, int[] bimestres)
         {
-            try
-            {
-                var query = new StringBuilder(@"select * 
+            var query = new StringBuilder(@"select * 
 	                                        from (select fa.*,
 				                                         row_number() over (partition by fa.bimestre, fa.disciplina_id order by fa.id desc) sequencia
           	                                        from frequencia_aluno fa
@@ -459,24 +457,19 @@ namespace SME.SGP.Dados
 	                                                and turma_id = ANY(@turmasCodigo)
 	                                                and disciplina_id = ANY(@disciplinasId)) rf ");
 
-                query.AppendLine("where rf.sequencia = 1");
+            query.AppendLine("where rf.sequencia = 1");
 
-                if (bimestres.Length > 0)
-                    query.AppendLine(" and rf.bimestre = ANY(@bimestres)");
+            if (bimestres.Length > 0)
+                query.AppendLine(" and rf.bimestre = ANY(@bimestres)");
 
-                return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
-                {
-                    codigoAluno,
-                    tipoFrequencia,
-                    disciplinasId,
-                    turmasCodigo,
-                    bimestres
-                });
-            }
-            catch (Exception ex)
+            return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
             {
-                throw ex;
-            }            
+                codigoAluno,
+                tipoFrequencia,
+                disciplinasId,
+                turmasCodigo,
+                bimestres
+            });
         }
 
         public async Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricular(string codigoTurma, string componenteCurricularId, long periodoEscolarId)
