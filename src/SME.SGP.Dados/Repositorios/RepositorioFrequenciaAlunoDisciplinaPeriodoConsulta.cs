@@ -445,18 +445,21 @@ namespace SME.SGP.Dados
         }
         public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmasDisciplinasDataAsync(string codigoAluno, TipoFrequenciaAluno tipoFrequencia,string[] disciplinasId, string[] turmasCodigo, int[] bimestres)
         {
-            var query = new StringBuilder(@"select fa.*
-                        from frequencia_aluno fa
-                        inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
-                        where
-	                        codigo_aluno = @codigoAluno
-	                        and tipo = @tipoFrequencia                            	                       
-                            and turma_id = ANY(@turmasCodigo)
-                            and disciplina_id = ANY(@disciplinasId) ");
+            var query = new StringBuilder(@"select * 
+	                                        from (select fa.*,
+				                                         row_number() over (partition by fa.bimestre, fa.disciplina order by fa.id desc) sequencia
+          	                                        from frequencia_aluno fa
+            	                                        inner join periodo_escolar pe 
+            		                                        on fa.periodo_escolar_id = pe.id
+	                                              where codigo_aluno = @codigoAluno
+	       	                                        and tipo = @tipoFrequencia
+	                                                and turma_id = @turmasCodigo
+	                                                and disciplina_id = any(@disciplinasId)) rf ");
+
+            query.AppendLine("where rf.sequencia = 1");
 
             if (bimestres.Length > 0)
-                query.AppendLine(" and pe.bimestre = ANY(@bimestres)");
-
+                query.AppendLine(" and rf.bimestre = ANY(@bimestres)");            
 
             return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
             {
