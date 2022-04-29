@@ -437,8 +437,11 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConsolidacaoFrequenciaTurma, RepositorioConsolidacaoFrequenciaTurma>();
             services.TryAddScoped<IRepositorioConsolidacaoFrequenciaTurmaConsulta, RepositorioConsolidacaoFrequenciaTurmaConsulta>();
 
-            // Consolidação Frequeência Aluno Mensal
+            // Consolidação Frequência Aluno Mensal
             services.TryAddScoped<IRepositorioConsolidacaoFrequenciaAlunoMensal, RepositorioConsolidacaoFrequenciaAlunoMensal>();
+
+            // Frequência turma evasão
+            services.TryAddScoped<IRepositorioFrequenciaTurmaEvasao, RepositorioFrequenciaTurmaEvasao>();
 
             // Consolidação Devolutivas
             services.TryAddScoped<IRepositorioConsolidacaoDevolutivas, RepositorioConsolidacaoDevolutivas>();
