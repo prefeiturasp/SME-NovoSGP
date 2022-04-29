@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             var aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.DiarioBordo,
                                                                                  "diario_bordo",
                                                                                  new long[] { (int)Modalidade.EducacaoInfantil },
-                                                                                 filtro.DreId));
+                                                                                 filtro.DreId, filtro.UeId));
 
             if (aulas != null && aulas.Any())
                 await RegistraPendencia(aulas, TipoPendencia.DiarioBordo);
