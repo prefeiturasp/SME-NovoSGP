@@ -49,6 +49,7 @@ namespace SME.SGP.Aplicacao
             planoAulaDto.PossuiPlanoAnual = planejamentoAnualPeriodoId > 0;
             planoAulaDto.IdAtividadeAvaliativa = atividadeAvaliativa?.Id;
             planoAulaDto.PodeLancarNota = planoAulaDto.IdAtividadeAvaliativa.HasValue && aulaDto.DataAula.Date <= DateTime.Now.Date;
+            planoAulaDto.QtdAulas = aulaDto.Quantidade;
             return planoAulaDto;
         }
 
