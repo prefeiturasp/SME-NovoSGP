@@ -474,8 +474,8 @@ namespace SME.SGP.Aplicacao
                 Codigo = componenteCurricular.CodigoComponenteCurricular,
                 Nome = componenteCurricular.Nome,
                 TotalFaltas = frequenciaDisciplina?.TotalAusencias,
-                PercentualFrequencia = !String.IsNullOrEmpty(percentualFrequencia) ? $"{percentualFrequencia}%" : "",
-                ParecerFinal = parecerFinal?.Valor ?? string.Empty,
+                PercentualFrequencia = !String.IsNullOrEmpty(percentualFrequencia) && percentualFrequencia != "0" ? $"{percentualFrequencia}%" : "",
+                ParecerFinal = parecerFinal?.Valor == null || !totalAulas.Any() ? string.Empty : parecerFinal?.Valor,
                 ParecerFinalId = (int)(parecerFinal?.Id ?? default),
                 TotalAulas = totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricular.CodigoComponenteCurricular) == null || totalAulas.Count() == 0 ? "" : totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricular.CodigoComponenteCurricular).TotalAulas,
                 TotalAusenciasCompensadas = totalCompensacoes.FirstOrDefault(x => x.DisciplinaId == componenteCurricular.CodigoComponenteCurricular) == null || totalCompensacoes.Count() == 0 ? "" : totalCompensacoes.FirstOrDefault(x => x.DisciplinaId == componenteCurricular.CodigoComponenteCurricular).TotalCompensacoes
