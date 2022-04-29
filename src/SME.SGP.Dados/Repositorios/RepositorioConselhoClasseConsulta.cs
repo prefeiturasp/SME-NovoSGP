@@ -359,11 +359,10 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> ObterTotalAulasPorAlunoTurma(string disciplinaId, string codigoTurma)
         {
-            var sql = @"select disciplina_id as disciplinaid,total_aulas as totalaulas from frequencia_aluno fa 
+            var sql = @"select disciplina_id as disciplinaid,total_aulas as totalaulas, codigo_aluno as codigoaluno from frequencia_aluno fa 
                         where tipo = 1 
                         and disciplina_id = @disciplinaId 
-                        and turma_id =@codigoTurma 
-                        group by disciplina_id, total_aulas ";
+                        and turma_id =@codigoTurma ";
 
             return await database.Conexao.QueryAsync<TotalAulasPorAlunoTurmaDto>(sql, new { disciplinaId, codigoTurma }, commandTimeout: 60);
         }
