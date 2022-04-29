@@ -404,5 +404,96 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { componenteCurricularId });
         }
+
+        public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50Porcento(string dreCodigo, string ueCodigo,
+            Modalidade modalidade, int semestre, int mes)
+        {
+            if (string.IsNullOrEmpty(dreCodigo) && string.IsNullOrEmpty(ueCodigo))
+                return await ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorDre(modalidade, semestre, mes);
+            else if (!string.IsNullOrEmpty(dreCodigo) && string.IsNullOrEmpty(ueCodigo))
+                return await ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorUe(dreCodigo, modalidade, semestre, mes);
+            else
+                return await ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorTurma(dreCodigo, ueCodigo, modalidade, semestre, mes);
+        }
+
+        private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorDre(Modalidade modalidade, int semestre, int mes)
+        {
+            var query = @"select d.dre_id as Grupo,
+                                sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
+                            from frequencia_turma_evasao fte
+	                            inner join turma t on t.id = fte.turma_id 
+	                            inner join ue u on u.id = t.ue_id 
+	                            inner join dre d on d.id = u.dre_id 
+                            where t.modalidade_codigo = @modalidade
+                            and (fte.quantidade_alunos_abaixo_50_porcento > 0)";
+
+            if (semestre > 0)
+                query += " and t.semestre = @semestre ";
+
+            if (mes > 0)
+                query += " and fte.mes = @mes ";
+
+            query += @" group by d.dre_id
+                        order by d.dre_id ";
+
+            var parametros = new { modalidade, semestre, mes };
+
+            return await database.Conexao.QueryAsync<GraficoFrequenciaTurmaEvasaoDto>(query, parametros);
+        }
+
+        private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorUe(string dreCodigo,
+            Modalidade modalidade, int semestre, int mes)
+        {
+            var query = @"select u.ue_id as Grupo,
+                                sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
+                            from frequencia_turma_evasao fte
+	                            inner join turma t on t.id = fte.turma_id 
+	                            inner join ue u on u.id = t.ue_id 
+	                            inner join dre d on d.id = u.dre_id 
+                            where d.dre_id = @dreCodigo
+                            and t.modalidade_codigo = @modalidade
+                            and (fte.quantidade_alunos_abaixo_50_porcento > 0)";
+
+            if (semestre > 0)
+                query += " and t.semestre = @semestre ";
+
+            if (mes > 0)
+                query += " and fte.mes = @mes ";
+
+            query += @" group by u.ue_id 
+                        order by u.ue_id ";
+
+            var parametros = new { dreCodigo, modalidade, semestre, mes };
+
+            return await database.Conexao.QueryAsync<GraficoFrequenciaTurmaEvasaoDto>(query, parametros);
+        }
+
+        private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorTurma(string dreCodigo, string ueCodigo,
+            Modalidade modalidade, int semestre, int mes)
+        {
+            var query = @"select t.turma_id as Grupo,
+                                sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
+                            from frequencia_turma_evasao fte
+	                            inner join turma t on t.id = fte.turma_id 
+	                            inner join ue u on u.id = t.ue_id 
+	                            inner join dre d on d.id = u.dre_id 
+                            where d.dre_id = @dreCodigo
+                            and u.ue_id = @ueCodigo
+                            and t.modalidade_codigo = @modalidade
+                            and (fte.quantidade_alunos_abaixo_50_porcento > 0)";
+
+            if (semestre > 0)
+                query += " and t.semestre = @semestre ";
+
+            if (mes > 0)
+                query += " and fte.mes = @mes ";
+
+            query += @" group by t.turma_id
+                        order by t.turma_id ";
+
+            var parametros = new { dreCodigo, ueCodigo, modalidade, semestre, mes };
+
+            return await database.Conexao.QueryAsync<GraficoFrequenciaTurmaEvasaoDto>(query, parametros);
+        }
     }
 }
