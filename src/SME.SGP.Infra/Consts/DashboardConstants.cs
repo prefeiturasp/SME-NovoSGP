@@ -17,6 +17,6 @@
 
         // NAAPA - frequência turma evasão
         public const string QuantidadeAbaixo50PorcentoDescricao = "Qtd. abaixo de 50%";
-        public const string QuantidadeSemFrequenciaDescricao = "Qtd. sem frequência";
+        public const string QuantidadeSemPresencaDescricao = "Qtd. sem presença";
     }
 }
