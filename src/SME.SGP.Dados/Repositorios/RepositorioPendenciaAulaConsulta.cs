@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
         }
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, int anoLetivo)
+        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int anoLetivo)
         {
             var listaRetorno = new List<Aula>();
             var sqlQuery = new StringBuilder();
@@ -31,6 +31,9 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("                a.disciplina_id DisciplinaId,");
             sqlQuery.AppendLine("                a.turma_id TurmaId,");
             sqlQuery.AppendLine("                a.professor_rf ProfessorRf,");
+            sqlQuery.AppendLine("                a.tipo_calendario_id TipoCalendarioId,");
+            sqlQuery.AppendLine("                a.data_aula DataAula,");
+            sqlQuery.AppendLine("                a.aula_cj AulaCJ,");
             sqlQuery.AppendLine("                t.id Id,");
             sqlQuery.AppendLine("                t.modalidade_codigo ModalidadeCodigo");
             sqlQuery.AppendLine("  	from aula a");
@@ -63,6 +66,9 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("	and p.id is null");
             sqlQuery.AppendLine("	and tf.id is null");
 
+            if (ueId > 0)
+                sqlQuery.AppendLine("    and ue.id = @ueId");
+
             return await database.Conexao.QueryAsync<Aula, Turma, Aula>(sqlQuery.ToString(), (aula, turma) =>
             {
                 aula.Turma = turma;
@@ -73,7 +79,8 @@ namespace SME.SGP.Dados.Repositorios
                 hoje = DateTime.Today.Date,
                 tipo = tipoPendenciaAula,
                 modalidades,
-                dreId
+                dreId,
+                ueId,
             }, splitOn: "Id", commandTimeout: 60);
         }
 
@@ -116,9 +123,10 @@ namespace SME.SGP.Dados.Repositorios
                 }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, int anoLetivo)
+        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo)
         {
-            var sqlQuery = @"select distinct a.id, a.turma_id, a.disciplina_id, a.professor_rf
+            var sqlQuery = @"select distinct a.id, a.turma_id, a.disciplina_id, a.professor_rf,
+                                    a.tipo_calendario_id, a.data_aula
 	                from atividade_avaliativa aa
 	                inner join dre on dre.dre_id = aa.dre_id
 	                inner join atividade_avaliativa_disciplina aad
@@ -128,7 +136,8 @@ namespace SME.SGP.Dados.Repositorios
 		                    aa.data_avaliacao::date = a.data_aula::date and
 		                    aad.disciplina_id = a.disciplina_id and 
 		                    a.professor_rf = aa.professor_rf 
-	                inner join turma t on t.turma_id = a.turma_id 
+	                inner join turma t on t.turma_id = a.turma_id
+                    inner join ue u on u.id = t.ue_id 
 
 	                left join notas_conceito nc 
 		                on nc.atividade_avaliativa = aa.id
@@ -148,13 +157,17 @@ namespace SME.SGP.Dados.Repositorios
                     and nc.id is null 
                     and p.id is null ";
 
+            if (ueId > 0)
+                sqlQuery += " and u.id = @ueId";
+
             return await database.Conexao
                 .QueryAsync<Aula>(sqlQuery.ToString(), new
                 {
                     anoLetivo,
                     hoje = DateTime.Today.Date,
                     tipo = TipoPendencia.Avaliacao,
-                    dreId
+                    dreId,
+                    ueId
                 }, commandTimeout: 120);
 
         }
@@ -363,6 +376,21 @@ namespace SME.SGP.Dados.Repositorios
                                 and rf.id is null";
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
+        }
+
+        public async Task<long> ObterPendenciaIdPorComponenteProfessorEBimestre(string componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia)
+        {
+            var sql = @"select p.id from pendencia p 
+                            inner join pendencia_aula pa on pa.pendencia_id = p.id 
+                            inner join pendencia_usuario pu on pu.pendencia_id = p.id 
+                            inner join usuario u on u.id = pu.usuario_id 
+                            inner join aula a on a.id = pa.aula_id 
+                            inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
+                            where u.rf_codigo = @codigoRf and a.disciplina_id = @componenteCurricularId 
+                            and pe.id = @periodoEscolarId and p.tipo = @tipoPendencia 
+                            order by p.criado_em desc";
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, tipoPendencia }));
         }
     }
 }

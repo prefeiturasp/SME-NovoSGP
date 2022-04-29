@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao
                     d.CodigoComponenteCurricular = componenteEOL.TerritorioSaber ? d.Id :componenteEOL.Codigo;
                     d.Regencia = componenteEOL.Regencia;
 
-                    if (!d.TerritorioSaber)
+                    if (d.TerritorioSaber)
                         d.Nome = componenteEOL.Descricao;
 
                     d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
