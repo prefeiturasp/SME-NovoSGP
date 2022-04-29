@@ -424,7 +424,8 @@ namespace SME.SGP.Dados.Repositorios
 	                            inner join turma t on t.id = fte.turma_id 
 	                            inner join ue u on u.id = t.ue_id 
 	                            inner join dre d on d.id = u.dre_id 
-                            where t.modalidade_codigo = @modalidade";
+                            where t.modalidade_codigo = @modalidade
+                            and (fte.quantidade_alunos_abaixo_50_porcento > 0)";
 
             if (semestre > 0)
                 query += " and t.semestre = @semestre ";
@@ -450,7 +451,8 @@ namespace SME.SGP.Dados.Repositorios
 	                            inner join ue u on u.id = t.ue_id 
 	                            inner join dre d on d.id = u.dre_id 
                             where d.dre_id = @dreCodigo
-                            and t.modalidade_codigo = @modalidade";
+                            and t.modalidade_codigo = @modalidade
+                            and (fte.quantidade_alunos_abaixo_50_porcento > 0)";
 
             if (semestre > 0)
                 query += " and t.semestre = @semestre ";
@@ -477,7 +479,8 @@ namespace SME.SGP.Dados.Repositorios
 	                            inner join dre d on d.id = u.dre_id 
                             where d.dre_id = @dreCodigo
                             and u.ue_id = @ueCodigo
-                            and t.modalidade_codigo = @modalidade";
+                            and t.modalidade_codigo = @modalidade
+                            and (fte.quantidade_alunos_abaixo_50_porcento > 0)";
 
             if (semestre > 0)
                 query += " and t.semestre = @semestre ";
