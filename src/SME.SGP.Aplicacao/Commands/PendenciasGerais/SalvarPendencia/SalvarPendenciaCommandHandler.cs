@@ -19,21 +19,31 @@ namespace SME.SGP.Aplicacao.Commands.PendenciasGerais.SalvarPendencia
 
         public async Task<long> Handle(SalvarPendenciaCommand request, CancellationToken cancellationToken)
         {
-            var pendencia = new Pendencia(request.TipoPendencia);
-            pendencia.Titulo = string.IsNullOrEmpty(request.Titulo) ? ObterTitulo(request.TipoPendencia) : request.Titulo;
-            pendencia.Descricao = string.IsNullOrEmpty(request.Descricao) ? ObterDescricao(request.TipoPendencia) : request.Descricao;
-            pendencia.Instrucao = request.Instrucao;
-            pendencia.DescricaoHtml = request.DescricaoHtml;
-            pendencia.UeId = request.UeId;
+            var pendencia = new Pendencia(request.TipoPendencia)
+            {
+                Titulo = ObterTitulo(request),
+                Descricao = ObterDescricao(request),
+                Instrucao = request.Instrucao,
+                DescricaoHtml = request.DescricaoHtml,
+                UeId = request.UeId
+            };
 
             return await repositorioPendencia.SalvarAsync(pendencia);
         }
 
-        private string ObterTitulo(TipoPendencia tipoPendencia) => tipoPendencia.Name();
-
-        private string ObterDescricao(TipoPendencia tipoPendencia)
+        private string ObterDescricao(SalvarPendenciaCommand request)
         {
-            switch (tipoPendencia)
+            return string.IsNullOrEmpty(request.Descricao) ? ObterDescricaoPorTipo(request) : request.Descricao;
+        }
+
+        private string ObterTitulo(SalvarPendenciaCommand request)
+        {
+            return !string.IsNullOrEmpty(request.Titulo) ? request.Titulo : request.TipoPendencia.Name();
+        }
+
+        private string ObterDescricaoPorTipo(SalvarPendenciaCommand request)
+        {
+            switch (request.TipoPendencia)
             {
                 case TipoPendencia.AvaliacaoSemNotaParaNenhumAluno:
                     return "";
@@ -48,13 +58,13 @@ namespace SME.SGP.Aplicacao.Commands.PendenciasGerais.SalvarPendencia
                 case TipoPendencia.AlteracaoNotaFechamento:
                     return "";
                 case TipoPendencia.Frequencia:
-                    return "As seguintes aulas estão sem Frequência registradas";
+                    return $"O registro de frequência do componente {request.DescricaoComponenteCurricular} da turma {request.TurmaAnoComModalidade} da {request.DescricaoUeDre} das aulas abaixo está pendente:";
                 case TipoPendencia.PlanoAula:
-                    return "As seguintes aulas estão sem Plano de Aula registrados:";
+                    return $"As aulas abaixo do componente {request.DescricaoComponenteCurricular} da turma {request.TurmaAnoComModalidade} da {request.DescricaoUeDre} estão sem plano de aula registrado:";
                 case TipoPendencia.DiarioBordo:
-                    return "As seguintes aulas estão sem Diario de Bordo registrados:";
+                    return $"O registro do Diário de Bordo do componente {request.DescricaoComponenteCurricular} da turma {request.TurmaAnoComModalidade} da {request.DescricaoUeDre} das aulas abaixo está pendente:";
                 case TipoPendencia.Avaliacao:
-                    return "As seguintes aulas estão sem Avaliação registradas:";
+                    return $"As avaliações abaixo do componente {request.DescricaoComponenteCurricular} da turma {request.TurmaAnoComModalidade} da {request.DescricaoUeDre} estão sem notas lançadas:";
                 case TipoPendencia.AulaNaoLetivo:
                     return "";
                 case TipoPendencia.CalendarioLetivoInsuficiente:
