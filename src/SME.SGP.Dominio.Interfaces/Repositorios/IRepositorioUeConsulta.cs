@@ -22,6 +22,7 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<Ue> ObterPorDre(long dreId);
 
         Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade modalidade);
+        Task<string> ObterCodigoPorId(long ueId);
         Task<IEnumerable<long>> ObterIdsPorDre(long dreId);
         Task<IEnumerable<string>> ObterCodigosUEs();
         IEnumerable<Ue> ObterTodas();

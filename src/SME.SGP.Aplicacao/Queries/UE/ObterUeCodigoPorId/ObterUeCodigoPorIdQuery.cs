@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
+using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public long UeId { get; }
     }
 
-    public class ObterUeCodigoPorIdQueryValidator : AbstractValidation<ObterUeCodigoPorIdQuery>
+    public class ObterUeCodigoPorIdQueryValidator : AbstractValidator<ObterUeCodigoPorIdQuery>
     {
         public ObterUeCodigoPorIdQueryValidator()
         {

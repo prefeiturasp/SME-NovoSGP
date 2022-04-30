@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao
 {
     public class Ao_gerar_pendencia_aula : TesteBase
     {
-        public Ao_gerar_pendencia_aula(TestFixture testFixture) : base(testFixture)
+        public Ao_gerar_pendencia_aula(CollectionFixture testFixture) : base(testFixture)
         {
 
         }
