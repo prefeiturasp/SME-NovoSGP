@@ -229,12 +229,22 @@ namespace SME.SGP.Aplicacao
 
             foreach (var pendenciaAula in pendenciasAulas)
             {
-                descricao.AppendLine($"<li>{pendenciaAula.DataAula:dd/MM} - {pendenciaAula.Motivo}</li>");
+                descricao.AppendLine($"<li>{pendenciaAula.DataAula:dd/MM/yyyy} {ObterComplementoDescricao(pendenciaAula)}</li>");
             }
             descricao.AppendLine("</ul>");
             descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
 
             return descricao.ToString();
+        }
+
+        private string ObterComplementoDescricao(PendenciaAulaDto pendenciaAula)
+        {
+            return !string.IsNullOrEmpty(pendenciaAula.TituloAvaliacao)? $" - {pendenciaAula.TituloAvaliacao}" : ObterComplementoReposicao(pendenciaAula);
+        }
+
+        private string ObterComplementoReposicao(PendenciaAulaDto pendenciaAula)
+        {
+            return (pendenciaAula.EhReposicao ? " - Reposição" : "");
         }
 
         private async Task<string> ObterDescricaoPendenciaDiarioBordo(Pendencia pendencia, string codigoRfProfessor)

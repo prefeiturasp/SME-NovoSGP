@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var filtro = param.ObterObjetoMensagem<DreUeDto>();
-            var uesDre = await mediator.Send(new ObterUesCodigosPorDreQuery(filtro.DreId));
+            var uesDre = await mediator.Send(new ObterUesCodigosPorDreQuery(filtro.DreId //aki));
 
             var codigoTurmas = new List<string>();
             foreach (var ue in uesDre)

@@ -8,19 +8,21 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciasAulasPorTipoQuery : IRequest<IEnumerable<Aula>>
     {
-        public ObterPendenciasAulasPorTipoQuery(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, int? anoLetivo = null)
+        public ObterPendenciasAulasPorTipoQuery(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int? anoLetivo = null)
         {
             TipoPendenciaAula = tipoPendenciaAula;
             TabelaReferencia = tabelaReferencia;
             Modalidades = modalidades;
             DreId = dreId;
             AnoLetivo = anoLetivo ?? DateTime.Today.Year;
+            UeId = ueId;
         }
 
         public TipoPendencia TipoPendenciaAula { get; set; }
         public string TabelaReferencia { get; set; }
         public long[] Modalidades { get; set; }
         public long DreId { get; }
+        public long UeId { get; }
         public int AnoLetivo { get; set; }
     }
 
