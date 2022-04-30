@@ -18,7 +18,9 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var filtro = param.ObterObjetoMensagem<DreUeDto>();
-            var uesDre = await mediator.Send(new ObterUesCodigosPorDreQuery(filtro.DreId //aki));
+            var uesDre = filtro.UeId > 0 ?
+                await CarregarUe(filtro.UeId) :
+                await mediator.Send(new ObterUesCodigosPorDreQuery(filtro.DreId));
 
             var codigoTurmas = new List<string>();
             foreach (var ue in uesDre)
@@ -32,6 +34,12 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurma, turma));    
             
             return true;
+        }
+
+        private async Task<IEnumerable<string>> CarregarUe(long ueId)
+        {
+            var ueCodigo = await mediator.Send(new ObterCodigoUEDREPorIdQuery(ueId));
+            return new List<string>() { };
         }
     }
 }
