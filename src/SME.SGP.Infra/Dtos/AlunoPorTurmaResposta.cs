@@ -92,6 +92,14 @@ namespace SME.SGP.Infra
         /// <returns></returns>
         public bool EstaInativo(DateTime dataBase) => !EstaAtivo(dataBase);
 
+        /// <summary>
+        /// Verifica se o aluno está inativo por periodo
+        /// </summary>
+        /// <param name="periodoInicio">Data a se considerar para verificar a situação do aluno no periodo, Ex: Data do inicio do bimestre</param>
+        /// <param name="periodoFim">Data a se considerar para verificar a situação do aluno no periodo, Ex: Data do fim do bimestre</param>
+        /// <returns></returns>
+        public bool EstaInativo(DateTime periodoInicio, DateTime periodoFim) => !EstaAtivo(periodoInicio, periodoFim);
+
         public string NomeValido()
         {
             return string.IsNullOrEmpty(NomeSocialAluno) ? NomeAluno : NomeSocialAluno;
