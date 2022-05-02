@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -156,7 +155,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(sql, new { codigoTurma, modalidade = (int)modalidade, dataReferencia });
         }
 
-        public async Task<bool> PeriodoEmAbertoAsync(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false, bool ehModalidadeInfantil = false)
+        public async Task<bool> PeriodoEmAbertoAsync(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
         {
             var query = new StringBuilder(@"select count(pe.Id)
                           from periodo_escolar pe 
@@ -166,12 +165,8 @@ namespace SME.SGP.Dados.Repositorios
             if (!ehAnoLetivo)
                 query.AppendLine("and periodo_inicio <= @dataReferencia");
 
-            if (bimestre > 0 && !ehModalidadeInfantil)
+            if (bimestre > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre");
-            else
-            {
-                query.AppendLine($"and pe.bimestre {BimestreConstants.ObterCondicaoBimestre(bimestre, ehModalidadeInfantil)} ");
-            }
 
             return (await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipoCalendarioId, dataReferencia, bimestre })) > 0;
         }
