@@ -32,16 +32,16 @@ namespace SME.SGP.Aplicacao
             {
                 var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(item.First().TipoCalendarioId, item.First().DataAula));
 
+                var turmaComDreUe = turmasDreUe.FirstOrDefault(f => f.CodigoTurma.Equals(item.Key.TurmaId));
+
+                var descricaoComponenteCurricular = componentesCurriculares.FirstOrDefault(f => f.Id == long.Parse(item.Key.DisciplinaId)).Descricao;
+
+                var turmaAnoComModalidade = turmaComDreUe.NomeComModalidade();
+
+                var descricaoUeDre = $"{ObterEscola(turmaComDreUe)}";
+
                 if (periodoEscolar != null)
                 {
-                    var turmaComDreUe = turmasDreUe.FirstOrDefault(f => f.CodigoTurma.Equals(item.Key.TurmaId));
-
-                    var descricaoComponenteCurricular = componentesCurriculares.FirstOrDefault(f => f.Id == long.Parse(item.Key.DisciplinaId)).Descricao;
-
-                    var turmaAnoComModalidade = turmaComDreUe.NomeComModalidade();
-
-                    var descricaoUeDre = $"{ObterEscola(turmaComDreUe)}";
-
                     if (!item.First().AulaCJ)
                     {
                         var modalidadeTurma = await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(item.First().TurmaId));
@@ -74,10 +74,46 @@ namespace SME.SGP.Aplicacao
                             }
                         }
                     }
-                    else if (!string.IsNullOrEmpty(item.First().ProfessorRf))
-                        await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, item.First().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, item.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre);
+                    else
+                        if (!String.IsNullOrEmpty(item.First().ProfessorRf))
+                            await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, item.First().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, item.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre);
                 }
             }
+        }
+
+        private async Task SalvarPendenciaAulaUsuario(string disciplinaId, string codigoRfProfessor, long periodoEscolarId, TipoPendencia tipoPendencia, IEnumerable<long> aulasIds, string descricaoComponenteCurricular, string turmaAnoComModalidade, string descricaoUeDre)
+        {
+            long pendenciaIdExistente = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(disciplinaId, codigoRfProfessor, periodoEscolarId, tipoPendencia));
+           
+            try
+            {
+                unitOfWork.IniciarTransacao();
+
+                var pendenciaId = pendenciaIdExistente > 0
+                    ? pendenciaIdExistente
+                    : await mediator.Send(MapearPendencia(tipoPendencia,descricaoComponenteCurricular,turmaAnoComModalidade, descricaoUeDre));
+
+                await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, aulasIds));
+                await SalvarPendenciaUsuario(pendenciaId, codigoRfProfessor);
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch (Exception)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
+        }
+
+        private SalvarPendenciaCommand MapearPendencia(TipoPendencia tipoPendencia, string descricaoComponenteCurricular, string turmaAnoComModalidade, string descricaoUeDre)
+        {
+            return new SalvarPendenciaCommand
+            {
+                TipoPendencia = tipoPendencia,
+                DescricaoComponenteCurricular = descricaoComponenteCurricular,
+                TurmaAnoComModalidade = turmaAnoComModalidade,
+                DescricaoUeDre = descricaoUeDre,
+            };
         }
 
         private string ObterEscola(Turma turmaDreUe)
