@@ -23,16 +23,16 @@ namespace SME.SGP.Dominio
         [Display(Name = "Alteração de nota de fechamento", GroupName = "Fechamento")]
         AlteracaoNotaFechamento = 6,
 
-        [Display(Name = "Aula sem Frequência registrada", GroupName = "Calendário")]
+        [Display(Name = "Aula sem Frequência registrada", GroupName = "Diario de Classe")]
         Frequencia = 7,
 
-        [Display(Name = "Aula sem Plano de Aula registrado", GroupName = "Calendário")]
+        [Display(Name = "Aula sem Plano de Aula registrado", GroupName = "Diario de Classe")]
         PlanoAula = 8,
 
-        [Display(Name = "Aula sem Diario de Bordo registrado", GroupName = "Calendário")]
+        [Display(Name = "Aula sem Diario de Bordo registrado", GroupName = "Diario de Classe")]
         DiarioBordo = 9,
 
-        [Display(Name = "Avaliações sem nota registrada", GroupName = "Calendário")]
+        [Display(Name = "Avaliações sem nota registrada", GroupName = "Diario de Classe")]
         Avaliacao = 10,
 
         [Display(Name = "Aulas criadas em dias não letivos", GroupName = "Calendário")]

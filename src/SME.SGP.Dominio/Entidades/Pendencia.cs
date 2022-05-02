@@ -16,7 +16,7 @@ namespace SME.SGP.Dominio
             UeId = ueId;
         }
 
-        protected Pendencia()
+        public Pendencia()
         {
         }
 

@@ -53,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var situacao = SituacaoPendencia.Pendente;
 
-            var query = @" select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo 
+            var query = @" select * from ( select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
 		                            from pendencia p 
 		                            inner join pendencia_perfil pp on pp.pendencia_id  = p.id 
 		                            inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id
@@ -61,12 +61,12 @@ namespace SME.SGP.Dados.Repositorios
 		                            and ppu.usuario_id = @usuarioId 
 		                            and situacao = @situacao
                             union all 
-                            select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo 
+                            select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
 		                            from pendencia p 
 		                            inner join pendencia_usuario pu on pu.pendencia_id = p.id
 		                            where not p.excluido 
 		                            and pu.usuario_id = @usuarioId 
-		                            and situacao = @situacao";
+		                            and situacao = @situacao ) t order by CriadoEm desc";
 
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
@@ -88,8 +88,6 @@ namespace SME.SGP.Dados.Repositorios
             retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendenciasPaginado, parametros);
             retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
-
-            retornoPaginado.Items = retornoPaginado.Items.Count() > 0 ? retornoPaginado.Items.OrderByDescending(rp => rp.CriadoEm) : retornoPaginado.Items;
 
             return retornoPaginado;
         }

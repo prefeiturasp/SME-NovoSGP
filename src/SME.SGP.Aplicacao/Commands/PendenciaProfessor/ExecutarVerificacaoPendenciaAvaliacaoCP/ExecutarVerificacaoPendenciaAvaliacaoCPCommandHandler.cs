@@ -25,13 +25,10 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExecutarVerificacaoPendenciaAvaliacaoCPCommand request, CancellationToken cancellationToken)
         {
             var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoEscolasPorDataFinalQuery(DateTime.Now.Date.AddDays(request.DiasParaGeracaoDePendencia)));
-            foreach (var periodoEncerrando in periodosEncerrando)
+            foreach (var periodoEncerrando in periodosEncerrando.Where(w=> w.PeriodoEscolar.TipoCalendario.Modalidade != ModalidadeTipoCalendario.Infantil))
             {
                 try
                 {
-                    if (periodoEncerrando.PeriodoEscolar.TipoCalendario.Modalidade == ModalidadeTipoCalendario.Infantil)
-                        continue;
-
                     var turmasSemAvaliacao = await mediator.Send(new ObterTurmaEComponenteSemAvaliacaoNoPeriodoPorUeQuery(periodoEncerrando.PeriodoEscolar.TipoCalendarioId,
                                                                                                                  periodoEncerrando.PeriodoEscolar.PeriodoInicio,
                                                                                                                  periodoEncerrando.PeriodoEscolar.PeriodoFim));
@@ -70,13 +67,18 @@ namespace SME.SGP.Aplicacao
             var pendenciaId = await ObterPendenciaIdDaTurma(turmaSemAvaliacao.Key.TurmaId);
             var gerarPendenciasCP = new List<(long componenteCurricularId, string professorRf)>();
 
+            var fechamentosDaTurma = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdQuery(long.Parse(turma.CodigoTurma)));
+
             foreach (var componenteCurricularNaTurma in turmaSemAvaliacao)
             {
                 var professorComponente = professoresTurma.FirstOrDefault(c => c.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId);
                 var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == componenteCurricularNaTurma.ComponenteCurricularId.ToString());
 
-                if (professorComponente != null && !await ExistePendenciaProfessor(pendenciaId, turma.Id, componenteCurricular.Codigo, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Id))
-                    gerarPendenciasCP.Add((long.Parse(componenteCurricular.Codigo), professorComponente.ProfessorRf));
+                if (!fechamentosDaTurma.Any(a=> a.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId))
+                {
+                    if (professorComponente != null && !await ExistePendenciaProfessor(pendenciaId, turma.Id, componenteCurricular.Codigo, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Id))
+                        gerarPendenciasCP.Add((long.Parse(componenteCurricular.Codigo), professorComponente.ProfessorRf));
+                }
             }
 
             if (gerarPendenciasCP.Any())

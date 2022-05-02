@@ -151,6 +151,13 @@ namespace SME.SGP.Dominio
         CJInfantilPodeEditarAulaTitular = 84,
 
         ControlePlanejamentoDiarioInfantilComComponente = 85,
+
+        //PendenciasAula
+        ExecutaPendenciaAulaDiarioBordo = 87,
+        ExecutaPendenciaAulaAvaliacao = 88,
+        ExecutaPendenciaAulaFrequencia = 89,
+        ExecutaPendenciaPlanoAula = 90,
+
         //Sistema
         HabilitarServicosEmBackground = 100,
         ProcessarDeadletter = 101,
