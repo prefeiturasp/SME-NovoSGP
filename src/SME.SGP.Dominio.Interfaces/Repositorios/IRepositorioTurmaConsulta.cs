@@ -36,7 +36,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Turma>> ObterTurmasComInicioFechamento(long ueId, long periodoEscolarId, int[] modalidades);
         Task<IEnumerable<Turma>> ObterTurmasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades);
         Task<IEnumerable<Turma>> ObterTurmasCompletasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades, string turmaCodigo = "");
-        Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long ueId, int anoLetivo, long? periodoEscolarId, int[] modalidades, int semestre);
+        Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long? ueId, int anoLetivo, long? periodoEscolarId, int[] modalidades, int semestre);
         Task<IEnumerable<long>> ObterTurmasPorUeAnos(string ueCodigo, int anoLetivo, string[] anos, int modalidadeId);
         Task<Modalidade> ObterModalidadePorCodigo(string turmaCodigo);
         Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, string[] turmasCodigo, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas);
@@ -50,5 +50,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<int>> BuscarAnosLetivosComTurmasVigentes(string codigoUe);
         Task<bool> VerificaSeVirouHistorica(long turmaId);
         Task<IEnumerable<RetornoConsultaTurmaNomeFiltroDto>> ObterTurmasNomeFiltro(string[] turmasCodigos);
+        Task<IEnumerable<Turma>> ObterTurmasDreUeCompletaPorCodigos(string[] turmasCodigo);
     }
 }

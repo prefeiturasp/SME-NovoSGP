@@ -130,8 +130,13 @@ namespace SME.SGP.Dominio
                 .GroupBy(x => x.AtividadeAvaliativaID);
 
             var dataConsiderada = atividadesAvaliativas.Any() ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao.Date : DateTime.Today;
-
-            alunos = alunos.Where(a => a.EstaAtivo(dataConsiderada));
+            alunos = (from a in alunos
+                      join nc in notasConceitos
+                      on a.CodigoAluno equals nc.AlunoId
+                      join aa in atividadesAvaliativas
+                      on nc.AtividadeAvaliativaID equals aa.Id
+                      where a.EstaAtivo(aa.DataAvaliacao)
+                      select a).Distinct();
 
             if (!usuario.EhGestorEscolar())
                 await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, dataConsiderada, usuario);

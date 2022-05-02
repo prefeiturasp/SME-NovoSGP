@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             var aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.Frequencia,
                                                                                  "registro_frequencia",
                                                                                  new long[] { (int)Modalidade.EducacaoInfantil, (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio },
-                                                                                 filtro.DreId));
+                                                                                 filtro.DreId, filtro.UeId));
 
             var aulasRegistramFrequencia = aulas.Where(a => a.PermiteRegistroFrequencia());
             if (aulasRegistramFrequencia.Any())
