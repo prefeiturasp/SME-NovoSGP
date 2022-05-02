@@ -8,16 +8,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase : IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase
     {
-        private readonly IMediator _mediator;
+        private readonly IMediator mediator;
 
         public ObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase(IMediator mediator)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> Executar(FiltroGraficoFrequenciaTurmaEvasaoDto filtro)
         {
-            return await _mediator.Send(new ObterDashboardFrequenciaTurmaEvasaoSemPresencaQuery(filtro.DreCodigo, filtro.UeCodigo,
+            return await mediator.Send(new ObterDashboardFrequenciaTurmaEvasaoSemPresencaQuery(filtro.DreCodigo, filtro.UeCodigo,
                 filtro.Modalidade, filtro.Semestre, filtro.Mes));
         }
     }

@@ -11,18 +11,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDashboardFrequenciaTurmaEvasaoSemPresencaQueryHandler : IRequestHandler<ObterDashboardFrequenciaTurmaEvasaoSemPresencaQuery, IEnumerable<GraficoFrequenciaTurmaEvasaoDto>>
     {
-        private readonly IRepositorioFrequenciaConsulta _repositorio;
+        private readonly IRepositorioFrequenciaConsulta repositorio;
 
         public ObterDashboardFrequenciaTurmaEvasaoSemPresencaQueryHandler(IRepositorioFrequenciaConsulta repositorio)
         {
-            _repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
         public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> Handle(ObterDashboardFrequenciaTurmaEvasaoSemPresencaQuery request, CancellationToken cancellationToken)
         {
             var resultado = new List<GraficoFrequenciaTurmaEvasaoDto>();
 
-            var frequenciasTurmasEvasao = await _repositorio.ObterDashboardFrequenciaTurmaEvasaoSemPresenca(request.DreCodigo, request.UeCodigo,
+            var frequenciasTurmasEvasao = await repositorio.ObterDashboardFrequenciaTurmaEvasaoSemPresenca(request.DreCodigo, request.UeCodigo,
                 request.Modalidade, request.Semestre, request.Mes);
 
             if (!frequenciasTurmasEvasao?.Any() ?? true)
