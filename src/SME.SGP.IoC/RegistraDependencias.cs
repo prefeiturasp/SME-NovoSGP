@@ -691,6 +691,9 @@ namespace SME.SGP.IoC
             // Consolidação frequência aluno
             services.TryAddScoped<IConsolidarFrequenciaAlunoPorTurmaEMesUseCase, ConsolidarFrequenciaAlunoPorTurmaEMesUseCase>();
 
+            // Consolidação frequência turma evasão
+            services.TryAddScoped<IConsolidarFrequenciaTurmaEvasaoUseCase, ConsolidarFrequenciaTurmaEvasaoUseCase>();
+
             //Calcula Frequencia Geral
             services.TryAddScoped<ICalcularFrequenciaGeralUseCase, CalcularFrequenciaGeralUseCase>();
 

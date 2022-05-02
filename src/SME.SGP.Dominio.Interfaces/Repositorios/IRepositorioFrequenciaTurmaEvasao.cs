@@ -5,6 +5,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioFrequenciaTurmaEvasao
     {
         Task<long> Inserir(FrequenciaTurmaEvasao frequenciaTurmaEvasao);
-        Task LimparFrequenciaTurmaEvasaoPorTurmas(long[] turmasIds);
+        Task LimparFrequenciaTurmaEvasaoPorTurmasEMeses(long[] turmasIds, int[] meses);
     }
 }

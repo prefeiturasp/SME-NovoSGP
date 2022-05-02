@@ -8,24 +8,25 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFrequenciaTurmaEvasao : IRepositorioFrequenciaTurmaEvasao
     {
-        private readonly ISgpContext _database;
+        private readonly ISgpContext database;
 
         public RepositorioFrequenciaTurmaEvasao(ISgpContext database)
         {
-            _database = database;
+            this.database = database;
         }
 
         public async Task<long> Inserir(FrequenciaTurmaEvasao frequenciaTurmaEvasao)
         {
-            return (long)(await _database.Conexao.InsertAsync(frequenciaTurmaEvasao));
+            return (long)(await database.Conexao.InsertAsync(frequenciaTurmaEvasao));
         }
 
-        public async Task LimparFrequenciaTurmaEvasaoPorTurmas(long[] turmasIds)
+        public async Task LimparFrequenciaTurmaEvasaoPorTurmasEMeses(long[] turmasIds, int[] meses)
         {
             const string query = @"delete from frequencia_turma_evasao
-                                    where turma_id = any(@turmaIds)";
+                                    where turma_id = any(@turmaIds)
+                                    and mes any(@meses)";
 
-            await _database.Conexao.ExecuteScalarAsync(query, new { turmasIds });
+            await database.Conexao.ExecuteScalarAsync(query, new { turmasIds });
         }
     }
 }
