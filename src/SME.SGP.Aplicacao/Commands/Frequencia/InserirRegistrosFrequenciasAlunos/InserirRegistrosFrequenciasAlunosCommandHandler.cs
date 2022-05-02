@@ -90,8 +90,11 @@ namespace SME.SGP.Aplicacao
 
                     if (frequenciaAluno != null)
                     {
-                        frequenciaAluno.Valor = (int)presenca;
-                        dicionario[ALTERAR].Add(frequenciaAluno);
+                        if (frequenciaAluno.Valor != (int)presenca)
+                        {
+                            frequenciaAluno.Valor = (int)presenca;
+                            dicionario[ALTERAR].Add(frequenciaAluno);
+                        }
                     } else
                     {
                         var novafrequencia = new RegistroFrequenciaAluno()
@@ -125,8 +128,11 @@ namespace SME.SGP.Aplicacao
 
                 if (frequenciaDefinida != null)
                 {
-                    frequenciaDefinida.TipoFrequencia = tipoFrequencia;
-                    dicionario[ALTERAR].Add(frequenciaDefinida);
+                    if (frequenciaDefinida.TipoFrequencia != tipoFrequencia)
+                    {
+                        frequenciaDefinida.TipoFrequencia = tipoFrequencia;
+                        dicionario[ALTERAR].Add(frequenciaDefinida);
+                    }
                 } else
                 {
                     var frequenciaPreDefinida = new FrequenciaPreDefinida()
