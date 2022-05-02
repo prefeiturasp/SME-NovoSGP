@@ -94,7 +94,10 @@ namespace SME.SGP.Aplicacao
                     turmasAbrangencia = turmasAbrangencia != null ? turmasAbrangencia.Concat(turmasPrograma) : turmasPrograma;
             }
 
+            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(codigoRf, string.Empty));
+
             var turmasAtribuidasAoProfessor = await mediator.Send(new ObterTurmasPorProfessorRfQuery(codigoRf));
+            var turmasAtribuidasAoProfessorPorAno = await mediator.Send(new ObterTurmasPorAnoEUsuarioIdQuery(usuario.Id, turmaAula.AnoLetivo));
 
             if (ehProfessorCj)
             {
@@ -113,15 +116,32 @@ namespace SME.SGP.Aplicacao
                 turmasAtribuidasAoProfessor = turmasAtribuidasCJ;
             }
 
-            await ValidaTurmasProfessor(ehProfessorCj, ueId,
-                                  migrarPlanoAulaDto.DisciplinaId,
-                                  codigoRf,
-                                  turmasAtribuidasAoProfessor,
-                                  turmasAbrangencia,
-                                  idsTurmasSelecionadas);
+            if (turmaAula.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year)
+            {
+                await ValidaTurmasProfessor(ehProfessorCj, ueId,
+                                      migrarPlanoAulaDto.DisciplinaId,
+                                      codigoRf,
+                                      turmasAtribuidasAoProfessor,
+                                      turmasAbrangencia,
+                                      idsTurmasSelecionadas);
 
-            ValidaTurmasAno(ehProfessorCj, migrarPlanoAulaDto.MigrarObjetivos,
+                ValidaTurmasAno(ehProfessorCj, migrarPlanoAulaDto.MigrarObjetivos,
                             turmasAtribuidasAoProfessor, turmasAbrangencia, idsTurmasSelecionadas);
+            }
+            else
+            {
+                await ValidaTurmasProfessorPorAno(ehProfessorCj, ueId,
+                                      migrarPlanoAulaDto.DisciplinaId,
+                                      codigoRf,
+                                      turmasAtribuidasAoProfessorPorAno,
+                                      turmasAbrangencia,
+                                      idsTurmasSelecionadas);
+                
+                ValidaTurmasAnoHistorico(ehProfessorCj, migrarPlanoAulaDto.MigrarObjetivos,
+                            turmasAtribuidasAoProfessorPorAno, turmasAbrangencia, idsTurmasSelecionadas);
+            }
+
+            
         }
 
         private void ValidaTurmasAno(bool ehProfessorCJ, bool migrarObjetivos,
@@ -148,6 +168,30 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        private void ValidaTurmasAnoHistorico(bool ehProfessorCJ, bool migrarObjetivos,
+                                     IEnumerable<TurmaNaoHistoricaDto> turmasAtribuidasAoProfessor,
+                                     IEnumerable<AbrangenciaTurmaRetorno> turmasAbrangencia,
+                                     IEnumerable<string> idsTurmasSelecionadas)
+        {
+            if (!ehProfessorCJ || migrarObjetivos)
+            {
+                if (turmasAtribuidasAoProfessor.Any())
+                {
+                    var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasSelecionadas.Contains(t.Codigo.ToString()));
+                    var anoTurma = turmasAtribuidasSelecionadas.First().Ano;
+                    if (!turmasAtribuidasSelecionadas.All(x => x.Ano == anoTurma))
+                        throw new NegocioException("Somente é possível migrar o plano de aula para turmas dentro do mesmo ano");
+                }
+                else
+                {
+                    var turmasAbrangenciaSelecionadas = turmasAbrangencia.Where(t => idsTurmasSelecionadas.Contains(t.Codigo));
+                    var anoTurma = turmasAbrangenciaSelecionadas.First().Ano;
+                    if (!turmasAbrangenciaSelecionadas.All(x => x.Ano == anoTurma))
+                        throw new NegocioException("Somente é possível migrar o plano de aula para turmas dentro do mesmo ano");
+                }
+            }
+        }
+
         private async Task ValidaTurmasProfessor(bool ehProfessorCJ, string ueId, string disciplinaId, string codigoRf,
                                                 IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
                                                 IEnumerable<AbrangenciaTurmaRetorno> turmasAbrangencia,
@@ -159,6 +203,54 @@ namespace SME.SGP.Aplicacao
             if (turmasAtribuidasAoProfessor.Any())
             {
                 var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodTurma).ToList();
+                if (
+                        (
+                            ehProfessorCJ &&
+                            (
+                                lstTurmasCJ == null ||
+                                idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
+                            )
+                        ) ||
+                        (
+                            idsTurmasProfessor == null ||
+                            idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c)))
+                        )
+
+                   )
+                    throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
+            }
+            else
+            {
+                var idsTurmasAbrangencia = turmasAbrangencia?.Select(c => c.Codigo).ToList();
+                if (
+                        (
+                            ehProfessorCJ &&
+                            (
+                                lstTurmasCJ == null ||
+                                idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
+                            )
+                        ) ||
+                        (
+                            idsTurmasAbrangencia == null ||
+                            idsTurmasSelecionadas.Any(c => !idsTurmasAbrangencia.Contains(c))
+                        )
+
+                   )
+                    throw new NegocioException("Somente é possível migrar o plano de aula para turmas da abrangência do professor");
+            }
+
+        }
+        private async Task ValidaTurmasProfessorPorAno(bool ehProfessorCJ, string ueId, string disciplinaId, string codigoRf,
+                                                IEnumerable<TurmaNaoHistoricaDto> turmasAtribuidasAoProfessor,
+                                                IEnumerable<AbrangenciaTurmaRetorno> turmasAbrangencia,
+                                                IEnumerable<string> idsTurmasSelecionadas)
+        {
+
+            IEnumerable<AtribuicaoCJ> lstTurmasCJ = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, null, ueId, Convert.ToInt64(disciplinaId), codigoRf, null, null));
+
+            if (turmasAtribuidasAoProfessor.Any())
+            {
+                var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => Convert.ToInt32(c.Codigo)).ToList();
                 if (
                         (
                             ehProfessorCJ &&
