@@ -10,8 +10,9 @@ namespace SME.SGP.TesteIntegracao
     [Collection("TesteIntegradoSGP")]
     public class TesteBase : IClassFixture<TestFixture>
     {
-        protected ServiceProvider ServiceProvider => _collectionFixture.ServiceProvider;
         private readonly CollectionFixture _collectionFixture;
+
+        public ServiceProvider ServiceProvider {  get {  return _collectionFixture.ServiceProvider; } }
         public TesteBase(CollectionFixture collectionFixture)
         {
             _collectionFixture = collectionFixture;
