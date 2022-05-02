@@ -182,14 +182,15 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (turma.AnoLetivo == 2020)
                     ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
+                
+                if (conselhoClasseNota.Id > 0)
+                    await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
                 enviarAprovacao = await EnviarParaAprovacao(turma, usuarioLogado);
                 if (enviarAprovacao)
                     await GerarWFAprovacao(conselhoClasseNota, turma, bimestre, usuarioLogado, alunoCodigo, notaAnterior, conceitoIdAnterior);
                 else
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
-
-                await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
                 auditoria = (AuditoriaDto)conselhoClasseAluno;
 
