@@ -11,5 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task Salvar(FrequenciaPreDefinida frequenciaPreDefinida);
         Task<FrequenciaPreDefinidaDto> ObterPorTurmaECCEAlunoCodigo(long turmaId, long componenteCurricularId, string alunoCodigo);
         Task<IEnumerable<FrequenciaPreDefinidaDto>> ObterPorTurmaEComponente(long turmaId, long componenteCurricularId);
+        Task<IEnumerable<FrequenciaPreDefinida>> ObterListaFrequenciaPreDefinida(long turmaId, long componenteCurricularId);
+        Task<bool> InserirVarios(IEnumerable<FrequenciaPreDefinida> registros);
     }
 }

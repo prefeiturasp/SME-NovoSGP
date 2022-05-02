@@ -239,5 +239,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<RegistroFrequenciaAlunoPorTurmaEMesDto>(query, parametros);
         }
+
+        public Task<IEnumerable<RegistroFrequenciaAluno>> ObterRegistrosAusenciaPorIdRegistro(long registroFrequenciaId)
+        {
+            var query = @"select * 
+                        from registro_frequencia_aluno 
+                        where not excluido 
+                            and registro_frequencia_id = @registroFrequenciaId";
+
+            return database.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { registroFrequenciaId });
+        }
     }
 }
