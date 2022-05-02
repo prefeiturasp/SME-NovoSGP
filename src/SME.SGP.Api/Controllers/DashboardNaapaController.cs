@@ -23,5 +23,16 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+        [HttpGet("frequencia/turma/evasao/sempresenca")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoFrequenciaTurmaEvasaoDto>), 200)]
+        //-> TODO: adicionar nova permissão [Permissao(Permissao.PDA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFrequenciaTurmaEvasaoSemPresenca([FromQuery] FiltroGraficoFrequenciaTurmaEvasaoDto filtro,
+            [FromServices] IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
