@@ -17,7 +17,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoFrequenciaTurmaEvasaoDto>), 200)]
-        //-> TODO: adicionar nova permissão [Permissao(Permissao.PDA_C, Policy = "Bearer")]
+        [Permissao(Permissao.DNA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFrequenciaTurmaEvasaoAbaixo50Porcento([FromQuery] FiltroGraficoFrequenciaTurmaEvasaoDto filtro,
             [FromServices] IObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase useCase)
         {
@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoFrequenciaTurmaEvasaoDto>), 200)]
-        //-> TODO: adicionar nova permissão [Permissao(Permissao.PDA_C, Policy = "Bearer")]
+        [Permissao(Permissao.DNA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFrequenciaTurmaEvasaoSemPresenca([FromQuery] FiltroGraficoFrequenciaTurmaEvasaoDto filtro,
             [FromServices] IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase useCase)
         {
