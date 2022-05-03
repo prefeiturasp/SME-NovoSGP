@@ -125,42 +125,7 @@ namespace SME.SGP.Aplicacao
             var ueNome = turmaDreUe.Ue.Nome;
 
             return ueTipo != TipoEscola.Nenhum ? $"{ueTipo.ShortName()} {ueNome} ({dreAbreviacao})" : $"{ueNome} ({dreAbreviacao})";
-        }
-
-        private async Task SalvarPendenciaAulaUsuario(string disciplinaId, string codigoRfProfessor, long periodoEscolarId, TipoPendencia tipoPendencia, IEnumerable<long> aulasIds, string descricaoComponenteCurricular, string turmaAnoComModalidade, string descricaoUeDre)
-        {
-            long pendenciaIdExistente = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(disciplinaId, codigoRfProfessor, periodoEscolarId, tipoPendencia));
-
-            try
-            {
-                unitOfWork.IniciarTransacao();
-
-                var pendenciaId = pendenciaIdExistente > 0
-                    ? pendenciaIdExistente
-                    : await mediator.Send(MapearPendencia(tipoPendencia, descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre);
-
-                await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, aulasIds));
-                await SalvarPendenciaUsuario(pendenciaId, codigoRfProfessor);
-
-                unitOfWork.PersistirTransacao();
-            }
-            catch (Exception)
-            {
-                unitOfWork.Rollback();
-                throw;
-            }
-        }
-
-        private SalvarPendenciaCommand MapearPendencia(TipoPendencia tipoPendencia, string descricaoComponenteCurricular, string turmaAnoComModalidade, string descricaoUeDre)
-        {
-            return new SalvarPendenciaCommand
-            {
-                TipoPendencia = tipoPendencia,
-                DescricaoComponenteCurricular = descricaoComponenteCurricular,
-                TurmaAnoComModalidade = turmaAnoComModalidade,
-                DescricaoUeDre = descricaoUeDre,
-            };
-        }
+        }     
 
         private async Task SalvarPendenciaUsuario(long pendenciaId, string professorRf)
         {
