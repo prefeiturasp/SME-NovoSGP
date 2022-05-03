@@ -23,10 +23,10 @@ namespace SME.SGP.Dados.Repositorios
         public async Task LimparFrequenciaTurmaEvasaoPorTurmasEMeses(long[] turmasIds, int[] meses)
         {
             const string query = @"delete from frequencia_turma_evasao
-                                    where turma_id = any(@turmaIds)
-                                    and mes any(@meses)";
+                                    where turma_id = any(@turmasIds)
+                                    and mes = any(@meses)";
 
-            await database.Conexao.ExecuteScalarAsync(query, new { turmasIds });
+            await database.Conexao.ExecuteScalarAsync(query, new { turmasIds, meses });
         }
     }
 }

@@ -32,7 +32,14 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ConsolidacaoFrequenciaAlunoMensalDto>> ObterConsolidacoesFrequenciaAlunoMensalPorTurmaEMes(long turmaId, int mes)
         {
-            const string query = @"select * from consolidacao_frequencia_aluno_mensal
+            const string query = @"select turma_id as TurmaId, 
+                                        aluno_codigo as AlunoCodigo,
+                                        mes,
+                                        percentual,
+                                        quantidade_aulas as QuantidadeAulas,
+                                        quantidade_ausencias as QuantidadeAusencias,
+                                        quantidade_compensacoes as QuantidadeCompensacoes
+                                    from consolidacao_frequencia_aluno_mensal
                                     where turma_id = @turmaId 
                                     and mes = @mes";
 

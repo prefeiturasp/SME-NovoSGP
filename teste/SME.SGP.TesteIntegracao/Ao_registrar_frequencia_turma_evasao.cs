@@ -1,5 +1,11 @@
-﻿using SME.SGP.Dominio;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,15 +18,25 @@ namespace SME.SGP.TesteIntegracao
         }
 
         [Fact]
-        public async Task Deve_registrar_apenas_alunos_com_frequencia_abaixo_50_porcento_e_maior_que_0_porcento()
+        public async Task Deve_registrar_a_quantidade_de_alunos_com_frequencia_abaixo_50_porcento_e_sem_frequencia_por_turma_e_mes()
         {
+            await CriarItensBasicos();
+            await CriarRegistrosConsolidacaoFrequenciaAlunoMensal();
 
-        }
+            var useCase = ServiceProvider.GetService<IConsolidarFrequenciaTurmaEvasaoUseCase>();
+            var mensagem = new FiltroConsolidacaoFrequenciaTurmaEvasao(1, 5);
+            var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
-        [Fact]
-        public async Task Deve_registrar_apenas_alunos_sem_frequencia()
-        {
+            await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
+            var consolidacoes = ObterTodos<FrequenciaTurmaEvasao>();
+
+            consolidacoes.ShouldNotBeEmpty();
+
+            consolidacoes.Count.ShouldBe(1);
+            consolidacoes.FirstOrDefault().Mes.ShouldBe(5);
+            consolidacoes.FirstOrDefault().QuantidadeAlunosAbaixo50Porcento.ShouldBe(2);
+            consolidacoes.FirstOrDefault().QuantidadeAlunos0Porcento.ShouldBe(2);
         }
 
         private async Task CriarRegistrosConsolidacaoFrequenciaAlunoMensal()
