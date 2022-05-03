@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Npgsql;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -30,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" left join periodo_escolar pe on pe.id = ft.periodo_escolar_id");
             sql.AppendLine(@" where cca.aluno_codigo = @alunoCodigo");
 
-            if(bimestre.HasValue)
+            if (bimestre.HasValue)
                 sql.AppendLine(@" and pe.bimestre = @bimestre");
 
             sql.AppendLine(@" and ft.id = @fechamentoTurmaId");
@@ -38,16 +39,23 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql.ToString(), new { alunoCodigo, bimestre, fechamentoTurmaId });
         }
 
-        public async Task InserirRecomendacaoAlunoFamilia(long recomendacaoId, long conselhoClasseAlunoId)
+        public void InserirRecomendacaoAlunoFamilia(long[] recomendacoesId, long conselhoClasseAlunoId)
         {
-            var recomendacaoAluno = new ConselhoClasseAlunoRecomendacao()
+            var sql = @"copy conselho_classe_aluno_recomendacao ( 
+                                        conselho_classe_aluno_id, 
+                                        conselho_classe_recomendacao_id)
+                            from
+                            stdin (FORMAT binary)";
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
             {
-                ConselhoClasseRecomendacaoId = recomendacaoId,
-                ConselhoClasseAlunoId = conselhoClasseAlunoId
-            };
-
-           await database.Conexao.InsertAsync(recomendacaoAluno);
-
+                foreach (var recomendacao in recomendacoesId)
+                {
+                    writer.StartRow();
+                    writer.Write(conselhoClasseAlunoId);
+                    writer.Write(recomendacao);
+                }
+                writer.Complete();
+            }
         }
 
         public async Task<IEnumerable<long>> ObterRecomendacoesDoAlunoPorConselhoAlunoId(long conselhoClasseAlunoId)
@@ -59,7 +67,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<long>(sql.ToString(), new { conselhoClasseAlunoId });
         }
 
-        public async Task ExcluirRecomendacoesPorConselhoAlunoIdRecomendacaoId (long conselhoClasseAlunoId, long[] recomendacoesId)
+        public async Task ExcluirRecomendacoesPorConselhoAlunoIdRecomendacaoId(long conselhoClasseAlunoId, long[] recomendacoesId)
         {
             var sql = new StringBuilder();
 

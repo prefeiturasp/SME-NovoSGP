@@ -41,8 +41,8 @@ namespace SME.SGP.Aplicacao
             if (listaRecomendacoesExcluidas.Any())
                 await repositorioConselhoClasseAlunoRecomendacao.ExcluirRecomendacoesPorConselhoAlunoIdRecomendacaoId(request.ConselhoClasseAlunoId, listaRecomendacoesExcluidas.ToArray());          
 
-            foreach(var recomendacaoId in recomendacoesAlunoFamilia)
-                await repositorioConselhoClasseAlunoRecomendacao.InserirRecomendacaoAlunoFamilia(recomendacaoId, request.ConselhoClasseAlunoId);
+            if(recomendacoesAlunoFamilia.Any())
+                repositorioConselhoClasseAlunoRecomendacao.InserirRecomendacaoAlunoFamilia(recomendacoesAlunoFamilia.ToArray(), request.ConselhoClasseAlunoId);
         }
     }
 }
