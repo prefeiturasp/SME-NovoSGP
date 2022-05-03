@@ -418,7 +418,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorDre(Modalidade modalidade, int semestre, int mes)
         {
-            var query = @"select d.dre_id as Grupo,
+            var query = @"select d.Abreviacao as Descricao,
                                 sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
                             from frequencia_turma_evasao fte
 	                            inner join turma t on t.id = fte.turma_id 
@@ -433,7 +433,7 @@ namespace SME.SGP.Dados.Repositorios
             if (mes > 0)
                 query += " and fte.mes = @mes ";
 
-            query += @" group by d.dre_id
+            query += @" group by d.Abreviacao, d.dre_id
                         order by d.dre_id ";
 
             var parametros = new { modalidade, semestre, mes };
@@ -444,7 +444,7 @@ namespace SME.SGP.Dados.Repositorios
         private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorUe(string dreCodigo,
             Modalidade modalidade, int semestre, int mes)
         {
-            var query = @"select u.ue_id as Grupo,
+            var query = @"select u.nome as Descricao,
                                 sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
                             from frequencia_turma_evasao fte
 	                            inner join turma t on t.id = fte.turma_id 
@@ -460,7 +460,7 @@ namespace SME.SGP.Dados.Repositorios
             if (mes > 0)
                 query += " and fte.mes = @mes ";
 
-            query += @" group by u.ue_id 
+            query += @" group by u.nome, u.ue_id 
                         order by u.ue_id ";
 
             var parametros = new { dreCodigo, modalidade, semestre, mes };
@@ -471,7 +471,7 @@ namespace SME.SGP.Dados.Repositorios
         private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorTurma(string dreCodigo, string ueCodigo,
             Modalidade modalidade, int semestre, int mes)
         {
-            var query = @"select t.turma_id as Grupo,
+            var query = @"select t.nome as Descricao,
                                 sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
                             from frequencia_turma_evasao fte
 	                            inner join turma t on t.id = fte.turma_id 
@@ -488,7 +488,7 @@ namespace SME.SGP.Dados.Repositorios
             if (mes > 0)
                 query += " and fte.mes = @mes ";
 
-            query += @" group by t.turma_id
+            query += @" group by t.nome, t.turma_id
                         order by t.turma_id ";
 
             var parametros = new { dreCodigo, ueCodigo, modalidade, semestre, mes };

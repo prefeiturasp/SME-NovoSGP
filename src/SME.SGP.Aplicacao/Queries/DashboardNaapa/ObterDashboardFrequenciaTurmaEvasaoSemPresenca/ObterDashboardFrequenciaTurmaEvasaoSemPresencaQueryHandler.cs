@@ -18,29 +18,18 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
+        private static string AbreviacaoDreFormatado(string abreviacaoDre)
+           => abreviacaoDre.Replace(DashboardConstants.PrefixoDreParaSerRemovido, string.Empty).Trim();
+
         public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> Handle(ObterDashboardFrequenciaTurmaEvasaoSemPresencaQuery request, CancellationToken cancellationToken)
         {
-            var resultado = new List<GraficoFrequenciaTurmaEvasaoDto>();
+            var frequenciasTurmasEvasao = (await repositorio.ObterDashboardFrequenciaTurmaEvasaoSemPresenca(request.DreCodigo, request.UeCodigo,
+                request.Modalidade, request.Semestre, request.Mes)).ToList();
 
-            var frequenciasTurmasEvasao = await repositorio.ObterDashboardFrequenciaTurmaEvasaoSemPresenca(request.DreCodigo, request.UeCodigo,
-                request.Modalidade, request.Semestre, request.Mes);
+            if (string.IsNullOrEmpty(request.DreCodigo) && string.IsNullOrEmpty(request.UeCodigo))
+                frequenciasTurmasEvasao.ForEach(c => c.Descricao = AbreviacaoDreFormatado(c.Descricao));
 
-            if (!frequenciasTurmasEvasao?.Any() ?? true)
-                return resultado;
-
-            foreach (var frequenciaTurmaEvasao in frequenciasTurmasEvasao)
-            {
-                var graficoFrequenciaTurmaEvasao = new GraficoFrequenciaTurmaEvasaoDto()
-                {
-                    Grupo = frequenciaTurmaEvasao.Grupo,
-                    Descricao = DashboardConstants.QuantidadeSemPresencaDescricao,
-                    Quantidade = frequenciaTurmaEvasao.Quantidade
-                };
-
-                resultado.Add(graficoFrequenciaTurmaEvasao);
-            }
-
-            return resultado;
+            return frequenciasTurmasEvasao;
         }
     }
 }
