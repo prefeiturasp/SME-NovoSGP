@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
             var anotacoesPedagogicas = new StringBuilder();
             var auditoriaListaDto = new List<AuditoriaDto>();
 
-            if (conselhosClassesIds != null)
+            if (conselhosClassesIds != null && !conselhosClassesIds.Any())
             {
                 foreach (var conselhoClassesIdParaTratar in conselhosClassesIds)
                 {
