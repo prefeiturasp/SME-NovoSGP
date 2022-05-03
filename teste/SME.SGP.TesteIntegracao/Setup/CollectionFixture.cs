@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.Setup
         private readonly IServiceCollection _services;
         public readonly InMemoryDatabase Database;
         public readonly ServiceProvider ServiceProvider;
-
+        
         public CollectionFixture()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             _services = new ServiceCollection();
 
             Database = new InMemoryDatabase();
-            _services.AddScoped<IDbConnection>(x => Database.Conexao);
+            _services.AddScoped<IDbConnection>(x=> Database.Conexao);
 
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
             _services.AddSingleton<IConfiguration>(config);

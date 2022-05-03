@@ -51,9 +51,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await ObterTurma(turmaId);
 
-            var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
-
-            AulasPrevistasDadasAuditoriaDto aulaPrevistaDto;
+            var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);            
 
             var aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
 
@@ -72,9 +70,7 @@ namespace SME.SGP.Aplicacao
                 aulaPrevistaBimestres = MapearPeriodoParaBimestreDto(periodosBimestre);
             }
 
-            aulaPrevistaDto = MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres, periodosAbertos);
-
-            return aulaPrevistaDto;
+            return MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres, periodosAbertos);            
         }
 
         public async Task<int> ObterAulasDadas(Turma turma, string componenteCurricularCodigo, int bimestre)
