@@ -51,8 +51,8 @@ namespace SME.SGP.Dados.Repositorios
                 foreach (var recomendacao in recomendacoesId)
                 {
                     writer.StartRow();
-                    writer.Write(conselhoClasseAlunoId);
-                    writer.Write(recomendacao);
+                    writer.Write(conselhoClasseAlunoId, NpgsqlTypes.NpgsqlDbType.Bigint);
+                    writer.Write(recomendacao, NpgsqlTypes.NpgsqlDbType.Bigint);
                 }
                 writer.Complete();
             }

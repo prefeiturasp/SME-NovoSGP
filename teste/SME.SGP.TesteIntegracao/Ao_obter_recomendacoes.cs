@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -93,16 +94,34 @@ namespace SME.SGP.TesteIntegracao
         }
 
         [Fact]
-        public async Task Deve_gravar_recomendacao_aluno()
+        public async Task Deve_inserir_recomendacao_aluno()
         {
             var mediator = ServiceProvider.GetService<IMediator>();
 
             await DadosConselhoClasse();
 
+            var listaRecomendacoesAluno = new List<long> { 1, 3 };
+            var listaRecomendacoesFamilia = new List<long> { 2, 4 };
+
+            await mediator.Send(new SalvarConselhoClasseAlunoRecomendacaoCommand(listaRecomendacoesAluno, listaRecomendacoesFamilia, 1));
+
             var dadosGravados = ObterTodos<ConselhoClasseAlunoRecomendacao>();
 
             dadosGravados.ShouldNotBeNull();
             dadosGravados.First().ConselhoClasseAlunoId.ShouldBe(1);
+        }
+
+        [Fact]
+        public async Task Deve_obter_recomendacoes_por_conselho_aluno()
+        {
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            await DadosConselhoClasse();
+
+            var recomendacoesAluno = await mediator.Send(new ObterRecomendacoesPorConselhoAlunoIdQuery(1));
+
+            recomendacoesAluno.ShouldNotBeNull();
+            recomendacoesAluno.First().ShouldBe(1);
         }
 
         public async Task DadosConselhoClasse()
@@ -242,6 +261,8 @@ namespace SME.SGP.TesteIntegracao
             });
            
         }
+
+
 
 
     }
