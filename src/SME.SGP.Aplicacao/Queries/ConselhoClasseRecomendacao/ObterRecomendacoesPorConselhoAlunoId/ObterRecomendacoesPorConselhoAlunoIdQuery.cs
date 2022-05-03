@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao 
 { 
-    public class ObterRecomendacoesPorConselhoAlunoIdQuery : IRequest<IEnumerable<RecomendacoesAlunoFamiliaDto>>
+    public class ObterRecomendacoesPorConselhoAlunoIdQuery : IRequest<IEnumerable<long>>
     {
         public long ConselhoClasseAlunoId { get; set; }
 

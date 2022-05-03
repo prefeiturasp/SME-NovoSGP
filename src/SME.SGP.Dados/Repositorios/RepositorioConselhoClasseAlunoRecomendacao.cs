@@ -50,22 +50,22 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterRecomendacoesDoAlunoPorConselhoAlunoId(long conselhoClasseAlunoId)
+        public async Task<IEnumerable<long>> ObterRecomendacoesDoAlunoPorConselhoAlunoId(long conselhoClasseAlunoId)
         {
             var sql = new StringBuilder();
 
-            sql.AppendLine("select * from conselho_classe_aluno_recomendacao where conselho_classe_aluno_id = @conselhoClasseAlunoId");
+            sql.AppendLine("select conselho_classe_recomendacao_id from conselho_classe_aluno_recomendacao where conselho_classe_aluno_id = @conselhoClasseAlunoId");
 
-            return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql.ToString(), new { conselhoClasseAlunoId });
+            return await database.Conexao.QueryAsync<long>(sql.ToString(), new { conselhoClasseAlunoId });
         }
 
-        public async Task ExcluirRecomendacoesPorConselhoAlunoId (long conselhoClasseAlunoId)
+        public async Task ExcluirRecomendacoesPorConselhoAlunoIdRecomendacaoId (long conselhoClasseAlunoId, long[] recomendacoesId)
         {
             var sql = new StringBuilder();
 
-            sql.AppendLine("delete from conselho_classe_aluno_recomendacao where conselho_classe_aluno_id = @conselhoClasseAlunoId");
+            sql.AppendLine("delete from conselho_classe_aluno_recomendacao where conselho_classe_aluno_id = @conselhoClasseAlunoId and conselho_classe_recomendacao_id = ANY(@recomendacoesId)");
 
-            await database.Conexao.ExecuteScalarAsync(sql.ToString(), new { conselhoClasseAlunoId });
+            await database.Conexao.ExecuteScalarAsync(sql.ToString(), new { conselhoClasseAlunoId, recomendacoesId });
         }
     }
 }
