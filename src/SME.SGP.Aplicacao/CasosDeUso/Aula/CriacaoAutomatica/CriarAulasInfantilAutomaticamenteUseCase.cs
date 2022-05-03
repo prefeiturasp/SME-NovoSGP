@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var dadosCriacaoAulaInfantil = mensagemRabbit != null && mensagemRabbit.Mensagem != null ?
-                    mensagemRabbit.ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() ?? new DadosCriacaoAulasAutomaticasCarregamentoDto();
+                    mensagemRabbit.ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() : new DadosCriacaoAulasAutomaticasCarregamentoDto();
                 var anoAtual = DateTime.Now.Year;
                 var tipoCalendarioId = await mediator
                     .Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.EducacaoInfantil, anoAtual, null));
