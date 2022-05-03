@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendarioId == 0)
                 throw new NegocioException($"Tipo de calendário para turma {request.Turma.CodigoTurma} não localizado!");
 
-            var periodoEmAberto = await repositorioPeriodoEscolar.PeriodoEmAbertoAsync(tipoCalendarioId, request.DataReferencia, request.Bimestre, request.EhAnoLetivo);
+            var periodoEmAberto = await repositorioPeriodoEscolar.PeriodoEmAbertoAsync(tipoCalendarioId, request.DataReferencia, request.Bimestre, request.EhAnoLetivo, request.Turma.EhTurmaInfantil);
 
             return periodoEmAberto || await TurmaEmPeriodoDeFechamento(request.Turma, tipoCalendarioId, request.DataReferencia, request.Bimestre);
         }
