@@ -474,12 +474,33 @@ namespace SME.SGP.Aplicacao
                 Codigo = componenteCurricular.CodigoComponenteCurricular,
                 Nome = componenteCurricular.Nome,
                 TotalFaltas = frequenciaDisciplina?.TotalAusencias,
-                PercentualFrequencia = !String.IsNullOrEmpty(percentualFrequencia) && percentualFrequencia != "0" ? $"{percentualFrequencia}%" : "",
+                PercentualFrequencia = ExibirPercentualFrequencia(percentualFrequencia, totalAulas),
                 ParecerFinal = parecerFinal?.Valor == null || !totalAulas.Any() ? string.Empty : parecerFinal?.Valor,
                 ParecerFinalId = (int)(parecerFinal?.Id ?? default),
-                TotalAulas = totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricular.CodigoComponenteCurricular) == null || totalAulas.Count() == 0 ? "" : totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricular.CodigoComponenteCurricular).TotalAulas,
-                TotalAusenciasCompensadas = totalCompensacoes.FirstOrDefault(x => x.DisciplinaId == componenteCurricular.CodigoComponenteCurricular) == null || totalCompensacoes.Count() == 0 ? "" : totalCompensacoes.FirstOrDefault(x => x.DisciplinaId == componenteCurricular.CodigoComponenteCurricular).TotalCompensacoes
+                TotalAulas = ExibirTotalAulas(totalAulas, componenteCurricular.CodigoComponenteCurricular),
+                TotalAusenciasCompensadas = ExibirTotalCompensadas(totalCompensacoes, componenteCurricular.CodigoComponenteCurricular)
             };
+        }
+
+        private static string ExibirPercentualFrequencia(string percentualFrequencia, IEnumerable<TotalAulasNaoLancamNotaDto> aulas)
+        {
+            if (!aulas.Any() || String.IsNullOrEmpty(percentualFrequencia) || percentualFrequencia == "0")
+                return "";
+
+            return $"{percentualFrequencia}%";
+        }
+        private static string ExibirTotalCompensadas(IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto> totalCompensacao, long codigoComponenteCurricular)
+        {
+            var compensacoes = totalCompensacao.FirstOrDefault(x => x.DisciplinaId == codigoComponenteCurricular);
+
+            return compensacoes?.TotalCompensacoes ?? "0";
+        }
+
+        private static string ExibirTotalAulas(IEnumerable<TotalAulasNaoLancamNotaDto> aulas, long codigoComponenteCurricular)
+        {
+            var totalAulas = aulas.FirstOrDefault(x => x.DisciplinaId == codigoComponenteCurricular);
+
+            return totalAulas?.TotalAulas ?? "0";
         }
 
         private string ObterPercentualDeFrequencia(IEnumerable<FrequenciaAluno> frequenciaDisciplina)
