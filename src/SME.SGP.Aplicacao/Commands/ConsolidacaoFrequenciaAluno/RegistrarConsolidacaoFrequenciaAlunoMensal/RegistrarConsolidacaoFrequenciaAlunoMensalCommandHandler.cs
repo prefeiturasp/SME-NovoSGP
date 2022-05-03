@@ -9,16 +9,16 @@ namespace SME.SGP.Aplicacao
 {
     public class RegistrarConsolidacaoFrequenciaAlunoMensalCommandHandler : IRequestHandler<RegistrarConsolidacaoFrequenciaAlunoMensalCommand, long>
     {
-        private readonly IRepositorioConsolidacaoFrequenciaAlunoMensal _repositorioConsolidacaoFrequenciaAlunoMensal;
+        private readonly IRepositorioConsolidacaoFrequenciaAlunoMensal repositorioConsolidacaoFrequenciaAlunoMensal;
 
         public RegistrarConsolidacaoFrequenciaAlunoMensalCommandHandler(IRepositorioConsolidacaoFrequenciaAlunoMensal repositorioConsolidacaoFrequenciaAlunoMensal)
         {
-            _repositorioConsolidacaoFrequenciaAlunoMensal = repositorioConsolidacaoFrequenciaAlunoMensal ?? throw new System.ArgumentNullException(nameof(repositorioConsolidacaoFrequenciaAlunoMensal));
+            this.repositorioConsolidacaoFrequenciaAlunoMensal = repositorioConsolidacaoFrequenciaAlunoMensal ?? throw new ArgumentNullException(nameof(repositorioConsolidacaoFrequenciaAlunoMensal));
         }
 
         public async Task<long> Handle(RegistrarConsolidacaoFrequenciaAlunoMensalCommand request, CancellationToken cancellationToken)
         {
-            return await _repositorioConsolidacaoFrequenciaAlunoMensal.Inserir(new ConsolidacaoFrequenciaAlunoMensal()
+            return await repositorioConsolidacaoFrequenciaAlunoMensal.Inserir(new ConsolidacaoFrequenciaAlunoMensal()
             {
                 TurmaId = request.TurmaId,
                 AlunoCodigo = request.AlunoCodigo,

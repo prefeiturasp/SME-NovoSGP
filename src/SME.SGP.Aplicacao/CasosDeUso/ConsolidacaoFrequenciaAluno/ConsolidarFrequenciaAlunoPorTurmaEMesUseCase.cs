@@ -9,12 +9,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsolidarFrequenciaAlunoPorTurmaEMesUseCase : AbstractUseCase, IConsolidarFrequenciaAlunoPorTurmaEMesUseCase
     {
-        public readonly IUnitOfWork _unitOfWork;
+        public readonly IUnitOfWork unitOfWork;
 
         public ConsolidarFrequenciaAlunoPorTurmaEMesUseCase(IMediator mediator,
             IUnitOfWork unitOfWork) : base(mediator)
         {
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
@@ -22,23 +22,26 @@ namespace SME.SGP.Aplicacao
             var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaAlunoMensal>();
             var frequenciasAlunosTurmaEMes = await mediator.Send(new ObterFrequenciaAlunosPorTurmaEMesQuery(filtro.TurmaCodigo, filtro.Mes));
 
-            _unitOfWork.IniciarTransacao();
+            var turmaId = frequenciasAlunosTurmaEMes.Select(c => c.TurmaId).FirstOrDefault();
+
+            unitOfWork.IniciarTransacao();
             try
             {
-                var turmasIds = frequenciasAlunosTurmaEMes.Select(c => c.TurmaId).Distinct().ToArray();
-
-                await mediator.Send(new LimparConsolidacaoFrequenciaAlunoPorTurmasEMesesCommand(turmasIds, new int[] { filtro.Mes }));
+                await mediator.Send(new LimparConsolidacaoFrequenciaAlunoPorTurmasEMesesCommand(new long[] { turmaId }, new int[] { filtro.Mes }));
 
                 foreach (var frequencia in frequenciasAlunosTurmaEMes)
                     await RegistrarConsolidacaoFrequenciaAlunoMensal(frequencia, filtro.Mes);
 
-                _unitOfWork.PersistirTransacao();
+                unitOfWork.PersistirTransacao();
             }
             catch
             {
-                _unitOfWork.Rollback();
+                unitOfWork.Rollback();
                 throw;
             }
+
+            var comandoConsolidacaoFrequenciaTurmaEvasao = new FiltroConsolidacaoFrequenciaTurmaEvasao(turmaId, filtro.Mes);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoFrequenciaTurmaEvasao, comandoConsolidacaoFrequenciaTurmaEvasao, Guid.NewGuid(), null));
 
             return true;
         }

@@ -14,9 +14,5 @@
         // Relatório de Acompanhamento de Aprendizagem
         public const string QuantidadeComAcompanhamento = "Registrados";
         public const string QuantidadeSemAcompanhamento = "Pendentes";
-
-        // NAAPA - frequência turma evasão
-        public const string QuantidadeAbaixo50PorcentoDescricao = "Qtd. abaixo de 50%";
-        public const string QuantidadeSemPresencaDescricao = "Qtd. sem presença";
     }
 }
