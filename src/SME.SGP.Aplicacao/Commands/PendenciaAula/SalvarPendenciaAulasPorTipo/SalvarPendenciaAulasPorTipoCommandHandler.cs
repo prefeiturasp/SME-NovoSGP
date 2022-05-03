@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
 
                 var pendenciaId = pendenciaIdExistente > 0
                     ? pendenciaIdExistente
-                    : await mediator.Send(MapearPendencia(tipoPendencia, descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre);
+                    : await mediator.Send(MapearPendencia(tipoPendencia, descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre));
 
                 await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, aulasIds));
                 await SalvarPendenciaUsuario(pendenciaId, codigoRfProfessor);
