@@ -33,8 +33,8 @@ namespace SME.SGP.TesteIntegracao
 
             resultados.ShouldNotBeEmpty();
             resultados.Count().ShouldBe(2);
-            resultados.FirstOrDefault(c => c.Grupo == "1").Quantidade.ShouldBe(10);
-            resultados.FirstOrDefault(c => c.Grupo == "2").Quantidade.ShouldBe(3);
+            resultados.FirstOrDefault(c => c.Descricao == "BT").Quantidade.ShouldBe(10);
+            resultados.FirstOrDefault(c => c.Descricao == "JT").Quantidade.ShouldBe(3);
         }
 
         [Fact]
@@ -97,8 +97,8 @@ namespace SME.SGP.TesteIntegracao
 
             resultados.ShouldNotBeEmpty();
             resultados.Count().ShouldBe(2);
-            resultados.FirstOrDefault(c => c.Grupo == "1").Quantidade.ShouldBe(7);
-            resultados.FirstOrDefault(c => c.Grupo == "2").Quantidade.ShouldBe(2);
+            resultados.FirstOrDefault(c => c.Descricao == "BT").Quantidade.ShouldBe(4);
+            resultados.FirstOrDefault(c => c.Descricao == "JT").Quantidade.ShouldBe(2);
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace SME.SGP.TesteIntegracao
 
             resultados.ShouldNotBeEmpty();
             resultados.Count().ShouldBe(1);
-            resultados.FirstOrDefault().Quantidade.ShouldBe(7);
+            resultados.FirstOrDefault().Quantidade.ShouldBe(4);
         }
 
         [Fact]
@@ -141,7 +141,7 @@ namespace SME.SGP.TesteIntegracao
 
             resultados.ShouldNotBeEmpty();
             resultados.Count().ShouldBe(1);
-            resultados.FirstOrDefault().Quantidade.ShouldBe(7);
+            resultados.FirstOrDefault().Quantidade.ShouldBe(4);
         }
 
         private async Task CriarItensBasicos()
@@ -149,27 +149,33 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new Dre
             {
                 Id = 1,
-                CodigoDre = "1"
+                CodigoDre = "1",
+                Abreviacao = "DRE - BT"
             });
 
             await InserirNaBase(new Dre
             {
                 Id = 2,
-                CodigoDre = "2"
+                CodigoDre = "2",
+                Abreviacao = "DRE - JT"
             });
 
             await InserirNaBase(new Ue
             {
                 Id = 1,
                 CodigoUe = "1",
-                DreId = 1
+                DreId = 1,
+                Nome = "UE - 1",
+                TipoEscola = TipoEscola.Nenhum
             });
 
             await InserirNaBase(new Ue
             {
                 Id = 2,
                 CodigoUe = "2",
-                DreId = 2
+                DreId = 2,
+                Nome = "UE - 2",
+                TipoEscola = TipoEscola.Nenhum
             });
 
             await InserirNaBase(new Turma
@@ -179,7 +185,8 @@ namespace SME.SGP.TesteIntegracao
                 Ano = "1",
                 CodigoTurma = "1",
                 AnoLetivo = 2022,
-                ModalidadeCodigo = Modalidade.Medio
+                ModalidadeCodigo = Modalidade.Medio,
+                Nome = "7A"
             });
 
             await InserirNaBase(new Turma
@@ -189,7 +196,8 @@ namespace SME.SGP.TesteIntegracao
                 Ano = "1",
                 CodigoTurma = "2",
                 AnoLetivo = 2022,
-                ModalidadeCodigo = Modalidade.Medio
+                ModalidadeCodigo = Modalidade.Medio,
+                Nome = "8A"
             });
 
             await InserirNaBase(new TipoCalendario
