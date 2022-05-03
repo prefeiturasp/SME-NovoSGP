@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao sincronizar aulas do infantil. {ex.Message}", LogNivel.Critico, LogContexto.WorkerRabbit, excecaoInterna: ex.ToString()));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao sincronizar aulas do infantil. {mensagemRabbit} - {ex.Message}", LogNivel.Critico, LogContexto.WorkerRabbit, excecaoInterna: ex.ToString()));
                 return false;
             }
         }
