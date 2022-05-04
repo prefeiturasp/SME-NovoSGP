@@ -133,19 +133,18 @@ namespace SME.SGP.Aplicacao
                 var conselhoClasseAluno = await repositorioConselhoClasseAluno
                     .ObterPorConselhoClasseAlunoCodigoAsync(conselhoClassesIdParaTratar, alunoCodigo);
 
-                    if (conselhoClasseAluno != null)
-                    {
-                        if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno))
-                            recomendacaoAluno.AppendLine(conselhoClasseAluno.RecomendacoesAluno);
+                if (conselhoClasseAluno != null)
+                {
+                    if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno))
+                        recomendacaoAluno.AppendLine(conselhoClasseAluno.RecomendacoesAluno);
 
-                        if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
-                            recomendacaoFamilia.AppendLine(conselhoClasseAluno.RecomendacoesFamilia);
+                    if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
+                        recomendacaoFamilia.AppendLine(conselhoClasseAluno.RecomendacoesFamilia);
 
-                        if (!string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas))
-                            anotacoesPedagogicas.AppendLine(conselhoClasseAluno.AnotacoesPedagogicas);
+                    if (!string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas))
+                        anotacoesPedagogicas.AppendLine(conselhoClasseAluno.AnotacoesPedagogicas);
 
-                        auditoriaListaDto.Add((AuditoriaDto)conselhoClasseAluno); //No final, buscar a mais recente
-                    }
+                    auditoriaListaDto.Add((AuditoriaDto)conselhoClasseAluno); //No final, buscar a mais recente
                 }
             }
 
