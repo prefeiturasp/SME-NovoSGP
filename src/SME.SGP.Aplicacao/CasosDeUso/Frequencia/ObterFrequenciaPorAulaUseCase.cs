@@ -81,12 +81,17 @@ namespace SME.SGP.Aplicacao
 
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, aula.DisciplinaId, periodoEscolar.Id));
             
-            foreach (var aluno in alunosDaTurmaFiltrados.Where(a => a.EstaAtivo(aula.DataAula, aula.DataAula)).OrderBy(c => c.NomeAluno))
+            foreach (var aluno in alunosDaTurmaFiltrados.Where(a => a.EstaAtivo(aula.DataAula, aula.DataAula) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) || 
+            (a.Inativo && a.DataSituacao >= aula.DataAula) ).OrderBy(c => c.NomeAluno))
             {
                 var tipoFrequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(turma.Id, long.Parse(aula.DisciplinaId), aluno.CodigoAluno));
 
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
-                
+
+                var periodoDeCompensacaoAberto = new PeriodoDeCompensacaoAbertoUseCase(mediator);
+                var ehAbertura = await periodoDeCompensacaoAberto.VerificarPeriodoAberto(turma.CodigoTurma, periodoEscolar.Bimestre);
+
+
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {
                     CodigoAluno = aluno.CodigoAluno,
@@ -96,8 +101,8 @@ namespace SME.SGP.Aplicacao
                     SituacaoMatricula = aluno.SituacaoMatricula,
                     DataSituacao = aluno.DataSituacao,
                     DataNascimento = aluno.DataNascimento,
-                    Desabilitado = aluno.EstaInativo(aula.DataAula, aula.DataAula) || aula.EhDataSelecionadaFutura,
-                    PermiteAnotacao = aluno.EstaAtivo(aula.DataAula,aula.DataAula),
+                    Desabilitado = aluno.EstaInativo(aula.DataAula, aula.DataAula) || aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido) || aula.EhDataSelecionadaFutura,
+                    PermiteAnotacao = aluno.EstaAtivo(aula.DataAula, aula.DataAula),
                     PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno),
                     NomeResponsavel = aluno.NomeResponsavel,
                     TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
