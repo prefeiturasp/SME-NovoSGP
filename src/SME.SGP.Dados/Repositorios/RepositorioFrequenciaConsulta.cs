@@ -408,6 +408,12 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50Porcento(int anoLetivo,
             string dreCodigo, string ueCodigo, Modalidade modalidade, int semestre, int mes)
         {
+            if (dreCodigo.Trim() == "-99")
+                dreCodigo = string.Empty;
+
+            if (ueCodigo.Trim() == "-99")
+                ueCodigo = string.Empty;
+
             if (string.IsNullOrEmpty(dreCodigo) && string.IsNullOrEmpty(ueCodigo))
                 return await ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorDre(anoLetivo, modalidade, semestre, mes);
             else if (!string.IsNullOrEmpty(dreCodigo) && string.IsNullOrEmpty(ueCodigo))
@@ -510,6 +516,12 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoSemPresenca(int anoLetivo, string dreCodigo, 
             string ueCodigo, Modalidade modalidade, int semestre, int mes)
         {
+            if (dreCodigo.Trim() == "-99")
+                dreCodigo = string.Empty;
+
+            if (ueCodigo.Trim() == "-99")
+                ueCodigo = string.Empty;
+
             if (string.IsNullOrEmpty(dreCodigo) && string.IsNullOrEmpty(ueCodigo))
                 return await ObterDashboardFrequenciaTurmaEvasaoSemPresencaAgrupadoPorDre(anoLetivo, modalidade, semestre, mes);
             else if (!string.IsNullOrEmpty(dreCodigo) && string.IsNullOrEmpty(ueCodigo))
