@@ -474,7 +474,7 @@ namespace SME.SGP.Aplicacao
                 Codigo = componenteCurricular.CodigoComponenteCurricular,
                 Nome = componenteCurricular.Nome,
                 TotalFaltas = frequenciaDisciplina?.TotalAusencias,
-                PercentualFrequencia = ExibirPercentualFrequencia(percentualFrequencia, totalAulas),
+                PercentualFrequencia = ExibirPercentualFrequencia(percentualFrequencia, totalAulas, componenteCurricular.CodigoComponenteCurricular),
                 ParecerFinal = parecerFinal?.Valor == null || !totalAulas.Any() ? string.Empty : parecerFinal?.Valor,
                 ParecerFinalId = (int)(parecerFinal?.Id ?? default),
                 TotalAulas = ExibirTotalAulas(totalAulas, componenteCurricular.CodigoComponenteCurricular),
@@ -482,9 +482,11 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private static string ExibirPercentualFrequencia(string percentualFrequencia, IEnumerable<TotalAulasNaoLancamNotaDto> aulas)
+        private static string ExibirPercentualFrequencia(string percentualFrequencia, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, long componenteCurricular)
         {
-            if (!aulas.Any() || String.IsNullOrEmpty(percentualFrequencia) || percentualFrequencia == "0")
+            var aulas = totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricular);
+
+            if (aulas == null || String.IsNullOrEmpty(percentualFrequencia) || percentualFrequencia == "0")
                 return "";
 
             return $"{percentualFrequencia}%";
