@@ -183,7 +183,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (turma.AnoLetivo == 2020)
                     ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
                 
-                if (conselhoClasseNota.Id > 0)
+                if (conselhoClasseNota.Id > 0 || conselhoClasseAluno.AlteradoEm.HasValue)
                     await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
                 enviarAprovacao = await EnviarParaAprovacao(turma, usuarioLogado);
