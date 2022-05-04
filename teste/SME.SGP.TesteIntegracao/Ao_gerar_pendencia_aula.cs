@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao
 {
     public class Ao_gerar_pendencia_aula : TesteBase
     {
-        public Ao_gerar_pendencia_aula(CollectionFixture testFixture) : base(testFixture)
+        public Ao_gerar_pendencia_aula(CollectionFixture collectionFixture) : base(collectionFixture)
         {
 
         }
@@ -73,7 +73,15 @@ namespace SME.SGP.TesteIntegracao
         {
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            await InserirNaBase(new Pendencia(TipoPendencia.PlanoAula, "Contém pendência de plano de aula para as seguintes aulas:", "Aulas com pendência de plano de aula:  01/03"));
+            await InserirNaBase(new Pendencia()
+            {
+                Tipo = TipoPendencia.PlanoAula,
+                Descricao = "Contém pendência de plano de aula para as seguintes aulas:",
+                Titulo = "Aulas com pendência de plano de aula:  01/03",
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(2022, 03, 01)
+            });
 
             await InserirNaBase(new TipoCalendario()
             {
@@ -82,7 +90,7 @@ namespace SME.SGP.TesteIntegracao
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022,01,10),
+                CriadoEm = new DateTime(2022, 01, 10),
                 Nome = "Calendário Escolar 2022",
                 Periodo = Periodo.Anual,
                 AnoLetivo = 2022,
@@ -96,7 +104,7 @@ namespace SME.SGP.TesteIntegracao
                 DataAula = new DateTime(2022, 01, 03),
                 ProfessorRf = "Sistema",
                 DisciplinaId = "512",
-                Excluido = false, 
+                Excluido = false,
                 TipoCalendarioId = 1,
                 RecorrenciaAula = RecorrenciaAula.AulaUnica,
                 Quantidade = 1,
@@ -140,7 +148,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new PeriodoEscolar()
             {
                 Bimestre = 1,
-                PeriodoFim = new DateTime(2022,04,20),
+                PeriodoFim = new DateTime(2022, 04, 20),
                 PeriodoInicio = new DateTime(2022, 02, 01),
                 TipoCalendarioId = 1,
                 CriadoPor = "",
