@@ -27,8 +27,8 @@ namespace SME.SGP.Aplicacao
             Turma turma = null;
             var executarProximaPagina = false;
 
-            var mensagem = mensagemRabbit?
-                .ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() ?? new DadosCriacaoAulasAutomaticasCarregamentoDto();
+            var mensagem = mensagemRabbit != null && mensagemRabbit.Mensagem != null ?
+                mensagemRabbit.ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() : new DadosCriacaoAulasAutomaticasCarregamentoDto();
 
             if (mensagem?.CodigoTurma != null)
             {
