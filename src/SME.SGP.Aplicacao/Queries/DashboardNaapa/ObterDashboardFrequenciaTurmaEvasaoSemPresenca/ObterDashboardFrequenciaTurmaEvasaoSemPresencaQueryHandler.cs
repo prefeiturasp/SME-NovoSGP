@@ -3,7 +3,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> Handle(ObterDashboardFrequenciaTurmaEvasaoSemPresencaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorio.ObterDashboardFrequenciaTurmaEvasaoSemPresenca(request.DreCodigo, request.UeCodigo,
+            return await repositorio.ObterDashboardFrequenciaTurmaEvasaoSemPresenca(request.AnoLetivo, request.DreCodigo, request.UeCodigo,
                 request.Modalidade, request.Semestre, request.Mes);
         }
     }

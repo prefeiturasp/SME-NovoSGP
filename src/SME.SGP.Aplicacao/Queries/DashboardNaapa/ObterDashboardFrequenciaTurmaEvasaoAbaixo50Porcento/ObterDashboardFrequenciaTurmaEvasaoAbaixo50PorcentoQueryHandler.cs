@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> Handle(ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorio.ObterDashboardFrequenciaTurmaEvasaoAbaixo50Porcento(request.DreCodigo, request.UeCodigo,
+            return await repositorio.ObterDashboardFrequenciaTurmaEvasaoAbaixo50Porcento(request.AnoLetivo, request.DreCodigo, request.UeCodigo,
                 request.Modalidade, request.Semestre, request.Mes);
         }
     }
