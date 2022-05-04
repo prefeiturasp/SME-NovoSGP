@@ -23,6 +23,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestoesPlanoAEEPorVersaoQuery request, CancellationToken cancellationToken)
         {
+            var versaoPlano = request.VersaoPlanoId > 0 ?
+                await mediator.Send(new ObterVersaoPlanoAEEPorIdQuery(request.VersaoPlanoId)) :
+                new PlanoAEEVersaoDto();
+
+            var ultimaVersaoPlano = await mediator.Send(new ObterUltimaVersaoPlanoAEEQuery(versaoPlano.PlanoAEEId > 0 ? versaoPlano.PlanoAEEId : 0));
+
             var respostasPlano = request.VersaoPlanoId > 0 ?
                 await mediator.Send(new ObterRespostasPlanoAEEPorVersaoQuery(request.VersaoPlanoId)) :
                 Enumerable.Empty<RespostaQuestaoDto>();
@@ -30,16 +36,16 @@ namespace SME.SGP.Aplicacao
             var listaQuestoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId, questaoId =>
                respostasPlano.Where(c => c.QuestaoId == questaoId)));
 
-            var versaoPlano = await mediator.Send(new ObterVersaoPlanoAEEPorIdQuery(request.VersaoPlanoId));
-            var ultimaVersaoPlano = await mediator.Send(new ObterUltimaVersaoPlanoAEEQuery(versaoPlano.PlanoAEEId));
-
             if (!versaoPlano.Numero.Equals(ultimaVersaoPlano.Numero))
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
                 var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
-                listaQuestoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoEscolar.Id.ToString();
+                if (respostasPlano.Any())
+                {
+                    listaQuestoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoEscolar.Id.ToString();
+                }
+                
             }
-
             return listaQuestoes;
         }
     }
