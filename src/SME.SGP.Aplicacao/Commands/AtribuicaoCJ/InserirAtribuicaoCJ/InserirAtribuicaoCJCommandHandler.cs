@@ -39,8 +39,8 @@ namespace SME.SGP.Aplicacao
 
             await ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
 
-            if (request.ProfessoresTitulares != null && request.ProfessoresTitulares.Any(c => c.ProfessorRf.Contains(atribuicaoCJ.ProfessorRf) && c.DisciplinaId == atribuicaoCJ.DisciplinaId))
-                throw new NegocioException("Não é possível realizar substituição na turma onde o professor já é o titular.");
+            //if (request.ProfessoresTitulares != null && request.ProfessoresTitulares.Any(c => c.ProfessorRf.Contains(atribuicaoCJ.ProfessorRf) && c.DisciplinaId == atribuicaoCJ.DisciplinaId))
+            //    throw new NegocioException("Não é possível realizar substituição na turma onde o professor já é o titular.");
 
             if (request.AtribuicoesAtuais == null)
                 request.AtribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJ.Modalidade, atribuicaoCJ.TurmaId,
