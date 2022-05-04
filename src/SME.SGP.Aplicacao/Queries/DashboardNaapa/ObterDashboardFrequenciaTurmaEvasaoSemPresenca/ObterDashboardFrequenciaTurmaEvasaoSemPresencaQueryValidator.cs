@@ -1,9 +1,4 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -11,6 +6,10 @@ namespace SME.SGP.Aplicacao
     {
         public ObterDashboardFrequenciaTurmaEvasaoSemPresencaQueryValidator()
         {
+            RuleFor(c => c.AnoLetivo)
+                .GreaterThan(0)
+                .WithMessage("O ano letivo deve ser informado.");
+
             RuleFor(c => c.Modalidade)
                 .NotEmpty()
                 .NotNull()

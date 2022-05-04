@@ -7,8 +7,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDashboardFrequenciaTurmaEvasaoSemPresencaQuery : IRequest<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>>
     {
-        public ObterDashboardFrequenciaTurmaEvasaoSemPresencaQuery(string dreCodigo, string ueCodigo, Modalidade modalidade, int semestre, int mes)
+        public ObterDashboardFrequenciaTurmaEvasaoSemPresencaQuery(int anoLetivo, string dreCodigo, string ueCodigo,
+            Modalidade modalidade, int semestre, int mes)
         {
+            AnoLetivo = anoLetivo;
             DreCodigo = dreCodigo;
             UeCodigo = ueCodigo;
             Modalidade = modalidade;
@@ -16,6 +18,7 @@ namespace SME.SGP.Aplicacao
             Mes = mes;
         }
 
+        public int AnoLetivo { get; set; }
         public string DreCodigo { get; set; }
         public string UeCodigo { get; set; }
         public Modalidade Modalidade { get; set; }
