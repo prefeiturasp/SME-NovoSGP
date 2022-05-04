@@ -45,6 +45,7 @@ namespace SME.SGP.TesteIntegracao.Setup
         protected override void RegistrarServicos(IServiceCollection services)
         {
             services.TryAddScoped<IServicoTelemetria, TelemetriaFake>();
+            services.TryAddScoped<IServicoEol, ServicoEOLFake>();
             base.RegistrarServicos(services);
         }
     }

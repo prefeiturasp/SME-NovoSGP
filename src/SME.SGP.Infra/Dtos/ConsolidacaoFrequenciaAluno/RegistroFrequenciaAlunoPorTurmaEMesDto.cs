@@ -6,7 +6,6 @@ namespace SME.SGP.Infra
     {
         public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }
-        public int Mes { get; set; }
 
         public decimal Percentual
         {

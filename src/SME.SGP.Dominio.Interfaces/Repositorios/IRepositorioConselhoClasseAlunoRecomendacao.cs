@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioConselhoClasseAlunoRecomendacao 
     {
-        Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterRecomendacoesDoAlunoPorConselho(string alunoCodigo, int bimestre, long fechamentoTurmaId);
+        Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterRecomendacoesDoAlunoPorConselho(string alunoCodigo, int? bimestre, long fechamentoTurmaId);
         Task InserirRecomendacaoAlunoFamilia(long recomendacaoId, long conselhoClasseAlunoId);
     }
 }

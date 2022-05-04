@@ -17,6 +17,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new MatrizSaberPlanoMap());
                config.AddMap(new AuditoriaMap());
                config.AddMap(new CicloMap());
+               config.AddMap(new CicloAnoMap());
                config.AddMap(new PlanoAnualMap());
                config.AddMap(new PeriodoEscolarMap());
                config.AddMap(new ObjetivoAprendizagemPlanoMap());
@@ -202,6 +203,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PendenciaDiarioBordoMap());
                config.AddMap(new ConselhoClasseAlunoRecomendacaoMap());
                config.AddMap(new ConsolidacaoFrequenciaAlunoMensalMap());
+               config.AddMap(new FrequenciaTurmaEvasaoMap());
                config.ForDommel();
            });
         }

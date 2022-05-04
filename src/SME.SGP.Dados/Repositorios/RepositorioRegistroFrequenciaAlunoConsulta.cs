@@ -219,8 +219,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             const string query = @"select t.id as TurmaId,
                                         rfa.codigo_aluno as AlunoCodigo,
-                                        extract(month from a.data_aula) as Mes,
-                                        count(a.id) as QuantidadeAulas,
+                                        sum(a.quantidade) as QuantidadeAulas,
                                         count(distinct(rfa.registro_frequencia_id * rfa.numero_aula)) filter (where rfa.valor = 2) as QuantidadeAusencias,
                                         sum(0) as QuantidadeCompensacoes,
                                         t.ano_letivo
@@ -232,10 +231,9 @@ namespace SME.SGP.Dados.Repositorios
                                     and a.turma_id = @turmaCodigo
                                     and extract(month from a.data_aula) = @mes
                                     group by rfa.codigo_aluno,
-                                        extract(month from a.data_aula),
                                         t.id,
                                         t.ano_letivo
-                                    order by t.ano_letivo, extract(month from a.data_aula), rfa.codigo_aluno";
+                                    order by t.ano_letivo, rfa.codigo_aluno";
 
             var parametros = new { turmaCodigo, mes };
 

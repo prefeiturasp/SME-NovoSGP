@@ -9,45 +9,47 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsolidarFrequenciaAlunoPorTurmaEMesUseCase : AbstractUseCase, IConsolidarFrequenciaAlunoPorTurmaEMesUseCase
     {
-        public readonly IUnitOfWork _unitOfWork;
+        public readonly IUnitOfWork unitOfWork;
 
         public ConsolidarFrequenciaAlunoPorTurmaEMesUseCase(IMediator mediator,
             IUnitOfWork unitOfWork) : base(mediator)
         {
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaAlunoMensal>();
-            var frequenciasAlunosTurmasEMeses = await mediator.Send(new ObterFrequenciaAlunosPorTurmaEMesQuery(filtro.TurmaCodigo, filtro.Mes));
+            var frequenciasAlunosTurmaEMes = await mediator.Send(new ObterFrequenciaAlunosPorTurmaEMesQuery(filtro.TurmaCodigo, filtro.Mes));
 
-            _unitOfWork.IniciarTransacao();
+            var turmaId = frequenciasAlunosTurmaEMes.Select(c => c.TurmaId).FirstOrDefault();
+
+            unitOfWork.IniciarTransacao();
             try
             {
-                var turmasIds = frequenciasAlunosTurmasEMeses.Select(c => c.TurmaId).Distinct().ToArray();
-                var meses = frequenciasAlunosTurmasEMeses.Select(c => c.Mes).Distinct().ToArray();
+                await mediator.Send(new LimparConsolidacaoFrequenciaAlunoPorTurmasEMesesCommand(new long[] { turmaId }, new int[] { filtro.Mes }));
 
-                await mediator.Send(new LimparConsolidacaoFrequenciaAlunoPorTurmasEMesesCommand(turmasIds, meses));
+                foreach (var frequencia in frequenciasAlunosTurmaEMes)
+                    await RegistrarConsolidacaoFrequenciaAlunoMensal(frequencia, filtro.Mes);
 
-                foreach (var frequencia in frequenciasAlunosTurmasEMeses)
-                    await RegistrarConsolidacaoFrequenciaAlunoMensal(frequencia);
-
-                _unitOfWork.PersistirTransacao();
+                unitOfWork.PersistirTransacao();
             }
             catch
             {
-                _unitOfWork.Rollback();
+                unitOfWork.Rollback();
                 throw;
             }
+
+            var comandoConsolidacaoFrequenciaTurmaEvasao = new FiltroConsolidacaoFrequenciaTurmaEvasao(turmaId, filtro.Mes);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoFrequenciaTurmaEvasao, comandoConsolidacaoFrequenciaTurmaEvasao, Guid.NewGuid(), null));
 
             return true;
         }
 
-        private async Task RegistrarConsolidacaoFrequenciaAlunoMensal(RegistroFrequenciaAlunoPorTurmaEMesDto frequencia)
+        private async Task RegistrarConsolidacaoFrequenciaAlunoMensal(RegistroFrequenciaAlunoPorTurmaEMesDto frequencia, int mes)
         {            
             await mediator.Send(new RegistrarConsolidacaoFrequenciaAlunoMensalCommand(frequencia.TurmaId, frequencia.AlunoCodigo,
-                frequencia.Mes, frequencia.Percentual, frequencia.QuantidadeAulas, frequencia.QuantidadeAusencias, frequencia.QuantidadeCompensacoes));
+                mes, frequencia.Percentual, frequencia.QuantidadeAulas, frequencia.QuantidadeAusencias, frequencia.QuantidadeCompensacoes));
         }
     }
 }

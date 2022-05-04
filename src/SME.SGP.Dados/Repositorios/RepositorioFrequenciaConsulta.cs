@@ -404,5 +404,209 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { componenteCurricularId });
         }
+
+        public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50Porcento(int anoLetivo,
+            string dreCodigo, string ueCodigo, Modalidade modalidade, int semestre, int mes)
+        {
+            if (string.IsNullOrEmpty(dreCodigo) && string.IsNullOrEmpty(ueCodigo))
+                return await ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorDre(anoLetivo, modalidade, semestre, mes);
+            else if (!string.IsNullOrEmpty(dreCodigo) && string.IsNullOrEmpty(ueCodigo))
+                return await ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorUe(anoLetivo, dreCodigo, modalidade, semestre, mes);
+            else
+                return await ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorTurma(anoLetivo, dreCodigo, ueCodigo, modalidade, semestre, mes);
+        }
+
+        private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorDre(int anoLetivo, Modalidade modalidade, 
+            int semestre, int mes)
+        {
+            var query = @"select d.Abreviacao as Descricao,
+                                sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
+                            from frequencia_turma_evasao fte
+	                            inner join turma t on t.id = fte.turma_id 
+	                            inner join ue u on u.id = t.ue_id 
+	                            inner join dre d on d.id = u.dre_id 
+                            where t.modalidade_codigo = @modalidade
+                            and (fte.quantidade_alunos_abaixo_50_porcento > 0)
+                            and t.ano_letivo = @anoLetivo";
+
+            if (semestre > 0)
+                query += " and t.semestre = @semestre ";
+
+            if (mes > 0)
+                query += " and fte.mes = @mes ";
+
+            query += @" group by d.dre_id, d.Abreviacao
+                        order by d.dre_id ";
+
+            var parametros = new { modalidade, semestre, anoLetivo, mes };
+
+            var resultado = (await database.Conexao.QueryAsync<GraficoFrequenciaTurmaEvasaoDto>(query, parametros)).ToList();
+            resultado.ForEach(c => c.Descricao = c.Descricao.Replace(DashboardConstants.PrefixoDreParaSerRemovido, string.Empty).Trim());
+
+            return resultado;
+        }
+
+        private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorUe(int anoLetivo, string dreCodigo, 
+            Modalidade modalidade, int semestre, int mes)
+        {
+            var query = @"select u.nome as Descricao,
+                                sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
+                            from frequencia_turma_evasao fte
+	                            inner join turma t on t.id = fte.turma_id 
+	                            inner join ue u on u.id = t.ue_id 
+	                            inner join dre d on d.id = u.dre_id 
+                                left join tipo_escola te on te.id = u.tipo_escola
+                            where d.dre_id = @dreCodigo
+                            and t.modalidade_codigo = @modalidade
+                            and (fte.quantidade_alunos_abaixo_50_porcento > 0)
+                            and t.ano_letivo = @anoLetivo";
+
+            if (semestre > 0)
+                query += " and t.semestre = @semestre ";
+
+            if (mes > 0)
+                query += " and fte.mes = @mes ";
+
+            query += @" group by u.nome, te.descricao
+                        order by u.nome, te.descricao ";
+
+            var parametros = new { dreCodigo, modalidade, semestre, anoLetivo, mes };
+
+            return await database.Conexao.QueryAsync<GraficoFrequenciaTurmaEvasaoDto>(query, parametros);
+        }
+
+        private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorTurma(int anoLetivo, string dreCodigo, 
+            string ueCodigo, Modalidade modalidade, int semestre, int mes)
+        {
+            var query = @"select t.nome as Descricao,
+                                sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
+                            from frequencia_turma_evasao fte
+	                            inner join turma t on t.id = fte.turma_id 
+	                            inner join ue u on u.id = t.ue_id 
+	                            inner join dre d on d.id = u.dre_id 
+                            where d.dre_id = @dreCodigo
+                            and u.ue_id = @ueCodigo
+                            and t.modalidade_codigo = @modalidade
+                            and (fte.quantidade_alunos_abaixo_50_porcento > 0)
+                            and t.ano_letivo = @anoLetivo";
+
+            if (semestre > 0)
+                query += " and t.semestre = @semestre ";
+
+            if (mes > 0)
+                query += " and fte.mes = @mes ";
+
+            query += @" group by t.nome
+                        order by t.nome ";
+
+            var parametros = new { dreCodigo, ueCodigo, modalidade, semestre, anoLetivo, mes };
+
+            var resultado = (await database.Conexao.QueryAsync<GraficoFrequenciaTurmaEvasaoDto>(query, parametros)).ToList();
+            resultado.ForEach(c => c.Descricao = string.Concat(modalidade.ShortName(), " - ", c.Descricao));
+
+            return resultado;
+        }
+
+        public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoSemPresenca(int anoLetivo, string dreCodigo, 
+            string ueCodigo, Modalidade modalidade, int semestre, int mes)
+        {
+            if (string.IsNullOrEmpty(dreCodigo) && string.IsNullOrEmpty(ueCodigo))
+                return await ObterDashboardFrequenciaTurmaEvasaoSemPresencaAgrupadoPorDre(anoLetivo, modalidade, semestre, mes);
+            else if (!string.IsNullOrEmpty(dreCodigo) && string.IsNullOrEmpty(ueCodigo))
+                return await ObterDashboardFrequenciaTurmaEvasaoSemPresencaAgrupadoPorUe(anoLetivo, dreCodigo, modalidade, semestre, mes);
+            else
+                return await ObterDashboardFrequenciaTurmaEvasaoSemPresencaAgrupadoPorTurma(anoLetivo, dreCodigo, ueCodigo, modalidade, semestre, mes);
+        }
+
+        private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoSemPresencaAgrupadoPorDre(int anoLetivo, 
+            Modalidade modalidade, int semestre, int mes)
+        {
+            var query = @"select d.Abreviacao as Descricao,
+                                sum(fte.quantidade_alunos_0_porcento) as Quantidade
+                            from frequencia_turma_evasao fte
+	                            inner join turma t on t.id = fte.turma_id 
+	                            inner join ue u on u.id = t.ue_id 
+	                            inner join dre d on d.id = u.dre_id 
+                            where t.modalidade_codigo = @modalidade
+                            and (fte.quantidade_alunos_0_porcento > 0)
+                            and t.ano_letivo = @anoLetivo";
+
+            if (semestre > 0)
+                query += " and t.semestre = @semestre ";
+
+            if (mes > 0)
+                query += " and fte.mes = @mes ";
+
+            query += @" group by d.dre_id, d.Abreviacao
+                        order by d.dre_id ";
+
+            var parametros = new { modalidade, semestre, anoLetivo, mes };
+
+            var resultado = (await database.Conexao.QueryAsync<GraficoFrequenciaTurmaEvasaoDto>(query, parametros)).ToList();
+            resultado.ForEach(c => c.Descricao = c.Descricao.Replace(DashboardConstants.PrefixoDreParaSerRemovido, string.Empty).Trim());
+
+            return resultado;
+        }
+
+        private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoSemPresencaAgrupadoPorUe(int anoLetivo, string dreCodigo, 
+            Modalidade modalidade, int semestre, int mes)
+        {
+            var query = @"select u.nome as Descricao,
+                                sum(fte.quantidade_alunos_0_porcento) as Quantidade
+                            from frequencia_turma_evasao fte
+	                            inner join turma t on t.id = fte.turma_id 
+	                            inner join ue u on u.id = t.ue_id 
+	                            inner join dre d on d.id = u.dre_id 
+                                left join tipo_escola te on te.id = u.tipo_escola
+                            where d.dre_id = @dreCodigo
+                            and t.modalidade_codigo = @modalidade
+                            and (fte.quantidade_alunos_0_porcento > 0)
+                            and t.ano_letivo = @anoLetivo";
+
+            if (semestre > 0)
+                query += " and t.semestre = @semestre ";
+
+            if (mes > 0)
+                query += " and fte.mes = @mes ";
+
+            query += @" group by u.nome, te.descricao
+                        order by u.nome, te.descricao ";
+
+            var parametros = new { dreCodigo, modalidade, semestre, anoLetivo, mes };
+
+            return await database.Conexao.QueryAsync<GraficoFrequenciaTurmaEvasaoDto>(query, parametros);
+        }
+
+        private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoSemPresencaAgrupadoPorTurma(int anoLetivo, string dreCodigo, 
+            string ueCodigo, Modalidade modalidade, int semestre, int mes)
+        {
+            var query = @"select t.nome as Descricao,
+                                sum(fte.quantidade_alunos_0_porcento) as Quantidade
+                            from frequencia_turma_evasao fte
+	                            inner join turma t on t.id = fte.turma_id 
+	                            inner join ue u on u.id = t.ue_id 
+	                            inner join dre d on d.id = u.dre_id 
+                            where d.dre_id = @dreCodigo
+                            and u.ue_id = @ueCodigo
+                            and t.modalidade_codigo = @modalidade
+                            and (fte.quantidade_alunos_0_porcento > 0)
+                            and t.ano_letivo = @anoLetivo";
+
+            if (semestre > 0)
+                query += " and t.semestre = @semestre ";
+
+            if (mes > 0)
+                query += " and fte.mes = @mes ";
+
+            query += @" group by t.nome
+                        order by t.nome ";
+
+            var parametros = new { dreCodigo, ueCodigo, modalidade, semestre, anoLetivo, mes };
+
+            var resultado = (await database.Conexao.QueryAsync<GraficoFrequenciaTurmaEvasaoDto>(query, parametros)).ToList();
+            resultado.ForEach(c => c.Descricao = string.Concat(modalidade.ShortName(), " - ", c.Descricao));
+
+            return resultado;
+        }
     }
 }
