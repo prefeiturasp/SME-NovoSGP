@@ -26,6 +26,7 @@ namespace SME.SGP.TesteIntegracao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
+                AnoLetivo = 2022,
                 Modalidade = Modalidade.Medio
             };
 
@@ -47,6 +48,7 @@ namespace SME.SGP.TesteIntegracao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
+                AnoLetivo = 2022,
                 DreCodigo = "1",
                 Modalidade = Modalidade.Medio
             };
@@ -68,6 +70,7 @@ namespace SME.SGP.TesteIntegracao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
+                AnoLetivo = 2022,
                 DreCodigo = "1",
                 UeCodigo = "1",
                 Modalidade = Modalidade.Medio
@@ -90,6 +93,7 @@ namespace SME.SGP.TesteIntegracao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
+                AnoLetivo = 2022,
                 Modalidade = Modalidade.Medio
             };
 
@@ -111,6 +115,7 @@ namespace SME.SGP.TesteIntegracao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
+                AnoLetivo = 2022,
                 DreCodigo = "1",
                 Modalidade = Modalidade.Medio
             };
@@ -132,6 +137,7 @@ namespace SME.SGP.TesteIntegracao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
+                AnoLetivo = 2022,
                 DreCodigo = "1",
                 UeCodigo = "1",
                 Modalidade = Modalidade.Medio
