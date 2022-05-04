@@ -128,26 +128,23 @@ namespace SME.SGP.Aplicacao
             var anotacoesPedagogicas = new StringBuilder();
             var auditoriaListaDto = new List<AuditoriaDto>();
 
-            if (conselhosClassesIds != null && !conselhosClassesIds.Any())
+            foreach (var conselhoClassesIdParaTratar in conselhosClassesIds)
             {
-                foreach (var conselhoClassesIdParaTratar in conselhosClassesIds)
+                var conselhoClasseAluno = await repositorioConselhoClasseAluno
+                    .ObterPorConselhoClasseAlunoCodigoAsync(conselhoClassesIdParaTratar, alunoCodigo);
+
+                if (conselhoClasseAluno != null)
                 {
-                    var conselhoClasseAluno = await repositorioConselhoClasseAluno
-                        .ObterPorConselhoClasseAlunoCodigoAsync(conselhoClassesIdParaTratar, alunoCodigo);
+                    if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno))
+                        recomendacaoAluno.AppendLine(conselhoClasseAluno.RecomendacoesAluno);
 
-                    if (conselhoClasseAluno != null)
-                    {
-                        if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno))
-                            recomendacaoAluno.AppendLine(conselhoClasseAluno.RecomendacoesAluno);
+                    if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
+                        recomendacaoFamilia.AppendLine(conselhoClasseAluno.RecomendacoesFamilia);
 
-                        if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
-                            recomendacaoFamilia.AppendLine(conselhoClasseAluno.RecomendacoesFamilia);
+                    if (!string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas))
+                        anotacoesPedagogicas.AppendLine(conselhoClasseAluno.AnotacoesPedagogicas);
 
-                        if (!string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas))
-                            anotacoesPedagogicas.AppendLine(conselhoClasseAluno.AnotacoesPedagogicas);
-
-                        auditoriaListaDto.Add((AuditoriaDto)conselhoClasseAluno); //No final, buscar a mais recente
-                    }
+                    auditoriaListaDto.Add((AuditoriaDto)conselhoClasseAluno); //No final, buscar a mais recente
                 }
             }
 
