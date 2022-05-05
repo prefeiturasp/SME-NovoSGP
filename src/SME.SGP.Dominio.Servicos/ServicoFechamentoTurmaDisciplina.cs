@@ -114,7 +114,7 @@ namespace SME.SGP.Dominio.Servicos
 
             foreach (var usuarioNotificacaoo in usuariosNotificacao)
             {
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioNotificacaoo.CodigoRf);
+                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioNotificacaoo.CodigoRf).Result;                
                 var notificacao = new Notificacao()
                 {
                     Ano = turma.AnoLetivo,
