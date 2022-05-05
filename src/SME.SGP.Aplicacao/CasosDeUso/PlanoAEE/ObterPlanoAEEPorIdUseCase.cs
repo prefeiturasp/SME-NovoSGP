@@ -123,7 +123,12 @@ namespace SME.SGP.Aplicacao
 
             plano.QuestionarioId = questionarioId;
 
-            if (plano.Situacao != SituacaoPlanoAEE.Encerrado && plano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente && turma != null && plano.Questoes != null && plano.Questoes.Any())
+            if (plano.Situacao != SituacaoPlanoAEE.Encerrado && 
+                plano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente && 
+                turma != null && 
+                plano.Questoes != null && 
+                plano.Questoes.Any() &&
+                turma.AnoLetivo.Equals(DateTime.Today.Year))
             {
                 var periodoAtual = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
                 plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
