@@ -235,7 +235,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("AND a.turma_id = @turmaCodigo");
             query.AppendLine("AND a.data_aula::date = @dataDaAula");
 
-            return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new {turmaCodigo, ueCodigo, dataDaAula }));
+            return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new { turmaCodigo, ueCodigo, dataDaAula }));
         }
 
         public async Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorMes(string turmaCodigo, string ueCodigo, int mes)
@@ -257,7 +257,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("AND extract(month from a.data_aula) = @mes");
             query.AppendLine("AND extract(year from a.data_aula) = t.ano_letivo");
 
-            return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new {turmaCodigo, ueCodigo, mes }));
+            return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new { turmaCodigo, ueCodigo, mes }));
         }
 
         public async Task<IEnumerable<Aula>> ObterAulasRecorrencia(long aulaPaiId, long? aulaIdInicioRecorrencia = null, DateTime? dataFinal = null)
@@ -441,7 +441,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and disciplina_id = @componenteCurricular ");
             query.AppendLine("and extract('week' from data_aula::date + 1) = (@semana - 1)");
             query.AppendLine("and Date(data_aula) <> @dataExcecao");
-            
+
             if (!string.IsNullOrEmpty(codigoRf) && !ehGestor)
                 query.AppendLine("and professor_rf = @codigoRf");
 
@@ -590,7 +590,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and t.ano_letivo = @anoLetivo");
 
             if (!string.IsNullOrWhiteSpace(usuarioRF))
-                query.AppendLine("and a.professor_rf = @usuarioRF ");            
+                query.AppendLine("and a.professor_rf = @usuarioRF ");
 
             return database.Conexao.Query<Aula, Turma, Aula>(query.ToString(), (aula, turma) =>
             {
@@ -900,7 +900,7 @@ namespace SME.SGP.Dados.Repositorios
                         where not excluido and tipo_calendario_id = @tipoCalendarioId ";
 
             int[] tiposEscolaFiltro = null;
-            if(tiposEscola?.Any() ?? false)
+            if (tiposEscola?.Any() ?? false)
             {
                 tiposEscolaFiltro = tiposEscola.Select(x => (int)x).ToArray();
                 query += " AND ue.tipo_escola = any(@tiposEscolaFiltro)";
@@ -1108,27 +1108,27 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula <= @dataFim ";
 
                 var lookup = new Dictionary<long, DiarioBordoPorPeriodoDto>();
-                await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto, AuditoriaDto, DiarioBordoPorPeriodoDto>(query,(diarioBordoPorPeriodoDto, auditoriaDto) =>
-                    {
-                        if (auditoriaDto != null)
-                            diarioBordoPorPeriodoDto.Auditoria = auditoriaDto;
+                await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto, AuditoriaDto, DiarioBordoPorPeriodoDto>(query, (diarioBordoPorPeriodoDto, auditoriaDto) =>
+                     {
+                         if (auditoriaDto != null)
+                             diarioBordoPorPeriodoDto.Auditoria = auditoriaDto;
 
-                        lookup.Add(diarioBordoPorPeriodoDto.AulaId, diarioBordoPorPeriodoDto);
+                         lookup.Add(diarioBordoPorPeriodoDto.AulaId, diarioBordoPorPeriodoDto);
 
-                        return diarioBordoPorPeriodoDto;
-                    }, new
-                    {
-                        turmaCodigo,
-                        componenteCurricularFilho = int.Parse(componenteCurricularFilhoCodigo),
-                        componenteCurricularPaiCodigo,
-                        dataFim,
-                        dataInicio
-                    });
+                         return diarioBordoPorPeriodoDto;
+                     }, new
+                     {
+                         turmaCodigo,
+                         componenteCurricularFilho = int.Parse(componenteCurricularFilhoCodigo),
+                         componenteCurricularPaiCodigo,
+                         dataFim,
+                         dataInicio
+                     });
 
                 return lookup.Values;
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -1139,6 +1139,18 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select * from aula where id = ANY(@aulasIds)";
 
             return await database.Conexao.QueryAsync<Aula>(query, new { aulasIds = aulasIds.ToList() });
+        }
+
+        public async Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasPorTurmaDisciplinaAluno(string disciplinaId, string codigoTurma, string codigoAluno)
+        {
+            var sql = @"select disciplina_id as disciplinaid, SUM(total_aulas) as TotalAulas from frequencia_aluno fa 
+                        where tipo = 1 
+                        and disciplina_id = @disciplinaId
+                        and codigo_aluno = @codigoAluno
+                        and turma_id = @codigoTurma 
+                        group by disciplina_id ";
+
+            return await database.Conexao.QueryAsync<TotalAulasNaoLancamNotaDto>(sql, new { disciplinaId, codigoAluno, codigoTurma });
         }
     }
 }
