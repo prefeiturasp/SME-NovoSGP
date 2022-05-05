@@ -203,6 +203,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PendenciaDiarioBordoMap());
                config.AddMap(new ConselhoClasseAlunoRecomendacaoMap());
                config.AddMap(new ConsolidacaoFrequenciaAlunoMensalMap());
+               config.AddMap(new FrequenciaTurmaEvasaoMap());
                config.ForDommel();
            });
         }
