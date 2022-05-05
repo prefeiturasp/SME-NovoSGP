@@ -99,5 +99,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterDatasAulaDiarioBordoPorPeriodo(string turmaCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim);
         Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterAulasDiariosPorPeriodo(string turmaCodigo, string componenteCurricularFilhoCodigo, string componenteCurricularPaiCodigo, DateTime dataFim, DateTime dataInicio);
+        Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasPorTurmaDisciplinaAluno(string disciplinaId, string codigoTurma, string codigoAluno);
     }
 }
