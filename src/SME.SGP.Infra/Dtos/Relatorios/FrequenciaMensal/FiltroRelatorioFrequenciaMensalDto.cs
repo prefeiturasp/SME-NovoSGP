@@ -15,5 +15,7 @@ namespace SME.SGP.Infra
         public IList<string> MesesReferencias { get; set; }
         public int ApenasAlunosPercentualAbaixoDe { get; set; }
         public TipoFormatoRelatorio TipoFormatoRelatorio { get; set; }
+        public string UsuarioNome { get; set; }
+        public string UsuarioRf { get; set; }
     }
 }
