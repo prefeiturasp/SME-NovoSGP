@@ -39,13 +39,13 @@ namespace SME.SGP.Aplicacao
             if (!versaoPlano.Numero.Equals(ultimaVersaoPlano.Numero))
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
-                var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
-                if (respostasPlano.Any())
+                if (turma.AnoLetivo.Equals(DateTime.Today.Year))
                 {
+                    var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
                     listaQuestoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoEscolar.Id.ToString();
-                }
-                
+                }                
             }
+
             return listaQuestoes;
         }
     }
