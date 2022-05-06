@@ -54,8 +54,7 @@ namespace SME.SGP.IoC
             RegistrarRabbit(services, configRabbit);
             RegistrarMapeamentos.Registrar();
         }
-
-        protected virtual void RegistrarRabbit(IServiceCollection services, ConfiguracaoRabbitOptions configRabbit)
+        public virtual void RegistrarRabbit(IServiceCollection services, ConfiguracaoRabbitOptions configRabbit)
         {
             services.AddRabbit(configRabbit);
         }
@@ -797,6 +796,7 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<INotificacaoFrequenciaUeUseCase, NotificacaoFrequenciaUeUseCase>();
             services.TryAddScoped<INotificacaoAndamentoFechamentoUseCase, NotificacaoAndamentoFechamentoUseCase>();
+            services.TryAddScoped<INotificacaoAndamentoFechamentoPorUeUseCase, NotificacaoAndamentoFechamentoPorUeUseCase>();
             services.TryAddScoped<INotificacaoUeFechamentosInsuficientesUseCase, NotificacaoUeFechamentosInsuficientesUseCase>();
             services.TryAddScoped<INotificacaoInicioFimPeriodoFechamentoUseCase, NotificacaoInicioFimPeriodoFechamentoUseCase>();
             services.TryAddScoped<INotificacaoInicioPeriodoFechamentoUEUseCase, NotificacaoInicioPeriodoFechamentoUEUseCase>();
