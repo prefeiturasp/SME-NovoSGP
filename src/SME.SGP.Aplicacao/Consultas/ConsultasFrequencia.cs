@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
 
             if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
             {
-                var turmasCodigosParaConsulta = new List<int>(){ (int)turma.TipoTurma };
+                var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                 turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, false));
@@ -104,10 +104,23 @@ namespace SME.SGP.Aplicacao
 
             periodos.ToList().ForEach(p =>
             {
-                var frequenciaCorrespondente = frequenciaAlunoPeriodos.SingleOrDefault(f => f.Bimestre == p.Bimestre);
+                var frequenciaCorrespondente = ObterUltimaFrequencia(frequenciaAlunoPeriodos, p.Bimestre);
                 frequenciaAluno.AdicionarFrequenciaBimestre(p.Bimestre, frequenciaCorrespondente != null ? frequenciaCorrespondente.PercentualFrequencia : 100);
             });
 
+            return frequenciaAluno;
+        }
+
+        private static FrequenciaAluno ObterUltimaFrequencia(IEnumerable<FrequenciaAluno> listaFrequenciaAlunos, int bimestre)
+        {
+            var frequenciaAluno = new FrequenciaAluno();
+            foreach (var item in listaFrequenciaAlunos)
+            {
+                if (item.AlteradoEm > item.CriadoEm)
+                    frequenciaAluno = listaFrequenciaAlunos.FirstOrDefault(x => x.AlteradoEm == item.AlteradoEm && x.Bimestre == bimestre);
+                else
+                    frequenciaAluno = listaFrequenciaAlunos.FirstOrDefault(x => x.CriadoEm == item.CriadoEm && x.Bimestre == bimestre);
+            }
             return frequenciaAluno;
         }
 
