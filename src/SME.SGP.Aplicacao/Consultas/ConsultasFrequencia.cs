@@ -102,25 +102,13 @@ namespace SME.SGP.Aplicacao
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
 
+
             periodos.ToList().ForEach(p =>
             {
-                var frequenciaCorrespondente = ObterUltimaFrequencia(frequenciaAlunoPeriodos, p.Bimestre);
+                var frequenciaCorrespondente = frequenciaAlunoPeriodos.OrderByDescending(x => x.AlteradoEm ?? x.CriadoEm).FirstOrDefault(x => x.Bimestre == p.Bimestre);
                 frequenciaAluno.AdicionarFrequenciaBimestre(p.Bimestre, frequenciaCorrespondente != null ? frequenciaCorrespondente.PercentualFrequencia : 100);
             });
 
-            return frequenciaAluno;
-        }
-
-        private static FrequenciaAluno ObterUltimaFrequencia(IEnumerable<FrequenciaAluno> listaFrequenciaAlunos, int bimestre)
-        {
-            var frequenciaAluno = new FrequenciaAluno();
-            foreach (var item in listaFrequenciaAlunos)
-            {
-                if (item.AlteradoEm > item.CriadoEm)
-                    frequenciaAluno = listaFrequenciaAlunos.FirstOrDefault(x => x.AlteradoEm == item.AlteradoEm && x.Bimestre == bimestre);
-                else
-                    frequenciaAluno = listaFrequenciaAlunos.FirstOrDefault(x => x.CriadoEm == item.CriadoEm && x.Bimestre == bimestre);
-            }
             return frequenciaAluno;
         }
 
