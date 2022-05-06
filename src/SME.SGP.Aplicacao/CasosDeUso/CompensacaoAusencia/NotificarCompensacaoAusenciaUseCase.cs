@@ -15,7 +15,8 @@ namespace SME.SGP.Aplicacao
 {
     public class NotificarCompensacaoAusenciaUseCase : AbstractUseCase, INotificarCompensacaoAusenciaUseCase
     {
-        private readonly IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAluno;
+        private readonly IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAlunoConsulta;
+        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
@@ -23,13 +24,15 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEol servicoEOL;
 
         public NotificarCompensacaoAusenciaUseCase(IMediator mediator,
-                                                   IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAluno,
+                                                   IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAlunoConsulta,
+                                                   IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
                                                    IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                                    IRepositorioTurmaConsulta repositorioTurmaConsulta,
                                                    IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
                                                    IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                                    IServicoEol servicoEOL) : base(mediator)
         {
+            this.repositorioCompensacaoAusenciaAlunoConsulta = repositorioCompensacaoAusenciaAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAlunoConsulta));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
@@ -44,7 +47,7 @@ namespace SME.SGP.Aplicacao
             var compensacaoId = filtro.CompensacaoId;
 
             // Verifica se compensação possui alunos vinculados
-            var alunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
+            var alunos = await repositorioCompensacaoAusenciaAlunoConsulta.ObterPorCompensacao(compensacaoId);
             if (alunos == null || !alunos.Any())
                 return true;
 
