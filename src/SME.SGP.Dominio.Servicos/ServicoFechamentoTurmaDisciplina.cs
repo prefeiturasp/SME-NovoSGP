@@ -93,8 +93,9 @@ namespace SME.SGP.Dominio.Servicos
 
         }
 
-        public void GerarNotificacaoAlteracaoLimiteDias(Turma turma, Usuario usuarioLogado, Ue ue, int bimestre, string alunosComNotaAlterada)
+        public async Task GerarNotificacaoAlteracaoLimiteDias(Turma turma, Usuario usuarioLogado, Ue ue, int bimestre, string alunosComNotaAlterada)
         {
+
             var dataAtual = DateTime.Now;
             var mensagem = $"<p>A(s) nota(s)/conceito(s) final(is) da turma {turma.Nome} da {ue.Nome} (DRE {ue.Dre.Nome}) no bimestre {bimestre} de {turma.AnoLetivo} foram alterados pelo Professor " +
                 $"{usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) em  {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para o(s) seguinte(s) aluno(s):</p><br/>{alunosComNotaAlterada} ";
@@ -114,7 +115,7 @@ namespace SME.SGP.Dominio.Servicos
 
             foreach (var usuarioNotificacaoo in usuariosNotificacao)
             {
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioNotificacaoo.CodigoRf);
+                var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioNotificacaoo.CodigoRf);
                 var notificacao = new Notificacao()
                 {
                     Ano = turma.AnoLetivo,
@@ -127,7 +128,7 @@ namespace SME.SGP.Dominio.Servicos
                     TurmaId = turma.Id.ToString(),
                     UeId = turma.UeId.ToString(),
                 };
-                servicoNotificacao.Salvar(notificacao);
+                await servicoNotificacao.SalvarAsync(notificacao);
             }
         }
 

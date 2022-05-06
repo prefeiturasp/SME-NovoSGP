@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var data = param.ObterObjetoMensagem<GerarNotificacaoAlteracaoLimiteDiasParametros>();
-            servicoFechamentoTurmaDisciplina.GerarNotificacaoAlteracaoLimiteDias(data.TurmaFechamento, data.UsuarioLogado, data.Ue, data.Bimestre, data.AlunosComNotaAlterada);
+            await servicoFechamentoTurmaDisciplina.GerarNotificacaoAlteracaoLimiteDias(data.TurmaFechamento, data.UsuarioLogado, data.Ue, data.Bimestre, data.AlunosComNotaAlterada);
             return true;
         }
     }
