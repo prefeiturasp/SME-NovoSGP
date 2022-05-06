@@ -716,7 +716,7 @@ namespace SME.SGP.Aplicacao
                 Frequencia = percentualFrequencia < 0 || ((frequenciaAluno?.TotalAulas ?? 0) == 0 && (frequenciaAluno?.TotalAusencias ?? 0) == 0) ? null : percentualFrequencia.ToString(),
                 NotasFechamentos = ObterNotasComponente(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno),
                 NotaPosConselho = await ObterNotaPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota, visualizaNota),
-                Aulas = totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricularCodigo.ToString() && x.CodigoAluno == codigoAluno) == null || totalAulas.Count() == 0 ? "" : totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricularCodigo.ToString() && x.CodigoAluno == codigoAluno).TotalAulas
+                Aulas = totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricularCodigo.ToString() && x.CodigoAluno == codigoAluno) == null || totalAulas.Count() == 0 ? "0" : totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricularCodigo.ToString() && x.CodigoAluno == codigoAluno).TotalAulas
             };
 
             return conselhoClasseComponente;
