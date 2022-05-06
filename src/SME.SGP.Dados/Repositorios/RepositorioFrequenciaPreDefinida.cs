@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Npgsql;
+using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -94,6 +96,41 @@ namespace SME.SGP.Dados.Repositorios
                    codigoAluno = frequenciaPreDefinida.CodigoAluno,
                    tipoFrequencia = frequenciaPreDefinida.TipoFrequencia
                });
+        }
+
+        public async Task<IEnumerable<FrequenciaPreDefinida>> ObterListaFrequenciaPreDefinida(long turmaId, long componenteCurricularId)
+        {
+            var query = new StringBuilder(@"select *
+                                              from frequencia_pre_definida fpd
+                                             where fpd.turma_id = @turmaId
+                                               and fpd.componente_curricular_id = @componenteCurricularId ");
+
+            return await database.Conexao.QueryAsync<FrequenciaPreDefinida>(query.ToString(), new { turmaId, componenteCurricularId });
+        }
+        public async Task<bool> InserirVarios(IEnumerable<FrequenciaPreDefinida> registros)
+        {
+            var sql = @"copy frequencia_pre_definida (                                         
+                                        componente_curricular_id, 
+                                        turma_id, 
+                                        codigo_aluno, 
+                                        tipo_frequencia)
+                            from
+                            stdin (FORMAT binary)";
+
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            {
+                foreach (var frequencia in registros)
+                {
+                    writer.StartRow();
+                    writer.Write(frequencia.ComponenteCurricularId, NpgsqlDbType.Bigint);
+                    writer.Write(frequencia.TurmaId, NpgsqlDbType.Bigint);
+                    writer.Write(frequencia.CodigoAluno);
+                    writer.Write((int)frequencia.TipoFrequencia, NpgsqlDbType.Integer);
+                }
+                writer.Complete();
+            }
+
+            return true;
         }
     }
 }
