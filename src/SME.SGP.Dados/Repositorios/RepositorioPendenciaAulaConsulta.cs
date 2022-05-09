@@ -140,20 +140,21 @@ namespace SME.SGP.Dados.Repositorios
                }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf)
+        public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf, bool ehGestor, string codigoTurma)
         {
-            var sqlQuery = new StringBuilder(@"select distinct pdb.aula_id
-                                                    from pendencia_diario_bordo pdb
-                                            where pdb.componente_curricular_id = @disciplinaId and pdb.professor_rf = @professorRf");
-
             var disciplinaId = Convert.ToInt32(componenteCurricularId);
+            var sqlQuery = string.Empty;
+            if (ehGestor)
+            {
+                sqlQuery = @"select aula_id from pendencia_diario_bordo pdb join aula a on a.id = pdb.aula_id where a.turma_id = @codigoTurma";
+                return await database.Conexao.QueryAsync<long>(sqlQuery, new { codigoTurma }, commandTimeout: 60);
+            }
+            else
+            {
+                sqlQuery = @"select distinct pdb.aula_id from pendencia_diario_bordo pdb where pdb.componente_curricular_id = @disciplinaId and pdb.professor_rf = @professorRf";
+                return await database.Conexao.QueryAsync<long>(sqlQuery, new { professorRf, disciplinaId }, commandTimeout: 60);
+            }
 
-            return await database.Conexao.QueryAsync<long>(sqlQuery.ToString(),
-               new
-               {
-                   professorRf,
-                   disciplinaId
-               }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo)
@@ -414,7 +415,7 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     sql.AppendLine(@" and pdb.professor_rf = @usuarioLogadoRf");
                 }
-                     
+
                 sql.AppendLine(@"  where
 	                            not aula.excluido
 	                            and aula.id = @aula
@@ -443,7 +444,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and rf.id is null");
             }
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql.ToString(), new { aula = aulaId, hoje = DateTime.Today.Date, usuarioLogadoRf = usuarioLogado.CodigoRf}));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql.ToString(), new { aula = aulaId, hoje = DateTime.Today.Date, usuarioLogadoRf = usuarioLogado.CodigoRf }));
         }
 
         public async Task<long> ObterPendenciaIdPorComponenteProfessorEBimestre(long componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia)

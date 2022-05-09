@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
 
             if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
             {
-                var turmasCodigosParaConsulta = new List<int>(){ (int)turma.TipoTurma };
+                var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                 turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, false));
@@ -102,9 +102,10 @@ namespace SME.SGP.Aplicacao
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
 
+
             periodos.ToList().ForEach(p =>
             {
-                var frequenciaCorrespondente = frequenciaAlunoPeriodos.SingleOrDefault(f => f.Bimestre == p.Bimestre);
+                var frequenciaCorrespondente = frequenciaAlunoPeriodos.OrderByDescending(x => x.AlteradoEm ?? x.CriadoEm).FirstOrDefault(x => x.Bimestre == p.Bimestre);
                 frequenciaAluno.AdicionarFrequenciaBimestre(p.Bimestre, frequenciaCorrespondente != null ? frequenciaCorrespondente.PercentualFrequencia : 100);
             });
 
