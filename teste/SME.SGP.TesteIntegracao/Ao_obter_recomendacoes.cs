@@ -92,8 +92,7 @@ namespace SME.SGP.TesteIntegracao
             retorno.ShouldNotBeEmpty();
             retorno.First().Tipo.ShouldBe((int)ConselhoClasseRecomendacaoTipo.Aluno);
         }
-
-        [Fact]
+  
         public async Task Deve_inserir_recomendacao_aluno()
         {
             var mediator = ServiceProvider.GetService<IMediator>();
@@ -111,8 +110,9 @@ namespace SME.SGP.TesteIntegracao
             dadosGravados.First().ConselhoClasseAlunoId.ShouldBe(1);
         }
 
+
         [Fact]
-        public async Task Deve_obter_recomendacoes_por_conselho_aluno()
+        public async Task Deve_obter_recomendacoes_por_conselho_aluno_id()
         {
             var mediator = ServiceProvider.GetService<IMediator>();
 
