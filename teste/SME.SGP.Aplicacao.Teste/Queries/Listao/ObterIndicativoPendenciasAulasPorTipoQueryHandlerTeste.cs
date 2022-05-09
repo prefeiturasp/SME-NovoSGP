@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             var aulas = new List<long>();
             aulas.Add(123);
 
-            repositorioPendenciaAula.Setup(x => x.TrazerAulasComPendenciasDiarioBordo("512", "7941706"))
+            repositorioPendenciaAula.Setup(x => x.TrazerAulasComPendenciasDiarioBordo("512", "7941706", false, ""))
                 .ReturnsAsync(aulas);
 
             repositorioPendenciaAula.Setup(x => x.TurmasPendenciaDiarioBordo(aulas, "2386241", 1))
