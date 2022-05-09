@@ -210,7 +210,9 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var consolidacaoNotaAlunoDto in consolidacaoNotasAlunos)
                 {
-                    consolidacaoNotaAlunoDto.Inativo = alunosDaTurma.FirstOrDefault(f=> f.CodigoAluno.Equals(consolidacaoNotaAlunoDto.AlunoCodigo)).Inativo;
+                    var dadosAluno = alunosDaTurma.FirstOrDefault(f => f.CodigoAluno.Equals(consolidacaoNotaAlunoDto.AlunoCodigo));
+                    consolidacaoNotaAlunoDto.Inativo = dadosAluno != null ? dadosAluno.Inativo : true;
+
                     await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
                 }
                     
