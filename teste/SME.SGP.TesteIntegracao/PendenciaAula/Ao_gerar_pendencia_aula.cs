@@ -156,7 +156,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoEm = new DateTime(2022, 01, 01),
             });
 
-            var retorno = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery("512", "7111111", 1, TipoPendencia.PlanoAula));
+            var retorno = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(512, "7111111", 1, TipoPendencia.PlanoAula));
 
             retorno.ShouldBe(1);
         }

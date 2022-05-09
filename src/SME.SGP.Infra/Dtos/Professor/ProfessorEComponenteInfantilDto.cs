@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class ProfessorEComponenteInfantilDto
     {
         public string CodigoRf { get; set; }
-        public long[] ComponentesCurricularesId { get; set; }
+        public long DisciplinaId { get; set; }
+        public string DescricaoComponenteCurricular { get; set; }
+
+        public ProfessorEComponenteInfantilDto() { }
     }
 }

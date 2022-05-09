@@ -1,33 +1,41 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaDiarioBordoCommand : IRequest
     {
-        public SalvarPendenciaDiarioBordoCommand(IEnumerable<AulaComComponenteDto> aulas, List<ProfessorEComponenteInfantilDto> professores)
-        {
-            Aulas = aulas;
-            ProfessoresComponentes = professores;
-        }
-        public IEnumerable<AulaComComponenteDto> Aulas { get; set; }
-        public List<ProfessorEComponenteInfantilDto> ProfessoresComponentes { get; set; }
+        public SalvarPendenciaDiarioBordoCommand()
+        {}
+
+        public IEnumerable<ProfessorEComponenteInfantilDto> ProfessoresComponentes { get; set; }
+        public AulaComComponenteDto Aula { get; set; }
+        public string DescricaoUeDre { get; set; }
+        public string TurmaComModalidade { get; set; }
     }
 
     public class SalvarPendenciaDiarioBordoCommandValidator : AbstractValidator<SalvarPendenciaDiarioBordoCommand>
     {
         public SalvarPendenciaDiarioBordoCommandValidator()
         {
-            RuleFor(c => c.Aulas)
-            .Must(a => a.Any())
+            RuleFor(c => c.Aula)
+            .NotEmpty()
             .WithMessage("As aulas devem ser informados para geração de pendência diário de bordo.");
+
+            RuleFor(c => c.DescricaoUeDre)
+            .NotEmpty()
+            .WithMessage("A descrição da Ue e Dre devem ser informados para geração de pendência diário de bordo.");
+
+            RuleFor(c => c.TurmaComModalidade)
+            .NotEmpty()
+            .WithMessage("A turma com ano e modalidade devem ser informados para geração de pendência diário de bordo.");
+
+            RuleFor(c => c.ProfessoresComponentes)
+            .Must(a => a.Any())
+            .WithMessage("A relação de professores e componentes devem ser informados para geração de pendência diário de bordo.");
         }
     }
 }

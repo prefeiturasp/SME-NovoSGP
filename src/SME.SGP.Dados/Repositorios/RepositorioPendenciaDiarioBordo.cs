@@ -40,49 +40,31 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<AulaComComponenteDto>> ListarPendenciasDiario(string turmaId, long[] componentesCurricularesId)
         {
-            var listaRetorno = new List<Aula>();
-            var sqlQuery = new StringBuilder();
-
-            sqlQuery.AppendLine("select distinct a.id as Id,");
-            sqlQuery.AppendLine("                a.turma_id as TurmaId,");
-            sqlQuery.AppendLine("                db.componente_curricular_id as ComponenteId");
-            sqlQuery.AppendLine("  	from aula a");
-            sqlQuery.AppendLine("  		inner join turma t");
-            sqlQuery.AppendLine("  			on a.turma_id = t.turma_id and t.modalidade_codigo = @modalidadeCodigo");
-            sqlQuery.AppendLine("  		inner join ue");
-            sqlQuery.AppendLine("  			on t.ue_id = ue.id");
-
-            sqlQuery.AppendLine($"  	left join diario_bordo db");
-            sqlQuery.AppendLine($"  		on db.aula_id = a.id and db.componente_curricular_id = ANY(@componentesCurricularesId)");
-            sqlQuery.AppendLine($"  	left join pendencia_diario_bordo pdb");
-            sqlQuery.AppendLine($"  		on pdb.aula_id = a.id and pdb.componente_curricular_id = ANY(@componentesCurricularesId)");
-            sqlQuery.AppendLine("  		left join pendencia p");
-            sqlQuery.AppendLine("  			on p.id = pdb.pendencia_id");
-            sqlQuery.AppendLine("  			and not p.excluido");
-            sqlQuery.AppendLine("  			and p.tipo = @tipoPendencia");
-
-            sqlQuery.AppendLine("  where not a.excluido");
-            sqlQuery.AppendLine("	and a.data_aula < @hoje");
-            sqlQuery.AppendLine("   and t.turma_id = @turmaId");
-
-            sqlQuery.AppendLine("	and pdb.id is null");
-            sqlQuery.AppendLine("   and p.id is null");
-
-            try
+            var sqlQuery = @" select distinct a.id as Id,
+                                              a.turma_id as TurmaId,
+                                              db.componente_curricular_id as ComponenteId,
+                                              pe.id as PeriodoEscolarId
+                              from aula a
+                                   join turma t on a.turma_id = t.turma_id and t.modalidade_codigo = @modalidadeCodigo
+                                   join ue on t.ue_id = ue.id
+                                   join periodo_escolar pe on a.data_aula between pe.periodo_inicio and pe.periodo_fim 	
+                                   left join diario_bordo db on db.aula_id = a.id and db.componente_curricular_id = ANY(@componentesCurricularesId)
+                                   left join pendencia_diario_bordo pdb on pdb.aula_id = a.id and pdb.componente_curricular_id = ANY(@componentesCurricularesId)
+                                   left join pendencia p on p.id = pdb.pendencia_id and not p.excluido and p.tipo = @tipoPendencia
+                              where not a.excluido
+                                    and a.data_aula < @hoje
+                                    and t.turma_id = @turmaId
+                                    and pdb.id is null
+                                    and p.id is null
+                                    and pe.tipo_calendario_id = a.tipo_calendario_id";
+            return await database.Conexao.QueryAsync<AulaComComponenteDto>(sqlQuery.ToString(), new
             {
-                return await database.Conexao.QueryAsync<AulaComComponenteDto>(sqlQuery.ToString(), new
-                {
-                    hoje = DateTime.Today.Date,
-                    turmaId,
-                    componentesCurricularesId,
-                    modalidadeCodigo = Modalidade.EducacaoInfantil,
-                    tipoPendencia = TipoPendencia.DiarioBordo
-                }, commandTimeout: 200);
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+                hoje = DateTime.Today.Date,
+                turmaId,
+                componentesCurricularesId,
+                modalidadeCodigo = Modalidade.EducacaoInfantil,
+                tipoPendencia = TipoPendencia.DiarioBordo
+            }, commandTimeout: 200);
         }
     }
 }
