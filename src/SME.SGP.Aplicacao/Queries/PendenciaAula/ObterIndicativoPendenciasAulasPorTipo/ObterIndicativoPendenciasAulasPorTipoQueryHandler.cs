@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PendenciaPaginaInicialListao> Handle(ObterIndicativoPendenciasAulasPorTipoQuery request, CancellationToken cancellationToken)
         {
-            
+
 
             var aulasComPendenciaDiario = await repositorioPendenciaAula.TrazerAulasComPendenciasDiarioBordo(request.DisciplinaId, request.ProfessorRf, request.EhGestor, request.TurmaId);
             var pendenciasDiarioBordo = await repositorioPendenciaAula.TurmasPendenciaDiarioBordo(aulasComPendenciaDiario, request.TurmaId, request.Bimestre);

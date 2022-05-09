@@ -480,8 +480,7 @@ namespace SME.SGP.Dados.Repositorios
                             join pendencia_usuario pu on pu.pendencia_id = p.id 
                             join usuario u on u.id = pu.usuario_id 
                             join aula a on a.id = pdb.aula_id 
-                            join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
-                            /*join componente_curricular cc on cc.id = a.disciplina_id::int8 */
+                            join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id                            
                             join componente_curricular cc on cc.id = pdb.componente_curricular_id
                             where u.rf_codigo = @codigoRf and cc.id = @componenteCurricularId 
                             and pe.id = @periodoEscolarId                            
