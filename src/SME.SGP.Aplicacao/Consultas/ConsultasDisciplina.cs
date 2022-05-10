@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
 
                     d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
                     d.CdComponenteCurricularPai = componenteEOL.CodigoComponenteCurricularPai;
-                    d.NomeComponenteInfantil = componenteEOL.ExibirComponenteEOL ? d.NomeComponenteInfantil : d.Nome;
+                    d.NomeComponenteInfantil = componenteEOL.ExibirComponenteEOL && !string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.NomeComponenteInfantil : d.Nome;
                 });
             }
 
