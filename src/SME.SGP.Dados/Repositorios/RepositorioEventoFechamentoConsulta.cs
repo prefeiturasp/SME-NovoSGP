@@ -60,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> UeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, bool ehModalidadeInfantil, int bimestre)
         {
-            var retorno = (await UeEmFechamentoBimestre(tipoCalendarioId, ehModalidadeInfantil, bimestre));
+            var retorno = (await UeEmFechamentoBimestreVigente(dataReferencia,tipoCalendarioId, ehModalidadeInfantil, bimestre));
             return retorno != null;
         }
 
@@ -98,6 +98,13 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        /// <summary>
+        /// Método que é usado para o ano anterior, não usar para o ano atual, pois tem o método semelhante com data de referência que deve ser passada
+        /// </summary>
+        /// <param name="tipoCalendarioId"></param>
+        /// <param name="ehModalidadeInfantil"></param>
+        /// <param name="bimestre"></param>
+        /// <returns></returns>
         public async Task<PeriodoFechamentoBimestre> UeEmFechamentoBimestre(long tipoCalendarioId, bool ehModalidadeInfantil, int bimestre)
         {
             var query = new StringBuilder();
@@ -118,7 +125,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine($" and pe.bimestre =  {consultaObterBimestreFinal} ");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query.ToString(), new
-            {                
+            {
                 bimestre,
                 tipoCalendarioId
             });
