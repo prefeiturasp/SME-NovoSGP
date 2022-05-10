@@ -250,7 +250,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<string> ObterCodigoComponentePai(long componenteCurricularId)
         {
-            var query = @"select componente_curricular_pai_id from componente_curricular where id = @componenteCurricularId";
+            var query = @"select coalesce(componente_curricular_pai_id,id) from componente_curricular where id = @componenteCurricularId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { componenteCurricularId });
         }
