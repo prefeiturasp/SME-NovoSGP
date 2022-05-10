@@ -156,6 +156,15 @@ namespace SME.SGP.TesteIntegracao
                 CriadoEm = new DateTime(2022, 01, 01),
             });
 
+            await InserirNaBase("componente_curricular_area_conhecimento", "1", "'Área de conhecimento 1'");
+
+            await InserirNaBase("componente_curricular_grupo_matriz", "1", "'Grupo matriz 1'");
+
+            await InserirNaBase("componente_curricular", "512", "512", "1", "1", "'ED.INF. EMEI 4 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 4H'");
+
+            await InserirNaBase("componente_curricular", "513", "512", "1", "1", "'ED.INF. EMEI 2 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 2H'");
+
+
             var retorno = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(512, "7111111", 1, TipoPendencia.PlanoAula));
 
             retorno.ShouldBe(1);

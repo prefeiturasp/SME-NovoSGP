@@ -449,50 +449,35 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> ObterPendenciaIdPorComponenteProfessorEBimestre(long componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia)
         {
-            try
-            {
-                var sql = @"select p.id from pendencia p 
-                            join pendencia_aula pa on pa.pendencia_id = p.id 
-                            join pendencia_usuario pu on pu.pendencia_id = p.id 
-                            join usuario u on u.id = pu.usuario_id 
-                            join aula a on a.id = pa.aula_id 
-                            join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
-                            join componente_curricular cc on cc.id = a.disciplina_id::int8 
-                            where u.rf_codigo = @codigoRf and cc.id = @componenteCurricularId 
-                            and pe.id = @periodoEscolarId and p.tipo = @tipoPendencia 
-                            order by p.criado_em desc";
+            var sql = @"select p.id from pendencia p 
+                        join pendencia_aula pa on pa.pendencia_id = p.id 
+                        join pendencia_usuario pu on pu.pendencia_id = p.id 
+                        join usuario u on u.id = pu.usuario_id 
+                        join aula a on a.id = pa.aula_id 
+                        join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
+                        join componente_curricular cc on cc.id = a.disciplina_id::int8 
+                        where u.rf_codigo = @codigoRf and cc.id = @componenteCurricularId 
+                        and pe.id = @periodoEscolarId and p.tipo = @tipoPendencia 
+                        order by p.criado_em desc";
 
-                return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, tipoPendencia }));
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, tipoPendencia }));
         }
 
         public async Task<long> ObterPendenciaDiarioBordoPorComponentePeriodoEscolarProfessor(long componenteCurricularId, string codigoRf, long periodoEscolarId)
         {
-            try
-            {
+            var sql = @"select p.id from pendencia p 
+                        join pendencia_diario_bordo pdb on pdb.pendencia_id = p.id 
+                        join pendencia_usuario pu on pu.pendencia_id = p.id 
+                        join usuario u on u.id = pu.usuario_id 
+                        join aula a on a.id = pdb.aula_id 
+                        join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
+                        /*join componente_curricular cc on cc.id = a.disciplina_id::int8 */
+                        join componente_curricular cc on cc.id = pdb.componente_curricular_id
+                        where u.rf_codigo = @codigoRf and cc.id = @componenteCurricularId 
+                        and pe.id = @periodoEscolarId                            
+                        order by p.criado_em desc";
 
-                var sql = @"select p.id from pendencia p 
-                            join pendencia_diario_bordo pdb on pdb.pendencia_id = p.id 
-                            join pendencia_usuario pu on pu.pendencia_id = p.id 
-                            join usuario u on u.id = pu.usuario_id 
-                            join aula a on a.id = pdb.aula_id 
-                            join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
-                            /*join componente_curricular cc on cc.id = a.disciplina_id::int8 */
-                            join componente_curricular cc on cc.id = pdb.componente_curricular_id
-                            where u.rf_codigo = @codigoRf and cc.id = @componenteCurricularId 
-                            and pe.id = @periodoEscolarId                            
-                            order by p.criado_em desc";
-
-                return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId}));
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId}));
         }
     }
 }
