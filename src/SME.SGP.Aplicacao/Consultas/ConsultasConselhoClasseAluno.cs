@@ -719,6 +719,17 @@ namespace SME.SGP.Aplicacao
                 Aulas = ExibirTotalAulas(totalAulas, componenteCurricularCodigo, codigoAluno)
             };
 
+            if (!componentePermiteFrequencia)
+            {
+                if (bimestre == (int)Bimestre.Final)
+                    conselhoClasseComponente.Aulas = totalAulas.Count() == 0 ? "0" : totalAulas.FirstOrDefault().TotalAulas;
+                else
+                {
+                    var valor = await mediator.Send(new ObterTotalAlunosSemFrequenciaPorTurmaBimestreQuery(componenteCurricularCodigo.ToString(), turma.CodigoTurma, bimestre));
+                    conselhoClasseComponente.QuantidadeAulas = valor.FirstOrDefault();
+                }
+            }
+
             return conselhoClasseComponente;
         }
 
