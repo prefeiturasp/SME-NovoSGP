@@ -205,9 +205,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TotalAulasNaoLancamNotaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterTotalAulasNaoLancamNotasPorTurmaBimestre(string codigoTurma, int bimestre, [FromServices] IObterTotalAulasNaoLancamNotaUseCase useCase)
+        public async Task<IActionResult> ObterTotalAulasNaoLancamNotasPorTurmaBimestre(string codigoTurma, int bimestre, string codigoAluno, [FromServices] IObterTotalAulasNaoLancamNotaUseCase useCase)
         {
-            return Ok(await useCase.Executar(codigoTurma, bimestre));
+            return Ok(await useCase.Executar(codigoTurma, bimestre, codigoAluno));
         }
 
         [HttpGet("TotalCompensacoesComponentesNaoLancamNota/turma/{codigoTurma}/bimestre/{bimestre}")]

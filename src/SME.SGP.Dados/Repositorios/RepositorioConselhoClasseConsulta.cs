@@ -293,9 +293,9 @@ namespace SME.SGP.Dados.Repositorios
 
             if (semestre > 0)
                 query.Append(" and t.semestre = @semestre ");
-            
+
             query.Append(";");
-            
+
             return query.ToString();
         }
 
@@ -395,7 +395,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<TotalAulasPorAlunoTurmaDto>(sql, new { codigoTurma, disciplinaId }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasNaoLancamNotaPorBimestreTurma(string codigoTurma, int bimestre)
+        public async Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasNaoLancamNotaPorBimestreTurma(string codigoTurma, int bimestre, string codigoAluno)
         {
             var sql = @"select fa.disciplina_id as DisciplinaID,total_aulas as TotalAulas from frequencia_aluno fa 
                         join componente_curricular cc on cc.id = fa.disciplina_id::int8
@@ -403,10 +403,11 @@ namespace SME.SGP.Dados.Repositorios
                         and fa.turma_id = @codigoTurma
                         and fa.bimestre = @bimestre
                         and fa.tipo  = @tipo
+                        and fa.codigo_aluno = @codigoAluno
                         group by fa.disciplina_id, total_aulas ";
 
             return await database.Conexao
-                                .QueryAsync<TotalAulasNaoLancamNotaDto>(sql, new { codigoTurma, bimestre, tipo = (int)TipoAula.Normal }, commandTimeout: 60);
+                                .QueryAsync<TotalAulasNaoLancamNotaDto>(sql, new { codigoTurma, bimestre, tipo = (int)TipoAula.Normal, codigoAluno }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNotaPorBimestre(string codigoTurma, int bimestre)

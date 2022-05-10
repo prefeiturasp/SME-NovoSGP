@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             var totalAulasComponenteSemNota = Enumerable.Empty<TotalAulasNaoLancamNotaDto>();
 
             if (bimestre != (int)Bimestre.Final)
-                totalAulasComponenteSemNota = await mediator.Send(new ObterTotalAulasNaoLancamNotaQuery(codigoTurma, bimestre));
+                totalAulasComponenteSemNota = await mediator.Send(new ObterTotalAulasNaoLancamNotaQuery(codigoTurma, bimestre, alunoCodigo));
 
             var retorno = new List<ConselhoDeClasseGrupoMatrizDto>();
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
