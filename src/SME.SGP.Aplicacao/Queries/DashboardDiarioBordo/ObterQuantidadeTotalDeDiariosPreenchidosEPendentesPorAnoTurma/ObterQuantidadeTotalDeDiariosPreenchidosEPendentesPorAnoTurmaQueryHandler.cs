@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             {
                 var quantidadeTotalDiariosPreenchidos = new GraficoTotalDiariosPreenchidosEPendentesDTO()
                 {
-                    TurmaAno = item.AnoTurma,
+                    TurmaAno = item.AnoTurma == null ? "" : item.AnoTurma,
                     Quantidade = item.QuantidadeTotalDiariosPreenchidos,
                     Descricao = "Preenchidos"
                 };
@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
 
                 var quantidadeTotalDiariosPendentes = new GraficoTotalDiariosPreenchidosEPendentesDTO()
                 {
-                    TurmaAno = item.AnoTurma,
+                    TurmaAno = item.AnoTurma == null ? "" : item.AnoTurma,
                     Quantidade = item.QuantidadeTotalDiariosPendentes,
                     Descricao = "Pendentes"
                 };
