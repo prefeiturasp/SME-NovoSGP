@@ -719,6 +719,17 @@ namespace SME.SGP.Aplicacao
                 Aulas = totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricularCodigo.ToString() && x.CodigoAluno == codigoAluno) == null || totalAulas.Count() == 0 ? "0" : totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricularCodigo.ToString() && x.CodigoAluno == codigoAluno).TotalAulas
             };
 
+            if (!componentePermiteFrequencia)
+            {
+                if (bimestre == (int)Bimestre.Final)
+                    conselhoClasseComponente.Aulas = totalAulas.Count() == 0 ? "0" : totalAulas.FirstOrDefault().TotalAulas;
+                else
+                {
+                    var valor = await mediator.Send(new ObterTotalAlunosSemFrequenciaPorTurmaBimestreQuery(componenteCurricularCodigo.ToString(), turma.CodigoTurma, bimestre));
+                    conselhoClasseComponente.QuantidadeAulas = valor.FirstOrDefault();
+                }
+            }
+
             return conselhoClasseComponente;
         }
         private async Task<ConselhoClasseComponenteRegenciaFrequenciaDto> ObterNotasFrequenciaRegencia(long componenteCurricularCodigo, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno,

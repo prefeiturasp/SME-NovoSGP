@@ -433,5 +433,19 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, tipo = (int)TipoAula.Normal }, commandTimeout: 60);
         }
+
+        public async Task<IEnumerable<int>> ObterTotalAulasSemFrequenciaPorTurmaBismetre(string discplinaId, string codigoTurma, int bismetre)
+        {
+            var sql = @"select COALESCE(SUM(quantidade), 0) as totalaulas from aula a
+                        join  componente_curricular cc on cc.id = a.disciplina_id::int8 
+                        join  periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id::int8  
+                        where cc.permite_registro_frequencia  = false 
+                        and a.turma_id = @codigoTurma
+                        and not a.excluido 
+                        and a.disciplina_id = @discplinaId
+                        and pe.bimestre = @bismetre";
+
+            return await database.Conexao.QueryAsync<int>(sql, new { discplinaId, codigoTurma, bismetre });
+        }
     }
 }
