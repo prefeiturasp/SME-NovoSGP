@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TotalAulasNaoLancamNotaDto>> Handle(ObterTotalAulasNaoLancamNotaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasse.ObterTotalAulasNaoLancamNotaPorBimestreTurma(request.CodigoTurma, request.Bimestre);
+            return await repositorioConselhoClasse.ObterTotalAulasNaoLancamNotaPorBimestreTurma(request.CodigoTurma, request.Bimestre, request.CodigoAluno);
         }
     }
 }
