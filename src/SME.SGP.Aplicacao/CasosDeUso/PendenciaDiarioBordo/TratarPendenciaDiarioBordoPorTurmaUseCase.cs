@@ -4,7 +4,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -19,7 +18,8 @@ namespace SME.SGP.Aplicacao
         {
             var turmaId = param.ObterObjetoMensagem<string>();
 
-            var turmaComComponente = new TurmaComComponentesInfantilDto();
+            var turmasDreUe = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(new string[] { turmaId }));
+
             var professoresEComponentes = new List<ProfessorEComponenteInfantilDto>();
             Guid perfilProfessorInfantil = Guid.Parse(PerfilUsuario.PROFESSOR_INFANTIL.ObterNome());
 
@@ -33,37 +33,62 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var professor in professoresSeparados)
                 {
-                    var professorEComponente = new ProfessorEComponenteInfantilDto();
-                    string codigoRfProfessor = professor.Trim();
+                    var codigoRfProfessor = professor.Trim();
                     if (!string.IsNullOrEmpty(codigoRfProfessor))
                     {
-                        var componenteProfessorEol = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaId, codigoRfProfessor, perfilProfessorInfantil));
-                        componentesDaTurma.AddRange(componenteProfessorEol.Select(c => c.Codigo).ToList());
-
-                        professorEComponente.ComponentesCurricularesId = componenteProfessorEol.Select(c => c.Codigo).ToArray();
-                        professorEComponente.CodigoRf = codigoRfProfessor;
-                        professoresEComponentes.Add(professorEComponente);
+                        var componentesCurricularesEolProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaId, codigoRfProfessor, perfilProfessorInfantil));
+                        professoresEComponentes.AddRange(componentesCurricularesEolProfessor.Select(s => new ProfessorEComponenteInfantilDto()
+                        {
+                            CodigoRf = codigoRfProfessor,
+                            DisciplinaId = s.Codigo,
+                            DescricaoComponenteCurricular = s.Descricao
+                        }));
                     }
                 }
-
-                turmaComComponente.TurmaId = turmaId;
-                turmaComComponente.ComponentesId = componentesDaTurma.Distinct().ToArray();
-
-                if (turmaComComponente.TurmaId != null && turmaComComponente.ComponentesId.Length > 0)
-                    await BuscaPendenciaESalva(turmaComComponente, professoresEComponentes);
+                await BuscaPendenciaESalva(turmasDreUe.FirstOrDefault(), professoresEComponentes);
             }
 
             return true;
         }
 
-        public async Task BuscaPendenciaESalva(TurmaComComponentesInfantilDto turmaEComponente, List<ProfessorEComponenteInfantilDto> professoresEComponentes)
+        public async Task BuscaPendenciaESalva(Turma turmaComDreUe, List<ProfessorEComponenteInfantilDto> professoresEComponentes)
         {
-            var aulas = await mediator.Send(new ObterPendenciasDiarioBordoQuery(turmaEComponente.TurmaId, turmaEComponente.ComponentesId.ToArray()));
+            try
+            {
+                var aulas = await mediator.Send(new ObterPendenciasDiarioBordoQuery(turmaComDreUe.CodigoTurma, professoresEComponentes.Select(d => d.DisciplinaId).ToArray()));
 
-            if (aulas != null && aulas.Any())
-                await RegistraPendencia(aulas, professoresEComponentes);
+                var professoresParaGerarPendencia = new List<ProfessorEComponenteInfantilDto>();
+
+                foreach (var aula in aulas)
+                {
+                    professoresParaGerarPendencia.AddRange(aula.ComponenteId > 0
+                                                           ? professoresEComponentes.Where(w => w.DisciplinaId != aula.ComponenteId)
+                                                           : professoresEComponentes);
+
+                    await mediator.Send(new SalvarPendenciaDiarioBordoCommand()
+                    {
+                        TurmaComModalidade = turmaComDreUe.NomeComModalidade(),
+                        DescricaoUeDre = $"{ObterEscola(turmaComDreUe)}",
+                        ProfessoresComponentes = professoresEComponentes,
+                        Aula = aula
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
-        private async Task RegistraPendencia(IEnumerable<AulaComComponenteDto> aulas, List<ProfessorEComponenteInfantilDto> professoresEComponentes)
-         => await mediator.Send(new SalvarPendenciaDiarioBordoCommand(aulas, professoresEComponentes));
+
+        private string ObterEscola(Turma turmaDreUe)
+        {
+            var ueTipo = turmaDreUe.Ue.TipoEscola;
+
+            var dreAbreviacao = turmaDreUe.Ue.Dre.Abreviacao.Replace("-", "");
+
+            var ueNome = turmaDreUe.Ue.Nome;
+
+            return ueTipo != TipoEscola.Nenhum ? $"{ueTipo.ShortName()} {ueNome} ({dreAbreviacao})" : $"{ueNome} ({dreAbreviacao})";
+        }
     }
 }
