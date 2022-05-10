@@ -28,6 +28,27 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Deve_Publicar_Fila_Por_Turma()
         {
             // arrange
+            IEnumerable<Turma> turmasDreUe = new List<Turma>()
+            {
+                new Turma()
+                {
+                    CodigoTurma = "2386241",
+                    ModalidadeCodigo = Modalidade.EducacaoInfantil,
+                    Ue = new Ue()
+                    {
+                        TipoEscola = TipoEscola.CEMEI,
+                        Nome = "CAPAO REDONDO ",
+                        Dre = new Dre() 
+                        {
+                            Abreviacao = "DRE - CL"
+                        }
+                    }
+                }
+            };
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmasDreUePorCodigosQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(turmasDreUe);
+
+
             var rfProfessores = new List<string>();
             rfProfessores.Add("8269149, 7941706");
 
