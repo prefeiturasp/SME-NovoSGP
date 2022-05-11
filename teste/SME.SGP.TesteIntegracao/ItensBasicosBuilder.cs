@@ -128,6 +128,39 @@ namespace SME.SGP.TesteIntegracao.Setup
             });
         }
 
+        public async Task CriaAulaSemFrequencia()
+        {
+            await _teste.InserirNaBase(new Aula
+            {
+                UeId = "1",
+                DisciplinaId = "1106",
+                TurmaId = "1",
+                TipoCalendarioId = 1,
+                ProfessorRf = "6926886",
+                Quantidade = 1,
+                DataAula = new DateTime(2022, 02, 10),
+                RecorrenciaAula = 0,
+                TipoAula = TipoAula.Normal,
+                CriadoEm = new DateTime(2022, 02, 10),
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                Excluido = false,
+                Migrado = false,
+                AulaCJ = false
+            });
+
+
+        }
+
+        public async Task CriaComponenteCurricularSemFrequencia()
+        {
+            await _teste.InserirNaBase("componente_curricular_area_conhecimento", "1", "'Área de conhecimento 1'");
+
+            await _teste.InserirNaBase("componente_curricular_grupo_matriz", "1", "'Grupo matriz 1'");
+
+            await _teste.InserirNaBase("componente_curricular", "1106", "1106", "1", "1", "'ED.INF. EMEI 4 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 4H'");
+        }
+
         private void CriarClaimRegenciaEja()
         {
             var contextoAplicacao = _teste.ServiceProvider.GetService<IContextoAplicacao>();
