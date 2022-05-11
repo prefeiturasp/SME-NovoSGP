@@ -444,7 +444,8 @@ namespace SME.SGP.Dados.Repositorios
                         and a.turma_id = @codigoTurma
                         and not a.excluido 
                         and a.disciplina_id = @discplinaId
-                        and pe.bimestre = @bismetre";
+                        and pe.bimestre = @bismetre
+                        and pe.periodo_inicio <= a.data_aula and pe.periodo_fim >= a.data_aula";
 
             return await database.Conexao.QueryAsync<int>(sql, new { discplinaId, codigoTurma, bismetre });
         }
