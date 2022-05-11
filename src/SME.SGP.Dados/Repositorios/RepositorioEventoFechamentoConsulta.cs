@@ -98,13 +98,6 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        /// <summary>
-        /// Método que é usado para o ano anterior, não usar para o ano atual, pois tem o método semelhante com data de referência que deve ser passada
-        /// </summary>
-        /// <param name="tipoCalendarioId"></param>
-        /// <param name="ehModalidadeInfantil"></param>
-        /// <param name="bimestre"></param>
-        /// <returns></returns>
         public async Task<PeriodoFechamentoBimestre> UeEmFechamentoBimestre(long tipoCalendarioId, bool ehModalidadeInfantil, int bimestre)
         {
             var query = new StringBuilder();
