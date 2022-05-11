@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                     usuarioLogado.CodigoRf,
                                                                                                                     usuarioLogado.PerfilAtual));
 
-            if (aula.CriadoRF == usuarioLogado.CodigoRf)
+            if ((aula.CriadoRF == usuarioLogado.CodigoRf) || aula.CriadoRF == "Sistema")
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
 
@@ -81,7 +81,8 @@ namespace SME.SGP.Aplicacao
 
                 var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(aula.TurmaId, turma.TipoTurma == TipoTurma.Programa);
 
-                if (disciplinas.Any(d => d.CodigoComponenteCurricular == long.Parse(aula.DisciplinaId)))
+                if (disciplinas.Any(d => d.CodigoComponenteCurricular == long.Parse(aula.DisciplinaId)) || 
+                    disciplinas.Any(d => d.CdComponenteCurricularPai == long.Parse(aula.DisciplinaId)))
                     return true;
             }
 
