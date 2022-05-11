@@ -60,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> UeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, bool ehModalidadeInfantil, int bimestre)
         {
-            var retorno = (await UeEmFechamentoBimestre(tipoCalendarioId, ehModalidadeInfantil, bimestre));
+            var retorno = (await UeEmFechamentoBimestreVigente(dataReferencia,tipoCalendarioId, ehModalidadeInfantil, bimestre));
             return retorno != null;
         }
 
@@ -118,7 +118,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine($" and pe.bimestre =  {consultaObterBimestreFinal} ");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query.ToString(), new
-            {                
+            {
                 bimestre,
                 tipoCalendarioId
             });
