@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            long[] conselhosClassesIds = new long[] { };
+            long[] conselhosClassesIds;
             string[] turmasCodigos;
             var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
             var auditoriaListaDto = new List<AuditoriaDto>();
             var listaRecomendacoes = new List<RecomendacoesAlunoFamiliaDto>();
 
-            if (conselhosClassesIds.Any())
+            if (conselhosClassesIds != null && conselhosClassesIds.Any())
             {
                 foreach (var conselhoClassesIdParaTratar in conselhosClassesIds)
                 {
