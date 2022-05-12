@@ -455,7 +455,7 @@ namespace SME.SGP.Dados.Repositorios
         private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoAgrupadoPorUe(int anoLetivo, string dreCodigo,
             Modalidade modalidade, int semestre, int mes)
         {
-            var query = @"select u.nome as Descricao,
+            var query = @"select coalesce(te.descricao || '-', '') || coalesce(u.nome, '') as Descricao,
                                 sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
                             from frequencia_turma_evasao fte
 	                            inner join turma t on t.id = fte.turma_id 
@@ -568,7 +568,8 @@ namespace SME.SGP.Dados.Repositorios
         private async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoSemPresencaAgrupadoPorUe(int anoLetivo, string dreCodigo,
             Modalidade modalidade, int semestre, int mes)
         {
-            var query = @"select u.nome as Descricao,
+            var query = @"select coalesce(te.descricao || '-', '') || coalesce(u.nome, '') as Descricao,
+                                 te.descricao as DescricaoTipo,
                                 sum(fte.quantidade_alunos_0_porcento) as Quantidade
                             from frequencia_turma_evasao fte
 	                            inner join turma t on t.id = fte.turma_id 
@@ -586,8 +587,8 @@ namespace SME.SGP.Dados.Repositorios
             if (mes > 0)
                 query += " and fte.mes = @mes ";
 
-            query += @" group by u.nome, te.descricao
-                        order by u.nome, te.descricao ";
+            query += @" group by te.descricao, u.nome
+                        order by te.descricao, u.nome ";
 
             var parametros = new { dreCodigo, modalidade, semestre, anoLetivo, mes };
 
