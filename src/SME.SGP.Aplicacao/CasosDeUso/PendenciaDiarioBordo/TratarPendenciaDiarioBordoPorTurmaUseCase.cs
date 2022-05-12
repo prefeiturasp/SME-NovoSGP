@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ namespace SME.SGP.Aplicacao
 
             var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turmaId));
 
+            var componentesSgp = await mediator.Send(new ObterComponentesCurricularesQuery());
+
             if (professoresDaTurma != null)
             {
                 string[] professoresSeparados = professoresDaTurma.FirstOrDefault().Split(',');
@@ -37,11 +40,12 @@ namespace SME.SGP.Aplicacao
                     if (!string.IsNullOrEmpty(codigoRfProfessor))
                     {
                         var componentesCurricularesEolProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaId, codigoRfProfessor, perfilProfessorInfantil));
+
                         professoresEComponentes.AddRange(componentesCurricularesEolProfessor.Select(s => new ProfessorEComponenteInfantilDto()
                         {
                             CodigoRf = codigoRfProfessor,
                             DisciplinaId = s.Codigo,
-                            DescricaoComponenteCurricular = s.Descricao
+                            DescricaoComponenteCurricular = componentesSgp.FirstOrDefault(f=> f.Codigo.Equals(s.Codigo.ToString())).Descricao,
                         }));
                     }
                 }
@@ -70,13 +74,14 @@ namespace SME.SGP.Aplicacao
                         TurmaComModalidade = turmaComDreUe.NomeComModalidade(),
                         DescricaoUeDre = $"{ObterEscola(turmaComDreUe)}",
                         ProfessoresComponentes = professoresEComponentes,
-                        Aula = aula
+                        Aula = aula,
+                        TurmaCodigo = turmaComDreUe.CodigoTurma
                     });
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                await mediator.Send(new SalvarLogViaRabbitCommand("Gerar pendências de diário de bordo por turma", LogNivel.Critico, LogContexto.Pendencia, ex.Message));
             }
         }
 

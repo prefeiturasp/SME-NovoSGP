@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
         public AulaComComponenteDto Aula { get; set; }
         public string DescricaoUeDre { get; set; }
         public string TurmaComModalidade { get; set; }
+        public string TurmaCodigo { get; set; }
     }
 
     public class SalvarPendenciaDiarioBordoCommandValidator : AbstractValidator<SalvarPendenciaDiarioBordoCommand>
@@ -35,7 +36,11 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(c => c.ProfessoresComponentes)
             .Must(a => a.Any())
-            .WithMessage("A relação de professores e componentes devem ser informados para geração de pendência diário de bordo.");
+            .WithMessage("A relação de professores devem ser informados para geração de pendência diário de bordo.");
+
+            RuleFor(c => c.TurmaCodigo)
+            .Must(a => a.Any())
+            .WithMessage("O código da turma deve ser informado para geração de pendência diário de bordo.");
         }
     }
 }

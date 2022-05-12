@@ -29,5 +29,6 @@
         Infantil = 25,
         Arquivos = 26,
         WorkerFechamento = 27,
+        Pendencia = 28,
     }
 }

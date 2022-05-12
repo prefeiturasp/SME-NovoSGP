@@ -71,18 +71,24 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ComponenteCurricularDto>> ListarComponentesCurriculares()
         {
-            var query = $@"select
+            try
+            {
+                var query = $@"select
 	                        id as Codigo,
                             permite_lancamento_nota as LancaNota,
-                            case
-		                        when descricao_sgp is not null then descricao_sgp
-		                        else descricao
-	                        end as descricao,
-                            descricao as DescricaoEol
+                            coalesce(descricao_infantil,descricao_sgp) as descricao,
+                            descricao as DescricaoEol,
+                            eh_regencia Regencia
                         from
 	                        componente_curricular";
 
-            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { }));
+                var retorno = (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { }));
+                return retorno;
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
         }
         public async Task<long[]> ListarCodigosJuremaPorComponenteCurricularId(long id)
         {
