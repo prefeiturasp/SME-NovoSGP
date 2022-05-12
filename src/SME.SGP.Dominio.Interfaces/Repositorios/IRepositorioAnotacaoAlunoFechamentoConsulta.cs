@@ -7,8 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioFechamentoAlunoConsulta : IRepositorioBase<FechamentoAluno>
     {
-        Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacoesTurmaAlunoBimestreAsync(string alunoCodigo, string[] turmasCodigos, long periodoId);
-
         Task<FechamentoAluno> ObterFechamentoAluno(long fechamentoTurmaDisciplinaId, string codigoAluno);
 
         Task<FechamentoAluno> ObterFechamentoAlunoENotas(long fechamentoTurmaDisciplinaId, string alunoCodigo);

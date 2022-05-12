@@ -136,24 +136,11 @@ namespace SME.SGP.Aplicacao
            
             //Obter alunos ativos
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
-            if (filtro.TurmaHistorico)
-            {
-                 alunosAtivos = from a in alunos
-                                   where a.EstaAtivo(periodoFim) ||
-                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date && a.DataSituacao.Date <= periodoFim.Date) &&
-                                          (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido)
-                                   orderby a.NomeValido(), a.NumeroAlunoChamada
-                                   select a;
-            }
-            else
-            {
-                 alunosAtivos = from a in alunos
-                                   where (a.EstaAtivo(periodoFim) ||
-                                         (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date && a.DataMatricula.Date <= periodoFim.Date)) 
-                                   orderby a.NomeValido(), a.NumeroAlunoChamada
-                                   select a;           
-            }
-
+            alunosAtivos = from a in alunos
+                            where a.EstaAtivo(periodoInicio, periodoFim) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido)
+                           orderby a.NomeValido(), a.NumeroAlunoChamada
+                            select a;
+          
             var alunosAtivosCodigos = alunosAtivos
                 .Select(a => a.CodigoAluno).Distinct().ToArray();
 
@@ -224,7 +211,7 @@ namespace SME.SGP.Aplicacao
                        (aluno.DataSituacao >= bimestreParaAdicionar.PeriodoInicio && bimestreParaAdicionar.PeriodoFim <= aluno.DataSituacao))));
 
                 notaConceitoAluno.Marcador = await mediator
-                    .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
+                    .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                 var fechamentoTurma = (from ft in fechamentosNotasDaTurma

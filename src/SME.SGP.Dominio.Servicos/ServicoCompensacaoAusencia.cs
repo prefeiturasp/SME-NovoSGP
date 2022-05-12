@@ -91,10 +91,7 @@ namespace SME.SGP.Dominio.Servicos
             // Carrega dasdos da disciplina no EOL
             await ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds, compensacaoBanco.Migrado);
 
-            var descricaoAtual = compensacaoBanco != null ? compensacaoBanco.Descricao : string.Empty;
-
-            // Persiste os dados
-            var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco);
+            var compensacao = await MapearEntidade(compensacaoDto, compensacaoBanco);
             compensacao.TurmaId = turma.Id;
             compensacao.AnoLetivo = turma.AnoLetivo;
 
@@ -106,7 +103,7 @@ namespace SME.SGP.Dominio.Servicos
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds);
                 codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo);
                 unitOfWork.PersistirTransacao();
-                await MoverRemoverExcluidos(compensacaoDto.Descricao, descricaoAtual);
+                
             }
             catch (Exception)
             {
@@ -124,16 +121,17 @@ namespace SME.SGP.Dominio.Servicos
                                                            Guid.NewGuid(),
                                                            usuario));
         }
-        private async Task MoverRemoverExcluidos(string novo, string atual)
+        private async Task<string> MoverRemoverExcluidos(string novo, string atual)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(novo))
-            {
-                await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.CompensacaoAusencia, atual, novo));
-            }
+                return await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.CompensacaoAusencia, atual, novo));
+
             if (!string.IsNullOrEmpty(atual))
-            {
                 await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.CompensacaoAusencia.Name()));
-            }
+
+            return caminho;
         }
         private async Task ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool registroMigrado)
         {
@@ -299,12 +297,12 @@ namespace SME.SGP.Dominio.Servicos
                 Excluido = false
             };
 
-        private CompensacaoAusencia MapearEntidade(CompensacaoAusenciaDto compensacaoDto, CompensacaoAusencia compensacao)
+        private async Task<CompensacaoAusencia> MapearEntidade(CompensacaoAusenciaDto compensacaoDto, CompensacaoAusencia compensacao)
         {
             compensacao.DisciplinaId = compensacaoDto.DisciplinaId;
             compensacao.Bimestre = compensacaoDto.Bimestre;
             compensacao.Nome = compensacaoDto.Atividade;
-            compensacao.Descricao = compensacaoDto.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.CompensacaoAusencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            compensacao.Descricao = await MoverRemoverExcluidos(compensacaoDto.Descricao, compensacao != null ? compensacao.Descricao : string.Empty);
 
             return compensacao;
         }

@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -142,6 +143,19 @@ namespace SME.SGP.Dados.Repositorios
                         ft.periodo_escolar_id = @periodoEscolarId  ");
             
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new { turmaId, componenteCurricularId, periodoEscolarId });
+        }
+
+        public Task<FechamentoTurmaPeriodoEscolarDto> ObterIdEPeriodoPorTurmaBimestre(long turmaId, int? bimestre)
+        {
+            var query = @"select ft.id as FechamentoTurmaId
+	                        , pe.id as PeriodoEscolarId
+                          from fechamento_turma ft
+                         left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                        where not ft.excluido 
+                          and ft.turma_id = @turmaId
+                          and pe.bimestre = @bimestre ";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaPeriodoEscolarDto>(query, new { turmaId, bimestre });
         }
     }
 }

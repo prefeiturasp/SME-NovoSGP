@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
             {
                 Id = aula.Id,
                 DisciplinaId = aula.DisciplinaId.Equals(disciplinasInglesAtualizacao.codigoAntiga) ? await VerificaAtualizacaoComponenteIngles(aula.TurmaId) : aula.DisciplinaId,
-                DisciplinaCompartilhadaId = aula.DisciplinaCompartilhadaId,
+                DisciplinaCompartilhadaId = aula.DisciplinaCompartilhadaId ?? "0",
                 TurmaId = aula.TurmaId,
                 UeId = aula.UeId,
                 TipoCalendarioId = aula.TipoCalendarioId,
@@ -119,7 +119,6 @@ namespace SME.SGP.Aplicacao
                 SomenteLeitura = !usuarioAcessoAoComponente || !temPeriodoAberto,
                 EmManutencao = aulaEmManutencao,
                 PodeEditar = (usuarioLogado.EhProfessorCj() && aula.AulaCJ)
-                          || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar()))
                           || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPoed()
                           || usuarioLogado.EhProfessorPosl()))
                           || (usuarioLogado.EhProfessorPap() && aula.EhPAP)
@@ -134,7 +133,7 @@ namespace SME.SGP.Aplicacao
                 .ObterComponentesCurricularesPorProfessorETurma(codigoTurma, false);
 
             return componentesCurricularesTurma
-                .Any(cc => cc.CodigoComponenteCurricular.Equals(disciplinasInglesAtualizacao.codigoAntiga)) ? 
+                .Any(cc => cc.CodigoComponenteCurricular.Equals(disciplinasInglesAtualizacao.codigoAntiga)) ?
                     disciplinasInglesAtualizacao.codigoAntiga : disciplinasInglesAtualizacao.codigoNova;
         }
     }
