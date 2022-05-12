@@ -34,14 +34,14 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PendenciaDiarioBordoDescricaoDto>> ObterPendenciasDiarioPorPendencia(long pendenciaId, string codigoRf)
         {
-            var query = @"select a.data_aula as DataAula, coalesce(cc.descricao_infantil , cc.descricao_sgp, cc.descricao) as ComponenteCurricular
+            var query = @"select a.data_aula as DataAula, coalesce(cc.descricao_infantil , cc.descricao_sgp, cc.descricao) as ComponenteCurricular, (a.tipo_aula = @tipoAulaReposicao) ehReposicao
                            from pendencia_diario_bordo pdb
                           inner join aula a on a.id = pdb.aula_id
                           inner join componente_curricular cc on cc.id = pdb.componente_curricular_id 
                           where pdb.pendencia_id = @pendenciaId and pdb.professor_rf = @codigoRf
                           order by a.data_aula desc";
 
-            return await database.Conexao.QueryAsync<PendenciaDiarioBordoDescricaoDto>(query, new { pendenciaId, codigoRf });
+            return await database.Conexao.QueryAsync<PendenciaDiarioBordoDescricaoDto>(query, new { pendenciaId, codigoRf, tipoAulaReposicao = (int)TipoAula.Reposicao });
         }
     }
 }

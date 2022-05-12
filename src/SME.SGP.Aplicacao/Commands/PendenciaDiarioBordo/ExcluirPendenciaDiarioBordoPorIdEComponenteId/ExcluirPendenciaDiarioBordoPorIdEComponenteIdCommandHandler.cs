@@ -29,12 +29,14 @@ namespace SME.SGP.Aplicacao
             if (pendenciaId > 0)
             {
                 await repositorioPendenciaDiarioBordo.Excluir(request.AulaId, request.ComponenteCurricularId);
-                await mediator.Send(new ExcluirPendenciaUsuarioPorPendenciaIdEUsuarioIdCommand(pendenciaId, usuario.Id));
 
                 var existePendencia = await mediator.Send(new VerificaSeExistePendenciaDiarioComPendenciaIdQuery(pendenciaId), cancellationToken);
 
                 if (!existePendencia)
+                {
+                    await mediator.Send(new ExcluirPendenciaUsuarioPorPendenciaIdEUsuarioIdCommand(pendenciaId, usuario.Id));
                     repositorioPendencia.ExclusaoLogicaPendencia(pendenciaId);
+                }                    
 
                 return true;
             }
