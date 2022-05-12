@@ -473,8 +473,8 @@ namespace SME.SGP.Dados.Repositorios
             if (mes > 0)
                 query += " and fte.mes = @mes ";
 
-            query += @" group by u.nome, te.descricao
-                        order by u.nome, te.descricao ";
+            query += @" group by te.descricao, u.nome
+                        order by te.descricao, u.nome ";
 
             var parametros = new { dreCodigo, modalidade, semestre, anoLetivo, mes };
 
