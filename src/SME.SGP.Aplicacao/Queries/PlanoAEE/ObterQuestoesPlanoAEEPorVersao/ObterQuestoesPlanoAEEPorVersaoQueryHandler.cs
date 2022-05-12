@@ -42,10 +42,12 @@ namespace SME.SGP.Aplicacao
                 if (turma.AnoLetivo.Equals(DateTime.Today.Year))
                 {
                     var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
-                    listaQuestoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoEscolar.Id.ToString();
-                }                
+                    if (listaQuestoes.SingleOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Any())
+                    {
+                        listaQuestoes.SingleOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.SingleOrDefault().Texto = periodoEscolar.Id.ToString();
+                    }                    
+                }
             }
-
             return listaQuestoes;
         }
     }
