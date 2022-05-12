@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var item in request.ProfessoresComponentes)
                 {
-                    var pendenciaIdExistente = await mediator.Send(new ObterPendenciaDiarioBordoPorComponentePeriodoEscolarProfessorQuery(item.DisciplinaId, item.CodigoRf, request.Aula.PeriodoEscolarId));
+                    var pendenciaIdExistente = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteTurmaCodigoQuery(item.DisciplinaId, request.TurmaCodigo));
 
                     var pendenciaId = pendenciaIdExistente > 0
                         ? pendenciaIdExistente

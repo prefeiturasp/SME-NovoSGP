@@ -463,21 +463,16 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, tipoPendencia }));
         }
 
-        public async Task<long> ObterPendenciaDiarioBordoPorComponentePeriodoEscolarProfessor(long componenteCurricularId, string codigoRf, long periodoEscolarId)
+        public async Task<long> ObterPendenciaDiarioBordoPorComponenteTurmaCodigo(long componenteCurricularId, string turmaCodigo)
         {
-            var sql = @"select p.id from pendencia p 
+            var sql = @"select p.Id from pendencia p 
                         join pendencia_diario_bordo pdb on pdb.pendencia_id = p.id 
-                        join pendencia_usuario pu on pu.pendencia_id = p.id 
-                        join usuario u on u.id = pu.usuario_id 
                         join aula a on a.id = pdb.aula_id 
-                        join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
-                        /*join componente_curricular cc on cc.id = a.disciplina_id::int8 */
                         join componente_curricular cc on cc.id = pdb.componente_curricular_id
-                        where u.rf_codigo = @codigoRf and cc.id = @componenteCurricularId 
-                        and pe.id = @periodoEscolarId                            
-                        order by p.criado_em desc";
+                        where a.turma_id = @turmaCodigo and cc.id = @componenteCurricularId                        
+                        order by p.Id desc";
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId}));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, turmaCodigo}));
         }
     }
 }

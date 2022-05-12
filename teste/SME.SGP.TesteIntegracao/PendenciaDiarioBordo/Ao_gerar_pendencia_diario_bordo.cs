@@ -29,14 +29,18 @@ namespace SME.SGP.TesteIntegracao
 
             await mediator.Send(salvarPendenciaDiarioBordoCommand);
 
-            var pendenciaId = 0;
             foreach (var item in salvarPendenciaDiarioBordoCommand.ProfessoresComponentes)
             {
-                var pendenciaRetorno = await mediator.Send(new ObterPendenciaDiarioBordoPorComponentePeriodoEscolarProfessorQuery(item.DisciplinaId, item.CodigoRf, 1));
-                pendenciaId++;
+                var pendenciaRetorno = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteTurmaCodigoQuery(item.DisciplinaId, salvarPendenciaDiarioBordoCommand.TurmaCodigo));
 
                 pendenciaRetorno.ShouldBeGreaterThan(0);
-                pendenciaRetorno.ShouldBe(pendenciaId);
+
+                if (item.DisciplinaId == 512)
+                    pendenciaRetorno.ShouldBe(1);
+                else if (item.DisciplinaId == 513)
+                    pendenciaRetorno.ShouldBe(2);
+                else if (item.DisciplinaId == 534)
+                    pendenciaRetorno.ShouldBe(3);
             }
         }
 
@@ -78,7 +82,7 @@ namespace SME.SGP.TesteIntegracao
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = "98",
+                TurmaId = "1234",
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(2022, 05, 09),
@@ -158,6 +162,36 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase("componente_curricular", "513","512","1","1", "'ED.INF. EMEI 2 HS'", "false","false","true","false","false","true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 2H'");
             
+            await InserirNaBase("componente_curricular", "534", "512", "1","1", "'REG -EMEI -INT/MANHA'", "false","false","true","false","false","true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI MANHÃ'");
+
+            await InserirNaBase(new Dre()
+            {
+                Id = 1,
+                Nome = "Dre Teste",
+                CodigoDre = "11",
+                Abreviacao = "DT"
+            });
+
+            await InserirNaBase(new Ue()
+            {
+                Id = 1,
+                Nome = "Ue Teste",
+                DreId = 1,
+                TipoEscola = TipoEscola.EMEF,
+                CodigoUe = "22"
+            });
+
+            await InserirNaBase(new Turma()
+            {
+                Id = 1,
+                Nome = "1A",
+                CodigoTurma = "1234",
+                Ano = "1",
+                AnoLetivo = 2022,
+                TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
+                ModalidadeCodigo = Modalidade.Fundamental,
+                UeId = 1
+            });
         }
 
         private SalvarPendenciaDiarioBordoCommand ObterSalvarPendenciaDiarioBordoCommand()
@@ -166,6 +200,7 @@ namespace SME.SGP.TesteIntegracao
             {
                 DescricaoUeDre = "CEMEI CAPAO REDONDO(DRE CL)",
                 TurmaComModalidade = "EI - 7F",
+                TurmaCodigo = "1234",
                 ProfessoresComponentes = new List<ProfessorEComponenteInfantilDto>() 
                 {
                     new ProfessorEComponenteInfantilDto()
@@ -195,14 +230,14 @@ namespace SME.SGP.TesteIntegracao
                     new ProfessorEComponenteInfantilDto()
                     {
                         CodigoRf = "1004",
-                        DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI 2H",
-                        DisciplinaId = 513
+                        DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI MANHÃ",
+                        DisciplinaId = 534
                     },
                     new ProfessorEComponenteInfantilDto()
                     {
                         CodigoRf = "1006",
-                        DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI 2H",
-                        DisciplinaId = 513
+                        DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI MANHÃ",
+                        DisciplinaId = 534
                     },
                 },
                 Aula = new AulaComComponenteDto() 
