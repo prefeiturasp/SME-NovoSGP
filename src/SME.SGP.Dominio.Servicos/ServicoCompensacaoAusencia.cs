@@ -262,7 +262,7 @@ namespace SME.SGP.Dominio.Servicos
             // adiciona os alunos novos
             foreach (var alunoDto in alunosDto.Where(d => !alunos.Any(a => a.CodigoAluno == d.Id)))
             {
-                var frequenciaAluno = repositorioFrequencia.ObterPorAlunoDisciplinaData(alunoDto.Id, disciplinaId, periodo.PeriodoFim);
+                var frequenciaAluno = repositorioFrequencia.ObterPorAlunoDisciplinaData(alunoDto.Id, disciplinaId, periodo.PeriodoFim, turmaId);
                 if (frequenciaAluno == null)
                 {
                     mensagensExcessao.Append($"O aluno(a) [{alunoDto.Id}] não possui ausência para compensar. ");
