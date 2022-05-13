@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             var auditoria = await servicoFechamentoFinal.SalvarAsync(fechamentoTurmaDisciplina, turma, usuarioLogado, fechamentoFinalSalvarDto.Itens, emAprovacao);
 
             if (!auditoria.EmAprovacao)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaFechamentoSync,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaFechamentoSync,
                                                                new ConsolidacaoTurmaDto(turma.Id, 0),
                                                                Guid.NewGuid(),
                                                                null));

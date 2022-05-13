@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             foreach (var ciclo in ciclos)
             {
 
-                var publicarTratamentoCiclo = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalCicloTratar, ciclo, param.CodigoCorrelacao, null));
+                var publicarTratamentoCiclo = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalCicloTratar, ciclo, param.CodigoCorrelacao, null));
                 if (!publicarTratamentoCiclo)
                 {
                     await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o ciclo : {publicarTratamentoCiclo} na fila de sync.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));

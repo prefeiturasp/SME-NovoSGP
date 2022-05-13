@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
                     var mensagemParaEnviar = new TurmaComponentesParaCalculoFrequenciaDto(turmaCodigo, componentesDaTurma, periodosDaTurma);
 
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasAlunosBuscar, mensagemParaEnviar, Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConciliacaoFrequenciaTurmasAlunosBuscar, mensagemParaEnviar, Guid.NewGuid(), null));
                 }
             }
             else
