@@ -50,6 +50,7 @@ namespace SME.SGP.Worker.Rabbbit
             new RegistraDependencias().Registrar(services, configuracaoRabbitOptions);
             ConfiguraGoogleClassroomSync(services);
             ConfiguraRabbitParaLogs(services);
+            ConfiguraConsumoFilas(services);
 
             services.AddRabbit(configuracaoRabbitOptions);
 
@@ -91,6 +92,14 @@ namespace SME.SGP.Worker.Rabbbit
             configuration.GetSection(nameof(GoogleClassroomSyncOptions)).Bind(googleClassroomSyncOptions, c => c.BindNonPublicProperties = true);
 
             services.AddSingleton(googleClassroomSyncOptions);
+        }
+
+        private void ConfiguraConsumoFilas(IServiceCollection services)
+        {
+            var consumoFilasOptions = new ConsumoFilasOptions();
+            configuration.GetSection(ConsumoFilasOptions.Secao).Bind(consumoFilasOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(consumoFilasOptions);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

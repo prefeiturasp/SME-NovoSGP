@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
                 var pendenciasComUes = pendenciaFuncionarios.Where(w => w.UeId.HasValue).Select(s => s.UeId.Value).Distinct();
                 foreach (var ue in pendenciasComUes)
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaRemoverAtribuicaoPendenciaUsuariosUe, MapearFiltroPendenciaPerfilUsuario(pendenciaFuncionarios, ue), Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaRemoverAtribuicaoPendenciaUsuariosUe, MapearFiltroPendenciaPerfilUsuario(pendenciaFuncionarios, ue), Guid.NewGuid(), null));
 
                 var pendenciasSemPendPerfUsuario = await mediator.Send(new ObterPendenciaSemPendenciaPerfilUsuarioQuery());
                 foreach (var pendencia in pendenciasSemPendPerfUsuario)
