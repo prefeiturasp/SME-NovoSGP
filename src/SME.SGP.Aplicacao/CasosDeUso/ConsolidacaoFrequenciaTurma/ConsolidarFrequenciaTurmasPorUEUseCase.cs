@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             {
                 var filtroTurma = new FiltroConsolidacaoFrequenciaTurma(turma.TurmaId, turma.TurmaCodigo, turma.ModalidadeInfantil ? filtro.PercentualMinimoInfantil : filtro.PercentualMinimo);
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarFrequenciasPorTurma, filtroTurma, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpProcessosIsolados.ConsolidarFrequenciasPorTurma, filtroTurma, Guid.NewGuid(), null));
             }
 
             return true;
