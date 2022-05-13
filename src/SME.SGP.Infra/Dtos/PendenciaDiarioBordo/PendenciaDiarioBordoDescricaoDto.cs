@@ -11,5 +11,6 @@ namespace SME.SGP.Infra
         public int Bimestre { get; set; }
         public int ModalidadeCodigo { get; set; }
         public string NomeTurma { get; set; }
+        public bool EhReposicao { get; set; }
     }
 }
