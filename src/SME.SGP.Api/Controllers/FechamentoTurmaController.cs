@@ -135,7 +135,7 @@ namespace SME.SGP.Api.Controllers
             {
                 try
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarTurmaFechamentoSync,
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaFechamentoSync,
                                                                    new ConsolidacaoTurmaDto(idTurma, fechamentoTurmaConsolidacaoDto.Bimestre),
                                                                    Guid.NewGuid(),
                                                                    null));
