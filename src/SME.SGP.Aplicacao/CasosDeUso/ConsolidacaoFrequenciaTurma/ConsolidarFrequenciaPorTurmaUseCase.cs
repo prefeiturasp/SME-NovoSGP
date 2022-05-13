@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             {
                 filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
                 var turma = !string.IsNullOrWhiteSpace(filtro.TurmaCodigo) ? 
-                    await mediator.Send(new ObterTurmaPorIdQuery(Convert.ToInt64(filtro.TurmaCodigo))) : 
+                    await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo)) : 
                     await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
 
                 if (turma != null)
