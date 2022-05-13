@@ -62,6 +62,7 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.BasicQos(0, 10, false);
 
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.Sgp, ExchangeType.Direct, true, false);
+            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpProcessosIsolados, ExchangeType.Direct, true, false);
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpLogs, ExchangeType.Direct, true, false);
 
@@ -75,7 +76,8 @@ namespace SME.SGP.Worker.RabbitMQ
         {
             DeclararFilasPorRota(typeof(RotasRabbitLogs), ExchangeSgpRabbit.SgpLogs);
             DeclararFilasPorRota(typeof(RotasRabbitSgp), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
-            DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);            
+            DeclararFilasPorRota(typeof(RotasRabbitSgpProcessosIsolados), ExchangeSgpRabbit.SgpProcessosIsolados, ExchangeSgpRabbit.SgpDeadLetter);
+            DeclararFilasPorRota(typeof(RotasRabbitSgpAgendamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
         }
 
         private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter = "")
@@ -212,7 +214,7 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.ConsolidarFrequenciasTurmasNoAno, new ComandoRabbit("Consolidar Registros de Frequência das Turmas no Ano", typeof(IConsolidarFrequenciaTurmasPorAnoUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarFrequenciasTurmasPorDre, new ComandoRabbit("Consolidar Registros de Frequência das Turmas por UE", typeof(IConsolidarFrequenciaTurmasPorDREUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarFrequenciasTurmasPorUe, new ComandoRabbit("Consolidar Registros de Frequência das Turmas por UE", typeof(IConsolidarFrequenciaTurmasPorUEUseCase)));
-            comandos.Add(RotasRabbitSgp.ConsolidarFrequenciasPorTurma, new ComandoRabbit("Consolidar Registros de Frequência por Turma", typeof(IConsolidarFrequenciaPorTurmaUseCase)));
+            comandos.Add(RotasRabbitSgpProcessosIsolados.ConsolidarFrequenciasPorTurma, new ComandoRabbit("Consolidar Registros de Frequência por Turma", typeof(IConsolidarFrequenciaPorTurmaUseCase)));
 
             comandos.Add(RotasRabbitSgp.ConsolidacaoMatriculasTurmasDreCarregar, new ComandoRabbit("Carrega os dados de todas as Dres para consolidação de matrículas", typeof(ICarregarDresConsolidacaoMatriculaUseCase)));
             comandos.Add(RotasRabbitSgp.SincronizarDresMatriculasTurmas, new ComandoRabbit("Consolidação de matrículas por turmas - Sincronizar Dres", typeof(IExecutarSincronizacaoDresConsolidacaoMatriculasUseCase)));
@@ -225,7 +227,7 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.ConsolidarTurmaTratar, new ComandoRabbit("Consolidação Fechamento/Conselho - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaUseCase)));
 
             comandos.Add(RotasRabbitSgp.ConsolidarTurmaConselhoClasseSync, new ComandoRabbit("Consolidação conselho classe - Sincronizar alunos da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseUseCase)));
-            comandos.Add(RotasRabbitSgp.ConsolidarTurmaConselhoClasseAlunoTratar, new ComandoRabbit("Consolidação conselho classe - Consolidar aluno da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase)));
+            comandos.Add(RotasRabbitSgpProcessosIsolados.ConsolidarTurmaConselhoClasseAlunoTratar, new ComandoRabbit("Consolidação conselho classe - Consolidar aluno da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase)));
 
             comandos.Add(RotasRabbitSgp.ConsolidarTurmaFechamentoSync, new ComandoRabbit("Consolidação fechamento - Sincronizar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoUseCase)));
             comandos.Add(RotasRabbitSgp.ConsolidarTurmaFechamentoComponenteTratar, new ComandoRabbit("Consolidação fechamento - Consolidar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoComponenteUseCase)));
@@ -489,12 +491,19 @@ namespace SME.SGP.Worker.RabbitMQ
             };
 
             RegistrarConsumerSgp(consumer);
+            RegistrarConsumerSgpProcessosIsolados(consumer);
             return Task.CompletedTask;
         }
 
         private void RegistrarConsumerSgp(EventingBasicConsumer consumer)
         {
             foreach (var fila in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>())
+                canalRabbit.BasicConsume(fila, false, consumer);
+        }
+
+        private void RegistrarConsumerSgpProcessosIsolados(EventingBasicConsumer consumer)
+        {
+            foreach (var fila in typeof(RotasRabbitSgpProcessosIsolados).ObterConstantesPublicas<string>())
                 canalRabbit.BasicConsume(fila, false, consumer);
         }
     }

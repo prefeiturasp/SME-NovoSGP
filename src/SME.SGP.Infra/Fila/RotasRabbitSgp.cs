@@ -109,7 +109,6 @@
         public const string ConsolidarFrequenciasTurmasNoAno = "sgp.frequencia.turma.ano.consolidar";
         public const string ConsolidarFrequenciasTurmasPorDre = "sgp.frequencia.turma.dre.consolidar";
         public const string ConsolidarFrequenciasTurmasPorUe = "sgp.frequencia.turma.ue.consolidar";
-        public const string ConsolidarFrequenciasPorTurma = "sgp.frequencia.turma.consolidar";
 
         public const string ConsolidacaoMatriculasTurmasDreCarregar = "sgp.matricula.turma.consolidar.dre.carregar";
         public const string SincronizarDresMatriculasTurmas = "sgp.matricula.turma.consolidar.dre.sync";
@@ -121,7 +120,6 @@
         public const string ConsolidarTurmaFechamentoSync = "sgp.consolidacao.turma.fechamento.sync";
         public const string ConsolidarTurmaFechamentoComponenteTratar = "sgp.consolidacao.turma.fechamento.componente.tratar";
         public const string ConsolidarTurmaConselhoClasseSync = "sgp.consolidacao.turma.conselhoclasse.sync";
-        public const string ConsolidarTurmaConselhoClasseAlunoTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.tratar";
 
         public const string RotaConciliacaoFrequenciaTurmasSync = "sgp.frequencia.turma.conciliacao.sync";
         public const string RotaConciliacaoFrequenciaTurmaPorPeriodo = "sgp.frequencia.turma.conciliacao.periodo";
