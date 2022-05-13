@@ -45,13 +45,13 @@ namespace SME.SGP.Aplicacao
             var body = Encoding.UTF8.GetBytes(mensagem);
 
             servicoTelemetria.Registrar(() => 
-                    policy.ExecuteAsync(() => PublicarMensagem(command.Rota, body)), 
+                    policy.ExecuteAsync(() => PublicarMensagem(command.Rota, body, command.Exchange)), 
                             "RabbitMQ", "PublicarFilaSgp", command.Rota);
 
             return true;
         }
 
-        private async Task PublicarMensagem(string rota, byte[] body)
+        private async Task PublicarMensagem(string rota, byte[] body, string exchange = null)
         {
             var factory = new ConnectionFactory
             {
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
                     var props = _channel.CreateBasicProperties();
                     props.Persistent = true;
 
-                    _channel.BasicPublish(ExchangeSgpRabbit.Sgp, rota, props, body);
+                    _channel.BasicPublish(exchange ?? ExchangeSgpRabbit.Sgp, rota, props, body);
                 }
             }
         }
