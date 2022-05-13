@@ -217,5 +217,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+        [HttpPost("frequencias/consolidar/{codigoTurma}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> Consolidar(string codigoTurma)
+        {
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ConsolidarFrequenciasPorTurma, new FiltroConsolidacaoFrequenciaTurma() { TurmaCodigo = codigoTurma }, Guid.NewGuid()));
+            return Ok();
+        }
     }
 }
