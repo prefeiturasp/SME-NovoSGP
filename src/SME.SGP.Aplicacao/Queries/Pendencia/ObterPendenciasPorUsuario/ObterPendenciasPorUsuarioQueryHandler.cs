@@ -280,12 +280,12 @@ namespace SME.SGP.Aplicacao
 
         private string ObterComplementoDescricao(PendenciaAulaDto pendenciaAula)
         {
-            return !string.IsNullOrEmpty(pendenciaAula.TituloAvaliacao)? $" - {pendenciaAula.TituloAvaliacao}" : ObterComplementoReposicao(pendenciaAula);
+            return !string.IsNullOrEmpty(pendenciaAula.TituloAvaliacao)? $" - {pendenciaAula.TituloAvaliacao}" : ObterComplementoReposicao(pendenciaAula.EhReposicao);
         }
 
-        private string ObterComplementoReposicao(PendenciaAulaDto pendenciaAula)
+        private string ObterComplementoReposicao(bool ehReposicao)
         {
-            return (pendenciaAula.EhReposicao ? " - Reposição" : "");
+            return ehReposicao ? " - Reposição" : "";
         }
 
         private async Task<string> ObterDescricaoPendenciaDiarioBordo(Pendencia pendencia, string codigoRfProfessor)
@@ -296,9 +296,8 @@ namespace SME.SGP.Aplicacao
             descricao.AppendLine("<br /><ul>");
 
             foreach (var pendenciaDiario in pendenciasDiarios)
-            {
-                descricao.AppendLine($"<li>{pendenciaDiario.DataAula:dd/MM}</li>");
-            }
+                descricao.AppendLine($"<li>{pendenciaDiario.DataAula:dd/MM/yyyy} {ObterComplementoReposicao(pendenciaDiario.EhReposicao)}</li>");
+
             descricao.AppendLine("</ul>");
             descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
 

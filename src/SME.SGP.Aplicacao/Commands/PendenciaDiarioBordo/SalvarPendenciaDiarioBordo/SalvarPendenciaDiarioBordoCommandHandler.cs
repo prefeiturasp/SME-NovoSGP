@@ -48,7 +48,10 @@ namespace SME.SGP.Aplicacao
             {
                 unitOfWork.IniciarTransacao();
 
-                await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
+                var existePendenciaUsuario = await mediator.Send(new ObterPendenciasUsuarioPorPendenciaUsuarioIdQuery(pendenciaId, usuarioId));
+
+                if (!existePendenciaUsuario)
+                    await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
 
                 var pendenciaDiarioBordo = new PendenciaDiarioBordo()
                 {

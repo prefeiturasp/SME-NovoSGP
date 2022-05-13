@@ -43,7 +43,7 @@ namespace SME.SGP.Dados.Repositorios
                           where pdb.pendencia_id = @pendenciaId and pdb.professor_rf = @codigoRf
                           order by a.data_aula desc";
 
-            return await database.Conexao.QueryAsync<PendenciaDiarioBordoDescricaoDto>(query, new { pendenciaId, codigoRf });
+            return await database.Conexao.QueryAsync<PendenciaDiarioBordoDescricaoDto>(query, new { pendenciaId, codigoRf, tipoAulaReposicao = (int)TipoAula.Reposicao });
         }
     }
 }
