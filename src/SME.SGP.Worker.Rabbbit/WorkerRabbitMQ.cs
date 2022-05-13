@@ -62,7 +62,7 @@ namespace SME.SGP.Worker.RabbitMQ
 
             canalRabbit = conexaoRabbit.CreateModel();
 
-            canalRabbit.BasicQos(0, 10, false);
+            canalRabbit.BasicQos(0, consumoFilasOptions.Qos, false);
 
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.Sgp, ExchangeType.Direct, true, false);
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
