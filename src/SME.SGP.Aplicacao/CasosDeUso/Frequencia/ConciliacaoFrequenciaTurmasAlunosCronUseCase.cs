@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public async Task Executar()
         {
             var mensagem = new FiltroCalculoFrequenciaDataRereferenciaDto(DateTime.Today);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasAlunosSync, mensagem, Guid.NewGuid(), null, false));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConciliacaoFrequenciaTurmasAlunosSync, mensagem, Guid.NewGuid(), null, false));
         }
 
     }
