@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
 
             if (await mediator.Send(new TrataSincronizacaoInstitucionalUeCommand(ueEol, ueSgp)))
-                return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalTurmasSync, ueCodigo, mensagemRabbit.CodigoCorrelacao, null));
+                return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmasSync, ueCodigo, mensagemRabbit.CodigoCorrelacao, null));
             else
                 throw new NegocioException($"Não foi possível sincronizar a UE de código {ueCodigo}");
 

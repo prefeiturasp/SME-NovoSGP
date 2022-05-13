@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             var command = new ValidaAusenciaParaConciliacaoFrequenciaTurmaCommand(request.TurmaCodigo, request.DataInicio, request.DataFim, request.ComponenteCurricularId);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaValidacaoAusenciaConciliacaoFrequenciaTurma, command, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaValidacaoAusenciaConciliacaoFrequenciaTurma, command, Guid.NewGuid(), null));
 
             return true;
         }

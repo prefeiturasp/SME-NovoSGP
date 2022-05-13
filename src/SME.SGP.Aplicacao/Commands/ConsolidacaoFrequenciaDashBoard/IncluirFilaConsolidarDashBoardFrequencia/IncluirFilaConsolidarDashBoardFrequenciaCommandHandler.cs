@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 TipoPeriodo = request.TipoPeriodo
             };            
 
-            var publicar = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoDashBoardFrequencia, filtro, Guid.NewGuid(), null));
+            var publicar = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoDashBoardFrequencia, filtro, Guid.NewGuid(), null));
             if (!publicar)
             {
                 var mensagem = $"Não foi possível inserir a turma: {request.TurmaId} na fila de consolidação de frequência.";
