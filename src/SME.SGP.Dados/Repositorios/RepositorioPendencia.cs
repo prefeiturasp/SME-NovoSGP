@@ -60,7 +60,17 @@ namespace SME.SGP.Dados.Repositorios
 		                            inner join pendencia_usuario pu on pu.pendencia_id = p.id
 		                            where not p.excluido 
 		                            and pu.usuario_id = @usuarioId 
-		                            and situacao = @situacao ) t order by CriadoEm desc";
+		                            and situacao = @situacao 
+                            union all
+                            select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+                                                      from pendencia p                                                      
+                                                      inner join pendencia_encaminhamento_aee eaee ON eaee.pendencia_id = p.id
+                                                      inner join encaminhamento_aee aee on eaee.encaminhamento_aee_id = aee.id
+                                                      where not p.excluido
+                                                       and aee.responsavel_id = @usuarioId
+                                                       and p.situacao = @situacao) t order by CriadoEm desc"
+
+;
 
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
@@ -362,7 +372,16 @@ namespace SME.SGP.Dados.Repositorios
                                                       inner join turma t ON t.id = pri.turma_id 
                                                       where not p.excluido 
                                                        and pu.usuario_id = @usuarioId
-                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}' {tituloPendencia}");
+                                                       and p.situacao = @situacao AND t.turma_id = '{turmaCodigo}' {tituloPendencia}
+                            union all
+                            select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo
+                                                      from pendencia p 
+                                                      inner join pendencia_encaminhamento_aee eaee ON eaee.pendencia_id = p.id 
+                                                      inner join encaminhamento_aee aee on eaee.encaminhamento_aee_id = aee.id
+                                                      where not p.excluido 
+                                                       and aee.responsavel_id = @usuarioId 
+                                                       and p.situacao = @situacao
+                                                       and aee.turma_id = '{turmaCodigo}' {tituloPendencia}");
             }
 
             return query.ToString();
