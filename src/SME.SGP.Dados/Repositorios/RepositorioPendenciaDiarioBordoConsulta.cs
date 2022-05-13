@@ -34,12 +34,15 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PendenciaDiarioBordoDescricaoDto>> ObterPendenciasDiarioPorPendencia(long pendenciaId, string codigoRf)
         {
-            var query = @"select distinct a.data_aula as DataAula, coalesce(cc.descricao_infantil , cc.descricao_sgp, cc.descricao) as ComponenteCurricular, (a.tipo_aula = @tipoAulaReposicao) ehReposicao
-                           from pendencia_diario_bordo pdb
-                          inner join aula a on a.id = pdb.aula_id
-                          inner join componente_curricular cc on cc.id = pdb.componente_curricular_id 
-                          where pdb.pendencia_id = @pendenciaId and pdb.professor_rf = @codigoRf
-                          order by a.data_aula desc";
+            var query = @"select a.data_aula as DataAula, coalesce(cc.descricao_infantil , cc.descricao_sgp, cc.descricao) as ComponenteCurricular, 
+                                pe.bimestre, pdb.pendencia_id as PendenciaId, t.modalidade_codigo ModalidadeCodigo, t.nome NomeTurma, (a.tipo_aula = @tipoAulaReposicao) ehReposicao 
+                        from pendencia_diario_bordo pdb
+                        join aula a on a.id = pdb.aula_id
+                        join componente_curricular cc on cc.id = pdb.componente_curricular_id
+                        join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id and pe.periodo_inicio <= a.data_aula and pe.periodo_fim >= a.data_aula
+                        join turma t on t.turma_id = a.turma_id 
+                        where pdb.pendencia_id = @pendenciaId and pdb.professor_rf = @codigoRf
+                        order by a.data_aula desc";
 
             return await database.Conexao.QueryAsync<PendenciaDiarioBordoDescricaoDto>(query, new { pendenciaId, codigoRf, tipoAulaReposicao = (int)TipoAula.Reposicao });
         }
