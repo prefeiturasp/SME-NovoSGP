@@ -23,18 +23,9 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                foreach (var item in request.ProfessoresComponentes)
-                {
-                    var pendenciaIdExistente = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteTurmaCodigoQuery(item.DisciplinaId, request.TurmaCodigo));
+                var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ProfessorComponente.CodigoRf));
 
-                    var pendenciaId = pendenciaIdExistente > 0
-                        ? pendenciaIdExistente
-                        : await mediator.Send(MapearPendencia(TipoPendencia.DiarioBordo, item.DescricaoComponenteCurricular, request.TurmaComModalidade, request.DescricaoUeDre));
-
-                    var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(item.CodigoRf));
-
-                    await SalvarPendenciaDiario(request.Aula.Id, item.CodigoRf, item.DisciplinaId, pendenciaId, usuarioId);
-                }
+                await SalvarPendenciaDiario(request.Aula.Id, request.ProfessorComponente.CodigoRf, request.ProfessorComponente.DisciplinaId, request.PendenciaId, usuarioId);
             }
             catch (Exception ex)
             {
@@ -69,17 +60,6 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.Rollback();
                 throw ex;
             }
-        }
-
-        private SalvarPendenciaCommand MapearPendencia(TipoPendencia tipoPendencia, string descricaoComponenteCurricular, string turmaAnoComModalidade, string descricaoUeDre)
-        {
-            return new SalvarPendenciaCommand
-            {
-                TipoPendencia = tipoPendencia,
-                DescricaoComponenteCurricular = descricaoComponenteCurricular,
-                TurmaAnoComModalidade = turmaAnoComModalidade,
-                DescricaoUeDre = descricaoUeDre,
-            };
         }
     }
 }
