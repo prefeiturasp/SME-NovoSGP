@@ -12,6 +12,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long[]> ListarPendenciasPorAulasId(long[] aulasId);
         Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil, Usuario usuarioLogado);
         Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil, long[] componentesCurricularesId);
+        Task<long> ObterPendenciaPorDescricaoTipo(string descricao, TipoPendencia tipoPendencia);
         Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId);
         Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId);
         Task<bool> PossuiAtividadeAvaliativaSemNotaPorAulasId(long[] aulasId);

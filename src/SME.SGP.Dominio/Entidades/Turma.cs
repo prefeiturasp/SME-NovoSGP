@@ -126,5 +126,16 @@ namespace SME.SGP.Dominio
         {
             return AnoLetivo < DateTime.Now.Year;
         }
+
+        public string ObterEscola()
+        {
+            var ueTipo = Ue.TipoEscola;
+
+            var dreAbreviacao = Ue.Dre.Abreviacao.Replace("-", "");
+
+            var ueNome = Ue.Nome;
+
+            return ueTipo != TipoEscola.Nenhum ? $"{ueTipo.ObterNomeCurto()} {ueNome} ({dreAbreviacao})" : $"{ueNome} ({dreAbreviacao})";
+        }
     }
 }

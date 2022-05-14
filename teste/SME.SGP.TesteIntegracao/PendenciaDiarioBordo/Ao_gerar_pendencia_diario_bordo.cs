@@ -329,5 +329,51 @@ namespace SME.SGP.TesteIntegracao
 
             return lstPendenciasDiarioBordo;
         }
+
+        [Fact]
+        public async Task Deve_encontrar_pendencia_de_diario_bordo_por_descricao()
+        {
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            var descricao = "O registro do Diário de Bordo do componente REGÊNCIA INFANTIL EMEI 4H da turma EI-7P da CEU EMEI PARAISOPOLIS (DRE  CL) das aulas abaixo está pendente:";
+
+            await InserirNaBase(new Pendencia()
+            {
+                Tipo = TipoPendencia.DiarioBordo,
+                Descricao = descricao,
+                Titulo = "Aula sem Diario de Bordo registrado",
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(2022, 05, 14)
+            });
+
+            var retorno = await mediator.Send(new ObterPendenciaPorDescricaoTipoQuery(descricao, TipoPendencia.DiarioBordo));
+
+            retorno.ShouldBe(1);
+        }
+
+        [Fact]
+        public async Task Nao_Deve_encontrar_pendencia_de_diario_bordo_por_descricao()
+        {
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            var descricao = "O registro do Diário de Bordo do componente REGÊNCIA INFANTIL EMEI 2H da turma EI-7P da CEU EMEI PARAISOPOLIS (DRE  CL) das aulas abaixo está pendente:";
+
+            await InserirNaBase(new Pendencia()
+            {
+                Tipo = TipoPendencia.DiarioBordo,
+                Descricao = descricao,
+                Titulo = "Aula sem Diario de Bordo registrado",
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(2022, 05, 14)
+            });
+
+            descricao = "O registro do Diário de Bordo do componente REGÊNCIA INFANTIL EMEI 4H da turma EI-7P da CEU EMEI PARAISOPOLIS (DRE  CL) das aulas abaixo está pendente:";
+
+            var retorno = await mediator.Send(new ObterPendenciaPorDescricaoTipoQuery(descricao, TipoPendencia.DiarioBordo));
+
+            retorno.ShouldBe(0);
+        }
     }
 }

@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -104,16 +105,24 @@ namespace SME.SGP.Aplicacao
 
             foreach (var item in professoresEComponentes)
             {
-                var pendenciaIdExistente = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteTurmaCodigoQuery(item.DisciplinaId, turmaComDreUe.CodigoTurma));
+                var turmaComModalidade = turmaComDreUe.NomeComModalidade();
+                
+                var nomeEscola = turmaComDreUe.ObterEscola();
+
+                var descricao = PendenciaConstants.ObterDescricaoPendenciaDiarioBordo(item.DescricaoComponenteCurricular, turmaComModalidade, nomeEscola);
+                
+                var pendenciaIdExistente = await mediator.Send(new ObterPendenciaPorDescricaoTipoQuery(descricao, TipoPendencia.DiarioBordo));
 
                 if (pendenciaIdExistente == 0)
-                    pendenciaIdExistente = await mediator.Send(MapearPendencia(TipoPendencia.DiarioBordo, item.DescricaoComponenteCurricular, turmaComDreUe.NomeComModalidade(), $"{ObterEscola(turmaComDreUe)}"));
+                    pendenciaIdExistente = await mediator.Send(MapearPendencia(TipoPendencia.DiarioBordo, item.DescricaoComponenteCurricular, turmaComModalidade, nomeEscola));
 
                 lstPendenciaComponente.Add(new PendenciaComponenteCurricularDto() { PendenciaId = pendenciaIdExistente, ComponenteCurricularId = item.DisciplinaId });
             }
 
             return lstPendenciaComponente;
         }
+
+        
 
         private SalvarPendenciaCommand MapearPendencia(TipoPendencia tipoPendencia, string descricaoComponenteCurricular, string turmaAnoComModalidade, string descricaoUeDre)
         {
@@ -126,15 +135,6 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private string ObterEscola(Turma turmaDreUe)
-        {
-            var ueTipo = turmaDreUe.Ue.TipoEscola;
-
-            var dreAbreviacao = turmaDreUe.Ue.Dre.Abreviacao.Replace("-", "");
-
-            var ueNome = turmaDreUe.Ue.Nome;
-
-            return ueTipo != TipoEscola.Nenhum ? $"{ueTipo.ShortName()} {ueNome} ({dreAbreviacao})" : $"{ueNome} ({dreAbreviacao})";
-        }
+        
     }
 }
