@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             {
                 var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ProfessorComponente.CodigoRf));
 
-                await SalvarPendenciaDiario(request.Aula.Id, request.ProfessorComponente.CodigoRf, request.ProfessorComponente.DisciplinaId, request.PendenciaId, usuarioId);
+                await SalvarPendenciaDiario(request, usuarioId);
             }
             catch (Exception ex)
             {
@@ -33,11 +33,16 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task SalvarPendenciaDiario(long aulaId, string codigoRf, long disciplinaId, long pendenciaId, long usuarioId)
+        private async Task SalvarPendenciaDiario(SalvarPendenciaDiarioBordoCommand request, long usuarioId)
         {
             try
             {
                 unitOfWork.IniciarTransacao();
+
+                var pendenciaId = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(request.ProfessorComponente.DisciplinaId, request.ProfessorComponente.CodigoRf, request.Aula.PeriodoEscolarId));
+
+                if (pendenciaId == 0)
+                    pendenciaId = await mediator.Send(MapearPendencia(TipoPendencia.DiarioBordo, request.ProfessorComponente.DescricaoComponenteCurricular, request.TurmaComModalidade, request.NomeEscola));
 
                 var existePendenciaUsuario = await mediator.Send(new ObterPendenciasUsuarioPorPendenciaUsuarioIdQuery(pendenciaId, usuarioId));
 
@@ -47,9 +52,9 @@ namespace SME.SGP.Aplicacao
                 var pendenciaDiarioBordo = new PendenciaDiarioBordo()
                 {
                     PendenciaId = pendenciaId,
-                    ProfessorRf = codigoRf,
-                    ComponenteId = disciplinaId,
-                    AulaId = aulaId
+                    ProfessorRf = request.ProfessorComponente.CodigoRf,
+                    ComponenteId = request.ProfessorComponente.DisciplinaId,
+                    AulaId = request.Aula.Id
                 };
                 await repositorioDiarioBordo.SalvarAsync(pendenciaDiarioBordo);
 
@@ -60,6 +65,17 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.Rollback();
                 throw ex;
             }
+        }
+
+        private SalvarPendenciaCommand MapearPendencia(TipoPendencia tipoPendencia, string descricaoComponenteCurricular, string turmaAnoComModalidade, string descricaoUeDre)
+        {
+            return new SalvarPendenciaCommand
+            {
+                TipoPendencia = tipoPendencia,
+                DescricaoComponenteCurricular = descricaoComponenteCurricular,
+                TurmaAnoComModalidade = turmaAnoComModalidade,
+                DescricaoUeDre = descricaoUeDre,
+            };
         }
     }
 }

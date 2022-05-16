@@ -14,7 +14,8 @@ namespace SME.SGP.Aplicacao
         public ProfessorEComponenteInfantilDto ProfessorComponente { get; set; }
         public AulaComComponenteDto Aula { get; set; }
         public string CodigoTurma { get; set; }
-        public long PendenciaId { get; set; }
+        public string TurmaComModalidade { get; set; }
+        public string NomeEscola { get; set; }
     }
 
     public class SalvarPendenciaDiarioBordoCommandValidator : AbstractValidator<SalvarPendenciaDiarioBordoCommand>
@@ -33,9 +34,13 @@ namespace SME.SGP.Aplicacao
             .NotEmpty()
             .WithMessage("O código da turma deve ser informado para geração de pendência diário de bordo.");
 
-            RuleFor(c => c.PendenciaId)
+            RuleFor(c => c.TurmaComModalidade)
             .NotEmpty()
-            .WithMessage("O código da pendência deve ser informado para geração de pendência diário de bordo.");
+            .WithMessage("O nome da turma com modalidade deve ser informado para geração de pendência diário de bordo.");
+
+            RuleFor(c => c.NomeEscola)
+            .NotEmpty()
+            .WithMessage("O nome da escola deve ser informado para geração de pendência diário de bordo.");
         }
     }
 }
