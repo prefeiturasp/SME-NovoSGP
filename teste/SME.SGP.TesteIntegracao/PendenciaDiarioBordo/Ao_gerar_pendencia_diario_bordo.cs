@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -25,13 +26,16 @@ namespace SME.SGP.TesteIntegracao
 
             await CriarCadastrosBasicos();
 
+            await CadastrarPendenciaDiarioBordoGeral(mediator);
+
             var salvarPendenciaDiarioBordoCommand = ObterSalvarPendenciaDiarioBordoCommand();
 
-            await mediator.Send(salvarPendenciaDiarioBordoCommand);
+            foreach (var item in salvarPendenciaDiarioBordoCommand)
+                await mediator.Send(item);
 
-            foreach (var item in salvarPendenciaDiarioBordoCommand.ProfessoresComponentes)
+            foreach (var item in salvarPendenciaDiarioBordoCommand.Select(s => s.ProfessorComponente))
             {
-                var pendenciaRetorno = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteTurmaCodigoQuery(item.DisciplinaId, salvarPendenciaDiarioBordoCommand.TurmaCodigo));
+                var pendenciaRetorno = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteTurmaCodigoQuery(item.DisciplinaId, salvarPendenciaDiarioBordoCommand.FirstOrDefault().CodigoTurma));
 
                 pendenciaRetorno.ShouldBeGreaterThan(0);
 
@@ -42,6 +46,33 @@ namespace SME.SGP.TesteIntegracao
                 else if (item.DisciplinaId == 534)
                     pendenciaRetorno.ShouldBe(3);
             }
+        }
+
+        private async Task CadastrarPendenciaDiarioBordoGeral(IMediator mediator)
+        {
+            await mediator.Send(new SalvarPendenciaCommand
+            {
+                TipoPendencia = TipoPendencia.DiarioBordo,
+                DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI 4H",
+                TurmaAnoComModalidade = "EI - 7F",
+                DescricaoUeDre = "CEMEI CAPAO REDONDO(DRE CL)",
+            });
+
+            await mediator.Send(new SalvarPendenciaCommand
+            {
+                TipoPendencia = TipoPendencia.DiarioBordo,
+                DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI 2H",
+                TurmaAnoComModalidade = "EI - 7F",
+                DescricaoUeDre = "CEMEI CAPAO REDONDO(DRE CL)",
+            });
+
+            await mediator.Send(new SalvarPendenciaCommand
+            {
+                TipoPendencia = TipoPendencia.DiarioBordo,
+                DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI MANHÃ",
+                TurmaAnoComModalidade = "EI - 7F",
+                DescricaoUeDre = "CEMEI CAPAO REDONDO(DRE CL)",
+            });
         }
 
         private async Task CriarCadastrosBasicos()
@@ -194,58 +225,155 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private SalvarPendenciaDiarioBordoCommand ObterSalvarPendenciaDiarioBordoCommand()
+        private List<SalvarPendenciaDiarioBordoCommand> ObterSalvarPendenciaDiarioBordoCommand()
         {
-            return new SalvarPendenciaDiarioBordoCommand() 
+            var lstPendenciasDiarioBordo = new List<SalvarPendenciaDiarioBordoCommand>()
             {
-                DescricaoUeDre = "CEMEI CAPAO REDONDO(DRE CL)",
-                TurmaComModalidade = "EI - 7F",
-                TurmaCodigo = "1234",
-                ProfessoresComponentes = new List<ProfessorEComponenteInfantilDto>() 
+                new SalvarPendenciaDiarioBordoCommand()
                 {
-                    new ProfessorEComponenteInfantilDto()
+                    ProfessorComponente = new ProfessorEComponenteInfantilDto()
                     {
                         CodigoRf = "1001",
                         DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI 4H",
                         DisciplinaId = 512
                     },
-                    new ProfessorEComponenteInfantilDto()
+                    Aula = new AulaComComponenteDto()
+                    {
+                        Id = 1,
+                        PeriodoEscolarId = 1
+                    },
+                    CodigoTurma = "1234",
+                    PendenciaId = 1,
+                },
+                new SalvarPendenciaDiarioBordoCommand()
+                {
+                    ProfessorComponente = new ProfessorEComponenteInfantilDto()
                     {
                         CodigoRf = "1003",
                         DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI 4H",
                         DisciplinaId = 512
                     },
-                    new ProfessorEComponenteInfantilDto()
+                    Aula = new AulaComComponenteDto()
+                    {
+                        Id = 1,
+                        PeriodoEscolarId = 1,
+                    },
+                    CodigoTurma = "1234",
+                    PendenciaId = 1,
+                },
+                new SalvarPendenciaDiarioBordoCommand()
+                {
+                    CodigoTurma = "1234",
+                    ProfessorComponente = new ProfessorEComponenteInfantilDto()
                     {
                         CodigoRf = "1005",
                         DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI 4H",
                         DisciplinaId = 512
                     },
-                    new ProfessorEComponenteInfantilDto()
+                    Aula = new AulaComComponenteDto()
+                    {
+                        Id = 1,
+                        PeriodoEscolarId = 1
+                    },
+                    PendenciaId = 1,
+                },
+                new SalvarPendenciaDiarioBordoCommand()
+                {
+                    CodigoTurma = "1234",
+                    ProfessorComponente = new ProfessorEComponenteInfantilDto()
                     {
                         CodigoRf = "1002",
                         DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI 2H",
                         DisciplinaId = 513
                     },
-                    new ProfessorEComponenteInfantilDto()
+                    Aula = new AulaComComponenteDto()
+                    {
+                        Id = 1,
+                        PeriodoEscolarId = 1
+                    },
+                    PendenciaId = 2,
+                },
+                new SalvarPendenciaDiarioBordoCommand()
+                {
+                    CodigoTurma = "1234",
+                    ProfessorComponente = new ProfessorEComponenteInfantilDto()
                     {
                         CodigoRf = "1004",
                         DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI MANHÃ",
                         DisciplinaId = 534
                     },
-                    new ProfessorEComponenteInfantilDto()
+                    Aula = new AulaComComponenteDto()
+                    {
+                        Id = 1,
+                        PeriodoEscolarId = 1
+                    },
+                    PendenciaId = 3,
+                },
+                new SalvarPendenciaDiarioBordoCommand()
+                {
+                    CodigoTurma = "1234",
+                    ProfessorComponente = new ProfessorEComponenteInfantilDto()
                     {
                         CodigoRf = "1006",
                         DescricaoComponenteCurricular = "REGÊNCIA INFANTIL EMEI MANHÃ",
                         DisciplinaId = 534
                     },
+                    Aula = new AulaComComponenteDto()
+                    {
+                        Id = 1,
+                        PeriodoEscolarId = 1
+                    },
+                    PendenciaId = 3,
                 },
-                Aula = new AulaComComponenteDto() 
-                { 
-                    Id = 1,
-                    PeriodoEscolarId = 1
-                }
             };
-        }        
+
+            return lstPendenciasDiarioBordo;
+        }
+
+        [Fact]
+        public async Task Deve_encontrar_pendencia_de_diario_bordo_por_descricao()
+        {
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            var descricao = "O registro do Diário de Bordo do componente REGÊNCIA INFANTIL EMEI 4H da turma EI-7P da CEU EMEI PARAISOPOLIS (DRE  CL) das aulas abaixo está pendente:";
+
+            await InserirNaBase(new Pendencia()
+            {
+                Tipo = TipoPendencia.DiarioBordo,
+                Descricao = descricao,
+                Titulo = "Aula sem Diario de Bordo registrado",
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(2022, 05, 14)
+            });
+
+            var retorno = await mediator.Send(new ObterPendenciaPorDescricaoTipoQuery(descricao, TipoPendencia.DiarioBordo));
+
+            retorno.ShouldBe(1);
+        }
+
+        [Fact]
+        public async Task Nao_Deve_encontrar_pendencia_de_diario_bordo_por_descricao()
+        {
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            var descricao = "O registro do Diário de Bordo do componente REGÊNCIA INFANTIL EMEI 2H da turma EI-7P da CEU EMEI PARAISOPOLIS (DRE  CL) das aulas abaixo está pendente:";
+
+            await InserirNaBase(new Pendencia()
+            {
+                Tipo = TipoPendencia.DiarioBordo,
+                Descricao = descricao,
+                Titulo = "Aula sem Diario de Bordo registrado",
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(2022, 05, 14)
+            });
+
+            descricao = "O registro do Diário de Bordo do componente REGÊNCIA INFANTIL EMEI 4H da turma EI-7P da CEU EMEI PARAISOPOLIS (DRE  CL) das aulas abaixo está pendente:";
+
+            var retorno = await mediator.Send(new ObterPendenciaPorDescricaoTipoQuery(descricao, TipoPendencia.DiarioBordo));
+
+            retorno.ShouldBe(0);
+        }
     }
 }

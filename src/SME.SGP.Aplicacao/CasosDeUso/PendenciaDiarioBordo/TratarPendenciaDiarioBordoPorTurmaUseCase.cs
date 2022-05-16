@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,20 +64,33 @@ namespace SME.SGP.Aplicacao
 
                 var professoresParaGerarPendencia = new List<ProfessorEComponenteInfantilDto>();
 
+                var pendenciasComponentes = await CadastraPendenciaGeral(turmaComDreUe, professoresEComponentes);
+
                 foreach (var aula in aulas)
                 {
-                    professoresParaGerarPendencia.AddRange(aula.ComponenteId > 0
-                                                           ? professoresEComponentes.Where(w => w.DisciplinaId != aula.ComponenteId)
-                                                           : professoresEComponentes);
-
-                    await mediator.Send(new SalvarPendenciaDiarioBordoCommand()
+                    if (aula.ComponenteId > 0)
                     {
-                        TurmaComModalidade = turmaComDreUe.NomeComModalidade(),
-                        DescricaoUeDre = $"{ObterEscola(turmaComDreUe)}",
-                        ProfessoresComponentes = professoresEComponentes,
-                        Aula = aula,
-                        TurmaCodigo = turmaComDreUe.CodigoTurma
-                    });
+                        professoresParaGerarPendencia = professoresEComponentes.Where(w => w.DisciplinaId != aula.ComponenteId).ToList();
+
+                        var componentesComAula = aulas.Where(w => w.Id == aula.Id).Select(s => s.ComponenteId).ToList();
+
+                        professoresParaGerarPendencia = professoresParaGerarPendencia.Where(w => !componentesComAula.Contains(w.DisciplinaId)).ToList();
+                    }
+                    else
+                        professoresParaGerarPendencia = professoresEComponentes;
+
+                    if (professoresParaGerarPendencia.Any())
+                    {
+                        var filtroPendenciaDiarioBordoTurmaAula = new FiltroPendenciaDiarioBordoTurmaAulaDto()
+                        {
+                            ProfessoresComponentes = professoresParaGerarPendencia,
+                            Aula = aula,
+                            CodigoTurma = turmaComDreUe.CodigoTurma,
+                            PendenciasIds = pendenciasComponentes
+                        };
+
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurmaAulaComponente, filtroPendenciaDiarioBordoTurmaAula));
+                    }
                 }
             }
             catch (Exception ex)
@@ -85,15 +99,42 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private string ObterEscola(Turma turmaDreUe)
+        private async Task<List<PendenciaComponenteCurricularDto>> CadastraPendenciaGeral(Turma turmaComDreUe, List<ProfessorEComponenteInfantilDto> professoresEComponentes)
         {
-            var ueTipo = turmaDreUe.Ue.TipoEscola;
+            var lstPendenciaComponente = new List<PendenciaComponenteCurricularDto>();
 
-            var dreAbreviacao = turmaDreUe.Ue.Dre.Abreviacao.Replace("-", "");
+            foreach (var item in professoresEComponentes)
+            {
+                var turmaComModalidade = turmaComDreUe.NomeComModalidade();
+                
+                var nomeEscola = turmaComDreUe.ObterEscola();
 
-            var ueNome = turmaDreUe.Ue.Nome;
+                var descricao = PendenciaConstants.ObterDescricaoPendenciaDiarioBordo(item.DescricaoComponenteCurricular, turmaComModalidade, nomeEscola);
+                
+                var pendenciaIdExistente = await mediator.Send(new ObterPendenciaPorDescricaoTipoQuery(descricao, TipoPendencia.DiarioBordo));
 
-            return ueTipo != TipoEscola.Nenhum ? $"{ueTipo.ShortName()} {ueNome} ({dreAbreviacao})" : $"{ueNome} ({dreAbreviacao})";
+                if (pendenciaIdExistente == 0)
+                    pendenciaIdExistente = await mediator.Send(MapearPendencia(TipoPendencia.DiarioBordo, item.DescricaoComponenteCurricular, turmaComModalidade, nomeEscola));
+
+                lstPendenciaComponente.Add(new PendenciaComponenteCurricularDto() { PendenciaId = pendenciaIdExistente, ComponenteCurricularId = item.DisciplinaId });
+            }
+
+            return lstPendenciaComponente;
         }
+
+        
+
+        private SalvarPendenciaCommand MapearPendencia(TipoPendencia tipoPendencia, string descricaoComponenteCurricular, string turmaAnoComModalidade, string descricaoUeDre)
+        {
+            return new SalvarPendenciaCommand
+            {
+                TipoPendencia = tipoPendencia,
+                DescricaoComponenteCurricular = descricaoComponenteCurricular,
+                TurmaAnoComModalidade = turmaAnoComModalidade,
+                DescricaoUeDre = descricaoUeDre,
+            };
+        }
+
+        
     }
 }

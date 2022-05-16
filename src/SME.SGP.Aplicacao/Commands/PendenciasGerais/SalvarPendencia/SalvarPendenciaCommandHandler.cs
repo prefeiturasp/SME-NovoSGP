@@ -58,13 +58,13 @@ namespace SME.SGP.Aplicacao.Commands.PendenciasGerais.SalvarPendencia
                 case TipoPendencia.AlteracaoNotaFechamento:
                     return "";
                 case TipoPendencia.Frequencia:
-                    return $"O registro de frequência do componente {request.DescricaoComponenteCurricular} da turma {request.TurmaAnoComModalidade} da {request.DescricaoUeDre} das aulas abaixo está pendente:";
+                    return PendenciaConstants.ObterDescricaoPendenciaFrequencia(request.DescricaoComponenteCurricular, request.TurmaAnoComModalidade, request.DescricaoUeDre);                    
                 case TipoPendencia.PlanoAula:
-                    return $"As aulas abaixo do componente {request.DescricaoComponenteCurricular} da turma {request.TurmaAnoComModalidade} da {request.DescricaoUeDre} estão sem plano de aula registrado:";
+                    return PendenciaConstants.ObterDescricaoPendenciaPlanoAula(request.DescricaoComponenteCurricular, request.TurmaAnoComModalidade, request.DescricaoUeDre);
                 case TipoPendencia.DiarioBordo:
-                    return $"O registro do Diário de Bordo do componente {request.DescricaoComponenteCurricular} da turma {request.TurmaAnoComModalidade} da {request.DescricaoUeDre} das aulas abaixo está pendente:";
+                    return PendenciaConstants.ObterDescricaoPendenciaDiarioBordo(request.DescricaoComponenteCurricular, request.TurmaAnoComModalidade, request.DescricaoUeDre);
                 case TipoPendencia.Avaliacao:
-                    return $"As avaliações abaixo do componente {request.DescricaoComponenteCurricular} da turma {request.TurmaAnoComModalidade} da {request.DescricaoUeDre} estão sem notas lançadas:";
+                    return PendenciaConstants.ObterDescricaoPendenciaAvaliacao(request.DescricaoComponenteCurricular, request.TurmaAnoComModalidade, request.DescricaoUeDre);
                 case TipoPendencia.AulaNaoLetivo:
                     return "";
                 case TipoPendencia.CalendarioLetivoInsuficiente:
