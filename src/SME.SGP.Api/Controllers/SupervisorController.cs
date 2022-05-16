@@ -25,7 +25,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("atribuir-ue")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Policy = "Bearer")]
+        [Permissao(Permissao.ARP_I, Permissao.ARP_A, Policy = "Bearer")]
         public async Task<IActionResult> AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorUEDto, [FromServices] IComandosSupervisor comandosSupervisor)
         {
             await comandosSupervisor.AtribuirUE(atribuicaoSupervisorUEDto);
@@ -35,7 +35,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("ues/{ueId}/vinculo")]
         [ProducesResponseType(typeof(SupervisorEscolasDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ASP_C, Policy = "Bearer")]
+        [Permissao(Permissao.ARP_C, Policy = "Bearer")]
         public IActionResult ObterPorUe(string ueId)
         {
             return Ok(consultasSupervisor.ObterPorUe(ueId));
@@ -44,7 +44,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("dre/{dreId}")]
         [ProducesResponseType(typeof(IEnumerable<SupervisorDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ASP_C, Policy = "Bearer")]
+        [Permissao(Permissao.ARP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSupervidoresPorDreENome(string dreId, [FromQuery]BuscaSupervisorPorNomeDto supervisorNome)
         {
             return Ok(await consultasSupervisor.ObterPorDreENomeSupervisorAsync(supervisorNome.Nome, dreId));
@@ -53,7 +53,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("dre/{dreId}/vinculo-escolas")]
         [ProducesResponseType(typeof(IEnumerable<SupervisorEscolasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ASP_C, Policy = "Bearer")]
+        [Permissao(Permissao.ARP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSupervisoresEEscolasPorDre(string dreId)
         {
             var retorno = await consultasSupervisor.ObterPorDre(dreId);
@@ -65,7 +65,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{supervisoresId}/dre/{dreId}")]
         [ProducesResponseType(typeof(IEnumerable<SupervisorEscolasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ASP_C, Policy = "Bearer")]
+        [Permissao(Permissao.ARP_C, Policy = "Bearer")]
         public IActionResult ObterSupervisoresEEscolasPorSupervisoresEDre(string supervisoresId, string dreId)
         {
             var listaretorno = consultasSupervisor.ObterPorDreESupervisores(supervisoresId.Split(","), dreId);
