@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/supervisores")]
     [ValidaDto]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class SupervisorController : ControllerBase
     {
         private readonly IConsultasSupervisor consultasSupervisor;
@@ -37,7 +37,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("vinculo-lista")]
         [ProducesResponseType(typeof(SupervisorEscolasDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.ASP_C, Policy = "Bearer")]
+        Permissao(Permissao.ASP_C, Policy = "Bearer")]
         public IActionResult ObterPorUe([FromQuery] FiltroObterSupervisorEscolasDto filtro)
         {
             return Ok(consultasSupervisor.ObterPorUe(filtro));
