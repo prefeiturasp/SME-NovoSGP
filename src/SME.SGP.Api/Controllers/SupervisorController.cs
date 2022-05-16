@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +14,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/supervisores")]
     [ValidaDto]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class SupervisorController : ControllerBase
     {
         private readonly IConsultasSupervisor consultasSupervisor;
@@ -32,13 +34,24 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpGet("ues/{ueId}/vinculo")]
+        [HttpGet("vinculo-lista")]
         [ProducesResponseType(typeof(SupervisorEscolasDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ASP_C, Policy = "Bearer")]
-        public IActionResult ObterPorUe(string ueId)
+        //[Permissao(Permissao.ASP_C, Policy = "Bearer")]
+        public IActionResult ObterPorUe([FromQuery] FiltroObterSupervisorEscolasDto filtro)
         {
-            return Ok(consultasSupervisor.ObterPorUe(ueId));
+            return Ok(consultasSupervisor.ObterPorUe(filtro));
+        }
+
+
+        [HttpGet("tipo-responsavel")]
+        public IActionResult ObterListTipoReponsavel()
+        {
+            var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
+                            .Cast<TipoResponsavelAtribuicao>()
+                            .Select(d => new { codigo = (int)d, descricao = d.Name() }).OrderBy(x => x.descricao).ToList();
+
+            return Ok(tipos);
         }
 
         [HttpGet("dre/{dreId}")]
