@@ -241,14 +241,16 @@ namespace SME.SGP.Dominio.Servicos
             // altera as faltas compensadas
             foreach (var aluno in alunos.Where(a => !a.Excluido))
             {
-                var frequenciaAluno = repositorioFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, disciplinaId, periodo.PeriodoFim);
+                var frequenciaAluno = repositorioFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, disciplinaId, periodo.PeriodoFim, turmaId);
                 if (frequenciaAluno == null)
                 {
                     mensagensExcessao.Append($"O aluno(a) [{aluno.CodigoAluno}] não possui ausência para compensar. ");
                     continue;
                 }
 
-                var faltasNaoCompensadas = frequenciaAluno.NumeroFaltasNaoCompensadas + aluno.QuantidadeFaltasCompensadas;
+                
+                var faltasNaoCompensadas = frequenciaAluno.NumeroFaltasNaoCompensadas > 0 ? 
+                    frequenciaAluno.NumeroFaltasNaoCompensadas + aluno.QuantidadeFaltasCompensadas : aluno.QuantidadeFaltasCompensadas;
 
                 var alunoDto = alunosDto.FirstOrDefault(a => a.Id == aluno.CodigoAluno);
                 if (alunoDto.QtdFaltasCompensadas > faltasNaoCompensadas)
