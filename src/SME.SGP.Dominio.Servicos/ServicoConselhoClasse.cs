@@ -108,11 +108,9 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<ConselhoClasseNotaRetornoDto> GravarConselhoClasse(FechamentoTurma fechamentoTurma, long conselhoClasseId, string alunoCodigo, Turma turma, ConselhoClasseNotaDto conselhoClasseNotaDto, int? bimestre)
         {
-            var conselhoClasseNota = new ConselhoClasseNota();
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            ConselhoClasseNotaRetornoDto conselhoClasseNotaRetorno = null;
-            conselhoClasseNotaRetorno = conselhoClasseId == 0 ?
+            var conselhoClasseNotaRetorno = conselhoClasseId == 0 ?
                 await InserirConselhoClasseNota(fechamentoTurma, alunoCodigo, turma, conselhoClasseNotaDto, bimestre, usuarioLogado) :
                 await AlterarConselhoClasse(conselhoClasseId, fechamentoTurma.Id, alunoCodigo, turma, conselhoClasseNotaDto, bimestre, usuarioLogado);
 
@@ -123,7 +121,8 @@ namespace SME.SGP.Dominio.Servicos
                 await VerificaRecomendacoesAluno(conselhoClasseAluno);
             }
 
-            await mediator.Send(new PublicaFilaAtualizacaoSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId, usuarioLogado));
+            if (!await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId)))
+                throw new NegocioException("Erro ao atualizar situação do conselho de classe");
 
             return conselhoClasseNotaRetorno;
         }
@@ -201,6 +200,16 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+
+            var alunos = await mediator
+                .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
+
+            if (alunos == null || !alunos.Any())
+                throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
+
+            var inativo = alunos.First(a => a.CodigoAluno == alunoCodigo).Inativo;
+
+            await mediator.Send(new ConsolidarTurmaConselhoClasseAlunoCommand(alunoCodigo, turma.Id, bimestre.Value, inativo));
 
             var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, bimestre ?? 0);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
