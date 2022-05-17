@@ -125,8 +125,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendencia.Id));
 
-            //return await ObterPendenciasFormatadas(pendencia, codigoRf, turma);
-            return await ObterPendenciasDiarioBordoFormatadas(pendencia);
+            return await ObterPendenciasAulasFormatadas(pendencia);
         }
 
         private async Task<List<PendenciaDto>> ObterPendenciasFormatadas(Pendencia pendencia, string codigoRf, Turma turma)
@@ -270,14 +269,14 @@ namespace SME.SGP.Aplicacao
             return descricao.ToString();
         }
 
-        private async Task<IEnumerable<PendenciaDto>> ObterPendenciasDiarioBordoFormatadas(Pendencia pendencia)
+        private async Task<IEnumerable<PendenciaDto>> ObterPendenciasAulasFormatadas(Pendencia pendencia)
         {
             var pendencias = new List<PendenciaDto>();
 
             var pendenciasAulas = await mediator.Send(new ObterPendenciasAulasPorPendenciaQuery(pendencia.Id));
 
-            var agrupamentoPendenciasBimestres = pendenciasAulas.GroupBy(g => new { g.PendenciaId, g.Bimestre, g.ModalidadeCodigo, g.NomeTurma }, (key, group) =>
-                                                        new { key.PendenciaId, key.Bimestre, key.ModalidadeCodigo, key.NomeTurma, Result = group.Select(s => s).ToList() });
+            var agrupamentoPendenciasBimestres = pendenciasAulas.GroupBy(g => new { g.NomeTurma, g.Bimestre, g.ModalidadeCodigo,  }, (key, group) =>
+                                                        new { key.NomeTurma, key.Bimestre, key.ModalidadeCodigo, Result = group.Select(s => s).ToList() });
 
 
             var descricao = new StringBuilder();
