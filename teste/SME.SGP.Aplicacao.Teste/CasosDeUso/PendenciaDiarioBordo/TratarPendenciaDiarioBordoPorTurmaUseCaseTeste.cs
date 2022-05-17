@@ -28,6 +28,38 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Deve_Publicar_Fila_Por_Turma()
         {
             // arrange
+            IEnumerable<Turma> turmasDreUe = new List<Turma>()
+            {
+                new Turma()
+                {
+                    CodigoTurma = "2386241",
+                    ModalidadeCodigo = Modalidade.EducacaoInfantil,
+                    Ue = new Ue()
+                    {
+                        TipoEscola = TipoEscola.CEMEI,
+                        Nome = "CAPAO REDONDO ",
+                        Dre = new Dre() 
+                        {
+                            Abreviacao = "DRE - CL"
+                        }
+                    }
+                }
+            };
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmasDreUePorCodigosQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(turmasDreUe);
+
+            var componentesSgp = new List<ComponenteCurricularDto>()
+            { 
+                new ComponenteCurricularDto()
+                { 
+                    Codigo = "512",
+                    Descricao = "ED.INF. EMEI 4 HS"
+                }
+            };
+            mediator.Setup(a => a.Send(It.IsAny<ObterComponentesCurricularesQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(componentesSgp);
+
+
             var rfProfessores = new List<string>();
             rfProfessores.Add("8269149, 7941706");
 
@@ -38,7 +70,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             componentesEol.Add(new ComponenteCurricularEol()
             {
                 TurmaCodigo = "512",
-                Descricao = "Regência de Classe Infantil"
+                Descricao = "Regência de Classe Infantil",
+                Codigo = 512
             });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterComponentesCurricularesDoProfessorNaTurmaQuery>(), It.IsAny<CancellationToken>()))

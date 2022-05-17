@@ -24,16 +24,16 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(RecalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
             var periodo = await repositorioAula.ObterPeriodoEscolarDaAula(request.AulaId);
+            var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId), cancellationToken);
 
             if (periodo == null)
             {
                 var mensagemErro = $"Não encontrado período escolar da aula [{request.AulaId}]";
-                var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
 
                 if (aula.TipoAula != TipoAula.Reposicao)
                     throw new NegocioException(mensagemErro);
 
-                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.TurmaCodigo));
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.TurmaCodigo), cancellationToken);
                 var eventoReposicaoAulaNoDia = await repositorioEvento
                     .EventosNosDiasETipo(aula.DataAula, aula.DataAula, TipoEvento.ReposicaoDoDia, aula.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
 
@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 if (eventoReposicaoAulaNoDia == null && eventoReposicaoDeAula == null)
                     throw new NegocioException(mensagemErro);
 
-                var periodos = (await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre))).OrderBy(p => p.Bimestre);
+                var periodos = (await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre), cancellationToken)).OrderBy(p => p.Bimestre);
                 var periodoDeAcordo = aula.DataAula.Date < periodos.First().PeriodoInicio.Date ? periodos.First() : periodos.Last();
 
                 periodo = new Infra.PeriodoEscolarInicioFimDto()
@@ -55,7 +55,10 @@ namespace SME.SGP.Aplicacao
                 };
             }
 
-            return await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(request.TurmaCodigo, periodo.Bimestre, request.ComponenteCurricularId, periodo.DataInicio, periodo.DataFim));
+            var alunos = (await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaCodigo), cancellationToken)).Select(c => c.CodigoAluno).Distinct();
+            await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, request.TurmaCodigo, request.ComponenteCurricularId), cancellationToken);
+
+            return await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(request.TurmaCodigo, periodo.Bimestre, request.ComponenteCurricularId, periodo.DataInicio, periodo.DataFim), cancellationToken);
         }
     }
 }

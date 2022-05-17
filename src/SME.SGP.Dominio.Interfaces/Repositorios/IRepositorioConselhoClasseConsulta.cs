@@ -21,7 +21,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<ConselhoClasse> ObterPorTurmaAlunoEPeriodoAsync(long turmaId, string alunoCodigo, long? periodoEscolarId = null);
         Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> ObterTotalAulasPorAlunoTurma(string codigoAluno, string codigoTurma);
         Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> ObterTotalAulasSemFrequenciaPorTurma(string discplinaId, string codigoTurma);
-        Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasNaoLancamNotaPorBimestreTurma(string codigoTurma, int bimestre);
+        Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasNaoLancamNotaPorBimestreTurma(string codigoTurma, int bimestre, string codigoAluno);
+        Task<IEnumerable<int>> ObterTotalAulasSemFrequenciaPorTurmaBismetre(string discplinaId, string codigoTurma, int bismetre);
         Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNotaPorBimestre(string codigoTurma, int bimestre);
         Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNota(string codigoTurma);
     }

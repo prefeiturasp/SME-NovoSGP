@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao
 
             //Act
             var controller = new ConselhoClasseController();
-            var retorno = await controller.ObterTotalAulasNaoLancamNotasPorTurmaBimestre("2370993", 1, useCase);
+            var retorno = await controller.ObterTotalAulasNaoLancamNotasPorTurmaBimestre("2370993", 1, "6579272", useCase);
 
             //Assert
             retorno.ShouldNotBeNull();
@@ -123,7 +123,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoAluno = "6579272",
                 TurmaId = "2370993",
                 Tipo = TipoFrequenciaAluno.PorDisciplina
-                
+
             });
         }
 

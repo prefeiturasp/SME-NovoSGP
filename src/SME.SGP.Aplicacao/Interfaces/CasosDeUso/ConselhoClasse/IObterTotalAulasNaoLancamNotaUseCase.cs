@@ -9,6 +9,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterTotalAulasNaoLancamNotaUseCase
     {
-        Task<IEnumerable<TotalAulasNaoLancamNotaDto>> Executar(string codigoTurma, int bimestre);
+        Task<IEnumerable<TotalAulasNaoLancamNotaDto>> Executar(string codigoTurma, int bimestre, string codigoAluno);
     }
 }

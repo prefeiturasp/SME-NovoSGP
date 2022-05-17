@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,6 +15,9 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFrequenciaPreDefinida repositorioFrequenciaPreDefinida;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
+
+        private const int INSERIR = 0;
+        private const int ALTERAR = 1;
 
         public InserirRegistrosFrequenciasAlunosCommandHandler(IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno,
             IRepositorioFrequenciaPreDefinida repositorioFrequenciaPreDefinida,
@@ -29,47 +31,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(InserirRegistrosFrequenciasAlunosCommand request, CancellationToken cancellationToken)
         {
+            var dicionarioFrequenciaAluno = await ObtenhaDicionarioFrequenciaAlunoParaPersistir(request);
+            var dicionarioPreDefinida = await ObtenhaDicionarioFrequenciaPreDefinidaParaPersistir(request);
+
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                var alunosComFrequenciaRegistrada = request.Frequencias.Select(s => s.CodigoAluno).ToArray();
-
-                await mediator.Send(new ExcluirFrequenciasAlunoPorRegistroFrequenciaIdCommand(request.RegistroFrequenciaId, alunosComFrequenciaRegistrada));
-
-                await mediator.Send(new ExcluirPreDefinicaoFrequenciaCommand(request.TurmaId, request.ComponenteCurricularId, alunosComFrequenciaRegistrada));
-                
                 try
                 {
-                    foreach (var frequencia in request.Frequencias)
-                    {
-                        var preDefinida = !string.IsNullOrEmpty(frequencia.TipoFrequenciaPreDefinido) ? 
-                            (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), frequencia.TipoFrequenciaPreDefinido) : 
-                            TipoFrequencia.C;
+                    await CadastreFrequenciaAluno(dicionarioFrequenciaAluno);
+                    await CadastreFrequenciaPreDefinida(dicionarioPreDefinida);
 
-                        foreach (var aulaRegistrada in frequencia.Aulas)
-                        {
-                            var presenca = !string.IsNullOrEmpty(aulaRegistrada.TipoFrequencia) ? 
-                                (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), aulaRegistrada.TipoFrequencia) : 
-                                preDefinida;
-
-                            var entidade = new RegistroFrequenciaAluno()
-                            {
-                                CodigoAluno = frequencia.CodigoAluno,
-                                NumeroAula = aulaRegistrada.NumeroAula,
-                                Valor = (int)presenca,
-                                RegistroFrequenciaId = request.RegistroFrequenciaId,
-                            };
-                            await repositorioRegistroFrequenciaAluno.SalvarAsync(entidade);
-                        }
-
-                        var frequenciaPreDefinida = new FrequenciaPreDefinida()
-                        {
-                            CodigoAluno = frequencia.CodigoAluno,
-                            TurmaId = request.TurmaId,
-                            ComponenteCurricularId = request.ComponenteCurricularId,
-                            TipoFrequencia = preDefinida
-                        };
-                        await repositorioFrequenciaPreDefinida.Salvar(frequenciaPreDefinida);
-                    }
                     unitOfWork.PersistirTransacao();
                 }
                 catch (Exception ex)
@@ -80,6 +51,120 @@ namespace SME.SGP.Aplicacao
             }
 
             return true;
+        }
+
+        private async Task CadastreFrequenciaAluno(Dictionary<int, List<RegistroFrequenciaAluno>> dicionario)
+        {
+            await repositorioRegistroFrequenciaAluno.InserirVariosComLog(dicionario[INSERIR]);
+            
+            foreach(var frequenciaAluno in dicionario[ALTERAR])
+            {
+                await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
+            }
+        }
+
+        private async Task CadastreFrequenciaPreDefinida(Dictionary<int, List<FrequenciaPreDefinida>> dicionario)
+        {
+            await repositorioFrequenciaPreDefinida.InserirVarios(dicionario[INSERIR]);
+
+            foreach (var frequenciaPreDefinida in dicionario[ALTERAR])
+            {
+                await repositorioFrequenciaPreDefinida.Salvar(frequenciaPreDefinida);
+            }
+        }
+
+        private async Task<Dictionary<int, List<RegistroFrequenciaAluno>>> ObtenhaDicionarioFrequenciaAlunoParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
+        {
+            var dicionario = new Dictionary<int, List<RegistroFrequenciaAluno>>();
+            var listaDeFrequenciaAlunoCadastrada = await mediator.Send(new ObterRegistroDeFrequenciaAlunoPorIdRegistroQuery(request.RegistroFrequenciaId));
+
+            dicionario.Add(INSERIR, new List<RegistroFrequenciaAluno>());
+            dicionario.Add(ALTERAR, new List<RegistroFrequenciaAluno>());
+
+            foreach (var frequencia in request.Frequencias)
+            {
+                foreach (var aulaRegistrada in frequencia.Aulas)
+                {
+                    var frequenciaAluno = listaDeFrequenciaAlunoCadastrada.FirstOrDefault(fr => fr.NumeroAula == aulaRegistrada.NumeroAula && fr.CodigoAluno == frequencia.CodigoAluno);
+                    var presenca = ObtenhaValorPresenca(frequencia.TipoFrequenciaPreDefinido, aulaRegistrada.TipoFrequencia);
+
+                    if (frequenciaAluno != null)
+                    {
+                        if (frequenciaAluno.Valor != (int)presenca)
+                        {
+                            frequenciaAluno.Valor = (int)presenca;
+                            dicionario[ALTERAR].Add(frequenciaAluno);
+                        }
+                    } else
+                    {
+                        var novafrequencia = new RegistroFrequenciaAluno()
+                        {
+                            CodigoAluno = frequencia.CodigoAluno,
+                            NumeroAula = aulaRegistrada.NumeroAula,
+                            Valor = (int)presenca,
+                            RegistroFrequenciaId = request.RegistroFrequenciaId
+                        };
+
+                        dicionario[INSERIR].Add(novafrequencia);
+                    }
+                }
+            }
+
+            return dicionario;
+        }
+
+        private async Task<Dictionary<int, List<FrequenciaPreDefinida>>> ObtenhaDicionarioFrequenciaPreDefinidaParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
+        {
+            var dicionario = new Dictionary<int, List<FrequenciaPreDefinida>>();
+            var listaDeFrequenciaDefinidaCadastrada = await mediator.Send(new ObterFrequenciasPreDefinidasPorTurmaComponenteQuery(request.TurmaId, request.ComponenteCurricularId));
+
+            dicionario.Add(INSERIR, new List<FrequenciaPreDefinida>());
+            dicionario.Add(ALTERAR, new List<FrequenciaPreDefinida>());
+
+            foreach (var frequencia in request.Frequencias)
+            {
+                var frequenciaDefinida = listaDeFrequenciaDefinidaCadastrada.FirstOrDefault(fr => fr.CodigoAluno == frequencia.CodigoAluno);
+                var tipoFrequencia = ObtenhaValorPreDefinido(frequencia.TipoFrequenciaPreDefinido);
+
+                if (frequenciaDefinida != null)
+                {
+                    if (frequenciaDefinida.TipoFrequencia != tipoFrequencia)
+                    {
+                        frequenciaDefinida.TipoFrequencia = tipoFrequencia;
+                        dicionario[ALTERAR].Add(frequenciaDefinida);
+                    }
+                } else
+                {
+                    var frequenciaPreDefinida = new FrequenciaPreDefinida()
+                    {
+                        CodigoAluno = frequencia.CodigoAluno,
+                        TurmaId = request.TurmaId,
+                        ComponenteCurricularId = request.ComponenteCurricularId,
+                        TipoFrequencia = tipoFrequencia
+                    };
+
+                    dicionario[INSERIR].Add(frequenciaPreDefinida);
+                }
+            }
+
+            return dicionario;
+        }
+
+        private TipoFrequencia ObtenhaValorPresenca(string tipoFrequenciaPreDefinido, string tipoFrequencia)
+        {
+            return ObtenhaValor(tipoFrequencia, ObtenhaValorPreDefinido(tipoFrequenciaPreDefinido));
+        }
+
+        private TipoFrequencia ObtenhaValorPreDefinido(string tipoFrequenciaPreDefinido)
+        {
+            return ObtenhaValor(tipoFrequenciaPreDefinido, TipoFrequencia.C);
+        }
+
+        private TipoFrequencia ObtenhaValor(string valorFrequencia, TipoFrequencia tipoFrequenciaElse)
+        {
+            return !string.IsNullOrEmpty(valorFrequencia) ?
+                      (TipoFrequencia)Enum.Parse(typeof(TipoFrequencia), valorFrequencia) :
+                      tipoFrequenciaElse;
         }
     }
 }

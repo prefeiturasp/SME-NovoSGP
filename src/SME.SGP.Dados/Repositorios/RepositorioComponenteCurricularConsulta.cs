@@ -71,18 +71,24 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ComponenteCurricularDto>> ListarComponentesCurriculares()
         {
-            var query = $@"select
+            try
+            {
+                var query = $@"select
 	                        id as Codigo,
                             permite_lancamento_nota as LancaNota,
-                            case
-		                        when descricao_sgp is not null then descricao_sgp
-		                        else descricao
-	                        end as descricao,
-                            descricao as DescricaoEol
+                            coalesce(descricao_infantil,descricao_sgp) as descricao,
+                            descricao as DescricaoEol,
+                            eh_regencia Regencia
                         from
 	                        componente_curricular";
 
-            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { }));
+                var retorno = (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { }));
+                return retorno;
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
         }
         public async Task<long[]> ListarCodigosJuremaPorComponenteCurricularId(long id)
         {
@@ -236,21 +242,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<string> ObterDescricaoPorId(long id)
         {
-            var query = @"select coalesce(descricao_sgp, descricao) from componente_curricular cc where id = @id";
+            var query = @"select coalesce(descricao_infantil, descricao_sgp, descricao) from componente_curricular cc where id = @id";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
         }
 
         public async Task<IEnumerable<ComponenteCurricularSimplesDto>> ObterDescricaoPorIds(long[] ids)
         {
-            var query = @"select id, coalesce(descricao_sgp, descricao) as descricao from componente_curricular where id = Any(@ids)";
+            var query = @"select id, coalesce(descricao_infantil, descricao_sgp, descricao) as descricao from componente_curricular where id = Any(@ids)";
 
             return await database.Conexao.QueryAsync<ComponenteCurricularSimplesDto>(query, new { ids },queryName: "ObterDescricaoPorIds");
         }
 
         public async Task<string> ObterCodigoComponentePai(long componenteCurricularId)
         {
-            var query = @"select componente_curricular_pai_id from componente_curricular where id = @componenteCurricularId";
+            var query = @"select coalesce(componente_curricular_pai_id,id) from componente_curricular where id = @componenteCurricularId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { componenteCurricularId });
         }

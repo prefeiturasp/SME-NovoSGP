@@ -23,11 +23,14 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task LimparConsolidacaoFrequenciasAlunosPorTurmasEMeses(long[] turmaIds, int[] meses)
         {
-            const string query = @"delete from consolidacao_frequencia_aluno_mensal
-                                    where turma_id = any(@turmaIds)
-                                    and mes = any(@meses)";
+            string query = @"delete from consolidacao_frequencia_aluno_mensal
+                                    where turma_id in (#turmaIds)
+                                    and mes in (#meses)";
 
-            await database.Conexao.ExecuteScalarAsync(query, new { turmaIds, meses });
+            query = query.Replace("#turmaIds", string.Join(",", turmaIds));
+            query = query.Replace("#meses", string.Join(",", meses));
+
+            await database.Conexao.ExecuteAsync(query, new { turmaIds, meses });
         }
 
         public async Task<IEnumerable<ConsolidacaoFrequenciaAlunoMensalDto>> ObterConsolidacoesFrequenciaAlunoMensalPorTurmaEMes(long turmaId, int mes)

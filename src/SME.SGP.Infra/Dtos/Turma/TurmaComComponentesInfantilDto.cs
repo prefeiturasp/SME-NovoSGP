@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
     public class TurmaComComponentesInfantilDto
     {
-        public string TurmaId { get; set; }
-        public long[] ComponentesId { get; set; }
-
-        public TurmaComComponentesInfantilDto()
-        {
-            ComponentesId = new long[] { };
-        }
+        public Turma Turma { get; set; }
+        public long[] ComponentesId { get; set; }        
     }
 }

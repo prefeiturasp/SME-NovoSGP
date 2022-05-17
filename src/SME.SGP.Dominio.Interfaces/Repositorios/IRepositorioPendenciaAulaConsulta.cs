@@ -6,12 +6,13 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioPendenciaAulaConsulta
     {
-        Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, int anoLetivo);
-        Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, int anoLetivo);
+        Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int anoLetivo);
+        Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo);
         Task<long[]> ListarPendenciasPorAulaId(long aulaId);
         Task<long[]> ListarPendenciasPorAulasId(long[] aulasId);
         Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil, Usuario usuarioLogado);
         Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil, long[] componentesCurricularesId);
+        Task<long> ObterPendenciaPorDescricaoTipo(string descricao, TipoPendencia tipoPendencia);
         Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId);
         Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId);
         Task<bool> PossuiAtividadeAvaliativaSemNotaPorAulasId(long[] aulasId);
@@ -23,8 +24,10 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long> ObterPendenciaAulaIdPorAulaId(long aulaId, TipoPendencia tipoPendencia);
         Task<IEnumerable<long>> ObterPendenciaIdPorAula(long aulaId, TipoPendencia tipoPendencia);
         Task<bool> PossuiPendenciasPorTipo(string disciplinaId, string turmaId, TipoPendencia tipoPendenciaAula, int bimestre,bool professorCj, bool professorNaoCj, string professorRf = "");
+        Task<long> ObterPendenciaIdPorComponenteProfessorEBimestre(long componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia);
         Task<IEnumerable<PossuiPendenciaDiarioBordoDto>> TurmasPendenciaDiarioBordo(IEnumerable<long> aulasId, string turmaId, int bimestre);
 
-        Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf);
+        Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf, bool ehGestor, string turma);        
+        Task<long> ObterPendenciaDiarioBordoPorComponenteTurmaCodigo(long componenteCurricularId, string turmaCodigo);        
     }
 }

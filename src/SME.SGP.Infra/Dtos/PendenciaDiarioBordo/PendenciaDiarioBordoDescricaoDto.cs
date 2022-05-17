@@ -1,9 +1,5 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
 {
@@ -11,5 +7,10 @@ namespace SME.SGP.Infra
     {
         public DateTime DataAula { get; set; }
         public string ComponenteCurricular { get; set; }
+        public long PendenciaId { get; set; }
+        public int Bimestre { get; set; }
+        public int ModalidadeCodigo { get; set; }
+        public string NomeTurma { get; set; }
+        public bool EhReposicao { get; set; }
     }
 }

@@ -436,8 +436,8 @@ namespace SME.SGP.Aplicacao
             foreach (var nota in notasBimestrais.Where(a => a.Bimestre.HasValue))
             {
                 var notaParaAdicionar = ehNota ?
-                                            nota?.Nota.Value.ToString() :
-                                            nota?.ConceitoId.Value.ToString();
+                                            nota?.Nota.ToString() :
+                                            nota?.ConceitoId.ToString();
 
                 listaRetorno.Add(new FechamentoNotaAlunoDto(nota.Bimestre.Value,
                                                             notaParaAdicionar,

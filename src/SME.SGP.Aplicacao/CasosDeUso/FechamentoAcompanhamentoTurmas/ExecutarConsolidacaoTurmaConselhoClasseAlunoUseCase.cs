@@ -116,14 +116,13 @@ namespace SME.SGP.Aplicacao
                         Bimestre = filtro.Bimestre,
                     };
 
-                if (filtro.Nota.HasValue) //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
-                    consolidadoNota.Nota = filtro.Nota;
-
-                if (filtro.ComponenteCurricularId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                if (filtro.ComponenteCurricularId.HasValue)
+                {
                     consolidadoNota.ComponenteCurricularId = filtro.ComponenteCurricularId;
-
-                if (filtro.ConceitoId.HasValue)//Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
+                    consolidadoNota.Nota = filtro.Nota;
                     consolidadoNota.ConceitoId = filtro.ConceitoId;
+                }
 
                 await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
 

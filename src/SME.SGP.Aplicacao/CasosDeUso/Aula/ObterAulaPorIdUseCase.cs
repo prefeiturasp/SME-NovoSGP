@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
             {
                 Id = aula.Id,
                 DisciplinaId = aula.DisciplinaId.Equals(disciplinasInglesAtualizacao.codigoAntiga) ? await VerificaAtualizacaoComponenteIngles(aula.TurmaId) : aula.DisciplinaId,
-                DisciplinaCompartilhadaId = aula.DisciplinaCompartilhadaId,
+                DisciplinaCompartilhadaId = aula.DisciplinaCompartilhadaId ?? "0",
                 TurmaId = aula.TurmaId,
                 UeId = aula.UeId,
                 TipoCalendarioId = aula.TipoCalendarioId,

@@ -18,9 +18,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(FiltroRelatorioFrequenciaMensalDto filtro)
         {
             var usuario = await _mediator.Send(new ObterUsuarioLogadoQuery());
-
-            if (usuario == null)
-                throw new NegocioException("Não foi possível localizar o usuário.");
+            filtro.UsuarioNome = usuario.Nome;
+            filtro.UsuarioRf = usuario.CodigoRf;
 
             return await _mediator.Send(new GerarRelatorioCommand(TipoRelatorio.FrequenciaMensal, filtro, usuario,
                 RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosFrequenciaMensal, filtro.TipoFormatoRelatorio));

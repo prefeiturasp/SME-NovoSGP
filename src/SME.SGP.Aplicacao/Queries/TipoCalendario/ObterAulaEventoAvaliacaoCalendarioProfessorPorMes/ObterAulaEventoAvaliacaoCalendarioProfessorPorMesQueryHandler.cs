@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var componentesCurriculares = await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
 
-            var componentesCurricularesId = componentesCurriculares.Select(x => x.Codigo).ToArray();
+            var componentesCurricularesId = componentesCurriculares?.Select(x => x.Codigo).ToArray();
 
             for (int i = 1; i < qntDiasMes + 1; i++)
             {
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
                         aulasId = aulas!= null && aulas.Any() ? aulas.Select(a => a.Id).ToArray() : null;
                     }
 
-                    if (aulasId != null && aulasId.Any())
+                    if (aulasId != null && aulasId.Any() && componentesCurricularesId != null)
                         eventoAula.PossuiPendencia = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasId, turma.ModalidadeCodigo, componentesCurricularesId));
                     else
                         eventoAula.PossuiPendencia = false;

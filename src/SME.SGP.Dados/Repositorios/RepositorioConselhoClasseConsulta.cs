@@ -204,30 +204,36 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder(@"select * from (
-                                                            select
-                                                            x.TurmaAnoNome,
-                                                            x.Bimestre,
-                                                            x.ComponenteCurricularCodigo,
-                                                            x.ConselhoClasseNotaId,
-                                                            x.ConceitoId,
-                                                            x.Nota,
-                                                            x.AlunoCodigo,
-                                                            x.Conceito,
-                                                            row_number() over(partition by x.TurmaAnoNome, x.ComponenteCurricularCodigo, x.AlunoCodigo
-                                                            order by x.Prioridade) as linha
-                                                            from
-                                                            (");
+            var query = new StringBuilder(@"CREATE TEMPORARY TABLE temp_dados
+                                            (
+                                                turmaanonome varchar(200),
+                                                bimestre int8,
+                                                componentecurricularcodigo int8,
+                                                conselhoclassenotaid varchar(10),
+                                                conceitoid int8,
+                                                nota int8,
+                                                alunocodigo varchar(10),
+                                                conceito varchar(10),
+                                                prioridade int8
+                                            ); ");
 
             query.AppendLine(MontarQueryNotasFinasFechamentoQuantidade(ueId, anoLetivo, dreId, modalidade, semestre, bimestre));
-
-            query.AppendLine(" union all ");
-
             query.AppendLine(MontarQueryNotasFinasConselhoClasseQuantidade(ueId, anoLetivo, dreId, modalidade, semestre, bimestre));
 
-            query.AppendLine(@" ) x 
-                                 ) a
-                                where a.linha = 1 ");
+            query.AppendLine(@" select
+                                x.TurmaAnoNome,
+                                x.Bimestre,
+                                x.ComponenteCurricularCodigo,
+                                x.ConselhoClasseNotaId,
+                                x.ConceitoId,
+                                x.Nota,
+                                x.AlunoCodigo,
+                                x.Conceito,
+                                row_number() over(partition by x.TurmaAnoNome, x.ComponenteCurricularCodigo, x.AlunoCodigo
+                                order by x.Prioridade) as linha
+                                from temp_dados x; ");
+
+            query.AppendLine(@" drop table temp_dados; ");
 
             var parametros = new
             {
@@ -243,8 +249,9 @@ namespace SME.SGP.Dados.Repositorios
 
         private string MontarQueryNotasFinasFechamentoQuantidade(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder(@" select t.nome as TurmaAnoNome, 
-				                                     pe.bimestre, 
+            var query = new StringBuilder(@"    insert into temp_dados
+                                                select t.nome as TurmaAnoNome,
+				                                    pe.bimestre, 
                                                     fn.disciplina_id as ComponenteCurricularCodigo, 
                                                     null as ConselhoClasseNotaId, 
                                                     fn.conceito_id as ConceitoId, 
@@ -287,12 +294,15 @@ namespace SME.SGP.Dados.Repositorios
             if (semestre > 0)
                 query.Append(" and t.semestre = @semestre ");
 
+            query.Append(";");
+
             return query.ToString();
         }
 
         private string MontarQueryNotasFinasConselhoClasseQuantidade(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder(@" select t.nome as TurmaAnoNome, 
+            var query = new StringBuilder(@"    insert into temp_dados
+                                                select t.nome as TurmaAnoNome,  
                                                     pe.bimestre, 
 		                                            ccn.componente_curricular_codigo as ComponenteCurricularCodigo, 
 		                                            ccn.id as ConselhoClasseNotaId, 
@@ -333,6 +343,8 @@ namespace SME.SGP.Dados.Repositorios
             if (semestre > 0)
                 query.Append(" and t.semestre = @semestre ");
 
+            query.Append(";");
+
             return query.ToString();
         }
 
@@ -359,11 +371,10 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> ObterTotalAulasPorAlunoTurma(string disciplinaId, string codigoTurma)
         {
-            var sql = @"select disciplina_id as disciplinaid,total_aulas as totalaulas from frequencia_aluno fa 
+            var sql = @"select disciplina_id as disciplinaid,total_aulas as totalaulas, codigo_aluno as codigoaluno from frequencia_aluno fa 
                         where tipo = 1 
                         and disciplina_id = @disciplinaId 
-                        and turma_id =@codigoTurma 
-                        group by disciplina_id, total_aulas ";
+                        and turma_id =@codigoTurma ";
 
             return await database.Conexao.QueryAsync<TotalAulasPorAlunoTurmaDto>(sql, new { disciplinaId, codigoTurma }, commandTimeout: 60);
         }
@@ -384,7 +395,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<TotalAulasPorAlunoTurmaDto>(sql, new { codigoTurma, disciplinaId }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasNaoLancamNotaPorBimestreTurma(string codigoTurma, int bimestre)
+        public async Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasNaoLancamNotaPorBimestreTurma(string codigoTurma, int bimestre, string codigoAluno)
         {
             var sql = @"select fa.disciplina_id as DisciplinaID,total_aulas as TotalAulas from frequencia_aluno fa 
                         join componente_curricular cc on cc.id = fa.disciplina_id::int8
@@ -392,35 +403,51 @@ namespace SME.SGP.Dados.Repositorios
                         and fa.turma_id = @codigoTurma
                         and fa.bimestre = @bimestre
                         and fa.tipo  = @tipo
+                        and fa.codigo_aluno = @codigoAluno
                         group by fa.disciplina_id, total_aulas ";
 
             return await database.Conexao
-                                .QueryAsync<TotalAulasNaoLancamNotaDto>(sql, new { codigoTurma, bimestre, tipo = (int)TipoAula.Normal }, commandTimeout: 60);
+                                .QueryAsync<TotalAulasNaoLancamNotaDto>(sql, new { codigoTurma, bimestre, tipo = (int)TipoAula.Normal, codigoAluno }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNotaPorBimestre(string codigoTurma, int bimestre)
         {
-            var sql = @"select fa.disciplina_id as DisciplinaID,total_compensacoes as TotalCompensacoes from frequencia_aluno fa 
+            var sql = @"select fa.disciplina_id as DisciplinaID,total_compensacoes as TotalCompensacoes, codigo_aluno as CodigoAluno from frequencia_aluno fa 
                         join componente_curricular cc on cc.id = fa.disciplina_id::int8
                         where cc.permite_lancamento_nota = false 
                         and fa.turma_id = @codigoTurma
                         and fa.bimestre = @bimestre
                         and fa.tipo  = @tipo
-                        group by fa.disciplina_id, total_compensacoes ";
+                        group by fa.disciplina_id, total_compensacoes, codigo_aluno ";
 
             return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, bimestre, tipo = (int)TipoAula.Normal }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNota(string codigoTurma)
         {
-            var sql = @"select fa.disciplina_id as DisciplinaID,total_compensacoes as TotalCompensacoes from frequencia_aluno fa 
+            var sql = @"select fa.disciplina_id as DisciplinaID,total_compensacoes as TotalCompensacoes, codigo_aluno as CodigoAluno from frequencia_aluno fa 
                         join componente_curricular cc on cc.id = fa.disciplina_id::int8
                         where cc.permite_lancamento_nota = false 
                         and fa.turma_id = @codigoTurma
                         and fa.tipo  = @tipo
-                        group by fa.disciplina_id, total_compensacoes ";
+                        group by fa.disciplina_id, total_compensacoes, codigo_aluno ";
 
             return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, tipo = (int)TipoAula.Normal }, commandTimeout: 60);
+        }
+
+        public async Task<IEnumerable<int>> ObterTotalAulasSemFrequenciaPorTurmaBismetre(string discplinaId, string codigoTurma, int bismetre)
+        {
+            var sql = @"select COALESCE(SUM(quantidade), 0) as totalaulas from aula a
+                        join  componente_curricular cc on cc.id = a.disciplina_id::int8 
+                        join  periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id::int8  
+                        where cc.permite_registro_frequencia  = false 
+                        and a.turma_id = @codigoTurma
+                        and not a.excluido 
+                        and a.disciplina_id = @discplinaId
+                        and pe.bimestre = @bismetre
+                        and pe.periodo_inicio <= a.data_aula and pe.periodo_fim >= a.data_aula";
+
+            return await database.Conexao.QueryAsync<int>(sql, new { discplinaId, codigoTurma, bismetre });
         }
     }
 }

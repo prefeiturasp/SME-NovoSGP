@@ -398,6 +398,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaAula, RepositorioPendenciaAula>();
             services.TryAddScoped<IRepositorioPendenciaAulaConsulta, RepositorioPendenciaAulaConsulta>();
             services.TryAddScoped<IRepositorioPendenciaUsuario, RepositorioPendenciaUsuario>();
+            services.TryAddScoped<IRepositorioPendenciaUsuarioConsulta, RepositorioPendenciaUsuarioConsulta>();            
             services.TryAddScoped<IRepositorioPendenciaCalendarioUe, RepositorioPendenciaCalendarioUe>();
             services.TryAddScoped<IRepositorioPendenciaParametroEvento, RepositorioPendenciaParametroEvento>();
             services.TryAddScoped<IRepositorioPendenciaProfessor, RepositorioPendenciaProfessor>();
@@ -678,6 +679,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterTotalAulasSemFrequenciaPorTurmaUseCase, ObterTotalAulasSemFrequenciaPorTurmaUseCase>();
             services.TryAddScoped<IObterTotalAulasNaoLancamNotaUseCase, ObterTotalAulasNaoLancamNotaUseCase>();
             services.TryAddScoped<IObterTotalCompensacoesComponenteNaoLancaNotaUseCase, ObterTotalCompensacoesComponenteNaoLancaNotaUseCase>();
+            services.TryAddScoped<IObterTotalAlunosSemFrequenciaPorTurmaBimestreUseCase, ObterTotalAlunosSemFrequenciaPorTurmaBimestreUseCase>();
             services.AddScoped<IObterRecomendacoesAlunoFamiliaUseCase, ObterRecomendacoesAlunoFamiliaUseCase>();
 
             // Consolidacao Frequencia Turma
@@ -834,6 +836,7 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<INotificacaoFrequenciaUeUseCase, NotificacaoFrequenciaUeUseCase>();
             services.TryAddScoped<INotificacaoAndamentoFechamentoUseCase, NotificacaoAndamentoFechamentoUseCase>();
+            services.TryAddScoped<INotificacaoAndamentoFechamentoPorUeUseCase, NotificacaoAndamentoFechamentoPorUeUseCase>();
             services.TryAddScoped<INotificacaoUeFechamentosInsuficientesUseCase, NotificacaoUeFechamentosInsuficientesUseCase>();
             services.TryAddScoped<INotificacaoInicioFimPeriodoFechamentoUseCase, NotificacaoInicioFimPeriodoFechamentoUseCase>();
             services.TryAddScoped<INotificacaoInicioPeriodoFechamentoUEUseCase, NotificacaoInicioPeriodoFechamentoUEUseCase>();
@@ -868,6 +871,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarExclusaoPendenciaDiasLetivosInsuficientes, ExecutarExclusaoPendenciaDiasLetivosInsuficientes>();
             services.TryAddScoped<IExecutarExclusaoPendenciaParametroEvento, ExecutarExclusaoPendenciaParametroEvento>();
             services.TryAddScoped<ITratarPendenciaDiarioBordoPorTurmaUseCase, TratarPendenciaDiarioBordoPorTurmaUseCase>();
+            services.TryAddScoped<ITratarPendenciaDiarioBordoPorTurmaAulaComponenteUseCase, TratarPendenciaDiarioBordoPorTurmaAulaComponenteUseCase>();
             services.TryAddScoped<IExcluirPendenciaDiarioBordoPorAulaIdUseCase, ExcluirPendenciaDiarioBordoPorAulaIdUseCase>();
 
             services.TryAddScoped<ITratarAtribuicaoPendenciasUsuariosUseCase, TratarAtribuicaoPendenciasUsuariosUseCase>();

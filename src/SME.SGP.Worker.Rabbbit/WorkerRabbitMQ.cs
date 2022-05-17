@@ -129,7 +129,8 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaExcluirNotificacaoDiarioBordo, new ComandoRabbit("Excluir uma notificação do diario de bordo", typeof(IExcluirNotificacaoDiarioBordoUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAula, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordo, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaDiarioBordoUseCase)));
-            comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurma, new ComandoRabbit("Verifica as pendências de aula para uma turma em específico e cria caso exista", typeof(ITratarPendenciaDiarioBordoPorTurmaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurma, new ComandoRabbit("Gerar pendências de diário de bordo por turma", typeof(ITratarPendenciaDiarioBordoPorTurmaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurmaAulaComponente, new ComandoRabbit("Gerar pendências de diário de bordo por turma, aula, componente", typeof(ITratarPendenciaDiarioBordoPorTurmaAulaComponenteUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaAvaliacao, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaAvaliacaoUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaFrequencia, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaFrequenciaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaPlanoAula, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaPlanoAulaUseCase)));
@@ -163,6 +164,7 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaNotificacaoResultadoInsatisfatorio, new ComandoRabbit("Notificar usuário resultado insatisfatório de aluno", typeof(INotificarResultadoInsatisfatorioUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaAtualizacaoSituacaoConselhoClasse, new ComandoRabbit("Executa atualização da situação do conselho de classe", typeof(IAtualizarSituacaoConselhoClasseUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoAndamentoFechamento, new ComandoRabbit("Executa notificação sobre o andamento do fechamento", typeof(INotificacaoAndamentoFechamentoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaNotificacaoAndamentoFechamentoPorUe, new ComandoRabbit("Executa notificação sobre o andamento do fechamento por UE", typeof(INotificacaoAndamentoFechamentoPorUeUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoUeFechamentosInsuficientes, new ComandoRabbit("Executa notificação UE sobre fechamento insuficientes", typeof(INotificacaoUeFechamentosInsuficientesUseCase)));
             comandos.Add(RotasRabbitSgp.RotaNotificacaoReuniaoPedagogica, new ComandoRabbit("Executa notificação sobre o andamento do fechamento", typeof(INotificacaoReuniaoPedagogicaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaGeracaoPendenciasFechamento, new ComandoRabbit("Executa inclusão de fila de Geração de Pendências do Fechamento", typeof(IGerarPendenciasFechamentoUseCase)));

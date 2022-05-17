@@ -21,15 +21,28 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(SalvarConselhoClasseAlunoRecomendacaoCommand request, CancellationToken cancellationToken)
         {
+            var listaRecomendacoesExcluidas = new List<long>();
             var recomendacoesAlunoFamilia = new List<long>();
 
             recomendacoesAlunoFamilia.AddRange(request.RecomendacoesAlunoId);
             recomendacoesAlunoFamilia.AddRange(request.RecomendacoesFamiliaId);
 
-            foreach(var recomendacaoId in recomendacoesAlunoFamilia)
+            var recomendacoesAssociadas = await repositorioConselhoClasseAlunoRecomendacao.ObterRecomendacoesDoAlunoPorConselhoAlunoId(request.ConselhoClasseAlunoId);
+
+            foreach(var recomendacao in recomendacoesAssociadas)
             {
-                await repositorioConselhoClasseAlunoRecomendacao.InserirRecomendacaoAlunoFamilia(recomendacaoId, request.ConselhoClasseAlunoId);
+                bool verificacao = recomendacoesAlunoFamilia.Contains(recomendacao);
+                if (verificacao)
+                    recomendacoesAlunoFamilia.Remove(recomendacao);
+                else
+                    listaRecomendacoesExcluidas.Add(recomendacao);
             }
+
+            if (listaRecomendacoesExcluidas.Any())
+                await repositorioConselhoClasseAlunoRecomendacao.ExcluirRecomendacoesPorConselhoAlunoIdRecomendacaoId(request.ConselhoClasseAlunoId, listaRecomendacoesExcluidas.ToArray());          
+
+            if(recomendacoesAlunoFamilia.Any())
+                repositorioConselhoClasseAlunoRecomendacao.InserirRecomendacaoAlunoFamilia(recomendacoesAlunoFamilia.ToArray(), request.ConselhoClasseAlunoId);
         }
     }
 }

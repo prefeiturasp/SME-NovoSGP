@@ -1,10 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,55 +21,45 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(SalvarPendenciaDiarioBordoCommand request, CancellationToken cancellationToken)
         {
-            unitOfWork.IniciarTransacao();
-
             try
             {
-                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.DiarioBordo));
-                await SalvarPendenciaDiario(pendenciaId, request.Aulas, request.ProfessoresComponentes);
+                var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ProfessorComponente.CodigoRf));
 
-                unitOfWork.PersistirTransacao();
+                await SalvarPendenciaDiario(request.Aula.Id, request.ProfessorComponente.CodigoRf, request.ProfessorComponente.DisciplinaId, request.PendenciaId, usuarioId);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                unitOfWork.Rollback();
-
-                throw;
+                throw ex;
             }
         }
 
-        private async Task<bool> SalvarPendenciaDiario(long pendenciaId, IEnumerable<AulaComComponenteDto> aulas, List<ProfessorEComponenteInfantilDto> professoresEComponentes)
+        private async Task SalvarPendenciaDiario(long aulaId, string codigoRf, long disciplinaId, long pendenciaId, long usuarioId)
         {
-            foreach (var aula in aulas)
+            try
             {
-                var professoresParaGravar = new List<ProfessorEComponenteInfantilDto>();
+                unitOfWork.IniciarTransacao();
 
-                if(aula.ComponenteId > 0)
-                {
-                    foreach (var professor in professoresEComponentes.Distinct())
-                        if (!professor.ComponentesCurricularesId.Contains(aula.ComponenteId))
-                            professoresParaGravar.Add(professor);
-                }
-                else
-                    professoresParaGravar.AddRange(professoresEComponentes);
-                           
+                var existePendenciaUsuario = await mediator.Send(new ObterPendenciasUsuarioPorPendenciaUsuarioIdQuery(pendenciaId, usuarioId));
 
-                foreach(var professorComPendencia in professoresParaGravar.DistinctBy(p=> p.CodigoRf))
-                {
-                    var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professorComPendencia.CodigoRf));
+                if (!existePendenciaUsuario)
                     await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
 
-                    var pendenciaDiarioBordo = new PendenciaDiarioBordo()
-                    {
-                        PendenciaId = pendenciaId,
-                        ProfessorRf = professorComPendencia.CodigoRf,
-                        ComponenteId = professorComPendencia.ComponentesCurricularesId.Any()? professorComPendencia.ComponentesCurricularesId.FirstOrDefault() : aula.ComponenteId,
-                        AulaId = aula.Id
-                    };
-                    await repositorioDiarioBordo.SalvarAsync(pendenciaDiarioBordo);
-                }
+                var pendenciaDiarioBordo = new PendenciaDiarioBordo()
+                {
+                    PendenciaId = pendenciaId,
+                    ProfessorRf = codigoRf,
+                    ComponenteId = disciplinaId,
+                    AulaId = aulaId
+                };
+                await repositorioDiarioBordo.SalvarAsync(pendenciaDiarioBordo);
+
+                unitOfWork.PersistirTransacao();
             }
-            return true;
+            catch (Exception ex)
+            {
+                unitOfWork.Rollback();
+                throw ex;
+            }
         }
     }
 }

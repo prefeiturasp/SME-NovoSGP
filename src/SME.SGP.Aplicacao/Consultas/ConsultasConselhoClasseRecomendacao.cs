@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
             var auditoriaListaDto = new List<AuditoriaDto>();
             var listaRecomendacoes = new List<RecomendacoesAlunoFamiliaDto>();
 
-            if (conselhosClassesIds != null)
+            if (conselhosClassesIds != null && conselhosClassesIds.Any())
             {
                 foreach (var conselhoClassesIdParaTratar in conselhosClassesIds)
                 {

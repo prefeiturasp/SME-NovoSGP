@@ -28,6 +28,7 @@
         public const string RotaExecutaPendenciasAula = "sgp.pendencias.aulas.executa";
         public const string RotaExecutaPendenciasAulaDiarioBordo = "sgp.pendencias.aulas.diario.bordo.executa";
         public const string RotaExecutaPendenciasAulaDiarioBordoTurma = "sgp.pendencias.aulas.diario.bordo.turma.executa";
+        public const string RotaExecutaPendenciasAulaDiarioBordoTurmaAulaComponente = "sgp.pendencias.aulas.diario.bordo.turma.aula.componente.executa";
         public const string RotaExecutaPendenciasAulaAvaliacao = "sgp.pendencias.aulas.avaliacao.executa";
         public const string RotaExecutaPendenciasAulaFrequencia = "sgp.pendencias.aulas.frequencia.executa";
         public const string RotaExecutaPendenciasAulaPlanoAula = "sgp.pendencias.aulas.plano.aula.executa";
@@ -56,6 +57,7 @@
 
         public const string RotaExecutaAtualizacaoSituacaoConselhoClasse = "sgp.conselho.classe.situacao.atualizar";
         public const string RotaNotificacaoAndamentoFechamento = "sgp.fechamento.andamento.notificar";
+        public const string RotaNotificacaoAndamentoFechamentoPorUe = "sgp.fechamento.andamento.notificar.ue";
 
         public const string RotaNotificacaoInicioFimPeriodoFechamento = "sgp.fechamento.abertura.iniciofim.periodo.notificar";
         public const string RotaNotificacaoInicioPeriodoFechamentoUE = "sgp.fechamento.abertura.inicio.periodo.notificar.ue";
