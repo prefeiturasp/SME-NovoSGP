@@ -57,17 +57,30 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { dreId }).AsList();
         }
 
-        public SupervisorEscolasDreDto ObtemPorUe(string ueId)
+        public SupervisorEscolasDreDto ObtemPorUe(FiltroObterSupervisorEscolasDto filtro)
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select id, dre_id as DreId, escola_id as EscolaId, supervisor_id as SupervisorId");
+            query.AppendLine("select id, tipo,dre_id as DreId, escola_id as EscolaId, supervisor_id as SupervisorId");
             query.AppendLine(", criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm");
             query.AppendLine(", alterado_por as AlteradoPor, criado_rf as CriadoRf, alterado_rf as AlteradoRf, excluido");
             query.AppendLine("from supervisor_escola_dre sed");
-            query.AppendLine("where escola_id = @ueId and excluido = false");
+            query.AppendLine("where excluido = false  and dre_id =@dre ");
 
-            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { ueId })
+            if (!string.IsNullOrEmpty(filtro.UeCodigo))
+                query.AppendLine(" and escola_id = @ue ");
+
+            if (filtro.TipoCodigo > 0)
+                query.AppendLine(" and tipo = @tipo ");
+
+            var parametros = new
+            {
+                dre = filtro.DreCodigo,
+                ue = filtro.UeCodigo,
+                tipo = filtro.TipoCodigo
+            };
+
+            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), parametros)
                 .AsList()
                 .FirstOrDefault();
         }
