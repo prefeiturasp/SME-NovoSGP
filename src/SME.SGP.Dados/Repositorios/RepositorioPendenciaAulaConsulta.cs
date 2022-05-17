@@ -252,10 +252,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PendenciaAulaDto>> ObterPendenciasAulasPorPendencia(long pendenciaId)
         {
-            var query = @"select a.data_aula as DataAula, pa.Motivo, (a.tipo_aula = @tipoAulaReposicao) ehReposicao, a.turma_id TurmaId, a.ue_id UeId, a.disciplina_id DisciplinaId, aa.nome_avaliacao as TituloAvaliacao
+            var query = @"select a.data_aula as DataAula, pa.Motivo, (a.tipo_aula = @tipoAulaReposicao) ehReposicao, a.turma_id TurmaId, a.ue_id UeId, a.disciplina_id DisciplinaId, 
+                           aa.nome_avaliacao as TituloAvaliacao,pe.bimestre,coalesce(cc.descricao_infantil , cc.descricao_sgp, cc.descricao) as ComponenteCurricular,
+                           pdb.pendencia_id as PendenciaId, t.modalidade_codigo ModalidadeCodigo, t.nome NomeTurma
                            from pendencia_aula pa
                            join pendencia p on p.id = pa.pendencia_id
                            join aula a on a.id = pa.aula_id
+                           join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id and pe.periodo_inicio <= a.data_aula and pe.periodo_fim >= a.data_aula
                            left join atividade_avaliativa aa on aa.turma_id = a.turma_id 
    									and aa.data_avaliacao::date = a.data_aula::date    									
 									and a.professor_rf = aa.professor_rf and p.tipo = @tipoPendenciaAvaliacao                           

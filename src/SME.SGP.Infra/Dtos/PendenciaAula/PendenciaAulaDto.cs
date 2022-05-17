@@ -38,5 +38,10 @@ namespace SME.SGP.Infra
         public string UeId { get; set; }
         public string DisciplinaId { get; set; }
         public string TituloAvaliacao { get; set; }
+        public int Bimestre { get; set; }
+        public string ComponenteCurricular { get; set; }
+        public long PendenciaId { get; set; }
+        public int ModalidadeCodigo { get; set; }
+        public string NomeTurma { get; set; }
     }
 }
