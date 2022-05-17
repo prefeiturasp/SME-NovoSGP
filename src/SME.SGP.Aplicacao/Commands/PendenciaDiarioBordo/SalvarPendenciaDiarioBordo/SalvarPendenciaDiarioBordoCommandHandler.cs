@@ -37,9 +37,9 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                unitOfWork.IniciarTransacao();
-
                 var pendenciaId = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(request.ProfessorComponente.DisciplinaId, request.ProfessorComponente.CodigoRf, request.Aula.PeriodoEscolarId));
+
+                unitOfWork.IniciarTransacao();
 
                 if (pendenciaId == 0)
                     pendenciaId = await mediator.Send(MapearPendencia(TipoPendencia.DiarioBordo, request.ProfessorComponente.DescricaoComponenteCurricular, request.TurmaComModalidade, request.NomeEscola));
