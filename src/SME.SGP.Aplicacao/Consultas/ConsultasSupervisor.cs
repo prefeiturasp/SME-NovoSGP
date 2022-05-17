@@ -1,8 +1,10 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -113,11 +115,14 @@ namespace SME.SGP.Aplicacao
             else return MapearSupervisorEscolaDre(supervisoresEscolasDres).ToList();
         }
 
-        public SupervisorEscolasDto ObterPorUe(string ueId)
+        public SupervisorEscolasDto ObterPorUe(FiltroObterSupervisorEscolasDto filtro)
         {
-            var supervisorEscolaDreDto = repositorioSupervisorEscolaDre.ObtemPorUe(ueId);
+            if (string.IsNullOrEmpty(filtro.DreCodigo))
+                throw new NegocioException("Necessário informar o Codigo da DRE");
+
+            var supervisorEscolaDreDto = repositorioSupervisorEscolaDre.ObtemPorUe(filtro);
             if (supervisorEscolaDreDto == null)
-                supervisorEscolaDreDto = new SupervisorEscolasDreDto() { EscolaId = ueId };
+                supervisorEscolaDreDto = new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo };
 
             return MapearSupervisorEscolaDre(new[] { supervisorEscolaDreDto })
                 .FirstOrDefault();
@@ -133,7 +138,7 @@ namespace SME.SGP.Aplicacao
 
                 var escolasSemSupervisor = escolasPorDre.Where(a => !escolasComSupervisor.Contains(a.Codigo)).ToList();
 
-                var escolaSupervisorRetorno = new SupervisorEscolasDto() { SupervisorId = string.Empty, SupervisorNome = "NÃO ATRIBUÍDO" };
+                var escolaSupervisorRetorno = new SupervisorEscolasDto() { ResponsavelId = string.Empty, Responsavel = "NÃO ATRIBUÍDO" };
 
                 var escolas = from t in escolasSemSupervisor
                               select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.NomeSimples };
@@ -171,13 +176,15 @@ namespace SME.SGP.Aplicacao
                 listaSupervisores = supervisores;
             }
 
-            var supervisoresIds = supervisoresEscolasDres
-                .GroupBy(a => a.SupervisorId)
+            var supervisoresTipo = supervisoresEscolasDres
+                .GroupBy(a => new { a.SupervisorId, a.Tipo })
                 .Select(g => g.Key);
 
-            foreach (var supervisorId in supervisoresIds)
+            foreach (var supervisor in supervisoresTipo)
             {
-                var idsEscolas = supervisoresEscolasDres.Where(a => a.SupervisorId == supervisorId).Select(a => a.EscolaId).ToList();
+                var supervisorEscolas = supervisoresEscolasDres.Where(a => a.SupervisorId == supervisor.SupervisorId).ToList(); //.Select(a => a.EscolaId).ToList();
+
+                var idsEscolas = supervisorEscolas.Select(a => a.EscolaId).ToList();
 
                 IEnumerable<UnidadeEscolarDto> escolas = new List<UnidadeEscolarDto>();
 
@@ -188,12 +195,15 @@ namespace SME.SGP.Aplicacao
                               select new UnidadeEscolarDto() { Codigo = t.CodigoUe, Nome = $"{t.TipoEscola.ShortName()} {t.Nome}" };
                 }
 
-                var auditoria = supervisoresEscolasDres.FirstOrDefault(c => c.SupervisorId == supervisorId);
+                var auditoria = supervisoresEscolasDres.FirstOrDefault(c => c.SupervisorId == supervisor.SupervisorId);
+
+                var supervisorRetorno = listaSupervisores.FirstOrDefault(a => a.CodigoRF == (supervisor?.SupervisorId ?? string.Empty));
 
                 yield return new SupervisorEscolasDto()
                 {
-                    SupervisorNome = listaSupervisores.FirstOrDefault(a => a.CodigoRF == (supervisorId ?? string.Empty)).NomeServidor,
-                    SupervisorId = supervisorId,
+                    Responsavel = supervisorRetorno.NomeServidor + " - " + supervisorRetorno.CodigoRF,
+                    ResponsavelId = supervisor.SupervisorId,
+                    TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.Tipo),
                     Escolas = escolas.ToList(),
                     AlteradoEm = auditoria.AlteradoEm,
                     AlteradoPor = auditoria.AlteradoPor,
@@ -203,6 +213,17 @@ namespace SME.SGP.Aplicacao
                     CriadoRF = auditoria.CriadoRF
                 };
             }
+        }
+
+        private static string ObterTipoResponsavelDescricao(int tipo)
+        {
+            var tipoDescricao = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
+                        .Cast<TipoResponsavelAtribuicao>()
+                        .Where(w => (int)w == tipo)
+                        .Select(d => new { descricao = d.Name() })
+                        .FirstOrDefault().descricao;
+
+            return tipoDescricao;
         }
 
         private SupervisorEscolaDre MapearDtoParaEntidade(SupervisorEscolasDreDto dto)
@@ -239,8 +260,8 @@ namespace SME.SGP.Aplicacao
                     foreach (var supervisorEscolaDre in supervisoresIds)
                     {
                         var supervisorEscolasDto = new SupervisorEscolasDto();
-                        supervisorEscolasDto.SupervisorNome = supervisores.FirstOrDefault(a => a.CodigoRF == supervisorEscolaDre)?.NomeServidor;
-                        supervisorEscolasDto.SupervisorId = supervisorEscolaDre;
+                        supervisorEscolasDto.Responsavel = supervisores.FirstOrDefault(a => a.CodigoRF == supervisorEscolaDre)?.NomeServidor;
+                        supervisorEscolasDto.ResponsavelId = supervisorEscolaDre;
 
                         var idsEscolasDoSupervisor = supervisoresEscolasDres.Where(a => a.SupervisorId == supervisorEscolaDre)
                             .Select(a => a.EscolaId)
