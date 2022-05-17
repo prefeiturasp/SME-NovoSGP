@@ -21,7 +21,7 @@ namespace SME.SGP.Api.Controllers
 
         public SupervisorController(IConsultasSupervisor consultasSupervisor)
         {
-            this.consultasSupervisor = consultasSupervisor ?? throw new System.ArgumentNullException(nameof(consultasSupervisor));
+            this.consultasSupervisor = consultasSupervisor ?? throw new ArgumentNullException(nameof(consultasSupervisor));
         }
 
         [HttpPost("atribuir-ue")]
@@ -48,8 +48,8 @@ namespace SME.SGP.Api.Controllers
         public IActionResult ObterListTipoReponsavel()
         {
             var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
-                            .Cast<TipoResponsavelAtribuicao>()
-                            .Select(d => new { codigo = (int)d, descricao = d.Name() }).OrderBy(x => x.descricao).ToList();
+                .Cast<TipoResponsavelAtribuicao>()
+                .Select(d => new { codigo = (int)d, descricao = d.Name() }).OrderBy(x => x.descricao).ToList();
 
             return Ok(tipos);
         }
@@ -58,9 +58,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<SupervisorDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSupervidoresPorDreENome(string dreId, [FromQuery]BuscaSupervisorPorNomeDto supervisorNome)
+        public async Task<IActionResult> ObterSupervisoresPorDre(string dreId, [FromQuery]FiltroObterSupervisoresDto filtro)
         {
-            return Ok(await consultasSupervisor.ObterPorDreENomeSupervisorAsync(supervisorNome.Nome, dreId));
+            return Ok(await consultasSupervisor.ObterPorDreENomeSupervisorAsync(filtro.Nome, dreId));
         }
 
         [HttpGet("dre/{dreId}/vinculo-escolas")]
@@ -70,9 +70,11 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterSupervisoresEEscolasPorDre(string dreId)
         {
             var retorno = await consultasSupervisor.ObterPorDre(dreId);
+
             if (retorno.Any())
                 return Ok(retorno);
-            else return StatusCode(204);
+            else 
+                return StatusCode(204);
         }
 
         [HttpGet("{supervisoresId}/dre/{dreId}")]
@@ -85,7 +87,8 @@ namespace SME.SGP.Api.Controllers
 
             if (listaretorno == null)
                 return new StatusCodeResult(204);
-            else return Ok(listaretorno);
+            else 
+                return Ok(listaretorno);
         }
     }
 }

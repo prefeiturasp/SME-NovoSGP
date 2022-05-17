@@ -27,11 +27,11 @@ namespace SME.SGP.Aplicacao
 
             var parametros = JsonConvert.SerializeObject(request.Perfis);
 
-            var resposta = await httpClient.PostAsync($"/api/funcionarios/unidade/{request.CodigoDreUe}", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+            var resposta = await httpClient.PostAsync($"/api/funcionarios/unidade/{request.CodigoDreUe}", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"), cancellationToken);
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
-                var json = await resposta.Content.ReadAsStringAsync();
+                var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
                 return JsonConvert.DeserializeObject<IEnumerable<string>>(json);
             }
 
