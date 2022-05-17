@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
                     var turmaAnoComModalidade = turmaComDreUe.NomeComModalidade();
 
-                    var descricaoUeDre = $"{ObterEscola(turmaComDreUe)}";
+                    var descricaoUeDre = turmaComDreUe.ObterEscola();
 
                     if (!item.First().AulaCJ)
                     {
@@ -78,17 +78,6 @@ namespace SME.SGP.Aplicacao
                         await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, item.First().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, item.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre);
                 }
             }
-        }
-
-        private string ObterEscola(Turma turmaDreUe)
-        {
-            var ueTipo = turmaDreUe.Ue.TipoEscola;
-
-            var dreAbreviacao = turmaDreUe.Ue.Dre.Abreviacao.Replace("-", "");
-
-            var ueNome = turmaDreUe.Ue.Nome;
-
-            return ueTipo != TipoEscola.Nenhum ? $"{ueTipo.ShortName()} {ueNome} ({dreAbreviacao})" : $"{ueNome} ({dreAbreviacao})";
         }
 
         private async Task SalvarPendenciaAulaUsuario(string disciplinaId, string codigoRfProfessor, long periodoEscolarId, TipoPendencia tipoPendencia, IEnumerable<long> aulasIds, string descricaoComponenteCurricular, string turmaAnoComModalidade, string descricaoUeDre)

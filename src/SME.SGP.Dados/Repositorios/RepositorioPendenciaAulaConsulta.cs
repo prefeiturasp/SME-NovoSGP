@@ -463,16 +463,28 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, tipoPendencia }));
         }
 
-        public async Task<long> ObterPendenciaDiarioBordoPorComponenteTurmaCodigo(long componenteCurricularId, string turmaCodigo)
+        public async Task<long> ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolar(long componenteCurricularId, string codigoRf, long periodoEscolarId)
         {
-            var sql = @"select p.Id from pendencia p 
+            try
+            {
+                var sql = @"select p.Id from pendencia p 
                         join pendencia_diario_bordo pdb on pdb.pendencia_id = p.id 
+                        join pendencia_usuario pu on pu.pendencia_id = p.id 
+                        join usuario u on u.id = pu.usuario_id 
                         join aula a on a.id = pdb.aula_id 
+                        join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
                         join componente_curricular cc on cc.id = pdb.componente_curricular_id
-                        where a.turma_id = @turmaCodigo and cc.id = @componenteCurricularId                        
-                        order by p.Id desc";
+                        where u.rf_codigo = @codigoRf and cc.id = @componenteCurricularId 
+                        and pe.id = @periodoEscolarId and p.tipo = @tipoPendencia 
+                        order by p.criado_em desc";
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, turmaCodigo}));
+                var retorno =  (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, tipoPendencia = (int)TipoPendencia.DiarioBordo }, commandTimeout: 60));
+                return retorno;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<long> ObterPendenciaPorDescricaoTipo(string descricao, TipoPendencia tipoPendencia)

@@ -28,6 +28,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PossuiPendenciaDiarioBordoDto>> TurmasPendenciaDiarioBordo(IEnumerable<long> aulasId, string turmaId, int bimestre);
 
         Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf, bool ehGestor, string turma);        
-        Task<long> ObterPendenciaDiarioBordoPorComponenteTurmaCodigo(long componenteCurricularId, string turmaCodigo);        
+        Task<long> ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolar(long componenteCurricularId, string codigoRf, long periodoEscolarId);        
     }
 }
