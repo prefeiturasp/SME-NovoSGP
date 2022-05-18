@@ -4,12 +4,6 @@ CREATE TABLE pendencia_devolutiva (
 	pendencia_id int8 NOT NULL,
 	componente_curricular_id int8 NOT NULL,
 	turma_id int8 NOT NULL,
-    alterado_por varchar(200) NULL,
-	alterado_rf varchar(200) NULL,
-	alterado_em timestamp NULL,
-	criado_por varchar(200) NOT NULL,
-	criado_rf varchar(200) NOT NULL,
-	criado_em timestamp NOT NULL,
 	CONSTRAINT pendencia_devolutiva_pk PRIMARY KEY (id)
 ); 
 

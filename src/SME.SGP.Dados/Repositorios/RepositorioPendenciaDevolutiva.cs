@@ -1,18 +1,20 @@
-﻿using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
-    public class RepositorioPendenciaDevolutiva : RepositorioBase<PendenciaDevolutiva>, IRepositorioPendenciaDevolutiva
+    public class RepositorioPendenciaDevolutiva : IRepositorioPendenciaDevolutiva
     {
-        public RepositorioPendenciaDevolutiva(ISgpContextConsultas database) : base(database)
-        {
+		private readonly ISgpContextConsultas database;
 
-        }
+		public RepositorioPendenciaDevolutiva(ISgpContextConsultas database)
+        {
+			this.database = database ?? throw new ArgumentNullException(nameof(database));
+		}
 
         public async Task<IEnumerable<PendenciaDevolutiva>> ObterPendenciasDevolutivaPorPendencia(long pendenciaId)
         {

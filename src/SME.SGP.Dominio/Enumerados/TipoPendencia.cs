@@ -35,9 +35,6 @@ namespace SME.SGP.Dominio
         [Display(Name = "Avaliações sem nota registrada", GroupName = "Diario de Classe")]
         Avaliacao = 10,
 
-        [Display(Name = "Pendências de Devolutivas", GroupName = "Diario de Classe")]
-        Devolutiva = 19,
-
         [Display(Name = "Aulas criadas em dias não letivos", GroupName = "Calendário")]
         AulaNaoLetivo = 11,
 
@@ -61,5 +58,8 @@ namespace SME.SGP.Dominio
         
         [Display(Name = "AEE", GroupName = "AEE")]
         AEE = 18,
+
+        [Display(Name = "Pendências de Devolutivas", GroupName = "Diario de Classe")]
+        Devolutiva = 19,
     }
 }

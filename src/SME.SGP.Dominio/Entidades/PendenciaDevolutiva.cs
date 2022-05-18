@@ -1,7 +1,8 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class PendenciaDevolutiva : EntidadeBase
+    public class PendenciaDevolutiva
     {
+        public long Id { get; set; }
         public long PedenciaId { get; set; }
         public Pendencia Pendencia { get; set; }
         public long ComponenteCurricularId { get; set; }
