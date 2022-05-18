@@ -258,9 +258,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var areaConhecimento in areasConhecimento)
                 {
-                    var componentes = await mediator.Send(new ObterComponentesAreasConhecimentoQuery(grupoDisiplinasMatriz, areaConhecimento));
-
-                    // TODO: Realizar consulta para obter as quantidades diretamente nas tabelas
+                    var componentes = await mediator.Send(new ObterComponentesAreasConhecimentoQuery(grupoDisiplinasMatriz, areaConhecimento));                    
 
                     var componentesIds = componentes.Select(c => c.Id.ToString()).ToArray();
 
