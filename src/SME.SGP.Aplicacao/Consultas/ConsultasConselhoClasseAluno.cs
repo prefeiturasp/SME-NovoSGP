@@ -235,7 +235,7 @@ namespace SME.SGP.Aplicacao
             var retorno = new ConselhoClasseAlunoNotasConceitosRetornoDto();
 
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
-
+            
             var frequenciasAluno = turmasComMatriculasValidas.Contains(codigoTurma) ?
                 await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, alunoCodigo, tipoCalendario.Id, bimestre) :
                 Enumerable.Empty<FrequenciaAluno>();
@@ -260,9 +260,17 @@ namespace SME.SGP.Aplicacao
                 {
                     var componentes = await mediator.Send(new ObterComponentesAreasConhecimentoQuery(grupoDisiplinasMatriz, areaConhecimento));
 
+                    // TODO: Realizar consulta para obter as quantidades diretamente nas tabelas
+
+                    var componentesIds = componentes.Select(c => c.Id.ToString()).ToArray();
+
+                    var frequenciasAlunoEAulas = await mediator.Send(new ObterTotalFrequenciaEAulasAlunoPorTurmaComponenteBimestresQuery(alunoCodigo, tipoCalendario.Id, componentesIds, turmasCodigos, bimestre));
+
                     foreach (var disciplina in componentes.Where(d => d.LancaNota).OrderBy(g => g.Nome))
                     {
                         var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
+
+                        var frequenciaAulasTratar = frequenciasAlunoEAulas.FirstOrDefault(f => f.ComponenteCurricularId == disciplina.Id.ToString());
 
                         var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
                         FrequenciaAluno frequenciaAluno;
@@ -270,7 +278,15 @@ namespace SME.SGP.Aplicacao
                         if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
                             frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
                         else if (frequenciasAlunoParaTratar.Count() == 1)
+                        {
                             frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
+                            if(frequenciaAulasTratar != null)
+                            {
+                                frequenciaAluno.TotalAulas = frequenciaAulasTratar.TotalAulas;
+                                frequenciaAluno.TotalAusencias = frequenciaAulasTratar.TotalAusencias;
+                                frequenciaAluno.TotalPresencas = frequenciaAulasTratar.TotalPresencas;
+                            }                            
+                        }                            
                         else
                         {
                             frequenciaAluno = new FrequenciaAluno()
@@ -279,9 +295,21 @@ namespace SME.SGP.Aplicacao
                                 CodigoAluno = alunoCodigo
                             };
 
-                            frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
-                            frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
-                            frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
+                            
+                            if (frequenciaAulasTratar != null)
+                            {
+                                frequenciaAluno.TotalAulas = frequenciaAulasTratar.TotalAulas;
+                                frequenciaAluno.TotalAusencias = frequenciaAulasTratar.TotalAusencias;
+                                frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
+                                frequenciaAluno.TotalPresencas = frequenciaAulasTratar.TotalPresencas;
+                            }
+                            else
+                            {
+                                frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
+                                frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
+                                frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
+                            }
+
                             percentualFrequenciaPadrao = true;
                             frequenciasAlunoParaTratar
                                 .ToList()
