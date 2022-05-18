@@ -97,61 +97,131 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PendenciaDto>> ObterPendencias(Pendencia pendencia, string codigoRf)
         {
             return pendencia.EhPendenciaAula() ?
-                        await ObterPendenciasAulaFormatadas(pendencia, codigoRf) :
+                        await ObterPendenciasAulasFormatadas(pendencia) :
+                    pendencia.EhPendenciaAusenciaAvaliacaoProfessor() ?
+                        await ObterPendenciaAusenciaAvaliacaoProfessor(pendencia) :
+                    pendencia.EhPendenciaAusenciaAvaliacaoCP() ?
+                        await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia): 
                     pendencia.EhPendenciaFechamento() ?
-                        await ObterPendenciasFechamentoFormatadas(pendencia, codigoRf) :
-                    pendencia.EhPendenciaProfessor() ?
-                        await ObterPendenciasProfessorFormatadas(pendencia, codigoRf) :
+                        await ObterPendenciasFechamentoFormatadas(pendencia) :
+                        pendencia.EhAusenciaFechamento() ?
+                        await ObterPendenciasProfessorFormatadas(pendencia) :
                     pendencia.EhPendenciaDiarioBordo() ?
                         await ObterPendenciasDiarioBordoFormatadas(pendencia, codigoRf):
                     new List<PendenciaDto>();
         }
         
-        private async Task<IEnumerable<PendenciaDto>> ObterPendenciasProfessorFormatadas(Pendencia pendencia, string codigoRf)
+        private async Task<IEnumerable<PendenciaDto>> ObterPendenciasProfessorFormatadas(Pendencia pendencia)
         {
             var turma = await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendencia.Id));
 
-            return await ObterPendenciasFormatadas(pendencia, codigoRf, turma);
-        }
-
-        private async Task<IEnumerable<PendenciaDto>> ObterPendenciasFechamentoFormatadas(Pendencia pendencia, string codigoRf)
-        {
-            var turma = await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendencia.Id));
-
-            return await ObterPendenciasFormatadas(pendencia, codigoRf, turma);
-        }
-
-        private async Task<IEnumerable<PendenciaDto>> ObterPendenciasAulaFormatadas(Pendencia pendencia, string codigoRf)
-        {
-            var turma = await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendencia.Id));
-
-            return await ObterPendenciasFormatadas(pendencia, codigoRf, turma);
-        }
-
-        private async Task<List<PendenciaDto>> ObterPendenciasFormatadas(Pendencia pendencia, string codigoRf, Turma turma)
-        {
             return new List<PendenciaDto>
             {
                 new PendenciaDto()
                 {
                     Tipo = pendencia.Tipo.GroupName(),
                     Titulo = !string.IsNullOrEmpty(pendencia.Titulo) ? pendencia.Titulo : pendencia.Tipo.Name(),
-                    Detalhe = await ObterDescricaoPendencia(pendencia, codigoRf),
+                    Detalhe = pendencia.Descricao,
                     Turma = ObterNomeTurma(turma),
                     Bimestre = await ObterBimestreTurma(pendencia)
                 }
             };
         }
 
+        private async Task<IEnumerable<PendenciaDto>> ObterPendenciasFechamentoFormatadas(Pendencia pendencia)
+        {
+            var turma = await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendencia.Id));
+
+            var descricao = string.Empty;
+
+            if (pendencia.EhPendenciaCadastroEvento())
+                descricao = await ObterDescricaoPendenciaEvento(pendencia);
+
+            if (pendencia.EhPendenciaAusenciaDeRegistroIndividual())
+                descricao = await ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(pendencia);
+
+            return new List<PendenciaDto>
+            {
+                new PendenciaDto()
+                {
+                    Tipo = pendencia.Tipo.GroupName(),
+                    Titulo = !string.IsNullOrEmpty(pendencia.Titulo) ? pendencia.Titulo : pendencia.Tipo.Name(),
+                    Detalhe = descricao,
+                    Turma = ObterNomeTurma(turma),
+                    Bimestre = await ObterBimestreTurma(pendencia)
+                }
+            };
+        }
+
+        private async Task<IEnumerable<PendenciaDto>> ObterPendenciaAusenciaAvaliacaoProfessor(Pendencia pendencia)
+        {
+            var pendenciasProfessorBimestre = await mediator.Send(new ObterPendenciasProfessorPorPendenciaIdQuery(pendencia.Id));
+
+            var pendenciasProfessor = new List<PendenciaDto>();
+
+            var pendenciaFormatada = new PendenciaDto
+            {
+                Titulo = !string.IsNullOrEmpty(pendencia.Titulo) ? pendencia.Titulo : pendencia.Tipo.Name(),
+                Tipo = pendencia.Tipo.GroupName(),
+                Bimestre = ObterNomeBimestre(pendenciasProfessorBimestre.FirstOrDefault().Bimestre),
+                Turma = $"{((Modalidade)pendenciasProfessorBimestre.FirstOrDefault().ModalidadeCodigo).ShortName()} - {pendenciasProfessorBimestre.FirstOrDefault().NomeTurma}"
+            };
+
+            var descricao = new StringBuilder(pendencia.Descricao);
+            
+            descricao.AppendLine("<br /><ul>");
+
+            descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
+
+            pendenciaFormatada.Detalhe = descricao.ToString();
+            pendenciasProfessor.Add(pendenciaFormatada);
+
+            return pendenciasProfessor;
+        }
+
+        private async Task<IEnumerable<PendenciaDto>> ObterPendenciasAulasFormatadas(Pendencia pendencia)
+        {
+            var pendenciasAulas = await mediator.Send(new ObterPendenciasAulasPorPendenciaQuery(pendencia.Id));
+
+            var agrupamentoPendenciasBimestres = pendenciasAulas.GroupBy(g => new { g.Bimestre,g.DisciplinaId, g.ModalidadeCodigo, g.NomeTurma }, (key, group) =>
+                                                        new PendenciaAgrupamentoDto()
+                                                        {
+                                                            Bimestre = key.Bimestre,
+                                                            ModalidadeCodigo = key.ModalidadeCodigo,
+                                                            NomeTurma = key.NomeTurma,
+                                                            PendenciaDetalhes = group.Select(s => new PendenciaDetalheDto()
+                                                            {
+                                                                DataAula = s.DataAula,
+                                                                EhReposicao = s.EhReposicao
+                                                            })
+                                                        });
+
+            return ObterPendenciasFormatadas(pendencia, agrupamentoPendenciasBimestres);
+        }
+
         private async Task<IEnumerable<PendenciaDto>> ObterPendenciasDiarioBordoFormatadas(Pendencia pendencia, string codigoRf)
         {
-            var pendenciasDiarioBordo = new List<PendenciaDto>();
-
             var pendenciasDiarios = await mediator.Send(new ObterPendenciasDiarioPorPendenciaIdEProfessorQuery(pendencia.Id, codigoRf));
 
-            var agrupamentoPendenciasBimestres = pendenciasDiarios.GroupBy(g => new { g.PendenciaId, g.Bimestre, g.ModalidadeCodigo, g.NomeTurma }, (key, group) =>
-                                                        new { key.PendenciaId, key.Bimestre, key.ModalidadeCodigo, key.NomeTurma, Result = group.Select(s => s).ToList() });
+            var agrupamentoPendenciasBimestres = pendenciasDiarios.GroupBy(g => new { g.Bimestre, g.ModalidadeCodigo, g.NomeTurma }, (key, group) =>
+                                                        new PendenciaAgrupamentoDto()
+                                                        {
+                                                            Bimestre = key.Bimestre,
+                                                            ModalidadeCodigo = key.ModalidadeCodigo,
+                                                            NomeTurma = key.NomeTurma,
+                                                            PendenciaDetalhes = group.Select(s => new PendenciaDetalheDto()
+                                                            {
+                                                                DataAula = s.DataAula,
+                                                                EhReposicao = s.EhReposicao
+                                                            })
+                                                        });
 
+            return ObterPendenciasFormatadas(pendencia, agrupamentoPendenciasBimestres);
+        }
+
+        private IEnumerable<PendenciaDto> ObterPendenciasFormatadas(Pendencia pendencia, IEnumerable<PendenciaAgrupamentoDto> agrupamentoPendenciasBimestres)
+        {
+            var pendenciasDiarioBordo = new List<PendenciaDto>();
 
             var descricao = new StringBuilder();
 
@@ -169,7 +239,7 @@ namespace SME.SGP.Aplicacao
                     Turma = $"{((Modalidade)pendenciaBimestre.ModalidadeCodigo).ShortName()} - {pendenciaBimestre.NomeTurma}"
                 };
 
-                foreach (var pendenciaDetalhe in pendenciaBimestre.Result)
+                foreach (var pendenciaDetalhe in pendenciaBimestre.PendenciaDetalhes)
                     descricao.AppendLine($"<li>{pendenciaDetalhe.DataAula:dd/MM/yyyy} {ObterComplementoReposicao(pendenciaDetalhe.EhReposicao)}</li>");
 
                 descricao.AppendLine("</ul>");
@@ -212,23 +282,31 @@ namespace SME.SGP.Aplicacao
         private string ObterNomeBimestre(int bimestre)
             => bimestre == 0 ? "Final" : $"{bimestre}º Bimestre";
 
-        private async Task<string> ObterDescricaoPendencia(Pendencia pendencia, string codigoRfProfessor)
-        {
-            if (pendencia.EhPendenciaAula())
-                return await ObterDescricaoPendenciaAula(pendencia);
+        private async Task<string> ObterDescricaoPendencia(Pendencia pendencia )
+        {           
             if (pendencia.EhPendenciaCadastroEvento())
                 return await ObterDescricaoPendenciaEvento(pendencia);
-            if (pendencia.EhPendenciaAusenciaAvaliacaoCP())
-                return await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia);
+           
+            
             if (pendencia.EhPendenciaAusenciaDeRegistroIndividual())
                 return await ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(pendencia);
 
             return ObterDescricaoPendenciaGeral(pendencia);
         }
 
-        private async Task<string> ObterDescricaoPendenciaAusenciaAvaliacaoCP(Pendencia pendencia)
+        private async Task<IEnumerable<PendenciaDto>> ObterDescricaoPendenciaAusenciaAvaliacaoCP(Pendencia pendencia)
         {
             var pendenciasProfessor = await mediator.Send(new ObterPendenciasProfessorPorPendenciaIdQuery(pendencia.Id));
+
+            var pendenciasCP = new List<PendenciaDto>();
+
+            var pendenciaFormatada = new PendenciaDto
+            {
+                Titulo = !string.IsNullOrEmpty(pendencia.Titulo) ? pendencia.Titulo : pendencia.Tipo.Name(),
+                Tipo = pendencia.Tipo.GroupName(),
+                Bimestre = ObterNomeBimestre(pendenciasProfessor.FirstOrDefault().Bimestre),
+                Turma = $"{((Modalidade)pendenciasProfessor.FirstOrDefault().ModalidadeCodigo).ShortName()} - {pendenciasProfessor.FirstOrDefault().NomeTurma}"
+            };
 
             var descricao = new StringBuilder(pendencia.Descricao);
             descricao.Append("<br/><table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
@@ -246,12 +324,22 @@ namespace SME.SGP.Aplicacao
             descricao.Append("</table><br/>");
             descricao.Append($"<b>{pendencia.Instrucao}</b>");
 
-            return descricao.ToString();
+            pendenciaFormatada.Detalhe = descricao.ToString();
+            pendenciasCP.Add(pendenciaFormatada);
+
+            return pendenciasCP;
         }
+                
+
 
         private string ObterDescricaoPendenciaGeral(Pendencia pendencia)
         {
-            return $"{pendencia.Descricao}<br /><br/><b>{pendencia.Instrucao}</b>";
+            return ObterDescricaoPendenciaGeral(pendencia.Descricao,pendencia.Instrucao);
+        }
+
+        private string ObterDescricaoPendenciaGeral(string descricao, string instrucao)
+        {
+            return $"{descricao}<br /><br/><b>{instrucao}</b>";
         }
 
         private async Task<string> ObterDescricaoPendenciaEvento(Pendencia pendencia)
@@ -269,28 +357,6 @@ namespace SME.SGP.Aplicacao
             descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
 
             return descricao.ToString();
-        }
-
-        private async Task<string> ObterDescricaoPendenciaAula(Pendencia pendencia)
-        {
-            var pendenciasAulas = await mediator.Send(new ObterPendenciasAulasPorPendenciaQuery(pendencia.Id));
-
-            var descricao = new StringBuilder(pendencia.Descricao);
-            descricao.AppendLine("<br /><ul>");
-
-            foreach (var pendenciaAula in pendenciasAulas)
-            {
-                descricao.AppendLine($"<li>{pendenciaAula.DataAula:dd/MM/yyyy} {ObterComplementoDescricao(pendenciaAula)}</li>");
-            }
-            descricao.AppendLine("</ul>");
-            descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
-
-            return descricao.ToString();
-        }
-
-        private string ObterComplementoDescricao(PendenciaAulaDto pendenciaAula)
-        {
-            return !string.IsNullOrEmpty(pendenciaAula.TituloAvaliacao)? $" - {pendenciaAula.TituloAvaliacao}" : ObterComplementoReposicao(pendenciaAula.EhReposicao);
         }
 
         private string ObterComplementoReposicao(bool ehReposicao)
