@@ -73,8 +73,6 @@
 
         public const string RotaNotificacaoFrequenciaUe = "sgp.frequencia.ue.notificar";
 
-        public const string RotaValidacaoAusenciaConciliacaoFrequenciaTurma = "sgp.frequencia.turma.conciliacao.validar";        
-
         public const string RotaPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual";
         public const string RotaAtualizarPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual.atualizar";
 
@@ -94,32 +92,16 @@
         public const string NotificarCriacaoPlanoAEE = "plano.aee.notificar.criacao";
         public const string NotificarPlanoAEEEncerrado = "plano.aee.notificar.encerramento";
         public const string RotaNotificacaoRegistroItineranciaInseridoUseCase = "notificacao.registro.itinerancia.inserido";
-        public const string SincronizaEstruturaInstitucionalUes = "sincroniza.estrtura.institucional.ues";
-        public const string SincronizaEstruturaInstitucionalDreSync = "sgp.sincronizacao.institucional.dre.sync";
-        public const string SincronizaEstruturaInstitucionalDreTratar = "sgp.sincronizacao.institucional.dre.tratar";
-        public const string SincronizaEstruturaInstitucionalUeTratar = "sgp.sincronizacao.institucional.ue.tratar";
-        public const string SincronizaEstruturaInstitucionalTurmasSync = "sgp.sincronizacao.institucional.turmas.sync";
-        public const string SincronizaEstruturaInstitucionalTurmaTratar = "sgp.sincronizacao.institucional.turma.tratar";
-
-        public const string SincronizaEstruturaInstitucionalTipoEscolaSync = "sgp.sincronizacao.institucional.tipoescola.sync";
-        public const string SincronizaEstruturaInstitucionalTipoEscolaTratar = "sgp.sincronizacao.institucional.tipoescola.tratar";
-
-        public const string SincronizaEstruturaInstitucionalCicloSync = "sgp.sincronizacao.institucional.ciclo.sync";
-        public const string SincronizaEstruturaInstitucionalCicloTratar = "sgp.sincronizacao.institucional.ciclo.tratar";
 
         public const string NotificarCompensacaoAusencia = "sgp.compensacao.ausencia.notificar";
-
-        public const string ConsolidacaoFrequenciasTurmasCarregar = "sgp.frequencia.turma.carregar";
-        public const string ConsolidarFrequenciasTurmasNoAno = "sgp.frequencia.turma.ano.consolidar";
-        public const string ConsolidarFrequenciasTurmasPorDre = "sgp.frequencia.turma.dre.consolidar";
-        public const string ConsolidarFrequenciasTurmasPorUe = "sgp.frequencia.turma.ue.consolidar";
-        public const string ConsolidarFrequenciasPorTurma = "sgp.frequencia.turma.consolidar";
 
         public const string ConsolidacaoMatriculasTurmasDreCarregar = "sgp.matricula.turma.consolidar.dre.carregar";
         public const string SincronizarDresMatriculasTurmas = "sgp.matricula.turma.consolidar.dre.sync";
         public const string ConsolidacaoMatriculasTurmasCarregar = "sgp.matricula.turma.carregar";
         public const string ConsolidacaoMatriculasTurmasSync = "sgp.matricula.turma.sync";
 
+        public const string ConsolidarTurmaSync = "sgp.consolidacao.turma.sync";
+        public const string ConsolidarTurmaTratar = "sgp.consolidacao.turma.tratar";
         public const string RotaConciliacaoFrequenciaTurmasSync = "sgp.frequencia.turma.conciliacao.sync";
         public const string RotaConciliacaoFrequenciaTurmaPorPeriodo = "sgp.frequencia.turma.conciliacao.periodo";
         public const string RotaConciliacaoCalculoFrequenciaPorTurmaComponente = "sgp.frequencia.turma.conciliacao.componente";
@@ -221,7 +203,7 @@
         public const string PlanoAulaDaAulaExcluir = "sgp.plano.aula.excluir";
         public const string AnotacoesFrequenciaDaAulaExcluir = "sgp.anotacoes.frequencia.aula.excluir";
         public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";
-        public const string RotaConsolidacaoDashBoardFrequencia = "sgp.consolidacao.frequencia.dashboard";
+        
 
         public const string RotaConsolidacaoDiariaDashBoardFrequencia = "sgp.consolidacao.diaria.frequencia.dashboard";
         public const string RotaConsolidacaoSemanalDashBoardFrequencia = "sgp.consolidacao.semanal.frequencia.dashboard";
