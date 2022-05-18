@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ExecutarConsolidacaoFrequenciaNoAnoCommand request, CancellationToken cancellationToken)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarFrequenciasTurmasNoAno, new FiltroAnoDto(request.Ano), Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ConsolidarFrequenciasTurmasNoAno, new FiltroAnoDto(request.Ano), Guid.NewGuid(), null));
             await AtualizarDataExecucao(request.Ano);
         }
 

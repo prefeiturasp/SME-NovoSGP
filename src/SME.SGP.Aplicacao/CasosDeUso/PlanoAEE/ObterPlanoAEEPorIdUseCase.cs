@@ -11,8 +11,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAEEPorIdUseCase : AbstractUseCase, IObterPlanoAEEPorIdUseCase
     {
-        public ObterPlanoAEEPorIdUseCase(IMediator mediator) : base(mediator)
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+
+        public ObterPlanoAEEPorIdUseCase(IMediator mediator,
+                                         IConsultasPeriodoEscolar consultasPeriodoEscolar) : base(mediator)
         {
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
         }
 
         public async Task<PlanoAEEDto> Executar(FiltroPesquisaQuestoesPorPlanoAEEIdDto filtro)
@@ -20,6 +24,7 @@ namespace SME.SGP.Aplicacao
             var plano = new PlanoAEEDto();
 
             PlanoAEEVersaoDto ultimaVersao = null;
+            Turma turma = null;
 
             if (filtro.PlanoAEEId.HasValue && filtro.PlanoAEEId > 0)
             {
@@ -42,7 +47,6 @@ namespace SME.SGP.Aplicacao
                         {
                             if (entidadePlano.AlteradoEm?.Year != null)
                                 anoLetivo = (int)entidadePlano.AlteradoEm?.Year;
-
                             break;
                         }
                 }
@@ -59,7 +63,7 @@ namespace SME.SGP.Aplicacao
                 if (alunoPorTurmaResposta == null)
                     throw new NegocioException("Aluno não localizado");
 
-                var turma = await mediator
+                turma = await mediator
                     .Send(new ObterTurmaPorCodigoQuery(alunoPorTurmaResposta.CodigoTurma.ToString()));
 
                 var aluno = new AlunoReduzidoDto()
@@ -118,6 +122,17 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterQuestoesPlanoAEEPorVersaoQuery(questionarioId, ultimaVersaoId, filtro.TurmaCodigo));
 
             plano.QuestionarioId = questionarioId;
+
+            if (plano.Situacao != SituacaoPlanoAEE.Encerrado && 
+                plano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente && 
+                turma != null && 
+                plano.Questoes != null && 
+                plano.Questoes.Any() &&
+                turma.AnoLetivo.Equals(DateTime.Today.Year))
+            {
+                var periodoAtual = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
+                plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
+            }
 
             return plano;
         }

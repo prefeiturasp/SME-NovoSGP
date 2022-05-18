@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
         private async Task PublicarFilaConciliacaoPeriodo(List<string> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim, string componenteCurricularId)
         {
             var dto = new ConciliacaoFrequenciaTurmaPorPeriodoDto(turmasDaModalidade, bimestre, dataInicio, dataFim, componenteCurricularId);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaPorPeriodo, dto, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConciliacaoFrequenciaTurmaPorPeriodo, dto, Guid.NewGuid(), null));
         }
 
         private async Task PublicarFilaConciliacaoMensal(List<string> turmasDaModalidade, int mes)

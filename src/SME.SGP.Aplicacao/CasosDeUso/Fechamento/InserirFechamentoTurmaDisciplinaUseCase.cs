@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var auditoria = await mediator.Send(new SalvarFechamentoCommand(fechamentoTurma));
 
             if (!auditoria.EmAprovacao)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitFechamento.ConsolidarTurmaFechamentoSync,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaFechamentoSync,
                                                                new ConsolidacaoTurmaDto(Int64.Parse(fechamentoTurma.TurmaId), 0),
                                                                Guid.NewGuid(),
                                                                null));
