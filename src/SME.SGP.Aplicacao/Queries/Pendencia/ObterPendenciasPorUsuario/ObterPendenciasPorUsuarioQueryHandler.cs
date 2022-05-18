@@ -130,15 +130,17 @@ namespace SME.SGP.Aplicacao
 
         private async Task<List<PendenciaDto>> ObterPendenciasFormatadas(Pendencia pendencia, string codigoRf, Turma turma)
         {
+            var descricao = await ObterDescricaoPendencia(pendencia, codigoRf);
+
             return new List<PendenciaDto>
             {
                 new PendenciaDto()
                 {
                     Tipo = pendencia.Tipo.GroupName(),
                     Titulo = !string.IsNullOrEmpty(pendencia.Titulo) ? pendencia.Titulo : pendencia.Tipo.Name(),
-                    Detalhe = await ObterDescricaoPendencia(pendencia, codigoRf),
+                    Detalhe = descricao.Item1,
                     Turma = ObterNomeTurma(turma),
-                    Bimestre = await ObterBimestreTurma(pendencia)
+                    Bimestre = descricao.Item2.HasValue ? descricao.Item2.Value : await ObterBimestreTurma(pendencia)
                 }
             };
         }
@@ -212,7 +214,7 @@ namespace SME.SGP.Aplicacao
         private string ObterNomeBimestre(int bimestre)
             => bimestre == 0 ? "Final" : $"{bimestre}º Bimestre";
 
-        private async Task<string> ObterDescricaoPendencia(Pendencia pendencia, string codigoRfProfessor)
+        private async Task<(string, int?)> ObterDescricaoPendencia(Pendencia pendencia, string codigoRfProfessor)
         {
             if (pendencia.EhPendenciaAula())
                 return await ObterDescricaoPendenciaAula(pendencia);
@@ -220,15 +222,29 @@ namespace SME.SGP.Aplicacao
                 return await ObterDescricaoPendenciaEvento(pendencia);
             if (pendencia.EhPendenciaAusenciaAvaliacaoCP())
                 return await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia);
+            if (pendencia.EhPendenciaAusenciaAvaliacaoProfessor())
+                return await ObterDescricaoPendenciaAusenciaAvaliacaoProfessor(pendencia);
             if (pendencia.EhPendenciaAusenciaDeRegistroIndividual())
                 return await ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(pendencia);
 
             return ObterDescricaoPendenciaGeral(pendencia);
         }
 
-        private async Task<string> ObterDescricaoPendenciaAusenciaAvaliacaoCP(Pendencia pendencia)
+        private async Task<(string,int?)> ObterDescricaoPendenciaAusenciaAvaliacaoProfessor(Pendencia pendencia)
         {
-            var pendenciasProfessor = await mediator.Send(new ObterPendenciasProfessorPorPendenciaIdQuery(pendencia.Id));
+            var pendenciasProfessorBimestre = await mediator.Send(new ObterPendenciasProfessorPorPendenciaIdQuery(pendencia.Id));
+
+            var pendenciaRetorno = new StringBuilder();
+
+            foreach (var item in pendenciasProfessorBimestre)
+                pendenciaRetorno.AppendLine(ObterDescricaoPendenciaGeral(item.ComponenteCurricular,string.Empty));
+
+            return (pendenciaRetorno.ToString(), pendenciasProfessorBimestre.FirstOrDefault().Bimestre);
+        }
+
+        private async Task<(string,int?)> ObterDescricaoPendenciaAusenciaAvaliacaoCP(Pendencia pendencia)
+        {
+            var pendenciasProfessorBimestre = await mediator.Send(new ObterPendenciasProfessorPorPendenciaIdQuery(pendencia.Id));
 
             var descricao = new StringBuilder(pendencia.Descricao);
             descricao.Append("<br/><table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
@@ -236,7 +252,7 @@ namespace SME.SGP.Aplicacao
             descricao.Append("<td style='padding: 5px;'><b>Componente curricular</b></td>");
             descricao.Append("<td style='padding: 5px;'><b>Professor titular</b></td>");
             descricao.Append("</tr>");
-            foreach (var pendenciaProfessor in pendenciasProfessor)
+            foreach (var pendenciaProfessor in pendenciasProfessorBimestre)
             {
                 descricao.Append("<tr style='padding:5px'>");
                 descricao.Append($"<td style='padding: 5px;'>{pendenciaProfessor.ComponenteCurricular}</td>");
@@ -246,15 +262,20 @@ namespace SME.SGP.Aplicacao
             descricao.Append("</table><br/>");
             descricao.Append($"<b>{pendencia.Instrucao}</b>");
 
-            return descricao.ToString();
+            return (descricao.ToString(),pendenciasProfessorBimestre.FirstOrDefault().Bimestre);
         }
 
-        private string ObterDescricaoPendenciaGeral(Pendencia pendencia)
+        private (string, int?) ObterDescricaoPendenciaGeral(Pendencia pendencia)
         {
-            return $"{pendencia.Descricao}<br /><br/><b>{pendencia.Instrucao}</b>";
+            return (ObterDescricaoPendenciaGeral(pendencia.Descricao, pendencia.Instrucao),null);
         }
 
-        private async Task<string> ObterDescricaoPendenciaEvento(Pendencia pendencia)
+        private string ObterDescricaoPendenciaGeral(string descricao, string instrucao)
+        {
+            return $"{descricao}<br /><br/><b>{instrucao}</b>";
+        }
+
+        private async Task<(string,int?)> ObterDescricaoPendenciaEvento(Pendencia pendencia)
         {
             var pendenciasEventos = await mediator.Send(new ObterPendenciasParametroEventoPorPendenciaQuery(pendencia.Id));
 
@@ -268,24 +289,24 @@ namespace SME.SGP.Aplicacao
             descricao.AppendLine("</ul>");
             descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
 
-            return descricao.ToString();
+            return (descricao.ToString(),null);
         }
 
-        private async Task<string> ObterDescricaoPendenciaAula(Pendencia pendencia)
+        private async Task<(string,int?)> ObterDescricaoPendenciaAula(Pendencia pendencia)
         {
-            var pendenciasAulas = await mediator.Send(new ObterPendenciasAulasPorPendenciaQuery(pendencia.Id));
+            var pendenciasAulasBimestre = await mediator.Send(new ObterPendenciasAulasPorPendenciaQuery(pendencia.Id));
 
             var descricao = new StringBuilder(pendencia.Descricao);
             descricao.AppendLine("<br /><ul>");
 
-            foreach (var pendenciaAula in pendenciasAulas)
+            foreach (var pendenciaAula in pendenciasAulasBimestre)
             {
                 descricao.AppendLine($"<li>{pendenciaAula.DataAula:dd/MM/yyyy} {ObterComplementoDescricao(pendenciaAula)}</li>");
             }
             descricao.AppendLine("</ul>");
             descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
 
-            return descricao.ToString();
+            return (descricao.ToString(), pendenciasAulasBimestre.FirstOrDefault().Bimestre);
         }
 
         private string ObterComplementoDescricao(PendenciaAulaDto pendenciaAula)
@@ -298,7 +319,7 @@ namespace SME.SGP.Aplicacao
             return ehReposicao ? " - Reposição" : "";
         }
 
-        private async Task<string> ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(Pendencia pendencia)
+        private async Task<(string,int?)> ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(Pendencia pendencia)
         {
             var alunos = await mediator.Send(new ObterPendenciaRegistroIndividualCodigosAlunosPorPendenciaQuery(pendencia.Id));
 
@@ -312,7 +333,7 @@ namespace SME.SGP.Aplicacao
             descricao.AppendLine("</ul>");
             descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
 
-            return descricao.ToString();
+            return (descricao.ToString(),null);
         }
     }
 }

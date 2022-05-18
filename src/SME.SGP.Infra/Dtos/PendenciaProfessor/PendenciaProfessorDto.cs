@@ -9,5 +9,6 @@ namespace SME.SGP.Infra
         public string ComponenteCurricular { get; set; }
         public string Professor { get; set; }
         public string ProfessorRf { get; set; }
+        public int Bimestre { get; set; }
     }
 }

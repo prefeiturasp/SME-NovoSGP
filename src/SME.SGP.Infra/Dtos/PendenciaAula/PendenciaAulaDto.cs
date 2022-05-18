@@ -38,5 +38,6 @@ namespace SME.SGP.Infra
         public string UeId { get; set; }
         public string DisciplinaId { get; set; }
         public string TituloAvaliacao { get; set; }
+        public int Bimestre { get; set; }
     }
 }

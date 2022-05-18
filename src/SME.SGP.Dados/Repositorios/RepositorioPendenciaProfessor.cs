@@ -76,10 +76,11 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<PendenciaProfessorDto>> ObterPendenciasPorPendenciaId(long pendenciaId)
         {
-            var query = @"select coalesce(cc.descricao_sgp, cc.descricao) as ComponenteCurricular, u.rf_codigo as ProfessorRf, u.nome as Professor
+            var query = @"select coalesce(cc.descricao_sgp, cc.descricao) as ComponenteCurricular, u.rf_codigo as ProfessorRf, u.nome as Professor, pe.bimestre
                           from pendencia_professor pp 
-                         inner join componente_curricular cc on cc.id = pp.componente_curricular_id
-                         inner join usuario u on u.rf_codigo = pp.professor_rf
+                         join componente_curricular cc on cc.id = pp.componente_curricular_id
+                         join usuario u on u.rf_codigo = pp.professor_rf
+                         join periodo_escolar pe on pp.periodo_escolar_id = pe.id
                          where pp.pendencia_id = @pendenciaId";
 
             return await database.Conexao.QueryAsync<PendenciaProfessorDto>(query, new { pendenciaId });
