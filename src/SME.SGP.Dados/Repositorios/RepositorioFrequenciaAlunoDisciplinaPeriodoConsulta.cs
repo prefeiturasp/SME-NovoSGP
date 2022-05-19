@@ -623,9 +623,9 @@ namespace SME.SGP.Dados
         public async Task<IEnumerable<TotalFrequenciaEAulasAlunoDto>> ObterTotalFrequenciaEAulasAlunoPorTurmaComponenteBimestres(string alunoCodigo, long tipoCalendarioId, string[] componentesCurricularesIds, string[] turmasCodigo, int bimestre)
         {
             var query = new StringBuilder(@"select
-                                                count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (where rfa.valor = 1) as TotalPresencas,
-                                                count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (where rfa.valor = 2) as TotalAusencias,
-                                                count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (where rfa.valor = 3) as TotalRemotos, 
+                                                count(distinct(distinct(a.id) * a.quantidade) filter (where rfa.valor = 1) as TotalPresencas,
+                                                count(distinct(distinct(a.id) * a.quantidade) filter (where rfa.valor = 2) as TotalAusencias,
+                                                count(distinct(distinct(a.id) * a.quantidade) filter (where rfa.valor = 3) as TotalRemotos, 
                                                 rfa.codigo_aluno as AlunoCodigo,
                                                 a.disciplina_id as ComponenteCurricularId
                                             from
