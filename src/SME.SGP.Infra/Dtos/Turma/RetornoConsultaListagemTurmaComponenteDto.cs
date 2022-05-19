@@ -24,9 +24,9 @@ namespace SME.SGP.Infra
             return $"{Modalidade.ShortName()} - {NomeTurma} - {complementoTurma} - {componenteCurricularNome}";
         }
 
-        public string NomeTurmaFiltroFormatado()
+        public string NomeTurmaFiltroFormatado(string componenteCurricularNome)
         {
-            return $"{Modalidade.ShortName()} - {NomeFiltro}";
+            return $"{Modalidade.ShortName()} - {NomeFiltro} - {componenteCurricularNome}";
         }
 
     }
