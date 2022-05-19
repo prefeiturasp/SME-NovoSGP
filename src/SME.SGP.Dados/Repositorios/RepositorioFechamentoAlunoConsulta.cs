@@ -72,34 +72,6 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacoesTurmaAlunoBimestreAsync(string alunoCodigo, string[] turmasCodigos, long periodoId)
-        {
-            var query = @"select fa.anotacao, ftd.disciplina_id,
-                          case
-                            when fa.alterado_por is null then fa.criado_por
-                            when fa.alterado_por is not null then fa.alterado_por
-                          end as professor,
-                          case
-                            when fa.alterado_em is null then fa.criado_em
-                            when fa.alterado_em is not null then fa.alterado_em
-                          end as data,
-                          case 
-                            when fa.alterado_rf is null then fa.criado_rf
-                            when fa.alterado_rf is not null then fa.alterado_rf
-                          end as professorrf
-                        from fechamento_turma_disciplina ftd 
-                        inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
-                        inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id 
-                        inner join turma t on ft.turma_id = t.id 
-                        where not ftd.excluido and not fa.excluido 
-                         and fa.aluno_codigo = @alunoCodigo
-                         and ft.periodo_escolar_id   = @periodoId    
-                         and t.turma_id =  ANY(@turmasCodigos)
-                         and fa.anotacao is not null;";
-
-            return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, turmasCodigos, periodoId   });
-        }
-
         public async Task<FechamentoAluno> ObterFechamentoAluno(long fechamentoTurmaDisciplinaId, string alunoCodigo)
         {
             var query = @"select *

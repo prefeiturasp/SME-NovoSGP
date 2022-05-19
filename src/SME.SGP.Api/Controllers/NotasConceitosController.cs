@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -102,6 +103,22 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterNotasPorBimestresUeAlunoTurmaUseCase.Executar(new NotaConceitoPorBimestresAlunoTurmaDto(ueCodigo, turmaCodigo, alunoCodigo, bimestres)));
         }
+
+        [HttpGet("turmas/{turmaId}/periodo-escolar/{periodoEscolarId}/alunos/{alunoCodigo}")]
+        [ProducesResponseType(typeof(IEnumerable<AvaliacaoNotaAlunoDto>), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Authorize("Bearer")]
+        public async Task<IActionResult> ObterNotasAvaliacoesPorTurmaBimestreAluno(long turmaId, long periodoEscolarId, string alunoCodigo, [FromServices] IObterAtividadesNotasAlunoPorTurmaPeriodoUseCase useCase)
+        {
+            var avaliacoes = await useCase.Executar(new FiltroTurmaAlunoPeriodoEscolarDto(turmaId, periodoEscolarId, alunoCodigo));
+
+            if (avaliacoes is null)
+                return NoContent();
+
+            return Ok(avaliacoes);
+        }
+
 
     }
 }

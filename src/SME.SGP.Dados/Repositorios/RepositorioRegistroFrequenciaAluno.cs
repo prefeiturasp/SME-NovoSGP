@@ -60,22 +60,11 @@ namespace SME.SGP.Dados
             return true;
         }
 
-        public async Task ExcluirVarios(List<long> idsParaExcluir)
+        public async Task ExcluirVarios(long[] idsParaExcluir)
         {
-            var query = "delete from registro_frequencia_aluno where = any(@idsParaExcluir)";
+            var query = "delete from registro_frequencia_aluno where id = any(@idsParaExcluir)";
 
-            using (var conexao = (NpgsqlConnection)database.Conexao)
-            {
-                await conexao.OpenAsync();
-                await conexao.ExecuteAsync(
-                    query,
-                    new
-                    {
-                        idsParaExcluir
-
-                    });
-                conexao.Close();
-            }
+            await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
         }
     }
 }

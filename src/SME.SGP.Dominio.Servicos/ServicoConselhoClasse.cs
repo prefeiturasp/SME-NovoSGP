@@ -535,7 +535,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurmas(string[] turmasCodigo, bool ehEnsinoEspecial, int turnoParaComponentesCurriculares)
         {
             var componentesTurma = new List<DisciplinaDto>();
-            Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
             if (componentesCurriculares != null && componentesCurriculares.Any())
@@ -599,7 +599,8 @@ namespace SME.SGP.Dominio.Servicos
 
             foreach (var conselhoAluno in listaAgrupada)
                 await PublicarMensagem(conselhoAluno.turmaId, conselhoAluno.bimestre);
-        }
+                
+        }        
 
         private async Task PublicarMensagem(long turmaId, int bimestre)
         {
