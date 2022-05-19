@@ -213,7 +213,7 @@ namespace SME.SGP.Aplicacao
             //Verificar as notas finais
             var notasFechamentoAluno = Enumerable.Empty<NotaConceitoBimestreComponenteDto>();
             var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(codigoTurma, turma.AnoLetivo, null, true));
-            var dadosAluno = dadosAlunos.First(da => da.CodigoEOL.Contains(alunoCodigo));
+            var dadosAluno = dadosAlunos.Last(da => da.CodigoEOL.Contains(alunoCodigo));
             if (turmasComMatriculasValidas.Contains(codigoTurma))
             {
                 notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
