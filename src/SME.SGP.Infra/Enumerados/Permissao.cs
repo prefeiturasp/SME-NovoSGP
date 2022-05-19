@@ -687,5 +687,11 @@
 
         [PermissaoMenu(Menu = "Listão", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 8, EhAlteracao = true, Url = "/diario-classe/listao")]
         L_A = 231,
+
+        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/mensal", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Frequência mensal")]
+        RFM_C = 232,
+
+        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/naapa")]
+        DNA_C = 233
     }
 }

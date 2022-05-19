@@ -77,6 +77,7 @@ namespace SME.SGP.Aplicacao
             else
                 disciplinas.Add(new DisciplinaDto() { Nome = componenteCurricularSelecionado.Nome, CodigoComponenteCurricular = componenteCurricularSelecionado.CodigoComponenteCurricular });
 
+            var alunosComAnotacao = Enumerable.Empty<string>();
             var fechamentosTurma = await ObterFechamentosTurmaDisciplina(turmaCodigo, componenteCurricularCodigo.ToString(), bimestre);
             if (fechamentosTurma != null && fechamentosTurma.Any())
             {
@@ -84,6 +85,8 @@ namespace SME.SGP.Aplicacao
                 fechamentoNotaConceitoTurma.DataFechamento = fechamentosTurma.First().AlteradoEm.HasValue ? fechamentosTurma.First().AlteradoEm.Value : fechamentosTurma.First().CriadoEm;
                 fechamentoNotaConceitoTurma.Situacao = fechamentosTurma.First().Situacao;
                 fechamentoNotaConceitoTurma.SituacaoNome = fechamentosTurma.First().Situacao.Name();
+
+                alunosComAnotacao = await ObterAlunosComAnotacaoNoFechamento(fechamentoNotaConceitoTurma.FechamentoId);
             }
             else
             {
@@ -111,7 +114,10 @@ namespace SME.SGP.Aplicacao
 
                 fechamentoNotaConceitoTurma.Alunos = await RetornaListagemAlunosFechamentoBimestreEspecifico(alunosValidosComOrdenacao, fechamentosTurma, periodoAtual, turma,
                                                            componenteCurricularCodigo.ToString(), turmaPossuiFrequenciaRegistrada, componenteCurricularSelecionado, disciplinasRegencia,
-                                                           periodosEscolares, usuarioAtual);
+                                                           periodosEscolares, usuarioAtual, alunosComAnotacao);
+
+                fechamentoNotaConceitoTurma.PossuiAvaliacao = await mediator.Send(new TurmaPossuiAvaliacaoNoPeriodoQuery(turma.Id, periodoAtual.Id, componenteCurricularCodigo));
+                fechamentoNotaConceitoTurma.PeriodoEscolarId = periodoAtual.Id;
             }
             else if (bimestre == 0)
             {
@@ -122,7 +128,7 @@ namespace SME.SGP.Aplicacao
                                                   .ThenBy(a => a.NomeValido());
 
                 fechamentoNotaConceitoTurma.Alunos = await RetornaListagemAlunosFechamentoFinal(alunosValidosComOrdenacao, disciplinas, fechamentosTurma, turma,
-                                                            componenteCurricularCodigo, periodosEscolares, tipoNotaTurma, usuarioAtual);
+                                                            componenteCurricularCodigo, periodosEscolares, tipoNotaTurma, usuarioAtual, alunosComAnotacao);
             }
 
             fechamentoNotaConceitoTurma.AuditoriaAlteracao = MontaTextoAuditoriaAlteracao(fechamentosTurma.Any() ? fechamentosTurma.FirstOrDefault() : null, tipoNotaTurma.EhNota());
@@ -131,9 +137,13 @@ namespace SME.SGP.Aplicacao
             return fechamentoNotaConceitoTurma;
         }
 
+        private Task<IEnumerable<string>> ObterAlunosComAnotacaoNoFechamento(long fechamentoId)
+            => mediator.Send(new ObterCodigosAlunosComAnotacaoNoFechamentoQuery(fechamentoId));
+
         public async Task<IList<AlunosFechamentoNotaConceitoTurmaDto>> RetornaListagemAlunosFechamentoBimestreEspecifico(IEnumerable<AlunoPorTurmaResposta> alunos,
             IEnumerable<FechamentoTurmaDisciplina> fechamentosTurma, PeriodoEscolar periodoAtual, Turma turma, string componenteCurricularCodigo,
-            bool turmaPossuiFrequenciaRegistrada, DisciplinaDto disciplina, IEnumerable<DisciplinaDto> disciplinasRegencia, IEnumerable<PeriodoEscolar> periodosEscolares, Usuario usuarioAtual)
+            bool turmaPossuiFrequenciaRegistrada, DisciplinaDto disciplina, IEnumerable<DisciplinaDto> disciplinasRegencia, IEnumerable<PeriodoEscolar> periodosEscolares
+            , Usuario usuarioAtual, IEnumerable<string> alunosComAnotacao)
         {
             var alunosFechamentoNotaConceito = new List<AlunosFechamentoNotaConceitoTurmaDto>();
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, periodoAtual, turma, componenteCurricularCodigo.ToString(), periodoAtual.PeriodoFim);
@@ -260,6 +270,8 @@ namespace SME.SGP.Aplicacao
                         }
                     }
 
+                    alunoDto.PossuiAnotacao = alunosComAnotacao.Any(a => a == aluno.CodigoAluno);
+
                     if (alunoDto.NotasConceitoBimestre.Any())
                         alunoDto.NotasConceitoBimestre = alunoDto.NotasConceitoBimestre.OrderBy(a => a.Disciplina).ToList();
 
@@ -272,7 +284,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IList<AlunosFechamentoNotaConceitoTurmaDto>> RetornaListagemAlunosFechamentoFinal(IEnumerable<AlunoPorTurmaResposta> alunos, List<DisciplinaDto> disciplinas,
             IEnumerable<FechamentoTurmaDisciplina> fechamentosTurma, Turma turma, long componenteCurricularCodigo, IEnumerable<PeriodoEscolar> periodosEscolares,
-            NotaTipoValor tipoNota, Usuario usuarioAtual)
+            NotaTipoValor tipoNota, Usuario usuarioAtual, IEnumerable<string> alunosComAnotacao)
         {
             var alunosFechamentoNotaConceito = new List<AlunosFechamentoNotaConceitoTurmaDto>();
 
@@ -332,14 +344,16 @@ namespace SME.SGP.Aplicacao
                     {
                         var valorNota = tipoNota.EhNota() ? nota.Nota : nota.ConceitoId;
 
-                        if (valorNota != null)
-                            notaConceitoTurma.NotaConceito = double.Parse(valorNota);
+                        if (valorNota.HasValue)
+                            notaConceitoTurma.NotaConceito = valorNota;
                     }
                     fechamentoFinalAluno.NotasConceitoFinal.Add(notaConceitoTurma);
                 }
 
                 fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
                 fechamentoFinalAluno.CodigoAluno = aluno.CodigoAluno;
+
+                fechamentoFinalAluno.PossuiAnotacao = alunosComAnotacao.Any(a => a == aluno.CodigoAluno);
 
                 if (fechamentoFinalAluno.NotasConceitoBimestre.Any())
                     fechamentoFinalAluno.NotasConceitoBimestre = fechamentoFinalAluno.NotasConceitoBimestre.OrderBy(a => a.Disciplina).ToList();
@@ -422,8 +436,8 @@ namespace SME.SGP.Aplicacao
             foreach (var nota in notasBimestrais.Where(a => a.Bimestre.HasValue))
             {
                 var notaParaAdicionar = ehNota ?
-                                            nota?.Nota :
-                                            nota?.ConceitoId;
+                                            nota?.Nota.ToString() :
+                                            nota?.ConceitoId.ToString();
 
                 listaRetorno.Add(new FechamentoNotaAlunoDto(nota.Bimestre.Value,
                                                             notaParaAdicionar,

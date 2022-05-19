@@ -12,4 +12,18 @@ namespace SME.SGP.Infra
         public string Detalhe { get; set; }
         public string Bimestre { get; set; }
     }
+
+    public class PendenciaAgrupamentoDto
+    {
+        public int Bimestre { get; set; }
+        public int ModalidadeCodigo { get; set; }
+        public string NomeTurma { get; set; }
+        public IEnumerable<PendenciaDetalheDto> PendenciaDetalhes { get; set; }
+    }
+
+    public class PendenciaDetalheDto
+    {
+        public DateTime DataAula { get; set; }
+        public bool EhReposicao { get; set; }
+    }
 }

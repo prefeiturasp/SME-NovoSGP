@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
@@ -11,6 +12,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/planos/anual")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class PlanoAnualController : ControllerBase
     {
         [HttpGet]
@@ -67,6 +69,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/copia")]
         [ProducesResponseType(typeof(PlanoAnualCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterTurmasParaCopia([FromQuery] int turmaId, [FromQuery] long componenteCurricular, bool consideraHistorico, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
         {
             var retorno = await consultasPlanoAnual.ObterTurmasParaCopia(turmaId, componenteCurricular, consideraHistorico);

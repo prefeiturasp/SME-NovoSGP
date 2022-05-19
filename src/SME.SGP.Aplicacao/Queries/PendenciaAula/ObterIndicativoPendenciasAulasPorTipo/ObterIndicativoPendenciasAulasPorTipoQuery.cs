@@ -15,7 +15,8 @@ namespace SME.SGP.Aplicacao
                                                           bool verificaPlanoAula = false,
                                                           bool professorCj = false,
                                                           bool professorNaoCj = false,
-                                                          string professorRf = "")
+                                                          string professorRf = "",
+                                                          bool ehGestor = false)
         {
             DisciplinaId = disciplinaId;
             TurmaId = turmaId;
@@ -27,6 +28,7 @@ namespace SME.SGP.Aplicacao
             ProfessorCj = professorCj;
             ProfessorNaoCj = professorNaoCj;
             ProfessorRf = professorRf;
+            EhGestor = ehGestor;
 
         }
 
@@ -40,6 +42,7 @@ namespace SME.SGP.Aplicacao
         public bool ProfessorCj { get; }
         public bool ProfessorNaoCj { get; }
         public string ProfessorRf { get; }
+        public bool EhGestor { get; }
     }
 
     public class ObterIndicativoPendenciasAulasPorTipoQueryValidator : AbstractValidator<ObterIndicativoPendenciasAulasPorTipoQuery>

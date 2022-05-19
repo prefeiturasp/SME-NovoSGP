@@ -214,8 +214,30 @@ namespace SME.SGP.Aplicacao
             {
                 int totalCompensacoesDoAlunoGeral = 0;
 
-                var registroFrequenciaAluno = registroFrequenciaAlunos.FirstOrDefault(a => a.AlunoCodigo == alunoCodigo);
-
+                var registroFrequenciaAluno = registroFrequenciaAlunos.Where(a => a.AlunoCodigo == alunoCodigo)
+                    .GroupBy(g => new { g.PeriodoEscolarId, g.PeriodoInicio, g.PeriodoFim, g.Bimestre, g.AlunoCodigo }, (key, group) =>
+                new
+                {
+                    key.PeriodoEscolarId,
+                    key.PeriodoInicio,
+                    key.PeriodoFim,
+                    key.Bimestre,
+                    key.AlunoCodigo,
+                    TotalPresencas = group.Sum(s => s.TotalPresencas),
+                    TotalAusencias = group.Sum(s => s.TotalAusencias),
+                    TotalRemotos = group.Sum(s => s.TotalRemotos)
+                }).Select(s => new RegistroFrequenciaPorDisciplinaAlunoDto()
+                {
+                    PeriodoEscolarId = s.PeriodoEscolarId,
+                    PeriodoInicio = s.PeriodoInicio,
+                    PeriodoFim = s.PeriodoFim,
+                    Bimestre = s.Bimestre,
+                    AlunoCodigo = s.AlunoCodigo,
+                    TotalPresencas = s.TotalPresencas,
+                    TotalAusencias = s.TotalAusencias,
+                    TotalRemotos = s.TotalRemotos
+                }).FirstOrDefault();
+                               
                 var totaisDoAluno = compensacoesDisciplinasAlunos.Where(a => a.AlunoCodigo == alunoCodigo).ToList();
                 if (totaisDoAluno.Any())
                     totalCompensacoesDoAlunoGeral = totaisDoAluno.Sum(a => a.Compensacoes);

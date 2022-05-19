@@ -7,9 +7,10 @@ namespace SME.SGP.Dados.Mapeamentos
         public RegistroAusenciaAlunoMap()
         {
             ToTable("registro_ausencia_aluno");
-            Map(e => e.CodigoAluno).ToColumn("codigo_aluno");
-            Map(e => e.NumeroAula).ToColumn("numero_aula");
-            Map(e => e.RegistroFrequenciaId).ToColumn("registro_frequencia_id");
+            Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
+            Map(c => c.Migrado).ToColumn("migrado");
+            Map(c => c.NumeroAula).ToColumn("numero_aula");
+            Map(c => c.RegistroFrequenciaId).ToColumn("registro_frequencia_id");
         }
     }
 }

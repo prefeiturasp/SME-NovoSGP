@@ -124,6 +124,7 @@ namespace SME.SGP.Worker.RabbitMQ
         private void RegistrarUseCases()
         {
             comandos.Add(RotasRabbitSgp.RotaRelatoriosProntos, new ComandoRabbit("Receber dados do relatório", typeof(IReceberRelatorioProntoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaRelatoriosProntosApp, new ComandoRabbit("Receber dados do relatório do Escola Aqui", typeof(IReceberRelatorioProntoEscolaAquiUseCase)));
             comandos.Add(RotasRabbitSgp.RotaInserirAulaRecorrencia, new ComandoRabbit("Inserir aulas recorrentes", typeof(IInserirAulaRecorrenteUseCase)));
             comandos.Add(RotasRabbitSgp.RotaAlterarAulaRecorrencia, new ComandoRabbit("Alterar aulas recorrentes", typeof(IAlterarAulaRecorrenteUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExcluirAulaRecorrencia, new ComandoRabbit("Excluir aulas recorrentes", typeof(IExcluirAulaRecorrenteUseCase)));
@@ -143,17 +144,23 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaExcluirNotificacaoDiarioBordo, new ComandoRabbit("Excluir uma notificação do diario de bordo", typeof(IExcluirNotificacaoDiarioBordoUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAula, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordo, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaDiarioBordoUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurma, new ComandoRabbit("Gerar pendências de diário de bordo por turma", typeof(ITratarPendenciaDiarioBordoPorTurmaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurmaAulaComponente, new ComandoRabbit("Gerar pendências de diário de bordo por turma, aula, componente", typeof(ITratarPendenciaDiarioBordoPorTurmaAulaComponenteUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaAvaliacao, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaAvaliacaoUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaFrequencia, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaFrequenciaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaPendenciasAulaPlanoAula, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaPlanoAulaUseCase)));
             comandos.Add(RotasRabbitSgp.RotaSincronizaComponetesCurricularesEol, new ComandoRabbit("Sincroniza os compoentes curriculares com o Eol", typeof(ISincronizarComponentesCurricularesUseCase)));
             comandos.Add(RotasRabbitSgpFrequencia.RotaConciliacaoCalculoFrequenciaPorTurmaComponente, new ComandoRabbit("Conciliação de Cálculo de frequência por Turma e Componente", typeof(ICalculoFrequenciaTurmaDisciplinaUseCase)));
             
+            comandos.Add(RotasRabbitSgp.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, new ComandoRabbit("Consolidação de frequência do aluno por turma mensal", typeof(IConsolidarFrequenciaAlunoPorTurmaEMesUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaConsolidacaoFrequenciaTurmaEvasao, new ComandoRabbit("Consolidação de evasão da turma", typeof(IConsolidarFrequenciaTurmaEvasaoUseCase)));
+
             comandos.Add(RotasRabbitSgp.PendenciasGerais, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisUseCase)));
             comandos.Add(RotasRabbitSgp.PendenciasGeraisAulas, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisAulaUseCase)));
             comandos.Add(RotasRabbitSgp.PendenciasGeraisCalendario, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisCalendarioUseCase)));
             comandos.Add(RotasRabbitSgp.PendenciasGeraisEventos, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisEventosUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula, new ComandoRabbit("Executa exclusão de pendências da aula", typeof(IExecutarExclusaoPendenciasAulaUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciaDiarioBordoAula, new ComandoRabbit("Executa exclusão de pendencias de diário de bordo por aula", typeof(IExcluirPendenciaDiarioBordoPorAulaIdUseCase)));
             comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes, new ComandoRabbit("Executa exclusão de pendências de dias letivos insuficientes", typeof(IExecutarExclusaoPendenciaDiasLetivosInsuficientes)));
 
             comandos.Add(RotasRabbitSgp.RotaExecutaExclusaoPendenciaParametroEvento, new ComandoRabbit("Executa exclusão de pendências de eventos por parâmetro", typeof(IExecutarExclusaoPendenciaParametroEvento)));
@@ -257,6 +264,7 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgpFrequencia.RotaConciliacaoFrequenciaTurmaPorPeriodo, new ComandoRabbit("Conciliação de frequência das turmas por período", typeof(IConciliacaoFrequenciaTurmasPorPeriodoUseCase)));
             comandos.Add(RotasRabbitSgpFrequencia.RotaValidacaoAusenciaConciliacaoFrequenciaTurma, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase)));
             comandos.Add(RotasRabbitSgpFrequencia.RotaConciliacaoFrequenciaTurmasAlunosBuscar, new ComandoRabbit("Conciliação de frequência da turma buscar", typeof(IConciliacaoFrequenciaTurmasAlunosBuscarUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaMes, new ComandoRabbit("Conciliação de frequência das turmas mês", typeof(IConciliacaoFrequenciaTurmasMesUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaNotificacaoAlunosFaltosos, new ComandoRabbit("Conciliação de frequência da turma buscar", typeof(INotificarAlunosFaltososUseCase)));
 

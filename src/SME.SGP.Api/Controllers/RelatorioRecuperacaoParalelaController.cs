@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
 using System;
@@ -8,6 +9,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/relatorios/recuperacao-paralela")]
+    [Authorize("Bearer")]
     public class RelatorioRecuperacaoParalelaController : ControllerBase
     {
         [HttpPost]        

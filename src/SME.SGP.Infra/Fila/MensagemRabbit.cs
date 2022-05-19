@@ -30,7 +30,7 @@ namespace SME.SGP.Infra
             Mensagem = mensagem;
         }
 
-        protected MensagemRabbit()
+        public MensagemRabbit()
         {
 
         }

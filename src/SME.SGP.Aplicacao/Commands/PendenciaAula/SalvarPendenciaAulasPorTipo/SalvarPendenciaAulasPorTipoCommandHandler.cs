@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
                     var turmaAnoComModalidade = turmaComDreUe.NomeComModalidade();
 
-                    var descricaoUeDre = $"{ObterEscola(turmaComDreUe)}";
+                    var descricaoUeDre = turmaComDreUe.ObterEscola();
 
                     if (!item.First().AulaCJ)
                     {
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                             if (professorTitularTurma != null)
                             {
                                 if (periodoEscolar != null)
-                                    await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, item.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre);
+                                    await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, item.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe.CodigoTurma, turmaComDreUe.UeId);
                             }
                         }
                         else
@@ -69,31 +69,20 @@ namespace SME.SGP.Aplicacao
                                     string codigoRfProfessor = professor.Trim();
 
                                     if (!String.IsNullOrEmpty(codigoRfProfessor))
-                                        await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, codigoRfProfessor, periodoEscolar.Id, request.TipoPendenciaAula, item.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre);
+                                        await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, codigoRfProfessor, periodoEscolar.Id, request.TipoPendenciaAula, item.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe.CodigoTurma, turmaComDreUe.UeId);
                                 }
                             }
                         }
                     }
                     else if (!string.IsNullOrEmpty(item.First().ProfessorRf))
-                        await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, item.First().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, item.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre);
+                        await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, item.First().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, item.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe.CodigoTurma, turmaComDreUe.UeId);
                 }
             }
         }
 
-        private string ObterEscola(Turma turmaDreUe)
+        private async Task SalvarPendenciaAulaUsuario(string disciplinaId, string codigoRfProfessor, long periodoEscolarId, TipoPendencia tipoPendencia, IEnumerable<long> aulasIds, string descricaoComponenteCurricular, string turmaAnoComModalidade, string descricaoUeDre, string turmaCodigo, long ueId)
         {
-            var ueTipo = turmaDreUe.Ue.TipoEscola;
-
-            var dreAbreviacao = turmaDreUe.Ue.Dre.Abreviacao.Replace("-", "");
-
-            var ueNome = turmaDreUe.Ue.Nome;
-
-            return ueTipo != TipoEscola.Nenhum ? $"{ueTipo.ShortName()} {ueNome} ({dreAbreviacao})" : $"{ueNome} ({dreAbreviacao})";
-        }
-
-        private async Task SalvarPendenciaAulaUsuario(string disciplinaId, string codigoRfProfessor, long periodoEscolarId, TipoPendencia tipoPendencia, IEnumerable<long> aulasIds, string descricaoComponenteCurricular, string turmaAnoComModalidade, string descricaoUeDre)
-        {
-            long pendenciaIdExistente = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(disciplinaId, codigoRfProfessor, periodoEscolarId, tipoPendencia));
+            long pendenciaIdExistente = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(long.Parse(disciplinaId), codigoRfProfessor, periodoEscolarId, tipoPendencia, turmaCodigo, ueId));
 
             try
             {

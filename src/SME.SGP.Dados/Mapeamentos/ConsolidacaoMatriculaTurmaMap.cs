@@ -11,8 +11,10 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConsolidacaoMatriculaTurmaMap()
         {
             ToTable("consolidacao_matricula_turma");
+            Map(c => c.Id).ToColumn("id");
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.Quantidade).ToColumn("quantidade");
+
         }
     }
 }

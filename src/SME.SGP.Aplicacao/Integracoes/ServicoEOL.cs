@@ -305,15 +305,20 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
         }
 
-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil,bool realizarAgrupamentoComponente = false)
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false)
         {
-            return await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma,login,perfil,realizarAgrupamentoComponente));
+            return await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, login, perfil, realizarAgrupamentoComponente));
+        }
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorLoginEIdPerfil(string login, Guid idPerfil)
+        {
+            var url = $"v1/componentes-curriculares/funcionarios/{login}/perfis/{idPerfil}";
+            return await ObterComponentesCurriculares(url);
         }
 
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil)
         {
             var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}/planejamento";
-           return await ObterComponentesCurriculares(url);
+            return await ObterComponentesCurriculares(url);
         }
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codigoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true)
@@ -818,7 +823,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var dataString = data.ToString("s");
 
-            var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{disciplinaId}/atribuicao/verificar/data?dataConsulta={dataString}");
+            var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{disciplinaId}/atribuicao/verificar/data?={dataString}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");

@@ -7,10 +7,13 @@ namespace SME.SGP.Dados.Mapeamentos
         public OcorrenciaMap()
         {
             ToTable("ocorrencia");
-            Map(x => x.DataOcorrencia).ToColumn("data_ocorrencia");
-            Map(x => x.HoraOcorrencia).ToColumn("hora_ocorrencia");
-            Map(x => x.OcorrenciaTipoId).ToColumn("ocorrencia_tipo_id");
-            Map(x => x.TurmaId).ToColumn("turma_id");
+            Map(c => c.DataOcorrencia).ToColumn("data_ocorrencia");
+            Map(c => c.Descricao).ToColumn("descricao");
+            Map(c => c.Excluido).ToColumn("excluido");
+            Map(c => c.HoraOcorrencia).ToColumn("hora_ocorrencia");
+            Map(c => c.OcorrenciaTipoId).ToColumn("ocorrencia_tipo_id");
+            Map(c => c.Titulo).ToColumn("titulo");
+            Map(c => c.TurmaId).ToColumn("turma_id");
         }
     }
 }

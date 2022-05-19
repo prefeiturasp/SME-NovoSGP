@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var filtro = mensagem.ObterObjetoMensagem<ConciliacaoFrequenciaTurmasSyncDto>();
-            await mediator.Send(new ConciliacaoFrequenciaTurmasCommand(filtro.DataPeriodo, filtro.TurmaCodigo, string.Empty));
+            await mediator.Send(new ConciliacaoFrequenciaTurmasCommand(filtro.DataPeriodo, filtro.TurmaCodigo, string.Empty, filtro.Bimestral, filtro.Mensal));
             return true;
         }
     }

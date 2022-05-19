@@ -8,6 +8,7 @@
         public const string RotaRelatoriosSolicitadosBoletimEscolaAqui = "sr.relatorios.app.solicitados.boletim";
         public const string RotaRelatoriosSolicitadosBoletimDetalhado = "sr.relatorios.solicitados.boletimdetalhado";
         public const string RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui = "sr.relatorios.app.solicitados.boletimdetalhado";
+        public const string RotaRelatoriosSolicitadosRaaEscolaAqui = "sr.relatorios.app.solicitados.raaescolaaqui";
         public const string RotaRelatoriosSolicitadosPlanoDeAula = "sr.relatorios.solicitados.planodeaula";
         public const string RotaRelatoriosSolicitadosRegistroIndividual = "sr.relatorios.solicitados.registroindividual";
         public const string RotaRelatoriosSolicitadosConselhoDeClasse = "sr.relatorios.solicitados.conselhodeclasse";
@@ -23,6 +24,7 @@
         public const string RotaRelatoriosSolicitadosPapGraficos = "sr.relatorios.solicitados.papgraficos";
         public const string RotaRelatoriosSolicitadosPapRelatorioSemestral = "sr.relatorios.solicitados.paprelatoriosemestral";
         public const string RotaRelatoriosSolicitadosFrequencia = "sr.relatorios.solicitados.frequencia";
+        public const string RotaRelatoriosSolicitadosFrequenciaMensal = "sr.relatorios.solicitados.frequenciamensal";
         public const string RotaRelatoriosSolicitadosCompensacaoAusencia = "sr.relatorios.solicitados.compensacaoausencia";
         public const string RotaRelatoriosSolicitadosControleGrade = "sr.relatorios.solicitados.controlegrade";
         public const string RotaRelatoriosSolicitadosControlePlanejamentoDiario = "sr.relatorios.solicitados.controleplanejamentodiario";

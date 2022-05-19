@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,14 +22,11 @@ namespace SME.SGP.Aplicacao
         {
             repositorioPendenciaAula.SalvarVarias(request.PendenciaId, request.AulasIds);
 
-            IList<long> professoresId = new List<long>();
-            foreach (var aulaId in request.AulasIds)
-            {
-                var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(aulaId));
+            var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(request.AulasIds.FirstOrDefault()));
 
-                if(professor != null)
-                    await mediator.Send(new SalvarPendenciaUsuarioCommand(request.PendenciaId, professor.Id));               
-            }
+            if(professor != null)
+                await mediator.Send(new SalvarPendenciaUsuarioCommand(request.PendenciaId, professor.Id));               
+
             return true;
         }
     }

@@ -9,11 +9,12 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("abrangencia");
             Map(c => c.DreId).ToColumn("dre_id");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.Perfil).ToColumn("perfil");
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.UsuarioId).ToColumn("usuario_id");
+            Map(c => c.Historico).ToColumn("historico");
         }
     }
 }

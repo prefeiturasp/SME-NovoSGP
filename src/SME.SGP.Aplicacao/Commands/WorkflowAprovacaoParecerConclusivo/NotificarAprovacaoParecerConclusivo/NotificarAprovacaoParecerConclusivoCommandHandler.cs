@@ -22,13 +22,13 @@ namespace SME.SGP.Aplicacao
             var aprovacao = request.Aprovado ? "aprovada" : "recusada";
             var turma = await ObterTurma(request.TurmaCodigo);
             var nomeTurma = $"{turma.Nome} da {turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo}";
-            var aluno = await ObterAluno(request.ParecerEmAprovacao.ConselhoClasseAluno.AlunoCodigo, turma.AnoLetivo);
+            var aluno = await ObterAluno(request.ParecerEmAprovacao.AlunoCodigo, turma.AnoLetivo);
             var nomeAluno = $"{aluno.Nome} ({aluno.CodigoAluno})";
             var data = $"{request.ParecerEmAprovacao.CriadoEm:dd/MM/yyyy} às {request.ParecerEmAprovacao.CriadoEm:HH:mm}";
             var usuarioSolicitante = await mediator.Send(new ObterUsuarioPorIdQuery(request.ParecerEmAprovacao.UsuarioSolicitanteId));
 
-            var parecerAnterior = request.ParecerEmAprovacao.ConselhoClasseAluno.ConselhoClasseParecer?.Nome ?? "(Nenhum)";
-            var parecerNovo = request.ParecerEmAprovacao.ConselhoClasseParecer?.Nome;
+            var parecerAnterior = !string.IsNullOrEmpty(request.ParecerEmAprovacao.NomeParecerAnterior) ? request.ParecerEmAprovacao.NomeParecerAnterior : "(Nenhum)";
+            var parecerNovo = request.ParecerEmAprovacao.NomeParecerNovo;
 
             var titulo = $"Alteração de parecer conclusivo - Turma {turma.Nome} ({turma.AnoLetivo})";
             var descricao = $"A alteração do parecer conclusivo do estudante {nomeAluno} da turma {nomeTurma} realizada pelo Professor {request.CriadorNome} ({request.CriadorRf}) em {data} de '{parecerAnterior}' para '{parecerNovo}' foi {aprovacao}.<br/>";

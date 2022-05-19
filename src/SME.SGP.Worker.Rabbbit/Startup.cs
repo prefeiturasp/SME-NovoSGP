@@ -47,7 +47,11 @@ namespace SME.SGP.Worker.Rabbbit
             services.AddPolicies();
 
             ConfiguraVariaveisAmbiente(services);
-            new RegistraDependencias().Registrar(services, configuracaoRabbitOptions);
+
+            var registrarDependencias = new RegistraDependencias();
+            registrarDependencias.Registrar(services, configuracaoRabbitOptions);
+            registrarDependencias.RegistrarGCA(services);
+
             ConfiguraGoogleClassroomSync(services);
             ConfiguraRabbitParaLogs(services);
             ConfiguraConsumoFilas(services);
@@ -196,6 +200,7 @@ namespace SME.SGP.Worker.Rabbbit
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-sr-api-key", configuration.GetSection("ApiKeySr").Value);
             });
 
             services.AddHttpClient(name: "servicoServidorRelatorios", c =>

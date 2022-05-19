@@ -46,9 +46,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(NotificacaoDetalheDto), 500)]
         [Route("{notificacaoId}")]
         [Permissao(Permissao.N_C, Policy = "Bearer")]
-        public IActionResult Get(long notificacaoId)
+        public async Task<IActionResult> Get(long notificacaoId)
         {
-            return Ok(consultasNotificacao.Obter(notificacaoId));
+            return Ok(await consultasNotificacao.Obter(notificacaoId));
         }
 
         [HttpPut]

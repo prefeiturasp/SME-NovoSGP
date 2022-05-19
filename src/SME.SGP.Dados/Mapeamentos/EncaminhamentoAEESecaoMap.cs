@@ -10,8 +10,10 @@ namespace SME.SGP.Dados
         public EncaminhamentoAEESecaoMap()
         {
             ToTable("encaminhamento_aee_secao");
-            Map(a => a.EncaminhamentoAEEId).ToColumn("encaminhamento_aee_id");
-            Map(a => a.SecaoEncaminhamentoAEEId).ToColumn("secao_encaminhamento_id");
+            Map(c => c.EncaminhamentoAEEId).ToColumn("encaminhamento_aee_id");
+            Map(c => c.SecaoEncaminhamentoAEEId).ToColumn("secao_encaminhamento_id");
+            Map(c => c.Concluido).ToColumn("concluido");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

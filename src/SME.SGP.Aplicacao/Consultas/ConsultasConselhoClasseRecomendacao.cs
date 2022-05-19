@@ -40,8 +40,11 @@ namespace SME.SGP.Aplicacao
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
-        public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int? bimestre, bool consideraHistorico = false)
+        public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestreParam, bool consideraHistorico = false)
         {
+            //Tratamento do bimestre que pode vir zero quando é aba final e endpoint não permite passar null
+            int? bimestre = bimestreParam > 0 ? bimestreParam : null;
+
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
@@ -54,7 +57,7 @@ namespace SME.SGP.Aplicacao
                 turma = fechamentoTurma?.Turma;
             else
             {
-                if (bimestre > 0)
+                if (bimestre.HasValue)
                 {
                     periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre.Value));
                     if (periodoEscolar == null) throw new NegocioException("Período escolar não encontrado");
@@ -130,6 +133,7 @@ namespace SME.SGP.Aplicacao
             var recomendacaoFamilia = new StringBuilder();
             var anotacoesPedagogicas = new StringBuilder();
             var auditoriaListaDto = new List<AuditoriaDto>();
+            var listaRecomendacoes = new List<RecomendacoesAlunoFamiliaDto>();
 
             foreach (var conselhoClassesIdParaTratar in conselhosClassesIds)
             {
@@ -147,20 +151,11 @@ namespace SME.SGP.Aplicacao
                     if (!string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas))
                         anotacoesPedagogicas.AppendLine(conselhoClasseAluno.AnotacoesPedagogicas);
 
-                    auditoriaListaDto.Add((AuditoriaDto)conselhoClasseAluno); //No final, buscar a mais recente
+                        auditoriaListaDto.Add((AuditoriaDto)conselhoClasseAluno); //No final, buscar a mais recente
                 }
             }
-
-            if (recomendacaoAluno.Length == 0 || recomendacaoFamilia.Length == 0)
-            {
-                var recomendacoes = await mediator.Send(new ObterTextoRecomendacoesAlunoFamiliaQuery());
-
-                if (recomendacaoAluno.Length == 0)
-                    recomendacaoAluno.AppendLine(recomendacoes.recomendacoesAluno);
-
-                if (recomendacaoFamilia.Length == 0)
-                    recomendacaoFamilia.AppendLine(recomendacoes.recomendacoesFamilia);
-            }
+                        
+            var recomendacoesAlunoFamiliaSelecionado = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery(alunoCodigo, bimestre, fechamentoTurmaId));
 
             var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(alunoCodigo, bimestre, turma);
 
@@ -171,8 +166,9 @@ namespace SME.SGP.Aplicacao
             var auditoria = auditoriaListaDto.Any() ? auditoriaListaDto.OrderByDescending(a => a.AlteradoEm).ThenBy(a => a.CriadoEm).FirstOrDefault() : null;
 
             consultasConselhoClasseRecomendacaoConsultaDto.Auditoria = auditoria;
-            consultasConselhoClasseRecomendacaoConsultaDto.RecomendacaoAluno = recomendacaoAluno.ToString();
-            consultasConselhoClasseRecomendacaoConsultaDto.RecomendacaoFamilia = recomendacaoFamilia.ToString();
+            consultasConselhoClasseRecomendacaoConsultaDto.RecomendacoesAlunoFamilia = recomendacoesAlunoFamiliaSelecionado;
+            consultasConselhoClasseRecomendacaoConsultaDto.TextoRecomendacaoAluno = recomendacaoAluno.ToString();
+            consultasConselhoClasseRecomendacaoConsultaDto.TextoRecomendacaoFamilia = recomendacaoFamilia.ToString();
             consultasConselhoClasseRecomendacaoConsultaDto.SomenteLeitura = !emFechamento;
             consultasConselhoClasseRecomendacaoConsultaDto.MatriculaAtiva = turmasComMatriculasValidas.Any();
 
@@ -183,7 +179,7 @@ namespace SME.SGP.Aplicacao
         {
             SituacaoConselhoClasse statusAluno = SituacaoConselhoClasse.NaoIniciado;
 
-            var statusConselhoAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turma.Id, bimestre.Value, alunoCodigo);
+            var statusConselhoAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turma.Id, alunoCodigo);
 
             if (statusConselhoAluno != null)
                 statusAluno = statusConselhoAluno.Status;

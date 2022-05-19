@@ -18,8 +18,12 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(IncluirFilaCalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
             var comando = new CalcularFrequenciaPorTurmaCommand(request.Alunos, request.DataAula, request.TurmaId, request.DisciplinaId);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null), 
+                cancellationToken);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
+            var comandoConsolidacao = new FiltroConsolidacaoFrequenciaAlunoMensal(request.TurmaId, request.DataAula.Month);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, comandoConsolidacao, Guid.NewGuid(), null),
+                cancellationToken);
 
             return true;
         }

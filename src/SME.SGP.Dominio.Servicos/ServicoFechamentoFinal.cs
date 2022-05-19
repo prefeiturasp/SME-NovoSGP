@@ -3,7 +3,9 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,6 +61,8 @@ namespace SME.SGP.Dominio.Servicos
             var componenteCurricular = await ObterComponenteCurricular(fechamentoFinal.DisciplinaId);
             var tipoNota = repositorioNotaTipoValor.ObterPorTurmaId(turma.Id, turma.TipoTurma);
 
+            var consolidacaoNotasAlunos = new List<ConsolidacaoNotaAlunoDto>();
+
             unitOfWork.IniciarTransacao();
             try
             {
@@ -106,6 +110,8 @@ namespace SME.SGP.Dominio.Servicos
                                     fechamentoNota.DisciplinaId = notaDto.ComponenteCurricularCodigo;
 
                                     await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+
+                                    ConsolidacaoNotasAlunos(consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
                                 }
                             }
                             catch (NegocioException e)
@@ -133,6 +139,9 @@ namespace SME.SGP.Dominio.Servicos
                 await EnviarNotasAprovacao(notasEmAprovacao, fechamentoTurmaDisciplinaId, usuarioLogado, turma, componenteCurricular);
                 unitOfWork.PersistirTransacao();
 
+                foreach (var consolidacaoNotaAluno in consolidacaoNotasAlunos)
+                    await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAluno));
+
                 if (!emAprovacao)
                     await ExcluirPendenciaAusenciaFechamento(fechamentoFinal.DisciplinaId, fechamentoFinal.FechamentoTurma.TurmaId);
 
@@ -148,6 +157,19 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private static void ConsolidacaoNotasAlunos(List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota)
+        {
+            consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
+            {
+                AlunoCodigo = AlunoCodigo,
+                TurmaId = turma.Id,                
+                AnoLetivo = turma.AnoLetivo,
+                Nota = fechamentoNota.Nota,
+                ConceitoId = fechamentoNota.ConceitoId,
+                ComponenteCurricularId = fechamentoNota.DisciplinaId
+            });
         }
 
         private FechamentoNota CarregarNota(FechamentoFinalSalvarItemDto notaDto, FechamentoAluno fechamentoAluno)

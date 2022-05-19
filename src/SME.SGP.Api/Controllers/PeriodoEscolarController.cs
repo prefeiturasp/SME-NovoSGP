@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -14,6 +14,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/periodo-escolar")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class PeriodoEscolarController : ControllerBase
     {
         [HttpGet]
@@ -44,7 +45,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("bimestres/{bimestre}/turmas/{turmaCodigo}/aberto")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(bool), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
         public async Task<IActionResult> PeriodoEmAberto(string turmaCodigo, int bimestre, [FromQuery] DateTime dataReferencia, [FromServices] IConsultasTurma consultas)
         {
             var dataConsulta = dataReferencia == DateTime.MinValue ? DateTime.Today : dataReferencia;
@@ -54,7 +55,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/{turmaCodigo}/bimestres/aberto")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarAbertoDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
         public async Task<IActionResult> PeriodosEmAberto(string turmaCodigo, [FromQuery] DateTime dataReferencia, [FromServices] IConsultasTurma consultas)
         {
             var dataConsulta = dataReferencia == DateTime.MinValue ? DateTime.Today : dataReferencia;

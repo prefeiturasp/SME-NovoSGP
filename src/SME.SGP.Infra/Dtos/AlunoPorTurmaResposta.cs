@@ -17,7 +17,13 @@ namespace SME.SGP.Infra
         public DateTime DataSituacao { get; set; }
         public DateTime DataMatricula { get; set; }
         public string EscolaTransferencia { get; set; }
-        public string NomeAluno { get => !string.IsNullOrWhiteSpace(NomeSocialAluno) ? NomeSocialAluno : nomeAluno; set { nomeAluno = value; } }
+
+        public string NomeAluno 
+        { 
+            get => !string.IsNullOrWhiteSpace(NomeSocialAluno) ? NomeSocialAluno : nomeAluno; 
+            set { nomeAluno = value; } 
+        }
+
         public string NomeSocialAluno { get; set; }
         public int NumeroAlunoChamada { get; set; }
         public char? ParecerConclusivo { get; set; }
@@ -40,13 +46,15 @@ namespace SME.SGP.Infra
                              SituacaoMatriculaAluno.SemContinuidade,
                              SituacaoMatriculaAluno.Concluido }.Contains(this.CodigoSituacaoMatricula));
         }
-        public int Idade
-        {
-            get
-            {
-                return ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(DataNascimento.ToString("yyyyMMdd"))) / 10000);
-            }
+
+        public int Idade 
+        { 
+            get 
+            { 
+                return ((int.Parse(DateTime.Now.ToString("yyyyMMdd")) - int.Parse(DataNascimento.ToString("yyyyMMdd"))) / 10000); 
+            } 
         }
+
         public bool Maioridade => Idade > 18;
 
         private SituacaoMatriculaAluno[] SituacoesAtiva => new[] {
@@ -55,7 +63,7 @@ namespace SME.SGP.Infra
             SituacaoMatriculaAluno.Rematriculado,
             SituacaoMatriculaAluno.PendenteRematricula,
             SituacaoMatriculaAluno.SemContinuidade
-    };
+        };
 
         public bool PossuiSituacaoAtiva()
         {
@@ -119,7 +127,7 @@ namespace SME.SGP.Infra
 
         public bool PodeEditarNotaConceitoNoPeriodo(PeriodoEscolar periodoEscolar, bool temPeriodoAberto)
         {
-            return !PodeEditarNotaConceito() ? temPeriodoAberto : true;
+            return PodeEditarNotaConceito() || temPeriodoAberto;
         }
 
         /// <summary>

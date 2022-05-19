@@ -1,16 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/plano-aee/observacoes")]
+    [Authorize("Bearer")]
     public class PlanoAEEObservacaoController : ControllerBase
     {
         [HttpGet]
