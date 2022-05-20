@@ -27,7 +27,6 @@ namespace SME.SGP.Aplicacao
             {
                 UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
                 DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
-                TipoCalendarioId = tipoCalendarioId,
                 DataConsulta = dataConsulta
             });
 
@@ -36,9 +35,10 @@ namespace SME.SGP.Aplicacao
                 UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
                 DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
                 TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
-                TipoCalendarioId = tipoCalendarioId,
                 DiaConsulta = dataConsulta
             });
+
+            aulasDoDia = aulasDoDia.Where(a => a.TipoCalendarioId == tipoCalendarioId).ToList();
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery()
             {

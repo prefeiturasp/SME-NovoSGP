@@ -68,7 +68,8 @@ namespace SME.SGP.Aplicacao
                         eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);
                     }
 
-                    eventoAulaDto.Pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id, atividadesAvaliativasDaAula.Any()));
+                    var modalidadeTurma = await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(request.TurmaCodigo));
+                    eventoAulaDto.Pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id, usuarioLogado, atividadesAvaliativasDaAula.Any(), modalidadeTurma == Modalidade.EducacaoInfantil));
 
                     retorno.Add(eventoAulaDto);
                 }

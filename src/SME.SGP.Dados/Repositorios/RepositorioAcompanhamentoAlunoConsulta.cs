@@ -71,5 +71,20 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, semestre });
         }
+
+        public async Task<int> ObterUltimoSemestreAcompanhamentoGerado(string alunoCodigo)
+        {
+            var sql = $@"SELECT aas.semestre
+                            FROM acompanhamento_aluno aa
+                            INNER JOIN acompanhamento_aluno_semestre aas ON aa.id = aas.acompanhamento_aluno_id
+                            WHERE aa.criado_em =
+                                (SELECT max(aa2.criado_em) AS DataCriacao
+                                 FROM acompanhamento_aluno aa2
+                                 INNER JOIN acompanhamento_aluno_semestre aas2 ON aa2.id = aas2.acompanhamento_aluno_id
+                                 WHERE aa2.aluno_codigo = @alunoCodigo)
+                              AND aa.aluno_codigo = @alunoCodigo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(sql, new { alunoCodigo });
+        }
     }
 }

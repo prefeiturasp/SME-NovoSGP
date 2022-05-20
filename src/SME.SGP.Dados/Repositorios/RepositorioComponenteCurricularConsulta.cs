@@ -72,18 +72,24 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ComponenteCurricularDto>> ListarComponentesCurriculares()
         {
-            var query = $@"select
+            try
+            {
+                var query = $@"select
 	                        id as Codigo,
                             permite_lancamento_nota as LancaNota,
-                            case
-		                        when descricao_sgp is not null then descricao_sgp
-		                        else descricao
-	                        end as descricao,
-                            descricao as DescricaoEol
+                            coalesce(descricao_infantil,descricao_sgp) as descricao,
+                            descricao as DescricaoEol,
+                            eh_regencia Regencia
                         from
 	                        componente_curricular";
 
-            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { }));
+                var retorno = (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { }));
+                return retorno;
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
         }
         public async Task<long[]> ListarCodigosJuremaPorComponenteCurricularId(long id)
         {
@@ -156,9 +162,9 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>("select permite_lancamento_nota from componente_curricular where id = @id", new { id });
         }
 
-        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, long turmaId, int bimestre, string codigoAluno)
+        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, long turmaId, int? bimestre, string codigoAluno)
         {
-            var query = new StringBuilder(@"	                        
+            var query = $@"	                        
                            select
                            distinct *
                            from
@@ -192,15 +198,13 @@ namespace SME.SGP.Dados.Repositorios
                            ccn.conselho_classe_aluno_id = cca.id
                            and ccn.componente_curricular_codigo = fn.disciplina_id
                            where
-                           cca.aluno_codigo = @codigoAluno
+                           {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
+                           and cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
-                           and ft.turma_id = @turmaId ");
-            if(bimestre != 0)
-                query.Append("and pe.bimestre = @bimestre ");
-
-            query.Append(" union all ");
-
-            query.Append(@"select 
+                           and ft.turma_id = @turmaId
+                           union all
+                           
+                           select 
                            ccn.componente_curricular_codigo as Codigo,
                            comp.descricao as Descricao, 
                            comp.permite_lancamento_nota as LancaNota
@@ -229,15 +233,12 @@ namespace SME.SGP.Dados.Repositorios
                            fn.fechamento_aluno_id = fa.id
                            and ccn.componente_curricular_codigo = fn.disciplina_id
                            where
-                           cca.aluno_codigo = @codigoAluno
+                            {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
+                           and cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
-                           and ft.turma_id = @turmaId ");
-            if (bimestre != 0)
-                query.Append("and pe.bimestre = @bimestre ");
+                           and ft.turma_id = @turmaId ) x   ";
 
-            query.Append(" ) x;");
-
-            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query.ToString(), new { bimestre, anoLetivo, turmaId, codigoAluno, }));
+            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { bimestre, anoLetivo, turmaId, codigoAluno, }));
         }
 
         public async Task<string> ObterDescricaoPorId(long id)
@@ -251,12 +252,12 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select id, coalesce(descricao_infantil, descricao_sgp, descricao) as descricao from componente_curricular where id = Any(@ids)";
 
-            return await database.Conexao.QueryAsync<ComponenteCurricularSimplesDto>(query, new { ids });
+            return await database.Conexao.QueryAsync<ComponenteCurricularSimplesDto>(query, new { ids },queryName: "ObterDescricaoPorIds");
         }
 
         public async Task<string> ObterCodigoComponentePai(long componenteCurricularId)
         {
-            var query = @"select componente_curricular_pai_id from componente_curricular where id = @componenteCurricularId";
+            var query = @"select coalesce(componente_curricular_pai_id,id) from componente_curricular where id = @componenteCurricularId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { componenteCurricularId });
         }

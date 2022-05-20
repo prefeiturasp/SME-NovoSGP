@@ -38,7 +38,8 @@ namespace SME.SGP.Aplicacao
                     var caminhoAntigoAcompanhamentoAluno = "aluno/acompanhamento";
                     arquivo = $@"{UtilArquivo.ObterDiretorioBase()}/{caminhoAntigoAcompanhamentoAluno}{item.ToString()}";
                     alterarBarras = arquivo.Replace(@"\", @"/");
-                    ExcluirArquivo(alterarBarras);
+                    if (File.Exists(alterarBarras))
+                        ExcluirArquivo(alterarBarras);
                 }
                 else
                     throw new NegocioException($"Arquivo Informado para exclusão não existe. {alterarBarras}");

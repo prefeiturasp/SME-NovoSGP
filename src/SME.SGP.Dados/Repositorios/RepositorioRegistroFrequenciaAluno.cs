@@ -19,7 +19,7 @@ namespace SME.SGP.Dados
         public async Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId, string[] alunosComFrequenciaRegistrada)
         {
             await database.Conexao.ExecuteAsync("DELETE FROM registro_frequencia_aluno WHERE registro_frequencia_id = @registroFrequenciaId  and codigo_aluno = any(@alunosComFrequenciaRegistrada);",
-            new { registroFrequenciaId, alunosComFrequenciaRegistrada});
+            new { registroFrequenciaId, alunosComFrequenciaRegistrada });
         }
 
         public async Task RemoverPorRegistroFrequenciaIdENumeroAula(long registroFrequenciaId, int numeroAula, string codigoAluno)
@@ -29,6 +29,34 @@ namespace SME.SGP.Dados
         }
 
         public async Task<bool> InserirVarios(IEnumerable<RegistroFrequenciaAluno> registros)
+        {
+            return await InserirVariosComLog(registros, false);
+        }
+
+        public async Task ExcluirVarios(List<long> idsParaExcluir)
+        {
+            var query = "delete from registro_frequencia_aluno where = any(@idsParaExcluir)";
+
+            using (var conexao = (NpgsqlConnection)database.Conexao)
+            {
+                await conexao.OpenAsync();
+                await conexao.ExecuteAsync(
+                    query,
+                    new
+                    {
+                        idsParaExcluir
+
+                    });
+                conexao.Close();
+            }
+        }
+
+        public async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros)
+        {
+            return await InserirVariosComLog(registros, true);
+        }
+
+        private async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros, bool log)
         {
             var sql = @"copy registro_frequencia_aluno (                                         
                                         valor, 
@@ -51,8 +79,8 @@ namespace SME.SGP.Dados
                     writer.Write(frequencia.NumeroAula);
                     writer.Write(frequencia.RegistroFrequenciaId);
                     writer.Write(frequencia.CriadoEm);
-                    writer.Write(frequencia.CriadoPor);
-                    writer.Write(frequencia.CriadoRF);
+                    writer.Write(log ? database.UsuarioLogadoNomeCompleto : frequencia.CriadoPor);
+                    writer.Write(log ? database.UsuarioLogadoRF : frequencia.CriadoRF);
                 }
                 writer.Complete();
             }

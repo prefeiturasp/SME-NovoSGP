@@ -46,7 +46,6 @@ namespace SME.SGP.Dominio
             => new TipoPendencia[] {
                 TipoPendencia.Frequencia,
                 TipoPendencia.PlanoAula,
-                TipoPendencia.DiarioBordo,
                 TipoPendencia.Avaliacao,
                 TipoPendencia.AulaNaoLetivo
             }.Contains(Tipo);
@@ -63,6 +62,11 @@ namespace SME.SGP.Dominio
                 TipoPendencia.CalendarioLetivoInsuficiente
             }.Contains(Tipo);
 
+        public bool EhPendenciaDiarioBordo()
+            => new TipoPendencia[] {
+                TipoPendencia.DiarioBordo
+            }.Contains(Tipo);
+
         public bool EhPendenciaCadastroEvento()
             => new TipoPendencia[] {
                 TipoPendencia.CadastroEventoPendente
@@ -73,9 +77,19 @@ namespace SME.SGP.Dominio
                 TipoPendencia.AusenciaDeAvaliacaoCP
             }.Contains(Tipo);
 
+        public bool EhPendenciaAusenciaAvaliacaoProfessor()
+            => new TipoPendencia[] {
+                TipoPendencia.AusenciaDeAvaliacaoProfessor
+            }.Contains(Tipo);
+
         public bool EhPendenciaAusenciaDeRegistroIndividual()
             => new TipoPendencia[] {
                 TipoPendencia.AusenciaDeRegistroIndividual
+            }.Contains(Tipo);
+
+        public bool EhAusenciaFechamento()
+            => new TipoPendencia[] {
+                TipoPendencia.AusenciaFechamento
             }.Contains(Tipo);
     }
 }

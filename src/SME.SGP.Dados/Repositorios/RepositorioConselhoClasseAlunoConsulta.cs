@@ -214,5 +214,40 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.QueryAsync<ConselhoClasseFechamentoAlunoDto>(sqlQuery, new { turmaCodigo });
         }
+
+        public async Task<IEnumerable<long>> ObterComponentesPorAlunoTurmaBimestreAsync(string alunoCodigo, int? bimestre, long turmaId)
+        {
+            var query = new StringBuilder(@"select coalesce(ccn.componente_curricular_codigo, ftd.disciplina_id) as ComponenteCurricularId 
+                            from conselho_classe_aluno cca 
+	                        left join conselho_classe_nota ccn
+		                        on ccn.conselho_classe_aluno_id  = cca.id 
+	                        inner join conselho_classe cc 
+		                        on cca.conselho_classe_id = cc.id
+	                        inner join fechamento_turma ft 
+		                        on cc.fechamento_turma_id  = ft.id 
+                            inner join fechamento_turma_disciplina ftd
+		                    	on ft.id = ftd.fechamento_turma_id
+	                        left join periodo_escolar pe 
+		                        on ft.periodo_escolar_id = pe.id 
+	                        where cca.aluno_codigo = @alunoCodigo
+	                        and ft.turma_id  = @turmaId");
+
+            if (bimestre.HasValue)
+                query.AppendLine(" and pe.bimestre = @bimestre ");
+            else
+                query.AppendLine(" and ft.periodo_escolar_id is null ");
+
+
+            return await database.Conexao.QueryAsync<long>(query.ToString(), new { alunoCodigo, turmaId, bimestre });
+        }
+
+        public Task<ConselhoClasseAluno> ObterConselhoClasseAlunoPorId(long conselhoClasseAlunoId)
+        {
+            var query = @"select c.* 
+                            from conselho_classe_aluno c 
+                           where c.id = @conselhoClasseAlunoId";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseAluno>(query, new { conselhoClasseAlunoId });
+        }
     }
 }

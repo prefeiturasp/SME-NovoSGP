@@ -15,8 +15,10 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/avaliacoes/notas")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class NotasConceitosController : ControllerBase
     {
+
         [HttpGet]
         [ProducesResponseType(typeof(NotasConceitosRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -81,10 +83,10 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto));
         }
-
         [HttpGet("conceitos")]
         [ProducesResponseType(typeof(IEnumerable<ConceitoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
         public async Task<IActionResult> ObterConceitos([FromQuery] DateTime data, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
         {
             var listaConceitos = await consultasNotasConceitos.ObterConceitos(data);
@@ -98,20 +100,20 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("ues/{ueCodigo}/turmas/{turmaCodigo}/alunos/{alunoCodigo}")]
         [ProducesResponseType(typeof(IEnumerable<NotaConceitoBimestreComponenteDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Authorize("Bearer")]
+        [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
         public async Task<IActionResult> ObterNotasPorBimestresUeAlunoTurma(string ueCodigo, string turmaCodigo, string alunoCodigo, [FromQuery] int[] bimestres, [FromServices] IObterNotasPorBimestresUeAlunoTurmaUseCase obterNotasPorBimestresUeAlunoTurmaUseCase)
         {
             return Ok(await obterNotasPorBimestresUeAlunoTurmaUseCase.Executar(new NotaConceitoPorBimestresAlunoTurmaDto(ueCodigo, turmaCodigo, alunoCodigo, bimestres)));
         }
 
-        [HttpGet("turmas/{turmaId}/periodo-escolar/{periodoEscolarId}/alunos/{alunoCodigo}")]
+        [HttpGet("turmas/{turmaId}/periodo-escolar/{periodoEscolarId}/alunos/{alunoCodigo}/componentes-curriculares/{componenteCurricular}")]
         [ProducesResponseType(typeof(IEnumerable<AvaliacaoNotaAlunoDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Authorize("Bearer")]
-        public async Task<IActionResult> ObterNotasAvaliacoesPorTurmaBimestreAluno(long turmaId, long periodoEscolarId, string alunoCodigo, [FromServices] IObterAtividadesNotasAlunoPorTurmaPeriodoUseCase useCase)
+        [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
+        public async Task<IActionResult> ObterNotasAvaliacoesPorTurmaBimestreAluno(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular, [FromServices] IObterAtividadesNotasAlunoPorTurmaPeriodoUseCase useCase)
         {
-            var avaliacoes = await useCase.Executar(new FiltroTurmaAlunoPeriodoEscolarDto(turmaId, periodoEscolarId, alunoCodigo));
+            var avaliacoes = await useCase.Executar(new FiltroTurmaAlunoPeriodoEscolarDto(turmaId, periodoEscolarId, alunoCodigo, componenteCurricular));
 
             if (avaliacoes is null)
                 return NoContent();

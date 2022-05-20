@@ -64,7 +64,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
                 query.AppendLine("and p.bimestre = @bimestre ");
-            else
+            else if(bimestre == 0)
                 query.AppendLine("and ft.periodo_escolar_id is null");
 
             IList<FechamentoTurmaDisciplina> fechammentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();

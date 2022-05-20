@@ -39,6 +39,7 @@ namespace SME.SGP.Aplicacao.Teste
             Assert.Equal(0, retorno.FechamentoTurmaId);
             Assert.Equal(0, retorno.PeriodoEscolarId);
             Assert.False(retorno.PossuiAvaliacao);
+            Assert.True(retorno.PeriodoEscolarId is null, "Turma sem fechamento deve retornar null");
         }
 
         [Fact]

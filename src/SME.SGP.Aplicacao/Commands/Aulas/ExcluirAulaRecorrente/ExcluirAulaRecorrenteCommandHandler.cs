@@ -51,16 +51,19 @@ namespace SME.SGP.Aplicacao
             if (aulaOrigem == null)
                 throw new NegocioException("Não foi possível obter a aula.");
 
-            var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(aulaOrigem.TipoCalendarioId, aulaOrigem.DataAula.Date, request.Recorrencia));
+            var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(aulaOrigem.TipoCalendarioId, aulaOrigem.DataAula.Date, request.Recorrencia), cancellationToken);
             var aulasRecorrencia = await repositorioAulaConsulta.ObterAulasRecorrencia(aulaOrigem.AulaPaiId ?? aulaOrigem.Id, aulaOrigem.Id, fimRecorrencia);
             var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasRecorrencia);
 
             try
             {
-                List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = new List<(DateTime data, bool existeFrequencia, bool existePlanoAula)>();
-                var listaExclusoes = new List<(DateTime dataAula, bool sucesso, string mensagem, bool existeFrequente, bool existePlanoAula)>();
+                List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = new();
 
-                listaExclusoes.Add(await TratarExclusaoAula(aulaOrigem, request.Usuario));
+                var listaExclusoes = new List<(DateTime dataAula, bool sucesso, string mensagem, bool existeFrequente, bool existePlanoAula)>
+                {
+                    await TratarExclusaoAula(aulaOrigem, request.Usuario)
+                };
+
                 foreach (var aulaRecorrente in aulasRecorrencia)
                 {
                     listaExclusoes.Add(await TratarExclusaoAula(aulaRecorrente, request.Usuario));
@@ -73,11 +76,16 @@ namespace SME.SGP.Aplicacao
             {
                 await RemoverAulasEmManutencao(listaProcessos.Select(p => p.Id).ToArray());
             }
+
             await ExcluirArquivoAnotacaoFrequencia(request.AulaId);
             await ExcluirArquivosPlanoAula(request.AulaId);
             await RemoverArquivosDiarioBordo(request.AulaId);
+
+            await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aulaOrigem.TurmaId, aulaOrigem.DisciplinaId, request.AulaId), cancellationToken);
+
             return true;
         }
+
         private async Task ExcluirArquivosPlanoAula(long aulaId)
         {
             var plano = await repositorioPlanoAula.ObterPlanoAulaPorAulaRegistroExcluido(aulaId);
@@ -92,7 +100,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task RemoverArquivosDiarioBordo(long aulaId)
         {
-            var diarioDeBordo = await repositorioDiarioBordo.ObterPorAulaIdRegistroExcluido(aulaId);
+            var diarioDeBordo = await repositorioDiarioBordo.ObterPorAulaId(aulaId);
             if(diarioDeBordo?.Planejamento != null)
             {
                 await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
@@ -101,6 +109,7 @@ namespace SME.SGP.Aplicacao
         private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)
         {
             var anotacaoFrequencia = await repositorioAnotacaoFrequenciaAluno.ObterPorAulaIdRegistroExcluido(aulaId);
+
             foreach (var item in anotacaoFrequencia)
             {
                 await ExcluirArquivo(item.Anotacao,TipoArquivo.FrequenciaAnotacaoEstudante);
@@ -113,6 +122,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new RemoverArquivosExcluidosCommand(mensagem, string.Empty, tipo.Name()));
             }
         }
+
         private async Task<(DateTime dataAula, bool sucesso, string mensagem, bool existeFrequente, bool existePlanoAula)> TratarExclusaoAula(Aula aula, Usuario usuario)
         {
             try
@@ -148,6 +158,7 @@ namespace SME.SGP.Aplicacao
             await PulicaFilaSgp(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula, aula.Id, usuario);
 
             aula.Excluido = true;
+
             await repositorioAula.SalvarAsync(aula);
         }
 
@@ -158,16 +169,16 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarComponentesDoProfessor(string codigoTurma, long componenteCurricularCodigo, DateTime dataAula, Usuario usuario)
         {
-            var resultadoValidacao = await mediator.Send(new ValidarComponentesDoProfessorCommand(usuario, codigoTurma, componenteCurricularCodigo, dataAula));
-            if (!resultadoValidacao.resultado)
-                throw new NegocioException(resultadoValidacao.mensagem);
+            var (resultado, mensagem) = await mediator.Send(new ValidarComponentesDoProfessorCommand(usuario, codigoTurma, componenteCurricularCodigo, dataAula));
+
+            if (!resultado)
+                throw new NegocioException(mensagem);
         }
 
         private async Task<IEnumerable<ProcessoExecutando>> IncluirAulasEmManutencao(Aula aulaOrigem, IEnumerable<Aula> aulasRecorrencia)
         {
             var listaProcessos = await mediator.Send(new InserirAulaEmManutencaoCommand(aulasRecorrencia.Select(a => a.Id)
                                                                                         .Union(new List<long>() { aulaOrigem.Id })));
-
 
             return listaProcessos;
         }
@@ -203,23 +214,23 @@ namespace SME.SGP.Aplicacao
             {
                 mensagemUsuario.Append($"<br><br>Nas seguintes datas haviam registros de plano de aula ou frequência:<br>");
 
-                foreach (var aulaComFrequenciaOuPlanoAula in aulasComFrequenciaOuPlanoAula)
+                foreach (var (dataAula, sucesso, mensagem, existeFrequencia, existePlanoAula) in aulasComFrequenciaOuPlanoAula)
                 {
-                    var planoAula = aulaComFrequenciaOuPlanoAula.existePlanoAula ? " e Plano de Aula" : "";
+                    var planoAula = existePlanoAula ? " e Plano de Aula" : "";
 
-                    var frequenciaPlano = aulaComFrequenciaOuPlanoAula.existeFrequencia ?
+                    var frequenciaPlano = existeFrequencia ?
                                             $"Frequência{planoAula}"
                                             : "Plano de Aula";
-                    mensagemUsuario.Append($"<br /> {aulaComFrequenciaOuPlanoAula.dataAula:dd/MM/yyyy} - {frequenciaPlano}");
+                    mensagemUsuario.Append($"<br /> {dataAula:dd/MM/yyyy} - {frequenciaPlano}");
                 }
             }
 
             if (aulasComErro.Any())
             {
                 mensagemUsuario.Append($"<br><br>Ocorreram erros na exclusão das seguintes aulas:<br>");
-                foreach (var aula in aulasComErro.OrderBy(a => a.dataAula))
+                foreach (var (dataAula, sucesso, mensagem, existeFrequencia, existePlanoAula) in aulasComErro.OrderBy(a => a.dataAula))
                 {
-                    mensagemUsuario.Append($"<br /> {aula.dataAula:dd/MM/yyyy} - {aula.mensagem};");
+                    mensagemUsuario.Append($"<br /> {dataAula:dd/MM/yyyy} - {mensagem};");
                 }
             }
 

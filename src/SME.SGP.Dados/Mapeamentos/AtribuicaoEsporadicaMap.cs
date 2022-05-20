@@ -7,12 +7,14 @@ namespace SME.SGP.Dados
         public AtribuicaoEsporadicaMap()
         {
             ToTable("atribuicao_esporadica");
-            Map(a => a.DreId).ToColumn("dre_id");
-            Map(a => a.UeId).ToColumn("ue_id");
-            Map(a => a.ProfessorRf).ToColumn("professor_rf");
-            Map(a => a.DataFim).ToColumn("data_fim");
-            Map(a => a.DataInicio).ToColumn("data_inicio");
-            Map(a => a.AnoLetivo).ToColumn("ano_letivo");
+            Map(c => c.DataFim).ToColumn("data_fim");
+            Map(c => c.DataInicio).ToColumn("data_inicio");
+            Map(c => c.DreId).ToColumn("dre_id");
+            Map(c => c.Excluido).ToColumn("excluido");
+            Map(c => c.Migrado).ToColumn("migrado");
+            Map(c => c.ProfessorRf).ToColumn("professor_rf");
+            Map(c => c.UeId).ToColumn("ue_id");
+            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
         }
     }
 }

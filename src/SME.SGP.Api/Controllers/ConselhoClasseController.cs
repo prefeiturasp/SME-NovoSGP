@@ -6,6 +6,8 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.ConselhoClasse;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,7 +26,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRecomendacoesAlunoFamilia([FromServices] IConsultasConselhoClasseRecomendacao consultasConselhoClasseRecomendacao,
             long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromQuery] bool consideraHistorico = false)
-        { 
+        {
             var retorno = await consultasConselhoClasseRecomendacao.ObterRecomendacoesAlunoFamilia(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre, consideraHistorico);
             return Ok(retorno);
         }
@@ -37,7 +39,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
         public async Task<IActionResult> SalvarRecomendacoesAlunoFamilia(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto, [FromServices] IComandosConselhoClasseAluno comandosConselhoClasseAluno)
         {
-            return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto)); 
+            return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto));
         }
 
         [HttpPost("{conselhoClasseId}/notas/alunos/{codigoAluno}/turmas/{codigoTurma}/bimestres/{bimestre}/fechamento-turma/{fechamentoTurmaId}")]
@@ -54,6 +56,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public IActionResult DetalhamentoNota(long id, [FromServices] IConsultasConselhoClasseNota consultasConselhoClasseNota)
         {
             return Ok(consultasConselhoClasseNota.ObterPorId(id));
@@ -111,6 +114,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSintesesConselhoDeClasse(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromServices] IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
         {
             return Ok(await consultasConselhoClasseAluno.ObterListagemDeSinteses(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre));
@@ -175,5 +179,60 @@ namespace SME.SGP.Api.Controllers
             await useCase.Executar(anoLetivo);
             return Ok();
         }
+
+        [HttpGet("ObterTotalAulas/aluno/{codigoAluno}/turma/{codigoTurma}")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(IEnumerable<TotalAulasPorAlunoTurmaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterTotalAulasPorAlunoTurma(string codigoAluno, string codigoTurma, [FromServices] IObterTotalAulasPorAlunoTurmaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoAluno, codigoTurma));
+        }
+
+        [HttpGet("ObterTotalAulasSemFrequencia/turma/{codigoTurma}")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(IEnumerable<TotalAulasPorAlunoTurmaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterTotalAulasSemFrequenciaPorTurma(string codigoTurma, [FromServices] IObterTotalAulasSemFrequenciaPorTurmaUseCase useCase)
+        {
+            return Ok(await useCase.Executar("1106", codigoTurma));
+        }
+
+        [HttpGet("TotalAulasNaoLancamNota/turma/{codigoTurma}/bimestre/{bimestre}")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(IEnumerable<TotalAulasNaoLancamNotaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterTotalAulasNaoLancamNotasPorTurmaBimestre(string codigoTurma, int bimestre, string codigoAluno, [FromServices] IObterTotalAulasNaoLancamNotaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoTurma, bimestre, codigoAluno));
+        }
+
+        [HttpGet("TotalCompensacoesComponentesNaoLancamNota/turma/{codigoTurma}/bimestre/{bimestre}")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterTotalCompensacoesComponentesNaoLancamNota(string codigoTurma, int bimestre, [FromServices] IObterTotalCompensacoesComponenteNaoLancaNotaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoTurma, bimestre));
+        }
+
+        [HttpGet("obter-recomendacoes")]
+        [ProducesResponseType(typeof(IEnumerable<RecomendacoesAlunoFamiliaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(204)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterRecomendacoes([FromServices] IObterRecomendacoesAlunoFamiliaUseCase useCase)
+        {
+            var recomendacoes = await useCase.Executar();
+            if (recomendacoes != null)
+                return Ok(recomendacoes);
+            else
+                return StatusCode(204);
+        }
     }
+
 }

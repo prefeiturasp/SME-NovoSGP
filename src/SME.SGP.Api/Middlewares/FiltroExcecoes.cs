@@ -6,9 +6,6 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Excecoes;
 using System;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Middlewares

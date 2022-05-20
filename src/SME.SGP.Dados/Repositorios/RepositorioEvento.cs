@@ -322,7 +322,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<Evento>> ObterEventosCalendarioProfessorPorMesDia(long tipoCalendarioId, string dreCodigo, string ueCodigo,
+        public async Task<IEnumerable<Evento>> ObterEventosCalendarioProfessorPorMesDia(string dreCodigo, string ueCodigo,
             DateTime dataDoEvento, bool VisualizarEventosSME = false, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false)
 
         {
@@ -335,6 +335,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.data_fim,");
             query.AppendLine("e.dre_id,");
             query.AppendLine("e.ue_id,");
+            query.AppendLine("e.tipo_calendario_id,");
             query.AppendLine("et.id,");
             query.AppendLine("et.descricao,");
             query.AppendLine("et.tipo_data,");
@@ -356,7 +357,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and e.status = 1");
             query.AppendLine("and et.ativo = true");
             query.AppendLine("and et.excluido = false");
-            query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
 
             if (!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
                 query.AppendFormat("and et.codigo not in ({0}) ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
@@ -377,6 +377,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("e.data_fim,");
                 query.AppendLine("e.dre_id,");
                 query.AppendLine("e.ue_id,");
+                query.AppendLine("e.tipo_calendario_id,");
                 query.AppendLine("et.id,");
                 query.AppendLine("et.descricao,");
                 query.AppendLine("et.tipo_data,");
@@ -394,7 +395,6 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and e.status = 1");
                 query.AppendLine("and et.ativo = true");
                 query.AppendLine("and et.excluido = false");
-                query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
                 query.AppendLine("and e.dre_id is null and e.ue_id is null");
                 query.AppendLine("and @dataDoEvento between symmetric e.data_inicio ::date and e.data_fim ::date");
             }
@@ -409,7 +409,6 @@ namespace SME.SGP.Dados.Repositorios
 
             }, param: new
             {
-                tipoCalendarioId,
                 dreCodigo,
                 ueCodigo,
                 dataDoEvento

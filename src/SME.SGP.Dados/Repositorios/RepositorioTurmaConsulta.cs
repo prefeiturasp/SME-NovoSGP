@@ -870,7 +870,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select t.turma_id as TurmaCodigo,serie_ensino as SerieEnsino,nome_filtro as NomeFiltro from turma t 
                        where t.turma_id =any(@turmasCodigos);";
 
-            return await contexto.Conexao.QueryAsync<RetornoConsultaTurmaNomeFiltroDto>(query, new { turmasCodigos });
+            return await contexto.Conexao.QueryAsync<RetornoConsultaTurmaNomeFiltroDto>(query, new { turmasCodigos },queryName: "ObterTurmasNomeFiltro");
         }
     }
 }

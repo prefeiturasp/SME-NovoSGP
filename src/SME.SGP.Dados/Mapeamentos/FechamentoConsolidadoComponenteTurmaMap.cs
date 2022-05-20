@@ -7,11 +7,13 @@ namespace SME.SGP.Dados.Mapeamentos
         public FechamentoConsolidadoComponenteTurmaMap()
         {
             ToTable("consolidado_fechamento_componente_turma");
-            Map(a => a.DataAtualizacao).ToColumn("dt_atualizacao");
-            Map(a => a.ComponenteCurricularCodigo).ToColumn("componente_curricular_id");
-            Map(a => a.ProfessorNome).ToColumn("professor_nome");
-            Map(a => a.ProfessorRf).ToColumn("professor_rf");
-            Map(a => a.TurmaId).ToColumn("turma_id");
+            Map(c => c.DataAtualizacao).ToColumn("dt_atualizacao");
+            Map(c => c.Status).ToColumn("status");
+            Map(c => c.ComponenteCurricularCodigo).ToColumn("componente_curricular_id");
+            Map(c => c.ProfessorRf).ToColumn("professor_rf");
+            Map(c => c.ProfessorNome).ToColumn("professor_nome");
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.Bimestre).ToColumn("bimestre");
         }
     }
 }

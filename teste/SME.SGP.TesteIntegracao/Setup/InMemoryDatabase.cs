@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             new ConstrutorDeTabelas().Contruir(Conexao);
         }
 
-        public void Inserir<T>(IEnumerable<T> objetos) where T: class, new()
+        public void Inserir<T>(IEnumerable<T> objetos) where T : class, new()
         {
             foreach (var objeto in objetos)
             {
@@ -32,26 +32,26 @@ namespace SME.SGP.TesteIntegracao.Setup
             }
         }
 
-        public void Inserir<T>(T objeto) where T: class, new()
+        public void Inserir<T>(T objeto) where T : class, new()
         {
             Conexao.Insert(objeto);
         }
-        
-        public List<T> ObterTodos<T>() where T: class, new()
+
+        public List<T> ObterTodos<T>() where T : class, new()
         {
             return Conexao.GetAll<T>().ToList();
         }
-        
-        public T ObterPorId<T,K>(K id) 
-            where T: class, new()
-            where K : struct 
+
+        public T ObterPorId<T, K>(K id)
+            where T : class, new()
+            where K : struct
         {
             return Conexao.Get<T>(id);
         }
 
         public void LimparBase()
         {
-            var builder = new StringBuilder(); 
+            var builder = new StringBuilder();
             builder.Append(" DO $$ DECLARE ");
             builder.Append(" r RECORD; ");
             builder.Append(" BEGIN ");
@@ -59,7 +59,20 @@ namespace SME.SGP.TesteIntegracao.Setup
             builder.Append("     EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' RESTART IDENTITY CASCADE '; ");
             builder.Append(" END LOOP; ");
             builder.Append(" END $$; ");
-            
+
+            using (var cmd = new NpgsqlCommand(builder.ToString(), Conexao))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void Inserir(string tabela, params string[] campos)
+        {
+            var builder = new StringBuilder();
+            builder.Append($"Insert into {tabela} Values (");
+            builder.Append(string.Join(", ", campos));
+            builder.Append(")");
+
             using (var cmd = new NpgsqlCommand(builder.ToString(), Conexao))
             {
                 cmd.ExecuteNonQuery();

@@ -8,6 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("anotacao_fechamento_aluno");
             Map(a => a.FechamentoAlunoId).ToColumn("fechamento_aluno_id");
+            Map(a => a.Anotacao).ToColumn("anotacao");
         }
     }
 }

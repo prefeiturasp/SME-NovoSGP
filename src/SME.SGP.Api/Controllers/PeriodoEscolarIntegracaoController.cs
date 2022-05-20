@@ -4,8 +4,6 @@ using SME.SGP.Api.Middlewares;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers

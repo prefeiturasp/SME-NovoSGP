@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
         {
             var aula = await repositorioAula.ObterPorIdAsync(request.AulaId);
 
-            if (await mediator.Send(new AulaPossuiAvaliacaoQuery(aula, request.Usuario.CodigoRf)))
+            if (await mediator.Send(new AulaPossuiAvaliacaoQuery(aula, request.Usuario.CodigoRf), cancellationToken))
                 throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
 
             if(!request.Usuario.EhGestorEscolar())
@@ -49,7 +49,8 @@ namespace SME.SGP.Aplicacao
                 RotasRabbitSgp.PlanoAulaDaAulaExcluir,
                 RotasRabbitSgp.AnotacoesFrequenciaDaAulaExcluir,
                 RotasRabbitSgp.DiarioBordoDaAulaExcluir,
-                RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula
+                RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula,
+                RotasRabbitSgp.RotaExecutaExclusaoPendenciaDiarioBordoAula
             };
 
             await PulicaFilaSgp(filas, aula.Id, request.Usuario);
@@ -57,12 +58,15 @@ namespace SME.SGP.Aplicacao
             aula.Excluido = true;
             await repositorioAula.SalvarAsync(aula);
 
-            await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aula.TurmaId, aula.DisciplinaId, aula.Id));
+            await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aula.TurmaId, aula.DisciplinaId, aula.Id), cancellationToken);
+
             await ExcluirArquivoAnotacaoFrequencia(request.AulaId);
             await ExcluirArquivosPlanoAula(request.AulaId);
             await RemoverArquivosDiarioBordo(request.AulaId);
+
             var retorno = new RetornoBaseDto();
             retorno.Mensagens.Add("Aula excluída com sucesso.");
+
             return retorno;
         }
 
@@ -80,7 +84,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task RemoverArquivosDiarioBordo(long aulaId)
         {
-            var diarioDeBordo = await repositorioDiarioBordo.ObterPorAulaIdRegistroExcluido(aulaId);
+            var diarioDeBordo = await repositorioDiarioBordo.ObterPorAulaId(aulaId);
             if(diarioDeBordo?.Planejamento != null)
             {
                 await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);

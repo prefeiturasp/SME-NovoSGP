@@ -13,9 +13,9 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioAtividadeAvaliativaDisciplina : RepositorioBase<AtividadeAvaliativaDisciplina>, IRepositorioAtividadeAvaliativaDisciplina
     {
         private readonly string connectionString;
-        public RepositorioAtividadeAvaliativaDisciplina(ISgpContext conexao, IConfiguration configuration) : base(conexao)
+        public RepositorioAtividadeAvaliativaDisciplina(ISgpContext conexao) : base(conexao)
         {
-            this.connectionString = configuration.GetConnectionString("SGP_Postgres");
+            this.connectionString = conexao.ConnectionString;
         }
 
         public async Task<IEnumerable<AtividadeAvaliativaDisciplina>> ListarPorIdAtividade(long atividadeAvaliativaId)

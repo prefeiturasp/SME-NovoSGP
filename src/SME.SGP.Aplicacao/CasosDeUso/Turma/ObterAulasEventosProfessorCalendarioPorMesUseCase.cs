@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -31,7 +32,6 @@ namespace SME.SGP.Aplicacao
             {
                 UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
                 DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
-                TipoCalendarioId = tipoCalendarioId,
                 TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
                 Mes = mes
             });

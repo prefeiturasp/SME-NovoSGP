@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -10,6 +11,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/aula-prevista")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class AulaPrevistaController : ControllerBase
     {
         [HttpGet("modalidades/{modalidade}/turmas/{turmaId}/disciplinas/{disciplinaId}/semestres/{semestre}")]

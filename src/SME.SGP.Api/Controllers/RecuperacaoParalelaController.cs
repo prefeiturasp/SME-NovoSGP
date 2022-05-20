@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -13,6 +13,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/recuperacao-paralela/")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class RecuperacaoParalelaController : ControllerBase
     {
         private readonly IComandosRecuperacaoParalela comandosRecuperacaoParalela;
@@ -28,6 +29,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaListagemDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> Listar([FromQuery]FiltroRecuperacaoParalelaDto filtro)
         {
             return Ok(await consultaRecuperacaoParalela.Listar(filtro));
@@ -37,6 +39,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaTotalEstudanteDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarTotalEstudantes([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
             return Ok(await consultaRecuperacaoParalela.TotalEstudantes(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano, filtro.AnoLetivo));
@@ -46,6 +49,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaTotalEstudantePorFrequenciaDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarTotalEstudantesPorFrequencia([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
             return Ok(await consultaRecuperacaoParalela.TotalEstudantesPorFrequencia(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano, filtro.AnoLetivo));
@@ -55,6 +59,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaTotalResultadoDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarTotalResultado([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
             return Ok(await consultaRecuperacaoParalela.ListarTotalResultado(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano, filtro.AnoLetivo, filtro.NumeroPagina));
@@ -63,6 +68,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("resultado/encaminhamento")]
         [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaTotalResultadoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarTotalResultadoEncaminhamento([FromQuery]FiltroRecuperacaoParalelaResumoDto filtro)
         {
             return Ok(await consultaRecuperacaoParalela.ListarTotalResultadoEncaminhamento(filtro.Periodo, filtro.DreId, filtro.UeId, filtro.CicloId, filtro.TurmaId, filtro.Ano, filtro.AnoLetivo, filtro.NumeroPagina));
@@ -72,7 +78,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.CP_I, Policy = "Bearer")]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> PostAsync([FromBody]RecuperacaoParalelaDto recuperacaoParalelaPeriodoDto)
         {
             return Ok(await comandosRecuperacaoParalela.Salvar(recuperacaoParalelaPeriodoDto));
@@ -83,6 +89,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaPeriodoPAPDto>),200)]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> GetListaPeriodoPAP(string codigoTurma, [FromServices]IConsultaRecuperacaoParalelaPeriodo consultaRecuperacaoParalelaPeriodo)
         {
             var retorno = await consultaRecuperacaoParalelaPeriodo.BuscarListaPeriodos(codigoTurma);
@@ -98,6 +105,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaPeriodoPAPDto>), 200)]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAnosLetivos([FromServices]IObterAnosLetivosPAPUseCase obterAnosLetivosPAPUseCase)
         {
             var retorno = await obterAnosLetivosPAPUseCase.Executar();

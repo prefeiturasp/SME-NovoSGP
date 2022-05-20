@@ -9,8 +9,8 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/periodos/fechamentos/aberturas/integracoes")]
-    [ChaveIntegracaoSgpApi]
     [ValidaDto]
+    [ChaveIntegracaoSgpApi]
     public class PeriodoFechamentoIntegracaoController : ControllerBase
     {
         [HttpGet("vigente")]

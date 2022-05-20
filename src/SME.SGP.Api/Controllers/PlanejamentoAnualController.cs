@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -57,6 +56,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/copia")]
         [ProducesResponseType(typeof(IEnumerable<TurmaParaCopiaPlanoAnualDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterTurmasParaCopia([FromQuery] int turmaId, [FromQuery] long componenteCurricular, [FromQuery] bool ensinoEspecial, [FromQuery] bool consideraHistorico, [FromServices] IObterTurmasParaCopiaUseCase useCase)
         {
             return Ok(await useCase.Executar(turmaId, componenteCurricular, ensinoEspecial, consideraHistorico ));
@@ -65,6 +65,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{planejamentoAnualId}/periodos-escolares/copia")]
         [ProducesResponseType(typeof(IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPeriodosEscolaresParaCopia(long planejamentoAnualId, [FromServices] IObterPeriodosEscolaresParaCopiaPorPlanejamentoAnualIdUseCase useCase)
         {
             return Ok(await useCase.Executar(planejamentoAnualId));

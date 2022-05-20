@@ -7,8 +7,10 @@ namespace SME.SGP.Dados.Mapeamentos
         public DiarioBordoObservacaoMap()
         {
             ToTable("diario_bordo_observacao");
+            Map(c => c.Observacao).ToColumn("observacao");
             Map(c => c.DiarioBordoId).ToColumn("diario_bordo_id");
             Map(c => c.UsuarioId).ToColumn("usuario_id");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

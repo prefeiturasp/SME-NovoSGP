@@ -24,13 +24,12 @@ namespace SME.SGP.Aplicacao
             var statusNovo = SituacaoConselhoClasse.NaoIniciado;
 
             var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado
-                    .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(request.TurmaId, request.Bimestre, request.AlunoCodigo);
+                    .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(request.TurmaId, request.AlunoCodigo);
 
             if (consolidadoTurmaAluno == null)
             {
                 consolidadoTurmaAluno = new ConselhoClasseConsolidadoTurmaAluno();
                 consolidadoTurmaAluno.AlunoCodigo = request.AlunoCodigo;
-                consolidadoTurmaAluno.Bimestre = request.Bimestre;
                 consolidadoTurmaAluno.TurmaId = request.TurmaId;
                 consolidadoTurmaAluno.Status = statusNovo;
             }

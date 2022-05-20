@@ -8,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long> ObterPorTurmaEAluno(long turmaId, string alunoCodigo);
         Task<int> ObterTotalAlunosComAcompanhamentoPorTurmaSemestre(long turmaId, int semestre);
         Task<int> ObterTotalAlunosTurmaSemestre(long turmaId,  int semestre);
+        Task<int> ObterUltimoSemestreAcompanhamentoGerado(string alunoCodigo);
     }
 }

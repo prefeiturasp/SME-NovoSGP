@@ -30,7 +30,12 @@ namespace SME.SGP.Aplicacao
             => await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
 
         public async Task<ConselhoClasseAluno> SalvarAsync(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto)
-            => await servicoConselhoClasse.SalvarConselhoClasseAluno(await MapearParaEntidade(conselhoClasseAlunoDto));
+        {
+            var conselhoClasseAluno = await servicoConselhoClasse.SalvarConselhoClasseAluno(await MapearParaEntidade(conselhoClasseAlunoDto));
+            await SalvarRecomendacoesAlunoFamilia(conselhoClasseAlunoDto.RecomendacaoAlunoIds, conselhoClasseAlunoDto.RecomendacaoFamiliaIds, conselhoClasseAluno.Id);
+
+            return conselhoClasseAluno;
+        }
 
         private async Task<ConselhoClasseAluno> MapearParaEntidade(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto)
         {
@@ -58,6 +63,9 @@ namespace SME.SGP.Aplicacao
 
             return conselhoClasseAluno;
         }
+
+        private async Task SalvarRecomendacoesAlunoFamilia(IEnumerable<long> recomendacoesAlunoId, IEnumerable<long> recomendacoesFamiliaId, long conselhoClasseAlunoId)
+            => await mediator.Send(new SalvarConselhoClasseAlunoRecomendacaoCommand(recomendacoesAlunoId, recomendacoesFamiliaId, conselhoClasseAlunoId));
 
         private async Task MoverAnotacoesPedagogicas(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto, ConselhoClasseAluno conselhoClasseAluno)
         {

@@ -10,8 +10,8 @@ namespace SME.SGP.Dados
         public PendenciaPlanoAEEMap()
         {
             ToTable("pendencia_plano_aee");
-            Map(a => a.PendenciaId).ToColumn("pendencia_id");
-            Map(a => a.PlanoAEEId).ToColumn("plano_aee_id");
+            Map(c => c.PlanoAEEId).ToColumn("plano_aee_id");
+            Map(c => c.PendenciaId).ToColumn("pendencia_id");
         }
     }
 }

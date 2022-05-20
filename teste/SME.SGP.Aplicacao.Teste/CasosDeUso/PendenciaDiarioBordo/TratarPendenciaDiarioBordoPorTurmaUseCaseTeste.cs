@@ -1,0 +1,99 @@
+﻿using MediatR;
+using Moq;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace SME.SGP.Aplicacao.Teste.CasosDeUso
+{
+    public class TratarPendenciaDiarioBordoPorTurmaUseCaseTeste
+    {
+        private readonly TratarPendenciaDiarioBordoPorTurmaUseCase tratarPendenciaDiarioBordoPorTurmaUseCase;
+        private readonly Mock<IMediator> mediator;
+
+        public TratarPendenciaDiarioBordoPorTurmaUseCaseTeste()
+        {
+
+            mediator = new Mock<IMediator>();
+            tratarPendenciaDiarioBordoPorTurmaUseCase = new TratarPendenciaDiarioBordoPorTurmaUseCase(mediator.Object);
+        }
+
+        [Fact]
+        public async Task Deve_Publicar_Fila_Por_Turma()
+        {
+            // arrange
+            IEnumerable<Turma> turmasDreUe = new List<Turma>()
+            {
+                new Turma()
+                {
+                    CodigoTurma = "2386241",
+                    ModalidadeCodigo = Modalidade.EducacaoInfantil,
+                    Ue = new Ue()
+                    {
+                        TipoEscola = TipoEscola.CEMEI,
+                        Nome = "CAPAO REDONDO ",
+                        Dre = new Dre() 
+                        {
+                            Abreviacao = "DRE - CL"
+                        }
+                    }
+                }
+            };
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmasDreUePorCodigosQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(turmasDreUe);
+
+            var componentesSgp = new List<ComponenteCurricularDto>()
+            { 
+                new ComponenteCurricularDto()
+                { 
+                    Codigo = "512",
+                    Descricao = "ED.INF. EMEI 4 HS"
+                }
+            };
+            mediator.Setup(a => a.Send(It.IsAny<ObterComponentesCurricularesQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(componentesSgp);
+
+
+            var rfProfessores = new List<string>();
+            rfProfessores.Add("8269149, 7941706");
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterProfessoresTitularesDaTurmaQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(rfProfessores);
+
+            var componentesEol = new List<ComponenteCurricularEol>();
+            componentesEol.Add(new ComponenteCurricularEol()
+            {
+                TurmaCodigo = "512",
+                Descricao = "Regência de Classe Infantil",
+                Codigo = 512
+            });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterComponentesCurricularesDoProfessorNaTurmaQuery>(), It.IsAny<CancellationToken>()))
+              .ReturnsAsync(componentesEol);
+
+            var aulaComponente = new List<AulaComComponenteDto>();
+            aulaComponente.Add(new AulaComComponenteDto()
+            {
+                Id = 53724092,
+                TurmaId = "2386241"
+            });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterPendenciasDiarioBordoQuery>(), It.IsAny<CancellationToken>()))
+              .ReturnsAsync(aulaComponente);
+
+            mediator.Setup(a => a.Send(It.IsAny<SalvarPendenciaDiarioBordoCommand>(), It.IsAny<CancellationToken>()));
+
+            // act
+            var retorno = await tratarPendenciaDiarioBordoPorTurmaUseCase.Executar(new MensagemRabbit("2386241"));
+
+            // assert
+            Assert.True(retorno, "Pendência tratada e salva com sucesso!");
+        }
+    }
+}

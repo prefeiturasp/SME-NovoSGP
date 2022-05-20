@@ -5,7 +5,6 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -31,7 +30,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> SincronizarAulasTurma([FromQuery] long? codigoTurma)
         {
             var dados = new DadosCriacaoAulasAutomaticasCarregamentoDto() { CodigoTurma = codigoTurma?.ToString() };
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, dados, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaSincronizarAulasInfatil, dados, Guid.NewGuid(), null));
             return Ok();
         }
     }
