@@ -825,6 +825,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterPeriodoLetivoTurmaUseCase, ObterPeriodoLetivoTurmaUseCase>();
 
             // Frequência
+            services.TryAddScoped<IConciliacaoFrequenciaAnoSyncUseCase, ConciliacaoFrequenciaAnoSyncUseCase>();
+            services.TryAddScoped<IConciliacaoFrequenciaTurmaDreSyncUseCase, ConciliacaoFrequenciaTurmaDreSyncUseCase>();
+            services.TryAddScoped<IConciliacaoFrequenciaTurmaUeSyncUseCase, ConciliacaoFrequenciaTurmaUeSyncUseCase>();
             services.TryAddScoped<IConciliacaoFrequenciaTurmasSyncUseCase, ConciliacaoFrequenciaTurmasSyncUseCase>();
             services.TryAddScoped<IConciliacaoFrequenciaTurmasPorPeriodoUseCase, ConciliacaoFrequenciaTurmasPorPeriodoUseCase>();
             services.TryAddScoped<IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase, ValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase>();
