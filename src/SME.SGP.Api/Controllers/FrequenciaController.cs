@@ -170,7 +170,7 @@ namespace SME.SGP.Api.Controllers
         {
             var mensagem = new ConciliacaoFrequenciaTurmasSyncDto(dataReferencia, turmaCodigo, bimestral, mensal);
             
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasSync, mensagem, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConciliacaoFrequenciaTurmasSync, mensagem, Guid.NewGuid(), null));
             
             return Ok();
         }
@@ -186,7 +186,7 @@ namespace SME.SGP.Api.Controllers
             {
                 var mensagem = new ConciliacaoFrequenciaTurmasSyncDto(dataReferencia, turmaCodigo, bimestral, mensal);
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmasSync, mensagem, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConciliacaoFrequenciaTurmasSync, mensagem, Guid.NewGuid(), null));
             }
 
             return Ok();
@@ -230,6 +230,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterFrequenciasPorPeriodo([FromQuery] FiltroFrequenciaPorPeriodoDto filtro, [FromServices] IObterFrequenciasPorPeriodoUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpPost("frequencias/consolidar/{codigoTurma}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> Consolidar(string codigoTurma)
+        {
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ConsolidarFrequenciasPorTurma, new FiltroConsolidacaoFrequenciaTurma() { TurmaCodigo = codigoTurma }, Guid.NewGuid()));
+            return Ok();
         }
     }
 }

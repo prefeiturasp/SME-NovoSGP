@@ -83,6 +83,15 @@ namespace SME.SGP.Infra
         public bool EstaAtivo(DateTime dataBase) => TratarExcepcionalmenteSituacaoAtivo(dataBase) ? SituacoesAtiva.Contains(CodigoSituacaoMatricula) :
                                                     (SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataMatricula.Date <= dataBase.Date) ||
                                                     (!SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date >= dataBase.Date);
+        /// <summary>
+        /// Verifica se o aluno está ativo para Notas e Frequencia
+        /// </summary>
+        /// <param name="periodoInicio">Data a se considerar para verificar a situação do aluno no periodo, Ex: Data do inicio do bimestre</param>
+        /// <param name="periodoFim">Data a se considerar para verificar a situação do aluno no periodo, Ex: Data do fim do bimestre</param>
+        /// <returns></returns>
+        public bool EstaAtivo(DateTime periodoInicio, DateTime periodoFim) => TratarExcepcionalmenteSituacaoAtivo(periodoFim) ? SituacoesAtiva.Contains(CodigoSituacaoMatricula) :
+                                                    SituacoesAtiva.Contains(CodigoSituacaoMatricula) ||
+                                                    (DataSituacao.Date >= periodoInicio.Date && DataSituacao.Date <= periodoFim.Date);
 
         /// <summary>
         /// Verifica se o aluno está inativo
@@ -90,6 +99,14 @@ namespace SME.SGP.Infra
         /// <param name="dataBase">Data a se considerar para verificar a situação do aluno, Ex: Data da aula</param>
         /// <returns></returns>
         public bool EstaInativo(DateTime dataBase) => !EstaAtivo(dataBase);
+
+        /// <summary>
+        /// Verifica se o aluno está inativo por periodo
+        /// </summary>
+        /// <param name="periodoInicio">Data a se considerar para verificar a situação do aluno no periodo, Ex: Data do inicio do bimestre</param>
+        /// <param name="periodoFim">Data a se considerar para verificar a situação do aluno no periodo, Ex: Data do fim do bimestre</param>
+        /// <returns></returns>
+        public bool EstaInativo(DateTime periodoInicio, DateTime periodoFim) => !EstaAtivo(periodoInicio, periodoFim);
 
         public string NomeValido()
         {

@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -23,7 +21,8 @@ namespace SME.SGP.Aplicacao
                     ProfessorComponente = item,
                     Aula = filtro.Aula,
                     CodigoTurma = filtro.CodigoTurma,
-                    PendenciaId = filtro.PendenciasIds.FirstOrDefault(f=> f.ComponenteCurricularId == item.DisciplinaId).PendenciaId
+                    TurmaComModalidade = filtro.TurmaComModalidade,
+                    NomeEscola = filtro.NomeEscola
                 });
             }
             return true;
