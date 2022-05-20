@@ -2,14 +2,8 @@
 {
     public static class RotasRabbitSgp
     {
-        public const string RotaExcluirAulaRecorrencia = "sgp.aula.excluir.recorrencia";
-        public const string RotaInserirAulaRecorrencia = "sgp.aula.cadastrar.recorrencia";
-        public const string RotaAlterarAulaRecorrencia = "sgp.aula.alterar.recorrencia";
-        public const string RotaAlterarAulaFrequenciaTratar = "sgp.aula.alterar.frequencia.tratar";
         public const string RotaNotificacaoUsuario = "sgp.notificacao.usuario";
         public const string RotaNotificacaoExclusaoAulasComFrequencia = "sgp.notificacao.aulas.exclusao.frequencia";
-        public const string RotaCriarAulasInfatilAutomaticamente = "sgp.aulas.infantil.criar";
-        public const string RotaSincronizarAulasInfatil = "sgp.aulas.infantil.sincronizar";
 
         public const string RotaInserirPendenciaAula = "sgp.aulas.pendencias.inserir";
         public const string RotaNotificacaoNovaObservacaoCartaIntencoes = "sgp.notificacao.nova.observacao.cartaintencoes";
@@ -123,10 +117,6 @@
         public const string ConsolidarDiariosBordoPorUeTratar = "sgp.consolidacao.diarios.bordo.ue.tratar";
 
         public const string ConsolidarRegistrosPedagogicosPorUeTratar = "sgp.consolidacao.registros.pedagogicos.ue.tratar";
-
-        public const string CarregarDadosUeTurmaRegenciaAutomaticamente = "aulas.automaticas.regencia.ue.turma.carregar";
-        public const string SincronizarDadosUeTurmaRegenciaAutomaticamente = "aulas.automaticas.regencia.ue.turma.sync";
-        public const string SincronizarAulasRegenciaAutomaticamente = "aulas.automaticas.regencia.sync";
 
         public const string SincronizaMediaRegistrosIndividuaisSync = "sgp.sincronizacao.media.registros.individuais.sync";
         public const string ConsolidarMediaRegistrosIndividuaisTurma = "sgp.consolidacao.media.registros.individuais.turma";

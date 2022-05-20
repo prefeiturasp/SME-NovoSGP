@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
                                                            request.ComponenteCurricularNome,
                                                            request.Usuario);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExcluirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
 
             return true;
         }

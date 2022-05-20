@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
         {
             var trataFrequenciaAulaModificada = new AulaAlterarFrequenciaRequestDto(aula.Id, aulaAnteriorQnt);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAlterarAulaFrequenciaTratar, trataFrequenciaAulaModificada, Guid.NewGuid(), usuarioLogado));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaAlterarAulaFrequenciaTratar, trataFrequenciaAulaModificada, Guid.NewGuid(), usuarioLogado));
         }
 
         private async Task ValidarAulasDeReposicao(AlterarAulaUnicaCommand request, Turma turma, IEnumerable<AulaConsultaDto> aulasExistentes, Aula aula, List<string> mensagens)
