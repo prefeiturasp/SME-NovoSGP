@@ -46,7 +46,7 @@ namespace SME.SGP.Dominio
 
         // Frequencia
         PercentualFrequenciaCriticoBaseNacional = 20,
-        
+
         DataUltimaAtualizacaoObjetivosJurema = 22,
 
         MunicipioAtendimentoHistoricoEscolar = 25,
@@ -73,7 +73,7 @@ namespace SME.SGP.Dominio
         // Pendencias Fechamento
         DiasGeracaoPendenciaAvaliacao = 37,
         DiasGeracaoPendenciaAusenciaFechamento = 38,
-        
+
         // Notificacao Andamento do Fechamento
         DiasNotificacaoAndamentoFechamento = 39,
 
@@ -92,7 +92,7 @@ namespace SME.SGP.Dominio
         DiasNotificacaoPeriodoFechamentoInicio = 43,
         DiasNotificacaoPeriodoFechamentoFim = 44,
 
-        [Display(Name = "Pendência por ausência de registro individual")]        
+        [Display(Name = "Pendência por ausência de registro individual")]
         PendenciaPorAusenciaDeRegistroIndividual = 48,
 
         GerarPendenciasEncaminhamentoAEE = 49,
@@ -114,7 +114,7 @@ namespace SME.SGP.Dominio
         ExecucaoConsolidacaoFrequenciaTurma = 58,
 
         ExecucaoConsolidacaoInformacoesEscolares = 59,
-        
+
         HabilitaFrequenciaRemotaEIPre = 60,
         HabilitaFrequenciaRemotaEICEI = 61,
         HabilitaFrequenciaRemotaEJA = 62,
@@ -145,12 +145,11 @@ namespace SME.SGP.Dominio
         ExecucaoConsolidacaoDiariosBordo = 81,
         ExecucaoConsolidacaoRegistrosPedagogicos = 82,
 
-
         PermiteCompensacaoForaPeriodo = 83,
 
         CJInfantilPodeEditarAulaTitular = 84,
 
-        ControlePlanejamentoDiarioInfantilComComponente = 85,
+        SepararDiarioBordoPorComponente = 85,
 
         //PendenciasAula
         ExecutaPendenciaAulaDiarioBordo = 87,
