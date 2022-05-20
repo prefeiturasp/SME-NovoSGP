@@ -124,7 +124,7 @@ namespace SME.SGP.Aplicacao
             var registrosFrequencia = await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, new string[] { turma.CodigoTurma }, disciplinas.Select(d => !d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : d.CodigoComponenteTerritorioSaber.ToString()).ToArray(),
                 periodoEscolar?.Id));
 
-            var retorno = new List<ConselhoDeClasseGrupoMatrizDto>();
+            retorno = new List<ConselhoDeClasseGrupoMatrizDto>();
 
             foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key.Nome))
             {
