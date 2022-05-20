@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(IncluirFilaConciliacaoFrequenciaTurmaMesCommand request, CancellationToken cancellationToken)
         {
             var comandoConsolidacao = new FiltroConsolidacaoFrequenciaAlunoMensal(request.TurmaCodigo, request.Mes);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, comandoConsolidacao, Guid.NewGuid(), null),
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, comandoConsolidacao, Guid.NewGuid(), null),
                 cancellationToken);
 
             return true;
