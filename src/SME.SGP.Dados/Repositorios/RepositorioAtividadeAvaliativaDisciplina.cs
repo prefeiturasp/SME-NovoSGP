@@ -103,24 +103,17 @@ namespace SME.SGP.Dados.Repositorios
                                      and aar.excluido = false
                                    group by(aar.disciplina_contida_regencia_id)";
 
-  
+
             using (var conexao = new NpgsqlConnection(connectionString))
             {
-                try
-                {
-                    await conexao.OpenAsync();
-                    var totalizador = await conexao.QueryAsync<ComponentesRegenciaComAtividadeAvaliativaDto>(query.ToString(), new
-                    {
-                        atividadesAvaliativasId
-                    });
-                    conexao.Close();
-                    return totalizador;
-                }
-                catch (System.Exception e)
-                {
 
-                    throw new System.Exception(e.Message);
-                }
+                await conexao.OpenAsync();
+                var totalizador = await conexao.QueryAsync<ComponentesRegenciaComAtividadeAvaliativaDto>(query.ToString(), new
+                {
+                    atividadesAvaliativasId
+                });
+                conexao.Close();
+                return totalizador;
             }
         }
 
