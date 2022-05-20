@@ -21,8 +21,6 @@
         public const string RotaExcluirNotificacaoDevolutiva = "sgp.notificacao.excluir.devolutiva";
         public const string RotaExcluirNotificacaoDiarioBordo = "sgp.notificacao.excluir.diariobordo";
         public const string RotaSincronizaComponetesCurricularesEol = "sgp.componentes.curriculares.eol.sincronizar";
-        public const string RotaConsolidacaoFrequenciaAlunoPorTurmaMensal = "sgp.frequencia.aluno.turma.mensal.consolidar";
-        public const string RotaConsolidacaoFrequenciaTurmaEvasao = "sgp.frequencia.turma.evasao.consolidar";
 
         public const string RotaExecutaPendenciasAula = "sgp.pendencias.aulas.executa";
         public const string RotaExecutaPendenciasAulaDiarioBordo = "sgp.pendencias.aulas.diario.bordo.executa";
@@ -101,13 +99,6 @@
 
         public const string ConsolidarTurmaSync = "sgp.consolidacao.turma.sync";
         public const string ConsolidarTurmaTratar = "sgp.consolidacao.turma.tratar";
-
-        public const string RotaConciliacaoFrequenciaTurmaPorPeriodo = "sgp.frequencia.turma.conciliacao.periodo";
-
-        public const string RotaConciliacaoFrequenciaTurmaMes = "sgp.frequencia.turma.conciliacao.mes";
-
-        public const string RotaConciliacaoFrequenciaTurmasAlunosBuscar = "sgp.frequencia.turma.alunos.buscar.sync";
-        public const string RotaCalcularFrequenciaGeralSync = "sgp.frequencia.calcular.geral.sync";
 
         public const string RotaNotificacaoAlunosFaltosos = "sgp.aulas.alunos.faltosos.notificar";
 

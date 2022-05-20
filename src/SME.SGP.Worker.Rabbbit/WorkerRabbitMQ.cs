@@ -152,8 +152,8 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaSincronizaComponetesCurricularesEol, new ComandoRabbit("Sincroniza os compoentes curriculares com o Eol", typeof(ISincronizarComponentesCurricularesUseCase)));
             comandos.Add(RotasRabbitSgpFrequencia.RotaConciliacaoCalculoFrequenciaPorTurmaComponente, new ComandoRabbit("Conciliação de Cálculo de frequência por Turma e Componente", typeof(ICalculoFrequenciaTurmaDisciplinaUseCase)));
             
-            comandos.Add(RotasRabbitSgp.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, new ComandoRabbit("Consolidação de frequência do aluno por turma mensal", typeof(IConsolidarFrequenciaAlunoPorTurmaEMesUseCase)));
-            comandos.Add(RotasRabbitSgp.RotaConsolidacaoFrequenciaTurmaEvasao, new ComandoRabbit("Consolidação de evasão da turma", typeof(IConsolidarFrequenciaTurmaEvasaoUseCase)));
+            comandos.Add(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, new ComandoRabbit("Consolidação de frequência do aluno por turma mensal", typeof(IConsolidarFrequenciaAlunoPorTurmaEMesUseCase)));
+            comandos.Add(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaTurmaEvasao, new ComandoRabbit("Consolidação de evasão da turma", typeof(IConsolidarFrequenciaTurmaEvasaoUseCase)));
 
             comandos.Add(RotasRabbitSgp.PendenciasGerais, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisUseCase)));
             comandos.Add(RotasRabbitSgp.PendenciasGeraisAulas, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisAulaUseCase)));
@@ -268,7 +268,7 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgpFrequencia.RotaConciliacaoFrequenciaTurmaPorPeriodo, new ComandoRabbit("Conciliação de frequência das turmas por período", typeof(IConciliacaoFrequenciaTurmasPorPeriodoUseCase)));
             comandos.Add(RotasRabbitSgpFrequencia.RotaValidacaoAusenciaConciliacaoFrequenciaTurma, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase)));
             comandos.Add(RotasRabbitSgpFrequencia.RotaConciliacaoFrequenciaTurmasAlunosBuscar, new ComandoRabbit("Conciliação de frequência da turma buscar", typeof(IConciliacaoFrequenciaTurmasAlunosBuscarUseCase)));
-            comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaMes, new ComandoRabbit("Conciliação de frequência das turmas mês", typeof(IConciliacaoFrequenciaTurmasMesUseCase)));
+            comandos.Add(RotasRabbitSgpFrequencia.RotaConciliacaoFrequenciaTurmaMes, new ComandoRabbit("Conciliação de frequência das turmas mês", typeof(IConciliacaoFrequenciaTurmasMesUseCase)));
 
             comandos.Add(RotasRabbitSgp.RotaNotificacaoAlunosFaltosos, new ComandoRabbit("Conciliação de frequência da turma buscar", typeof(INotificarAlunosFaltososUseCase)));
 
