@@ -532,50 +532,29 @@ namespace SME.SGP.Worker.RabbitMQ
             };
 
             if (consumoFilasOptions.Padrao)
-                RegistrarConsumerSgp(consumer);
+                RegistrarConsumerSgp(consumer, typeof(RotasRabbitSgp));
+
+            if (consumoFilasOptions.Aula)
+                RegistrarConsumerSgp(consumer, typeof(RotasRabbitSgpAula));
 
             if (consumoFilasOptions.FechamentoConselho)
-                RegistrarConsumerSgpFechamentoConselho(consumer);
+                RegistrarConsumerSgp(consumer, typeof(RotasRabbitSgpFechamentoConselho));
 
             if (consumoFilasOptions.Frequencia)
-                RegistrarConsumerSgpFrequencia(consumer);
+                RegistrarConsumerSgp(consumer, typeof(RotasRabbitSgpFrequencia));
 
             if (consumoFilasOptions.Institucional)
-                RegistrarConsumerSgpInstitucional(consumer);
+                RegistrarConsumerSgp(consumer, typeof(RotasRabbitSgpInstitucional));
 
             if (consumoFilasOptions.Pendencias)
-                RegistrarConsumerSgpPendencias(consumer);
+                RegistrarConsumerSgp(consumer, typeof(RotasRabbitSgpPendencias));
 
             return Task.CompletedTask;
         }
 
-        private void RegistrarConsumerSgp(EventingBasicConsumer consumer)
+        private void RegistrarConsumerSgp(EventingBasicConsumer consumer, Type tipoRotas)
         {
-            foreach (var fila in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>())
-                canalRabbit.BasicConsume(fila, false, consumer);
-        }
-
-        private void RegistrarConsumerSgpFechamentoConselho(EventingBasicConsumer consumer)
-        {
-            foreach (var fila in typeof(RotasRabbitSgpFechamentoConselho).ObterConstantesPublicas<string>())
-                canalRabbit.BasicConsume(fila, false, consumer);
-        }
-
-        private void RegistrarConsumerSgpFrequencia(EventingBasicConsumer consumer)
-        {
-            foreach (var fila in typeof(RotasRabbitSgpFrequencia).ObterConstantesPublicas<string>())
-                canalRabbit.BasicConsume(fila, false, consumer);
-        }
-
-        private void RegistrarConsumerSgpInstitucional(EventingBasicConsumer consumer)
-        {
-            foreach (var fila in typeof(RotasRabbitSgpInstitucional).ObterConstantesPublicas<string>())
-                canalRabbit.BasicConsume(fila, false, consumer);
-        }
-
-        private void RegistrarConsumerSgpPendencias(EventingBasicConsumer consumer)
-        {
-            foreach (var fila in typeof(RotasRabbitSgpPendencias).ObterConstantesPublicas<string>())
+            foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
                 canalRabbit.BasicConsume(fila, false, consumer);
         }
     }
