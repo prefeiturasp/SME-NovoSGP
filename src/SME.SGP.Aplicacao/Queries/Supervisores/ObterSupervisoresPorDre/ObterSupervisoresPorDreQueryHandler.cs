@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -18,6 +19,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<SupervisorEscolasDreDto>> Handle(ObterSupervisoresPorDreQuery request, CancellationToken cancellationToken)
-                      => await repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(request.CodigoDre);
+            => await repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(request.CodigoDre, TipoResponsavelAtribuicao.SupervisorEscolar);
     }
 }

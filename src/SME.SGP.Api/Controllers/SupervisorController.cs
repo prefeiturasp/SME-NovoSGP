@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -58,9 +59,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<SupervisorDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSupervisoresPorDre(string dreId, [FromQuery]FiltroObterSupervisoresDto filtro)
+        public async Task<IActionResult> ObterSupervisoresPorDre(string dreId, [FromQuery]FiltroObterSupervisoresDto filtro,
+            [FromServices] IObterSupervisoresPorDreUseCase useCase)
         {
-            return Ok(await consultasSupervisor.ObterPorDreENomeSupervisorAsync(filtro.Nome, dreId));
+            return Ok(await useCase.Executar(new ObterSupervisoresPorDreDto(dreId, filtro.Nome, filtro.TipoResponsavelAtribuicao)));
         }
 
         [HttpGet("dre/{dreId}/vinculo-escolas")]

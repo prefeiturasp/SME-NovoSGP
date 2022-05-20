@@ -3,10 +3,11 @@ using MediatR;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFuncionariosDreOuUePorPerfisQuery : IRequest<IEnumerable<string>>
+    public class ObterFuncionariosDreOuUePorPerfisQuery : IRequest<IEnumerable<SupervisoresRetornoDto>>
     {
 
         public ObterFuncionariosDreOuUePorPerfisQuery(string codigoDreUe, IEnumerable<Guid> perfis)
