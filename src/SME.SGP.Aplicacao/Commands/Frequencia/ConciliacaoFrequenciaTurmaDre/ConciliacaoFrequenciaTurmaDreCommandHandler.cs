@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var ueCodigo in uesCodigos)
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaUeSync,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConciliacaoFrequenciaTurmaUeSync,
                     new ConciliacaoFrequenciaTurmaUeSyncDto(ueCodigo, request.AnoLetivo)), cancellationToken);
             }
 

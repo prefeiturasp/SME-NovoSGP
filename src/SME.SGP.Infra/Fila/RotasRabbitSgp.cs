@@ -104,11 +104,6 @@
 
         public const string RotaConciliacaoFrequenciaTurmaPorPeriodo = "sgp.frequencia.turma.conciliacao.periodo";
 
-        public const string RotaConciliacaoFrequenciaAnoSync = "sgp.frequencia.turma.conciliacao.ano.sync";
-        public const string RotaConciliacaoFrequenciaTurmaDreSync = "sgp.frequencia.turma.conciliacao.dre.sync";
-        public const string RotaConciliacaoFrequenciaTurmaUeSync = "sgp.frequencia.turma.conciliacao.ue.sync";
-        public const string RotaConciliacaoFrequenciaTurmasSync = "sgp.frequencia.turma.conciliacao.sync";
-
         public const string RotaConciliacaoFrequenciaTurmaMes = "sgp.frequencia.turma.conciliacao.mes";
 
         public const string RotaConciliacaoFrequenciaTurmasAlunosBuscar = "sgp.frequencia.turma.alunos.buscar.sync";
