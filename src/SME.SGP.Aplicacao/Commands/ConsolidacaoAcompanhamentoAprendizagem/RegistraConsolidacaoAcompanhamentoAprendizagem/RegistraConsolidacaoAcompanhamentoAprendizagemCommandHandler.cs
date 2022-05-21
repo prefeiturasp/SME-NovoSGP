@@ -17,7 +17,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(RegistraConsolidacaoAcompanhamentoAprendizagemCommand request, CancellationToken cancellationToken)
         {
-            //var consolidacao = new ConsolidacaoAcompanhamentoAprendizagemAluno(request.TurmaId, request.QuantidadeComAcompanhamento, request.QuantidadeSemAcompanhamento, request.Semestre);
             return await repositorio.Inserir(new ConsolidacaoAcompanhamentoAprendizagemAluno(request.TurmaId, request.QuantidadeComAcompanhamento, request.QuantidadeSemAcompanhamento, request.Semestre));
         }
     }
