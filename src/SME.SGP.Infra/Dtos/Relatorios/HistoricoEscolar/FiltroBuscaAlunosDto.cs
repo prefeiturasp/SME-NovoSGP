@@ -7,5 +7,6 @@
         public long CodigoTurma { get; set; }
         public long? Codigo { get; set; }
         public string Nome { get; set; }
+        public bool Historico { get; set; } = false;
     }
 }
