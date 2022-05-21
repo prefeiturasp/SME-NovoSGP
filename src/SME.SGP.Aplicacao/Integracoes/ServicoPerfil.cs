@@ -64,6 +64,9 @@ namespace SME.SGP.Aplicacao.Integracoes
                     (usuario.PossuiPerfilCJInfantilPrioritario() || (!possuiTurmaInfantilAtiva && possuiTurmaCjInfantilAtiva)));
             usuario.DefinirPerfilAtual(usuario.ObterPerfilPrioritario(possuiTurmaAtiva, possuiTurmaInfantilAtiva, perfilProfCJSemTurmaTitular));
 
+            if (!usuario.Perfis.Any(p => p.CodigoPerfil == usuario.PerfilAtual))
+                usuario.PerfilAtual = usuario.Perfis.FirstOrDefault().CodigoPerfil;
+
             var perfisPorPrioridade = new PerfisPorPrioridadeDto
             {
                 PerfilSelecionado = usuario.PerfilAtual,
