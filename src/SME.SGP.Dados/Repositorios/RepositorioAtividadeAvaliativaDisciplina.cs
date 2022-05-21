@@ -103,8 +103,10 @@ namespace SME.SGP.Dados.Repositorios
                                      and aar.excluido = false
                                    group by(aar.disciplina_contida_regencia_id)";
 
+
             using (var conexao = new NpgsqlConnection(connectionString))
             {
+
                 await conexao.OpenAsync();
                 var totalizador = await conexao.QueryAsync<ComponentesRegenciaComAtividadeAvaliativaDto>(query.ToString(), new
                 {

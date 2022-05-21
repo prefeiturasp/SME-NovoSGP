@@ -87,7 +87,6 @@ namespace SME.SGP.Dados
                                 where not a.excluido 
                                 and t.ue_id = @ueId and a.data_aula < NOW()
                                 and t.ano_letivo = @anoLetivo and a.tipo_aula = 1
-                                and a.data_aula < NOW()
                                 group by pe.id, pe.bimestre, t.id, a.disciplina_id, case when t.modalidade_codigo = 1 then '' else a.professor_rf end, t.modalidade_codigo";
 
             return await database.Conexao.QueryAsync<ConsolidacaoRegistrosPedagogicosDto>(query, new { ueId, anoLetivo });
