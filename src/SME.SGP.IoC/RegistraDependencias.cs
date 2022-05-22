@@ -812,6 +812,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IBuscarTiposCalendarioPorDescricaoUseCase, BuscarTiposCalendarioPorDescricaoUseCase>();
 
             services.TryAddScoped<IPendenciaAulaUseCase, PendenciaAulaUseCase>();
+            services.TryAddScoped<IPendenciaAulaDreUseCase, PendenciaAulaDreUseCase>();
+            services.TryAddScoped<IPendenciaAulaDreUeUseCase, PendenciaAulaDreUeUseCase>();
             services.TryAddScoped<IPendenciaAulaDiarioBordoUseCase, PendenciaAulaDiarioBordoUseCase>();
             services.TryAddScoped<IPendenciaAulaAvaliacaoUseCase, PendenciaAulaAvaliacaoUseCase>();
             services.TryAddScoped<IPendenciaAulaFrequenciaUseCase, PendenciaAulaFrequenciaUseCase>();
