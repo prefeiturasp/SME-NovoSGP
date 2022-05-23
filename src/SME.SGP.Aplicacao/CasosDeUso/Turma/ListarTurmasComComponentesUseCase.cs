@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                                                                                              filtroTurmaDto.DreCodigo,
                                                                                              filtroTurmaDto.TurmaCodigo,
                                                                                              filtroTurmaDto.AnoLetivo,
-                                                                                             0,
+                                                                                             qtdeRegistros,
                                                                                              qtdeRegistrosIgnorados,
                                                                                              filtroTurmaDto.Bimestre,
                                                                                              filtroTurmaDto.Modalidade.Value,
@@ -79,7 +79,9 @@ namespace SME.SGP.Aplicacao
                                                                                              usuario.EhPerfilProfessor(),
                                                                                              usuario.CodigoRf,
                                                                                              filtroTurmaDto.ConsideraHistorico,
-                                                                                             periodoEscolar.FirstOrDefault().PeriodoInicio,
+                                                                                             filtroTurmaDto.Bimestre > 0 ? 
+                                                                                                periodoEscolar.Where(p => p.Bimestre == (filtroTurmaDto.Bimestre)).FirstOrDefault().PeriodoInicio : 
+                                                                                                periodoEscolar.FirstOrDefault().PeriodoInicio,
                                                                                              anosInfantilDesconsiderar != null ? String.Join(",", anosInfantilDesconsiderar) : string.Empty));
             }
 
