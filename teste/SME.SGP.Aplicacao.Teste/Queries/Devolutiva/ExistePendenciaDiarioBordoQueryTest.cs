@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Devolutiva
             var consulta = await queryHandler.Handle(new ExistePendenciaDiarioBordoQuery("856521", "512"), new CancellationToken());
 
             // Assert
-            Assert.False(consulta, "Não Existe Diário de Bordo sem devolutiva");
+            Assert.False(consulta, "Existe Diário de Bordo sem devolutiva");
         }
     }
 }
