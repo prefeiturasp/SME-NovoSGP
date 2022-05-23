@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<SupervisorEscolasDreDto>> Handle(ObterSupervisoresPorDreQuery request, CancellationToken cancellationToken)
-            => await repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(request.CodigoDre, TipoResponsavelAtribuicao.SupervisorEscolar);
+            => await repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(request.CodigoDre, request.TipoResponsavelAtribuicao);
     }
 }

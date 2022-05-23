@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.Queries.Funcionario.ObterListaNomePorListaRF
 
         public ObterListaNomePorListaRFQueryHandler(IHttpClientFactory httpClientFactory)
         {
-            this.httpClientFactory = httpClientFactory ?? throw new System.ArgumentNullException(nameof(httpClientFactory));
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<IEnumerable<ProfessorResumoDto>> Handle(ObterListaNomePorListaRFQuery request, CancellationToken cancellationToken)

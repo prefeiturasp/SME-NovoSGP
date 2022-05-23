@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFuncionariosDreOuUePorPerfisQueryHandler : IRequestHandler<ObterFuncionariosDreOuUePorPerfisQuery, IEnumerable<SupervisoresRetornoDto>>
+    public class ObterFuncionariosDreOuUePorPerfisQueryHandler : IRequestHandler<ObterFuncionariosDreOuUePorPerfisQuery, IEnumerable<FuncionarioUnidadeDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<IEnumerable<SupervisoresRetornoDto>> Handle(ObterFuncionariosDreOuUePorPerfisQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<FuncionarioUnidadeDto>> Handle(ObterFuncionariosDreOuUePorPerfisQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
 
@@ -32,10 +32,10 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<IEnumerable<SupervisoresRetornoDto>>(json);
+                return JsonConvert.DeserializeObject<IEnumerable<FuncionarioUnidadeDto>>(json);
             }
 
-            return Enumerable.Empty<SupervisoresRetornoDto>();
+            return Enumerable.Empty<FuncionarioUnidadeDto>();
         }
     }
 }

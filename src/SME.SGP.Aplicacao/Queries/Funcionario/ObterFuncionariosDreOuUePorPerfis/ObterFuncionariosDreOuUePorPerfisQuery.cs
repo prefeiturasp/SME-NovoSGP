@@ -7,9 +7,8 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFuncionariosDreOuUePorPerfisQuery : IRequest<IEnumerable<SupervisoresRetornoDto>>
+    public class ObterFuncionariosDreOuUePorPerfisQuery : IRequest<IEnumerable<FuncionarioUnidadeDto>>
     {
-
         public ObterFuncionariosDreOuUePorPerfisQuery(string codigoDreUe, IEnumerable<Guid> perfis)
         {
             CodigoDreUe = codigoDreUe;

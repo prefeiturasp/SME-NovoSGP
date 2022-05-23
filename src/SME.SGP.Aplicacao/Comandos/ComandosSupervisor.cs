@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException($"A UE {ue} não pertence a DRE {atribuicaoSupervisorEscolaDto.DreId}.");
                 });
 
-            if (!supervisores.Any(s => s.Login.Equals(atribuicaoSupervisorEscolaDto.SupervisorId)))
+            if (!supervisores.Any(s => s.CodigoRf.Equals(atribuicaoSupervisorEscolaDto.SupervisorId)))
             {                
                 var atribuicaoExistentes = repositorioSupervisorEscolaDre
                     .ObtemPorDreESupervisor(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId);

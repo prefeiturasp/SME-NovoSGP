@@ -1,8 +1,8 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class SupervisoresRetornoDto
+    public class FuncionarioUnidadeDto
     {
+        public string Login { get; set; }
         public string NomeServidor { get; set; }
-        public string CodigoRf { get; set; }
     }
 }

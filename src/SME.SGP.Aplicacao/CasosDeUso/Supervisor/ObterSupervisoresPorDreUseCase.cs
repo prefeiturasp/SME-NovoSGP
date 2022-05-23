@@ -15,21 +15,68 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<SupervisorDto>> Executar(ObterSupervisoresPorDreDto filtro)
+        private async Task<IEnumerable<ResponsavelRetornoDto>> ObterNomesResponsaveisAtribuidos(IEnumerable<SupervisorEscolasDreDto> responsaveisAtribuidos,
+            TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
         {
-            var supervisoresEol = Enumerable.Empty<SupervisoresRetornoDto>().ToList();
+            var listaNomesResponsaveisAtribuidos = Enumerable.Empty<ResponsavelRetornoDto>().ToList();
 
-            switch (filtro.TipoResponsavelAtribuicao)
+            switch (tipoResponsavelAtribuicao)
+            {
+                case TipoResponsavelAtribuicao.PsicologoEscolar:
+                case TipoResponsavelAtribuicao.Psicopedagogo:
+                case TipoResponsavelAtribuicao.AssistenteSocial:
+                    {
+                        var nomesFuncionariosAtribuidos = await mediator.Send(new ObterListaNomePorListaLoginQuery(responsaveisAtribuidos?.Select(c => c.SupervisorId)));
+
+                        foreach (var funcionario in nomesFuncionariosAtribuidos)
+                        {
+                            listaNomesResponsaveisAtribuidos.Add(new ResponsavelRetornoDto()
+                            {
+                                CodigoRf_Login = funcionario.Login,
+                                NomeServidor = funcionario.NomeServidor
+                            });
+                        }
+
+                        break;
+                    }
+                default:
+                    {
+                        var nomesServidoresAtribuidos = await mediator.Send(new ObterListaNomePorListaRFQuery(responsaveisAtribuidos?.Select(c => c.SupervisorId)));
+
+                        foreach (var supervisor in nomesServidoresAtribuidos)
+                        {
+                            listaNomesResponsaveisAtribuidos.Add(new ResponsavelRetornoDto()
+                            {
+                                CodigoRf_Login = supervisor.CodigoRF,
+                                NomeServidor = supervisor.Nome
+                            });
+                        }
+
+                        break;
+                    }
+            }
+
+            if (listaNomesResponsaveisAtribuidos == null || !listaNomesResponsaveisAtribuidos.Any())
+                throw new NegocioException("A API/EOL não retornou os nomes dos responsáveis atribuídos.");
+
+            return await Task.FromResult(listaNomesResponsaveisAtribuidos);
+        }
+
+        private async Task<IEnumerable<ResponsavelRetornoDto>> ObterResponsaveisEol_CoreSSO(string dreCodigo, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+        {
+            var listaResponsavel = Enumerable.Empty<ResponsavelRetornoDto>().ToList();
+
+            switch (tipoResponsavelAtribuicao)
             {
                 case TipoResponsavelAtribuicao.PAAI:
                     {
-                        var funcionariosEol = await mediator.Send(new ObterFuncionariosPorDreECargoQuery(filtro.DreCodigo, 29));
+                        var funcionariosEol = await mediator.Send(new ObterFuncionariosPorDreECargoQuery(dreCodigo, 29));
 
                         foreach (var funcionario in funcionariosEol)
                         {
-                            supervisoresEol.Add(new SupervisoresRetornoDto()
+                            listaResponsavel.Add(new ResponsavelRetornoDto()
                             {
-                                Login = funcionario.CodigoRf,
+                                CodigoRf_Login = funcionario.CodigoRf,
                                 NomeServidor = funcionario.NomeServidor
                             });
                         }
@@ -40,62 +87,99 @@ namespace SME.SGP.Aplicacao
                 case TipoResponsavelAtribuicao.Psicopedagogo:
                 case TipoResponsavelAtribuicao.AssistenteSocial:
                     {
-                        supervisoresEol = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(filtro.DreCodigo,
+                        var funcionariosUnidades = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(dreCodigo,
                             new List<Guid> { Perfis.PERFIL_PSICOLOGO_ESCOLAR, Perfis.PERFIL_PSICOPEDAGOGO, Perfis.PERFIL_ASSISTENTE_SOCIAL }))).ToList();
+
+                        foreach (var funcionario in funcionariosUnidades)
+                        {
+                            listaResponsavel.Add(new ResponsavelRetornoDto()
+                            {
+                                CodigoRf_Login = funcionario.Login,
+                                NomeServidor = funcionario.NomeServidor
+                            });
+                        }
 
                         break;
                     }
                 default:
-                    supervisoresEol = (await mediator.Send(new ObterSupervisoresPorDreEolQuery(filtro.DreCodigo))).ToList();
+                    var supervisoresEol = (await mediator.Send(new ObterSupervisoresPorDreEolQuery(dreCodigo))).ToList();
+
+                    foreach (var supervisor in supervisoresEol)
+                    {
+                        listaResponsavel.Add(new ResponsavelRetornoDto()
+                        {
+                            CodigoRf_Login = supervisor.CodigoRf,
+                            NomeServidor = supervisor.NomeServidor
+                        });
+                    }
+
                     break;
             }
 
-            var supervisoresAtribuidos = (await mediator.Send(new ObterSupervisoresPorDreQuery(filtro.DreCodigo, TipoResponsavelAtribuicao.SupervisorEscolar)))
+            return await Task.FromResult(listaResponsavel);
+        }
+
+        public async Task<IEnumerable<SupervisorDto>> Executar(ObterSupervisoresPorDreDto filtro)
+        {
+            var responsaveisEol_CoreSSO = await ObterResponsaveisEol_CoreSSO(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao);
+
+            //-> Obtem os resposáveis já atribuidos
+            var responsaveisAtribuidos = (await mediator.Send(new ObterSupervisoresPorDreQuery(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao)))
                 .DistinctBy(c => c.SupervisorId);
 
-            var nomeServidoresAtribuidos = await mediator.Send(new ObterListaNomePorListaRFQuery(supervisoresAtribuidos?.Select(c => c.SupervisorId)));
+            var nomesResponsaveisAtribuidos = await ObterNomesResponsaveisAtribuidos(responsaveisAtribuidos, filtro.TipoResponsavelAtribuicao);
 
-            if (nomeServidoresAtribuidos == null || !nomeServidoresAtribuidos.Any())
-                throw new NegocioException("A API/EOL não retornou os nomes dos responsáveis atribuídos.");
-
+            //-> Preparando a lista de retorno
             var lstSupervisores = new List<SupervisorDto>();
 
             if (string.IsNullOrEmpty(filtro.SupervisorNome))
             {
-                if (supervisoresEol != null && supervisoresEol.Any())
-                    lstSupervisores.AddRange(supervisoresEol?.Select(a => new SupervisorDto() { SupervisorId = a.Login, SupervisorNome = a.NomeServidor }));
-
-                if (supervisoresAtribuidos != null && supervisoresAtribuidos.Any())
+                if (responsaveisEol_CoreSSO != null && responsaveisEol_CoreSSO.Any())
                 {
-                    lstSupervisores.AddRange(supervisoresAtribuidos?.Where(s => !supervisoresEol.Select(se => se.Login).Contains(s.SupervisorId))?
+                    lstSupervisores.AddRange(responsaveisEol_CoreSSO?.Select(a => new SupervisorDto()
+                    {
+                        SupervisorId = a.CodigoRf_Login,
+                        SupervisorNome = a.NomeServidor
+                    }));
+                }
+
+                if (responsaveisAtribuidos != null && responsaveisAtribuidos.Any())
+                {
+                    lstSupervisores.AddRange(responsaveisAtribuidos?.Where(s => !responsaveisEol_CoreSSO.Select(se => se.CodigoRf_Login).Contains(s.SupervisorId))?
                         .Select(a => new SupervisorDto()
                         {
                             SupervisorId = a.SupervisorId,
-                            SupervisorNome = nomeServidoresAtribuidos?.FirstOrDefault(n => n.CodigoRF == a.SupervisorId)?.Nome
+                            SupervisorNome = nomesResponsaveisAtribuidos?.FirstOrDefault(n => n.CodigoRf_Login == a.SupervisorId)?.NomeServidor
                         }));
                 }
             }
             else
             {
-                if (supervisoresEol != null && supervisoresEol.Any())
+                if (responsaveisEol_CoreSSO != null && responsaveisEol_CoreSSO.Any())
                 {
-                    lstSupervisores.AddRange(
-                        from a in supervisoresEol
+                    lstSupervisores.AddRange(from a in responsaveisEol_CoreSSO
                         where a.NomeServidor.ToLower().Contains(filtro.SupervisorNome.ToLower())
-                        select new SupervisorDto() { SupervisorId = a.Login, SupervisorNome = a.NomeServidor });
+                        select new SupervisorDto() 
+                        { 
+                            SupervisorId = a.CodigoRf_Login, 
+                            SupervisorNome = a.NomeServidor 
+                        });
                 }
 
-                if (supervisoresAtribuidos != null && supervisoresAtribuidos.Any())
+                if (responsaveisAtribuidos != null && responsaveisAtribuidos.Any())
                 {
-                    lstSupervisores.AddRange(
-                       from a in supervisoresAtribuidos
-                       join b in nomeServidoresAtribuidos on a.SupervisorId equals b.CodigoRF
-                       where !supervisoresEol.Select(s => s.Login).Contains(a.SupervisorId) && b.Nome.ToLower().Contains(filtro.SupervisorNome.ToLower())
-                       select new SupervisorDto() { SupervisorId = b.CodigoRF, SupervisorNome = b.Nome });
+                    lstSupervisores.AddRange(from a in responsaveisAtribuidos
+                       join b in nomesResponsaveisAtribuidos on a.SupervisorId equals b.CodigoRf_Login
+                       where !responsaveisEol_CoreSSO.Select(s => s.CodigoRf_Login).Contains(a.SupervisorId) && b.NomeServidor.ToLower().Contains(filtro.SupervisorNome.ToLower())
+                       select new SupervisorDto() 
+                       { 
+                           SupervisorId = b.CodigoRf_Login, 
+                           SupervisorNome = b.NomeServidor 
+                       });
                 }
             }
 
-            return lstSupervisores?.OrderBy(s => s.SupervisorNome);
+            return lstSupervisores?.OrderBy(s => s.SupervisorNome).ThenBy(c => c.SupervisorId);
         }
     }
 }
