@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
         public long DreId { get; set; }
     }
 
-    public class ObterUesIdPorDreQueryValidator : AbstractValidator<ObterUesCodigosPorDreQuery>
+    public class ObterUesCodigosPorDreQueryValidator : AbstractValidator<ObterUesCodigosPorDreQuery>
     {
-        public ObterUesIdPorDreQueryValidator()
+        public ObterUesCodigosPorDreQueryValidator()
         {
             RuleFor(c => c.DreId)
             .NotEmpty()
