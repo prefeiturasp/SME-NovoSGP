@@ -148,6 +148,42 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new Aula()
             {
                 AulaCJ = false,
+                DataAula = new DateTime(2022, 05, 10),
+                ProfessorRf = "Sistema",
+                DisciplinaId = Codigo_Regencia_Infantil_Emei_4h_512.ToString(),
+                Excluido = false,
+                TipoCalendarioId = 1,
+                RecorrenciaAula = RecorrenciaAula.AulaUnica,
+                Quantidade = 1,
+                TipoAula = TipoAula.Normal,
+                UeId = "1",
+                TurmaId = Turma_Emei_7P,
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(2022, 05, 09),
+            });
+
+            await InserirNaBase(new Aula()
+            {
+                AulaCJ = false,
+                DataAula = new DateTime(2022, 05, 11),
+                ProfessorRf = "Sistema",
+                DisciplinaId = Codigo_Regencia_Infantil_Emei_4h_512.ToString(),
+                Excluido = false,
+                TipoCalendarioId = 1,
+                RecorrenciaAula = RecorrenciaAula.AulaUnica,
+                Quantidade = 1,
+                TipoAula = TipoAula.Normal,
+                UeId = "1",
+                TurmaId = Turma_Emei_7P,
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(2022, 05, 09),
+            });
+
+            await InserirNaBase(new Aula()
+            {
+                AulaCJ = false,
                 DataAula = new DateTime(2022, 05, 09),
                 ProfessorRf = "Sistema",
                 DisciplinaId = Codigo_Regencia_Infantil_Emei_2h_513.ToString(),
@@ -166,7 +202,79 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new Aula()
             {
                 AulaCJ = false,
+                DataAula = new DateTime(2022, 05, 10),
+                ProfessorRf = "Sistema",
+                DisciplinaId = Codigo_Regencia_Infantil_Emei_2h_513.ToString(),
+                Excluido = false,
+                TipoCalendarioId = 1,
+                RecorrenciaAula = RecorrenciaAula.AulaUnica,
+                Quantidade = 1,
+                TipoAula = TipoAula.Normal,
+                UeId = "1",
+                TurmaId = Turma_Emei_7A,
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(2022, 05, 09),
+            });
+
+            await InserirNaBase(new Aula()
+            {
+                AulaCJ = false,
+                DataAula = new DateTime(2022, 05, 11),
+                ProfessorRf = "Sistema",
+                DisciplinaId = Codigo_Regencia_Infantil_Emei_2h_513.ToString(),
+                Excluido = false,
+                TipoCalendarioId = 1,
+                RecorrenciaAula = RecorrenciaAula.AulaUnica,
+                Quantidade = 1,
+                TipoAula = TipoAula.Normal,
+                UeId = "1",
+                TurmaId = Turma_Emei_7A,
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(2022, 05, 09),
+            });
+
+            await InserirNaBase(new Aula()
+            {
+                AulaCJ = false,
                 DataAula = new DateTime(2022, 05, 09),
+                ProfessorRf = "Sistema",
+                DisciplinaId = Codigo_Regencia_Infantil_Emei_Manha_534.ToString(),
+                Excluido = false,
+                TipoCalendarioId = 1,
+                RecorrenciaAula = RecorrenciaAula.AulaUnica,
+                Quantidade = 1,
+                TipoAula = TipoAula.Normal,
+                UeId = "1",
+                TurmaId = Turma_Emei_7B,
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(2022, 05, 09),
+            });
+
+            await InserirNaBase(new Aula()
+            {
+                AulaCJ = false,
+                DataAula = new DateTime(2022, 05, 10),
+                ProfessorRf = "Sistema",
+                DisciplinaId = Codigo_Regencia_Infantil_Emei_Manha_534.ToString(),
+                Excluido = false,
+                TipoCalendarioId = 1,
+                RecorrenciaAula = RecorrenciaAula.AulaUnica,
+                Quantidade = 1,
+                TipoAula = TipoAula.Normal,
+                UeId = "1",
+                TurmaId = Turma_Emei_7B,
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(2022, 05, 09),
+            });
+
+            await InserirNaBase(new Aula()
+            {
+                AulaCJ = false,
+                DataAula = new DateTime(2022, 05, 11),
                 ProfessorRf = "Sistema",
                 DisciplinaId = Codigo_Regencia_Infantil_Emei_Manha_534.ToString(),
                 Excluido = false,
@@ -378,6 +486,60 @@ namespace SME.SGP.TesteIntegracao
                            PeriodoEscolarId = 1,
                            ProfessorRf = Professor_512_Rf_1003,
                            PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 2,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_4h_512,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_4h_512,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_512_Rf_1001,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 2,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_4h_512,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_4h_512,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_512_Rf_1002,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 2,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_4h_512,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_4h_512,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_512_Rf_1003,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 3,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_4h_512,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_4h_512,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_512_Rf_1001,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 3,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_4h_512,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_4h_512,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_512_Rf_1002,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 3,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_4h_512,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_4h_512,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_512_Rf_1003,
+                           PendenciaId = 0
                        }
                     }
                 },
@@ -390,7 +552,7 @@ namespace SME.SGP.TesteIntegracao
                     {
                        new AulaProfessorComponenteDto()
                        {
-                           AulaId = 1,
+                           AulaId = 4,
                            ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_2h_513,
                            DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_2h_513,
                            PeriodoEscolarId = 1,
@@ -399,7 +561,7 @@ namespace SME.SGP.TesteIntegracao
                        },
                        new AulaProfessorComponenteDto()
                        {
-                           AulaId = 1,
+                           AulaId = 4,
                            ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_2h_513,
                            DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_2h_513,
                            PeriodoEscolarId = 1,
@@ -408,7 +570,61 @@ namespace SME.SGP.TesteIntegracao
                        },
                         new AulaProfessorComponenteDto()
                        {
-                           AulaId = 1,
+                           AulaId = 4,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_2h_513,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_2h_513,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_513_Rf_1006,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 5,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_2h_513,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_2h_513,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_513_Rf_1004,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 5,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_2h_513,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_2h_513,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_513_Rf_1005,
+                           PendenciaId = 0
+                       },
+                        new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 5,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_2h_513,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_2h_513,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_513_Rf_1006,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 6,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_2h_513,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_2h_513,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_513_Rf_1004,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 6,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_2h_513,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_2h_513,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_513_Rf_1005,
+                           PendenciaId = 0
+                       },
+                        new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 6,
                            ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_2h_513,
                            DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_2h_513,
                            PeriodoEscolarId = 1,
@@ -426,7 +642,7 @@ namespace SME.SGP.TesteIntegracao
                     {
                        new AulaProfessorComponenteDto()
                        {
-                           AulaId = 1,
+                           AulaId = 7,
                            ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_Manha_534,
                            DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_Manha_534,
                            PeriodoEscolarId = 1,
@@ -435,7 +651,7 @@ namespace SME.SGP.TesteIntegracao
                        },
                        new AulaProfessorComponenteDto()
                        {
-                           AulaId = 1,
+                           AulaId = 7,
                            ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_Manha_534,
                            DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_Manha_534,
                            PeriodoEscolarId = 1,
@@ -444,7 +660,61 @@ namespace SME.SGP.TesteIntegracao
                        },
                         new AulaProfessorComponenteDto()
                        {
-                           AulaId = 1,
+                           AulaId = 7,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_Manha_534,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_Manha_534,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_534_Rf_1009,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 8,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_Manha_534,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_Manha_534,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_534_Rf_1007,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 8,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_Manha_534,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_Manha_534,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_534_Rf_1008,
+                           PendenciaId = 0
+                       },
+                        new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 8,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_Manha_534,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_Manha_534,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_534_Rf_1009,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 9,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_Manha_534,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_Manha_534,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_534_Rf_1007,
+                           PendenciaId = 0
+                       },
+                       new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 9,
+                           ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_Manha_534,
+                           DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_Manha_534,
+                           PeriodoEscolarId = 1,
+                           ProfessorRf = Professor_534_Rf_1008,
+                           PendenciaId = 0
+                       },
+                        new AulaProfessorComponenteDto()
+                       {
+                           AulaId = 9,
                            ComponenteCurricularId = Codigo_Regencia_Infantil_Emei_Manha_534,
                            DescricaoComponenteCurricular = Descricao_Regencia_Infantil_Emei_Manha_534,
                            PeriodoEscolarId = 1,

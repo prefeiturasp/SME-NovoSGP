@@ -31,14 +31,16 @@ namespace SME.SGP.Aplicacao
                     if (pendenciaId == 0)
                     {
                         pendenciaId = await mediator.Send(MapearPendencia(TipoPendencia.DiarioBordo, item.DescricaoComponenteCurricular, filtro.TurmaComModalidade, filtro.NomeEscola));
-                        pendenciaProfessorDisciplinaCache.Add(new PendenciaProfessorComponenteCurricularDto() 
-                        { 
-                            ComponenteCurricularId = item.ComponenteCurricularId, 
-                            ProfessorRf = item.ProfessorRf, 
-                            PendenciaId = pendenciaId 
+                        pendenciaProfessorDisciplinaCache.Add(new PendenciaProfessorComponenteCurricularDto()
+                        {
+                            ComponenteCurricularId = item.ComponenteCurricularId,
+                            ProfessorRf = item.ProfessorRf,
+                            PendenciaId = pendenciaId
                         });
                     }
                 }
+                else
+                    pendenciaId = pendencia.PendenciaId;
 
                 await mediator.Send(new SalvarPendenciaDiarioBordoCommand()
                 {
