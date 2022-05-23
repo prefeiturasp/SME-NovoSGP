@@ -780,18 +780,20 @@ namespace SME.SGP.Dados.Repositorios
             var resultado = await database.Conexao
                 .QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos, anosInfantilDesconsiderar });
 
+            var resultadoFiltrado = resultado.GroupBy(x => x.Codigo).SelectMany(y => y.OrderBy(a => a.Codigo).Take(1));
+
             if (perfil == Perfis.PERFIL_SUPERVISOR)
             {
-                resultado = await AcrescentarTurmasSupervisor(login, modalidade, periodo, codigoUe, consideraHistorico, anoLetivo, resultado);
+                resultadoFiltrado = await AcrescentarTurmasSupervisor(login, modalidade, periodo, codigoUe, consideraHistorico, anoLetivo, resultadoFiltrado);
 
                 if (tipos != null && tipos.Any())
-                    resultado = resultado.Where(r => tipos.Contains(r.TipoTurma));
+                    resultadoFiltrado = resultadoFiltrado.Where(r => tipos.Contains(r.TipoTurma));
 
                 if (anosInfantilDesconsiderar != null && anosInfantilDesconsiderar.Any())
-                    resultado = resultado.Where(r => !anosInfantilDesconsiderar.Contains(r.Ano));
+                    resultadoFiltrado = resultadoFiltrado.Where(r => !anosInfantilDesconsiderar.Contains(r.Ano));
             }
 
-            return resultado;
+            return resultadoFiltrado;
         }
         public async Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false)
         {
