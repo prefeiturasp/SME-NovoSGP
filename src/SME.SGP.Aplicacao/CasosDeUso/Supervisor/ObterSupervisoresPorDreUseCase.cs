@@ -20,6 +20,9 @@ namespace SME.SGP.Aplicacao
         {
             var listaNomesResponsaveisAtribuidos = Enumerable.Empty<ResponsavelRetornoDto>().ToList();
 
+            if (responsaveisAtribuidos == null || !responsaveisAtribuidos.Any())
+                return listaNomesResponsaveisAtribuidos;
+
             switch (tipoResponsavelAtribuicao)
             {
                 case TipoResponsavelAtribuicao.PsicologoEscolar:
