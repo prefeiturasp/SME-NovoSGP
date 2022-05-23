@@ -1,8 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -11,36 +8,32 @@ namespace SME.SGP.Aplicacao
         public SalvarPendenciaDiarioBordoCommand()
         {}
 
-        public ProfessorEComponenteInfantilDto ProfessorComponente { get; set; }
-        public AulaComComponenteDto Aula { get; set; }
-        public string CodigoTurma { get; set; }
-        public string TurmaComModalidade { get; set; }
-        public string NomeEscola { get; set; }
+        public string ProfessorRf { get; set; }
+        public long PendenciaId { get; set; }
+        public long ComponenteCurricularId { get; set; }
+        public long AulaId { get; set; }
+
     }
 
     public class SalvarPendenciaDiarioBordoCommandValidator : AbstractValidator<SalvarPendenciaDiarioBordoCommand>
     {
         public SalvarPendenciaDiarioBordoCommandValidator()
         {
-            RuleFor(c => c.Aula)
+            RuleForEach(c => c.ProfessorRf)
             .NotEmpty()
-            .WithMessage("As aulas devem ser informados para geração de pendência diário de bordo.");
+            .WithMessage("O código do professor deve ser informa para geração de pendência diário de bordo.");
 
-            RuleFor(c => c.ProfessorComponente)
+            RuleFor(c => c.PendenciaId)
             .NotEmpty()
-            .WithMessage("A relação de professores devem ser informados para geração de pendência diário de bordo.");
+            .WithMessage("O identificador da pendência deve ser informado para geração de pendência diário de bordo.");
 
-            RuleFor(c => c.CodigoTurma)
+            RuleFor(c => c.ComponenteCurricularId)
             .NotEmpty()
-            .WithMessage("O código da turma deve ser informado para geração de pendência diário de bordo.");
+            .WithMessage("O identificador do componente curricular deve ser informado para geração de pendência diário de bordo.");
 
-            RuleFor(c => c.TurmaComModalidade)
+            RuleFor(c => c.AulaId)
             .NotEmpty()
-            .WithMessage("O nome da turma com modalidade deve ser informado para geração de pendência diário de bordo.");
-
-            RuleFor(c => c.NomeEscola)
-            .NotEmpty()
-            .WithMessage("O nome da escola deve ser informado para geração de pendência diário de bordo.");
+            .WithMessage("O identificador da aula deve ser informado para geração de pendência diário de bordo.");
         }
     }
 }
