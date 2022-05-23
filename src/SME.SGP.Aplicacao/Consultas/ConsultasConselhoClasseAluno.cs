@@ -403,7 +403,7 @@ namespace SME.SGP.Aplicacao
             if (turmaFechamento == null || !turmaFechamento.Any())
                 throw new NegocioException($"Não foi possível obter os dados da turma {turma.CodigoTurma}");
 
-            var aluno = turmaFechamento.FirstOrDefault(a => a.CodigoAluno == alunoCodigo);
+            var aluno = turmaFechamento.Last(a => a.CodigoAluno == alunoCodigo);
 
             if (aluno == null)
                 throw new NegocioException($"Não foi possível obter os dados do aluno {alunoCodigo}");
