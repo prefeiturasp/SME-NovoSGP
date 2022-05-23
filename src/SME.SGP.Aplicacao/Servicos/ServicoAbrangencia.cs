@@ -365,11 +365,19 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             var novas = turmas.Where(x => !abrangenciaSintetica.Select(y => y.TurmaId).Contains(x.Id));
 
-            var paraAtualizar = abrangenciaSintetica.Where(x => !turmas.Select(y => y.Id).Contains(x.TurmaId)).Select(x => x.Id);
+            var paraAtualizar = abrangenciaSintetica.GroupBy(x => x.CodigoTurma).SelectMany(y => y.OrderBy(a => a.CodigoTurma).Take(1));
 
+            var listaAbrangenciaSintetica = new List<AbrangenciaSinteticaDto>();
+            var listaParaAtualizar = new List<AbrangenciaSinteticaDto>();
+
+            listaAbrangenciaSintetica.AddRange(abrangenciaSintetica.ToList());
+            listaParaAtualizar.AddRange(paraAtualizar.ToList());
+            var registrosDuplicados = listaAbrangenciaSintetica.Except(listaParaAtualizar);
+            var idsParaAtualizar = registrosDuplicados.Select(x => x.Id);
             repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, TurmaId = x.Id }), login);
 
-            repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar);
+            repositorioAbrangencia.AtualizaAbrangenciaHistorica(idsParaAtualizar);
+
         }
 
         private void SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia? abrangencia, bool ehSupervisor, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas, string login, Guid perfil)
