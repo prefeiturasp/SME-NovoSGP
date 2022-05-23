@@ -289,16 +289,16 @@
         [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 1, EhAlteracao = true, Url = "/gestao/atribuicao-esporadica")]
         AE_A = 95,
 
-        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhConsulta = true, Url = "/gestao/atribuicao-responsaveis-lista")]
+        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhConsulta = true, Url = "/gestao/atribuicao/responsaveis")]
         ARP_C = 96,
 
-        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhInclusao = true, Url = "/gestao/atribuicao-responsaveis-lista")]
+        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhInclusao = true, Url = "/gestao/atribuicao/responsaveis")]
         ARP_I = 97,
 
-        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhExclusao = true, Url = "/gestao/atribuicao-responsaveis-lista")]
+        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhExclusao = true, Url = "/gestao/atribuicao/responsaveis")]
         ARP_E = 98,
 
-        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhAlteracao = true, Url = "/gestao/atribuicao-responsaveis-lista")]
+        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhAlteracao = true, Url = "/gestao/atribuicao/responsaveis")]
         ARP_A = 99,
 
         [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 2, EhConsulta = true, Url = "/configuracoes/tipo-avaliacao")]
