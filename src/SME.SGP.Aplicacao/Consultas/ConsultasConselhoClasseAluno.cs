@@ -29,6 +29,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
+        private const int PRIMEIRO_BIMESTRE = 1;
 
         public ConsultasConselhoClasseAluno(IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
                                             IRepositorioTurma repositorioTurma,
@@ -233,8 +234,16 @@ namespace SME.SGP.Aplicacao
 
             //Verificar as notas finais
             var notasFechamentoAluno = Enumerable.Empty<NotaConceitoBimestreComponenteDto>();
-            var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(codigoTurma, turma.AnoLetivo));
-            var dadosAluno = dadosAlunos.First(da => da.CodigoEOL.Contains(alunoCodigo));
+            var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(codigoTurma, turma.AnoLetivo,null,true));
+            var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
+
+            if (periodosEscolares != null)
+            {
+                var dataInicioPrimeiroBimestre = periodosEscolares.Where(pe => pe.Bimestre == PRIMEIRO_BIMESTRE).FirstOrDefault().PeriodoInicio;
+                dadosAlunos = dadosAlunos.Where(d => d.SituacaoCodigo == SituacaoMatriculaAluno.Ativo || d.SituacaoCodigo != SituacaoMatriculaAluno.Ativo && d.DataSituacao >= dataInicioPrimeiroBimestre);
+            }
+
+            var dadosAluno = dadosAlunos.FirstOrDefault(da => da.CodigoEOL.Contains(alunoCodigo));
             if (turmasComMatriculasValidas.Contains(codigoTurma))
             {
                 notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?

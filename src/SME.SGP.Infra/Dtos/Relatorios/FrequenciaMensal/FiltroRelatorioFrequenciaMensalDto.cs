@@ -13,7 +13,7 @@ namespace SME.SGP.Infra
         public int Semestre { get; set; }
         public IList<string> CodigosTurmas { get; set; }
         public IList<string> MesesReferencias { get; set; }
-        public int ApenasAlunosPercentualAbaixoDe { get; set; }
+        public int? ApenasAlunosPercentualAbaixoDe { get; set; }
         public TipoFormatoRelatorio TipoFormatoRelatorio { get; set; }
         public string UsuarioNome { get; set; }
         public string UsuarioRf { get; set; }
