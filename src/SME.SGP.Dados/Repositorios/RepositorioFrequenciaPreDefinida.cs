@@ -49,8 +49,7 @@ namespace SME.SGP.Dados.Repositorios
                                              where turma_id = @turmaId
                                                and componente_curricular_id = @componenteCurricularId 
                                                and codigo_aluno = @alunoCodigo
-                                             order by fpd.id desc;");
-
+                                               order by fpd.id desc;");
             var parametros = new
             {
                 turmaId,
