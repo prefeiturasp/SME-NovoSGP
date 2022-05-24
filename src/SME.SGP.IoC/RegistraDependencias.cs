@@ -70,7 +70,6 @@ namespace SME.SGP.IoC
         {
             services.TryAddScoped<IComandosPlanoCiclo, ComandosPlanoCiclo>();
             services.TryAddScoped<IComandosPlanoAnual, ComandosPlanoAnual>();
-            services.TryAddScoped<IComandosSupervisor, ComandosSupervisor>();
             services.TryAddScoped<IComandosNotificacao, ComandosNotificacao>();
             services.TryAddScoped<IComandosWorkflowAprovacao, ComandosWorkflowAprovacao>();
             services.TryAddScoped<IComandosUsuario, ComandosUsuario>();
@@ -1289,6 +1288,7 @@ namespace SME.SGP.IoC
 
             // Supervisor
             services.TryAddScoped<IObterSupervisoresPorDreUseCase, ObterSupervisoresPorDreUseCase>();
+            services.TryAddScoped<ISupervisorAtribuirUeUseCase, SupervisorAtribuirUeUseCase>();
         }
     }
 }

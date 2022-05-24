@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioSupervisorEscolaDre : IRepositorioBase<SupervisorEscolaDre>
     {
-        IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisor(string dreId, string supervisorId, bool excluidos = false);
+        Task<IEnumerable<SupervisorEscolasDreDto>> ObtemPorDreESupervisor(string dreId, string supervisorId, bool excluidos = false);
         IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisores(string dreId, string[] supervisoresId);
         SupervisorEscolasDreDto ObtemPorUe(FiltroObterSupervisorEscolasDto filtro);
         IEnumerable<SupervisorEscolasDreDto> ObtemSupervisoresPorUe(string ueId);

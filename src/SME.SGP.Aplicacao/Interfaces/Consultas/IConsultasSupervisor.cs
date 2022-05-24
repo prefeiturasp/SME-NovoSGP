@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
     {
         Task<IEnumerable<SupervisorEscolasDto>> ObterPorDre(string dreId);
 
-        IEnumerable<SupervisorEscolasDto> ObterPorDreESupervisor(string supervisorId, string dreId);
+        Task<IEnumerable<SupervisorEscolasDto>> ObterPorDreESupervisor(string supervisorId, string dreId);
 
         IEnumerable<SupervisorEscolasDto> ObterPorDreESupervisores(string[] supervisoresId, string dreId);
 

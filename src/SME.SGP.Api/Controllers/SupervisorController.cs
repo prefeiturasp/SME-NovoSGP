@@ -29,10 +29,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_I, Permissao.ARP_A, Policy = "Bearer")]
-        public async Task<IActionResult> AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorUEDto, [FromServices] IComandosSupervisor comandosSupervisor)
+        public async Task<IActionResult> AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorUEDto,
+            [FromServices] ISupervisorAtribuirUeUseCase useCase)
         {
-            await comandosSupervisor.AtribuirUE(atribuicaoSupervisorUEDto);
-            return Ok();
+            return Ok(await useCase.Executar(atribuicaoSupervisorUEDto));
         }
 
         [HttpGet("vinculo-lista")]
