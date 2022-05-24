@@ -122,7 +122,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterDadosAlunos(string turmaCodigo, int anoLetivo, PeriodoEscolar periodoEscolar = null, bool ehInfantil = false)
         {
-            var dadosAlunos = await servicoEOL.ObterAlunosPorTurma(turmaCodigo, true);
+            var dadosAlunos = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turmaCodigo, DateTime.Today));
+
             if (dadosAlunos == null || !dadosAlunos.Any())
                 throw new NegocioException($"Não foram localizados dados dos alunos para turma {turmaCodigo} no EOL para o ano letivo {anoLetivo}");
 
