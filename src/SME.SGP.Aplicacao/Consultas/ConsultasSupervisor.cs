@@ -197,7 +197,8 @@ namespace SME.SGP.Aplicacao
                 AlteradoRF = dto.AlteradoRF,
                 CriadoEm = dto.CriadoEm,
                 CriadoPor = dto.CriadoPor,
-                CriadoRF = dto.CriadoRF
+                CriadoRF = dto.CriadoRF,
+                Tipo = dto.Tipo
             };
         }
 

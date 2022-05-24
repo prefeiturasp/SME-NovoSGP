@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Dominio;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
@@ -12,5 +13,6 @@ namespace SME.SGP.Infra
         public string SupervisorId { get; set; }
 
         public List<string> UESIds { get; set; }
+        public TipoResponsavelAtribuicao TipoResponsavelAtribuicao { get; set; }
     }
 }
