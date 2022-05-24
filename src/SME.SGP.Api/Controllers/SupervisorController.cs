@@ -62,7 +62,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterSupervisoresPorDre(string dreId, [FromQuery]FiltroObterSupervisoresDto filtro,
             [FromServices] IObterSupervisoresPorDreUseCase useCase)
         {
-            return Ok(await useCase.Executar(new ObterSupervisoresPorDreDto(dreId, filtro.Nome, filtro.TipoResponsavelAtribuicao)));
+            return Ok(await useCase.Executar(new ObterSupervisoresPorDreDto(dreId, filtro.TipoResponsavelAtribuicao)));
         }
 
         [HttpGet("dre/{dreId}/vinculo-escolas")]
