@@ -1,13 +1,16 @@
-do $$
+drop procedure if exists public.CARGA_RELATORIO_BID_FECHAMENTO;
+CREATE PROCEDURE public.CARGA_RELATORIO_BID_FECHAMENTO(p_AnoLetivo int)
+LANGUAGE plpgsql
+as $$
 declare
 	ues record;
-	anoLetivo int := 2019;
 begin	
 	for ues in
 		select id, nome from ue order by id
 	loop
 		raise notice 'Escola % - %', ues.id, ues.nome;
-		call RELATORIO_BID_FECHAMENTO(anoLetivo, ues.Id);
+		call RELATORIO_BID_FECHAMENTO(p_AnoLetivo, ues.Id);
 		commit;
 	end loop;
 end $$
+
