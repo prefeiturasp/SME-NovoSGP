@@ -20,19 +20,27 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>> Handle(ObterTurmasComComponentesQuery request, CancellationToken cancellationToken)
         {
-            var turmas = new PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>();
-
-            var turmaCodigo = request.TurmaCodigo == null ? 0 : long.Parse(request.TurmaCodigo);
-
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"turmas/ues/{request.UeCodigo}/modalidades/{(int)request.Modalidade}/anos/{request.AnoLetivo}/componentes?codigoTurma={turmaCodigo}&ehProfessor={request.EhProfessor}&codigoRf={request.CodigoRf}&qtdeRegistros={request.QtdeRegistros}&qtdeRegistrosIgnorados={request.QtdeRegistrosIgnorados}&consideraHistorico={request.ConsideraHistorico}&periodoEscolarInicio={request.PeriodoEscolarInicio.Ticks}&anosInfantilDesconsiderar={request.AnosInfantilDesconsiderar}");
-
-            if (resposta.IsSuccessStatusCode)
+            try
             {
-                var json = await resposta.Content.ReadAsStringAsync();
-                turmas = JsonConvert.DeserializeObject<PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>>(json);
+                var turmas = new PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>();
+
+                var turmaCodigo = request.TurmaCodigo == null ? 0 : long.Parse(request.TurmaCodigo);
+
+                var httpClient = httpClientFactory.CreateClient("servicoEOL");
+                var resposta = await httpClient.GetAsync($"turmas/ues/{request.UeCodigo}/modalidades/{(int)request.Modalidade}/anos/{request.AnoLetivo}/componentes?codigoTurma={turmaCodigo}&ehProfessor={request.EhProfessor}&codigoRf={request.CodigoRf}&qtdeRegistros={request.QtdeRegistros}&qtdeRegistrosIgnorados={request.QtdeRegistrosIgnorados}&consideraHistorico={request.ConsideraHistorico}&periodoEscolarInicioTicks={request.PeriodoEscolarInicio.Ticks}&anosInfantilDesconsiderar={request.AnosInfantilDesconsiderar}");
+
+                if (resposta.IsSuccessStatusCode)
+                {
+                    var json = await resposta.Content.ReadAsStringAsync();
+                    turmas = JsonConvert.DeserializeObject<PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>>(json);
+                }
+                return turmas;
             }
-            return turmas;
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
     }
 }
