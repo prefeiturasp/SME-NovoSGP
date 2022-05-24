@@ -86,7 +86,8 @@ namespace SME.SGP.Aplicacao
                     {
                         DreId = atribuicaoSupervisorEscolaDto.DreId,
                         SupervisorId = atribuicaoSupervisorEscolaDto.SupervisorId,
-                        EscolaId = codigoEscolaDto
+                        EscolaId = codigoEscolaDto,
+                        Tipo = (int)atribuicaoSupervisorEscolaDto.TipoResponsavelAtribuicao
                     });
                 }
             }
@@ -106,6 +107,7 @@ namespace SME.SGP.Aplicacao
                             .ObterPorId(atribuicao.Id);
 
                         supervisorEscolaDre.Excluido = false;
+                        supervisorEscolaDre.Tipo = 1;
 
                         await repositorioSupervisorEscolaDre
                             .SalvarAsync(supervisorEscolaDre);
