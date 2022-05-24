@@ -171,6 +171,9 @@ namespace SME.SGP.Aplicacao
 
         private static string ObterTipoResponsavelDescricao(int tipo)
         {
+            if (tipo == 0)
+                tipo = 1;
+
             var tipoDescricao = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
                 .Cast<TipoResponsavelAtribuicao>()
                 .Where(w => (int)w == tipo)

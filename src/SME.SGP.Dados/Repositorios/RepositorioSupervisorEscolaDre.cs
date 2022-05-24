@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido");
             query.AppendLine("from supervisor_escola_dre sed");
-            query.AppendLine("where 1 = 1 and sed.Tipo = @tipoResponsavelAtribuicao");
+            query.AppendLine("where 1 = 1");
 
             if (!excluidos)
                 query.AppendLine("and excluido = false");
@@ -32,8 +32,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine("and sed.dre_id = @dreId");
 
-            var tipoResponsavelAtribuicao = (int)TipoResponsavelAtribuicao.SupervisorEscolar;
-            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { supervisorId, dreId, tipoResponsavelAtribuicao }).AsList();
+            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { supervisorId, dreId }).AsList();
         }
 
         public IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisores(string dreId, string[] supervisoresId)
@@ -42,7 +41,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido");
             query.AppendLine("from supervisor_escola_dre sed");
-            query.AppendLine("where excluido = false and sed.Tipo = @tipoResponsavelAtribuicao");
+            query.AppendLine("where excluido = false");
 
             if (supervisoresId.Length > 0)
             {
@@ -55,8 +54,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine("and sed.dre_id = @dreId");
 
-            var tipoResponsavelAtribuicao = (int)TipoResponsavelAtribuicao.SupervisorEscolar;
-            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { dreId, tipoResponsavelAtribuicao }).AsList();
+            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { dreId }).AsList();
         }
 
         public SupervisorEscolasDreDto ObtemPorUe(FiltroObterSupervisorEscolasDto filtro)
@@ -111,10 +109,9 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select id, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as Excluido");
             query.AppendLine("from supervisor_escola_dre sed");
-            query.AppendLine("where escola_id = @ueId and excluido = false and sed.Tipo = @tipoResponsavelAtribuicao");
+            query.AppendLine("where escola_id = @ueId and excluido = false");
 
-            var tipoResponsavelAtribuicao = (int)TipoResponsavelAtribuicao.SupervisorEscolar;
-            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { ueId, tipoResponsavelAtribuicao })
+            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { ueId })
                 .AsList();
         }
 
@@ -124,10 +121,9 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select id, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as Excluido");
             query.AppendLine("from supervisor_escola_dre sed");
-            query.AppendLine("where escola_id = @ueId and excluido = false and sed.Tipo = @tipoResponsavelAtribuicao");
+            query.AppendLine("where escola_id = @ueId and excluido = false");
 
-            var tipoResponsavelAtribuicao = (int)TipoResponsavelAtribuicao.SupervisorEscolar;
-            return database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { ueId, tipoResponsavelAtribuicao });
+            return database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { ueId });
         }
 
         public Task<IEnumerable<DadosAbrangenciaSupervisorDto>> ObterDadosAbrangenciaSupervisor(string rfSupervisor, bool consideraHistorico, int anoLetivo)

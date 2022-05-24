@@ -34,13 +34,11 @@ namespace SME.SGP.Aplicacao
             var escolasAtribuidas = repositorioSupervisorEscolaDre
                 .ObtemPorDreESupervisor(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId, true);
 
-            using (var transacao = unitOfWork.IniciarTransacao())
-            {
-                await AjustarRegistrosExistentes(atribuicaoSupervisorEscolaDto, escolasAtribuidas);
-                AtribuirEscolas(atribuicaoSupervisorEscolaDto);
+            using var transacao = unitOfWork.IniciarTransacao();
+            await AjustarRegistrosExistentes(atribuicaoSupervisorEscolaDto, escolasAtribuidas);
+            AtribuirEscolas(atribuicaoSupervisorEscolaDto);
 
-                unitOfWork.PersistirTransacao();
-            }
+            unitOfWork.PersistirTransacao();
         }
 
         private async Task ValidarDados(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto)
