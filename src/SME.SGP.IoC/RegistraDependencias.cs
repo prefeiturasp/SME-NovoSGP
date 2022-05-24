@@ -862,6 +862,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IReprocessarParecerConclusivoPorTurmaUseCase, ReprocessarParecerConclusivoPorTurmaUseCase>();
             services.TryAddScoped<IReprocessarParecerConclusivoAlunoUseCase, ReprocessarParecerConclusivoAlunoUseCase>();
 
+            //Pendencias Devolutiva
+
             // Pendencias
             services.TryAddScoped<IObterPendenciasUseCase, ObterPendenciasUseCase>();
             services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisUseCase, ExecutaVerificacaoPendenciasGeraisUseCase>();
@@ -1302,6 +1304,13 @@ namespace SME.SGP.IoC
             // NAAPA - Frequência turma evasão
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase, ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase>();
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase, ObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
+
+            // Pendencia Devolutiva
+            services.TryAddScoped<IReprocessarDiarioBordoPendenciaDevolutivaPorDreUseCase, ReprocessarDiarioBordoPendenciaDevolutivaPorDreUseCase>();
+            services.TryAddScoped<IReprocessarDiarioBordoPendenciaDevolutivaPorUeUseCase, ReprocessarDiarioBordoPendenciaDevolutivaPorUeUseCase>();
+            services.TryAddScoped<IReprocessarDiarioBordoPendenciaDevolutivaPorTurmaUseCase, ReprocessarDiarioBordoPendenciaDevolutivaPorTurmaUseCase>();
+            services.TryAddScoped<IReprocessarDiarioBordoPendenciaDevolutivaPorComponenteUseCase, ReprocessarDiarioBordoPendenciaDevolutivaPorComponenteUseCase>();
+
         }
     }
 }

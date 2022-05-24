@@ -687,6 +687,16 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<string>(query, new { anoLetivo, modalidades, turmaCodigo });
         }
+        public async Task<IEnumerable<string>> ObterCodigosTurmasPorAnoModalidadeUe(int anoLetivo, int modalidade, string ueCodigo)
+        {
+            var query = @"select turma_id 
+                            from turma
+                           where ano_letivo = @anoLetivo
+                             AND ue_id  = @ueCodigo
+                             and modalidade_codigo = @modalidade ";
+
+            return await contexto.QueryAsync<string>(query, new { anoLetivo, modalidade, ueCodigo });
+        }
 
         public async Task<IEnumerable<TurmaComponenteDto>> ObterTurmasComponentesPorAnoLetivo(DateTime dataReferencia)
         {
