@@ -50,7 +50,6 @@ namespace SME.SGP.Dados.Repositorios
                                                and componente_curricular_id = @componenteCurricularId 
                                                and codigo_aluno = @alunoCodigo
                                                order by fpd.id desc;");
-
             var parametros = new
             {
                 turmaId,

@@ -155,7 +155,16 @@ namespace SME.SGP.Aplicacao
 
         private TurmaComComponenteDto MapearParaDto(RetornoConsultaListagemTurmaComponenteDto turmas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
         {
-            var nomeComponente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo)?.Descricao ?? turmas.NomeComponenteCurricular;
+            var nomeComponente = string.Empty;
+
+            if (turmas.Modalidade == Modalidade.EducacaoInfantil)
+            {
+                var disciplina =  consultasDisciplina.ObterDisciplina(turmas.ComponenteCurricularCodigo).Result;
+                nomeComponente = disciplina.NomeComponenteInfantil;
+            }
+            else
+                nomeComponente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo)?.Descricao ?? turmas.NomeComponenteCurricular;
+
             return turmas == null ? null : new TurmaComComponenteDto
             {
                 Id = turmas.Id,

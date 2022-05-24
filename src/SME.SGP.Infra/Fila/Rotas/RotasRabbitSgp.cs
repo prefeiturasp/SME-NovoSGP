@@ -17,6 +17,8 @@
         public const string RotaSincronizaComponetesCurricularesEol = "sgp.componentes.curriculares.eol.sincronizar";
 
         public const string RotaExecutaPendenciasAula = "sgp.pendencias.aulas.executa";
+        public const string RotaExecutaPendenciasAulaDre = "sgp.pendencias.aulas.dre.executa";
+        public const string RotaExecutaPendenciasAulaDreUe = "sgp.pendencias.aulas.dre.ue.executa";
         public const string RotaExecutaPendenciasAulaDiarioBordo = "sgp.pendencias.aulas.diario.bordo.executa";
         public const string RotaExecutaPendenciasAulaDiarioBordoTurma = "sgp.pendencias.aulas.diario.bordo.turma.executa";
         public const string RotaExecutaPendenciasAulaDiarioBordoTurmaAulaComponente = "sgp.pendencias.aulas.diario.bordo.turma.aula.componente.executa";
