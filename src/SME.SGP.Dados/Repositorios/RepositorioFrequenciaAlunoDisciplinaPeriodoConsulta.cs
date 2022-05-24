@@ -346,10 +346,12 @@ namespace SME.SGP.Dados
                 and t.tipo_turma in(1,2,7) ");
 
             if (bimestre > 0)
-                query.AppendLine(" and fa.bimestre = @bimestre");
+                query.AppendLine(" and fa.bimestre = @bimestre ");
 
             if (tipoCalendarioId > 0)
-                query.AppendLine(" and pe.tipo_calendario_id = @tipoCalendarioId");
+                query.AppendLine(" and pe.tipo_calendario_id = @tipoCalendarioId ");
+
+            query.AppendLine(" order by alterado_em desc ");
 
             return await database.Conexao
                 .QueryAsync<FrequenciaAluno>(query.ToString(), new
@@ -616,6 +618,68 @@ namespace SME.SGP.Dados
                 turmaCodigo,
                 bimestres
             });
+        }
+
+        public async Task<IEnumerable<TotalFrequenciaEAulasAlunoDto>> ObterTotalFrequenciaEAulasAlunoPorTurmaComponenteBimestres(string alunoCodigo, long tipoCalendarioId, string[] componentesCurricularesIds, string[] turmasCodigo, int bimestre)
+        {
+            var query = new StringBuilder(@"select sum(tb1.TotalPresencas) as TotalPresencas,
+ 		                                            sum(tb1.TotalAusencias) as TotalAusencias,
+ 		                                            sum(tb1.TotalRemotos) as TotalRemotos,
+ 		                                            tb1.AlunoCodigo,
+ 		                                            tb1.ComponenteCurricularId
+                                               from (
+                                             select
+                                                    (count(distinct(a.id)) filter (where rfa.valor = 1)*a.quantidade) as TotalPresencas,
+                                                    (count(distinct(a.id)) filter (where rfa.valor = 2)*a.quantidade) as TotalAusencias,
+                                                    (count(distinct(a.id)) filter (where rfa.valor = 3)*a.quantidade) as TotalRemotos,
+                                                    p.id as PeriodoEscolarId,
+                                                    p.periodo_inicio as PeriodoInicio,
+                                                    p.periodo_fim as PeriodoFim,
+                                                    p.bimestre,
+                                                    rfa.codigo_aluno as AlunoCodigo,
+                                                    a.disciplina_id as ComponenteCurricularId
+                                                from
+                                                    registro_frequencia_aluno rfa
+                                                inner join registro_frequencia rf on
+                                                    rfa.registro_frequencia_id = rf.id
+                                                inner join aula a on
+                                                    rf.aula_id = a.id
+                                                inner join periodo_escolar p on
+                                                    a.tipo_calendario_id = p.tipo_calendario_id
+                                                where
+                                              not rfa.excluido
+                                              and not a.excluido
+                                              and rfa.codigo_aluno = @alunoCodigo         
+                                              and a.turma_id = any(@turmasCodigo)     
+                                              and a.data_aula >= p.periodo_inicio
+                                              and a.data_aula <= p.periodo_fim                    
+                                              and rfa.numero_aula <= a.quantidade 
+                                              and p.tipo_calendario_id = @tipoCalendarioId
+                                              and a.disciplina_id = any(@componentesCurricularesIds) ");
+            if(bimestre > 0)
+                query.AppendLine(" and p.bimestre = @bimestre ");
+
+            query.AppendLine(@" group by
+                                    p.id,
+                                    p.periodo_inicio,
+                                    p.periodo_fim,
+                                    p.bimestre,
+                                    rfa.codigo_aluno,
+                                    a.disciplina_id,
+                                    a.quantidade) tb1
+                              group by tb1.AlunoCodigo,
+                                       tb1.ComponenteCurricularId");
+
+            var parametros = new
+            {
+                alunoCodigo,
+                tipoCalendarioId,
+                componentesCurricularesIds,
+                turmasCodigo,
+                bimestre
+            };
+
+            return await database.QueryAsync<TotalFrequenciaEAulasAlunoDto>(query.ToString(), parametros);
         }
     }
 }
