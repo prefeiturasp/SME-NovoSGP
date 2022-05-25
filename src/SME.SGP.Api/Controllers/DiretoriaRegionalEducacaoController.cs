@@ -24,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<CicloDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_C, Policy = "Bearer")]
+        [Permissao(Permissao.ARP_I, Permissao.ARP_A, Permissao.ARP_C, Policy = "Bearer")]
         public IActionResult Get()
         {
             return Ok(consultaDres.ObterTodos());
@@ -33,7 +33,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{dreId}/ues/sem-atribuicao")]
         [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_C, Policy = "Bearer")]
+        [Permissao(Permissao.ARP_I, Permissao.ARP_A, Permissao.ARP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEscolasSemAtribuicao(string dreId)
         {
             var retorno = await consultaDres.ObterEscolasSemAtribuicao(dreId);
@@ -45,7 +45,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{dreId}/ues")]
         [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_C, Policy = "Bearer")]
+        [Permissao(Permissao.ARP_I, Permissao.ARP_A, Permissao.ARP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterUesPorDre(string dreId)
         {
             var retorno = await consultaDres.ObterEscolasPorDre(dreId);
