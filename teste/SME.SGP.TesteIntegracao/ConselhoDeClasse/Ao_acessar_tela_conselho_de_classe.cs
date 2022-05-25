@@ -17,14 +17,14 @@ namespace SME.SGP.TesteIntegracao
         public Ao_acessar_tela_conselho_de_classe(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
         [Fact]
-        public async Task Deve_Exibir_Notas_Alunos_Inativos()
+        public async Task Deve_Exibir_Notas_Alunos()
         {
             //Arrange
             await Criar_Nota_Fechamento();
 
             string[] codigoTurmas = { "1" };
             var codigoAluno = "4853818";
-            var dataMatricula = new DateTime(2021, 10, 06).AddYears(2);
+            var dataMatricula = new DateTime(2021, 10, 06);
             var dataSituacao = new DateTime(2022, 03, 09);
             const int BIMESTRE = 1;
 
@@ -34,6 +34,7 @@ namespace SME.SGP.TesteIntegracao
 
             //Assert
             retorno.ShouldNotBeNull();
+            Assert.True(retorno.Any());
         }
 
         private async Task Criar_Nota_Fechamento()
