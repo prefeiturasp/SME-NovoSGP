@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Dtos\PendenciaPerfil\**" />
+    <EmbeddedResource Remove="Dtos\PendenciaPerfil\**" />
+    <None Remove="Dtos\PendenciaPerfil\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentValidation" Version="10.3.3" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.3" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.18.0" />
@@ -19,10 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Dtos\PendenciaPerfil\" />
   </ItemGroup>
 
 </Project>
