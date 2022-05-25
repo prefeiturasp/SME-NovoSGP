@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao
         public Ao_acessar_tela_conselho_de_classe(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
         [Fact]
-        public async Task Deve_Exibir_Notas_Alunos()
+        public async Task Deve_Exibir_Notas_Alunos_Com_Matricula_E_Situacao_Dentro_Do_PeriodoEscolar()
         {
             //Arrange
             await Criar_Nota_Fechamento();
