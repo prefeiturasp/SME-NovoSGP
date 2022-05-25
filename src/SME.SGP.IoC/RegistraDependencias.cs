@@ -1289,6 +1289,7 @@ namespace SME.SGP.IoC
             // Supervisor
             services.TryAddScoped<IObterResponsaveisPorDreUseCase, ObterResponsaveisPorDreUseCase>();
             services.TryAddScoped<IResponsavelAtribuirUeUseCase, ResponsavelAtribuirUeUseCase>();
+            services.TryAddScoped<IObterListTipoReponsavelUseCase, ObterListTipoReponsavelUseCase>();
         }
     }
 }
