@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Infra
 {
-    public class SupervisorEscolasDto : AuditoriaDto
+    public class ResponsavelEscolasDto : AuditoriaDto
     {
-        public SupervisorEscolasDto()
+        public ResponsavelEscolasDto()
         {
             Escolas = new List<UnidadeEscolarDto>();
         }

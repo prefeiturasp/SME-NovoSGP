@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class FiltroObterSupervisoresDto
+    public class FiltroObterResponsaveisDto
     {
         public TipoResponsavelAtribuicao TipoResponsavelAtribuicao { get; set; }
     }

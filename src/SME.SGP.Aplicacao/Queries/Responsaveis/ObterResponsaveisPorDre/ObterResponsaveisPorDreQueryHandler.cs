@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterSupervisoresPorDreQueryHandler : IRequestHandler<ObterSupervisoresPorDreQuery, IEnumerable<SupervisorEscolasDreDto>>
+    public class ObterResponsaveisPorDreQueryHandler : IRequestHandler<ObterResponsaveisPorDreQuery, IEnumerable<SupervisorEscolasDreDto>>
     {
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
 
-        public ObterSupervisoresPorDreQueryHandler(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
+        public ObterResponsaveisPorDreQueryHandler(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
         {
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
         }
 
-        public async Task<IEnumerable<SupervisorEscolasDreDto>> Handle(ObterSupervisoresPorDreQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SupervisorEscolasDreDto>> Handle(ObterResponsaveisPorDreQuery request, CancellationToken cancellationToken)
             => await repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(request.CodigoDre, request.TipoResponsavelAtribuicao);
     }
 }

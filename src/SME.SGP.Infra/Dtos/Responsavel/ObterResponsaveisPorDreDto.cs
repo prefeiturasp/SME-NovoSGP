@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Infra
 {
-    public class ObterSupervisoresPorDreDto
+    public class ObterResponsaveisPorDreDto
     {
-        public ObterSupervisoresPorDreDto(string dreCodigo, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+        public ObterResponsaveisPorDreDto(string dreCodigo, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
         {
             DreCodigo = dreCodigo;
             TipoResponsavelAtribuicao = tipoResponsavelAtribuicao;

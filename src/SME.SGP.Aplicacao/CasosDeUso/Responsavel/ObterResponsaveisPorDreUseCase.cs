@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterSupervisoresPorDreUseCase : AbstractUseCase, IObterSupervisoresPorDreUseCase
+    public class ObterResponsaveisPorDreUseCase : AbstractUseCase, IObterResponsaveisPorDreUseCase
     {
-        public ObterSupervisoresPorDreUseCase(IMediator mediator) : base(mediator)
+        public ObterResponsaveisPorDreUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -46,12 +46,12 @@ namespace SME.SGP.Aplicacao
                     {
                         var nomesServidoresAtribuidos = await mediator.Send(new ObterListaNomePorListaRFQuery(responsaveisAtribuidos?.Select(c => c.SupervisorId)));
 
-                        foreach (var supervisor in nomesServidoresAtribuidos)
+                        foreach (var responsavel in nomesServidoresAtribuidos)
                         {
                             listaNomesResponsaveisAtribuidos.Add(new ResponsavelRetornoDto()
                             {
-                                CodigoRf_Login = supervisor.CodigoRF,
-                                NomeServidor = supervisor.Nome
+                                CodigoRf_Login = responsavel.CodigoRF,
+                                NomeServidor = responsavel.Nome
                             });
                         }
 
@@ -129,24 +129,24 @@ namespace SME.SGP.Aplicacao
             return await Task.FromResult(listaResponsaveis);
         }
 
-        public async Task<IEnumerable<SupervisorDto>> Executar(ObterSupervisoresPorDreDto filtro)
+        public async Task<IEnumerable<SupervisorDto>> Executar(ObterResponsaveisPorDreDto filtro)
         {
-            var lstSupervisores = new List<SupervisorDto>();
+            var listaResponsaveis = new List<SupervisorDto>();
 
             if ((int)filtro.TipoResponsavelAtribuicao == 0)
-                return lstSupervisores;
+                return listaResponsaveis;
 
             var responsaveisEol_CoreSSO = await ObterResponsaveisEol_CoreSSO(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao);
 
             //-> Obtem os resposáveis já atribuidos
-            var responsaveisAtribuidos = (await mediator.Send(new ObterSupervisoresPorDreQuery(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao)))
+            var responsaveisAtribuidos = (await mediator.Send(new ObterResponsaveisPorDreQuery(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao)))
                 .DistinctBy(c => c.SupervisorId);
 
             var nomesResponsaveisAtribuidos = await ObterNomesResponsaveisAtribuidos(responsaveisAtribuidos, filtro.TipoResponsavelAtribuicao);
 
             if (responsaveisEol_CoreSSO != null && responsaveisEol_CoreSSO.Any())
             {
-                lstSupervisores.AddRange(responsaveisEol_CoreSSO?.Select(a => new SupervisorDto()
+                listaResponsaveis.AddRange(responsaveisEol_CoreSSO?.Select(a => new SupervisorDto()
                 {
                     SupervisorId = a.CodigoRf_Login,
                     SupervisorNome = a.NomeServidor
@@ -155,7 +155,7 @@ namespace SME.SGP.Aplicacao
 
             if (responsaveisAtribuidos != null && responsaveisAtribuidos.Any())
             {
-                lstSupervisores.AddRange(responsaveisAtribuidos?.Where(s => !responsaveisEol_CoreSSO.Select(se => se.CodigoRf_Login).Contains(s.SupervisorId))?
+                listaResponsaveis.AddRange(responsaveisAtribuidos?.Where(s => !responsaveisEol_CoreSSO.Select(se => se.CodigoRf_Login).Contains(s.SupervisorId))?
                     .Select(a => new SupervisorDto()
                     {
                         SupervisorId = a.SupervisorId,
@@ -163,7 +163,7 @@ namespace SME.SGP.Aplicacao
                     }));
             }
 
-            return lstSupervisores?.OrderBy(s => s.SupervisorNome).ThenBy(c => c.SupervisorId);
+            return listaResponsaveis?.OrderBy(s => s.SupervisorNome).ThenBy(c => c.SupervisorId);
         }
     }
 }
