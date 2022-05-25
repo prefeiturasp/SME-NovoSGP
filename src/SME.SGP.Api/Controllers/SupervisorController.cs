@@ -29,21 +29,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_I, Permissao.ARP_A, Policy = "Bearer")]
-        public async Task<IActionResult> AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorUEDto,
-            [FromServices] ISupervisorAtribuirUeUseCase useCase)
+        public async Task<IActionResult> AtribuirUE(AtribuicaoResponsavelUEDto atribuicaoResponsavelUEDto,
+            [FromServices] IResponsavelAtribuirUeUseCase useCase)
         {
-            return Ok(await useCase.Executar(atribuicaoSupervisorUEDto));
+            return Ok(await useCase.Executar(atribuicaoResponsavelUEDto));
         }
 
         [HttpGet("vinculo-lista")]
-        [ProducesResponseType(typeof(SupervisorEscolasDto), 200)]
+        [ProducesResponseType(typeof(ResponsavelEscolasDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
         public IActionResult ObterPorUe([FromQuery] FiltroObterSupervisorEscolasDto filtro)
         {
             return Ok(consultasSupervisor.ObterPorUe(filtro));
         }
-
 
         [HttpGet("tipo-responsavel")]
         public IActionResult ObterListTipoReponsavel()
@@ -59,17 +58,17 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<SupervisorDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSupervisoresPorDre(string dreId, [FromQuery]FiltroObterSupervisoresDto filtro,
-            [FromServices] IObterSupervisoresPorDreUseCase useCase)
+        public async Task<IActionResult> ObterResponsaveisPorDre(string dreId, [FromQuery]FiltroObterResponsaveisDto filtro,
+            [FromServices] IObterResponsaveisPorDreUseCase useCase)
         {
-            return Ok(await useCase.Executar(new ObterSupervisoresPorDreDto(dreId, filtro.TipoResponsavelAtribuicao)));
+            return Ok(await useCase.Executar(new ObterResponsaveisPorDreDto(dreId, filtro.TipoResponsavelAtribuicao)));
         }
 
         [HttpGet("dre/{dreId}/vinculo-escolas")]
-        [ProducesResponseType(typeof(IEnumerable<SupervisorEscolasDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ResponsavelEscolasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSupervisoresEEscolasPorDre(string dreId)
+        public async Task<IActionResult> ObterResponsaveisEEscolasPorDre(string dreId)
         {
             var retorno = await consultasSupervisor.ObterPorDre(dreId);
 
@@ -80,10 +79,10 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("{supervisoresId}/dre/{dreId}")]
-        [ProducesResponseType(typeof(IEnumerable<SupervisorEscolasDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ResponsavelEscolasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public IActionResult ObterSupervisoresEEscolasPorSupervisoresEDre(string supervisoresId, string dreId)
+        public IActionResult ObterResponsavelEEscolasPorSupervisoresEDre(string supervisoresId, string dreId)
         {
             var listaretorno = consultasSupervisor.ObterPorDreESupervisores(supervisoresId.Split(","), dreId);
 

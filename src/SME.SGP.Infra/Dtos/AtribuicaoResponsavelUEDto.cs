@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
 {
-    public class AtribuicaoSupervisorUEDto
+    public class AtribuicaoResponsavelUEDto
     {
         [Required(ErrorMessage = "A Dre deve ser informada")]
         public string DreId { get; set; }
+
 
         [Required(ErrorMessage = "O Supervisor deve ser informado")]
         public string SupervisorId { get; set; }

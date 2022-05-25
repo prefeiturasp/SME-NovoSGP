@@ -7,12 +7,12 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasSupervisor
     {
-        Task<IEnumerable<SupervisorEscolasDto>> ObterPorDre(string dreId);
+        Task<IEnumerable<ResponsavelEscolasDto>> ObterPorDre(string dreId);
 
-        Task<IEnumerable<SupervisorEscolasDto>> ObterPorDreESupervisor(string supervisorId, string dreId);
+        Task<IEnumerable<ResponsavelEscolasDto>> ObterPorDreESupervisor(string supervisorId, string dreId);
 
-        IEnumerable<SupervisorEscolasDto> ObterPorDreESupervisores(string[] supervisoresId, string dreId);
+        IEnumerable<ResponsavelEscolasDto> ObterPorDreESupervisores(string[] supervisoresId, string dreId);
 
-        SupervisorEscolasDto ObterPorUe(FiltroObterSupervisorEscolasDto filtro);
+        ResponsavelEscolasDto ObterPorUe(FiltroObterSupervisorEscolasDto filtro);
     }
 }

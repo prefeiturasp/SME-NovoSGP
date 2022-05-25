@@ -1287,8 +1287,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase, ObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
 
             // Supervisor
-            services.TryAddScoped<IObterSupervisoresPorDreUseCase, ObterSupervisoresPorDreUseCase>();
-            services.TryAddScoped<ISupervisorAtribuirUeUseCase, SupervisorAtribuirUeUseCase>();
+            services.TryAddScoped<IObterResponsaveisPorDreUseCase, ObterResponsaveisPorDreUseCase>();
+            services.TryAddScoped<IResponsavelAtribuirUeUseCase, ResponsavelAtribuirUeUseCase>();
         }
     }
 }

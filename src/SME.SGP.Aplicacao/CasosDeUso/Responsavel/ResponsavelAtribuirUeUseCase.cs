@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SupervisorAtribuirUeUseCase : AbstractUseCase, ISupervisorAtribuirUeUseCase
+    public class ResponsavelAtribuirUeUseCase : AbstractUseCase, IResponsavelAtribuirUeUseCase
     {
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IUnitOfWork unitOfWork;
 
-        public SupervisorAtribuirUeUseCase(IMediator mediator,
+        public ResponsavelAtribuirUeUseCase(IMediator mediator,
             IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
             IUnitOfWork unitOfWork) : base(mediator)
         {
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<bool> Executar(AtribuicaoSupervisorUEDto atribuicaoSupervisorUe)
+        public async Task<bool> Executar(AtribuicaoResponsavelUEDto atribuicaoSupervisorUe)
         {
             await ValidarDados(atribuicaoSupervisorUe);
 
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
             return await Task.FromResult(true);
         }
 
-        private async Task ValidarDados(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto)
+        private async Task ValidarDados(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
         {
             var dre = await mediator.Send(new ObterDREIdPorCodigoQuery(atribuicaoSupervisorEscolaDto.DreId));
 
@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void AtribuirEscolas(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto)
+        private void AtribuirEscolas(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
         {
             if (atribuicaoSupervisorEscolaDto.UESIds != null)
             {
@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task AjustarRegistrosExistentes(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto,
+        private async Task AjustarRegistrosExistentes(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto,
             IEnumerable<SupervisorEscolasDreDto> escolasAtribuidas)
         {
             if (escolasAtribuidas != null)
