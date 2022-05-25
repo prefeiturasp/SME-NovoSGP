@@ -23,16 +23,16 @@ namespace SME.SGP.Aplicacao
                 .ToList();
 
             if (exibirTodos)
-                return tipos;
+                return await Task.FromResult(tipos);
 
             var perfil = await mediator.Send(new ObterPerfilAtualQuery());
 
             if (perfil == Perfis.PERFIL_CEFAI)
-                return tipos.Where(c => c.Codigo == 2);
+                return await Task.FromResult(tipos.Where(c => c.Codigo == 2));
             else if (perfil == Perfis.PERFIL_COORDENADOR_NAAPA)
-                return tipos.Where(c => c.Codigo == 3 || c.Codigo == 4 || c.Codigo == 5);
+                return await Task.FromResult(tipos.Where(c => c.Codigo == 3 || c.Codigo == 4 || c.Codigo == 5));
             else
-                return Enumerable.Empty<TipoReponsavelRetornoDto>();
+                return await Task.FromResult(Enumerable.Empty<TipoReponsavelRetornoDto>());
         }
     }
 }
