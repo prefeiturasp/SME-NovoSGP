@@ -158,7 +158,7 @@ namespace SME.SGP.Aplicacao
             if (turmas.Modalidade == Modalidade.EducacaoInfantil)
             {
                 var disciplina =  consultasDisciplina.ObterDisciplina(turmas.ComponenteCurricularCodigo).Result;
-                nomeComponente = disciplina.NomeComponenteInfantil;
+                nomeComponente = disciplina.Nome;
             }
             else
                 nomeComponente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo)?.Descricao ?? turmas.NomeComponenteCurricular;
