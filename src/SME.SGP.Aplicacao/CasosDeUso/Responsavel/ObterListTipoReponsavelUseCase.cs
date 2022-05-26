@@ -20,7 +20,8 @@ namespace SME.SGP.Aplicacao
             var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
                 .Cast<TipoResponsavelAtribuicao>()
                 .Select(d => new TipoReponsavelRetornoDto() { Codigo = (int)d, Descricao = d.Name() }).OrderBy(x => x.Descricao)
-                .ToList();
+                .ToList()
+                .OrderBy(c => c.Codigo);
 
             if (exibirTodos)
                 return await Task.FromResult(tipos);
