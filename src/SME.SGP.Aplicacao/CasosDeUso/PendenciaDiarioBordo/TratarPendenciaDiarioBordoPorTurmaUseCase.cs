@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             var componentesSgp = await mediator.Send(new ObterComponentesCurricularesQuery());
 
-            if (professoresDaTurma != null)
+            if (professoresDaTurma != null && professoresDaTurma.Any(a => !string.IsNullOrEmpty(a)))
             {
                 string[] professoresSeparados = professoresDaTurma.FirstOrDefault().Split(',');
 
@@ -68,7 +68,8 @@ namespace SME.SGP.Aplicacao
                 {
                     CodigoTurma = turmaComDreUe.CodigoTurma,
                     TurmaComModalidade = turmaComDreUe.NomeComModalidade(),
-                    NomeEscola = turmaComDreUe.ObterEscola()
+                    NomeEscola = turmaComDreUe.ObterEscola(),
+                    AulasProfessoresComponentesCurriculares = new List<AulaProfessorComponenteDto>()
                 };
 
                 foreach (var aula in aulas)
