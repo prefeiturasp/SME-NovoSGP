@@ -45,7 +45,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("tipo-responsavel/{exibirTodos}")]
-        public async Task<IActionResult> ObterListTipoReponsavel(bool exibirTodos, [FromServices] IObterListTipoReponsavelUseCase useCase)
+        public async Task<IActionResult> ObterListTipoReponsavel(bool exibirTodos, [FromServices] IObterListaTipoReponsavelUseCase useCase)
         {
             return Ok(await useCase.Executar(exibirTodos));
         }

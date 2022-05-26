@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
             return await Task.FromResult(listaNomesResponsaveisAtribuidos);
         }
 
-        private async Task<IEnumerable<ResponsavelRetornoDto>> ObterResponsaveisEol_CoreSSO(string dreCodigo, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+        private async Task<IEnumerable<ResponsavelRetornoDto>> ObterResponsaveisEolOuCoreSSO(string dreCodigo, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
         {
             var listaResponsaveis = Enumerable.Empty<ResponsavelRetornoDto>().ToList();
 
@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
             if ((int)filtro.TipoResponsavelAtribuicao == 0)
                 return listaResponsaveis;
 
-            var responsaveisEol_CoreSSO = await ObterResponsaveisEol_CoreSSO(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao);
+            var responsaveisEolOuCoreSSO = await ObterResponsaveisEolOuCoreSSO(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao);
 
             //-> Obtem os resposáveis já atribuidos
             var responsaveisAtribuidos = (await mediator.Send(new ObterResponsaveisPorDreQuery(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao)))
@@ -144,9 +144,9 @@ namespace SME.SGP.Aplicacao
 
             var nomesResponsaveisAtribuidos = await ObterNomesResponsaveisAtribuidos(responsaveisAtribuidos, filtro.TipoResponsavelAtribuicao);
 
-            if (responsaveisEol_CoreSSO != null && responsaveisEol_CoreSSO.Any())
+            if (responsaveisEolOuCoreSSO != null && responsaveisEolOuCoreSSO.Any())
             {
-                listaResponsaveis.AddRange(responsaveisEol_CoreSSO?.Select(a => new SupervisorDto()
+                listaResponsaveis.AddRange(responsaveisEolOuCoreSSO?.Select(a => new SupervisorDto()
                 {
                     SupervisorId = a.CodigoRfOuLogin,
                     SupervisorNome = a.NomeServidor
@@ -155,7 +155,7 @@ namespace SME.SGP.Aplicacao
 
             if (responsaveisAtribuidos != null && responsaveisAtribuidos.Any())
             {
-                listaResponsaveis.AddRange(responsaveisAtribuidos?.Where(s => !responsaveisEol_CoreSSO.Select(se => se.CodigoRfOuLogin).Contains(s.SupervisorId))?
+                listaResponsaveis.AddRange(responsaveisAtribuidos?.Where(s => !responsaveisEolOuCoreSSO.Select(se => se.CodigoRfOuLogin).Contains(s.SupervisorId))?
                     .Select(a => new SupervisorDto()
                     {
                         SupervisorId = a.SupervisorId,

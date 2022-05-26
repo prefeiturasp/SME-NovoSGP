@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IObterListTipoReponsavelUseCase : IUseCase<bool, IEnumerable<TipoReponsavelRetornoDto>>
+    public interface IObterListaTipoReponsavelUseCase : IUseCase<bool, IEnumerable<TipoReponsavelRetornoDto>>
     {
     }
 }

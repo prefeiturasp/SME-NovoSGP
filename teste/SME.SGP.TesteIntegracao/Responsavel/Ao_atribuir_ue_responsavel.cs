@@ -1,9 +1,6 @@
 ﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -17,7 +14,7 @@ namespace SME.SGP.TesteIntegracao
 {
     public class Ao_atribuir_ue_responsavel : TesteBase
     {
-        private readonly AtribuirUeResponsavelUseCase responsavelAtribuirUeUseCase;
+        private readonly AtribuirUeResponsavelUseCase atribuirUeResponsavelUseCase;
         private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioSupervisorEscolaDre> repositorioSupervisorEscolaDre;
         private readonly Mock<IUnitOfWork> unitOfWork;
@@ -27,7 +24,7 @@ namespace SME.SGP.TesteIntegracao
             mediator = new Mock<IMediator>();
             repositorioSupervisorEscolaDre = new Mock<IRepositorioSupervisorEscolaDre>();
             unitOfWork = new Mock<IUnitOfWork>();
-            responsavelAtribuirUeUseCase = new AtribuirUeResponsavelUseCase(mediator.Object, repositorioSupervisorEscolaDre.Object, unitOfWork.Object);
+            atribuirUeResponsavelUseCase = new AtribuirUeResponsavelUseCase(mediator.Object, repositorioSupervisorEscolaDre.Object, unitOfWork.Object);
         }
 
         [Fact]
@@ -60,14 +57,9 @@ namespace SME.SGP.TesteIntegracao
             mediator.Setup(a => a.Send(It.IsAny<ObterSupervisoresPorDreEolQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(supervisores);
 
-            await responsavelAtribuirUeUseCase.Executar(responsavelUe);
+            await atribuirUeResponsavelUseCase.Executar(responsavelUe);
 
-            var registrosInseridos = ObterTodos<SupervisorEscolaDre>();
-
-            registrosInseridos.ShouldNotBeEmpty();
-            registrosInseridos.Count.ShouldBe(3);
-
-            var useCase = ServiceProvider.GetService<IAtribuirUeResponsavelUseCase>();
+            unitOfWork.Verify(c => c.PersistirTransacao(), Times.Once);
         }
 
         [Fact]
@@ -102,12 +94,9 @@ namespace SME.SGP.TesteIntegracao
             mediator.Setup(a => a.Send(It.IsAny<ObterFuncionariosPorDreECargoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(funcionariosEol);
 
-            await responsavelAtribuirUeUseCase.Executar(responsavelUe);
+            await atribuirUeResponsavelUseCase.Executar(responsavelUe);
 
-            var registrosInseridos = ObterTodos<SupervisorEscolaDre>();
-
-            registrosInseridos.ShouldNotBeEmpty();
-            registrosInseridos.Count.ShouldBe(3);
+            unitOfWork.Verify(c => c.PersistirTransacao(), Times.Once);
         }
 
         [Fact]
@@ -142,12 +131,9 @@ namespace SME.SGP.TesteIntegracao
             mediator.Setup(a => a.Send(It.IsAny<ObterFuncionariosDreOuUePorPerfisQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(funcionariosUnidades);
 
-            await responsavelAtribuirUeUseCase.Executar(responsavelUe);
+            await atribuirUeResponsavelUseCase.Executar(responsavelUe);
 
-            var registrosInseridos = ObterTodos<SupervisorEscolaDre>();
-
-            registrosInseridos.ShouldNotBeEmpty();
-            registrosInseridos.Count.ShouldBe(3);
+            unitOfWork.Verify(c => c.PersistirTransacao(), Times.Once);
         }
 
         [Fact]
@@ -180,20 +166,15 @@ namespace SME.SGP.TesteIntegracao
             mediator.Setup(a => a.Send(It.IsAny<ObterFuncionariosDreOuUePorPerfisQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(funcionariosUnidades);
 
-            await responsavelAtribuirUeUseCase.Executar(responsavelUe);
+            await atribuirUeResponsavelUseCase.Executar(responsavelUe);
 
-            var registrosInseridos = ObterTodos<SupervisorEscolaDre>();
-
-            registrosInseridos.ShouldNotBeEmpty();
-            registrosInseridos.Count.ShouldBe(3);
+            unitOfWork.Verify(c => c.PersistirTransacao(), Times.Once);
         }
 
         [Fact]
         public async Task Deve_inserir_ue_para_o_responsavel_tipo_asistente_social()
         {
             await CriarItensBasicos();
-
-            var useCase = ServiceProvider.GetService<IAtribuirUeResponsavelUseCase>();
 
             var responsavelUe = new AtribuicaoResponsavelUEDto()
             {
@@ -220,12 +201,9 @@ namespace SME.SGP.TesteIntegracao
             mediator.Setup(a => a.Send(It.IsAny<ObterFuncionariosDreOuUePorPerfisQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(funcionariosUnidades);
 
-            await responsavelAtribuirUeUseCase.Executar(responsavelUe);
+            await atribuirUeResponsavelUseCase.Executar(responsavelUe);
 
-            var registrosInseridos = ObterTodos<SupervisorEscolaDre>();
-
-            registrosInseridos.ShouldNotBeEmpty();
-            registrosInseridos.Count.ShouldBe(3);
+            unitOfWork.Verify(c => c.PersistirTransacao(), Times.Once);
         }
 
         private async Task CriarItensBasicos()

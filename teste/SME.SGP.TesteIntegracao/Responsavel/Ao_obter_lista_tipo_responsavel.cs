@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Deve_obter_lista_de_responsaveis()
         {
-            var useCase = ServiceProvider.GetService<IObterListTipoReponsavelUseCase>();
+            var useCase = ServiceProvider.GetService<IObterListaTipoReponsavelUseCase>();
 
             var resultados = await useCase.Executar(true);
 

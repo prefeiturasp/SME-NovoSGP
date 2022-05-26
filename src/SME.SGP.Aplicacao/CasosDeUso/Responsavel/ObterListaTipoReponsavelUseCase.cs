@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterListTipoReponsavelUseCase : AbstractUseCase, IObterListTipoReponsavelUseCase
+    public class ObterListaTipoReponsavelUseCase : AbstractUseCase, IObterListaTipoReponsavelUseCase
     {
-        public ObterListTipoReponsavelUseCase(IMediator mediator) : base(mediator)
+        public ObterListaTipoReponsavelUseCase(IMediator mediator) : base(mediator)
         {
         }
 
