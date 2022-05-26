@@ -30,7 +30,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_I, Permissao.ARP_A, Policy = "Bearer")]
         public async Task<IActionResult> AtribuirUE(AtribuicaoResponsavelUEDto atribuicaoResponsavelUEDto,
-            [FromServices] IResponsavelAtribuirUeUseCase useCase)
+            [FromServices] IAtribuirUeResponsavelUseCase useCase)
         {
             return Ok(await useCase.Executar(atribuicaoResponsavelUEDto));
         }

@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                         {
                             listaNomesResponsaveisAtribuidos.Add(new ResponsavelRetornoDto()
                             {
-                                CodigoRf_Login = funcionario.Login,
+                                CodigoRfOuLogin = funcionario.Login,
                                 NomeServidor = funcionario.NomeServidor
                             });
                         }
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                         {
                             listaNomesResponsaveisAtribuidos.Add(new ResponsavelRetornoDto()
                             {
-                                CodigoRf_Login = responsavel.CodigoRF,
+                                CodigoRfOuLogin = responsavel.CodigoRF,
                                 NomeServidor = responsavel.Nome
                             });
                         }
@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
                         {
                             listaResponsaveis.Add(new ResponsavelRetornoDto()
                             {
-                                CodigoRf_Login = funcionario.CodigoRf,
+                                CodigoRfOuLogin = funcionario.CodigoRf,
                                 NomeServidor = funcionario.NomeServidor
                             });
                         }
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
                         {
                             listaResponsaveis.Add(new ResponsavelRetornoDto()
                             {
-                                CodigoRf_Login = funcionario.Login,
+                                CodigoRfOuLogin = funcionario.Login,
                                 NomeServidor = funcionario.NomeServidor
                             });
                         }
@@ -118,7 +118,7 @@ namespace SME.SGP.Aplicacao
                     {
                         listaResponsaveis.Add(new ResponsavelRetornoDto()
                         {
-                            CodigoRf_Login = supervisor.CodigoRf,
+                            CodigoRfOuLogin = supervisor.CodigoRf,
                             NomeServidor = supervisor.NomeServidor
                         });
                     }
@@ -148,18 +148,18 @@ namespace SME.SGP.Aplicacao
             {
                 listaResponsaveis.AddRange(responsaveisEol_CoreSSO?.Select(a => new SupervisorDto()
                 {
-                    SupervisorId = a.CodigoRf_Login,
+                    SupervisorId = a.CodigoRfOuLogin,
                     SupervisorNome = a.NomeServidor
                 }));
             }
 
             if (responsaveisAtribuidos != null && responsaveisAtribuidos.Any())
             {
-                listaResponsaveis.AddRange(responsaveisAtribuidos?.Where(s => !responsaveisEol_CoreSSO.Select(se => se.CodigoRf_Login).Contains(s.SupervisorId))?
+                listaResponsaveis.AddRange(responsaveisAtribuidos?.Where(s => !responsaveisEol_CoreSSO.Select(se => se.CodigoRfOuLogin).Contains(s.SupervisorId))?
                     .Select(a => new SupervisorDto()
                     {
                         SupervisorId = a.SupervisorId,
-                        SupervisorNome = nomesResponsaveisAtribuidos?.FirstOrDefault(n => n.CodigoRf_Login == a.SupervisorId)?.NomeServidor
+                        SupervisorNome = nomesResponsaveisAtribuidos?.FirstOrDefault(n => n.CodigoRfOuLogin == a.SupervisorId)?.NomeServidor
                     }));
             }
 

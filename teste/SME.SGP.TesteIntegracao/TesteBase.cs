@@ -13,6 +13,7 @@ namespace SME.SGP.TesteIntegracao
         private readonly CollectionFixture _collectionFixture;
 
         public ServiceProvider ServiceProvider {  get {  return _collectionFixture.ServiceProvider; } }
+
         public TesteBase(CollectionFixture collectionFixture)
         {
             _collectionFixture = collectionFixture;
@@ -30,6 +31,7 @@ namespace SME.SGP.TesteIntegracao
             _collectionFixture.Database.Inserir(objeto);
             return Task.CompletedTask;
         }
+
         public Task InserirNaBase(string nomeTabela, params string[] campos)
         {
             _collectionFixture.Database.Inserir(nomeTabela, campos);
@@ -47,6 +49,5 @@ namespace SME.SGP.TesteIntegracao
         {
             return _collectionFixture.Database.ObterPorId<T, K>(id);
         }
-
     }
 }
