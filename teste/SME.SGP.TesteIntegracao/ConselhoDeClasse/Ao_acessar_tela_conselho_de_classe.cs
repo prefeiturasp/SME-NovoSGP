@@ -17,10 +17,13 @@ namespace SME.SGP.TesteIntegracao
         public Ao_acessar_tela_conselho_de_classe(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
         [Fact]
-        public async Task Deve_Exibir_Notas_Alunos_Com_Matricula_E_Situacao_Dentro_Do_PeriodoEscolar()
+        public async Task Deve_Exibir_Notas_Alunos_Inativos_Com_Matricula_E_Situacao_Dentro_Do_PeriodoEscolar()
         {
             //Arrange
-            await Criar_Nota_Fechamento();
+            var inicioPeriodoEscolar = new DateTime(2022, 01, 03);
+            var fimPeriodoEscolar = new DateTime(2022, 04, 29);
+
+            await Criar_Nota_Fechamento(inicioPeriodoEscolar, fimPeriodoEscolar);
 
             string[] codigoTurmas = { "1" };
             var codigoAluno = "4853818";
@@ -37,13 +40,60 @@ namespace SME.SGP.TesteIntegracao
             Assert.True(retorno.Any());
         }
 
-        private async Task Criar_Nota_Fechamento()
+        [Fact]
+        public async Task Nao_Deve_Exibir_Notas_Alunos_Inativos_Com_Situacao_Apos_PeriodoEscolar()
+        {
+            //Arrange
+            var inicioPeriodoEscolar = new DateTime(2022, 01, 03);
+            var fimPeriodoEscolar = new DateTime(2022, 04, 29);
+
+            await Criar_Nota_Fechamento(inicioPeriodoEscolar, fimPeriodoEscolar);
+
+            string[] codigoTurmas = { "1" };
+            var codigoAluno = "4853818";
+            var dataMatricula = new DateTime(2021, 10, 06);
+            var dataSituacao = new DateTime(2023, 03, 09);
+            const int BIMESTRE = 1;
+
+            var repositorio = ServiceProvider.GetService<IRepositorioFechamentoNotaConsulta>();
+            //Act
+            var retorno = await repositorio.ObterNotasAlunoPorTurmasCodigosBimestreAsync(codigoTurmas, codigoAluno, BIMESTRE, dataMatricula, dataSituacao);
+
+            //Assert
+            retorno.ShouldNotBeNull();
+            Assert.True(!retorno.Any());
+        }
+
+        [Fact]
+        public async Task Nao_Deve_Exibir_Notas_Alunos_Inativos_Com_Situacao_Antes_do_PeriodoEscolar()
+        {
+            //Arrange
+            var inicioPeriodoEscolar = new DateTime(2022, 01, 03);
+            var fimPeriodoEscolar = new DateTime(2022, 04, 29);
+
+            await Criar_Nota_Fechamento(inicioPeriodoEscolar, fimPeriodoEscolar);
+
+            string[] codigoTurmas = { "1" };
+            var codigoAluno = "4853818";
+            var dataMatricula = new DateTime(2021, 10, 06);
+            var dataSituacao = new DateTime(2020, 03, 09);
+            const int BIMESTRE = 1;
+
+            var repositorio = ServiceProvider.GetService<IRepositorioFechamentoNotaConsulta>();
+            //Act
+            var retorno = await repositorio.ObterNotasAlunoPorTurmasCodigosBimestreAsync(codigoTurmas, codigoAluno, BIMESTRE, dataMatricula, dataSituacao);
+
+            //Assert
+            retorno.ShouldNotBeNull();
+            Assert.True(!retorno.Any());
+        }
+
+        private async Task Criar_Nota_Fechamento(DateTime inicioPeriodoEscolar, DateTime fimPeriodoEscolar)
         {
             await InserirNaBase(new Dre()
             {
                 CodigoDre = "1",
                 DataAtualizacao = DateTime.Now
-
             });
 
             await InserirNaBase(new Ue()
@@ -75,8 +125,10 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new PeriodoEscolar()
             {
                 TipoCalendarioId = 1,
-                PeriodoInicio = new DateTime(2022, 01, 03),
-                PeriodoFim = new DateTime(2022, 04, 29),
+                //PeriodoInicio = new DateTime(2022, 01, 03),
+                PeriodoInicio = inicioPeriodoEscolar,
+                //PeriodoFim = new DateTime(2022, 04, 29),
+                PeriodoFim = fimPeriodoEscolar,
                 CriadoPor = "",
                 AlteradoPor = "",
                 CriadoRF = "",
