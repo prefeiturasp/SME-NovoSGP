@@ -109,9 +109,19 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(string codigoTurma, DateTime dataAula)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(string codigoTurma, DateTime dataAula)
         {
-            throw new NotImplementedException();
+            var lista = new List<AlunoPorTurmaResposta>();
+
+            lista.Add(new AlunoPorTurmaResposta()
+            {
+                CodigoAluno = "6523614",
+                CodigoTurma = 1,
+                NomeAluno = "Teste",
+                CodigoComponenteCurricular = 1
+            });
+
+            return lista;
         }
 
         public Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol, bool? somenteAtivos)
@@ -189,9 +199,18 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false)
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false)
         {
-            throw new NotImplementedException();
+            var lista = new List<ComponenteCurricularEol>();
+
+            lista.Add(new ComponenteCurricularEol()
+            {
+                TurmaCodigo = codigoTurma,
+                GrupoMatriz = new Dominio.GrupoMatriz(),
+                Codigo = 1
+            });
+
+            return lista;
         }
 
         public Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil)

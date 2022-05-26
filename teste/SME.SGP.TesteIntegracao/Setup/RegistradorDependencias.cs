@@ -46,7 +46,9 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             services.TryAddScoped<IServicoTelemetria, TelemetriaFake>();
             services.TryAddScoped<IServicoEol, ServicoEOLFake>();
+            services.TryAddScoped<IServicoJurema, ServicoJuremaFake>();
             base.RegistrarServicos(services);
+            base.RegistrarConsultas(services);
         }
     }
 }

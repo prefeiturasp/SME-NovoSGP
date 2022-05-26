@@ -161,6 +161,15 @@ namespace SME.SGP.TesteIntegracao.Setup
             await _teste.InserirNaBase("componente_curricular", "1106", "1106", "1", "1", "'ED.INF. EMEI 4 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 4H'");
         }
 
+        public async Task CriaComponenteCurricularComFrequencia()
+        {
+            await _teste.InserirNaBase("componente_curricular_area_conhecimento", "1", "'Área de conhecimento 1'");
+
+            await _teste.InserirNaBase("componente_curricular_grupo_matriz", "1", "'Grupo matriz 1'");
+
+            await _teste.InserirNaBase("componente_curricular", "1", "0", "1", "1", "'INGLES'", "false", "false", "false", "false", "true", "true", "'Inglês'", "''");
+        }
+
         private void CriarClaimRegenciaEja()
         {
             var contextoAplicacao = _teste.ServiceProvider.GetService<IContextoAplicacao>();

@@ -20,15 +20,15 @@ namespace SME.SGP.TesteIntegracao.Nota
 {
     public class LancarNotaBimestreTeste : TesteBase
     {
+        private ItensBasicosBuilder itensBasicos;
         public LancarNotaBimestreTeste(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+            itensBasicos = new ItensBasicosBuilder(this);
         }
 
         [Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Diferente_Regencia_Fundamental()
         {
-            // Arrange
-            var command = ServiceProvider.GetService<IComandosNotasConceitos>();
             await CriarUsuarioLogadoFundamental();
             CriarClaimFundamental();
             await InserirDadosBasicosNoBanco();
@@ -39,6 +39,9 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarAtividadeAvaliativaFundamental();
             await CriarPeriodoEscolar();
             await CriarParametroSistema();
+            await CriaComponenteCurricularJurema();
+            await itensBasicos.CriaComponenteCurricularComFrequencia();
+
             var listaDeNotas = new List<NotaConceitoDto>()
             {
              new NotaConceitoDto()
@@ -46,23 +49,37 @@ namespace SME.SGP.TesteIntegracao.Nota
                      AlunoId = "6523614",
                      AtividadeAvaliativaId = 1,
                      Conceito = 2,
-                     Nota=null
+                     Nota=5
                  },
             };
+
             var dto = new NotaConceitoListaDto
             {
-                DisciplinaId = "9",
+                DisciplinaId = "1",
                 TurmaId = "1",
                 NotasConceitos = listaDeNotas
             };
-            //Act
-            var controller = new NotasConceitosController();
-            // TODO: Ajustar o teste
-            //var retorno = await controller.Post(dto, command);
 
-            //Assert
-            //retorno.ShouldNotBeNull();
-            //Assert.IsType<OkResult>(retorno);
+            var command = ServiceProvider.GetService<IComandosNotasConceitos>();
+            
+            await command.Salvar(dto);
+
+            var dtoConsulta = new ListaNotasConceitosDto()
+            {   
+                AnoLetivo = 2,
+                Bimestre = 2,
+                TurmaCodigo = "1",
+                Modalidade = Modalidade.Fundamental,
+                DisciplinaCodigo = 1,
+                PeriodoInicioTicks = new DateTime(2022, 02, 10).Ticks,
+                PeriodoFimTicks = new DateTime(2022, 02, 10).Ticks
+            };
+
+            var obterNotasUseCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
+            var retorno = await obterNotasUseCase.Executar(dtoConsulta);
+
+            retorno.ShouldNotBeNull();
+            Assert.IsType<NotasConceitosRetornoDto>(retorno);
         }
         [Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Regencia_Eja()
@@ -79,6 +96,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarAtividadeAvaliativaEja();
             await CriarPeriodoEscolar();
             await CriarParametroSistema();
+ 
             var listaDeNotas = new List<NotaConceitoDto>()
             {
              new NotaConceitoDto()
@@ -117,7 +135,8 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Historica = true,
                 AnoLetivo = 2022,
                 ModalidadeCodigo = Modalidade.Fundamental,
-                Nome = "Turma Nome 2"
+                Nome = "Turma Nome 2",
+                
             });
         }
         private async Task CriarTurmaEja()
@@ -153,40 +172,8 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         private async Task InserirDadosBasicosNoBanco()
         {
-            await InserirNaBase(new Dre
-            {
-                Id = 1,
-                CodigoDre = "1",
-                Abreviacao = "DRE AB",
-                Nome = "DRE AB"
-            });
-            await InserirNaBase(new Ue
-            {
-                Id = 1,
-                CodigoUe = "1",
-                DreId = 1,
-                Nome = "Nome da UE",
-            });
-            await InserirNaBase(new PrioridadePerfil
-            {
-                Id = 1,
-                CodigoPerfil = new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
-                NomePerfil = "Professor",
-                Ordem = 290,
-                Tipo = TipoPerfil.UE,
-                CriadoPor = "Sistema",
-                CriadoRF = "1"
-            });
-            await InserirNaBase(new PrioridadePerfil
-            {
-                Id = 2,
-                CodigoPerfil = new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
-                NomePerfil = "Professor CJ",
-                Ordem = 320,
-                Tipo = TipoPerfil.UE,
-                CriadoPor = "Sistema",
-                CriadoRF = "1"
-            });
+            await itensBasicos.CriaItensComuns(); 
+
             await InserirNaBase(new TipoAvaliacao
             {
                 Id = 1,
@@ -582,6 +569,20 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriadoRF = "1"
             });
         }
+
+        private async Task CriaComponenteCurricularJurema()
+        {
+            await InserirNaBase(new ComponenteCurricularJurema()
+            {
+                CodigoJurema = 1,
+                DescricaoEOL = "Arte",
+                CodigoEOL = 1,
+                CriadoPor = "Sistema",
+                CriadoRF = "1"
+            });
+        }
+
+
         #endregion Massa de Dados
     }
 }
