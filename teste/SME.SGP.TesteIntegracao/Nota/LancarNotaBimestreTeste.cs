@@ -718,6 +718,19 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriadoRF = ""
             });
         }
+
+        private async Task CriaTipoEvento()
+        {
+            await InserirNaBase(new EventoTipo
+            {
+                Codigo = (int)TipoEvento.FechamentoBimestre,
+                Ativo = true,
+                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+            
+        }
         #endregion Massa de Dados
     }
 }
