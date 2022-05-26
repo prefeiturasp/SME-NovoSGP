@@ -476,6 +476,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConsolidacaoRegistrosPedagogicos, RepositorioConsolidacaoRegistrosPedagogicos>();
 
             services.TryAddScoped<IRepositorioConselhoClasseAlunoRecomendacao, RepositorioConselhoClasseAlunoRecomendacao>();
+
+            services.TryAddScoped<IRepositorioSuporteUsuario, RepositorioSuporteUsuario>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
