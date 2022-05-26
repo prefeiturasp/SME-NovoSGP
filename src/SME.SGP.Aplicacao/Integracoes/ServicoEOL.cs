@@ -1118,5 +1118,19 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<FuncionarioUnidadeDto>>(json));
         }
+
+        public async Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login)
+        {
+            var url = $@"v1/autenticacao/AutenticarSemSenha/{login}";
+
+            var resposta = await httpClient.GetAsync(url);
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException($"Não foram encontrados dados do usuário {login}");
+
+
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+        }
     }
 }
