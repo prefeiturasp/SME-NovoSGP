@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -37,10 +38,16 @@ namespace SME.SGP.Aplicacao
 
             bool diariosAtualizados = await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
 
-
+            await GerarPendenciaDevolutiva(turma.AnoLetivo);
 
             return auditoria;
         }
+
+        private async Task GerarPendenciaDevolutiva(int anoLetivo)
+        {
+            await mediator.Send(new ProcessarPendenciaDevolutivaQuery(anoLetivo));
+        }
+
         private async  Task MoverRemoverExcluidos(InserirDevolutivaDto devolutiva)
         {
             if (!string.IsNullOrEmpty(devolutiva.Descricao))

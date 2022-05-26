@@ -57,10 +57,10 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Devolutiva
             };
 
             mediator.Setup(x => x.Send(It.IsAny<ObterParametroSistemaPorTipoEAnoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(parametroSistema);
-            repositorio.Setup(x => x.DiarioBordoSemDevolutiva("856521", "512")).ReturnsAsync(dadosRepositorio);
+            repositorio.Setup(x => x.DiarioBordoSemDevolutiva(856521, "512")).ReturnsAsync(dadosRepositorio);
 
             // Act
-            var consulta = await queryHandler.Handle(new ExistePendenciaDiarioBordoQuery("856521", "512"), new CancellationToken());
+            var consulta = await queryHandler.Handle(new ExistePendenciaDiarioBordoQuery(856521, "512"), new CancellationToken());
 
             // Assert
             Assert.False(consulta, "Não Existe Diário de Bordo sem devolutiva com menos de 25 dias");
@@ -100,10 +100,10 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Devolutiva
             };
 
             mediator.Setup(x => x.Send(It.IsAny<ObterParametroSistemaPorTipoEAnoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(parametroSistema);
-            repositorio.Setup(x => x.DiarioBordoSemDevolutiva("856521", "512")).ReturnsAsync(dadosRepositorio);
+            repositorio.Setup(x => x.DiarioBordoSemDevolutiva(856521, "512")).ReturnsAsync(dadosRepositorio);
 
             // Act
-            var consulta = await queryHandler.Handle(new ExistePendenciaDiarioBordoQuery("856521", "512"), new CancellationToken());
+            var consulta = await queryHandler.Handle(new ExistePendenciaDiarioBordoQuery(856521, "512"), new CancellationToken());
 
             // Assert
             Assert.True(consulta, "Não Existe Diário de Bordo sem devolutiva com mais de 25 dias");
@@ -114,10 +114,10 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Devolutiva
         {
             //Arrange
             var dadosRepositorio = new List<DiarioBordoSemDevolutivaDto>();
-            repositorio.Setup(x => x.DiarioBordoSemDevolutiva("856521", "512")).ReturnsAsync(dadosRepositorio);
+            repositorio.Setup(x => x.DiarioBordoSemDevolutiva(856521, "512")).ReturnsAsync(dadosRepositorio);
 
             // Act
-            var consulta = await queryHandler.Handle(new ExistePendenciaDiarioBordoQuery("856521", "512"), new CancellationToken());
+            var consulta = await queryHandler.Handle(new ExistePendenciaDiarioBordoQuery(856521, "512"), new CancellationToken());
 
             // Assert
             Assert.False(consulta, "Existe Diário de Bordo sem devolutiva");

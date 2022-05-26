@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -13,13 +14,24 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public async Task Executar(int anoLetivo)
+        public async Task<bool> Executar(MensagemRabbit param)
         {
-            var dres = await mediator.Send(new ObterIdsDresQuery());
-            foreach (var dreId in dres)
+            try
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorDre, 
-                                                                new FiltroDiarioBordoPendenciaDevolutivaDto(dreCodigo:dreId,anoLetivo: anoLetivo),Guid.NewGuid(),null));
+                var filtro = param.ObterObjetoMensagem<FiltroDiarioBordoPendenciaDevolutivaDto>();
+                var dres = await mediator.Send(new ObterIdsDresQuery());
+                foreach (var dreId in dres)
+                {
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorUe,
+                                          new FiltroDiarioBordoPendenciaDevolutivaDto(dreId: dreId, anoLetivo: filtro.AnoLetivo), Guid.NewGuid(), null));
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível executar a verificação de pendencias de devolutivas por DRE", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));
+                return false;
             }
         }
     }

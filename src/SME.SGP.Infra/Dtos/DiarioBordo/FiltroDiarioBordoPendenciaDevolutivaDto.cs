@@ -2,19 +2,18 @@
 {
     public class FiltroDiarioBordoPendenciaDevolutivaDto
     {
-        public FiltroDiarioBordoPendenciaDevolutivaDto(int anoLetivo,long dreCodigo, string ueCodigo = "", string turmaCodigo = "", string componenteCodigo = "")
+        public FiltroDiarioBordoPendenciaDevolutivaDto(int anoLetivo,long dreId=0, string ueCodigo = "", long turmaId = 0, long ueId = 0)
         {
-            DreCodigo = dreCodigo;
+            DreId = dreId;
             UeCodigo = ueCodigo;
-            TurmaCodigo = turmaCodigo;
-            ComponenteCodigo = componenteCodigo;
+            TurmaId = turmaId;
             AnoLetivo = anoLetivo;
+            UeId = ueId;
         }
-
-        public long DreCodigo { get; set; }
+        public long DreId { get; set; }
         public int AnoLetivo { get; set; }
         public string UeCodigo { get; set; }
-        public string TurmaCodigo { get; set; }
-        public string ComponenteCodigo { get; set; }
+        public long UeId { get; set; }
+        public long TurmaId { get; set; }
     }
 }

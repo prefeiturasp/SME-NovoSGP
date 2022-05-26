@@ -529,7 +529,7 @@ namespace SME.SGP.Dados.Repositorios
                 }, splitOn: "id");
         }
 
-        public async Task<IEnumerable<DiarioBordoSemDevolutivaDto>> DiarioBordoSemDevolutiva(string turmaCodigo, string componenteCodigo)
+        public async Task<IEnumerable<DiarioBordoSemDevolutivaDto>> DiarioBordoSemDevolutiva(long turmaId, string componenteCodigo)
         {
             var sql = $@"WITH DiarioBordo AS(
                             SELECT 
@@ -541,7 +541,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            db.aula_id = a.id
                             WHERE
 	                            db.devolutiva_id ISNULL
-	                            AND db.turma_id = @turmaCodigo
+	                            AND db.turma_id = @turmaId
 	                            AND a.disciplina_id = @componenteCodigo
                             GROUP BY
 	                            a.tipo_calendario_id
@@ -557,7 +557,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            pe.tipo_calendario_id = db.TipoCalendarioId
                                 WHERE pe.periodo_inicio <= now() ";
 
-            return await database.Conexao.QueryAsync<DiarioBordoSemDevolutivaDto>(sql, new { turmaCodigo, componenteCodigo });
+            return await database.Conexao.QueryAsync<DiarioBordoSemDevolutivaDto>(sql, new { turmaId, componenteCodigo });
         }
     }
 }

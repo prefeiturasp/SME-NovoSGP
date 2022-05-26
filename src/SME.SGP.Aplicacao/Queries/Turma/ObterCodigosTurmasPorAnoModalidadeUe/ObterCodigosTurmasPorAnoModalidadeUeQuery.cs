@@ -5,18 +5,18 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCodigosTurmasPorAnoModalidadeUeQuery : IRequest<IEnumerable<string>>
+    public class ObterCodigosTurmasPorAnoModalidadeUeQuery : IRequest<IEnumerable<long>>
     {
-        public ObterCodigosTurmasPorAnoModalidadeUeQuery(int anoLetivo, Modalidade modalidade, string ueCodigo)
+        public ObterCodigosTurmasPorAnoModalidadeUeQuery(int anoLetivo, Modalidade modalidade, long ueId)
         {
             AnoLetivo = anoLetivo;
             Modalidade = modalidade;
-            UeCodigo = ueCodigo;
+            UeId = ueId;
         }
 
         public int AnoLetivo { get; }
         public Modalidade Modalidade { get; }
-        public string UeCodigo { get; }
+        public long UeId { get; }
 
         public class ObterCodigosTurmasPorAnoModalidadeUeQueryValidator : AbstractValidator<ObterCodigosTurmasPorAnoModalidadeUeQuery>
         {
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                     .NotEmpty()
                     .WithMessage("A modalidade da turma deve ser informada para consulta de turmas na modalidade.");
                 
-                RuleFor(a => a.UeCodigo)
+                RuleFor(a => a.UeId)
                     .NotEmpty()
                     .WithMessage("A UE da turma deve ser informada para consulta de turmas na modalidade.");
             }

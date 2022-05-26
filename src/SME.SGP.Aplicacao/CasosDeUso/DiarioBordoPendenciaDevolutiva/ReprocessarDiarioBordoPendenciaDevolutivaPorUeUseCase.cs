@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -8,21 +10,32 @@ namespace SME.SGP.Aplicacao
 {
     public class ReprocessarDiarioBordoPendenciaDevolutivaPorUeUseCase : AbstractUseCase, IReprocessarDiarioBordoPendenciaDevolutivaPorUeUseCase
     {
-        public ReprocessarDiarioBordoPendenciaDevolutivaPorUeUseCase(IMediator mediator) : base(mediator)
+        private readonly IRepositorioUeConsulta repositorioUeConsulta;
+        public ReprocessarDiarioBordoPendenciaDevolutivaPorUeUseCase(IMediator mediator, IRepositorioUeConsulta repositorioUeConsulta) : base(mediator)
         {
-
+            this.repositorioUeConsulta = repositorioUeConsulta ?? throw new ArgumentNullException(nameof(repositorioUeConsulta));
         }
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var filtro = param.ObterObjetoMensagem<FiltroDiarioBordoPendenciaDevolutivaDto>();
-            var ues = await mediator.Send(new ObterUesCodigosPorDreQuery(filtro.DreCodigo));
-            foreach (var ueCodigo in ues)
+            try
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorUe, new FiltroDiarioBordoPendenciaDevolutivaDto(dreCodigo:filtro.DreCodigo,ueCodigo: ueCodigo,anoLetivo:filtro.AnoLetivo), Guid.NewGuid(), null));
-            }
+                var filtro = param.ObterObjetoMensagem<FiltroDiarioBordoPendenciaDevolutivaDto>();
+                var ues =  repositorioUeConsulta.ObterPorDre(filtro.DreId);
+                foreach (var ue in ues)
+                {
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorTurma, 
+                        new FiltroDiarioBordoPendenciaDevolutivaDto(dreId: filtro.DreId, ueCodigo: ue.CodigoUe, anoLetivo: filtro.AnoLetivo,ueId:ue.Id), 
+                        Guid.NewGuid(), null));
+                }
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível executar a verificação de pendencias de devolutivas por UE", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));
+                return false;
+            }
         }
     }
 }

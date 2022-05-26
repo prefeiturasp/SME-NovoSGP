@@ -12,15 +12,18 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioDiarioBordo repositorio;
         private readonly IMediator mediator;
-        public ExistePendenciaDiarioBordoQueryHandler(IRepositorioDiarioBordo repositorio,IMediator mediator)
+        public ExistePendenciaDiarioBordoQueryHandler(IRepositorioDiarioBordo repositorio, IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<bool> Handle(ExistePendenciaDiarioBordoQuery request, CancellationToken cancellationToken)
         {
-            var consulta = await repositorio.DiarioBordoSemDevolutiva(request.TurmaCodigo, request.ComponenteCodigo);
             var totalDiasPermitidos = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PeriodoDeDiasDevolutiva, DateTime.Now.Year));
+            if (!totalDiasPermitidos.Ativo || totalDiasPermitidos == null)
+                return false;
+
+            var consulta = await repositorio.DiarioBordoSemDevolutiva(request.TurmaId, request.ComponenteCodigo);
 
             if (consulta?.Count() > 0)
             {

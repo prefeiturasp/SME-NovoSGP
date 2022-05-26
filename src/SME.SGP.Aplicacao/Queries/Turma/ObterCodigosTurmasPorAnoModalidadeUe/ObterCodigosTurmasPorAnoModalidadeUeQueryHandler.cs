@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCodigosTurmasPorAnoModalidadeUeQueryHandler : IRequestHandler<ObterCodigosTurmasPorAnoModalidadeUeQuery, IEnumerable<string>>
+    public class ObterCodigosTurmasPorAnoModalidadeUeQueryHandler : IRequestHandler<ObterCodigosTurmasPorAnoModalidadeUeQuery, IEnumerable<long>>
     {
         private readonly IRepositorioTurmaConsulta repositorioTurma;
-        public ObterCodigosTurmasPorAnoModalidadeUeQueryHandler()
+        public ObterCodigosTurmasPorAnoModalidadeUeQueryHandler(IRepositorioTurmaConsulta repositorioTurma)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
-        public async Task<IEnumerable<string>> Handle(ObterCodigosTurmasPorAnoModalidadeUeQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<long>> Handle(ObterCodigosTurmasPorAnoModalidadeUeQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTurma.ObterCodigosTurmasPorAnoModalidadeUe(request.AnoLetivo,(int)request.Modalidade,request.UeCodigo);
+            return await repositorioTurma.ObterIdsTurmasPorAnoModalidadeUeTipoRegular(request.AnoLetivo,(int)request.Modalidade,request.UeId);
         }
     }
 }
