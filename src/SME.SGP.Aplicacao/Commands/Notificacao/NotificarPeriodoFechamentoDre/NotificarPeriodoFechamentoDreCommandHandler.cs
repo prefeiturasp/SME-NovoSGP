@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<IEnumerable<long>> ObterUsuariosDre(string dreCodigo)
-            => await ObterUsuarios(await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(dreCodigo, ObterPerfisDre())));
+            => await ObterUsuarios((await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(dreCodigo, ObterPerfisDre()))).Select(c => c.Login));
 
         private async Task<IEnumerable<long>> ObterUsuariosSme()
             => await ObterUsuarios(await mediator.Send(new ObterFuncionariosSmePorPerfisQuery(ObterPerfisSme())));

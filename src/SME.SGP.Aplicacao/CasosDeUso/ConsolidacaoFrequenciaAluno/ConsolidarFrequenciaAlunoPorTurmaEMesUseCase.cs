@@ -40,8 +40,11 @@ namespace SME.SGP.Aplicacao
                 throw;
             }
 
-            var comandoConsolidacaoFrequenciaTurmaEvasao = new FiltroConsolidacaoFrequenciaTurmaEvasao(turmaId, filtro.Mes);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoFrequenciaTurmaEvasao, comandoConsolidacaoFrequenciaTurmaEvasao, Guid.NewGuid(), null));
+            if (turmaId > 0)
+            {
+                var comandoConsolidacaoFrequenciaTurmaEvasao = new FiltroConsolidacaoFrequenciaTurmaEvasao(turmaId, filtro.Mes);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoFrequenciaTurmaEvasao, comandoConsolidacaoFrequenciaTurmaEvasao, Guid.NewGuid(), null));
+            }
 
             return true;
         }

@@ -21,12 +21,14 @@ namespace SME.SGP.Aplicacao
             try
             {
                 filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
-                var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
+                var turma = !string.IsNullOrWhiteSpace(filtro.TurmaCodigo) ? 
+                    await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo)) : 
+                    await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
 
                 if (turma != null)
                 {
-                    var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(filtro.TurmaCodigo, true));
-                    await ConsolidarFrequenciaAlunos(filtro.TurmaId, filtro.TurmaCodigo, filtro.PercentualFrequenciaMinimo, alunos);
+                    var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, true));
+                    await ConsolidarFrequenciaAlunos(turma.Id, turma.CodigoTurma, filtro.PercentualFrequenciaMinimo, alunos);
                 }
 
                 return true;

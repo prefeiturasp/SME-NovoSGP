@@ -40,7 +40,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    a2.id = af2.arquivo_id
                     where
 	                    not af.excluido and
-	                    af.aluno_codigo = @alunoCodigo";
+	                    af.aluno_codigo = @alunoCodigo
+                    order by af.id desc";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<MiniaturaFotoDto>(query, new { alunoCodigo });
         }
