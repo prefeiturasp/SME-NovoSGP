@@ -111,17 +111,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(string codigoTurma, DateTime dataAula)
         {
-            var lista = new List<AlunoPorTurmaResposta>();
-
-            lista.Add(new AlunoPorTurmaResposta()
-            {
-                CodigoAluno = "6523614",
-                CodigoTurma = 1,
-                NomeAluno = "Teste",
-                CodigoComponenteCurricular = 1
-            });
-
-            return lista;
+            return await ObterAlunosPorTurma(codigoTurma);
         }
 
         public Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol, bool? somenteAtivos)
@@ -215,7 +205,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil)
         {
-            throw new NotImplementedException();
+            return ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfil);
         }
 
         public Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorLoginEIdPerfil(string login, Guid idPerfil)

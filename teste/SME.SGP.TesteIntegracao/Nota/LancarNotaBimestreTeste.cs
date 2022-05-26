@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using System.Linq;
 using TipoAvaliacao = SME.SGP.Dominio.TipoAvaliacao;
 
 namespace SME.SGP.TesteIntegracao.Nota
@@ -48,8 +49,8 @@ namespace SME.SGP.TesteIntegracao.Nota
                  {
                      AlunoId = "6523614",
                      AtividadeAvaliativaId = 1,
-                     Conceito = 2,
-                     Nota=5
+                     Conceito = 4,
+                     Nota = 4.5
                  },
             };
 
@@ -66,26 +67,71 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             var dtoConsulta = new ListaNotasConceitosDto()
             {   
-                AnoLetivo = 2,
-                Bimestre = 2,
+                AnoLetivo = 2022,
+                Bimestre = 1,
                 TurmaCodigo = "1",
-                Modalidade = Modalidade.Fundamental,
                 DisciplinaCodigo = 1,
-                PeriodoInicioTicks = new DateTime(2022, 02, 10).Ticks,
-                PeriodoFimTicks = new DateTime(2022, 02, 10).Ticks
+                PeriodoEscolarId = 1,
+                TurmaId = 1,
+                PeriodoInicioTicks = new DateTime(2021, 02, 10).Ticks,
+                PeriodoFimTicks = new DateTime(2022, 11, 09).Ticks
             };
 
             var obterNotasUseCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
             var retorno = await obterNotasUseCase.Executar(dtoConsulta);
 
             retorno.ShouldNotBeNull();
-            Assert.IsType<NotasConceitosRetornoDto>(retorno);
+            Assert.True(retorno.Bimestres.Count >= 0);
         }
+
+        [Fact]
+        public async Task Deve_Lancar_Conceito_Para_Componente_Diferente_Regencia_Fundamental_Sem_Avaliacao()
+        {
+            await CriarUsuarioLogadoFundamental();
+            CriarClaimFundamental();
+            await InserirDadosBasicosNoBanco();
+            await CriarTurmaFundamental();
+            await CriarAbrangenciaFundamental();
+            await CriarTipoCalendarioFundamentalMedio();
+            await CriarAulaProfFundamental();
+            await CriarPeriodoEscolar();
+            await CriarParametroSistema();
+            await CriaComponenteCurricularJurema();
+            await CriaFechamento();
+            await itensBasicos.CriaComponenteCurricularComFrequencia();
+
+            var listaNotas = new List<FechamentoNotaDto>()
+            {
+                new FechamentoNotaDto()
+                {
+                    CodigoAluno = "6523614",
+                    DisciplinaId = 1,
+                    Nota = 10
+                }
+            };
+
+            var fechamentoTurma = new List<FechamentoTurmaDisciplinaDto>()
+            {
+                new FechamentoTurmaDisciplinaDto()
+                {
+                    Bimestre = 1,
+                    DisciplinaId = 1,
+                    NotaConceitoAlunos = listaNotas,
+                    TurmaId = "1"
+                }
+            };
+
+            var command = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
+
+            var retorno = await command.Salvar(fechamentoTurma);
+
+            retorno.ShouldNotBeNull();
+            Assert.IsType<AuditoriaPersistenciaDto>(retorno);
+        }
+
         [Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Regencia_Eja()
         {
-            // Arrange
-            var command = ServiceProvider.GetService<IComandosNotasConceitos>();
             await CriarUsuarioLogadoRegenciaEja();
             CriarClaimRegenciaEja();
             await InserirDadosBasicosNoBanco();
@@ -96,16 +142,16 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarAtividadeAvaliativaEja();
             await CriarPeriodoEscolar();
             await CriarParametroSistema();
- 
+            await itensBasicos.CriaComponenteCurricularComFrequencia();
+
             var listaDeNotas = new List<NotaConceitoDto>()
             {
              new NotaConceitoDto()
                  {
                      AlunoId = "7128291",
                      AtividadeAvaliativaId = 1,
-                     Conceito = 2,
-                     Nota=null
-                 },
+                     Conceito = 2
+                 }
             };
             var dto = new NotaConceitoListaDto
             {
@@ -114,14 +160,39 @@ namespace SME.SGP.TesteIntegracao.Nota
                 NotasConceitos = listaDeNotas
             };
 
-            //Act
-            var controller = new NotasConceitosController();
-            // TODO: Ajustar o teste
-            //var retorno = await controller.Post(dto, command);
+            var command = ServiceProvider.GetService<IComandosNotasConceitos>();
 
-            //Assert
-            //retorno.ShouldNotBeNull();
-            //Assert.IsType<OkResult>(retorno);
+            await command.Salvar(dto);
+
+            var dtoConsulta = new ListaNotasConceitosDto()
+            {
+                AnoLetivo = 2,
+                Bimestre = 2,
+                TurmaCodigo = "1",
+                DisciplinaCodigo = 1,
+                PeriodoInicioTicks = new DateTime(2021, 02, 10).Ticks,
+                PeriodoFimTicks = new DateTime(2022, 11, 09).Ticks
+            };
+
+            var obterNotasUseCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
+            var retorno = await obterNotasUseCase.Executar(dtoConsulta);
+
+            retorno.ShouldNotBeNull();
+            Assert.True(retorno.Bimestres.Count >= 0);
+        }
+
+        [Fact]
+        public async Task Deve_Arrendondar_Nota()
+        {
+            await CriarUsuarioLogadoFundamental();
+            CriarClaimFundamental();
+            await InserirDadosBasicosNoBanco();
+            await CriaNotaParametro();
+
+            var consultaNota = ServiceProvider.GetService<IConsultasNotasConceitos>();
+            var retornoNota = await consultaNota.ObterValorArredondado(new DateTime(2021, 02, 10), 4.8);
+
+            retornoNota.ShouldBe(5);
         }
 
         #region Massa de Dados
@@ -174,19 +245,6 @@ namespace SME.SGP.TesteIntegracao.Nota
         {
             await itensBasicos.CriaItensComuns(); 
 
-            await InserirNaBase(new TipoAvaliacao
-            {
-                Id = 1,
-                Nome = "Avaliação bimestral",
-                Descricao = "Avaliação bimestral",
-                CriadoEm = new DateTime(2019, 12, 19),
-                Situacao = true,
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
-                AvaliacoesNecessariasPorBimestre = 1,
-                Codigo = TipoAvaliacaoCodigo.AvaliacaoBimestral,
-
-            });
             #region Ciclo
             await InserirNaBase(new Ciclo { Id = 1, Descricao = "Alfabetização", CriadoEm = DateTime.Now, CriadoPor = "Sistema", CriadoRF = "1" });
             await InserirNaBase(new Ciclo { Id = 2, Descricao = "Interdisciplinar", CriadoEm = DateTime.Now, CriadoPor = "Sistema", CriadoRF = "1" });
@@ -337,8 +395,26 @@ namespace SME.SGP.TesteIntegracao.Nota
             #endregion NotasTipo e CicloParametos
         }
 
+        private async Task CriaAvaliacao()
+        {
+            await InserirNaBase(new TipoAvaliacao
+            {
+                Id = 1,
+                Nome = "Avaliação bimestral",
+                Descricao = "Avaliação bimestral",
+                CriadoEm = new DateTime(2019, 12, 19),
+                Situacao = true,
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                AvaliacoesNecessariasPorBimestre = 1,
+                Codigo = TipoAvaliacaoCodigo.AvaliacaoBimestral
+            });
+        }
+
         private async Task CriarAtividadeAvaliativaEja()
         {
+            await CriaAvaliacao();
+
             await InserirNaBase(new AtividadeAvaliativa
             {
                 Id = 1,
@@ -366,6 +442,8 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
         private async Task CriarAtividadeAvaliativaFundamental()
         {
+            await CriaAvaliacao();
+
             await InserirNaBase(new AtividadeAvaliativa
             {
                 Id = 1,
@@ -386,7 +464,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             {
                 Id = 1,
                 AtividadeAvaliativaId = 1,
-                DisciplinaId = "9",
+                DisciplinaId = "1",
                 CriadoPor = "GENILDO CLEBER DA SILVA",
                 CriadoRF = "6737544"
             });
@@ -501,7 +579,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await InserirNaBase(new Aula
             {
                 UeId = "1",
-                DisciplinaId = "9",
+                DisciplinaId = "1",
                 TurmaId = "1",
                 TipoCalendarioId = 1,
                 ProfessorRf = "6737544",
@@ -582,7 +660,64 @@ namespace SME.SGP.TesteIntegracao.Nota
             });
         }
 
+        private async Task CriaFechamento()
+        {
+            await InserirNaBase(new FechamentoTurma()
+            {
+                Id = 1,
+                PeriodoEscolarId = 1,
+                TurmaId = 1,
+                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+            await InserirNaBase(new FechamentoTurmaDisciplina()
+            {
+                Id = 1,
+                FechamentoTurmaId = 1,
+                DisciplinaId = 1,
+                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoPor = "",
+                CriadoRF = ""
+            });
 
+            await InserirNaBase(new FechamentoAluno()
+            {
+                Id = 1,
+                FechamentoTurmaDisciplinaId = 1,
+                AlunoCodigo = "6523614",
+                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+
+            await InserirNaBase(new FechamentoNota()
+            {
+                Id = 1,
+                FechamentoAlunoId = 1,
+                Nota = 4.5,
+                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+        }
+
+        private async Task CriaNotaParametro()
+        {
+            await InserirNaBase(new NotaParametro
+            {
+                Ativo = true,
+                FimVigencia = DateTime.Today.AddDays(2),
+                Incremento = 0.5,
+                InicioVigencia = new DateTime(2021, 02, 10),
+                Maxima = 10,
+                Media = 5,
+                Minima = 0,
+                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+        }
         #endregion Massa de Dados
     }
 }
