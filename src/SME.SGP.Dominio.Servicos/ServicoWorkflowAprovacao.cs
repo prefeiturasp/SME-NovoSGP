@@ -255,7 +255,7 @@ namespace SME.SGP.Dominio.Servicos
                 repositorioFechamentoNota.Salvar(fechamentoNota);
             }
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitFechamento.ConsolidarTurmaFechamentoSync,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaFechamentoSync,
                                                new ConsolidacaoTurmaDto(fechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.TurmaId, 0),
                                                Guid.NewGuid(),
                                                null));

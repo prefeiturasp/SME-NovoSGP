@@ -1,9 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -13,13 +10,17 @@ namespace SME.SGP.Aplicacao
         public string CodigoRf { get; set; }
         public long PeriodoEscolarId { get; set; }
         public TipoPendencia TipoPendencia { get; set; }
+        public string TurmaCodigo { get; set; }
+        public long UeId { get; set; }
 
-        public ObterPendenciaIdPorComponenteProfessorBimestreQuery(long componenteId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia)
+        public ObterPendenciaIdPorComponenteProfessorBimestreQuery(long componenteId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia, string turmaCodigo, long ueId)
         {
             ComponenteCurricularId = componenteId;
             CodigoRf = codigoRf;
             PeriodoEscolarId = periodoEscolarId;
             TipoPendencia = tipoPendencia;
+            TurmaCodigo = turmaCodigo;
+            UeId = ueId;
         }
     }
 
@@ -42,6 +43,14 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.TipoPendencia)
                 .NotEmpty()
                 .WithMessage("É necessário informar o tipo da pendência para verificar se já existe a mesma.");
+
+            RuleFor(a => a.TurmaCodigo)
+                .NotEmpty()
+                .WithMessage("É necessário informar o código da turma para verificar se já existe a mesma.");
+
+            RuleFor(a => a.UeId)
+                .NotEmpty()
+                .WithMessage("É necessário informar o identificador da Ue para verificar se já existe a mesma.");
         }
     }
 }

@@ -83,6 +83,32 @@ namespace SME.SGP.TesteIntegracao
                 CriadoEm = new DateTime(2022, 03, 01)
             });
 
+            await InserirNaBase(new Dre()
+            {
+                Nome = "Dre Teste",
+                CodigoDre = "11",
+                Abreviacao = "DT"
+            });
+
+            await InserirNaBase(new Ue()
+            {
+                Nome = "Ue Teste",
+                DreId = 1,
+                TipoEscola = TipoEscola.EMEF,
+                CodigoUe = "22"
+            });
+
+            await InserirNaBase(new Turma()
+            {
+                Nome = "7P",
+                CodigoTurma = "2372753",
+                Ano = "1",
+                AnoLetivo = 2022,
+                TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
+                ModalidadeCodigo = Modalidade.Fundamental,
+                UeId = 1
+            });
+
             await InserirNaBase(new TipoCalendario()
             {
                 Id = 1,
@@ -99,7 +125,6 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(new Aula()
             {
-                Id = 1,
                 AulaCJ = false,
                 DataAula = new DateTime(2022, 01, 03),
                 ProfessorRf = "Sistema",
@@ -110,7 +135,7 @@ namespace SME.SGP.TesteIntegracao
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = "98",
+                TurmaId = "2372753",
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(2022, 03, 01),
@@ -156,6 +181,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoEm = new DateTime(2022, 01, 01),
             });
 
+
             await InserirNaBase("componente_curricular_area_conhecimento", "1", "'Área de conhecimento 1'");
 
             await InserirNaBase("componente_curricular_grupo_matriz", "1", "'Grupo matriz 1'");
@@ -165,7 +191,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase("componente_curricular", "513", "512", "1", "1", "'ED.INF. EMEI 2 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 2H'");
 
 
-            var retorno = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(512, "7111111", 1, TipoPendencia.PlanoAula));
+            var retorno = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(512, "7111111", 1, TipoPendencia.PlanoAula, "2372753", 1));
 
             retorno.ShouldBe(1);
         }

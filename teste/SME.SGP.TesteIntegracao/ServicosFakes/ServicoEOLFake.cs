@@ -70,6 +70,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
+        public Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil)
         {
             throw new NotImplementedException();
@@ -324,6 +329,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         }
 
         public Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<FuncionarioUnidadeDto>> ObterListaNomePorListaLogin(IEnumerable<string> logins)
         {
             throw new NotImplementedException();
         }
