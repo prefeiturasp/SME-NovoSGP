@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<long> GerarPedencia(long ueId, Turma dadosTurma, string descricaoComponente)
         {
-            var tituloPendencia = ObterTitualoPendencia(dadosTurma, descricaoComponente);
+            var tituloPendencia = ObterTituloPendencia(dadosTurma, descricaoComponente);
             var descricaoPendencia = ObterDescricaoPendencia(dadosTurma, descricaoComponente);
             long pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.Devolutiva, ueId, descricao: descricaoPendencia, titulo: tituloPendencia, instrucao: ObterInstrucaoPendencia()));
             await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis()));
@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
         private static string ObterInstrucaoPendencia()
             => "Esta pendência será resolvida automaticamente quando o registro da devolutiva for regularizado.";
 
-        private static string ObterTitualoPendencia(Turma dadosTurma, string descricaoComponente)
+        private static string ObterTituloPendencia(Turma dadosTurma, string descricaoComponente)
             => $"Devolutiva - {dadosTurma.ObterEscola()} - {descricaoComponente}";
 
         private static string ObterDescricaoPendencia(Turma dadosTurma, string descricaoComponente)
