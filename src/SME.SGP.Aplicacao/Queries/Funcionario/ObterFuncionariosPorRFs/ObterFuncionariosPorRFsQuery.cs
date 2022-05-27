@@ -5,17 +5,17 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterListaNomePorListaRFQuery : IRequest<IEnumerable<ProfessorResumoDto>>
+    public class ObterFuncionariosPorRFsQuery : IRequest<IEnumerable<ProfessorResumoDto>>
     {
         public IEnumerable<string> CodigosRf { get; set; }
 
-        public ObterListaNomePorListaRFQuery(IEnumerable<string> codigosRf)
+        public ObterFuncionariosPorRFsQuery(IEnumerable<string> codigosRf)
         {
             CodigosRf = codigosRf;
         }
     }
 
-    public class ObterListaNomePorListaRFQueryValidator : AbstractValidator<ObterListaNomePorListaRFQuery>
+    public class ObterListaNomePorListaRFQueryValidator : AbstractValidator<ObterFuncionariosPorRFsQuery>
     {
         public ObterListaNomePorListaRFQueryValidator()
         {

@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterListaNomePorListaLoginQueryHandler : IRequestHandler<ObterListaNomePorListaLoginQuery, IEnumerable<FuncionarioUnidadeDto>>
+    public class ObterFuncionariosPorLoginsQueryHandler : IRequestHandler<ObterFuncionariosPorLoginsQuery, IEnumerable<FuncionarioUnidadeDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
-        public ObterListaNomePorListaLoginQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterFuncionariosPorLoginsQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<IEnumerable<FuncionarioUnidadeDto>> Handle(ObterListaNomePorListaLoginQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<FuncionarioUnidadeDto>> Handle(ObterFuncionariosPorLoginsQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
 
