@@ -10,6 +10,6 @@ namespace SME.SGP.Dominio
         Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId, string[] alunosComFrequenciaRegistrada);
         Task<bool> InserirVarios(IEnumerable<RegistroFrequenciaAluno> registros);
         Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros);
-        Task ExcluirVarios(List<long> idsParaExcluir);
+        Task ExcluirVarios(long[] idsParaExcluir);
     }
 }

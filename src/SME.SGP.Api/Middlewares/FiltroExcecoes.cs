@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Middlewares
             {
                 case NegocioException negocioException:
                     await SalvaLogAsync(LogNivel.Negocio, context.Exception.Message, internalIP, context.Exception.StackTrace);
-                    context.Result = new ResultadoBaseResult(context.Exception.Message, negocioException.StatusCode);
+                    context.Result = new ResultadoBaseResult(context.Exception.Message, negocioException.StatusCode, negocioException.EhInformatico);
                     break;
                 case ValidacaoException validacaoException:
                     await SalvaLogAsync(LogNivel.Negocio, context.Exception.Message, internalIP, context.Exception.StackTrace);
