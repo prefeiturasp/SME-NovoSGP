@@ -234,7 +234,7 @@ namespace SME.SGP.Aplicacao
 
             //Verificar as notas finais
             var notasFechamentoAluno = Enumerable.Empty<NotaConceitoBimestreComponenteDto>();
-            var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(codigoTurma, turma.AnoLetivo,null,true));
+            var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(codigoTurma, turma.AnoLetivo, null, true));
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
 
             if (periodosEscolares != null)
@@ -266,7 +266,7 @@ namespace SME.SGP.Aplicacao
             var retorno = new ConselhoClasseAlunoNotasConceitosRetornoDto();
 
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
-            
+
             var frequenciasAluno = turmasComMatriculasValidas.Contains(codigoTurma) ?
                 await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, alunoCodigo, tipoCalendario.Id, bimestre) :
                 Enumerable.Empty<FrequenciaAluno>();
@@ -289,17 +289,13 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var areaConhecimento in areasConhecimento)
                 {
-                    var componentes = await mediator.Send(new ObterComponentesAreasConhecimentoQuery(grupoDisiplinasMatriz, areaConhecimento));                    
+                    var componentes = await mediator.Send(new ObterComponentesAreasConhecimentoQuery(grupoDisiplinasMatriz, areaConhecimento));
 
-                    var componentesIds = componentes.Select(c => c.Id.ToString()).ToArray();
-
-                    var frequenciasAlunoEAulas = await mediator.Send(new ObterTotalFrequenciaEAulasAlunoPorTurmaComponenteBimestresQuery(alunoCodigo, tipoCalendario.Id, componentesIds, turmasCodigos, bimestre));
+                    var componentesIds = componentes.Select(c => c.Id.ToString()).ToArray();                   
 
                     foreach (var disciplina in componentes.Where(d => d.LancaNota).OrderBy(g => g.Nome))
                     {
-                        var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
-
-                        var frequenciaAulasTratar = frequenciasAlunoEAulas.FirstOrDefault(f => f.ComponenteCurricularId == disciplina.Id.ToString());
+                        var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);                        
 
                         var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
                         FrequenciaAluno frequenciaAluno;
@@ -308,14 +304,8 @@ namespace SME.SGP.Aplicacao
                             frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
                         else if (frequenciasAlunoParaTratar.Count() == 1)
                         {
-                            frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
-                            if(frequenciaAulasTratar != null)
-                            {
-                                frequenciaAluno.TotalAulas = frequenciaAulasTratar.TotalAulas;
-                                frequenciaAluno.TotalAusencias = frequenciaAulasTratar.TotalAusencias;
-                                frequenciaAluno.TotalPresencas = frequenciaAulasTratar.TotalPresencas;
-                            }                            
-                        }                            
+                            frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();                                                     
+                        }
                         else
                         {
                             frequenciaAluno = new FrequenciaAluno()
@@ -325,20 +315,9 @@ namespace SME.SGP.Aplicacao
                                 TurmaId = turma.CodigoTurma,
                             };
 
-                            
-                            if (frequenciaAulasTratar != null)
-                            {
-                                frequenciaAluno.TotalAulas = frequenciaAulasTratar.TotalAulas;
-                                frequenciaAluno.TotalAusencias = frequenciaAulasTratar.TotalAusencias;
-                                frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
-                                frequenciaAluno.TotalPresencas = frequenciaAulasTratar.TotalPresencas;
-                            }
-                            else
-                            {
-                                frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
-                                frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
-                                frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
-                            }
+                            frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
+                            frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
+                            frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);                            
 
                             percentualFrequenciaPadrao = true;
                             frequenciasAlunoParaTratar
