@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -170,22 +171,125 @@ namespace SME.SGP.TesteIntegracao.Setup
             await _teste.InserirNaBase("componente_curricular", "1", "0", "1", "1", "'INGLES'", "false", "false", "false", "false", "true", "true", "'Inglês'", "''");
         }
 
-        private void CriarClaimRegenciaEja()
+        public async Task CriaNotaParametro()
         {
-            var contextoAplicacao = _teste.ServiceProvider.GetService<IContextoAplicacao>();
-            var variaveis = new Dictionary<string, object>();
-            variaveis.Add("NomeUsuario", "ESTER CUSTODIA DOS SANTOS");
-            variaveis.Add("UsuarioLogado", "6926886");
-            variaveis.Add("RF", "6926886");
-            variaveis.Add("login", "6926886");
-            variaveis.Add("Claims", new List<InternalClaim> {
-                new InternalClaim { Value = "6926886", Type = "rf" },
-                new InternalClaim { Value = "41e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
+            await _teste.InserirNaBase(new NotaParametro
+            {
+                Ativo = true,
+                FimVigencia = DateTime.Today.AddDays(2),
+                Incremento = 0.5,
+                InicioVigencia = new DateTime(2021, 02, 10),
+                Maxima = 10,
+                Media = 5,
+                Minima = 0,
+                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoPor = "",
+                CriadoRF = ""
             });
-            contextoAplicacao.AdicionarVariaveis(variaveis);
         }
 
-        private async Task CriarPeriodoEscolar()
+        public async Task CriaTipoEventoBimestral()
+        {
+            await _teste.InserirNaBase(new EventoTipo
+            {
+                Id = 1,
+                Codigo = (int)TipoEvento.FechamentoBimestre,
+                Ativo = true,
+                Descricao = "Tipo Evento",
+                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+        }
+
+        public async Task CriaCiclo()
+        {
+            await _teste.InserirNaBase(new Ciclo { Id = 1, Descricao = "Alfabetização", CriadoEm = DateTime.Now, CriadoPor = "Sistema", CriadoRF = "1" });
+            await _teste.InserirNaBase(new Ciclo { Id = 2, Descricao = "Interdisciplinar", CriadoEm = DateTime.Now, CriadoPor = "Sistema", CriadoRF = "1" });
+            await _teste.InserirNaBase(new Ciclo { Id = 3, Descricao = "Autoral", CriadoEm = DateTime.Now, CriadoPor = "Sistema", CriadoRF = "1" });
+            await _teste.InserirNaBase(new Ciclo { Id = 4, Descricao = "Médio", CriadoEm = DateTime.Now, CriadoPor = "Sistema", CriadoRF = "1" });
+            await _teste.InserirNaBase(new Ciclo { Id = 5, Descricao = "EJA - Alfabetização", CriadoEm = DateTime.Now, CriadoPor = "Sistema", CriadoRF = "1" });
+            await _teste.InserirNaBase(new Ciclo { Id = 6, Descricao = "EJA - Básica", CriadoEm = DateTime.Now, CriadoPor = "Sistema", CriadoRF = "1" });
+            await _teste.InserirNaBase(new Ciclo { Id = 7, Descricao = "EJA - Complementar", CriadoEm = DateTime.Now, CriadoPor = "Sistema", CriadoRF = "1" });
+            await _teste.InserirNaBase(new Ciclo { Id = 8, Descricao = "EJA - Final", CriadoEm = DateTime.Now, CriadoPor = "Sistema", CriadoRF = "1" });
+
+
+            await _teste.InserirNaBase(new CicloAno { Id = 1, CicloId = 1, Modalidade = Modalidade.Fundamental, Ano = "1" });
+            await _teste.InserirNaBase(new CicloAno { Id = 2, CicloId = 1, Modalidade = Modalidade.Fundamental, Ano = "2" });
+            await _teste.InserirNaBase(new CicloAno { Id = 3, CicloId = 1, Modalidade = Modalidade.Fundamental, Ano = "3" });
+            await _teste.InserirNaBase(new CicloAno { Id = 4, CicloId = 2, Modalidade = Modalidade.Fundamental, Ano = "4" });
+            await _teste.InserirNaBase(new CicloAno { Id = 5, CicloId = 2, Modalidade = Modalidade.Fundamental, Ano = "5" });
+            await _teste.InserirNaBase(new CicloAno { Id = 6, CicloId = 2, Modalidade = Modalidade.Fundamental, Ano = "6" });
+            await _teste.InserirNaBase(new CicloAno { Id = 7, CicloId = 3, Modalidade = Modalidade.Fundamental, Ano = "7" });
+            await _teste.InserirNaBase(new CicloAno { Id = 8, CicloId = 3, Modalidade = Modalidade.Fundamental, Ano = "8" });
+            await _teste.InserirNaBase(new CicloAno { Id = 9, CicloId = 3, Modalidade = Modalidade.Fundamental, Ano = "9" });
+            await _teste.InserirNaBase(new CicloAno { Id = 10, CicloId = 4, Modalidade = Modalidade.Medio, Ano = "1" });
+            await _teste.InserirNaBase(new CicloAno { Id = 11, CicloId = 4, Modalidade = Modalidade.Medio, Ano = "2" });
+            await _teste.InserirNaBase(new CicloAno { Id = 12, CicloId = 4, Modalidade = Modalidade.Medio, Ano = "3" });
+            await _teste.InserirNaBase(new CicloAno { Id = 13, CicloId = 5, Modalidade = Modalidade.EJA, Ano = "1" });
+            await _teste.InserirNaBase(new CicloAno { Id = 14, CicloId = 6, Modalidade = Modalidade.EJA, Ano = "2" });
+            await _teste.InserirNaBase(new CicloAno { Id = 15, CicloId = 7, Modalidade = Modalidade.EJA, Ano = "3" });
+            await _teste.InserirNaBase(new CicloAno { Id = 16, CicloId = 8, Modalidade = Modalidade.EJA, Ano = "4" });
+            await _teste.InserirNaBase(new CicloAno { Id = 17, CicloId = 4, Modalidade = Modalidade.Medio, Ano = "4" });
+        }
+
+        public async Task CriaAvaliacaoBimestral()
+        {
+            await _teste.InserirNaBase(new TipoAvaliacao
+            {
+                Id = 1,
+                Nome = "Avaliação bimestral",
+                Descricao = "Avaliação bimestral",
+                CriadoEm = new DateTime(2019, 12, 19),
+                Situacao = true,
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                AvaliacoesNecessariasPorBimestre = 1,
+                Codigo = TipoAvaliacaoCodigo.AvaliacaoBimestral
+            });
+        }
+
+        public async Task CriarParametroSistema()
+        {
+            await _teste.InserirNaBase(new ParametrosSistema
+            {
+                Nome = "MediaBimestre",
+                Tipo = TipoParametroSistema.MediaBimestre,
+                Descricao = "Media final para aprovacão no bimestre",
+                Valor = "5",
+                Ano = 2022,
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                Ativo = true
+            });
+            await _teste.InserirNaBase(new ParametrosSistema
+            {
+                Nome = "PercentualAlunosInsuficientes",
+                Tipo = TipoParametroSistema.PercentualAlunosInsuficientes,
+                Descricao = "Media final para aprovacão no bimestre",
+                Valor = "50",
+                Ano = 2022,
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                Ativo = true
+            });
+        }
+
+        public async Task CriaComponenteCurricularJurema()
+        {
+            await _teste.InserirNaBase(new ComponenteCurricularJurema()
+            {
+                CodigoJurema = 1,
+                DescricaoEOL = "Arte",
+                CodigoEOL = 1,
+                CriadoPor = "Sistema",
+                CriadoRF = "1"
+            });
+        }
+
+        public async Task CriarPeriodoEscolar()
         {
             await _teste.InserirNaBase(new PeriodoEscolar
             {
@@ -199,6 +303,21 @@ namespace SME.SGP.TesteIntegracao.Setup
                 CriadoEm = DateTime.Now,
                 Migrado = false
             });
+        }
+
+        private void CriarClaimRegenciaEja()
+        {
+            var contextoAplicacao = _teste.ServiceProvider.GetService<IContextoAplicacao>();
+            var variaveis = new Dictionary<string, object>();
+            variaveis.Add("NomeUsuario", "ESTER CUSTODIA DOS SANTOS");
+            variaveis.Add("UsuarioLogado", "6926886");
+            variaveis.Add("RF", "6926886");
+            variaveis.Add("login", "6926886");
+            variaveis.Add("Claims", new List<InternalClaim> {
+                new InternalClaim { Value = "6926886", Type = "rf" },
+                new InternalClaim { Value = "41e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
+            });
+            contextoAplicacao.AdicionarVariaveis(variaveis);
         }
     }
 }
