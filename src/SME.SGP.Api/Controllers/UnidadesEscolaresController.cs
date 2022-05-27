@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AS_C, Policy = "Bearer")]
+        [Permissao(Permissao.US_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterUsuarios([FromServices] IObterUsuarioFuncionarioUseCase obterUsuarioUseCase,
                                                        [FromBody] FiltroFuncionarioDto filtroFuncionariosDto)
         {
