@@ -79,8 +79,8 @@ namespace SME.SGP.Aplicacao
                                                                                              usuario.EhPerfilProfessor(),
                                                                                              usuario.CodigoRf,
                                                                                              filtroTurmaDto.ConsideraHistorico,
-                                                                                             filtroTurmaDto.Bimestre > 0 ? 
-                                                                                                periodoEscolar.Where(p => p.Bimestre == (filtroTurmaDto.Bimestre)).FirstOrDefault().PeriodoInicio : 
+                                                                                             filtroTurmaDto.Bimestre > 0 ?
+                                                                                                periodoEscolar.Where(p => p.Bimestre == (filtroTurmaDto.Bimestre)).FirstOrDefault().PeriodoInicio :
                                                                                                 periodoEscolar.FirstOrDefault().PeriodoInicio,
                                                                                              anosInfantilDesconsiderar != null ? String.Join(",", anosInfantilDesconsiderar) : string.Empty));
             }
@@ -155,7 +155,13 @@ namespace SME.SGP.Aplicacao
 
         private TurmaComComponenteDto MapearParaDto(RetornoConsultaListagemTurmaComponenteDto turmas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
         {
-            var nomeComponente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo)?.Descricao ?? turmas.NomeComponenteCurricular;
+            var nomeComponente = string.Empty;
+
+            if (turmas.Modalidade == Modalidade.EducacaoInfantil)
+                nomeComponente = consultasDisciplina.ObterDisciplina(turmas.ComponenteCurricularCodigo).Result.Nome;
+            else
+                nomeComponente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo)?.Descricao ?? turmas.NomeComponenteCurricular;
+
             return turmas == null ? null : new TurmaComComponenteDto
             {
                 Id = turmas.Id,
