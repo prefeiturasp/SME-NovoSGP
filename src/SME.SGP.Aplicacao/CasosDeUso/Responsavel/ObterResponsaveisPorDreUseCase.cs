@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 case TipoResponsavelAtribuicao.Psicopedagogo:
                 case TipoResponsavelAtribuicao.AssistenteSocial:
                     {
-                        var nomesFuncionariosAtribuidos = await mediator.Send(new ObterListaNomePorListaLoginQuery(responsaveisAtribuidos?.Select(c => c.SupervisorId)));
+                        var nomesFuncionariosAtribuidos = await mediator.Send(new ObterFuncionariosPorLoginsQuery(responsaveisAtribuidos?.Select(c => c.SupervisorId)));
 
                         foreach (var funcionario in nomesFuncionariosAtribuidos)
                         {
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                     }
                 default:
                     {
-                        var nomesServidoresAtribuidos = await mediator.Send(new ObterListaNomePorListaRFQuery(responsaveisAtribuidos?.Select(c => c.SupervisorId)));
+                        var nomesServidoresAtribuidos = await mediator.Send(new ObterFuncionariosPorRFsQuery(responsaveisAtribuidos?.Select(c => c.SupervisorId)));
 
                         foreach (var responsavel in nomesServidoresAtribuidos)
                         {
