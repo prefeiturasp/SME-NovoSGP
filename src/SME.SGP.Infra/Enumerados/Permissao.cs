@@ -142,7 +142,7 @@
         AP_A = 45,
 
         [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 1, Url = "/usuarios/reiniciar-senha", EhAlteracao = true,
-           EhSubMenu = true, EhConsulta = true, SubMenu = "Reiniciar Senha")]
+           EhSubMenu = true, EhConsulta = true, OrdemSubMenu = 1, SubMenu = "Reiniciar Senha")]
         AS_C = 47,
 
         [PermissaoMenu(EhMenu = false, EhConsulta = true, Menu = "Meus Dados", Agrupamento = "Meus Dados", Url = "/meus-dados")]
@@ -694,11 +694,11 @@
         [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/naapa")]
         DNA_C = 233,
 
-        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 2,
+        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 2, OrdemSubMenu = 2,
             Url = "/usuarios/suporte", EhSubMenu = true, EhConsulta = true, SubMenu = "Suporte")]
         US_C = 234,
 
-        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 2,
+        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 2, OrdemSubMenu = 2,
              Url = "/usuarios/suporte", EhSubMenu = true, EhInclusao = true, SubMenu = "Suporte")]
         US_I = 235
     }
