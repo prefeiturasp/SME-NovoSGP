@@ -64,10 +64,10 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("	and ue.dre_id = @dreId");
 
             sqlQuery.AppendLine("	and p.id is null");
-            sqlQuery.AppendLine("	and tf.id is null");
+            sqlQuery.AppendLine("	and tf.id is null and a.turma_id='2364474'");
 
             if (ueId > 0)
-                sqlQuery.AppendLine("    and ue.id = @ueId");
+                sqlQuery.AppendLine("    and ue.id = @ueId ");
 
             return await database.Conexao.QueryAsync<Aula, Turma, Aula>(sqlQuery.ToString(), (aula, turma) =>
             {
@@ -404,9 +404,12 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql.ToString(), new { aula = aulaId, hoje = DateTime.Today.Date, usuarioLogadoRf = usuarioLogado.CodigoRf }));
         }
 
-        public async Task<long> ObterPendenciaIdPorComponenteProfessorEBimestre(long componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia, string turmaCodigo, long ueId)
+        public async Task<IEnumerable<PendenciaAulaProfessorDto>> ObterPendenciaIdPorComponenteProfessorEBimestre(long componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia, string turmaCodigo, long ueId)
         {
-            var sql = @"select p.id from pendencia p 
+            try
+            {
+                var sql = @"select distinct pa.pendencia_id PendenciaId, a.id AulaId, u.rf_codigo CodigoRfProfessor
+                        from pendencia p 
                         join pendencia_aula pa on pa.pendencia_id = p.id 
                         join pendencia_usuario pu on pu.pendencia_id = p.id 
                         join usuario u on u.id = pu.usuario_id 
@@ -417,9 +420,14 @@ namespace SME.SGP.Dados.Repositorios
                         where u.rf_codigo = @codigoRf and cc.id = @componenteCurricularId 
                         and pe.id = @periodoEscolarId and p.tipo = @tipoPendencia 
                         and t.turma_id = @turmaCodigo and t.ue_id = @ueId and not p.excluido  
-                        order by p.criado_em desc";
+                        order by pa.pendencia_id, a.id";
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, tipoPendencia, turmaCodigo, ueId }));
+                return (await database.Conexao.QueryAsync<PendenciaAulaProfessorDto>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, tipoPendencia, turmaCodigo, ueId }));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<long> ObterPendenciaPorDescricaoTipo(string descricao, TipoPendencia tipoPendencia)
