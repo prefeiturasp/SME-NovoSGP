@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var alunoEmTurmaDisciplinaData in alunosEmTurmasDisciplinasData)
                 {
                     var comando = new CalcularFrequenciaPorTurmaCommand(alunoEmTurmaDisciplinaData.Alunos, alunoEmTurmaDisciplinaData.DataAula, alunoEmTurmaDisciplinaData.TurmaId.ToString(), alunoEmTurmaDisciplinaData.DisciplinaId);
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
                 };
 
                 return true;

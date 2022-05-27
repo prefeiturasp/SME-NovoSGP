@@ -15,6 +15,8 @@
         Cessado = 12,
         SemContinuidade = 13,
         RemanejadoSaida = 14,
-        ReclassificadoSaida = 15
+        ReclassificadoSaida = 15,
+        TransferidoSED = 16,
+        DispensadoEdFisica = 17
     }
 }

@@ -20,7 +20,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ItineranciaObjetivosBaseDto>> ObterObjetivosBase()
         {
-            var query = @"select id,
+            var query = @"select id as ItineranciaObjetivoBaseId,
 	                             nome,
 	                             tem_descricao as TemDescricao
                             from itinerancia_objetivo_base iob  
