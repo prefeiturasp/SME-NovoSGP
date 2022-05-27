@@ -565,6 +565,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioNotasEConceitosFinaisUseCase, RelatorioNotasEConceitosFinaisUseCase>();
             services.TryAddScoped<IRelatorioAtribuicaoCJUseCase, RelatorioAtribuicaoCJUseCase>();
             services.TryAddScoped<IObterJustificativasAlunoPorComponenteCurricularUseCase, ObterJustificativasAlunoPorComponenteCurricularUseCase>();
+            services.TryAddScoped<IObterUsuarioFuncionarioUseCase, ObterUsuarioFuncionarioUseCase>();
 
             services.TryAddScoped<IExcluirDevolutivaUseCase, ExcluirDevolutivaUseCase>();
             services.TryAddScoped<IObterListaDevolutivasPorTurmaComponenteUseCase, ObterListaDevolutivasPorTurmaComponenteUseCase>();

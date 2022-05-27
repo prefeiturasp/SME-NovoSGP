@@ -484,6 +484,17 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionario(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)
+        {
+            return new List<UsuarioEolRetornoDto>()
+            {
+                new UsuarioEolRetornoDto()
+                {
+                    CodigoRf = "6926886"
+                }
+            };
+        }
+
         public Task<bool> PodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
             throw new NotImplementedException();
