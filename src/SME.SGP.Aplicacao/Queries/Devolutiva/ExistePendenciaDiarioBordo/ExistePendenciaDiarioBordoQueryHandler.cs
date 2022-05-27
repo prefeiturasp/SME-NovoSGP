@@ -20,8 +20,6 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExistePendenciaDiarioBordoQuery request, CancellationToken cancellationToken)
         {
             var totalDiasPermitidos = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PeriodoDeDiasDevolutiva, DateTime.Now.Year));
-            if (!totalDiasPermitidos.Ativo || totalDiasPermitidos == null)
-                return false;
 
             var consulta = await repositorio.DiarioBordoSemDevolutiva(request.TurmaId, request.ComponenteCodigo);
 
@@ -36,13 +34,9 @@ namespace SME.SGP.Aplicacao
                     else if (datas.PeriodoInicio <= dataAtual && datas.PeriodoFim > dataAtual)
                         totalDeDias += (int)dataAtual.Subtract(datas.PeriodoInicio).TotalDays;
                 }
-                if (totalDeDias > Convert.ToInt32(totalDiasPermitidos.Valor))
-                    return true;
-                else
-                    return false;
+                return totalDeDias > Convert.ToInt32(totalDiasPermitidos.Valor);
             }
-            else
-                return false;
+            return false;
         }
     }
 }

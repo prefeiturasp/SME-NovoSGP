@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível executar a verificação de pendencias de devolutivas por UE", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível executar a verificação de pendencias de devolutivas por UE", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));
                 return false;
             }
         }
