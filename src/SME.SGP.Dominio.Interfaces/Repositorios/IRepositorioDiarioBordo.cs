@@ -39,6 +39,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<QuantidadeDiariosDeBordoComDevolutivaEDevolutivaPendentePorTurmaAnoDto>> ObterDiariosDeBordoComDevolutivaEDevolutivaPendenteAsync(int anoLetivo, Modalidade modalidade, DateTime dataAula, long? dreId, long? ueId);
 
         Task<IEnumerable<DiarioBordo>> ObterIdDiarioBordoAulasExcluidas(string codigoTurma, string codigoDisciplina, long tipoCalendarioId, DateTime[] datasConsideradas);
-        Task<IEnumerable<DiarioBordoSemDevolutivaDto>> DiarioBordoSemDevolutiva(string turmaCodigo, string componenteCodigo);
+        Task<IEnumerable<DiarioBordoSemDevolutivaDto>> DiarioBordoSemDevolutiva(long turmaId, string componenteCodigo);
     }
 }

@@ -7,5 +7,9 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<PendenciaDevolutiva>> ObterPendenciasDevolutivaPorTurmaComponente(long turmaId, long componenteId);
         Task<IEnumerable<PendenciaDevolutiva>> ObterPendenciasDevolutivaPorPendencia(long pendenciaId);
+        Task Salvar(PendenciaDevolutiva pendenciaDevolutiva);
+        Task ExcluirPorTurmaComponente(long turmaId, long componenteId);
+        Task ExcluirPorId(long id);
+        Task<IEnumerable<string>> ObterCodigoComponenteComDiarioBordoSemDevolutiva(long turmaId,string ueId);
     }
 }

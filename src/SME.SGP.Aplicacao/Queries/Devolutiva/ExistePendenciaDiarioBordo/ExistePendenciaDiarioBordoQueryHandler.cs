@@ -12,15 +12,16 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioDiarioBordo repositorio;
         private readonly IMediator mediator;
-        public ExistePendenciaDiarioBordoQueryHandler(IRepositorioDiarioBordo repositorio,IMediator mediator)
+        public ExistePendenciaDiarioBordoQueryHandler(IRepositorioDiarioBordo repositorio, IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<bool> Handle(ExistePendenciaDiarioBordoQuery request, CancellationToken cancellationToken)
         {
-            var consulta = await repositorio.DiarioBordoSemDevolutiva(request.TurmaCodigo, request.ComponenteCodigo);
             var totalDiasPermitidos = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PeriodoDeDiasDevolutiva, DateTime.Now.Year));
+
+            var consulta = await repositorio.DiarioBordoSemDevolutiva(request.TurmaId, request.ComponenteCodigo);
 
             if (consulta?.Count() > 0)
             {
@@ -33,13 +34,9 @@ namespace SME.SGP.Aplicacao
                     else if (datas.PeriodoInicio <= dataAtual && datas.PeriodoFim > dataAtual)
                         totalDeDias += (int)dataAtual.Subtract(datas.PeriodoInicio).TotalDays;
                 }
-                if (totalDeDias > Convert.ToInt32(totalDiasPermitidos.Valor))
-                    return true;
-                else
-                    return false;
+                return totalDeDias > Convert.ToInt32(totalDiasPermitidos.Valor);
             }
-            else
-                return false;
+            return false;
         }
     }
 }
