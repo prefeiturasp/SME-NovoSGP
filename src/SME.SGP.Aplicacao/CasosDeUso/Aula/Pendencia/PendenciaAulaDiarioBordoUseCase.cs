@@ -16,16 +16,14 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var filtro = param.ObterObjetoMensagem<DreUeDto>();
-            var uesDre = filtro.UeId > 0 ?
-                await CarregarUePorId(filtro.UeId) :
-                await CarregarUesPorDreId(filtro.DreId);
 
-            foreach (var ue in uesDre)
+            if (filtro != null)
             {
-                var turmasUe = await mediator.Send(new ObterTurmasInfantilPorUEQuery(DateTimeExtension.HorarioBrasilia().Year, ue));
+                var turmasUe = await mediator.Send(new ObterTurmasInfantilPorUEQuery(DateTimeExtension.HorarioBrasilia().Year, filtro.CodigoUe));
+
                 foreach (var turma in turmasUe)
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurma, turma.TurmaCodigo));
-            }
+            }                
 
             return true;
         }
