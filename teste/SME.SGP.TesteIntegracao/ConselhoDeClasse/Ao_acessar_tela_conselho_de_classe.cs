@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao
             string[] codigoTurmas = { "1" };
             var codigoAluno = "4853818";
             var dataMatricula = new DateTime(2021, 10, 06);
-            var dataSituacao = new DateTime(2020, 03, 09);
+            var dataSituacao = new DateTime(2021, 03, 09);
             const int BIMESTRE = 1;
 
             var repositorio = ServiceProvider.GetService<IRepositorioFechamentoNotaConsulta>();
