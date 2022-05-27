@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public ObterUltimaVersaoPlanoAEEQueryValidator()
         {
             RuleFor(a => a.PlanoId)
-                .NotEmpty()
+                .NotNull()
                 .WithMessage("O id do plano deve ser informado.");
         }
     }

@@ -1,19 +1,19 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    internal class ObterFuncionariosPorDreECargoQuery : IRequest<IEnumerable<UsuarioEolRetornoDto>>
+    public class ObterFuncionariosPorDreECargoQuery : IRequest<IEnumerable<UsuarioEolRetornoDto>>
     {
-        public string CodigoDRE;
-        public int CodigoCargo;
-
         public ObterFuncionariosPorDreECargoQuery(string codigoDRE, int codigoCargo)
         {
-            this.CodigoDRE = codigoDRE;
-            this.CodigoCargo = codigoCargo;
+            CodigoDRE = codigoDRE;
+            CodigoCargo = codigoCargo;
         }
+
+        public string CodigoDRE { get; set; }
+        public int CodigoCargo { get; set; }
+
     }
 }

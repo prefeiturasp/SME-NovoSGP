@@ -32,6 +32,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
+        private const int PRIMEIRO_BIMESTRE = 1;
 
         public ConsultasFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
             IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
@@ -94,6 +95,21 @@ namespace SME.SGP.Aplicacao
             var periodosAberto = await consultasPeriodoFechamento
                 .ObterPeriodosComFechamentoEmAberto(turma.UeId, turma.AnoLetivo);
 
+            var tipoCalendario = await repositorioTipoCalendario
+                .BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, semestre);
+
+            if (tipoCalendario == null)
+                throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
+
+            var periodosEscolares = await consultasPeriodoEscolar
+                .ObterPeriodosEscolares(tipoCalendario.Id);
+
+            if (periodosEscolares == null)
+                throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
+
+            DateTime primeiroPeriodoDoCalendario = periodosEscolares.Where(p => p.Bimestre == PRIMEIRO_BIMESTRE).Select(pe => pe.PeriodoInicio).FirstOrDefault();
+
+
             PeriodoEscolar periodoEscolar;
             if (periodosAberto != null && periodosAberto.Any())
             {
@@ -103,17 +119,6 @@ namespace SME.SGP.Aplicacao
             else
             {
                 // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
-                var tipoCalendario = await repositorioTipoCalendario
-                    .BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, semestre);
-
-                if (tipoCalendario == null)
-                    throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
-
-                var periodosEscolares = await consultasPeriodoEscolar
-                    .ObterPeriodosEscolares(tipoCalendario.Id);
-
-                if (periodosEscolares == null)
-                    throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
 
                 periodoEscolar = consultasPeriodoEscolar
                     .ObterPeriodoPorData(periodosEscolares, DateTime.Today);
@@ -129,6 +134,9 @@ namespace SME.SGP.Aplicacao
                                            (
                                            x.DataSituacao.Date >= periodoEscolar.PeriodoInicio.Date &&
                                            x.DataSituacao.Date <= periodoEscolar.PeriodoFim.Date)).OrderBy(w => w.Nome);
+
+            dadosAlunosFiltrados = dadosAlunosFiltrados.Where(d => d.SituacaoCodigo == SituacaoMatriculaAluno.Ativo || d.SituacaoCodigo != SituacaoMatriculaAluno.Ativo 
+                                                              && d.DataSituacao >= primeiroPeriodoDoCalendario).OrderBy(d=> d.Nome);
 
             return dadosAlunosFiltrados;
         }

@@ -18,6 +18,9 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasTurma consultasTurma;
         private readonly IMediator mediator;
 
+        private const string CODIGO_DISCIPLINA_INGLES = "9";
+        private const string CODIGO_ALTERNATIVO_DISCIPLINA_INGLES = "1046";
+
         public ConsultasAulaPrevista(IRepositorioAulaPrevistaConsulta repositorioAulaPrevistaConsulta,
                                      IRepositorioAulaPrevistaBimestreConsulta repositorioBimestre,
                                      IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
@@ -51,12 +54,20 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await ObterTurma(turmaId);
 
-            var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);            
+            var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
 
-            var aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
+            var aulaPrevista = await repositorioAulaPrevistaConsulta
+                .ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
+
+            if (disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) && aulaPrevista == null)
+            {
+                aulaPrevista = await repositorioAulaPrevistaConsulta
+                    .ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, CODIGO_ALTERNATIVO_DISCIPLINA_INGLES);
+            }
 
             var ehAnoLetivo = turma.AnoLetivo == DateTime.Today.Year;
-            var periodosAbertos = await consultasTurma.PeriodosEmAbertoTurma(turmaId, DateTime.Now, ehAnoLetivo);
+            var periodosAbertos = await consultasTurma
+                .PeriodosEmAbertoTurma(turmaId, DateTime.Now, ehAnoLetivo);
 
             IEnumerable<AulaPrevistaBimestreQuantidade> aulaPrevistaBimestres;
 

@@ -23,10 +23,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PlanoAEEVersaoDto> ObterUltimaVersaoPorPlanoId(long planoId)
         {
-            var query = @"select pav.Id, pav.numero, pav.criado_em as CriadoEm 
-                          from plano_aee_versao pav 
-                         where pav.plano_aee_id = @planoId 
+            var query = "";
+            if (planoId > 0)
+            {
+                query = @"select pav.Id, pav.numero, pav.criado_em as CriadoEm 
+                          from plano_aee_versao pav
+                         where pav.plano_aee_id = @planoId
                          order by pav.numero desc";
+            }
+            else
+            {
+                query = @"select pav.Id, pav.numero, pav.criado_em as CriadoEm 
+                          from plano_aee_versao pav                         
+                         order by pav.numero desc";
+            }
+            
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEVersaoDto>(query, new { planoId });
         }

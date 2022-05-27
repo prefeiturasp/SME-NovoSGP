@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var publicarSyncUe = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalUeTratar, ueCodigo, Guid.NewGuid(), null));
+                    var publicarSyncUe = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalUeTratar, ueCodigo, Guid.NewGuid(), null));
                     if (!publicarSyncUe)
                     {
                         await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir a UE de codígo : {ueCodigo} na fila de sync.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, "Sincronização Institucional de Dre"));

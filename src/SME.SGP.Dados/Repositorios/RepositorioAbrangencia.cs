@@ -566,7 +566,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join ue u on
                                 t.ue_id = u.id
                             where
-                                u.ue_id = @codigoUe";
+                                u.ue_id = @codigoUe  and t.modalidade_codigo <> 0";
 
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe });
         }
