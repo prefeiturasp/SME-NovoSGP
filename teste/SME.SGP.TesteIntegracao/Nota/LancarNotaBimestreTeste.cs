@@ -206,6 +206,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarAbrangenciaFundamental();
             await CriarTipoCalendarioFundamentalMedio();
             await CriarAulaProfFundamental();
+            await CriaFechamento();
         }
 
         private async Task PreparaBaseEja()
@@ -218,6 +219,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarTipoCalendarioEja();
             await CriarAulaProfRegenciaEja();
             await CriarAtividadeAvaliativaEja();
+            await CriaFechamento();
         }
 
         #region Massa de Dados
@@ -257,7 +259,6 @@ namespace SME.SGP.TesteIntegracao.Nota
             await itensBasicos.CriaCiclo();
             await itensBasicos.CriarPeriodoEscolar();
             await itensBasicos.CriarParametroSistema();
-            await CriaFechamento();
             await itensBasicos.CriaTipoEventoBimestral();
             await itensBasicos.CriaComponenteCurricularComFrequencia();
 
