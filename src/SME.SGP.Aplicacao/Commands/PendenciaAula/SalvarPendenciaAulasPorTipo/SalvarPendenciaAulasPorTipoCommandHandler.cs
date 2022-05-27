@@ -40,54 +40,55 @@ namespace SME.SGP.Aplicacao
 
                     var turmaAnoComModalidade = turmaComDreUe.NomeComModalidade();
 
-                var descricaoUeDre = turmaComDreUe.ObterEscola();
+                    var descricaoUeDre = turmaComDreUe.ObterEscola();
 
-                if (periodoEscolar != null)
-                {
-                    var aulasNormais = item.Where(w => !w.AulaCJ);
-
-                    var aulasCJ = item.Where(w => w.AulaCJ);
-
-                    if (aulasNormais.Any())
+                    if (periodoEscolar != null)
                     {
-                        var modalidadeTurma = await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(item.First().TurmaId));
+                        var aulasNormais = item.Where(w => !w.AulaCJ);
 
-                        if (modalidadeTurma != Modalidade.EducacaoInfantil || request.TipoPendenciaAula != TipoPendencia.Frequencia)
+                        var aulasCJ = item.Where(w => w.AulaCJ);
+
+                        if (aulasNormais.Any())
                         {
-                            var professorTitularTurma = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(item.First().TurmaId, item.First().DisciplinaId));
+                            var modalidadeTurma = await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(item.First().TurmaId));
 
-                            if (professorTitularTurma != null)
+                            if (modalidadeTurma != Modalidade.EducacaoInfantil || request.TipoPendenciaAula != TipoPendencia.Frequencia)
                             {
-                                if (periodoEscolar != null)
-                                    await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe.CodigoTurma, turmaComDreUe.UeId);
-                            }
-                        }
-                        else
-                        {
-                            var professoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(item.First().TurmaId));
+                                var professorTitularTurma = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(item.First().TurmaId, item.First().DisciplinaId));
 
-                            if (professoresTitularesDaTurma != null)
-                            {
-                                string[] professoresSeparados = professoresTitularesDaTurma.FirstOrDefault().Split(',');
-
-                                foreach (var professor in professoresSeparados)
+                                if (professorTitularTurma != null)
                                 {
-                                    string codigoRfProfessor = professor.Trim();
-
-                                    if (!String.IsNullOrEmpty(codigoRfProfessor))
-                                        await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, codigoRfProfessor, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe.CodigoTurma, turmaComDreUe.UeId);
+                                    if (periodoEscolar != null)
+                                        await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe.CodigoTurma, turmaComDreUe.UeId);
                                 }
                             }
+                            else
+                            {
+                                var professoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(item.First().TurmaId));
+
+                                if (professoresTitularesDaTurma != null)
+                                {
+                                    string[] professoresSeparados = professoresTitularesDaTurma.FirstOrDefault().Split(',');
+
+                                    foreach (var professor in professoresSeparados)
+                                    {
+                                        string codigoRfProfessor = professor.Trim();
+
+                                        if (!String.IsNullOrEmpty(codigoRfProfessor))
+                                            await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, codigoRfProfessor, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe.CodigoTurma, turmaComDreUe.UeId);
+                                    }
+                                }
+                            }
+
                         }
 
-                    }
+                        if (aulasCJ.Any())
+                        {
+                            var agrupamentoAulasCJ = aulasCJ.Where(w => !string.IsNullOrEmpty(w.ProfessorRf)).GroupBy(x => new { x.ProfessorRf });
 
-                    if (aulasCJ.Any())
-                    {
-                        var agrupamentoAulasCJ = aulasCJ.Where(w=> !string.IsNullOrEmpty(w.ProfessorRf)).GroupBy(x => new { x.ProfessorRf });
-
-                        foreach (var aulaCJ in agrupamentoAulasCJ)
-                            await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, aulaCJ.FirstOrDefault().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulaCJ.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe.CodigoTurma, turmaComDreUe.UeId);
+                            foreach (var aulaCJ in agrupamentoAulasCJ)
+                                await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, aulaCJ.FirstOrDefault().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulaCJ.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe.CodigoTurma, turmaComDreUe.UeId);
+                        }
                     }
                 }
             }
