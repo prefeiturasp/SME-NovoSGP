@@ -64,7 +64,7 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("	and ue.dre_id = @dreId");
 
             sqlQuery.AppendLine("	and p.id is null");
-            sqlQuery.AppendLine("	and tf.id is null and a.turma_id='2364474'");
+            sqlQuery.AppendLine("	and tf.id is null");
 
             if (ueId > 0)
                 sqlQuery.AppendLine("    and ue.id = @ueId ");
