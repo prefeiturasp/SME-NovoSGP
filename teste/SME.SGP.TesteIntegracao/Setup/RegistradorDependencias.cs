@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
@@ -38,6 +40,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 var contextoAplicacao = provider.GetService<IContextoAplicacao>();
                 return new SgpContextConsultas(connection, contextoAplicacao);
             });
+
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
             services.AddPolicies();
         }

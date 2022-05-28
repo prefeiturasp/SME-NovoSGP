@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterListaNomePorListaLoginQueryValidator : AbstractValidator<ObterListaNomePorListaLoginQuery>
+    public class ObterFuncionariosPorLoginsQueryValidator : AbstractValidator<ObterFuncionariosPorLoginsQuery>
     {
-        public ObterListaNomePorListaLoginQueryValidator()
+        public ObterFuncionariosPorLoginsQueryValidator()
         {
             RuleForEach(x => x.Logins)
                 .NotEmpty()

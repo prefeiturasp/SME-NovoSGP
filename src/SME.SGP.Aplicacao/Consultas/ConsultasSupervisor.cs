@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
             var listaResponsaveis = Enumerable.Empty<ResponsavelRetornoDto>().ToList();
 
             if (supervisoresEscolasDres.Count() == 1 && string.IsNullOrEmpty(supervisoresEscolasDres.FirstOrDefault().SupervisorId))
-                listaResponsaveis.Add(new ResponsavelRetornoDto() { CodigoRf_Login = "", NomeServidor = "NÃO ATRIBUÍDO" });
+                listaResponsaveis.Add(new ResponsavelRetornoDto() { CodigoRfOuLogin = "", NomeServidor = "NÃO ATRIBUÍDO" });
 
             var supervisoresTipo = supervisoresEscolasDres
                 .GroupBy(a => new { a.SupervisorId, a.Tipo })
@@ -147,7 +147,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 listaResponsaveis.Add(new ResponsavelRetornoDto()
                                 {
-                                    CodigoRf_Login = funcionario.Login,
+                                    CodigoRfOuLogin = funcionario.Login,
                                     NomeServidor = funcionario.NomeServidor
                                 });
                             }
@@ -162,7 +162,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 listaResponsaveis.Add(new ResponsavelRetornoDto()
                                 {
-                                    CodigoRf_Login = item.CodigoRF,
+                                    CodigoRfOuLogin = item.CodigoRF,
                                     NomeServidor = item.Nome
                                 });
                             }
@@ -171,11 +171,11 @@ namespace SME.SGP.Aplicacao
                         }
                 }
 
-                var responsavelRetorno = listaResponsaveis.FirstOrDefault(a => a.CodigoRf_Login == (supervisor?.SupervisorId ?? string.Empty));
+                var responsavelRetorno = listaResponsaveis.FirstOrDefault(a => a.CodigoRfOuLogin == (supervisor?.SupervisorId ?? string.Empty));
 
                 yield return new ResponsavelEscolasDto()
                 {
-                    Responsavel = responsavelRetorno.NomeServidor + " - " + responsavelRetorno.CodigoRf_Login,
+                    Responsavel = responsavelRetorno.NomeServidor + " - " + responsavelRetorno.CodigoRfOuLogin,
                     ResponsavelId = supervisor.SupervisorId,
                     TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.Tipo),
                     Escolas = escolas.ToList(),
