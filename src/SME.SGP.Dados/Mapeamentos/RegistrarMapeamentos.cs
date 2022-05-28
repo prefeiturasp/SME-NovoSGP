@@ -204,6 +204,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConselhoClasseAlunoRecomendacaoMap());
                config.AddMap(new ConsolidacaoFrequenciaAlunoMensalMap());
                config.AddMap(new FrequenciaTurmaEvasaoMap());
+               config.AddMap(new PendenciaDevolutivaMap());
                config.ForDommel();
            });
         }

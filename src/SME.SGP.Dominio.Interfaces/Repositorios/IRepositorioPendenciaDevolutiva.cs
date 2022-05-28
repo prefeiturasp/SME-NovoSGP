@@ -1,0 +1,15 @@
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace SME.SGP.Dominio.Interfaces
+{
+    public interface IRepositorioPendenciaDevolutiva
+    {
+        Task<IEnumerable<PendenciaDevolutiva>> ObterPendenciasDevolutivaPorTurmaComponente(long turmaId, long componenteId);
+        Task<IEnumerable<PendenciaDevolutiva>> ObterPendenciasDevolutivaPorPendencia(long pendenciaId);
+        Task Salvar(PendenciaDevolutiva pendenciaDevolutiva);
+        Task ExcluirPorTurmaComponente(long turmaId, long componenteId);
+        Task ExcluirPorId(long id);
+        Task<IEnumerable<string>> ObterCodigoComponenteComDiarioBordoSemDevolutiva(long turmaId,string ueId);
+    }
+}
