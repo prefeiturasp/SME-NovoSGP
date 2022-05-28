@@ -70,6 +70,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
+        public Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil)
         {
             throw new NotImplementedException();
@@ -482,6 +487,17 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         public Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionario(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)
+        {
+            return new List<UsuarioEolRetornoDto>()
+            {
+                new UsuarioEolRetornoDto()
+                {
+                    CodigoRf = "6926886"
+                }
+            };
         }
 
         public Task<bool> PodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
