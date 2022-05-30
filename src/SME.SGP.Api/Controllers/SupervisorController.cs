@@ -39,9 +39,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ResponsavelEscolasDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public IActionResult ObterPorUe([FromQuery] FiltroObterSupervisorEscolasDto filtro)
+        public async Task<IActionResult> ObterPorUe([FromQuery] FiltroObterSupervisorEscolasDto filtro)
         {
-            return Ok(consultasSupervisor.ObterPorUe(filtro));
+            return Ok(await consultasSupervisor.ObterPorUe(filtro));
         }
 
         [HttpGet("tipo-responsavel/{exibirTodos}")]
