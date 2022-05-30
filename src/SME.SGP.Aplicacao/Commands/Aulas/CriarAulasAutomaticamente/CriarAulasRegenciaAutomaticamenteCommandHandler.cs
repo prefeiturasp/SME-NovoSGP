@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
                                      on a.DataAula.Date equals ae.data.Date
                                      join cc in componentesCurriculares
                                      on a.DisciplinaId equals cc.CodigoComponenteCurricular.ToString()
-                                     where cc.Regencia
+                                     where cc.Regencia && !a.Excluido
                                      select new
                                      {
                                          aulaCriadaPorUsuario = a,
@@ -169,9 +169,12 @@ namespace SME.SGP.Aplicacao
                 {
                     var frequencia = await mediator
                         .Send(new ObterRegistroFrequenciaPorAulaIdQuery(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id));
-                    frequencia.AulaId = aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id;
-                    await repositorioFrequencia.SalvarAsync(frequencia);
-
+                    if (frequencia != null)
+                    {
+                        frequencia.AulaId = aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id;
+                        await repositorioFrequencia.SalvarAsync(frequencia);
+                    }
+                    
                     var planoAulaCriadaPeloUsuario = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id));
                     var planoAulaSistema = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id));
 
