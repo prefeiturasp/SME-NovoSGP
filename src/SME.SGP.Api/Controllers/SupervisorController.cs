@@ -39,9 +39,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(ResponsavelEscolasDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPorUe([FromQuery] FiltroObterSupervisorEscolasDto filtro)
+        public async Task<IActionResult> ObterAtribuicaoResponsavelLista([FromQuery] FiltroObterSupervisorEscolasDto filtro)
         {
-            return Ok(await consultasSupervisor.ObterPorUe(filtro));
+            return Ok(await consultasSupervisor.ObterAtribuicaoResponsavel(filtro));
         }
 
         [HttpGet("tipo-responsavel/{exibirTodos}")]
@@ -54,7 +54,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<SupervisorDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterResponsaveisPorDre(string dreId, [FromQuery]FiltroObterResponsaveisDto filtro,
+        public async Task<IActionResult> ObterResponsaveisPorDre(string dreId, [FromQuery] FiltroObterResponsaveisDto filtro,
             [FromServices] IObterResponsaveisPorDreUseCase useCase)
         {
             return Ok(await useCase.Executar(new ObterResponsaveisPorDreDto(dreId, filtro.TipoResponsavelAtribuicao)));
@@ -70,7 +70,7 @@ namespace SME.SGP.Api.Controllers
 
             if (retorno.Any())
                 return Ok(retorno);
-            else 
+            else
                 return StatusCode(204);
         }
 
@@ -84,7 +84,7 @@ namespace SME.SGP.Api.Controllers
 
             if (listaretorno == null)
                 return new StatusCodeResult(204);
-            else 
+            else
                 return Ok(listaretorno);
         }
     }

@@ -106,7 +106,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 UeCodigo = turma.Ue.CodigoUe
             };
-            var listaSupervisores = await consultasSupervisor.ObterPorUe(filtro);
+            var listaSupervisores = await consultasSupervisor.ObterAtribuicaoResponsavel(filtro);
 
             var usuariosNotificacao = new List<UsuarioEolRetornoDto>();
 
