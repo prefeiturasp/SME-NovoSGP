@@ -57,7 +57,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { dreId }).AsList();
         }
 
-        public SupervisorEscolasDreDto ObtemPorUe(FiltroObterSupervisorEscolasDto filtro)
+        public async Task<IEnumerable<SupervisorEscolasDreDto>> ObtemPorUe(FiltroObterSupervisorEscolasDto filtro)
         {
             StringBuilder query = new();
 
@@ -80,9 +80,7 @@ namespace SME.SGP.Dados.Repositorios
                 tipo = filtro.TipoCodigo
             };
 
-            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), parametros)
-                .AsList()
-                .FirstOrDefault();
+            return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), parametros);
         }
 
         public async Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorDreAsync(string codigoDre,
