@@ -250,7 +250,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ComponenteCurricularSimplesDto>> ObterDescricaoPorIds(long[] ids)
         {
-            var query = @"select id, coalesce(descricao_infantil, descricao_sgp, descricao) as descricao from componente_curricular where id = Any(@ids)";
+            var query = @"select id, coalesce( descricao_sgp, descricao) as descricao, descricao_infantil as descricaoinfantil from componente_curricular where id = Any(@ids)";
 
             return await database.Conexao.QueryAsync<ComponenteCurricularSimplesDto>(query, new { ids },queryName: "ObterDescricaoPorIds");
         }
