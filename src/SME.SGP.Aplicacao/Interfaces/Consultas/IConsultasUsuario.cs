@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
     {
         Task<MeusDadosDto> BuscarMeusDados();
 
-        Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfilsUsuarioPorLogin(string login);
+        Task<PerfisApiEolDto> ObterPerfilsUsuarioPorLogin(string login);
     }
 }

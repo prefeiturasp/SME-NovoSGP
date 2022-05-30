@@ -127,13 +127,11 @@ namespace SME.SGP.Aplicacao
                 var tipoFrequencia = ObtenhaValorPreDefinido(frequencia.TipoFrequenciaPreDefinido);
 
                 if (frequenciaDefinida != null)
-                {
-                    if (frequenciaDefinida.TipoFrequencia != tipoFrequencia)
-                    {
+                {                    
                         frequenciaDefinida.TipoFrequencia = tipoFrequencia;
-                        dicionario[ALTERAR].Add(frequenciaDefinida);
-                    }
-                } else
+                        dicionario[ALTERAR].Add(frequenciaDefinida);                 
+                } 
+                else
                 {
                     var frequenciaPreDefinida = new FrequenciaPreDefinida()
                     {

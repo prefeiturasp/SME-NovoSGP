@@ -70,26 +70,13 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task RemoverVariosAsync(long[] ids)
         {
-            var query = @"delete from frequencia_aluno where id = any(@ids)";
+            const string comando = @"delete from frequencia_aluno where id in (#ids)";
 
-            using (var conexao = new NpgsqlConnection(connectionString))
+            for (int i = 0; i < ids.Length; i = i + 900)
             {
-                await conexao.OpenAsync();
-                var transacao = conexao.BeginTransaction();
-                try
-                {
-                    await conexao.ExecuteAsync(query, new
-                    {
-                        ids
-                    }, transacao);
-                    await transacao.CommitAsync();
-                    conexao.Close();
-                }
-                catch (Exception)
-                {
-                    await transacao.RollbackAsync();
-                    throw;
-                }
+                var iteracao = ids.Skip(i).Take(900);
+
+                await database.Conexao.ExecuteAsync(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
         public async Task RemoverFrequenciaGeralAlunos(string[] alunos, string turmaCodigo, long periodoEscolarId)
