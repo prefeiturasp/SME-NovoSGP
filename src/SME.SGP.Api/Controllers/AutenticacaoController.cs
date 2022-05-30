@@ -174,7 +174,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
-        [Permissao(Permissao.US_I, Policy = "Bearer")]
+        [Permissao(Permissao.US_C, Policy = "Bearer")]
         public async Task<IActionResult> AutenticarSuporte(string login)
         {
             var retornoAutenticacao = await comandosUsuario.AutenticarSuporte(login);
