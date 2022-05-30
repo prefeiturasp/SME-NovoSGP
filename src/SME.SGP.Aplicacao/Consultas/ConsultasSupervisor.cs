@@ -70,18 +70,17 @@ namespace SME.SGP.Aplicacao
                 return MapearResponsavelEscolaDre(responsaveisEscolasDres).ToList();
         }
 
-        public ResponsavelEscolasDto ObterPorUe(FiltroObterSupervisorEscolasDto filtro)
+        public async Task<IEnumerable<ResponsavelEscolasDto>> ObterPorUe(FiltroObterSupervisorEscolasDto filtro)
         {
             if (string.IsNullOrEmpty(filtro.DreCodigo))
                 throw new NegocioException("Necessário informar o Codigo da DRE");
 
-            var responsavelEscolaDreDto = repositorioSupervisorEscolaDre.ObtemPorUe(filtro);
+            var responsavelEscolaDreDto = await repositorioSupervisorEscolaDre.ObtemPorUe(filtro);
 
             if (responsavelEscolaDreDto == null)
-                responsavelEscolaDreDto = new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo };
+                responsavelEscolaDreDto =   new List<SupervisorEscolasDreDto>(){ new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo } };
 
-            return MapearResponsavelEscolaDre(new[] { responsavelEscolaDreDto })
-                .FirstOrDefault();
+            return MapearResponsavelEscolaDre(responsavelEscolaDreDto);
         }
 
         private static void TrataEscolasSemResponsaveis(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, List<ResponsavelEscolasDto> listaRetorno)
@@ -105,7 +104,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private IEnumerable<ResponsavelEscolasDto> MapearResponsavelEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
+        private  IEnumerable<ResponsavelEscolasDto> MapearResponsavelEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
         {
             var listaEscolas = repositorioUe.ListarPorCodigos(supervisoresEscolasDres.Select(a => a.EscolaId).ToArray());
 

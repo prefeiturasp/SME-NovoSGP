@@ -106,7 +106,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 UeCodigo = turma.Ue.CodigoUe
             };
-            var listaSupervisores = consultasSupervisor.ObterPorUe(filtro);
+            var listaSupervisores = await consultasSupervisor.ObterPorUe(filtro);
 
             var usuariosNotificacao = new List<UsuarioEolRetornoDto>();
 
@@ -115,7 +115,7 @@ namespace SME.SGP.Dominio.Servicos
             if (listaDiretores != null)
                 usuariosNotificacao.AddRange(listaDiretores);
             if (listaSupervisores != null)
-                usuariosNotificacao.Add(new UsuarioEolRetornoDto() { CodigoRf = listaSupervisores.ResponsavelId, NomeServidor = listaSupervisores.Responsavel });
+                usuariosNotificacao.Add(new UsuarioEolRetornoDto() { CodigoRf = listaSupervisores.FirstOrDefault().ResponsavelId, NomeServidor = listaSupervisores.FirstOrDefault().Responsavel });
 
             foreach (var usuarioNotificacaoo in usuariosNotificacao)
             {

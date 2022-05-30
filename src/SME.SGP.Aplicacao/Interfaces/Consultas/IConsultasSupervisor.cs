@@ -13,6 +13,6 @@ namespace SME.SGP.Aplicacao
 
         IEnumerable<ResponsavelEscolasDto> ObterPorDreESupervisores(string[] supervisoresId, string dreId);
 
-        ResponsavelEscolasDto ObterPorUe(FiltroObterSupervisorEscolasDto filtro);
+        Task<IEnumerable<ResponsavelEscolasDto>> ObterPorUe(FiltroObterSupervisorEscolasDto filtro);
     }
 }
