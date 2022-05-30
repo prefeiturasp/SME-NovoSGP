@@ -36,7 +36,9 @@ namespace SME.SGP.Aplicacao
                 {
                     var turmaComDreUe = turmasDreUe.FirstOrDefault(f => f.CodigoTurma.Equals(item.Key.TurmaId));
 
-                    var descricaoComponenteCurricular = componentesCurriculares.FirstOrDefault(f => f.Id == long.Parse(item.Key.DisciplinaId)).Descricao;
+                    var componente = componentesCurriculares.FirstOrDefault(f => f.Id == long.Parse(item.Key.DisciplinaId));
+
+                    var descricaoComponenteCurricular = !string.IsNullOrEmpty(componente.DescricaoInfantil) ? componente.DescricaoInfantil : componente.Descricao;
 
                     var turmaAnoComModalidade = turmaComDreUe.NomeComModalidade();
 
