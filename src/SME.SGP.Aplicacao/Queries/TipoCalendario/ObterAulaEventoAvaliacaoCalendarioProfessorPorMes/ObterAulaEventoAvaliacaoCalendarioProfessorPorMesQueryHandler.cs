@@ -30,6 +30,10 @@ namespace SME.SGP.Aplicacao
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
 
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+
+            var periodofechametno = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendarioId, turma.EhTurmaInfantil, 1));
+
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var componentesCurriculares = await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
 
@@ -39,8 +43,12 @@ namespace SME.SGP.Aplicacao
             {
                 var eventoAula = new EventoAulaDiaDto() { Dia = i };
 
-                if (request.EventosDaUeSME.Any(a => i >= a.DataInicio.Day && i <= a.DataFim.Day))
-                    eventoAula.TemEvento = true;
+                if (periodofechametno == null)
+                    if (request.EventosDaUeSME.Any(a => i >= a.DataInicio.Day && i <= a.DataFim.Day))
+                        eventoAula.TemEvento = true;
+                else
+                    if (request.EventosDaUeSME.Any(a => i >= a.DataInicio.Day && i <= a.DataFim.Day || a.DataInicio.Day >= periodofechametno.InicioDoFechamento.Day && a.DataInicio.Day <= periodofechametno.FinalDoFechamento.Day))
+                        eventoAula.TemEvento = true;
 
                 var aulasDoDia = request.Aulas.Where(a => a.DataAula.Day == i);
                 if (aulasDoDia.Any())
@@ -61,7 +69,7 @@ namespace SME.SGP.Aplicacao
                             var temAvaliacaoComComponente = (from avaliacao in avaliacoesDoDia
                                                              from disciplina in avaliacao.Disciplinas
                                                              where componentesCurricularesDoDia.Contains(disciplina.DisciplinaId.ToString()) || avaliacao.ProfessorRf == request.UsuarioCodigoRf
-                                                             where avaliacao.TipoAvaliacaoId != 18 
+                                                             where avaliacao.TipoAvaliacaoId != 18
                                                              select true);
 
                             if (temAvaliacaoComComponente.Any())
@@ -74,7 +82,7 @@ namespace SME.SGP.Aplicacao
                     if (turma.ModalidadeCodigo == Modalidade.EJA)
                     {
                         var aulas = aulasDoDia.Where(a => !a.EhTecnologiaAprendizagem);
-                        aulasId = aulas!= null && aulas.Any() ? aulas.Select(a => a.Id).ToArray() : null;
+                        aulasId = aulas != null && aulas.Any() ? aulas.Select(a => a.Id).ToArray() : null;
                     }
 
                     if (aulasId != null && aulasId.Any() && componentesCurricularesId != null)
