@@ -36,17 +36,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterAulaPorIdUseCase.Executar(id));
         }
 
-        [HttpDelete("{id}/recorrencias/{recorrencia}/disciplinaNome/{disciplinaNome}")]
+        [HttpDelete("{id}/recorrencias/{recorrencia}")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_E, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir(long id, string disciplinaNome, RecorrenciaAula recorrencia, [FromServices] IExcluirAulaUseCase excluirAulaUseCase)
+        public async Task<IActionResult> Excluir(long id, RecorrenciaAula recorrencia, [FromServices] IExcluirAulaUseCase excluirAulaUseCase)
         {
             return Ok(await excluirAulaUseCase.Executar(new ExcluirAulaDto()
             {
                 AulaId = id,
-                RecorrenciaAula = recorrencia,
-                ComponenteCurricularNome = UtilCriptografia.DesconverterBase64(disciplinaNome)
+                RecorrenciaAula = recorrencia                
             }));
         }
 
