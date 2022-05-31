@@ -21,6 +21,7 @@
     {
         public string TurmaId { get; set; }
         public int AnoLetivo { get; set; }
+        public long UeId { get; set; }
     }
 
     public class FiltroDevolutivaTurmaDTO

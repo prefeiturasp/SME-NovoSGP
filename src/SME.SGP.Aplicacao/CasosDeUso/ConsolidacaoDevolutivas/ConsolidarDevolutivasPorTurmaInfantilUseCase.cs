@@ -33,10 +33,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         private async Task ConsolidarDevolutivasAnoAtual()
         {
             var anoAtual = DateTime.Now.Year;
-
             var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual));
+            var turmasIds = turmasInfantil.Select(x => x.TurmaId).ToArray();
 
-            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(anoAtual));
+            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(turmasIds));
 
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, anoAtual);
 
@@ -46,8 +46,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         private async Task ConsolidarDevolutivas(int ano)
         {
             var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(ano));
-
-            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(ano));
+            var turmasIds = turmasInfantil.Select(x => x.TurmaId).ToArray();
+            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(turmasIds));
 
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, ano);
 
