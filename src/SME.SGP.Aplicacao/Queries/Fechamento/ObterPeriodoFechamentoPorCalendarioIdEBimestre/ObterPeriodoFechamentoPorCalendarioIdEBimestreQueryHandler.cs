@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<PeriodoFechamentoBimestre> Handle(ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery request, CancellationToken cancellationToken)
-            => await repositorioEventoFechamentoConsulta.UeEmFechamentoBimestre(request.TipoCandarioId, true, request.Bimestre);
+            => await repositorioEventoFechamentoConsulta.UeEmFechamentoBimestre(request.TipoCandarioId, request.EhTurmaInfantil, request.Bimestre);
     }
 }
