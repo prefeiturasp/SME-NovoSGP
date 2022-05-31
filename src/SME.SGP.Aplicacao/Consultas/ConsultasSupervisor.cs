@@ -66,19 +66,20 @@ namespace SME.SGP.Aplicacao
 
             if (responsaveisEscolasDres == null || !responsaveisEscolasDres.Any())
                 return Enumerable.Empty<ResponsavelEscolasDto>();
-            else 
+            else
                 return MapearResponsavelEscolaDre(responsaveisEscolasDres).ToList();
         }
 
-        public async Task<IEnumerable<ResponsavelEscolasDto>> ObterPorUe(FiltroObterSupervisorEscolasDto filtro)
+        public async Task<IEnumerable<ResponsavelEscolasDto>> ObterAtribuicaoResponsavel(FiltroObterSupervisorEscolasDto filtro)
         {
+
             if (string.IsNullOrEmpty(filtro.DreCodigo))
                 throw new NegocioException("Necessário informar o Codigo da DRE");
 
-            var responsavelEscolaDreDto = await repositorioSupervisorEscolaDre.ObtemPorUe(filtro);
+            var responsavelEscolaDreDto = await repositorioSupervisorEscolaDre.ObterAtribuicaoResponsavel(filtro);
 
             if (responsavelEscolaDreDto == null)
-                responsavelEscolaDreDto =   new List<SupervisorEscolasDreDto>(){ new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo } };
+                responsavelEscolaDreDto = new List<SupervisorEscolasDreDto>() { new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo } };
 
             return MapearResponsavelEscolaDre(responsavelEscolaDreDto);
         }
@@ -96,7 +97,7 @@ namespace SME.SGP.Aplicacao
                 var escolaResponsavelRetorno = new ResponsavelEscolasDto() { ResponsavelId = string.Empty, Responsavel = "NÃO ATRIBUÍDO" };
 
                 var escolas = from t in escolasSemResponsavel
-                    select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.NomeSimples };
+                              select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.NomeSimples };
 
                 escolaResponsavelRetorno.Escolas = escolas.ToList();
 
@@ -104,7 +105,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private  IEnumerable<ResponsavelEscolasDto> MapearResponsavelEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
+        private IEnumerable<ResponsavelEscolasDto> MapearResponsavelEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
         {
             var listaEscolas = repositorioUe.ListarPorCodigos(supervisoresEscolasDres.Select(a => a.EscolaId).ToArray());
 
@@ -190,14 +191,12 @@ namespace SME.SGP.Aplicacao
 
         private static string ObterTipoResponsavelDescricao(int tipo)
         {
-            if (tipo == 0)
-                tipo = 1;
 
             var tipoDescricao = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
                 .Cast<TipoResponsavelAtribuicao>()
                 .Where(w => (int)w == tipo)
                 .Select(d => new { descricao = d.Name() })
-                .FirstOrDefault().descricao;
+                .FirstOrDefault()?.descricao;
 
             return tipoDescricao;
         }
