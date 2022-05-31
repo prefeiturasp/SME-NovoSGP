@@ -61,6 +61,8 @@ namespace SME.SGP.Aplicacao
                 request.Alunos = request.Alunos.Union(alunosDaTurma.Select(a => a.CodigoAluno)).ToArray();
             }
 
+            var excluirFrequenciaAlunoIds = new List<long>();
+
             var registroFreqAlunos = (await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId))).ToList();
 
             var periodosEscolaresParaFiltro = registroFreqAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
@@ -71,6 +73,9 @@ namespace SME.SGP.Aplicacao
             {
                 var totalAulasDaDisciplina = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.DisciplinaId, request.TurmaId));
                 var totalAulasDaTurmaGeral = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, string.Empty, request.TurmaId));
+
+                if (totalAulasDaDisciplina == 0)
+                    excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos.Where(w => w.DisciplinaId.Equals(request.DisciplinaId)).Select(s => s.Id));
 
                 var alunosComFrequencia = registroFreqAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
                 var bimestre = registroFreqAlunos.Select(a => a.Bimestre).First();
@@ -86,8 +91,14 @@ namespace SME.SGP.Aplicacao
                     TrataFrequenciaGlobalAluno(codigoAluno, totalAulasDaTurmaGeral, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, request.TurmaId);
                 }
             }
-
+            await ExcluirFrequenciaAluno(excluirFrequenciaAlunoIds);
             await TrataPersistencia(frequenciaDosAlunos);
+        }
+
+        private async Task ExcluirFrequenciaAluno(List<long> excluirFrequenciaAlunoIds)
+        {
+            if (excluirFrequenciaAlunoIds.Any())
+                await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(excluirFrequenciaAlunoIds.ToArray());
         }
 
         private List<RegistroFrequenciaPorDisciplinaAlunoDto> ObterRegistroFrequenciaAgregado(List<RegistroFrequenciaPorDisciplinaAlunoDto> registroFreqAlunos)
