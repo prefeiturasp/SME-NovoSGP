@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,15 +29,17 @@ namespace SME.SGP.Aplicacao
             if (uesCodigos == null || !uesCodigos.Any())
                 return false;
 
-            foreach(var ueCodigo in uesCodigos)
-            {                
-                var turmasIds = await mediator.Send(new ObterTurmasIdPorUeCodigoEAnoLetivoQuery(filtro.AnoLetivo, ueCodigo));
+            foreach (var ueCodigo in uesCodigos)
+            {
+                var dados = new ConsolidacaoPorUeDashBoardFrequencia()
+                {
+                    AnoLetivo = filtro.AnoLetivo,
+                    Mes = filtro.Mes,
+                    UeCodigo = ueCodigo,
+                    TipoPeriodo = TipoPeriodoDashboardFrequencia.Diario
+                };
 
-                if (turmasIds == null || !turmasIds.Any())
-                    continue;
-
-                foreach (var turmaId in turmasIds)                
-                    await mediator.Send(new InserirConsolidacaoDiariaDashBoardFrequenciaCommand(filtro.AnoLetivo, filtro.Mes, turmaId));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoMensalDashBoardFrequencia, dados, Guid.NewGuid(), null));
             }
 
             return true;
