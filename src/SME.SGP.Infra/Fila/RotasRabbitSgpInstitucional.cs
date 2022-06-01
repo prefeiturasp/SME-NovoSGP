@@ -12,5 +12,6 @@
         public const string SincronizaEstruturaInstitucionalTipoEscolaTratar = "sgp.sincronizacao.institucional.tipoescola.tratar";
         public const string SincronizaEstruturaInstitucionalCicloSync = "sgp.sincronizacao.institucional.ciclo.sync";
         public const string SincronizaEstruturaInstitucionalCicloTratar = "sgp.sincronizacao.institucional.ciclo.tratar";
+        public const string SincronizaEstruturaInstitucionalExcluirTurmaExtinta = "sgp.sincronizacao.institucional.excluir.turma.extinta";
     }
 }
