@@ -68,5 +68,32 @@ namespace SME.SGP.Dados.Repositorios
 
             await database.Conexao.ExecuteScalarAsync(query.ToString(), parametros);
         }
+
+        public async Task<RetornoConsolidacaoExistenteDto> ObterConsolidacaoDashboardPorTurmaAnoTipoPeriodoMes(long turmaId, int anoLetivo, TipoPeriodoDashboardFrequencia tipo, int mes)
+        {
+            var query = @"select cdf.id as Id, 
+                                                cdf.turma_id as TurmaId,
+                                                cdf.quantidade_presencas as Presentes, 
+                                                cdf.quantidade_ausencias as Ausentes, 
+                                                cdf.quantidade_remotos as Remotos
+                                                from consolidado_dashboard_frequencia cdf 
+                                                where cdf.turma_id = @turmaId 
+                                                and cdf.ano_letivo = @anoLetivo 
+                                                and cdf.tipo = @tipo 
+                                                and cdf.mes = @mes";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<RetornoConsolidacaoExistenteDto>(query, new { turmaId, anoLetivo, tipo, mes});
+        }
+
+        public async Task AlterarConsolidacaoDashboardTurmaMesPeriodoAno(long id, int quantidadePresente, int quantidadeAusente, int quantidadeRemoto)
+        {
+            string query = @"update consolidado_dashboard_frequencia 
+                                    set quantidade_presencas = @quantidadePresente, 
+                                    quantidade_ausencias = @quantidadeAusente,
+                                    quantidade_remotos = @quantidadeRemoto
+                                    where id = @id";
+
+            await database.Conexao.ExecuteAsync(query, new { id, quantidadePresente, quantidadeAusente, quantidadeRemoto});
+        }
     }
 }

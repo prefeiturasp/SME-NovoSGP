@@ -46,21 +46,26 @@ namespace SME.SGP.Aplicacao
             if (consolidacao.Presentes == 0 && consolidacao.Ausentes == 0 && consolidacao.Remotos == 0)
                 return false;
 
-            await mediator.Send(new ExcluirConsolidacaoDashBoardFrequenciaPorDataETipoCommand(anoLetivo,
-                                                                                              turma.Id,
-                                                                                              primeiroDiaDoMes,
-                                                                                              TipoPeriodoDashboardFrequencia.Mensal,
-                                                                                              null,
-                                                                                              null,
-                                                                                              mes));
+            var consolidacaoJaExistente = await mediator.Send(new ObterConsolidacaoExistentePorTurmaIdAnoLetivoTipoPeriodoMesQuery(request.TurmaId, anoLetivo, TipoPeriodoDashboardFrequencia.Mensal, mes));
 
-            await repositorioConsolidacaoFrequenciaTurma.InserirConsolidacaoDashBoard(MapearParaEntidade(turma,
+            if(consolidacaoJaExistente != null)
+            {
+                bool validaMudancaDeInformacoes = (consolidacao.Ausentes == consolidacaoJaExistente.Ausentes && consolidacao.Presentes == consolidacaoJaExistente.Presentes
+                                                && consolidacao.Remotos == consolidacaoJaExistente.Remotos);
+
+                if (!validaMudancaDeInformacoes)
+                    await mediator.Send(new AlterarConsolidacaoDashboardFrequenciaTurmaCommand(consolidacaoJaExistente.Id, consolidacao.Remotos, consolidacao.Ausentes, consolidacao.Presentes));
+            }
+            else
+            {
+                await repositorioConsolidacaoFrequenciaTurma.InserirConsolidacaoDashBoard(MapearParaEntidade(turma,
                                                                                                          consolidacao,
                                                                                                          primeiroDiaDoMes,
                                                                                                          (int)TipoPeriodoDashboardFrequencia.Mensal,
                                                                                                          null,
                                                                                                          null,
                                                                                                          mes));
+            }        
 
 
             return true;
