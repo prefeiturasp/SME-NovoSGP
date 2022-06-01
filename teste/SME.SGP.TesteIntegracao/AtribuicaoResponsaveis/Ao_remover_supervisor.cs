@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirSupervisor(SUPERVISOR_ID_1, SUPERVISOR_RF_01);
             await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_02);
 
-            //var dre = "1";
+            
             var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
             var useCase = ServiceProvider.GetService<IRemoverResponsaveisSupervisorPorDreUseCase>();
             var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
