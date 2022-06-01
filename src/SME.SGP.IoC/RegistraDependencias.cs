@@ -15,6 +15,7 @@ using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AtribuicaoDeResponsaveis;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicados;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorAlunosDaTurma;
@@ -398,7 +399,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaAula, RepositorioPendenciaAula>();
             services.TryAddScoped<IRepositorioPendenciaAulaConsulta, RepositorioPendenciaAulaConsulta>();
             services.TryAddScoped<IRepositorioPendenciaUsuario, RepositorioPendenciaUsuario>();
-            services.TryAddScoped<IRepositorioPendenciaUsuarioConsulta, RepositorioPendenciaUsuarioConsulta>();            
+            services.TryAddScoped<IRepositorioPendenciaUsuarioConsulta, RepositorioPendenciaUsuarioConsulta>();
             services.TryAddScoped<IRepositorioPendenciaCalendarioUe, RepositorioPendenciaCalendarioUe>();
             services.TryAddScoped<IRepositorioPendenciaParametroEvento, RepositorioPendenciaParametroEvento>();
             services.TryAddScoped<IRepositorioPendenciaProfessor, RepositorioPendenciaProfessor>();
@@ -1302,6 +1303,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IReprocessarDiarioBordoPendenciaDevolutivaPorUeUseCase, ReprocessarDiarioBordoPendenciaDevolutivaPorUeUseCase>();
             services.TryAddScoped<IReprocessarDiarioBordoPendenciaDevolutivaPorTurmaUseCase, ReprocessarDiarioBordoPendenciaDevolutivaPorTurmaUseCase>();
             services.TryAddScoped<IReprocessarDiarioBordoPendenciaDevolutivaPorComponenteUseCase, ReprocessarDiarioBordoPendenciaDevolutivaPorComponenteUseCase>();
+
+            //Atribuição Responsaveis
+            services.TryAddScoped<IAtribuicaoResponsaveisPorDreUseCase, AtribuicaoResponsaveisPorDreUseCase>();
+            services.TryAddScoped<IAtribuicaoResponsaveisSupervisorPorDreUseCase, AtribuicaoResponsaveisSupervisorPorDreUseCase>();
+            services.TryAddScoped<IAtribuicaoResponsaveisPAAIPorDreUseCase, AtribuicaoResponsaveisPAAIPorDreUseCase>();
+            services.TryAddScoped<IAtribuicaoResponsaveisASPPPorDreUseCase, AtribuicaoResponsaveisASPPPorDreUseCase>();
+
 
         }
     }
