@@ -127,7 +127,8 @@ namespace SME.SGP.Dados.Repositorios
 	                        distinct
                             t.turma_id as turmaId,
                             t.ano_letivo as anoLetivo,
-                            t.ue_id AS UeId
+                            t.ue_id AS UeId,
+                            t.id
                         from diario_bordo db 
                             inner join aula a on a.id = db.aula_id
                             inner join turma t on t.turma_id = a.turma_id 

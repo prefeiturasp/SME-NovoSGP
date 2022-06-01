@@ -76,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
             return (long)(await database.Conexao.InsertAsync(consolidacao));
         }
 
-        public async Task LimparConsolidacaoDevolutivasPorAno(string[] turmasIds)
+        public async Task LimparConsolidacaoDevolutivasPorAno(long[] turmasIds)
         {
             var query = @" delete from consolidacao_devolutivas
                            where turma_id = any (@turmasIds)";

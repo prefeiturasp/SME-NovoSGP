@@ -5,12 +5,12 @@ namespace SME.SGP.Aplicacao
 {
     public class LimparConsolidacaoDevolutivasCommand : IRequest<bool>
     {
-        public LimparConsolidacaoDevolutivasCommand(string[] turmasIds)
+        public LimparConsolidacaoDevolutivasCommand(long[] turmasIds)
         {
             TurmasIds = turmasIds;
         }
 
-        public string[] TurmasIds { get; }
+        public long[] TurmasIds { get; }
     }
 
     public class LimparConsolidacaoDevolutivasCommandValidator : AbstractValidator<LimparConsolidacaoDevolutivasCommand>
