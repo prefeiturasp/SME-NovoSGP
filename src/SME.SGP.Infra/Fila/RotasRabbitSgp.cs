@@ -244,5 +244,10 @@
         public const string RotaReprocessarDiarioBordoPendenciaDevolutivaPorUe = "sgp.diario.bordo.pendencia.devolutiva.ue";
         public const string RotaReprocessarDiarioBordoPendenciaDevolutivaPorTurma = "sgp.diario.bordo.pendencia.devolutiva.turma";
         public const string RotaReprocessarDiarioBordoPendenciaDevolutivaPorComponente = "sgp.diario.bordo.pendencia.devolutiva.componente";
+
+        public const string RemoverAtribuicaoResponsaveis = "sgp.remover.atribuicao.responsaveis";
+        public const string RemoverAtribuicaoResponsaveisSupervisorPorDre = "sgp.remover.atribuicao.responsaveis.supervisor.dre";
+        public const string RemoverAtribuicaoResponsaveisPAAIPorDre = "sgp.remover.atribuicao.responsaveis.paai.dre";
+        public const string RemoverAtribuicaoResponsaveisASPPorDre = "sgp.remover.atribuicao.responsaveis.aspp.dre";
     }
 }
