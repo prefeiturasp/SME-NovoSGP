@@ -376,7 +376,7 @@ namespace SME.SGP.Worker.RabbitMQ
 
             //Atribuicao de Responsaveis
             comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveis, new ComandoRabbit("Atribuição de Responsaveis por DRE", typeof(IAtribuicaoResponsaveisUseCase)));
-            comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisSupervisorPorDre, new ComandoRabbit("Atribuição de Responsaveis - Supervisor por DRE", typeof(IAtribuicaoResponsaveisSupervisorPorDreUseCase)));
+            comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisSupervisorPorDre, new ComandoRabbit("Atribuição de Responsaveis - Supervisor por DRE", typeof(IRemoverResponsaveisSupervisorPorDreUseCase)));
             comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisPAAIPorDre, new ComandoRabbit("Atribuição de Responsaveis - PAAI por DRE", typeof(IAtribuicaoResponsaveisPAAIPorDreUseCase)));
             comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisASPPorDre, new ComandoRabbit("Atribuição de Responsaveis - Assistente Social, Psicólogo ou Psicopedagogo por DRE", typeof(IAtribuicaoResponsaveisASPPPorDreUseCase)));
             

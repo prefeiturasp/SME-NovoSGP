@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AtribuicaoResponsaveisSupervisorPorDreUseCase : IAtribuicaoResponsaveisSupervisorPorDreUseCase
+    public class RemoverResponsaveisSupervisorPorDreUseCase : IRemoverResponsaveisSupervisorPorDreUseCase
     {
         private readonly IRepositorioSupervisorEscolaDre _repositorioSupervisorEscolaDre;
         private readonly IServicoEol _servicoEOL;
         private readonly IMediator _mediator;
-        public AtribuicaoResponsaveisSupervisorPorDreUseCase(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
+        public RemoverResponsaveisSupervisorPorDreUseCase(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
                                                             IServicoEol servicoEOL, IMediator mediator)
         {
             _repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre;

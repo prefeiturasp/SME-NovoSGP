@@ -1305,7 +1305,7 @@ namespace SME.SGP.IoC
 
             //Atribuição Responsaveis
             services.TryAddScoped<IAtribuicaoResponsaveisUseCase, AtribuicaoResponsaveisUseCase>();
-            services.TryAddScoped<IAtribuicaoResponsaveisSupervisorPorDreUseCase, AtribuicaoResponsaveisSupervisorPorDreUseCase>();
+            services.TryAddScoped<IRemoverResponsaveisSupervisorPorDreUseCase, RemoverResponsaveisSupervisorPorDreUseCase>();
             services.TryAddScoped<IAtribuicaoResponsaveisPAAIPorDreUseCase, AtribuicaoResponsaveisPAAIPorDreUseCase>();
             services.TryAddScoped<IAtribuicaoResponsaveisASPPPorDreUseCase, AtribuicaoResponsaveisASPPPorDreUseCase>();
 
