@@ -21,6 +21,9 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<FiltroTurmaCodigoTurmaIdDto>();
 
+            if (filtro == null)
+                return false;
+
             try
             {
                 await repositorioTurma.ExcluirTurmaExtintaAsync(filtro.TurmaId);
