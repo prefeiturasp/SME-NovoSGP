@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AtribuicaoResponsaveisUseCase : AbstractUseCase, IAtribuicaoResponsaveisUseCase
+    public class RemoverAtribuicaoResponsaveisUseCase : AbstractUseCase, IRemoverAtribuicaoResponsaveisUseCase
     {
-        public AtribuicaoResponsaveisUseCase(IMediator mediator) : base(mediator) { }
+        public RemoverAtribuicaoResponsaveisUseCase(IMediator mediator) : base(mediator) { }
 
         public async Task<bool> Executar(MensagemRabbit param)
         {

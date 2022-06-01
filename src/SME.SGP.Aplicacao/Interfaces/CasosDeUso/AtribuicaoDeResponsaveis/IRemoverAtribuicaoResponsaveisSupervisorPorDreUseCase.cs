@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IAtribuicaoResponsaveisASPPPorDreUseCase : IUseCase<MensagemRabbit, bool>
+    public interface IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase : IUseCase<MensagemRabbit, bool>
     {
     }
 }

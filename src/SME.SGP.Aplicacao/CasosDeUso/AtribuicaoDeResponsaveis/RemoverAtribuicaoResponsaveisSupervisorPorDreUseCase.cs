@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RemoverResponsaveisSupervisorPorDreUseCase : IRemoverResponsaveisSupervisorPorDreUseCase
+    public class RemoverAtribuicaoResponsaveisSupervisorPorDreUseCase : IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase
     {
         private readonly IRepositorioSupervisorEscolaDre _repositorioSupervisorEscolaDre;
         private readonly IServicoEol _servicoEOL;
         private readonly IMediator _mediator;
-        public RemoverResponsaveisSupervisorPorDreUseCase(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
+        public RemoverAtribuicaoResponsaveisSupervisorPorDreUseCase(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
                                                             IServicoEol servicoEOL, IMediator mediator)
         {
             _repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre;
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await _mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível executar a remoção de responsavel por DRE", LogNivel.Critico, LogContexto.AtribuicaoReponsavel, ex.Message));
+                await _mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível executar a remoção da atribuição de responsavel por DRE", LogNivel.Critico, LogContexto.AtribuicaoReponsavel, ex.Message));
                 return false;
             }
         }

@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao
 
             
             var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
-            var useCase = ServiceProvider.GetService<IRemoverResponsaveisSupervisorPorDreUseCase>();
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
             var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
 
             //Act
@@ -61,7 +61,7 @@ namespace SME.SGP.TesteIntegracao
 
             var dre = "1";
             var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
-            var useCase = ServiceProvider.GetService<IRemoverResponsaveisSupervisorPorDreUseCase>();
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
             var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
 
             //Act
@@ -83,7 +83,7 @@ namespace SME.SGP.TesteIntegracao
 
             var dre = "1";
             var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
-            var useCase = ServiceProvider.GetService<IRemoverResponsaveisSupervisorPorDreUseCase>();
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
             var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
             var registrosAntesUseCase = ObterTodos<SupervisorEscolaDre>();
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AtribuicaoResponsaveisPAAIPorDreUseCase : IAtribuicaoResponsaveisPAAIPorDreUseCase
+    public class RemoverAtribuicaoResponsaveisPAAIPorDreUseCase : IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase
     {
         public Task<bool> Executar(MensagemRabbit param)
         {

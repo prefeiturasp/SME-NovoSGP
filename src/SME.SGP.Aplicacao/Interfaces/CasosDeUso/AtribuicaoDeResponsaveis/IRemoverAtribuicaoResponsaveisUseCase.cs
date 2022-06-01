@@ -6,8 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces
-{
-    public interface IRemoverResponsaveisSupervisorPorDreUseCase : IUseCase<MensagemRabbit, bool>
+{ 
+    public interface IRemoverAtribuicaoResponsaveisUseCase : IUseCase<MensagemRabbit, bool>
     {
+
     }
 }

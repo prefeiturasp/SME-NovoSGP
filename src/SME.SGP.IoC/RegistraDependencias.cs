@@ -1304,10 +1304,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IReprocessarDiarioBordoPendenciaDevolutivaPorComponenteUseCase, ReprocessarDiarioBordoPendenciaDevolutivaPorComponenteUseCase>();
 
             //Atribuição Responsaveis
-            services.TryAddScoped<IAtribuicaoResponsaveisUseCase, AtribuicaoResponsaveisUseCase>();
-            services.TryAddScoped<IRemoverResponsaveisSupervisorPorDreUseCase, RemoverResponsaveisSupervisorPorDreUseCase>();
-            services.TryAddScoped<IAtribuicaoResponsaveisPAAIPorDreUseCase, AtribuicaoResponsaveisPAAIPorDreUseCase>();
-            services.TryAddScoped<IAtribuicaoResponsaveisASPPPorDreUseCase, AtribuicaoResponsaveisASPPPorDreUseCase>();
+            services.TryAddScoped<IRemoverAtribuicaoResponsaveisUseCase, RemoverAtribuicaoResponsaveisUseCase>();
+            services.TryAddScoped<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase, RemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
+            services.TryAddScoped<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase, RemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
+            services.TryAddScoped<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase, RemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
 
 
         }
