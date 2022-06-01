@@ -95,7 +95,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     Grupo = GruposSGP.Professor,
                     Abrangencia = Infra.Enumerados.Abrangencia.Professor,
                 },
-                IdTurmas = new List<string> {"2366531"}.ToArray(),
+                IdTurmas = new List<string> { "2366531" }.ToArray(),
             };
         }
 
@@ -466,11 +466,21 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores)
         {
-            throw new NotImplementedException();
+            return new List<SupervisoresRetornoDto>()
+            {
+                new SupervisoresRetornoDto()
+                {
+                    CodigoRf = "1",
+                    NomeServidor = "Teste da silva"
+                }
+            };
         }
 
         public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorDre(string dreId)
         {
+
+
+
             throw new NotImplementedException();
         }
 

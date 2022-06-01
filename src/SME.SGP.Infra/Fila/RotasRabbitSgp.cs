@@ -245,9 +245,9 @@
         public const string RotaReprocessarDiarioBordoPendenciaDevolutivaPorTurma = "sgp.diario.bordo.pendencia.devolutiva.turma";
         public const string RotaReprocessarDiarioBordoPendenciaDevolutivaPorComponente = "sgp.diario.bordo.pendencia.devolutiva.componente";
 
-        public const string RotaAtribuicaoDeResponsaveis = "sgp.atribuicao.responsaveis";
-        public const string RotaAtribuicaoDeResponsaveisSupervisorPorDre = "sgp.atribuicao.responsaveis.supervisor.dre";
-        public const string RotaAtribuicaoDeResponsaveisPAAIPorDre = "sgp.atribuicao.responsaveis.paai.dre";
-        public const string RotaAtribuicaoDeResponsaveisASPPorDre = "sgp.atribuicao.responsaveis.aspp.dre";
+        public const string RemoverAtribuicaoResponsaveis = "sgp.atribuicao.responsaveis";
+        public const string RemoverAtribuicaoResponsaveisSupervisorPorDre = "sgp.atribuicao.responsaveis.supervisor.dre";
+        public const string RemoverAtribuicaoResponsaveisPAAIPorDre = "sgp.atribuicao.responsaveis.paai.dre";
+        public const string RemoverAtribuicaoResponsaveisASPPorDre = "sgp.atribuicao.responsaveis.aspp.dre";
     }
 }

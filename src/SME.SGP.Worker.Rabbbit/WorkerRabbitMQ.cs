@@ -8,7 +8,6 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.AtribuicaoDeResponsaveis;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -376,10 +375,10 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorComponente, new ComandoRabbit("Verificar se existe Pendências de Devolutivas por Componente", typeof(IReprocessarDiarioBordoPendenciaDevolutivaPorComponenteUseCase)));
 
             //Atribuicao de Responsaveis
-            comandos.Add(RotasRabbitSgp.RotaAtribuicaoDeResponsaveis, new ComandoRabbit("Atribuição de Responsaveis por DRE", typeof(IAtribuicaoResponsaveisPorDreUseCase)));
-            comandos.Add(RotasRabbitSgp.RotaAtribuicaoDeResponsaveis, new ComandoRabbit("Atribuição de Responsaveis - Supervisor por DRE", typeof(IAtribuicaoResponsaveisSupervisorPorDreUseCase)));
-            comandos.Add(RotasRabbitSgp.RotaAtribuicaoDeResponsaveis, new ComandoRabbit("Atribuição de Responsaveis - PAAI por DRE", typeof(IAtribuicaoResponsaveisPAAIPorDreUseCase)));
-            comandos.Add(RotasRabbitSgp.RotaAtribuicaoDeResponsaveis, new ComandoRabbit("Atribuição de Responsaveis - Assistente Social, Psicólogo ou Psicopedagogo por DRE", typeof(IAtribuicaoResponsaveisASPPPorDreUseCase)));
+            comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveis, new ComandoRabbit("Atribuição de Responsaveis por DRE", typeof(IAtribuicaoResponsaveisUseCase)));
+            comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisSupervisorPorDre, new ComandoRabbit("Atribuição de Responsaveis - Supervisor por DRE", typeof(IAtribuicaoResponsaveisSupervisorPorDreUseCase)));
+            comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisPAAIPorDre, new ComandoRabbit("Atribuição de Responsaveis - PAAI por DRE", typeof(IAtribuicaoResponsaveisPAAIPorDreUseCase)));
+            comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisASPPorDre, new ComandoRabbit("Atribuição de Responsaveis - Assistente Social, Psicólogo ou Psicopedagogo por DRE", typeof(IAtribuicaoResponsaveisASPPPorDreUseCase)));
             
         }
 

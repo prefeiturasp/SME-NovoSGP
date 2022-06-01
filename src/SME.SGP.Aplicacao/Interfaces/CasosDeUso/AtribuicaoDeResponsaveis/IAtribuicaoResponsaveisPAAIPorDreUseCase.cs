@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.AtribuicaoDeResponsaveis
+namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IAtribuicaoResponsaveisPAAIPorDreUseCase : IUseCase<MensagemRabbit, bool>
     {
