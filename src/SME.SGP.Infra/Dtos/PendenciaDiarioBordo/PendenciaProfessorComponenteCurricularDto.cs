@@ -9,10 +9,5 @@ namespace SME.SGP.Infra
         public string ProfessorRf { get; set; }
 
         public PendenciaProfessorComponenteCurricularDto() { }
-
-        public bool Any()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

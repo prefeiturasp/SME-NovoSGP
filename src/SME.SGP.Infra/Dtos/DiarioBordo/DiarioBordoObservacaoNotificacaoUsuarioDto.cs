@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
 {
     public class DiarioBordoObservacaoNotificacaoUsuarioDto
     {
-        protected DiarioBordoObservacaoNotificacaoUsuarioDto() { }
+        public DiarioBordoObservacaoNotificacaoUsuarioDto() { }
 
         public DiarioBordoObservacaoNotificacaoUsuarioDto(long idObservacao, long idNotificacao, long idUsuario)
         {

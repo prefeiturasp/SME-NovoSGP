@@ -37,9 +37,9 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                unitOfWork.IniciarTransacao();
-
                 var existePendenciaUsuario = await mediator.Send(new ObterPendenciasUsuarioPorPendenciaUsuarioIdQuery(request.PendenciaId, usuarioId));
+
+                unitOfWork.IniciarTransacao();                
 
                 if (!existePendenciaUsuario)
                     await mediator.Send(new SalvarPendenciaUsuarioCommand(request.PendenciaId, usuarioId));
@@ -55,10 +55,9 @@ namespace SME.SGP.Aplicacao
 
                 unitOfWork.PersistirTransacao();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 unitOfWork.Rollback();
-                throw ex;
             }
         }
     }
