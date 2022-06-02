@@ -3,7 +3,7 @@ using Dapper.FluentMap.Dommel.Mapping;
 
 namespace SME.SGP.Dados
 {
-    public class ConselhoClasseConsolidadoTurmaAlunoMap : DommelEntityMap<ConselhoClasseConsolidadoTurmaAluno>
+    public class ConselhoClasseConsolidadoTurmaAlunoMap : BaseMap<ConselhoClasseConsolidadoTurmaAluno>
     {
         public ConselhoClasseConsolidadoTurmaAlunoMap()
         {
