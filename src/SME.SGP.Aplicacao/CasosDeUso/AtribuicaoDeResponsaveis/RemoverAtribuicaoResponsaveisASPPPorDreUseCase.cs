@@ -1,4 +1,6 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Interfaces;
 using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
