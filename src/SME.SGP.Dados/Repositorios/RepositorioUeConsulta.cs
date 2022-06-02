@@ -120,7 +120,7 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Query<Ue>(query);
         }
 
-        public IEnumerable<Ue> ObterPorDre(long dreId)
+        public async Task<IEnumerable<Ue>> ObterPorDre(long dreId)
         {
             var query = @"select
 	                        id,
@@ -134,7 +134,7 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        dre_id = @dreId";
 
-            return contexto.Query<Ue>(query, new { dreId });
+            return await contexto.QueryAsync<Ue>(query, new { dreId });
         }
 
         public Ue ObterPorId(long id)
