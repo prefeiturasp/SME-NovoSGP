@@ -31,5 +31,7 @@ namespace SME.SGP.Aplicacao
         Task<bool> TokenRecuperacaoSenhaEstaValido(Guid token);
 
         Task<UsuarioAutenticacaoRetornoDto> AutenticarSuporte(string login);
+
+        Task<UsuarioAutenticacaoRetornoDto> DeslogarSuporte();
     }
 }

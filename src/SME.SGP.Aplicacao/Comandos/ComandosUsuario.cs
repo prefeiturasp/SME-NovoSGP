@@ -306,5 +306,18 @@ namespace SME.SGP.Aplicacao
 
             return dto;
         }
+        public async Task<UsuarioAutenticacaoRetornoDto> DeslogarSuporte()
+        {
+            var administrador = await mediator.Send(new ObterAdministradorDoSuporteQuery());
+
+            if (administrador == null || string.IsNullOrEmpty(administrador.Login))
+            {
+                throw new NegocioException($"O usuário não está em suporte de um administrador!");
+            }
+
+            var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEolSemSenha(administrador.Login);
+
+            return await ObtenhaAutenticacao(retornoAutenticacaoEol, administrador.Login);
+        }
     }
 }

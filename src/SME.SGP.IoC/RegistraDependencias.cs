@@ -354,6 +354,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioAreaDoConhecimento, RepositorioAreaDoConhecimento>();
             services.TryAddScoped<IRepositorioComponenteCurricularGrupoAreaOrdenacao, RepositorioComponenteCurricularGrupoAreaOrdenacao>();
             services.TryAddScoped<IRepositorioPendenciaDevolutiva, RepositorioPendenciaDevolutiva>();
+            services.TryAddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
 
             // Acompanhamento Aluno
             services.TryAddScoped<IRepositorioAcompanhamentoAluno, RepositorioAcompanhamentoAluno>();
