@@ -19,7 +19,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioSupervisorEscolaDre _repositorioSupervisorEscolaDre;
         private readonly IServicoEol _servicoEOL;
         private readonly IMediator _mediator;
-        const string PERFIL = "5ae1e074-37d6-e911-abd6-f81654fe895d";
         public RemoverAtribuicaoResponsaveisASPPPorDreUseCase(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IServicoEol servicoEOL, IMediator mediator)
         {
             _repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre;
@@ -34,7 +33,6 @@ namespace SME.SGP.Aplicacao
                 var assitenteSocialEscolasDres = await _repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(dre, TipoResponsavelAtribuicao.AssistenteSocial);
                 var psicologosEscolasDres = await _repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(dre, TipoResponsavelAtribuicao.PsicologoEscolar);
                 var psicopedagogosEscolasDres = await _repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(dre, TipoResponsavelAtribuicao.Psicopedagogo);
-                var perfil = new Guid(PERFIL);
 
                 var funcionariosASPP = new List<SupervisorEscolasDreDto>();
 
@@ -44,9 +42,17 @@ namespace SME.SGP.Aplicacao
 
                 if (funcionariosASPP.Any())
                 {
+                    var funcionarios = new List<UsuarioEolRetornoDto>();
+
                     var supervisoresIds = funcionariosASPP.GroupBy(a => a.SupervisorId).Select(a => a.Key);
 
-                    var funcionarios = await _servicoEOL.ObterUsuarioFuncionarioCoreSSO(perfil, dre);
+                    var funcionariosPsicoloEscolar = await _servicoEOL.ObterUsuarioFuncionarioCoreSSO(Perfis.PERFIL_PSICOLOGO_ESCOLAR, dre);
+                    var funcionariosPsicoPedagogos = await _servicoEOL.ObterUsuarioFuncionarioCoreSSO(Perfis.PERFIL_PSICOPEDAGOGO, dre);
+                    var funcionariosAssistenteSocial = await _servicoEOL.ObterUsuarioFuncionarioCoreSSO(Perfis.PERFIL_ASSISTENTE_SOCIAL, dre);
+
+                    funcionarios.AddRange(funcionariosPsicoloEscolar);
+                    funcionarios.AddRange(funcionariosPsicoPedagogos);
+                    funcionarios.AddRange(funcionariosAssistenteSocial);
 
                     if (funcionarios != null && funcionarios.Any())
                     {
