@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterListTipoReponsavelUseCase : AbstractUseCase, IObterListTipoReponsavelUseCase
+    public class ObterListaTipoReponsavelUseCase : AbstractUseCase, IObterListaTipoReponsavelUseCase
     {
-        public ObterListTipoReponsavelUseCase(IMediator mediator) : base(mediator)
+        public ObterListaTipoReponsavelUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -20,12 +20,13 @@ namespace SME.SGP.Aplicacao
             var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
                 .Cast<TipoResponsavelAtribuicao>()
                 .Select(d => new TipoReponsavelRetornoDto() { Codigo = (int)d, Descricao = d.Name() }).OrderBy(x => x.Descricao)
-                .ToList();
-
-            if (exibirTodos)
-                return await Task.FromResult(tipos);
+                .ToList()
+                .OrderBy(c => c.Codigo);
 
             var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+
+            if (exibirTodos || (perfil == Perfis.PERFIL_ADMDRE))
+                return await Task.FromResult(tipos);
 
             if (perfil == Perfis.PERFIL_CEFAI)
                 return await Task.FromResult(tipos.Where(c => c.Codigo == 2));

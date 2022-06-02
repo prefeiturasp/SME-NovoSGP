@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ResponsavelAtribuirUeUseCase : AbstractUseCase, IResponsavelAtribuirUeUseCase
+    public class AtribuirUeResponsavelUseCase : AbstractUseCase, IAtribuirUeResponsavelUseCase
     {
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IUnitOfWork unitOfWork;
 
-        public ResponsavelAtribuirUeUseCase(IMediator mediator,
+        public AtribuirUeResponsavelUseCase(IMediator mediator,
             IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
             IUnitOfWork unitOfWork) : base(mediator)
         {
@@ -23,18 +23,18 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<bool> Executar(AtribuicaoResponsavelUEDto atribuicaoSupervisorUe)
+        public async Task<bool> Executar(AtribuicaoResponsavelUEDto atribuicaoResponsavelUe)
         {
-            await ValidarDados(atribuicaoSupervisorUe);
+            await ValidarDados(atribuicaoResponsavelUe);
 
             var escolasAtribuidas = await repositorioSupervisorEscolaDre
-                .ObtemPorDreESupervisor(atribuicaoSupervisorUe.DreId, atribuicaoSupervisorUe.SupervisorId, true);
+                .ObtemPorDreESupervisor(atribuicaoResponsavelUe.DreId, atribuicaoResponsavelUe.SupervisorId, true);
 
             unitOfWork.IniciarTransacao();
             try
             {
-                await AjustarRegistrosExistentes(atribuicaoSupervisorUe, escolasAtribuidas);
-                AtribuirEscolas(atribuicaoSupervisorUe);
+                await AjustarRegistrosExistentes(atribuicaoResponsavelUe, escolasAtribuidas);
+                AtribuirEscolas(atribuicaoResponsavelUe);
                 unitOfWork.PersistirTransacao();
             } 
             catch
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
             if (dre < 1)
                 throw new NegocioException($"A DRE {atribuicaoSupervisorEscolaDto.DreId} não foi localizada.");
 
-            var responsaveisEol_CoreSSO = await ObterResponsaveisEol_CoreSSO(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.TipoResponsavelAtribuicao);
+            var responsaveisEolOuCoreSSO = await ObterResponsaveisEolOuCoreSSO(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.TipoResponsavelAtribuicao);
 
             atribuicaoSupervisorEscolaDto.UESIds
                 .ForEach(ue =>
@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException($"A UE {ue} não pertence a DRE {atribuicaoSupervisorEscolaDto.DreId}.");
                 });
 
-            if (!responsaveisEol_CoreSSO.Any(s => s.CodigoRf_Login.Equals(atribuicaoSupervisorEscolaDto.SupervisorId)))
+            if (!responsaveisEolOuCoreSSO.Any(s => s.CodigoRfOuLogin.Equals(atribuicaoSupervisorEscolaDto.SupervisorId)))
             {
                 var atribuicaoExistentes = await repositorioSupervisorEscolaDre
                     .ObtemPorDreESupervisor(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId);
@@ -121,7 +121,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<IEnumerable<ResponsavelRetornoDto>> ObterResponsaveisEol_CoreSSO(string dreCodigo, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+        private async Task<IEnumerable<ResponsavelRetornoDto>> ObterResponsaveisEolOuCoreSSO(string dreCodigo, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
         {
             var listaResponsaveis = Enumerable.Empty<ResponsavelRetornoDto>().ToList();
 
@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
                         {
                             listaResponsaveis.Add(new ResponsavelRetornoDto()
                             {
-                                CodigoRf_Login = funcionario.CodigoRf,
+                                CodigoRfOuLogin = funcionario.CodigoRf,
                                 NomeServidor = funcionario.NomeServidor
                             });
                         }
@@ -160,7 +160,7 @@ namespace SME.SGP.Aplicacao
                         {
                             listaResponsaveis.Add(new ResponsavelRetornoDto()
                             {
-                                CodigoRf_Login = funcionario.Login,
+                                CodigoRfOuLogin = funcionario.Login,
                                 NomeServidor = funcionario.NomeServidor
                             });
                         }
@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao
                     {
                         listaResponsaveis.Add(new ResponsavelRetornoDto()
                         {
-                            CodigoRf_Login = supervisor.CodigoRf,
+                            CodigoRfOuLogin = supervisor.CodigoRf,
                             NomeServidor = supervisor.NomeServidor
                         });
                     }

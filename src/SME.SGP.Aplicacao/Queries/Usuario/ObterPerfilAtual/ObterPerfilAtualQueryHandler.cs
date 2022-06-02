@@ -21,6 +21,7 @@ namespace SME.SGP.Aplicacao
         public async Task<Guid> Handle(ObterPerfilAtualQuery request, CancellationToken cancellationToken)
         {
             var tokenAtual = await mediator.Send(new ObterTokenAtualQuery());
+
             var perfil = Guid.Parse(ObterClaims(tokenAtual)
                 .FirstOrDefault(claim => claim.Type == "perfil")?.Value
                 ?? string.Empty);

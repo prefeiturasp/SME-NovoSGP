@@ -695,11 +695,7 @@
         DNA_C = 233,
 
         [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 1, OrdemSubMenu = 2,
-            Url = "/usuarios/suporte", EhSubMenu = true, EhConsulta = true, SubMenu = "Suporte")]
-        US_C = 234,
-
-        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 1, OrdemSubMenu = 2,
-             Url = "/usuarios/suporte", EhSubMenu = true, EhInclusao = true, SubMenu = "Suporte")]
-        US_I = 235
+            Url = "/usuarios/suporte", EhSubMenu = true, EhConsulta = true, EhInclusao = true, SubMenu = "Suporte")]
+        US_C = 234
     }
 }

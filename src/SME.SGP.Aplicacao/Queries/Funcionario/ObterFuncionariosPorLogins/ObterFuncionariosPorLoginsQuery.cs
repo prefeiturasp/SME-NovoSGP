@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterListaNomePorListaLoginQuery : IRequest<IEnumerable<FuncionarioUnidadeDto>>
+    public class ObterFuncionariosPorLoginsQuery : IRequest<IEnumerable<FuncionarioUnidadeDto>>
     {
-        public ObterListaNomePorListaLoginQuery(IEnumerable<string> logins)
+        public ObterFuncionariosPorLoginsQuery(IEnumerable<string> logins)
         {
             Logins = logins;
         }

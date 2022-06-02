@@ -66,22 +66,22 @@ namespace SME.SGP.Aplicacao
 
             if (responsaveisEscolasDres == null || !responsaveisEscolasDres.Any())
                 return Enumerable.Empty<ResponsavelEscolasDto>();
-            else 
+            else
                 return MapearResponsavelEscolaDre(responsaveisEscolasDres).ToList();
         }
 
-        public ResponsavelEscolasDto ObterPorUe(FiltroObterSupervisorEscolasDto filtro)
+        public async Task<IEnumerable<ResponsavelEscolasDto>> ObterAtribuicaoResponsavel(FiltroObterSupervisorEscolasDto filtro)
         {
+
             if (string.IsNullOrEmpty(filtro.DreCodigo))
                 throw new NegocioException("Necessário informar o Codigo da DRE");
 
-            var responsavelEscolaDreDto = repositorioSupervisorEscolaDre.ObtemPorUe(filtro);
+            var responsavelEscolaDreDto = await repositorioSupervisorEscolaDre.ObterAtribuicaoResponsavel(filtro);
 
             if (responsavelEscolaDreDto == null)
-                responsavelEscolaDreDto = new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo };
+                responsavelEscolaDreDto = new List<SupervisorEscolasDreDto>() { new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo } };
 
-            return MapearResponsavelEscolaDre(new[] { responsavelEscolaDreDto })
-                .FirstOrDefault();
+            return MapearResponsavelEscolaDre(responsavelEscolaDreDto);
         }
 
         private static void TrataEscolasSemResponsaveis(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, List<ResponsavelEscolasDto> listaRetorno)
@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao
                 var escolaResponsavelRetorno = new ResponsavelEscolasDto() { ResponsavelId = string.Empty, Responsavel = "NÃO ATRIBUÍDO" };
 
                 var escolas = from t in escolasSemResponsavel
-                    select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.NomeSimples };
+                              select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.NomeSimples };
 
                 escolaResponsavelRetorno.Escolas = escolas.ToList();
 
@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
             var listaResponsaveis = Enumerable.Empty<ResponsavelRetornoDto>().ToList();
 
             if (supervisoresEscolasDres.Count() == 1 && string.IsNullOrEmpty(supervisoresEscolasDres.FirstOrDefault().SupervisorId))
-                listaResponsaveis.Add(new ResponsavelRetornoDto() { CodigoRf_Login = "", NomeServidor = "NÃO ATRIBUÍDO" });
+                listaResponsaveis.Add(new ResponsavelRetornoDto() { CodigoRfOuLogin = "", NomeServidor = "NÃO ATRIBUÍDO" });
 
             var supervisoresTipo = supervisoresEscolasDres
                 .GroupBy(a => new { a.SupervisorId, a.Tipo })
@@ -147,7 +147,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 listaResponsaveis.Add(new ResponsavelRetornoDto()
                                 {
-                                    CodigoRf_Login = funcionario.Login,
+                                    CodigoRfOuLogin = funcionario.Login,
                                     NomeServidor = funcionario.NomeServidor
                                 });
                             }
@@ -162,7 +162,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 listaResponsaveis.Add(new ResponsavelRetornoDto()
                                 {
-                                    CodigoRf_Login = item.CodigoRF,
+                                    CodigoRfOuLogin = item.CodigoRF,
                                     NomeServidor = item.Nome
                                 });
                             }
@@ -171,11 +171,11 @@ namespace SME.SGP.Aplicacao
                         }
                 }
 
-                var responsavelRetorno = listaResponsaveis.FirstOrDefault(a => a.CodigoRf_Login == (supervisor?.SupervisorId ?? string.Empty));
+                var responsavelRetorno = listaResponsaveis.FirstOrDefault(a => a.CodigoRfOuLogin == (supervisor?.SupervisorId ?? string.Empty));
 
                 yield return new ResponsavelEscolasDto()
                 {
-                    Responsavel = responsavelRetorno.NomeServidor + " - " + responsavelRetorno.CodigoRf_Login,
+                    Responsavel = responsavelRetorno.NomeServidor + " - " + responsavelRetorno.CodigoRfOuLogin,
                     ResponsavelId = supervisor.SupervisorId,
                     TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.Tipo),
                     Escolas = escolas.ToList(),
@@ -191,14 +191,12 @@ namespace SME.SGP.Aplicacao
 
         private static string ObterTipoResponsavelDescricao(int tipo)
         {
-            if (tipo == 0)
-                tipo = 1;
 
             var tipoDescricao = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
                 .Cast<TipoResponsavelAtribuicao>()
                 .Where(w => (int)w == tipo)
                 .Select(d => new { descricao = d.Name() })
-                .FirstOrDefault().descricao;
+                .FirstOrDefault()?.descricao;
 
             return tipoDescricao;
         }

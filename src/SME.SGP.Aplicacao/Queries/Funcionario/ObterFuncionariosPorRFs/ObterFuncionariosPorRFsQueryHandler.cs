@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.Funcionario.ObterListaNomePorListaRF
 {
-    public class ObterListaNomePorListaRFQueryHandler : IRequestHandler<ObterListaNomePorListaRFQuery, IEnumerable<ProfessorResumoDto>>
+    public class ObterFuncionariosPorRFsQueryHandler : IRequestHandler<ObterFuncionariosPorRFsQuery, IEnumerable<ProfessorResumoDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
-        public ObterListaNomePorListaRFQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterFuncionariosPorRFsQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<IEnumerable<ProfessorResumoDto>> Handle(ObterListaNomePorListaRFQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ProfessorResumoDto>> Handle(ObterFuncionariosPorRFsQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
 
