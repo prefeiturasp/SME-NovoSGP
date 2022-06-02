@@ -73,6 +73,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeAusentes = 1,
                 QuantidadePresencas = 20, 
                 QuantidadeRemotos = 0,
+                Mes = 2,
                 CriadoEm = DateTime.Now
             });
 
@@ -92,14 +93,9 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeAusentes = 5,
                 QuantidadePresencas = 18,
                 QuantidadeRemotos = 0,
+                Mes = 2,
                 CriadoEm = DateTime.Now
             });
-
-            var useCase = ServiceProvider.GetService<IExecutaConsolidacaoDashBoardFrequenciaPorUeUseCase>();
-            var mensagem = new ConsolidacaoPorUeDashBoardFrequencia() { AnoLetivo = 2022, Mes = 2, TipoPeriodo = Dominio.Enumerados.TipoPeriodoDashboardFrequencia.Mensal, UeCodigo = "1"};
-            var jsonMensagem = JsonSerializer.Serialize(mensagem);
-
-            await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
             await InserirNaBase(new RegistroFrequenciaAluno
             {
@@ -112,14 +108,21 @@ namespace SME.SGP.TesteIntegracao
                 NumeroAula = 1
             });
 
+            var useCase = ServiceProvider.GetService<IExecutaConsolidacaoDashBoardFrequenciaPorUeUseCase>();
+            var mensagem = new ConsolidacaoPorUeDashBoardFrequencia() { AnoLetivo = 2022, Mes = 2, TipoPeriodo = Dominio.Enumerados.TipoPeriodoDashboardFrequencia.Mensal, UeCodigo = "1" };
+            var jsonMensagem = JsonSerializer.Serialize(mensagem);
+
+            await useCase.Executar(new MensagemRabbit(jsonMensagem));
+
             var consolidacoes = ObterTodos<ConsolidacaoDashBoardFrequencia>();
 
             consolidacoes.ShouldNotBeEmpty();
 
-            consolidacoes.Count.ShouldBe(1);
+            consolidacoes.Count.ShouldBe(2);
             consolidacoes.FirstOrDefault().Mes.ShouldBe(2);
-            consolidacoes.FirstOrDefault(c => c.TurmaId == 1).QuantidadeAusentes.ShouldBe(5);
-            consolidacoes.FirstOrDefault(c=> c.TurmaId == 1).QuantidadePresencas.ShouldBe(18);
+            consolidacoes.FirstOrDefault(c => c.TurmaId == 2).QuantidadeAusentes.ShouldBe(5);
+            consolidacoes.FirstOrDefault(c=> c.TurmaId == 2).QuantidadePresencas.ShouldBe(18);
+            consolidacoes.FirstOrDefault(c => c.TurmaId == 1).QuantidadePresencas.ShouldBe(1);
         }
 
         private async Task CriarItensBasicos()
