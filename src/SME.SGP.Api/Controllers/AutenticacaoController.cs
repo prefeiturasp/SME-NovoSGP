@@ -190,7 +190,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
-        [Permissao(Permissao.US_C, Policy = "Bearer")]
+        [AllowAnonymous]
         public async Task<IActionResult> DeslogarSuporte()
         {
             var retornoAutenticacao = await comandosUsuario.DeslogarSuporte();
