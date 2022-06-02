@@ -55,6 +55,51 @@ namespace SME.SGP.TesteIntegracao
             Assert.True(registrosDeletados > 0);
         }
 
+        [Fact]
+        public async Task Deve_retornar_false_quando_nao_passar_dre_valida()
+        {
+            //Arrange
+            await InserirDre(DRE_CODIGO_2);
+
+            var dre = "1";
+            var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisCoreSSO>();
+            var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
+
+            //Act
+            var retorno = await useCase.Executar(new MensagemRabbit(""));
+
+            var supervisoresEscolaresDre = await repositorio.ObtemSupervisoresPorDreAsync(dre, TipoResponsavelAtribuicao.PAAI);
+
+            //Assert
+            Assert.False(retorno);
+
+        }
+
+        [Fact]
+        public async Task Deve_retornar_true_quando_nao_excluir_supervisores()
+        {
+            //Arrange
+            await InserirDre(DRE_CODIGO_2);
+            await InserirDre(DRE_CODIGO_1);
+            await InserirSupervisorPsicologo("10", "10");
+            await InserirSupervisorPsicoPedagogo("9", "9");
+            await InserirSupervisorAssistenteSocial("8", "8");
+
+            var dre = "1";
+            var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisCoreSSO>();
+            var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
+            var registrosAntesUseCase = ObterTodos<SupervisorEscolaDre>();
+
+            //Act
+            var retorno = await useCase.Executar(new MensagemRabbit(dre));
+            var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
+            //Assert
+            Assert.True(registrosAntesUseCase.Count() == registrosAposUseCase.Count());
+
+        }
+
         public async Task InserirDre(string codigoDre)
         {
             await InserirNaBase(new Dre()
