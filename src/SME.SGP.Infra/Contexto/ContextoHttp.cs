@@ -30,8 +30,9 @@ namespace SME.SGP.Infra.Contexto
 
             Variaveis.Add("UsuarioLogado", httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Sistema");
             Variaveis.Add("NomeUsuario", httpContextAccessor.HttpContext?.User?.FindFirst("Nome")?.Value ?? "Sistema");
+            Variaveis.Add("Administrador", httpContextAccessor.HttpContext?.User?.FindFirst("login_adm_suporte")?.Value ?? string.Empty);
             Variaveis.Add("PerfilUsuario", ObterPerfilAtual());
-
+            
             var authorizationHeader = httpContextAccessor.HttpContext?.Request?.Headers["authorization"];
 
             if (!authorizationHeader.HasValue || authorizationHeader.Value == StringValues.Empty)
