@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 var dre = param.ObterObjetoMensagem<string>();
 
                 var paaiEscolasDres = await _repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(dre, TipoResponsavelAtribuicao.PAAI);
-                var perfil = new Guid("5ae1e074-37d6-e911-abd6-f81654fe895d");
+                var perfil = Perfis.PERFIL_PAAI;
 
                 if (paaiEscolasDres.Any())
                 {
